@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include
+
+Name: udisks2-qt5
+Description: UDisks2 manipulation library for Qt5
+Version: @VERSION@
+Requires: QtCore, QtDBus
+Libs: -L${libdir} -lpackagekit-qt2
+Cflags: -I${includedir}/UDisks2Qt5/udisks2-qt5

@@ -1,0 +1,11 @@
+# - Config information for UDisks2-Qt5
+# This file defines:
+#
+#  UDisks2Qt5_INCLUDE_DIR - the UDisks2Qt5 include directory
+#  UDisks2Qt5_LIBRARIES - Link these to use UDisks2-Qt5
+
+SET(prefix "@CMAKE_INSTALL_PREFIX@")
+SET(exec_prefix "@CMAKE_INSTALL_PREFIX@")
+SET(UDisks2Qt5_LIBRARIES "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/libudisks2-qt5.so" CACHE FILEPATH "Libraries for UDisks2-Qt5")
+SET(UDisks2Qt5_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/UDisks2Qt5/" CACHE PATH "Include path for UDisks2-Qt5")
+SET(UDisks2Qt5_FOUND "TRUE")

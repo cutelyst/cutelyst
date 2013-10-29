@@ -1,0 +1,34 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/* always defined to indicate that i18n is enabled */
+#define ENABLE_NLS 1
+
+/* Gettext Package */
+#define GETTEXT_PACKAGE "@GETTEXT_PACKAGE@"
+
+/* Paths */
+#define LOCALEDIR "@LOCALE_DIR@"
+#define PKGDATADIR "@PKGDATADIR@"
+#define PKGLIBDIR "@PKGLIBDIR@"
+#define PREFIXDIR "@PREFIXDIR@"
+#define DATADIR "@DATADIR@"
+#define LIBDIR "@LIBDIR@"
+#define BUILDDIR "@BUILDDIR@"
+
+/* Name of package */
+#define PACKAGE_NAME "packagekit-qt"
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "http://www.packagekit.org/pk-bugs.html"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL "http://packagekit.org"
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "@VERSION@"
+
+/* Version number of package */
+#define VERSION "@VERSION@"
+
+#endif /*CONFIG_H*/
