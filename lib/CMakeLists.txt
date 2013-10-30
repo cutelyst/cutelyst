@@ -15,18 +15,25 @@ include_directories(${CMAKE_BINARY_DIR}
 
 set(cutelystqt_SRC
     cutelystrequest.cpp
-    cutelystconnection.cpp
-    cutelystconnection_p.h
-    cutelystconnectionhttp.cpp
+    cutelystrequest_p.h
+    cutelystresponse.cpp
+    cutelyst.cpp
     cutelystengine.cpp
     cutelystengine_p.h
+    cutelystenginehttp.cpp
+    cutelystcontroller.cpp
+    cutelystchildprocess.cpp
+    cutelystchildprocess_p.h
     cutelystapplication.cpp
     cutelystapplication_p.h
 )
 
 set(cutelystqt_HEADERS
     cutelystrequest.h
-    cutelystconnection.h
+    cutelystresponse.h
+    cutelyst.h
+    cutelystengine.h
+    cutelystcontroller.h
     cutelystapplication.h
     CutelystApplication
 )

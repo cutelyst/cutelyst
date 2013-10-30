@@ -4,11 +4,12 @@
 #include <QObject>
 #include <QTcpSocket>
 
-class CutelystRequest : public QObject
+class CutelystRequestPrivate;
+class CutelystRequest
 {
-    Q_OBJECT
 public:
-    explicit CutelystRequest(QObject *parent = 0);
+    CutelystRequest();
+    CutelystRequest(CutelystRequestPrivate *prv);
     ~CutelystRequest();
 
     /**
@@ -34,13 +35,19 @@ public:
     QString body() const;
     QVariantHash bodyParameters() const;
     QString contentEncoding() const;
-    QVariant cookie(const QString &name) const;
-    QVariantHash cookies() const;
-    QVariant header(const QString &name) const;
-    QVariantHash headers() const;
+    QString cookie(const QString &key) const;
+    QHash<QString, QString> cookies() const;
+    QString header(const QString &key) const;
+    QHash<QString, QString> headers() const;
     QString method() const;
     QString protocol() const;
     QString userAgent() const;
+
+protected:
+    CutelystRequestPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(CutelystRequest)
 };
 
 #endif // CUTELYSTREQUEST_H

@@ -3,7 +3,7 @@
 
 #include "cutelystengine.h"
 
-#include <QSocketNotifier>
+#include <QTcpSocket>
 
 class CutelystEnginePrivate
 {
@@ -12,16 +12,10 @@ public:
     CutelystEnginePrivate(CutelystEngine *parent);
     ~CutelystEnginePrivate();
 
-    void gotFD(int socket);
-    ssize_t sendFD(int sock, void *buf, ssize_t buflen, int fd);
-    ssize_t readFD(int sock, void *buf, ssize_t bufsize, int *fd);
-
     CutelystEngine *q_ptr;
-    QSocketNotifier *notifier;
-    QString error;
-    int childFD;
-    int parentFD;
-    int childPID;
+    QTcpSocket *socket;
+    bool valid;
+    CutelystRequest *request;
 };
 
 #endif // CUTELYSTENGINE_P_H

@@ -1,64 +1,65 @@
-#include "cutelystconnectionhttp.h"
+#include "cutelystenginehttp.h"
+#include "cutelystrequest_p.h"
 
 #include <QStringList>
 
-CutelystConnectionHttp::CutelystConnectionHttp(int socket, QObject *parent) :
-    CutelystConnection(socket, parent),
+CutelystEngineHttp::CutelystEngineHttp(int socket, QObject *parent) :
+    CutelystEngine(socket, parent),
     m_bufLastIndex(0)
 {
 }
 
-QStringList CutelystConnectionHttp::args() const
+QStringList CutelystEngineHttp::args() const
 {
 
 }
 
-QString CutelystConnectionHttp::base() const
+QString CutelystEngineHttp::base() const
 {
 
 }
 
-QString CutelystConnectionHttp::body() const
+QString CutelystEngineHttp::body() const
 {
 
 }
 
-QVariantHash CutelystConnectionHttp::bodyParameters() const
+QVariantHash CutelystEngineHttp::bodyParameters() const
 {
 
 }
 
-QString CutelystConnectionHttp::contentEncoding() const
+QString CutelystEngineHttp::contentEncoding() const
 {
 
 }
 
-QVariantHash CutelystConnectionHttp::cookies() const
+QVariantHash CutelystEngineHttp::cookies() const
 {
 
 }
 
-QVariantHash CutelystConnectionHttp::headers() const
+QVariantHash CutelystEngineHttp::headers() const
 {
 
 }
 
-QString CutelystConnectionHttp::method() const
+QString CutelystEngineHttp::method() const
 {
 
 }
 
-QString CutelystConnectionHttp::protocol() const
+QString CutelystEngineHttp::protocol() const
 {
 
 }
 
-QString CutelystConnectionHttp::userAgent() const
+QString CutelystEngineHttp::userAgent() const
 {
     return m_headers.value(QLatin1String("User-Agent"));
 }
 
-void CutelystConnectionHttp::parse(const QByteArray &request)
+void CutelystEngineHttp::parse(const QByteArray &request)
 {
     m_buffer.prepend(request);
 
@@ -94,15 +95,6 @@ void CutelystConnectionHttp::parse(const QByteArray &request)
                 qDebug() << "BAD REQUEST" << request;
                 return;
             }
-//            QList<QByteArray> parts = section.split(' ');
-//            if (parts.size() > 1) {
-//                m_method = parts.first();
-//                m_args = parts.at(1).split('/');
-//            }
-
-//            if (parts.size() == 3) {
-//                m_protocol = parts.at(3);
-//            }
         }
     }
 
@@ -116,6 +108,14 @@ void CutelystConnectionHttp::parse(const QByteArray &request)
             qDebug() << section.section(QLatin1Char(':'), 0, 0) << section.section(QLatin1Char(':'), 1).trimmed() << endl;
         }
     }
+
+    CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
+    requestPriv->engine = this;
+    requestPriv->method = m_method;
+    requestPriv->args = m_args;
+    requestPriv->protocol = m_protocol;
+    requestPriv->headers = m_headers;
+
     qDebug() << request;
 
     //    while (request.end())

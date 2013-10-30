@@ -1,16 +1,16 @@
-#ifndef CUTELYSTCONNECTIONHTTP_H
-#define CUTELYSTCONNECTIONHTTP_H
+#ifndef CUTELYSTENGINEHTTP_H
+#define CUTELYSTENGINEHTTP_H
 
-#include "cutelystconnection.h"
+#include "cutelystengine.h"
 
 #include <QTcpSocket>
 #include <QStringList>
 
-class CutelystConnectionHttp : public CutelystConnection
+class CutelystEngineHttp : public CutelystEngine
 {
     Q_OBJECT
 public:
-    explicit CutelystConnectionHttp(int socket, QObject *parent = 0);
+    explicit CutelystEngineHttp(int socket, QObject *parent = 0);
 
     virtual QStringList args() const;
     virtual QString base() const;
@@ -36,4 +36,4 @@ private:
     QHash<QString, QString> m_headers;
 };
 
-#endif // CUTELYSTCONNECTIONHTTP_H
+#endif // CUTELYSTENGINEHTTP_H

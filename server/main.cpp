@@ -5,6 +5,8 @@
 
 #include <CutelystApplication>
 
+#include "root.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -13,6 +15,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("ceciletti.com.br");
     QCoreApplication::setApplicationName("CuteWeb");
     QCoreApplication::setApplicationVersion("0.0.1");
+
+    qRegisterMetaType<Root*>();
 
     CutelystApplication app(argc, argv);
 

@@ -1,14 +1,18 @@
-#include "cutelystrequest.h"
-
-#include <QHostAddress>
-#include <QTimer>
+#include "cutelystrequest_p.h"
+#include "cutelystengine.h"
 
 // TODO make this configurable
 #define TIMEOUT 3000
 
-CutelystRequest::CutelystRequest(QObject *parent) :
-    QObject(parent)
+CutelystRequest::CutelystRequest() :
+    d_ptr(new CutelystRequestPrivate)
 {
+}
+
+CutelystRequest::CutelystRequest(CutelystRequestPrivate *prv) :
+    d_ptr(prv)
+{
+
 }
 
 CutelystRequest::~CutelystRequest()
@@ -17,35 +21,42 @@ CutelystRequest::~CutelystRequest()
 
 QHostAddress CutelystRequest::peerAddress() const
 {
-    return m_socket->peerAddress();
+    Q_D(const CutelystRequest);
+    return d->engine->peerAddress();
 }
 
 QString CutelystRequest::peerName() const
 {
-    return m_socket->peerName();
+    Q_D(const CutelystRequest);
+    return d->engine->peerName();
 }
 
 quint16 CutelystRequest::peerPort() const
 {
-    return m_socket->peerPort();
+    Q_D(const CutelystRequest);
+    return d->engine->peerPort();
 }
 
-QVariant CutelystRequest::cookie(const QString &name) const
+QString CutelystRequest::cookie(const QString &key) const
 {
-    return cookies().value(name);
+    Q_D(const CutelystRequest);
+    return d->cookies.value(key);
 }
 
-QVariantHash CutelystRequest::cookies() const
+QHash<QString, QString> CutelystRequest::cookies() const
 {
-
+    Q_D(const CutelystRequest);
+    return d->cookies;
 }
 
-QVariant CutelystRequest::header(const QString &name) const
+QString CutelystRequest::header(const QString &key) const
 {
-    return headers().value(name);
+    Q_D(const CutelystRequest);
+    return d->headers.value(key);
 }
 
-QVariantHash CutelystRequest::headers() const
+QHash<QString, QString> CutelystRequest::headers() const
 {
-
+    Q_D(const CutelystRequest);
+    return d->headers;
 }

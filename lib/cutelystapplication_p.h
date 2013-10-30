@@ -6,7 +6,7 @@
 #include <QSocketNotifier>
 #include <QTcpServer>
 
-class CutelystEngine;
+class CutelystChildProcess;
 class CutelystApplicationPrivate
 {
     Q_DECLARE_PUBLIC(CutelystApplication)
@@ -25,7 +25,7 @@ public:
     QHostAddress address;
     QString pluginApplication;
     QTcpServer *server;
-    QList<CutelystEngine*> child;
+    QList<CutelystChildProcess*> child;
 };
 
 #endif // CUTELYSTAPPLICATION_P_H

@@ -6,10 +6,7 @@ include_directories(
 )
 
 set(server_SRCS
-#    CWRequest.cpp
-#    CWHttpRequest.cpp
-#    ChildProcess.cpp
-#    CuteWebApplication.cpp
+    root.cpp
     main.cpp
 )
 

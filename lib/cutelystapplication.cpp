@@ -1,6 +1,6 @@
 #include "cutelystapplication_p.h"
 
-#include "cutelystengine.h"
+#include "cutelystchildprocess.h"
 
 #include <iostream>
 
@@ -58,7 +58,7 @@ bool CutelystApplication::parseArgs()
         int childCount = 1;
         for (int i = 0; i < childCount; ++i) {
             bool childProcess;
-            CutelystEngine *child = new CutelystEngine(childProcess, this);
+            CutelystChildProcess *child = new CutelystChildProcess(childProcess, this);
             if (childProcess) {
                 // We are not the parent anymore,
                 // so we don't need the server class
