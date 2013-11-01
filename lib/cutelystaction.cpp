@@ -53,7 +53,9 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     qDebug() << Q_FUNC_INFO << actionNamespace << m_attributes;
 
     if (m_attributes.contains(QLatin1String("Path"))) {
-        if (m_attributes)
+//        if (m_attributes) {
+
+//        }
     }
 }
 
