@@ -1,5 +1,7 @@
 #include "cutelystcontroller.h"
 
+#include <QDebug>
+
 CutelystController::CutelystController(QObject *parent) :
     QObject(parent)
 {

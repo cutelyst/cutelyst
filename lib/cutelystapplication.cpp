@@ -72,6 +72,8 @@ bool CutelystApplication::parseArgs()
         }
         qDebug() << "Listening on:" << d->server->serverAddress() << d->server->serverPort();
         qDebug() << "Number of child process:" << d->child.size();
+    } else {
+        qWarning() << "Failed to listen on" << d->address.toString() << d->port;
     }
 
     return !d->child.isEmpty();

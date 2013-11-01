@@ -3,17 +3,16 @@
 
 #include <QObject>
 
-#include "cutelyst.h"
+#include "cutelystcontext.h"
 
 class CutelystController : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("Controller", "")
 public:
-    explicit CutelystController(QObject *parent = 0);
+    Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
     ~CutelystController();
 
-private:
 };
 
 Q_DECLARE_METATYPE(CutelystController*)

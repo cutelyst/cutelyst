@@ -6,12 +6,13 @@
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
-class Cutelyst : public QObject
+class CutelystContext : public QObject
 {
     Q_OBJECT
 public:
-    explicit Cutelyst(QObject *parent = 0);
+    explicit CutelystContext(QObject *parent = 0);
 
+    QStringList args() const;
     QString uriPrefix() const;
     CutelystRequest request() const;
     CutelystResponse* response() const;

@@ -7,10 +7,12 @@ class Root : public CutelystController
 {
     Q_OBJECT
 public:
-    Root();
+    Q_INVOKABLE Root();
 
-public slots:
-    void begin(Cutelyst *c, const QString &nome, QString foo, QString &bar, QString *teste);
+private:
+    Q_CLASSINFO("begin_Path", "/home")
+    Q_INVOKABLE void begin(CutelystContext *c, const QString &nome);
+    void begin(CutelystContext *c, const QString &nome, const QString &idade);
 };
 
 #endif // ROOT_H
