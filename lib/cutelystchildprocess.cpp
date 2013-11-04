@@ -21,6 +21,7 @@
 
 #include "cutelystenginehttp.h"
 #include "cutelystcontroller.h"
+#include "cutelystcontext.h"
 #include "cutelystaction.h"
 
 #include <stdio.h>
@@ -135,7 +136,7 @@ void CutelystChildProcess::initChild(int socket)
                         if (action->isValid()) {
                             actions << action;
                         }
-                        qDebug() << Q_FUNC_INFO << "Calling method:" << method.name();
+                        qDebug() << Q_FUNC_INFO << "Calling method:" << method.name() << controller->classNamespace();
                         CutelystContext *c = new CutelystContext();
                         bool ret;
                         ret = action->dispatch(c);

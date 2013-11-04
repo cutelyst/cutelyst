@@ -22,16 +22,55 @@
 
 #include <QObject>
 
-#include "cutelystcontext.h"
-
+class CutelystContext;
 class CutelystController : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("Controller", "")
+    /**
+      * Use Q_CLASSINFO to give hints about methods
+      * build like methodName(_numberOfArguments)_option
+      * Where numberOfArguments is needed only for methods
+      * with the same name but different signatures and
+      * option is one of the following:
+      *
+      * Path - An ending path relative to the class info Namespace
+      * for example:
+      * "" - /namespace/controlername (used for the index)
+      * "foo" - /namespace/controlername/foo
+      * "/bar" - /namespace/bar
+      *
+      * Chained - Sets the name of this part of the chain. If it
+      * is specified without arguments, it takes the name of
+      * the action as default.
+      *
+      * PathPart - The part of the chained path
+      *
+      * Args - In the case of more than 9 parameters, to build
+      * the path set the needed number here, where an empty string
+      * means unlimited arguments.
+      *
+      * CaptureArgs - In the case of more than 9 parameters, to
+      * be captured the path set the needed number here, where -1
+      * means unlimited arguments.
+      */
 public:
+    /**
+     * @brief CaptureArgs - Specifies how many arguments this
+     * part of the chain will Capture.
+     * Add it to the end of the Parameters list, or in the case
+     * of more than 9 parameters use Q_CLASSINFO
+     */
+    typedef int CaptureArgs;
     Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
     ~CutelystController();
 
+    QString classNamespace() const;
+
+    CutelystContext* c() const;
+    void setContext(CutelystContext *c);
+
+private:
+    CutelystContext *m_c;
 };
 
 Q_DECLARE_METATYPE(CutelystController*)

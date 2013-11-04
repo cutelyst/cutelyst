@@ -28,59 +28,9 @@ CutelystEngineHttp::CutelystEngineHttp(int socket, QObject *parent) :
 {
 }
 
-QStringList CutelystEngineHttp::args() const
-{
-
-}
-
-QString CutelystEngineHttp::base() const
-{
-
-}
-
-QString CutelystEngineHttp::body() const
-{
-
-}
-
-QVariantHash CutelystEngineHttp::bodyParameters() const
-{
-
-}
-
-QString CutelystEngineHttp::contentEncoding() const
-{
-
-}
-
-QVariantHash CutelystEngineHttp::cookies() const
-{
-
-}
-
-QVariantHash CutelystEngineHttp::headers() const
-{
-
-}
-
-QString CutelystEngineHttp::method() const
-{
-
-}
-
-QString CutelystEngineHttp::protocol() const
-{
-
-}
-
-QString CutelystEngineHttp::userAgent() const
-{
-    return m_headers.value(QLatin1String("User-Agent"));
-}
-
 void CutelystEngineHttp::parse(const QByteArray &request)
 {
-    m_buffer.prepend(request);
+    m_buffer.append(request);
 
     int newLine;
     if (m_method.isEmpty()) {

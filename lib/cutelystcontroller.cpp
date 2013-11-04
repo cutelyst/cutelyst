@@ -19,6 +19,8 @@
 
 #include "cutelystcontroller.h"
 
+#include <QMetaClassInfo>
+#include <QStringBuilder>
 #include <QDebug>
 
 CutelystController::CutelystController(QObject *parent) :
@@ -28,7 +30,47 @@ CutelystController::CutelystController(QObject *parent) :
 
 CutelystController::~CutelystController()
 {
+}
 
+QString CutelystController::classNamespace() const
+{
+    QString ns;
+    for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
+        if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
+            ns = metaObject()->classInfo(i).value();
+            break;
+        }
+    }
+
+    QString className = metaObject()->className();
+    if (ns.isNull()) {
+        bool lastWasUpper = false;
+        for (int i = 0; i < className.length(); ++i) {
+            if (className.at(i).toLower() == className.at(i)) {
+                ns.append(className.at(i));
+                lastWasUpper = false;
+            } else {
+                if (lastWasUpper) {
+                    ns.append(className.at(i).toLower());
+                } else {
+                    ns.append(QLatin1Char('/') % className.at(i).toLower());
+                }
+                lastWasUpper = true;
+            }
+        }
+    }
+
+    return ns;
+}
+
+CutelystContext *CutelystController::c() const
+{
+    return m_c;
+}
+
+void CutelystController::setContext(CutelystContext *c)
+{
+    m_c = c;
 }
 
 #include "moc_cutelystcontroller.cpp"

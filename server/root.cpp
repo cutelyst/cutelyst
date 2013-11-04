@@ -1,5 +1,7 @@
 #include "root.h"
 
+#include <cutelystcontext.h>
+
 #include <QDebug>
 
 Root::Root()
@@ -7,12 +9,12 @@ Root::Root()
     qDebug() << Q_FUNC_INFO;
 }
 
-void Root::begin(CutelystContext *c, const QString &nome)
+void Root::begin(const QString &nome)
 {
     qDebug() << Q_FUNC_INFO << nome;
 }
 
-void Root::begin(CutelystContext *c, const QString &nome, const QString &idade)
+void Root::begin(const QString &nome, const QString &idade, CaptureArgs)
 {
     qDebug() << Q_FUNC_INFO << nome << idade;
 }

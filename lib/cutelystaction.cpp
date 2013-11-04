@@ -19,8 +19,10 @@
 
 #include "cutelystaction.h"
 #include "cutelystcontroller.h"
+#include "cutelystcontext.h"
 
 #include <QMetaClassInfo>
+#include <QDebug>
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
@@ -51,6 +53,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
         }
     }
     qDebug() << Q_FUNC_INFO << actionNamespace << m_attributes;
+    qDebug() << Q_FUNC_INFO << m_method.parameterTypes() << m_method.parameterNames();
 
     if (m_attributes.contains(QLatin1String("Path"))) {
 //        if (m_attributes) {
@@ -84,14 +87,15 @@ CutelystController *CutelystAction::controller() const
 
 bool CutelystAction::dispatch(CutelystContext *c)
 {
+    m_controller->setContext(c);
+
     QStringList args = c->args();
     // Fill the missing arguments
-    for (int i = args.count(); i < 8; ++i) {
+    for (int i = args.count(); i < 9; ++i) {
         args << QString();
     }
 
     return m_method.invoke(m_controller,
-                           Q_ARG(CutelystContext*, c),
                            Q_ARG(QString, args.at(0)),
                            Q_ARG(QString, args.at(1)),
                            Q_ARG(QString, args.at(2)),
@@ -99,7 +103,8 @@ bool CutelystAction::dispatch(CutelystContext *c)
                            Q_ARG(QString, args.at(4)),
                            Q_ARG(QString, args.at(5)),
                            Q_ARG(QString, args.at(6)),
-                           Q_ARG(QString, args.at(7)));
+                           Q_ARG(QString, args.at(7)),
+                           Q_ARG(QString, args.at(8)));
 }
 
 bool CutelystAction::match(CutelystContext *c) const
@@ -125,20 +130,4 @@ quint8 CutelystAction::numberOfArgs() const
 quint8 CutelystAction::numberOfCaptures() const
 {
 
-}
-
-bool CutelystAction::invokeMethod(CutelystContext *c,
-                                  const QVariant &arg1,
-                                  const QVariant &arg2,
-                                  const QVariant &arg3,
-                                  const QVariant &arg4,
-                                  const QVariant &arg5,
-                                  const QVariant &arg6,
-                                  const QVariant &arg7,
-                                  const QVariant &arg8)
-{
-    qDebug() << c << arg1;
-    return m_method.invoke(m_controller,
-                           Q_ARG(CutelystContext*, c),
-                           Q_ARG(QString, arg1.toString()));
 }

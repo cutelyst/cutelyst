@@ -31,17 +31,6 @@ class CutelystEngineHttp : public CutelystEngine
 public:
     explicit CutelystEngineHttp(int socket, QObject *parent = 0);
 
-    virtual QStringList args() const;
-    virtual QString base() const;
-    virtual QString body() const;
-    virtual QVariantHash bodyParameters() const;
-    virtual QString contentEncoding() const;
-    virtual QVariantHash cookies() const;
-    virtual QVariantHash headers() const;
-    virtual QString method() const;
-    virtual QString protocol() const;
-    virtual QString userAgent() const;
-
 protected:
     virtual void parse(const QByteArray &request);
 

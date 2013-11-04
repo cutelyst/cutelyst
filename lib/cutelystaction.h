@@ -102,16 +102,6 @@ public:
     QMetaMethod meta() const;
 
 private:
-    bool invokeMethod(CutelystContext *c,
-                      const QVariant &arg1 = QVariant(),
-                      const QVariant &arg2 = QVariant(),
-                      const QVariant &arg3 = QVariant(),
-                      const QVariant &arg4 = QVariant(),
-                      const QVariant &arg5 = QVariant(),
-                      const QVariant &arg6 = QVariant(),
-                      const QVariant &arg7 = QVariant(),
-                      const QVariant &arg8 = QVariant());
-
     QMetaMethod m_method;
     QHash<QString, QString> m_attributes;
     CutelystController *m_controller;
