@@ -52,6 +52,29 @@ class CutelystController : public QObject
       * means unlimited arguments.
       */
 public:
+    /**
+     * @brief Global - Alias to Path="/methodname" which sets the
+     * method relative to your root
+     * Always add it to the end of the argument list of the methods
+     */
+    typedef int Global;
+
+    /**
+     * @brief Local - Alias to Path="methodname"
+     * Always add it to the end of the argument list of the methods
+     */
+    typedef int Local;
+
+    /**
+     * @brief Args - When used with "Path"  indicates the number of
+     * arguments expected in the path.
+     * However if no Args value is set, assumed to 'slurp' all
+     * remaining path parts under this namespace.
+     * This is ignored if Q_CLASSINFO has defined it before
+     * Always add it to the end of the argument list of the methods.
+     */
+    typedef int Args;
+
     Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
     ~CutelystController();
 

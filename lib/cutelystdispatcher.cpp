@@ -52,9 +52,8 @@ void CutelystDispatcher::setupActions()
                     qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
 
-                    QString privateName = controller->classNamespace() % QLatin1Char('/') % action->name();
-                    if (!m_actions.contains(privateName)) {
-                        m_actions.insert(privateName, action);
+                    if (!m_actions.contains(action->privateName())) {
+                        m_actions.insert(action->privateName(), action);
 
                         bool registered = false;
                         // Register the action with each dispatcher
@@ -65,7 +64,7 @@ void CutelystDispatcher::setupActions()
                         }
 
                         if (!registered) {
-                            qWarning() << "***Could NOT register the action" << privateName << "with any dispatcher";
+                            qWarning() << "***Could NOT register the action" << action->name() << "with any dispatcher";
                         }
                     } else {
                         delete action;
@@ -87,7 +86,7 @@ void CutelystDispatcher::setupActions()
 
 void CutelystDispatcher::printActions()
 {
-    qDebug() << "Loaded private actions:";
+    qDebug() << "Loaded Private actions:";
     QString privateTitle("Private");
     QString classTitle("Class");
     QString methodTitle("Method");
@@ -129,7 +128,7 @@ void CutelystDispatcher::printActions()
     qDebug() << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
              << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
              << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-             << ".";
+             << ".\n";
 
     // List all public actions
     foreach (CutelystDispatchType *dispatch, m_dispatchers) {

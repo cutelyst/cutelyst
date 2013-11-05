@@ -9,17 +9,23 @@ Root::Root()
     qDebug() << Q_FUNC_INFO;
 }
 
-void Root::hugeNameQuiteLong(const QString &nome)
+void Root::hugeNameQuiteLong(const QString &nome, Local)
 {
 
 }
 
-void Root::begin(const QString &nome)
+void Root::begin(const QString &name)
 {
-    qDebug() << Q_FUNC_INFO << nome;
+    qDebug() << Q_FUNC_INFO << name;
 }
 
-void Root::begin(const QString &nome, const QString &idade)
+void Root::users(const QString &name, const QString &age, Args, CutelystController::Local)
 {
-    qDebug() << Q_FUNC_INFO << nome << idade;
+    qDebug() << Q_FUNC_INFO << name << age;
+}
+
+void Root::admin(const QString &name, const QString &age, CutelystController::Global)
+{
+    qDebug() << Q_FUNC_INFO << name << age;
+
 }

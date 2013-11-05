@@ -79,6 +79,12 @@ public:
     QString name() const;
 
     /**
+     * @brief name
+     * @return Returns the private name of this action.
+     */
+    QString privateName() const;
+
+    /**
      * @brief numberOfArgs
      * @return Returns the number of args this action expects.
      * This is 0 if the action doesn't take any arguments and
@@ -100,6 +106,7 @@ public:
     QMetaMethod meta() const;
 
 private:
+    QString m_name;
     QMetaMethod m_method;
     QMultiHash<QString, QString> m_attributes;
     CutelystController *m_controller;

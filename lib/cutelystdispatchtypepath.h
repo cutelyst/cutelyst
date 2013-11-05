@@ -37,6 +37,8 @@ public:
     virtual bool registerAction(CutelystAction *action);
 
 private:
+    void registerPath(const QString &path, CutelystAction *action);
+
     QHash<QString, CutelystAction*> m_paths;
 };
 

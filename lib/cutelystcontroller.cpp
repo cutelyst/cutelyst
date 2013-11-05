@@ -60,6 +60,10 @@ QString CutelystController::classNamespace() const
         }
     }
 
+    if (!ns.startsWith(QLatin1Char('/'))) {
+        ns.prepend(QLatin1Char('/'));
+    }
+
     return ns;
 }
 

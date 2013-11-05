@@ -21,6 +21,7 @@
 
 #include "cutelystaction.h"
 
+#include <QStringBuilder>
 #include <QDebug>
 
 CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
@@ -30,7 +31,61 @@ CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
 
 void CutelystDispatchTypePath::list() const
 {
+    qDebug() << "Loaded Path actions:";
+    QString pathTitle("Path");
+    QString privateTitle("Private");
+    int pathLength = pathTitle.length();
+    int privateLength = privateTitle.length();
+    QHash<QString, CutelystAction*>::ConstIterator it = m_paths.constBegin();
+    while (it != m_paths.constEnd()) {
+        CutelystAction *action = it.value();
+        QString path = QLatin1Char('/') % it.key();
+        QString args = action->attributes().value(QLatin1String("Args"));
+        if (args.isEmpty()) {
+            path.append(QLatin1String("/..."));
+        } else {
+            for (int i = 0; i < action->numberOfArgs(); ++i) {
+                path.append(QLatin1String("/*"));
+            }
+        }
 
+        pathLength = qMax(pathLength, path.length() + 1);
+        privateLength = qMax(privateLength, action->privateName().length());
+
+        ++it;
+    }
+
+    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+             << ".";
+    qDebug() << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
+             << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+             << "|";
+    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+             << ".";
+
+    it = m_paths.constBegin();
+    while (it != m_paths.constEnd()) {
+        CutelystAction *action = it.value();
+        QString path = QLatin1Char('/') % it.key();
+        if (!action->attributes().contains(QLatin1String("Args"))) {
+            path.append(QLatin1String("/..."));
+        } else {
+            for (int i = 0; i < action->numberOfArgs(); ++i) {
+                path.append(QLatin1String("/*"));
+            }
+        }
+
+        qDebug() << "|" << path.leftJustified(pathLength).toUtf8().data()
+                 << "|" << action->privateName().leftJustified(privateLength).toUtf8().data()
+                 << "|";
+        ++it;
+    }
+
+    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+             << ".\n";
 }
 
 bool CutelystDispatchTypePath::match(const QUrl &path) const
@@ -40,10 +95,32 @@ bool CutelystDispatchTypePath::match(const QUrl &path) const
 
 bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
 {
+    int pathsCount = m_paths.size();
+
     QMultiHash<QString, QString> attributes = action->attributes();
     QMultiHash<QString, QString>::iterator i = attributes.find(QLatin1String("Path"));
     while (i != attributes.end() && i.key() == QLatin1String("Path")) {
-        qDebug() << Q_FUNC_INFO << i.value();
+        if (!m_paths.contains(i.value())) {
+            registerPath(i.value(), action);
+        }
+
         ++i;
     }
+
+    return m_paths.size() != pathsCount;
+}
+
+void CutelystDispatchTypePath::registerPath(const QString &path, CutelystAction *action)
+{
+    qDebug() << Q_FUNC_INFO << path;
+
+    QString _path = path;
+    if (_path.startsWith(QLatin1Char('/'))) {
+        _path.remove(0, 1);
+    }
+    if (_path.isEmpty()) {
+        _path = QLatin1Char('/');
+    }
+
+    m_paths.insert(_path, action);
 }

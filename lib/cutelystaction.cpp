@@ -22,10 +22,12 @@
 #include "cutelystcontext.h"
 
 #include <QMetaClassInfo>
+#include <QStringBuilder>
 #include <QDebug>
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
+    m_name(parent->classNamespace() % QLatin1Char('/') % method.name()),
     m_method(method),
     m_controller(parent),
     m_numberOfArgs(0),
@@ -36,7 +38,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
-    QString regexString = QString("%1_(\\w+)").arg(QString(m_method.name()));
+    QString regexString = QString("%1_(\\w+)").arg(m_name);
     QRegExp regex(regexString);
     for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
@@ -51,24 +53,34 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
         }
     }
 
-    if (!m_attributes.contains(QLatin1String("Args"))) {
-        m_numberOfArgs = method.parameterCount();
-        m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfArgs));
+    // if the method has the CaptureArgs as an argument
+    // set it on the attributes
+    int parameterCount = 0;
+    bool ignoreParameters = false;
+    foreach (const QByteArray &type, method.parameterTypes()) {
+        if (type == "QString" && !ignoreParameters) {
+            ++parameterCount;
+        } else {
+            // Make sure the user defines specia
+            // parameters types AFTER the ones to be captured
+            ignoreParameters = true;
+            if (type == "Global") {
+                if (m_name.startsWith(QLatin1Char('/'))) {
+                    m_attributes.insertMulti(QLatin1String("Path"), m_name);
+                } else {
+                    m_attributes.insertMulti(QLatin1String("Path"), QLatin1Char('/') % m_name);
+                }
+            } else if (type == "Local") {
+                m_attributes.insertMulti(QLatin1String("Path"), m_name);
+            } else if (type == "Args" && !m_attributes.contains(QLatin1String("Args"))) {
+                m_numberOfArgs = parameterCount;
+                m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfArgs));
+            } else if (type == "CaptureArgs" && !m_attributes.contains(QLatin1String("CaptureArgs"))) {
+                m_numberOfCaptures = parameterCount;
+                m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfCaptures));
+            }
+        }
     }
-
-    if (!m_attributes.contains(QLatin1String("CaptureArgs"))) {
-        m_numberOfCaptures = method.parameterCount();
-        m_attributes.insertMulti(QLatin1String("CaptureArgs"), QString::number(m_numberOfCaptures));
-    }
-
-//    qDebug() << Q_FUNC_INFO << actionNamespace << m_attributes;
-//    qDebug() << Q_FUNC_INFO << m_method.parameterTypes() << m_method.parameterNames();
-
-////    if (m_attributes.contains(QLatin1String("Path"))) {
-//////        if (m_attributes) {
-
-//////        }
-////    }
 }
 
 QMultiHash<QString, QString> CutelystAction::attributes() const
@@ -125,6 +137,11 @@ bool CutelystAction::matchCaptures(CutelystContext *c) const
 QString CutelystAction::name() const
 {
     return m_method.name();
+}
+
+QString CutelystAction::privateName() const
+{
+    return m_name;
 }
 
 quint8 CutelystAction::numberOfArgs() const
