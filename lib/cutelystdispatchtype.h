@@ -17,35 +17,42 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCHILDPROCESS_H
-#define CUTELYSTCHILDPROCESS_H
+#ifndef CUTELYSTDISPATCHTYPE_H
+#define CUTELYSTDISPATCHTYPE_H
 
 #include <QObject>
 
-class CutelystChildProcessPrivate;
-class CutelystChildProcess : public QObject
+class CutelystAction;
+class CutelystDispatchType : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystChildProcess(bool &childProcess, QObject *parent = 0);
-    ~CutelystChildProcess();
+    explicit CutelystDispatchType(QObject *parent = 0);
 
-    bool initted() const;
-    bool sendFD(int fd);
+    /**
+     * @brief list the registered actions
+     * To be implemented by subclasses
+     */
+    virtual void list() const = 0;
 
-protected:
-    virtual void methodBegin();
-    virtual void methodAuto();
-    virtual void methodEnd();
-    virtual void methodDefault();
+    /**
+     * Return true if the dispatchType matches the given path
+     */
+    virtual bool match(const QUrl &path) const = 0;
 
-    CutelystChildProcessPrivate *d_ptr;
+    /**
+     * @brief registerAction
+     * @param action
+     * @return
+     */
+    virtual bool registerAction(CutelystAction *action) = 0;
 
-private:
-    Q_DECLARE_PRIVATE(CutelystChildProcess)
-
-    void initChild(int socket);
-    void gotFD(int socket);
+    /**
+     * Returns true if the dispatch type has low precedence
+     * when the precedence is the same the Class name is used
+     * to sort them.
+     */
+    virtual bool isLowPrecedence() const;
 };
 
-#endif // CUTELYSTCHILDPROCESS_H
+#endif // CUTELYSTDISPATCHTYPE_H

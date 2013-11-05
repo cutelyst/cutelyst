@@ -47,24 +47,18 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
         }
 
         if (regex.indexIn(name) != -1) {
-            m_attributes[regex.cap(1)] = classInfo.value();
+            m_attributes.insertMulti(regex.cap(1), classInfo.value());
         }
     }
 
-    // if the method has the CaptureArgs as an argument
-    // set it on the attributes
-    foreach (const QByteArray &type, method.parameterTypes()) {
-        if (type == "CaptureArgs") {
-            m_numberOfCaptures = method.parameterCount() - 1;
-            m_attributes[type] = QString::number(m_numberOfCaptures);
-            break;
-        }
-    }
-
-    if (!m_attributes.contains(QLatin1String("CaptureArgs")) &&
-            m_attributes.contains(QLatin1String("Args"))) {
+    if (!m_attributes.contains(QLatin1String("Args"))) {
         m_numberOfArgs = method.parameterCount();
-        m_attributes[QLatin1String("Args")] = QString::number(m_numberOfArgs);
+        m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfArgs));
+    }
+
+    if (!m_attributes.contains(QLatin1String("CaptureArgs"))) {
+        m_numberOfCaptures = method.parameterCount();
+        m_attributes.insertMulti(QLatin1String("CaptureArgs"), QString::number(m_numberOfCaptures));
     }
 
 //    qDebug() << Q_FUNC_INFO << actionNamespace << m_attributes;
@@ -77,7 +71,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
 ////    }
 }
 
-QHash<QString, QString> CutelystAction::attributes() const
+QMultiHash<QString, QString> CutelystAction::attributes() const
 {
     return m_attributes;
 }
@@ -117,7 +111,7 @@ bool CutelystAction::dispatch(CutelystContext *c)
 bool CutelystAction::match(CutelystContext *c) const
 {
     if (m_attributes.contains(QLatin1String("Args")) &&
-            m_attributes[QLatin1String("Args")].isEmpty()) {
+            m_attributes.value(QLatin1String("Args")).isEmpty()) {
         return true;
     }
     return m_numberOfArgs == 0 || m_numberOfArgs == c->args().size();

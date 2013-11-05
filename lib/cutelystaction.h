@@ -37,7 +37,7 @@ public:
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    QHash<QString, QString> attributes() const;
+    QMultiHash<QString, QString> attributes() const;
 
     /**
      * @return Returns the name of the component where this action is defined
@@ -101,7 +101,7 @@ public:
 
 private:
     QMetaMethod m_method;
-    QHash<QString, QString> m_attributes;
+    QMultiHash<QString, QString> m_attributes;
     CutelystController *m_controller;
     quint8 m_numberOfArgs;
     quint8 m_numberOfCaptures;

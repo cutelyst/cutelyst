@@ -106,6 +106,22 @@ bool CutelystChildProcess::sendFD(int fd)
     return d->sendFD(d->parentFD, buf, 1, fd) == 1;
 }
 
+void CutelystChildProcess::methodBegin()
+{
+}
+
+void CutelystChildProcess::methodAuto()
+{
+}
+
+void CutelystChildProcess::methodEnd()
+{
+}
+
+void CutelystChildProcess::methodDefault()
+{
+}
+
 void CutelystChildProcess::initChild(int socket)
 {
     Q_D(CutelystChildProcess);

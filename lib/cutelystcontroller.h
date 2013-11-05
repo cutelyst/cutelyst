@@ -52,13 +52,6 @@ class CutelystController : public QObject
       * means unlimited arguments.
       */
 public:
-    /**
-     * @brief CaptureArgs - Specifies how many arguments this
-     * part of the chain will Capture.
-     * Add it to the end of the Parameters list, or in the case
-     * of more than 9 parameters use Q_CLASSINFO
-     */
-    typedef int CaptureArgs;
     Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
     ~CutelystController();
 

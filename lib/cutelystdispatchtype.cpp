@@ -17,35 +17,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCHILDPROCESS_H
-#define CUTELYSTCHILDPROCESS_H
+#include "cutelystdispatchtype.h"
 
-#include <QObject>
-
-class CutelystChildProcessPrivate;
-class CutelystChildProcess : public QObject
+CutelystDispatchType::CutelystDispatchType(QObject *parent) :
+    QObject(parent)
 {
-    Q_OBJECT
-public:
-    explicit CutelystChildProcess(bool &childProcess, QObject *parent = 0);
-    ~CutelystChildProcess();
+}
 
-    bool initted() const;
-    bool sendFD(int fd);
-
-protected:
-    virtual void methodBegin();
-    virtual void methodAuto();
-    virtual void methodEnd();
-    virtual void methodDefault();
-
-    CutelystChildProcessPrivate *d_ptr;
-
-private:
-    Q_DECLARE_PRIVATE(CutelystChildProcess)
-
-    void initChild(int socket);
-    void gotFD(int socket);
-};
-
-#endif // CUTELYSTCHILDPROCESS_H
+bool CutelystDispatchType::isLowPrecedence() const
+{
+    return false;
+}

@@ -19,7 +19,7 @@ void Root::begin(const QString &nome)
     qDebug() << Q_FUNC_INFO << nome;
 }
 
-void Root::begin(const QString &nome, const QString &idade, CaptureArgs)
+void Root::begin(const QString &nome, const QString &idade)
 {
     qDebug() << Q_FUNC_INFO << nome << idade;
 }

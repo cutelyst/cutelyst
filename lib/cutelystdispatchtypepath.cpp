@@ -17,35 +17,33 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCHILDPROCESS_H
-#define CUTELYSTCHILDPROCESS_H
+#include "cutelystdispatchtypepath.h"
 
-#include <QObject>
+#include "cutelystaction.h"
 
-class CutelystChildProcessPrivate;
-class CutelystChildProcess : public QObject
+#include <QDebug>
+
+CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
+    CutelystDispatchType(parent)
 {
-    Q_OBJECT
-public:
-    explicit CutelystChildProcess(bool &childProcess, QObject *parent = 0);
-    ~CutelystChildProcess();
+}
 
-    bool initted() const;
-    bool sendFD(int fd);
+void CutelystDispatchTypePath::list() const
+{
 
-protected:
-    virtual void methodBegin();
-    virtual void methodAuto();
-    virtual void methodEnd();
-    virtual void methodDefault();
+}
 
-    CutelystChildProcessPrivate *d_ptr;
+bool CutelystDispatchTypePath::match(const QUrl &path) const
+{
 
-private:
-    Q_DECLARE_PRIVATE(CutelystChildProcess)
+}
 
-    void initChild(int socket);
-    void gotFD(int socket);
-};
-
-#endif // CUTELYSTCHILDPROCESS_H
+bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
+{
+    QMultiHash<QString, QString> attributes = action->attributes();
+    QMultiHash<QString, QString>::iterator i = attributes.find(QLatin1String("Path"));
+    while (i != attributes.end() && i.key() == QLatin1String("Path")) {
+        qDebug() << Q_FUNC_INFO << i.value();
+        ++i;
+    }
+}

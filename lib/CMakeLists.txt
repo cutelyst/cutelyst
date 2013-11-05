@@ -23,6 +23,8 @@ set(cutelystqt_SRC
     cutelystengine_p.h
     cutelystenginehttp.cpp
     cutelystcontroller.cpp
+    cutelystdispatchtype.cpp
+    cutelystdispatchtypepath.cpp
     cutelystdispatcher.cpp
     cutelystchildprocess.cpp
     cutelystchildprocess_p.h
