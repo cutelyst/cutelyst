@@ -32,8 +32,6 @@ class CutelystAction : public QObject
 public:
     explicit CutelystAction(const QMetaMethod &method, CutelystController *parent = 0);
 
-    bool isValid() const;
-
     /**
      * @return The sub attributes that are set for this action,
      * like Local, Path, Private and so on. This determines
@@ -105,6 +103,8 @@ private:
     QMetaMethod m_method;
     QHash<QString, QString> m_attributes;
     CutelystController *m_controller;
+    quint8 m_numberOfArgs;
+    quint8 m_numberOfCaptures;
 };
 
 #endif // CUTELYSTACTION_H

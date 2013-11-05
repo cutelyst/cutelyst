@@ -22,7 +22,6 @@
 #include "cutelystenginehttp.h"
 #include "cutelystcontroller.h"
 #include "cutelystcontext.h"
-#include "cutelystaction.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -109,53 +108,12 @@ bool CutelystChildProcess::sendFD(int fd)
 
 void CutelystChildProcess::initChild(int socket)
 {
+    Q_D(CutelystChildProcess);
     QSocketNotifier *notifier = new QSocketNotifier(socket, QSocketNotifier::Read, this);
     connect(notifier, &QSocketNotifier::activated,
             this, &CutelystChildProcess::gotFD);
-
-    int metaType = QMetaType::User;
-    while (QMetaType::isRegistered(metaType)) {
-        const QMetaObject *meta = QMetaType::metaObjectForType(metaType);
-        const QMetaObject *superMeta = meta->superClass();
-        qDebug() << Q_FUNC_INFO << superMeta->className() << meta->classInfoCount();
-        QList<CutelystAction*> actions;
-        if (qstrcmp(superMeta->className(), "CutelystController") == 0) {
-            // App controller
-            CutelystController *controller = qobject_cast<CutelystController*>(meta->newInstance());
-            qDebug() << Q_FUNC_INFO << "Found a controller:" << controller << meta->className();
-
-            QHash<QString, CutelystAction*> pathSpec;
-            int i = 0;
-            while (i < meta->methodCount()) {
-                QMetaMethod method = meta->method(i);
-                if (method.methodType() == QMetaMethod::Slot || method.methodType() == QMetaMethod::Method) {
-                    qDebug() << method.name() << method.attributes() << method.access();
-                    qDebug() << method.parameterTypes();
-                    if (method.name() != "destroyed" && method.name() != "deleteLater" && method.name() != "_q_reregisterTimers") {
-                        CutelystAction *action = new CutelystAction(method, controller);
-                        if (action->isValid()) {
-                            actions << action;
-                        }
-                        qDebug() << Q_FUNC_INFO << "Calling method:" << method.name() << controller->classNamespace();
-                        CutelystContext *c = new CutelystContext();
-                        bool ret;
-                        ret = action->dispatch(c);
-//                        ret = method.invoke(controller,
-//                                            Q_ARG(CutelystContext*, 0),
-//                                            Q_ARG(QString, QString("funcionou!")));
-                        qDebug() << Q_FUNC_INFO << "Called method:" << ret;
-                    }
-                }
-                ++i;
-            }
-        }
-
-        if (meta->classInfoCount()) {
-            QMetaClassInfo classInfo = meta->classInfo(0);
-            qDebug() << Q_FUNC_INFO << classInfo.name() << classInfo.value();
-        }
-        ++metaType;
-    }
+    d->dispatcher = new CutelystDispatcher(this);
+    d->dispatcher->setupActions();
 }
 
 void CutelystChildProcess::gotFD(int socket)

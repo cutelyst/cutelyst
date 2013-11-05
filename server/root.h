@@ -10,8 +10,9 @@ class Root : public CutelystController
 public:
     Q_INVOKABLE Root();
 
-private:
     Q_CLASSINFO("begin_Path", "/home")
+private slots:
+    Q_INVOKABLE void hugeNameQuiteLong(const QString &nome);
     Q_INVOKABLE void begin(const QString &nome);
     Q_INVOKABLE void begin(const QString &nome, const QString &idade, CaptureArgs);
 };

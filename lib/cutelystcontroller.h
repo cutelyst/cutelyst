@@ -28,10 +28,8 @@ class CutelystController : public QObject
     Q_OBJECT
     /**
       * Use Q_CLASSINFO to give hints about methods
-      * build like methodName(_numberOfArguments)_option
-      * Where numberOfArguments is needed only for methods
-      * with the same name but different signatures and
-      * option is one of the following:
+      * build like methodName_option
+      * Where option is one of the following:
       *
       * Path - An ending path relative to the class info Namespace
       * for example:

@@ -9,6 +9,11 @@ Root::Root()
     qDebug() << Q_FUNC_INFO;
 }
 
+void Root::hugeNameQuiteLong(const QString &nome)
+{
+
+}
+
 void Root::begin(const QString &nome)
 {
     qDebug() << Q_FUNC_INFO << nome;

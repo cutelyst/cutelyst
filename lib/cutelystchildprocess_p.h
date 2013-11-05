@@ -21,6 +21,7 @@
 #define CUTELYSTCHILDPROCESS_P_H
 
 #include "cutelystchildprocess.h"
+#include "cutelystdispatcher.h"
 
 #include <QSocketNotifier>
 
@@ -37,6 +38,7 @@ public:
 
     CutelystChildProcess *q_ptr;
     QSocketNotifier *notifier;
+    CutelystDispatcher *dispatcher;
     QString error;
     int childFD;
     int parentFD;
