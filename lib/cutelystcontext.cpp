@@ -30,3 +30,8 @@ QStringList CutelystContext::args() const
 {
     return QStringList() << "bla bla bla";
 }
+
+CutelystRequest CutelystContext::request() const
+{
+    return CutelystRequest();
+}

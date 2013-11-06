@@ -30,6 +30,7 @@ class CutelystRequestPrivate
 {
 public:
     QString method;
+    QString path;
     QStringList args;
     QString protocol;
     QHash<QString, QString> cookies;

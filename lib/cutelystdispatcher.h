@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QHash>
 
+class CutelystContext;
 class CutelystAction;
 class CutelystDispatchType;
 class CutelystDispatcher : public QObject
@@ -31,6 +32,8 @@ class CutelystDispatcher : public QObject
 public:
     explicit CutelystDispatcher(QObject *parent = 0);
     void setupActions();
+
+    void prepareAction(CutelystContext *c);
 
 private:
     void printActions();

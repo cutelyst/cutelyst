@@ -49,6 +49,7 @@ public:
      */
     quint16 peerPort() const;
 
+    QString path() const;
     QStringList args() const;
     QString base() const;
     QString body() const;
@@ -63,9 +64,12 @@ public:
     QString userAgent() const;
 
 protected:
+    void setArgs(const QStringList &args);
+
     CutelystRequestPrivate *d_ptr;
 
 private:
+    friend class CutelystDispatcher;
     Q_DECLARE_PRIVATE(CutelystRequest)
 };
 

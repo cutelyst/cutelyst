@@ -23,6 +23,7 @@
 #include <QObject>
 
 class CutelystAction;
+class CutelystContext;
 class CutelystDispatchType : public QObject
 {
     Q_OBJECT
@@ -38,7 +39,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(const QUrl &path) const = 0;
+    virtual bool match(CutelystContext *c, const QString &path) const = 0;
 
     /**
      * @brief registerAction

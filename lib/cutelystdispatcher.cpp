@@ -19,6 +19,7 @@
 
 #include "cutelystdispatcher.h"
 
+#include "cutelystcontext.h"
 #include "cutelystcontroller.h"
 #include "cutelystaction.h"
 #include "cutelystdispatchtypepath.h"
@@ -82,6 +83,31 @@ void CutelystDispatcher::setupActions()
     }
 
     printActions();
+}
+
+void CutelystDispatcher::prepareAction(CutelystContext *c)
+{
+    QString path = c->request().path();
+    QStringList pathParts = path.split(QLatin1Char('/'));
+    QStringList args;
+    CutelystDispatchType *dispatch = 0;
+
+    while (!pathParts.isEmpty()) {
+        path = args.join(QLatin1Char('/'));
+        if (path.startsWith(QLatin1Char('/'))) {
+            path.remove(0, 1);
+        }
+        c->request().setArgs(args);
+
+        foreach (CutelystDispatchType *type, m_dispatchers) {
+            if (type->match(c, path)) {
+                dispatch = type;
+                break;
+            }
+        }
+
+        args << pathParts.takeLast();
+    }
 }
 
 void CutelystDispatcher::printActions()

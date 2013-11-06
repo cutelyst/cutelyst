@@ -56,6 +56,12 @@ quint16 CutelystRequest::peerPort() const
     return d->engine->peerPort();
 }
 
+QString CutelystRequest::path() const
+{
+    Q_D(const CutelystRequest);
+    return d->path;
+}
+
 QString CutelystRequest::cookie(const QString &key) const
 {
     Q_D(const CutelystRequest);
@@ -78,4 +84,10 @@ QHash<QString, QString> CutelystRequest::headers() const
 {
     Q_D(const CutelystRequest);
     return d->headers;
+}
+
+void CutelystRequest::setArgs(const QStringList &args)
+{
+    Q_D(CutelystRequest);
+    d->args = args;
 }
