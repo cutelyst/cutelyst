@@ -43,7 +43,7 @@ public:
 protected:
     virtual void parse(const QByteArray &data) = 0;
     qint64 write(const QByteArray &data);
-    void dispatch(CutelystContext *c);
+    void dispatch(CutelystRequest *request);
 
     CutelystEnginePrivate *d_ptr;
 

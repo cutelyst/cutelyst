@@ -113,6 +113,8 @@ bool CutelystAction::dispatch(CutelystContext *c)
         args << QString();
     }
 
+    qDebug() << Q_FUNC_INFO << m_name << args;
+
     return m_method.invoke(m_controller,
                            Q_ARG(QString, args.at(0)),
                            Q_ARG(QString, args.at(1)),

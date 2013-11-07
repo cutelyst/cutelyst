@@ -19,7 +19,6 @@
 
 #include "cutelystenginehttp.h"
 #include "cutelystrequest_p.h"
-#include "cutelystcontext_p.h"
 
 #include <QStringList>
 
@@ -90,9 +89,7 @@ void CutelystEngineHttp::parse(const QByteArray &request)
 
 //    qDebug() << request;
 
-    CutelystContext *c = new CutelystContext;
-    c->d_ptr->request = req;
-    dispatch(c);
+    dispatch(req);
 
     //    while (request.end())
     QByteArray data;

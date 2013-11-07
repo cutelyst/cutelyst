@@ -27,6 +27,7 @@ set(cutelystqt_SRC
     cutelystdispatchtype.cpp
     cutelystdispatchtypepath.cpp
     cutelystdispatcher.cpp
+    cutelystdispatcher_p.h
     cutelystchildprocess.cpp
     cutelystchildprocess_p.h
     cutelystapplication.cpp

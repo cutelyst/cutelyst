@@ -22,27 +22,36 @@
 
 #include <QObject>
 #include <QHash>
+#include <QStringList>
 
 class CutelystContext;
 class CutelystAction;
 class CutelystDispatchType;
+class CutelystDispatcherPrivate;
 class CutelystDispatcher : public QObject
 {
     Q_OBJECT
 public:
     explicit CutelystDispatcher(QObject *parent = 0);
+    ~CutelystDispatcher();
     void setupActions();
 
     void dispatch(CutelystContext *c);
+    bool forward(CutelystContext *c, const QString &opname, const QStringList &arguments);
     void prepareAction(CutelystContext *c);
     CutelystAction* getAction(const QString &action, const QString &ns);
     QList<CutelystAction *> getActions(const QString &action, const QString &ns);
 
 private:
     void printActions();
+    CutelystAction *command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QStringList &args);
-    QHash<QString, CutelystAction*> m_actions;
-    QList<CutelystDispatchType*> m_dispatchers;
+
+protected:
+    CutelystDispatcherPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(CutelystDispatcher)
 };
 
 #endif // CUTELYSTDISPATCHER_H

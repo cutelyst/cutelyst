@@ -33,6 +33,7 @@ class CutelystContext : public QObject
     Q_OBJECT
 public:
     explicit CutelystContext(QObject *parent = 0);
+    ~CutelystContext();
 
     bool error() const;
     bool state() const;
@@ -54,7 +55,7 @@ public:
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
 
 protected:
-    friend class CutelystEngineHttp; // TODO don't use specific class
+    friend class CutelystEngine;
     friend class CutelystDispatchType;
     CutelystContextPrivate *d_ptr;
 

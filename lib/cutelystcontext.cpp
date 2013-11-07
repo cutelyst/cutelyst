@@ -31,6 +31,11 @@ CutelystContext::CutelystContext(QObject *parent) :
 {
 }
 
+CutelystContext::~CutelystContext()
+{
+    delete d_ptr;
+}
+
 bool CutelystContext::error() const
 {
     return false;
@@ -98,8 +103,7 @@ void CutelystContext::dispatch()
 bool CutelystContext::forward(const QString &action, const QStringList &arguments)
 {
     Q_D(CutelystContext);
-    qDebug() << Q_FUNC_INFO << action << arguments;
-    return d->dispatcher->forward(action, ns);
+    return d->dispatcher->forward(this, action, arguments);
 }
 
 CutelystAction *CutelystContext::getAction(const QString &action, const QString &ns)

@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelystdispatcher.h"
+#include "cutelystdispatcher_p.h"
 
 #include "cutelystcontext.h"
 #include "cutelystcontroller.h"
@@ -31,13 +31,23 @@
 #include <QDebug>
 
 CutelystDispatcher::CutelystDispatcher(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    d_ptr(new CutelystDispatcherPrivate)
 {
-    m_dispatchers << new CutelystDispatchTypePath(this);
+    Q_D(CutelystDispatcher);
+    d->dispatchers << new CutelystDispatchTypePath(this);
+}
+
+CutelystDispatcher::~CutelystDispatcher()
+{
+    qDebug() << Q_FUNC_INFO;
+    delete d_ptr;
 }
 
 void CutelystDispatcher::setupActions()
 {
+    Q_D(CutelystDispatcher);
+
     // Find all the User classes
     int metaType = QMetaType::User;
     while (QMetaType::isRegistered(metaType)) {
@@ -55,14 +65,14 @@ void CutelystDispatcher::setupActions()
 //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
 
-                    if (!m_actions.contains(action->privateName())) {
-                        m_actions.insert(action->privateName(), action);
+                    if (!d->actions.contains(action->privateName())) {
+                        d->actions.insert(action->privateName(), action);
 
                         if (!action->attributes().contains(QLatin1String("Private"))) {
                             bool registered = false;
 
                             // Register the action with each dispatcher
-                            foreach (CutelystDispatchType *dispatch, m_dispatchers) {
+                            foreach (CutelystDispatchType *dispatch, d->dispatchers) {
                                 if (dispatch->registerAction(action)) {
                                     registered = true;
                                 }
@@ -93,12 +103,27 @@ void CutelystDispatcher::setupActions()
 void CutelystDispatcher::dispatch(CutelystContext *c)
 {
     if (c->action()) {
-        c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("_DISPATCH"));
+        c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
     }
+}
+
+bool CutelystDispatcher::forward(CutelystContext *c, const QString &opname, const QStringList &arguments)
+{
+    CutelystAction *action = command2Action(c, opname);
+    qDebug() << Q_FUNC_INFO << opname << action;
+    if (action) {
+        qDebug() << Q_FUNC_INFO << action->name();
+        return action->dispatch(c);
+    } else {
+        qWarning() << "Action not found" << action;
+    }
+    return false;
 }
 
 void CutelystDispatcher::prepareAction(CutelystContext *c)
 {
+    Q_D(CutelystDispatcher);
+
     QString path = c->req()->path();
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
@@ -110,7 +135,7 @@ void CutelystDispatcher::prepareAction(CutelystContext *c)
             path.remove(0, 1);
         }
 
-        foreach (CutelystDispatchType *type, m_dispatchers) {
+        foreach (CutelystDispatchType *type, d->dispatchers) {
             if (type->match(c, path)) {
                 qDebug() << Q_FUNC_INFO << "Found a dispatcher type" << type;
                 dispatch = type;
@@ -143,6 +168,8 @@ QList<CutelystAction *> CutelystDispatcher::getActions(const QString &action, co
 
 void CutelystDispatcher::printActions()
 {
+    Q_D(CutelystDispatcher);
+
     bool showInternalActions = true;
     qDebug() << "Loaded Private actions:";
     QString privateTitle("Private");
@@ -151,8 +178,8 @@ void CutelystDispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QHash<QString, CutelystAction*>::ConstIterator it = m_actions.constBegin();
-    while (it != m_actions.constEnd()) {
+    QHash<QString, CutelystAction*>::ConstIterator it = d->actions.constBegin();
+    while (it != d->actions.constEnd()) {
         CutelystAction *action = it.value();
         privateLength = qMax(privateLength, it.key().length());
         classLength = qMax(classLength, action->className().length());
@@ -173,8 +200,8 @@ void CutelystDispatcher::printActions()
              << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
              << ".";
 
-    it = m_actions.constBegin();
-    while (it != m_actions.constEnd()) {
+    it = d->actions.constBegin();
+    while (it != d->actions.constEnd()) {
         CutelystAction *action = it.value();
         if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
             qDebug() << "|" << it.key().leftJustified(privateLength).toUtf8().data()
@@ -191,9 +218,23 @@ void CutelystDispatcher::printActions()
              << ".\n";
 
     // List all public actions
-    foreach (CutelystDispatchType *dispatch, m_dispatchers) {
+    foreach (CutelystDispatchType *dispatch, d->dispatchers) {
         dispatch->list();
     }
+}
+
+CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams)
+{
+    Q_D(CutelystDispatcher);
+    qDebug() << Q_FUNC_INFO << command;
+    printActions();
+
+    if (d->actions.contains(command)) {
+        qDebug() << Q_FUNC_INFO << command;
+
+        return d->actions.value(command);
+    }
+    return 0;
 }
 
 QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)

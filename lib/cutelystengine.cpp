@@ -21,7 +21,7 @@
 
 #include "cutelystrequest.h"
 #include "cutelystdispatcher.h"
-#include "cutelystcontext.h"
+#include "cutelystcontext_p.h"
 
 CutelystEngine::CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     QObject(parent),
@@ -65,9 +65,13 @@ qint64 CutelystEngine::write(const QByteArray &data)
     return d->socket->write(data);
 }
 
-void CutelystEngine::dispatch(CutelystContext *c)
+void CutelystEngine::dispatch(CutelystRequest *request)
 {
     Q_D(CutelystEngine);
+    CutelystContext *c = new CutelystContext;
+    c->d_ptr->request = request;
+    c->d_ptr->dispatcher = d->dispatcher;
+
     d->dispatcher->prepareAction(c);
     c->dispatch();
 }
