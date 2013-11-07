@@ -19,11 +19,12 @@
 
 #include "cutelystenginehttp.h"
 #include "cutelystrequest_p.h"
+#include "cutelystcontext_p.h"
 
 #include <QStringList>
 
-CutelystEngineHttp::CutelystEngineHttp(int socket, QObject *parent) :
-    CutelystEngine(socket, parent),
+CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
+    CutelystEngine(socket, dispatcher, parent),
     m_bufLastIndex(0)
 {
 }
@@ -42,19 +43,19 @@ void CutelystEngineHttp::parse(const QByteArray &request)
             QRegExp methodRE("(\\w+)\\s+(.*)");
             bool badRequest = false;
             if (methodProtocolRE.indexIn(section) != -1) {
-                qDebug() << 1 <<  methodProtocolRE.capturedTexts() << methodProtocolRE.captureCount();
+//                qDebug() << 1 <<  methodProtocolRE.capturedTexts() << methodProtocolRE.captureCount();
                 if (methodProtocolRE.captureCount() == 3) {
                     m_method = methodProtocolRE.cap(1);
-                    m_args = methodProtocolRE.cap(2).split(QLatin1String("/"));
+                    m_path = methodProtocolRE.cap(2);
                     m_protocol = methodProtocolRE.cap(3);
                 } else {
                     badRequest = true;
                 }
             } else if (methodRE.indexIn(section) != -1) {
-                qDebug() << 2 << methodRE.capturedTexts() << methodRE.captureCount();
+//                qDebug() << 2 << methodRE.capturedTexts() << methodRE.captureCount();
                 if (methodRE.captureCount() == 2) {
                     m_method = methodRE.cap(1);
-                    m_args = methodProtocolRE.cap(2).split(QLatin1String("/"));
+                    m_path = methodProtocolRE.cap(2);
                 } else {
                     badRequest = true;
                 }
@@ -73,19 +74,25 @@ void CutelystEngineHttp::parse(const QByteArray &request)
 
         if (!section.isEmpty()) {
             m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed();
-            qDebug() << section << section.length();
-            qDebug() << section.section(QLatin1Char(':'), 0, 0) << section.section(QLatin1Char(':'), 1).trimmed() << endl;
+//            qDebug() << section << section.length();
+//            qDebug() << section.section(QLatin1Char(':'), 0, 0) << section.section(QLatin1Char(':'), 1).trimmed() << endl;
         }
     }
 
     CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
     requestPriv->engine = this;
     requestPriv->method = m_method;
-    requestPriv->args = m_args;
+    requestPriv->path = m_path;
     requestPriv->protocol = m_protocol;
     requestPriv->headers = m_headers;
 
-    qDebug() << request;
+    CutelystRequest *req = new CutelystRequest(requestPriv);
+
+//    qDebug() << request;
+
+    CutelystContext *c = new CutelystContext;
+    c->d_ptr->request = req;
+    dispatch(c);
 
     //    while (request.end())
     QByteArray data;

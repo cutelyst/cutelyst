@@ -23,13 +23,15 @@
 #include <QObject>
 #include <QHostAddress>
 
+class CutelystContext;
+class CutelystDispatcher;
 class CutelystRequest;
 class CutelystEnginePrivate;
 class CutelystEngine : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystEngine(int socket, QObject *parent = 0);
+    explicit CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
     ~CutelystEngine();
 
     bool isValid() const;
@@ -41,6 +43,8 @@ public:
 protected:
     virtual void parse(const QByteArray &data) = 0;
     qint64 write(const QByteArray &data);
+    void dispatch(CutelystContext *c);
+
     CutelystEnginePrivate *d_ptr;
 
 private:

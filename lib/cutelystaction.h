@@ -85,6 +85,11 @@ public:
     QString privateName() const;
 
     /**
+     * Returns the private namespace this action lives in.
+     */
+    QString ns() const;
+
+    /**
      * @brief numberOfArgs
      * @return Returns the number of args this action expects.
      * This is 0 if the action doesn't take any arguments and
@@ -107,6 +112,7 @@ public:
 
 private:
     QString m_name;
+    QString m_ns;
     QMetaMethod m_method;
     QMultiHash<QString, QString> m_attributes;
     CutelystController *m_controller;

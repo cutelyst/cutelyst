@@ -19,6 +19,9 @@
 
 #include "cutelystcontroller.h"
 
+#include "cutelystcontext.h"
+#include "cutelystaction.h"
+
 #include <QMetaClassInfo>
 #include <QStringBuilder>
 #include <QDebug>
@@ -32,39 +35,39 @@ CutelystController::~CutelystController()
 {
 }
 
-QString CutelystController::classNamespace() const
+QString CutelystController::ns() const
 {
-    QString ns;
+    QString ret;
     for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
         if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
-            ns = metaObject()->classInfo(i).value();
+            ret = metaObject()->classInfo(i).value();
             break;
         }
     }
 
     QString className = metaObject()->className();
-    if (ns.isNull()) {
+    if (ret.isNull()) {
         bool lastWasUpper = false;
         for (int i = 0; i < className.length(); ++i) {
             if (className.at(i).toLower() == className.at(i)) {
-                ns.append(className.at(i));
+                ret.append(className.at(i));
                 lastWasUpper = false;
             } else {
                 if (lastWasUpper) {
-                    ns.append(className.at(i).toLower());
+                    ret.append(className.at(i).toLower());
                 } else {
-                    ns.append(QLatin1Char('/') % className.at(i).toLower());
+                    ret.append(QLatin1Char('/') % className.at(i).toLower());
                 }
                 lastWasUpper = true;
             }
         }
     }
 
-    if (!ns.startsWith(QLatin1Char('/'))) {
-        ns.prepend(QLatin1Char('/'));
+    if (!ret.startsWith(QLatin1Char('/'))) {
+        ret.prepend(QLatin1Char('/'));
     }
 
-    return ns;
+    return ret;
 }
 
 CutelystContext *CutelystController::c() const
@@ -75,6 +78,81 @@ CutelystContext *CutelystController::c() const
 void CutelystController::setContext(CutelystContext *c)
 {
     m_c = c;
+}
+
+void CutelystController::dispatchBegin()
+{
+
+}
+
+void CutelystController::dispatchAuto()
+{
+
+}
+
+void CutelystController::dispatchAction()
+{
+
+}
+
+void CutelystController::dispatchEnd()
+{
+
+}
+
+bool CutelystController::_DISPATCH()
+{
+    QStringList dispatchSteps;
+    dispatchSteps << QLatin1String("_BEGIN");
+    dispatchSteps << QLatin1String("_AUTO");
+    dispatchSteps << QLatin1String("_ACTION");
+    foreach (const QString &disp, dispatchSteps) {
+        if (!m_c->forward(disp)) {
+            break;
+        }
+    }
+
+    m_c->forward(QLatin1String("_END"));
+}
+
+bool CutelystController::_BEGIN()
+{
+    CutelystAction *begin = m_c->getAction(QLatin1String("dispatchBegin"));
+    if (begin) {
+        begin->dispatch(m_c);
+        return !m_c->error();
+    }
+    return true;
+}
+
+bool CutelystController::_AUTO()
+{
+    QList<CutelystAction*> autoList = m_c->getActions(QLatin1String("dispatchAuto"));
+    foreach (CutelystAction *autoAction, autoList) {
+        autoAction->dispatch(m_c);
+        if (m_c->state()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool CutelystController::_ACTION()
+{
+    if (m_c->action()) {
+        return m_c->action()->dispatch(m_c);
+    }
+    return !m_c->error();
+}
+
+bool CutelystController::_END()
+{
+    CutelystAction *begin = m_c->getAction(QLatin1String("dispatchEnd"));
+    if (begin) {
+        begin->dispatch(m_c);
+        return !m_c->error();
+    }
+    return true;
 }
 
 #include "moc_cutelystcontroller.cpp"

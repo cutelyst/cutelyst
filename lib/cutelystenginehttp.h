@@ -29,7 +29,7 @@ class CutelystEngineHttp : public CutelystEngine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineHttp(int socket, QObject *parent = 0);
+    explicit CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
 
 protected:
     virtual void parse(const QByteArray &request);
@@ -39,7 +39,7 @@ private:
     QByteArray m_buffer;
     quint64 m_bufLastIndex;
     QString m_method;
-    QStringList m_args;
+    QString m_path;
     QString m_protocol;
     QHash<QString, QString> m_headers;
 };

@@ -22,8 +22,10 @@
 #include "cutelystcontext.h"
 #include "cutelystcontroller.h"
 #include "cutelystaction.h"
+#include "cutelystrequest_p.h"
 #include "cutelystdispatchtypepath.h"
 
+#include <QUrl>
 #include <QMetaMethod>
 #include <QStringBuilder>
 #include <QDebug>
@@ -49,23 +51,26 @@ void CutelystDispatcher::setupActions()
             while (i < meta->methodCount()) {
                 QMetaMethod method = meta->method(i);
                 if (method.methodType() == QMetaMethod::Method) {
-                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
-                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
+//                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
+//                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
 
                     if (!m_actions.contains(action->privateName())) {
                         m_actions.insert(action->privateName(), action);
 
-                        bool registered = false;
-                        // Register the action with each dispatcher
-                        foreach (CutelystDispatchType *dispatch, m_dispatchers) {
-                            if (dispatch->registerAction(action)) {
-                                registered = true;
-                            }
-                        }
+                        if (!action->attributes().contains(QLatin1String("Private"))) {
+                            bool registered = false;
 
-                        if (!registered) {
-                            qWarning() << "***Could NOT register the action" << action->name() << "with any dispatcher";
+                            // Register the action with each dispatcher
+                            foreach (CutelystDispatchType *dispatch, m_dispatchers) {
+                                if (dispatch->registerAction(action)) {
+                                    registered = true;
+                                }
+                            }
+
+                            if (!registered) {
+                                qWarning() << "***Could NOT register the action" << action->name() << "with any dispatcher";
+                            }
                         }
                     } else {
                         delete action;
@@ -85,33 +90,60 @@ void CutelystDispatcher::setupActions()
     printActions();
 }
 
+void CutelystDispatcher::dispatch(CutelystContext *c)
+{
+    if (c->action()) {
+        c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("_DISPATCH"));
+    }
+}
+
 void CutelystDispatcher::prepareAction(CutelystContext *c)
 {
-    QString path = c->request().path();
+    QString path = c->req()->path();
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
     CutelystDispatchType *dispatch = 0;
 
     while (!pathParts.isEmpty()) {
-        path = args.join(QLatin1Char('/'));
+        path = pathParts.join(QLatin1Char('/'));
         if (path.startsWith(QLatin1Char('/'))) {
             path.remove(0, 1);
         }
-        c->request().setArgs(args);
 
         foreach (CutelystDispatchType *type, m_dispatchers) {
             if (type->match(c, path)) {
+                qDebug() << Q_FUNC_INFO << "Found a dispatcher type" << type;
                 dispatch = type;
                 break;
             }
         }
 
-        args << pathParts.takeLast();
+        if (dispatch) {
+            break;
+        }
+
+        args.prepend(pathParts.takeLast());
+        c->req()->d_ptr->args = unexcapedArgs(args);
+
     }
+
+    qDebug() << Q_FUNC_INFO << "Path is " << path;
+    qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
+}
+
+CutelystAction *CutelystDispatcher::getAction(const QString &action, const QString &ns)
+{
+
+}
+
+QList<CutelystAction *> CutelystDispatcher::getActions(const QString &action, const QString &ns)
+{
+
 }
 
 void CutelystDispatcher::printActions()
 {
+    bool showInternalActions = true;
     qDebug() << "Loaded Private actions:";
     QString privateTitle("Private");
     QString classTitle("Class");
@@ -144,10 +176,12 @@ void CutelystDispatcher::printActions()
     it = m_actions.constBegin();
     while (it != m_actions.constEnd()) {
         CutelystAction *action = it.value();
-        qDebug() << "|" << it.key().leftJustified(privateLength).toUtf8().data()
-                 << "|" << action->className().leftJustified(classLength).toUtf8().data()
-                 << "|" << action->name().leftJustified(actionLength).toUtf8().data()
-                 << "|";
+        if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
+            qDebug() << "|" << it.key().leftJustified(privateLength).toUtf8().data()
+                     << "|" << action->className().leftJustified(classLength).toUtf8().data()
+                     << "|" << action->name().leftJustified(actionLength).toUtf8().data()
+                     << "|";
+        }
         ++it;
     }
 
@@ -160,4 +194,13 @@ void CutelystDispatcher::printActions()
     foreach (CutelystDispatchType *dispatch, m_dispatchers) {
         dispatch->list();
     }
+}
+
+QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)
+{
+    QStringList ret;
+    foreach (const QString &arg, args) {
+        ret << QUrl::fromPercentEncoding(arg.toLocal8Bit());
+    }
+    return ret;
 }

@@ -18,6 +18,7 @@ set(cutelystqt_SRC
     cutelystrequest_p.h
     cutelystresponse.cpp
     cutelystcontext.cpp
+    cutelystcontext_p.h
     cutelystaction.cpp
     cutelystengine.cpp
     cutelystengine_p.h

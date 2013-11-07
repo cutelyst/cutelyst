@@ -39,7 +39,7 @@ public:
 private:
     void registerPath(const QString &path, CutelystAction *action);
 
-    QHash<QString, CutelystAction*> m_paths;
+    QMultiHash<QString, CutelystAction*> m_paths;
 };
 
 #endif // CUTELYSTDISPATCHTYPEPATH_H

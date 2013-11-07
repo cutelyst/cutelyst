@@ -34,11 +34,6 @@ public:
     bool sendFD(int fd);
 
 protected:
-    virtual void methodBegin();
-    virtual void methodAuto();
-    virtual void methodEnd();
-    virtual void methodDefault();
-
     CutelystChildProcessPrivate *d_ptr;
 
 private:

@@ -17,21 +17,104 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelystcontext.h"
+#include "cutelystcontext_p.h"
+
+#include "cutelystrequest.h"
+#include "cutelystaction.h"
+#include "cutelystdispatcher.h"
 
 #include <QStringList>
 
 CutelystContext::CutelystContext(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    d_ptr(new CutelystContextPrivate(this))
 {
+}
+
+bool CutelystContext::error() const
+{
+    return false;
+}
+
+bool CutelystContext::state() const
+{
+    return true;
 }
 
 QStringList CutelystContext::args() const
 {
-    return QStringList() << "bla bla bla";
+    Q_D(const CutelystContext);
+    return d->request->args();
 }
 
-CutelystRequest CutelystContext::request() const
+CutelystRequest *CutelystContext::request() const
 {
-    return CutelystRequest();
+    Q_D(const CutelystContext);
+    return d->request;
+}
+
+CutelystRequest *CutelystContext::req() const
+{
+    Q_D(const CutelystContext);
+    return d->request;
+}
+
+CutelystResponse *CutelystContext::response() const
+{
+    Q_D(const CutelystContext);
+    return d->response;
+}
+
+CutelystAction *CutelystContext::action() const
+{
+    Q_D(const CutelystContext);
+    return d->action;
+}
+
+CutelystDispatcher *CutelystContext::dispatcher() const
+{
+    Q_D(const CutelystContext);
+    return d->dispatcher;
+}
+
+QString CutelystContext::ns() const
+{
+    Q_D(const CutelystContext);
+    return d->action->ns();
+}
+
+QString CutelystContext::match() const
+{
+    Q_D(const CutelystContext);
+    return d->match;
+}
+
+void CutelystContext::dispatch()
+{
+    Q_D(CutelystContext);
+    d->dispatcher->dispatch(this);
+}
+
+bool CutelystContext::forward(const QString &action, const QStringList &arguments)
+{
+    Q_D(CutelystContext);
+    qDebug() << Q_FUNC_INFO << action << arguments;
+    return d->dispatcher->forward(action, ns);
+}
+
+CutelystAction *CutelystContext::getAction(const QString &action, const QString &ns)
+{
+    Q_D(CutelystContext);
+    return d->dispatcher->getAction(action, ns);
+}
+
+QList<CutelystAction *> CutelystContext::getActions(const QString &action, const QString &ns)
+{
+    Q_D(CutelystContext);
+    return d->dispatcher->getActions(action, ns);
+}
+
+CutelystContextPrivate::CutelystContextPrivate(CutelystContext *parent) :
+    action(0)
+{
 }

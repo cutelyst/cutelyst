@@ -93,6 +93,7 @@ bool CutelystDispatchTypePath::match(CutelystContext *c, const QString &path) co
     QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(path);
     while (i != m_paths.constEnd() && i.key() == path) {
         if (i.value()->match(c)) {
+            setupMatchedAction(c, i.value(), path);
             return true;
         }
 
@@ -108,9 +109,7 @@ bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
     QMultiHash<QString, QString> attributes = action->attributes();
     QMultiHash<QString, QString>::iterator i = attributes.find(QLatin1String("Path"));
     while (i != attributes.end() && i.key() == QLatin1String("Path")) {
-        if (!m_paths.contains(i.value())) {
-            registerPath(i.value(), action);
-        }
+        registerPath(i.value(), action);
 
         ++i;
     }
@@ -120,15 +119,18 @@ bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
 
 void CutelystDispatchTypePath::registerPath(const QString &path, CutelystAction *action)
 {
-    qDebug() << Q_FUNC_INFO << path;
+//    qDebug() << Q_FUNC_INFO << path;
 
     QString _path = path;
     if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {
+        // TODO when we try to match a path
+        // it comes without a leading / so
+        // when would this be used?
         _path = QLatin1Char('/');
     }
 
-    m_paths.insert(_path, action);
+    m_paths.insertMulti(_path, action);
 }

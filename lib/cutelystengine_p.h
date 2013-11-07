@@ -35,6 +35,7 @@ public:
     QTcpSocket *socket;
     bool valid;
     CutelystRequest *request;
+    CutelystDispatcher *dispatcher;
 };
 
 #endif // CUTELYSTENGINE_P_H

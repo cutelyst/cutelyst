@@ -33,10 +33,14 @@ public:
     explicit CutelystDispatcher(QObject *parent = 0);
     void setupActions();
 
+    void dispatch(CutelystContext *c);
     void prepareAction(CutelystContext *c);
+    CutelystAction* getAction(const QString &action, const QString &ns);
+    QList<CutelystAction *> getActions(const QString &action, const QString &ns);
 
 private:
     void printActions();
+    QStringList unexcapedArgs(const QStringList &args);
     QHash<QString, CutelystAction*> m_actions;
     QList<CutelystDispatchType*> m_dispatchers;
 };

@@ -20,13 +20,16 @@
 #include "cutelystengine_p.h"
 
 #include "cutelystrequest.h"
+#include "cutelystdispatcher.h"
+#include "cutelystcontext.h"
 
-CutelystEngine::CutelystEngine(int socket, QObject *parent) :
+CutelystEngine::CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystEnginePrivate(this))
 {
     Q_D(CutelystEngine);
 
+    d->dispatcher = dispatcher;
     d->socket = new QTcpSocket(this);
     d->valid = d->socket->setSocketDescriptor(socket);
     if (d->valid) {
@@ -59,8 +62,14 @@ CutelystRequest *CutelystEngine::request() const
 qint64 CutelystEngine::write(const QByteArray &data)
 {
     Q_D(CutelystEngine);
-
     return d->socket->write(data);
+}
+
+void CutelystEngine::dispatch(CutelystContext *c)
+{
+    Q_D(CutelystEngine);
+    d->dispatcher->prepareAction(c);
+    c->dispatch();
 }
 
 void CutelystEngine::readyRead()

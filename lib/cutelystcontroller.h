@@ -78,12 +78,33 @@ public:
     Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
     ~CutelystController();
 
-    QString classNamespace() const;
+    /**
+     * This specifies the internal namespace the controller should
+     * be bound to.
+     * By default the controller is bound to the URI version of the
+     * controller name. For instance a controller named
+     * 'MyFooBar' will be bound to 'my/foo/bar'.
+     * The default Root controller is an example of setting
+     * namespace to '' (the null string).
+     */
+    QString ns() const;
 
     CutelystContext* c() const;
     void setContext(CutelystContext *c);
 
+protected:
+    virtual void dispatchBegin();
+    virtual void dispatchAuto();
+    virtual void dispatchAction();
+    virtual void dispatchEnd();
+
 private:
+    Q_INVOKABLE bool _DISPATCH();
+    Q_INVOKABLE bool _BEGIN();
+    Q_INVOKABLE bool _AUTO();
+    Q_INVOKABLE bool _ACTION();
+    Q_INVOKABLE bool _END();
+
     CutelystContext *m_c;
 };
 

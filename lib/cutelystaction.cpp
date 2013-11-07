@@ -27,7 +27,8 @@
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
-    m_name(parent->classNamespace() % QLatin1Char('/') % method.name()),
+    m_name(parent->ns() % QLatin1Char('/') % method.name()),
+    m_ns(parent->ns()),
     m_method(method),
     m_controller(parent),
     m_numberOfArgs(0),
@@ -80,6 +81,10 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
                 m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfCaptures));
             }
         }
+    }
+
+    if (m_method.access() == QMetaMethod::Private) {
+        m_attributes.insertMulti(QLatin1String("Private"), QString());
     }
 }
 
@@ -142,6 +147,11 @@ QString CutelystAction::name() const
 QString CutelystAction::privateName() const
 {
     return m_name;
+}
+
+QString CutelystAction::ns() const
+{
+    return m_ns;
 }
 
 quint8 CutelystAction::numberOfArgs() const

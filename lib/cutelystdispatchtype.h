@@ -54,6 +54,9 @@ public:
      * to sort them.
      */
     virtual bool isLowPrecedence() const;
+
+protected:
+    void setupMatchedAction(CutelystContext *c, CutelystAction *action, const QString &match) const;
 };
 
 #endif // CUTELYSTDISPATCHTYPE_H

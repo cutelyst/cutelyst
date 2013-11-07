@@ -10,7 +10,7 @@ class Root : public CutelystController
 public:
     Q_INVOKABLE Root();
 
-private:
+public:
     Q_INVOKABLE void hugeNameQuiteLong(const QString &nome, Local);
     Q_CLASSINFO("begin_Path", "/home")
     Q_CLASSINFO("begin_Chained", "/")

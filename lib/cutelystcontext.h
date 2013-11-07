@@ -21,22 +21,45 @@
 #define CUTELYST_H
 
 #include <QObject>
+#include <QStringList>
 
-#include "cutelystrequest.h"
-#include "cutelystresponse.h"
-
+class CutelystAction;
+class CutelystRequest;
+class CutelystResponse;
+class CutelystDispatcher;
+class CutelystContextPrivate;
 class CutelystContext : public QObject
 {
     Q_OBJECT
 public:
     explicit CutelystContext(QObject *parent = 0);
 
+    bool error() const;
+    bool state() const;
     QStringList args() const;
     QString uriPrefix() const;
-    CutelystRequest request() const;
-    CutelystResponse* response() const;
+    CutelystRequest *request() const;
+    CutelystRequest *req() const;
+    CutelystResponse *response() const;
+    CutelystAction *action() const;
+    CutelystDispatcher *dispatcher() const;
+    QString ns() const;
+    QString match() const;
 
     QVariantHash* stash();
+
+    void dispatch();
+    bool forward(const QString &action, const QStringList &arguments = QStringList());
+    CutelystAction *getAction(const QString &action, const QString &ns = QString());
+    QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
+
+protected:
+    friend class CutelystEngineHttp; // TODO don't use specific class
+    friend class CutelystDispatchType;
+    CutelystContextPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(CutelystContext)
 };
 
 #endif // CUTELYST_H

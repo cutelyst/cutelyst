@@ -62,6 +62,12 @@ QString CutelystRequest::path() const
     return d->path;
 }
 
+QStringList CutelystRequest::args() const
+{
+    Q_D(const CutelystRequest);
+    return d->args;
+}
+
 QString CutelystRequest::cookie(const QString &key) const
 {
     Q_D(const CutelystRequest);
