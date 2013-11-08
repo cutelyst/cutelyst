@@ -99,7 +99,7 @@ protected:
     virtual void dispatchEnd();
 
 private:
-    Q_INVOKABLE bool _DISPATCH();
+    Q_INVOKABLE void _DISPATCH();
     Q_INVOKABLE bool _BEGIN();
     Q_INVOKABLE bool _AUTO();
     Q_INVOKABLE bool _ACTION();

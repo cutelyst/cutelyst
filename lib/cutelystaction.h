@@ -120,4 +120,6 @@ private:
     quint8 m_numberOfCaptures;
 };
 
+typedef QList<CutelystAction*> CutelystActionList;
+
 #endif // CUTELYSTACTION_H

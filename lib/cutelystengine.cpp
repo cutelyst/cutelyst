@@ -86,7 +86,6 @@ CutelystEnginePrivate::CutelystEnginePrivate(CutelystEngine *parent) :
     q_ptr(parent),
     request(new CutelystRequest)
 {
-
 }
 
 CutelystEnginePrivate::~CutelystEnginePrivate()

@@ -6,7 +6,7 @@
 class Root : public CutelystController
 {
     Q_OBJECT
-    Q_CLASSINFO("Namespace", "Galera")
+    Q_CLASSINFO("Namespace", "Galera/oi")
 public:
     Q_INVOKABLE Root();
 
@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE void begin(const QString &name);
     Q_INVOKABLE void users(const QString &name, const QString &age, Args, Local);
     Q_INVOKABLE void admin(const QString &name, const QString &age, Global);
+
+    Q_INVOKABLE virtual void dispatchBegin();
 };
 
 #endif // ROOT_H

@@ -27,5 +27,9 @@ void Root::users(const QString &name, const QString &age, Args, CutelystControll
 void Root::admin(const QString &name, const QString &age, CutelystController::Global)
 {
     qDebug() << Q_FUNC_INFO << name << age;
+}
 
+void Root::dispatchBegin()
+{
+    qDebug() << Q_FUNC_INFO;
 }

@@ -65,8 +65,9 @@ void CutelystDispatcher::setupActions()
 //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
 
-                    if (!d->actions.contains(action->privateName())) {
-                        d->actions.insert(action->privateName(), action);
+                    if (!d->actionHash.contains(action->privateName())) {
+                        d->actionHash.insert(action->privateName(), action);
+                        d->containerHash[action->ns()] << action;
 
                         if (!action->attributes().contains(QLatin1String("Private"))) {
                             bool registered = false;
@@ -156,14 +157,43 @@ void CutelystDispatcher::prepareAction(CutelystContext *c)
     qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
 }
 
-CutelystAction *CutelystDispatcher::getAction(const QString &action, const QString &ns)
+CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString &ns)
 {
+    Q_D(CutelystDispatcher);
+    if (name.isEmpty()) {
+        return 0;
+    }
 
+    QString _ns = cleanNamespace(ns);
+
+    QString action = _ns % QLatin1Char('/') % name;
+    qDebug() << Q_FUNC_INFO << "Action is " << action;
+    if (d->actionHash.contains(action)) {
+        return d->actionHash.value(action);
+    }
+
+    return 0;
 }
 
-QList<CutelystAction *> CutelystDispatcher::getActions(const QString &action, const QString &ns)
+CutelystActionList CutelystDispatcher::getActions(const QString &name, const QString &ns)
 {
+    Q_D(CutelystDispatcher);
 
+    CutelystActionList ret;
+    if (name.isEmpty()) {
+        return ret;
+    }
+
+    QString _ns = cleanNamespace(ns);
+
+    CutelystActionList containers = d->getContainers(_ns);
+    foreach (CutelystAction *action, containers) {
+        if (action->name() == name) {
+            ret << action;
+        }
+    }
+
+    return ret;
 }
 
 void CutelystDispatcher::printActions()
@@ -178,8 +208,8 @@ void CutelystDispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QHash<QString, CutelystAction*>::ConstIterator it = d->actions.constBegin();
-    while (it != d->actions.constEnd()) {
+    QHash<QString, CutelystAction*>::ConstIterator it = d->actionHash.constBegin();
+    while (it != d->actionHash.constEnd()) {
         CutelystAction *action = it.value();
         privateLength = qMax(privateLength, it.key().length());
         classLength = qMax(classLength, action->className().length());
@@ -200,8 +230,8 @@ void CutelystDispatcher::printActions()
              << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
              << ".";
 
-    it = d->actions.constBegin();
-    while (it != d->actions.constEnd()) {
+    it = d->actionHash.constBegin();
+    while (it != d->actionHash.constEnd()) {
         CutelystAction *action = it.value();
         if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
             qDebug() << "|" << it.key().leftJustified(privateLength).toUtf8().data()
@@ -227,14 +257,19 @@ CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QSt
 {
     Q_D(CutelystDispatcher);
     qDebug() << Q_FUNC_INFO << command;
-    printActions();
 
-    if (d->actions.contains(command)) {
-        qDebug() << Q_FUNC_INFO << command;
-
-        return d->actions.value(command);
+    CutelystAction *ret = 0;
+    if (d->actionHash.contains(command)) {
+        ret = d->actionHash.value(command);
+    } else {
+        QString path = actionRel2Abs(c, command);
+        qDebug() << Q_FUNC_INFO << path << command;
+        if (d->actionHash.contains(path)) {
+            ret = d->actionHash.value(path);
+        }
     }
-    return 0;
+
+    return ret;
 }
 
 QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)
@@ -243,5 +278,52 @@ QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)
     foreach (const QString &arg, args) {
         ret << QUrl::fromPercentEncoding(arg.toLocal8Bit());
     }
+    return ret;
+}
+
+QString CutelystDispatcher::actionRel2Abs(CutelystContext *c, const QString &path)
+{
+    QString ret = path;
+    if (!ret.startsWith(QLatin1Char('/'))) {
+        // TODO at Catalyst it uses
+        // c->stack->last()->namespace
+        QString ns = c->action()->ns();
+        ret = ns % QLatin1Char('/') % path;
+    }
+
+    if (ret.startsWith(QLatin1Char('/'))) {
+        ret.remove(0, 1);
+    }
+
+    return ret;
+}
+
+QString CutelystDispatcher::cleanNamespace(const QString &ns) const
+{
+    QStringList ret;
+    foreach (const QString &part, ns.split(QLatin1Char('/'))) {
+        if (!part.isEmpty()) {
+            ret << part;
+        }
+    }
+    return ret.join(QLatin1Char('/'));
+}
+
+
+CutelystActionList CutelystDispatcherPrivate::getContainers(const QString &ns)
+{
+    CutelystActionList ret;
+
+    QString _ns = ns;
+    if (_ns == QLatin1String("/")) {
+        _ns = QLatin1String("");
+    }
+
+    while (!_ns.isEmpty()) {
+        ret << containerHash.value(_ns);
+        _ns = _ns.section(QLatin1Char('/'), 0, -2);
+    }
+    ret << containerHash.value(_ns);
+
     return ret;
 }

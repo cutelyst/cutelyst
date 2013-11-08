@@ -113,18 +113,40 @@ bool CutelystAction::dispatch(CutelystContext *c)
         args << QString();
     }
 
-    qDebug() << Q_FUNC_INFO << m_name << args;
+    qDebug() << Q_FUNC_INFO << m_name << c->args();
 
-    return m_method.invoke(m_controller,
-                           Q_ARG(QString, args.at(0)),
-                           Q_ARG(QString, args.at(1)),
-                           Q_ARG(QString, args.at(2)),
-                           Q_ARG(QString, args.at(3)),
-                           Q_ARG(QString, args.at(4)),
-                           Q_ARG(QString, args.at(5)),
-                           Q_ARG(QString, args.at(6)),
-                           Q_ARG(QString, args.at(7)),
-                           Q_ARG(QString, args.at(8)));
+    if (m_method.returnType() == QMetaType::Bool) {
+        bool methodRet;
+        bool ret;
+        ret = m_method.invoke(m_controller,
+                              Q_RETURN_ARG(bool, methodRet),
+                              Q_ARG(QString, args.at(0)),
+                              Q_ARG(QString, args.at(1)),
+                              Q_ARG(QString, args.at(2)),
+                              Q_ARG(QString, args.at(3)),
+                              Q_ARG(QString, args.at(4)),
+                              Q_ARG(QString, args.at(5)),
+                              Q_ARG(QString, args.at(6)),
+                              Q_ARG(QString, args.at(7)),
+                              Q_ARG(QString, args.at(8)));
+
+        qDebug() << "Called " << m_name << ret << methodRet;
+        if (ret) {
+            return methodRet;
+        }
+        return false;
+    } else {
+        return m_method.invoke(m_controller,
+                               Q_ARG(QString, args.at(0)),
+                               Q_ARG(QString, args.at(1)),
+                               Q_ARG(QString, args.at(2)),
+                               Q_ARG(QString, args.at(3)),
+                               Q_ARG(QString, args.at(4)),
+                               Q_ARG(QString, args.at(5)),
+                               Q_ARG(QString, args.at(6)),
+                               Q_ARG(QString, args.at(7)),
+                               Q_ARG(QString, args.at(8)));
+    }
 }
 
 bool CutelystAction::match(CutelystContext *c) const

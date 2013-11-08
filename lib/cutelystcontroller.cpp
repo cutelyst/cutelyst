@@ -63,9 +63,9 @@ QString CutelystController::ns() const
         }
     }
 
-    if (!ret.startsWith(QLatin1Char('/'))) {
-        ret.prepend(QLatin1Char('/'));
-    }
+//    if (!ret.startsWith(QLatin1Char('/'))) {
+//        ret.prepend(QLatin1Char('/'));
+//    }
 
     return ret;
 }
@@ -100,7 +100,7 @@ void CutelystController::dispatchEnd()
 
 }
 
-bool CutelystController::_DISPATCH()
+void CutelystController::_DISPATCH()
 {
     qDebug() << Q_FUNC_INFO;
     QStringList dispatchSteps;
@@ -119,8 +119,11 @@ bool CutelystController::_DISPATCH()
 bool CutelystController::_BEGIN()
 {
     qDebug() << Q_FUNC_INFO;
-    CutelystAction *begin = m_c->getAction(QLatin1String("dispatchBegin"));
-    if (begin) {
+    QList<CutelystAction*> beginList;
+    beginList = m_c->getActions(QLatin1String("dispatchBegin"), m_c->ns());
+    if (!beginList.isEmpty()) {
+        CutelystAction *begin = beginList.last();
+        qDebug() << Q_FUNC_INFO << begin;
         begin->dispatch(m_c);
         return !m_c->error();
     }
@@ -152,9 +155,12 @@ bool CutelystController::_ACTION()
 bool CutelystController::_END()
 {
     qDebug() << Q_FUNC_INFO;
-    CutelystAction *begin = m_c->getAction(QLatin1String("dispatchEnd"));
-    if (begin) {
-        begin->dispatch(m_c);
+    QList<CutelystAction*> endList;
+    endList = m_c->getActions(QLatin1String("dispatchEnd"), m_c->ns());
+    if (!endList.isEmpty()) {
+        CutelystAction *end = endList.last();
+        qDebug() << Q_FUNC_INFO << end;
+        end->dispatch(m_c);
         return !m_c->error();
     }
     return true;
