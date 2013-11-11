@@ -18,6 +18,12 @@ set(CUTELYST_VERSION "${CUTELYST_VERSION_MAJOR}.${CUTELYST_VERSION_MINOR}.${CUTE
 
 set(CUTELYST_API_LEVEL "0")
 
+# CMakeLists for Cutelyst library
+set(CMAKE_AUTOMOC ON)
+# As moc files are generated in the binary dir, tell CMake
+# to always look for includes there:
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # Forbid in-tree building
 if(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
       message(STATUS "Please do an out-of-tree build:")

@@ -1,13 +1,3 @@
-# CMakeLists for Cutelyst library
-set(CMAKE_AUTOMOC ON)
-# As moc files are generated in the binary dir, tell CMake
-# to always look for includes there:
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
-add_definitions(${Qt5Core_DEFINITIONS})
-add_definitions(-fPIC)
-
 include_directories(${CMAKE_BINARY_DIR}
 		    ${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}

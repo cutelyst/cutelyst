@@ -211,7 +211,11 @@ void CutelystDispatcher::printActions()
     QHash<QString, CutelystAction*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         CutelystAction *action = it.value();
-        privateLength = qMax(privateLength, it.key().length());
+        QString path = it.key();
+        if (!path.startsWith(QLatin1String("/"))) {
+            path.prepend(QLatin1String("/"));
+        }
+        privateLength = qMax(privateLength, path.length());
         classLength = qMax(classLength, action->className().length());
         actionLength = qMax(actionLength, action->name().length());
         ++it;
@@ -234,7 +238,11 @@ void CutelystDispatcher::printActions()
     while (it != d->actionHash.constEnd()) {
         CutelystAction *action = it.value();
         if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
-            qDebug() << "|" << it.key().leftJustified(privateLength).toUtf8().data()
+            QString path = it.key();
+            if (!path.startsWith(QLatin1String("/"))) {
+                path.prepend(QLatin1String("/"));
+            }
+            qDebug() << "|" << path.leftJustified(privateLength).toUtf8().data()
                      << "|" << action->className().leftJustified(classLength).toUtf8().data()
                      << "|" << action->name().leftJustified(actionLength).toUtf8().data()
                      << "|";

@@ -48,9 +48,13 @@ void CutelystDispatchTypePath::list() const
                 path.append(QLatin1String("/*"));
             }
         }
-
         pathLength = qMax(pathLength, path.length() + 1);
-        privateLength = qMax(privateLength, action->privateName().length());
+
+        QString privateName = action->privateName();
+        if (!privateName.startsWith(QLatin1String("/"))) {
+            privateName.prepend(QLatin1String("/"));
+        }
+        privateLength = qMax(privateLength, privateName.length());
 
         ++it;
     }
@@ -77,8 +81,13 @@ void CutelystDispatchTypePath::list() const
             }
         }
 
+        QString privateName = action->privateName();
+        if (!privateName.startsWith(QLatin1String("/"))) {
+            privateName.prepend(QLatin1String("/"));
+        }
+
         qDebug() << "|" << path.leftJustified(pathLength).toUtf8().data()
-                 << "|" << action->privateName().leftJustified(privateLength).toUtf8().data()
+                 << "|" << privateName.leftJustified(privateLength).toUtf8().data()
                  << "|";
         ++it;
     }

@@ -6,7 +6,7 @@
 class Root : public CutelystController
 {
     Q_OBJECT
-    Q_CLASSINFO("Namespace", "Galera/oi")
+    Q_CLASSINFO("Namespace", "")
 public:
     Q_INVOKABLE Root();
 
