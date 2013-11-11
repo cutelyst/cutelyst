@@ -17,36 +17,30 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTENGINEHTTP_H
-#define CUTELYSTENGINEHTTP_H
+#ifndef CUTELYSTRESPONSE_P_H
+#define CUTELYSTRESPONSE_P_H
 
-#include "cutelystengine.h"
+#include "cutelystresponse.h"
 
-#include <QTcpSocket>
-#include <QStringList>
+#include <QMap>
 
-class CutelystEngineHttp : public CutelystEngine
+class CutelystEngine;
+class CutelystResponsePrivate
 {
-    Q_OBJECT
 public:
-    explicit CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
+    CutelystResponsePrivate();
 
-    virtual void finalizeCookies(CutelystContext *c);
-    virtual void finalizeHeaders(CutelystContext *c);
-    virtual void finalizeBody(CutelystContext *c);
-    virtual void finalizeError(CutelystContext *c);
-
-protected:
-    virtual void parse(const QByteArray &request);
-
-private:
-    QVariantHash m_data;
-    QByteArray m_buffer;
-    quint64 m_bufLastIndex;
-    QString m_method;
-    QString m_path;
-    QString m_protocol;
-    QHash<QString, QString> m_headers;
+    int status;
+    quint16 finalizedHeaders;
+    // We use a map since QHash *might*
+    // cause issues in browsers due to
+    // it's random ordering
+    QMap<QString, QString> headers;
+    QByteArray body;
+    QString redirect;
+    QString contentType;
+    quint64 contentLength;
+    CutelystEngine *engine;
 };
 
-#endif // CUTELYSTENGINEHTTP_H
+#endif // CUTELYSTRESPONSE_P_H

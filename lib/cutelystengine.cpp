@@ -20,6 +20,7 @@
 #include "cutelystengine_p.h"
 
 #include "cutelystrequest.h"
+#include "cutelystresponse.h"
 #include "cutelystdispatcher.h"
 #include "cutelystcontext_p.h"
 
@@ -65,15 +66,12 @@ qint64 CutelystEngine::write(const QByteArray &data)
     return d->socket->write(data);
 }
 
-void CutelystEngine::dispatch(CutelystRequest *request)
+void CutelystEngine::handleRequest(CutelystRequest *request)
 {
     Q_D(CutelystEngine);
-    CutelystContext *c = new CutelystContext;
-    c->d_ptr->request = request;
-    c->d_ptr->dispatcher = d->dispatcher;
+    CutelystContext *c = new CutelystContext(this, d->dispatcher);
 
-    d->dispatcher->prepareAction(c);
-    c->dispatch();
+    c->handleRequest(request, new CutelystResponse);
 }
 
 void CutelystEngine::readyRead()

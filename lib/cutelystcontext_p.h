@@ -9,11 +9,13 @@ class CutelystContextPrivate
 public:
     CutelystContextPrivate(CutelystContext *parent);
 
+    CutelystEngine *engine;
     CutelystRequest *request;
     CutelystResponse *response;
     CutelystAction *action;
     CutelystDispatcher *dispatcher;
     QString match;
+    int status;
 };
 
 #endif // CUTELYSTCONTEXT_P_H

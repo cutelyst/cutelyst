@@ -17,14 +17,83 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelystresponse.h"
+#include "cutelystresponse_p.h"
 
 CutelystResponse::CutelystResponse(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    d_ptr(new CutelystResponsePrivate)
 {
 }
 
+CutelystResponse::~CutelystResponse()
+{
+    delete d_ptr;
+}
+
+int CutelystResponse::status() const
+{
+    return 0;
+}
+
+bool CutelystResponse::finalizedHeaders() const
+{
+    Q_D(const CutelystResponse);
+    return d->finalizedHeaders;
+}
+
+QString CutelystResponse::redirect() const
+{
+    Q_D(const CutelystResponse);
+    return d->redirect;
+}
+
+void CutelystResponse::setHeaderValue(const QString &key, const QString &value)
+{
+    Q_D(CutelystResponse);
+    d->headers[key] = value;
+}
+
+bool CutelystResponse::hasBody() const
+{
+    Q_D(const CutelystResponse);
+    return !d->body.isEmpty();
+}
+
+QByteArray CutelystResponse::body() const
+{
+    Q_D(const CutelystResponse);
+    return d->body;
+}
+
 void CutelystResponse::setBody(const QByteArray &body)
+{
+    Q_D(CutelystResponse);
+    d->body = body;
+}
+
+void CutelystResponse::setContentLength(quint64 length)
+{
+    Q_D(CutelystResponse);
+    d->contentLength = length;
+}
+
+void CutelystResponse::setContentType(const QString &encoding)
+{
+    Q_D(CutelystResponse);
+    d->contentType = encoding;
+}
+
+void CutelystResponse::setRedirect(const QString &url, quint16 status)
+{
+    Q_D(CutelystResponse);
+    d->redirect = url;
+    d->status = status;
+}
+
+CutelystResponsePrivate::CutelystResponsePrivate() :
+    finalizedHeaders(false),
+    status(0),
+    contentLength(0)
 {
 
 }

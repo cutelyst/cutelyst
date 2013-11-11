@@ -40,10 +40,15 @@ public:
     QString peerName() const;
     QHostAddress peerAddress() const;
 
+    virtual void finalizeCookies(CutelystContext *c) = 0;
+    virtual void finalizeHeaders(CutelystContext *c) = 0;
+    virtual void finalizeBody(CutelystContext *c) = 0;
+    virtual void finalizeError(CutelystContext *c) = 0;
+
 protected:
     virtual void parse(const QByteArray &data) = 0;
     qint64 write(const QByteArray &data);
-    void dispatch(CutelystRequest *request);
+    void handleRequest(CutelystRequest *request);
 
     CutelystEnginePrivate *d_ptr;
 

@@ -18,6 +18,9 @@
  */
 
 #include "cutelystenginehttp.h"
+
+#include "cutelystcontext.h"
+#include "cutelystresponse.h"
 #include "cutelystrequest_p.h"
 
 #include <QStringList>
@@ -26,6 +29,26 @@ CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatche
     CutelystEngine(socket, dispatcher, parent),
     m_bufLastIndex(0)
 {
+}
+
+void CutelystEngineHttp::finalizeCookies(CutelystContext *c)
+{
+
+}
+
+void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
+{
+
+}
+
+void CutelystEngineHttp::finalizeBody(CutelystContext *c)
+{
+    write(c->response()->body());
+}
+
+void CutelystEngineHttp::finalizeError(CutelystContext *c)
+{
+
 }
 
 void CutelystEngineHttp::parse(const QByteArray &request)
@@ -89,7 +112,7 @@ void CutelystEngineHttp::parse(const QByteArray &request)
 
 //    qDebug() << request;
 
-    dispatch(req);
+    handleRequest(req);
 
     //    while (request.end())
     QByteArray data;

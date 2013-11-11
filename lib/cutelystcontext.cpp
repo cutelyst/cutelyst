@@ -19,16 +19,23 @@
 
 #include "cutelystcontext_p.h"
 
+#include "cutelystengine.h"
 #include "cutelystrequest.h"
+#include "cutelystresponse.h"
 #include "cutelystaction.h"
 #include "cutelystdispatcher.h"
 
+#include <QUrl>
+#include <QStringBuilder>
 #include <QStringList>
 
-CutelystContext::CutelystContext(QObject *parent) :
-    QObject(parent),
+CutelystContext::CutelystContext(CutelystEngine *engine, CutelystDispatcher *dispatcher) :
+    QObject(engine),
     d_ptr(new CutelystContextPrivate(this))
 {
+    Q_D(CutelystContext);
+    d->engine = engine;
+    d->dispatcher = dispatcher;
 }
 
 CutelystContext::~CutelystContext()
@@ -50,6 +57,12 @@ QStringList CutelystContext::args() const
 {
     Q_D(const CutelystContext);
     return d->request->args();
+}
+
+CutelystEngine *CutelystContext::engine() const
+{
+    Q_D(const CutelystContext);
+    return d->engine;
 }
 
 CutelystRequest *CutelystContext::request() const
@@ -116,6 +129,89 @@ QList<CutelystAction *> CutelystContext::getActions(const QString &action, const
 {
     Q_D(CutelystContext);
     return d->dispatcher->getActions(action, ns);
+}
+
+void CutelystContext::handleRequest(CutelystRequest *req, CutelystResponse *resp)
+{
+    Q_D(CutelystContext);
+
+    d->request = req;
+    d->response = resp;
+
+    d->dispatcher->prepareAction(this);
+    dispatch();
+    d->status = finalize();
+}
+
+void CutelystContext::finalizeHeaders()
+{
+    Q_D(CutelystContext);
+
+    CutelystResponse *response = d->response;
+    if (response->finalizedHeaders()) {
+        return;
+    }
+
+    if (!response->redirect().isEmpty()) {
+        response->setHeaderValue(QLatin1String("Location"), response->redirect());
+
+        if (!response->hasBody()) {
+            QByteArray data;
+            data = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
+                   "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
+                   "  <head>"
+                   "    <title>Moved</title>"
+                   "  </head>"
+                   "  <body>"
+                   "     <p>This item has moved <a href=";
+            data.append(QUrl::toPercentEncoding(response->redirect()));
+            data.append(">here</a>.</p>"
+                   "  </body>"
+                   "</html>");
+            response->setContentType(QLatin1String("text/html; charset=utf-8"));
+        }
+    }
+
+    if (response->hasBody()) {
+        response->setContentLength(response->body().size());
+    }
+
+    finalizeCookies();
+
+    d->engine->finalizeHeaders(this);
+}
+
+void CutelystContext::finalizeCookies()
+{
+    Q_D(CutelystContext);
+    d->engine->finalizeCookies(this);
+}
+
+void CutelystContext::finalizeBody()
+{
+    Q_D(CutelystContext);
+    d->engine->finalizeBody(this);
+}
+
+void CutelystContext::finalizeError()
+{
+    Q_D(CutelystContext);
+    d->engine->finalizeError(this);
+}
+
+int CutelystContext::finalize()
+{
+    Q_D(CutelystContext);
+
+    finalizeHeaders();
+
+    if (d->request->method() == QLatin1String("HEAD")) {
+        d->response->setBody(QByteArray());
+    }
+
+    finalizeBody();
+
+    return d->response->status();
 }
 
 CutelystContextPrivate::CutelystContextPrivate(CutelystContext *parent) :

@@ -24,6 +24,7 @@
 #include <QStringList>
 
 class CutelystAction;
+class CutelystEngine;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystDispatcher;
@@ -32,13 +33,14 @@ class CutelystContext : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystContext(QObject *parent = 0);
+    CutelystContext(CutelystEngine *engine, CutelystDispatcher *dispatcher);
     ~CutelystContext();
 
     bool error() const;
     bool state() const;
     QStringList args() const;
     QString uriPrefix() const;
+    CutelystEngine *engine() const;
     CutelystRequest *request() const;
     CutelystRequest *req() const;
     CutelystResponse *response() const;
@@ -55,6 +57,13 @@ public:
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
 
 protected:
+    void handleRequest(CutelystRequest *req, CutelystResponse *resp);
+    void finalizeHeaders();
+    void finalizeCookies();
+    void finalizeBody();
+    void finalizeError();
+    int finalize();
+
     friend class CutelystEngine;
     friend class CutelystDispatchType;
     CutelystContextPrivate *d_ptr;

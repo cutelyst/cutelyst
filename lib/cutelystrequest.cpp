@@ -92,6 +92,12 @@ QHash<QString, QString> CutelystRequest::headers() const
     return d->headers;
 }
 
+QString CutelystRequest::method() const
+{
+    Q_D(const CutelystRequest);
+    return d->method;
+}
+
 void CutelystRequest::setArgs(const QStringList &args)
 {
     Q_D(CutelystRequest);

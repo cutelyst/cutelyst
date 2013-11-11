@@ -22,23 +22,36 @@
 
 #include <QObject>
 
+class CutelystResponsePrivate;
 class CutelystResponse : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(CutelystResponse)
 public:
     explicit CutelystResponse(QObject *parent = 0);
+    ~CutelystResponse();
 
+    int status() const;
+    bool finalizedHeaders() const;
+    QString redirect() const;
+
+    void setHeaderValue(const QString &key, const QString &value);
+    bool hasBody() const;
+    QByteArray body() const;
     void setBody(const QByteArray &body);
     void setContentEncoding(const QString &encoding);
-    void setContentLength(quint64 lenght);
+    void setContentLength(quint64 length);
     void setContentType(const QString &encoding);
     void setCookie(const QString &key, const QString &value);
     void setCookies(const QHash<QString, QString> &cookies);
 
-    void redirect(const QUrl &url, quint16 status = 302);
+    void setRedirect(const QString &url, quint16 status = 302);
     void setLocation(const QString &location);
     void setStatus(quint64 status);
     void write(const QByteArray &data);
+
+protected:
+    CutelystResponsePrivate *d_ptr;
 };
 
 #endif // CUTELYSTRESPONSE_H
