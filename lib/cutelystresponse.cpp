@@ -80,12 +80,6 @@ bool CutelystResponse::finalizedHeaders() const
     return d->finalizedHeaders;
 }
 
-QUrl CutelystResponse::redirect() const
-{
-    Q_D(const CutelystResponse);
-    return d->redirect;
-}
-
 void CutelystResponse::setHeaderValue(const QString &key, const QString &value)
 {
     Q_D(CutelystResponse);
@@ -125,8 +119,14 @@ void CutelystResponse::setContentType(const QString &encoding)
 void CutelystResponse::redirect(const QString &url, quint16 status)
 {
     Q_D(CutelystResponse);
-    d->redirect = url;
+    d->location = url;
     d->status = status;
+}
+
+QUrl CutelystResponse::location() const
+{
+    Q_D(const CutelystResponse);
+    return d->location;
 }
 
 QMap<QString, QString> CutelystResponse::headers() const

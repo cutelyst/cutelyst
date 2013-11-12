@@ -38,7 +38,7 @@ public:
     // it's random ordering
     QMap<QString, QString> headers;
     QByteArray body;
-    QUrl redirect;
+    QUrl location;
     QString contentType;
     quint64 contentLength;
     CutelystEngine *engine;

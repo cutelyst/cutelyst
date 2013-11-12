@@ -53,7 +53,6 @@ public:
     void setStatus(quint16 status);
     QString statusString() const;
     bool finalizedHeaders() const;
-    QUrl redirect() const;
 
     void setHeaderValue(const QString &key, const QString &value);
     bool hasBody() const;
@@ -73,7 +72,12 @@ public:
      * occur straight away.
      */
     void redirect(const QString &url, quint16 status = Found);
-    void setLocation(const QString &location);
+
+    /**
+     * Returns the HTTP location set by the redirect
+     */
+    QUrl location() const;
+
     QMap<QString, QString> headers() const;
     void write(const QByteArray &data);
 

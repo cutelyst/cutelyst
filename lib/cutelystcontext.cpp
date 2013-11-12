@@ -171,8 +171,8 @@ void CutelystContext::finalizeHeaders()
         return;
     }
 
-    if (response->redirect().isValid()) {
-        response->setHeaderValue(QLatin1String("Location"), response->redirect().toEncoded());
+    if (response->location().isValid()) {
+        response->setHeaderValue(QLatin1String("Location"), response->location().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;
@@ -183,7 +183,7 @@ void CutelystContext::finalizeHeaders()
                    "  </head>\n"
                    "  <body>\n"
                    "     <p>This item has moved <a href=";
-            data.append(response->redirect().toEncoded());
+            data.append(response->location().toEncoded());
             data.append(">here</a>.</p>\n"
                    "  </body>\n"
                    "</html>\n");
