@@ -74,6 +74,8 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
                 }
             } else if (type == "Local") {
                 m_attributes.insertMulti(QLatin1String("Path"), m_name);
+            } else if (type == "Path") {
+                m_attributes.insertMulti(QLatin1String("Path"), controller()->ns());
             } else if (type == "Args" && !m_attributes.contains(QLatin1String("Args"))) {
                 m_numberOfArgs = parameterCount;
                 m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfArgs));

@@ -15,7 +15,7 @@ public:
     Q_CLASSINFO("begin_Path", "/home")
     Q_CLASSINFO("begin_Chained", "/")
     Q_CLASSINFO("begin_Path", "/")
-    Q_INVOKABLE void begin(const QString &name);
+    Q_INVOKABLE void begin(const QString &name, Path);
     Q_INVOKABLE void users(const QString &name, const QString &age, Args, Local);
     Q_INVOKABLE void admin(const QString &name, const QString &age, Global);
 

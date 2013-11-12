@@ -21,6 +21,7 @@
 
 #include "cutelystaction.h"
 
+#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QDebug>
 
@@ -48,6 +49,7 @@ void CutelystDispatchTypePath::list() const
                 path.append(QLatin1String("/*"));
             }
         }
+        path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
         pathLength = qMax(pathLength, path.length() + 1);
 
         QString privateName = action->privateName();
@@ -80,6 +82,7 @@ void CutelystDispatchTypePath::list() const
                 path.append(QLatin1String("/*"));
             }
         }
+        path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
 
         QString privateName = action->privateName();
         if (!privateName.startsWith(QLatin1String("/"))) {

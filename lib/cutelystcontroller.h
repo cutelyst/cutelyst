@@ -66,6 +66,14 @@ public:
     typedef int Local;
 
     /**
+     * @brief Path - Alias to Path=""
+     * When this argument is preset on the method it will
+     * create a path with the class name.
+     * Always add it to the end of the argument list of the methods
+     */
+    typedef int Path;
+
+    /**
      * @brief Args - When used with "Path"  indicates the number of
      * arguments expected in the path.
      * However if no Args value is set, assumed to 'slurp' all

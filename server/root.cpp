@@ -15,7 +15,7 @@ void Root::hugeNameQuiteLong(const QString &nome, Local)
 
 }
 
-void Root::begin(const QString &name)
+void Root::begin(const QString &name, Path)
 {
     qDebug() << Q_FUNC_INFO << name;
 }
