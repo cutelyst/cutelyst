@@ -48,6 +48,7 @@ private:
     CutelystAction *command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QStringList &args);
     QString actionRel2Abs(CutelystContext *c, const QString &path);
+    CutelystAction *invokeAsPath(CutelystContext *c, const QString &relativePath, const QStringList &args);
     QString cleanNamespace(const QString &ns) const;
 
 protected:

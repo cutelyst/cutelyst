@@ -24,6 +24,7 @@
 #include "cutelystrequest_p.h"
 
 #include <QStringList>
+#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QDateTime>
 
@@ -79,25 +80,19 @@ void CutelystEngineHttp::parse(const QByteArray &request)
             QByteArray section = request.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
             m_bufLastIndex = newLine + 1;
 
-            QRegExp methodProtocolRE("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$");
-            QRegExp methodRE("(\\w+)\\s+(.*)");
+            QRegularExpression methodProtocolRE("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$");
+            QRegularExpression methodRE("(\\w+)\\s+(.*)");
             bool badRequest = false;
-            if (methodProtocolRE.indexIn(section) != -1) {
-//                qDebug() << 1 <<  methodProtocolRE.capturedTexts() << methodProtocolRE.captureCount();
-                if (methodProtocolRE.captureCount() == 3) {
-                    m_method = methodProtocolRE.cap(1);
-                    m_path = methodProtocolRE.cap(2);
-                    m_protocol = methodProtocolRE.cap(3);
-                } else {
-                    badRequest = true;
-                }
-            } else if (methodRE.indexIn(section) != -1) {
-//                qDebug() << 2 << methodRE.capturedTexts() << methodRE.captureCount();
-                if (methodRE.captureCount() == 2) {
-                    m_method = methodRE.cap(1);
-                    m_path = methodProtocolRE.cap(2);
-                } else {
-                    badRequest = true;
+            QRegularExpressionMatch match = methodProtocolRE.match(section);
+            if (match.hasMatch()) {
+                m_method = match.captured(1);
+                m_path = match.captured(2);
+                m_protocol = match.captured(3);
+            } else {
+                match = methodRE.match(section);
+                if (match.hasMatch()) {
+                    m_method = match.captured(1);
+                    m_path = match.captured(2);
                 }
             }
 
@@ -114,8 +109,6 @@ void CutelystEngineHttp::parse(const QByteArray &request)
 
         if (!section.isEmpty()) {
             m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed();
-//            qDebug() << section << section.length();
-//            qDebug() << section.section(QLatin1Char(':'), 0, 0) << section.section(QLatin1Char(':'), 1).trimmed() << endl;
         }
     }
 
@@ -131,11 +124,6 @@ void CutelystEngineHttp::parse(const QByteArray &request)
     qDebug() << request;
 
     handleRequest(req);
-
-
-//    //    while (request.end())
-
-    //    deleteLater();
 }
 
 QString CutelystEngineHttp::statusText(quint16 status)

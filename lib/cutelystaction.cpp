@@ -23,6 +23,7 @@
 
 #include <QMetaClassInfo>
 #include <QStringBuilder>
+#include <QRegularExpression>
 #include <QDebug>
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
@@ -39,8 +40,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
-    QString regexString = QString("%1_(\\w+)").arg(m_name);
-    QRegExp regex(regexString);
+    QRegularExpression regex(m_name % QLatin1String("_(\\w+)"));
     for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
         QString name = classInfo.name();
@@ -49,8 +49,9 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
             continue;
         }
 
-        if (regex.indexIn(name) != -1) {
-            m_attributes.insertMulti(regex.cap(1), classInfo.value());
+        QRegularExpressionMatch match = regex.match(name);
+        if (match.hasMatch()) {
+            m_attributes.insertMulti(match.captured(1), classInfo.value());
         }
     }
 
@@ -105,7 +106,7 @@ CutelystController *CutelystAction::controller() const
 
 bool CutelystAction::dispatch(CutelystContext *c)
 {
-    m_controller->setContext(c);
+    m_controller->c = c;
 
     QStringList args = c->args();
     // Fill the missing arguments

@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QMetaMethod>
 #include <QStringBuilder>
+#include <QRegularExpression>
 #include <QDebug>
 
 CutelystDispatcher::CutelystDispatcher(QObject *parent) :
@@ -266,17 +267,13 @@ void CutelystDispatcher::printActions()
 CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams)
 {
     Q_D(CutelystDispatcher);
-    qDebug() << Q_FUNC_INFO << command;
+    qDebug() << Q_FUNC_INFO << "Command" << command;
 
     CutelystAction *ret = 0;
     if (d->actionHash.contains(command)) {
         ret = d->actionHash.value(command);
     } else {
-        QString path = actionRel2Abs(c, command);
-        qDebug() << Q_FUNC_INFO << path << command;
-        if (d->actionHash.contains(path)) {
-            ret = d->actionHash.value(path);
-        }
+        ret = invokeAsPath(c, command, c->args());
     }
 
     return ret;
@@ -303,6 +300,30 @@ QString CutelystDispatcher::actionRel2Abs(CutelystContext *c, const QString &pat
 
     if (ret.startsWith(QLatin1Char('/'))) {
         ret.remove(0, 1);
+    }
+
+    return ret;
+}
+
+CutelystAction *CutelystDispatcher::invokeAsPath(CutelystContext *c, const QString &relativePath, const QStringList &args)
+{
+    Q_D(CutelystDispatcher);
+
+    CutelystAction *ret = 0;
+    QString path = actionRel2Abs(c, relativePath);
+
+    QRegularExpression re("^(?:(.*)/)?(\\w+)?$");
+    while (!path.isEmpty()) {
+        QRegularExpressionMatch match = re.match(path);
+        if (match.hasMatch()) {
+            path = match.captured(1);
+            const QString &tail = match.captured(2);
+            if (ret = getAction(tail, path)) {
+                break;
+            }
+        } else {
+            break;
+        }
     }
 
     return ret;

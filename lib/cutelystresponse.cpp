@@ -30,13 +30,13 @@ CutelystResponse::~CutelystResponse()
     delete d_ptr;
 }
 
-CutelystResponse::HttpStatus CutelystResponse::status() const
+quint16 CutelystResponse::status() const
 {
     Q_D(const CutelystResponse);
     return d->status;
 }
 
-void CutelystResponse::setStatus(CutelystResponse::HttpStatus status)
+void CutelystResponse::setStatus(quint16 status)
 {
     Q_D(CutelystResponse);
     d->status = status;

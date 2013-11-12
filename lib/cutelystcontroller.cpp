@@ -27,7 +27,8 @@
 #include <QDebug>
 
 CutelystController::CutelystController(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    c(0)
 {
 }
 
@@ -70,16 +71,6 @@ QString CutelystController::ns() const
     return ret;
 }
 
-CutelystContext *CutelystController::c() const
-{
-    return m_c;
-}
-
-void CutelystController::setContext(CutelystContext *c)
-{
-    m_c = c;
-}
-
 void CutelystController::dispatchBegin()
 {
 
@@ -108,24 +99,24 @@ void CutelystController::_DISPATCH()
     dispatchSteps << QLatin1String("_AUTO");
     dispatchSteps << QLatin1String("_ACTION");
     foreach (const QString &disp, dispatchSteps) {
-        if (!m_c->forward(disp)) {
+        if (!c->forward(disp)) {
             break;
         }
     }
 
-    m_c->forward(QLatin1String("_END"));
+    c->forward(QLatin1String("_END"));
 }
 
 bool CutelystController::_BEGIN()
 {
     qDebug() << Q_FUNC_INFO;
     QList<CutelystAction*> beginList;
-    beginList = m_c->getActions(QLatin1String("dispatchBegin"), m_c->ns());
+    beginList = c->getActions(QLatin1String("dispatchBegin"), c->ns());
     if (!beginList.isEmpty()) {
         CutelystAction *begin = beginList.last();
         qDebug() << Q_FUNC_INFO << begin;
-        begin->dispatch(m_c);
-        return !m_c->error();
+        begin->dispatch(c);
+        return !c->error();
     }
     return true;
 }
@@ -133,10 +124,10 @@ bool CutelystController::_BEGIN()
 bool CutelystController::_AUTO()
 {
     qDebug() << Q_FUNC_INFO;
-    QList<CutelystAction*> autoList = m_c->getActions(QLatin1String("dispatchAuto"));
+    QList<CutelystAction*> autoList = c->getActions(QLatin1String("dispatchAuto"));
     foreach (CutelystAction *autoAction, autoList) {
-        autoAction->dispatch(m_c);
-        if (m_c->state()) {
+        autoAction->dispatch(c);
+        if (c->state()) {
             return false;
         }
     }
@@ -146,22 +137,22 @@ bool CutelystController::_AUTO()
 bool CutelystController::_ACTION()
 {
     qDebug() << Q_FUNC_INFO;
-    if (m_c->action()) {
-        return m_c->action()->dispatch(m_c);
+    if (c->action()) {
+        return c->action()->dispatch(c);
     }
-    return !m_c->error();
+    return !c->error();
 }
 
 bool CutelystController::_END()
 {
     qDebug() << Q_FUNC_INFO;
     QList<CutelystAction*> endList;
-    endList = m_c->getActions(QLatin1String("dispatchEnd"), m_c->ns());
+    endList = c->getActions(QLatin1String("dispatchEnd"), c->ns());
     if (!endList.isEmpty()) {
         CutelystAction *end = endList.last();
         qDebug() << Q_FUNC_INFO << end;
-        end->dispatch(m_c);
-        return !m_c->error();
+        end->dispatch(c);
+        return !c->error();
     }
     return true;
 }

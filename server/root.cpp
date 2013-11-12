@@ -42,7 +42,7 @@ void Root::admin(const QString &name, const QString &age, CutelystController::Gl
             "        </p>"
             "    </body>"
             "</html>";
-    c()->response()->setBody(data);
+    c->response()->setBody(data);
 }
 
 void Root::dispatchBegin()

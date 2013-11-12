@@ -44,8 +44,8 @@ public:
     explicit CutelystResponse(QObject *parent = 0);
     ~CutelystResponse();
 
-    HttpStatus status() const;
-    void setStatus(HttpStatus status);
+    quint16 status() const;
+    void setStatus(quint16 status);
     QString statusString() const;
     bool finalizedHeaders() const;
     QString redirect() const;

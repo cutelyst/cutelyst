@@ -89,23 +89,22 @@ public:
      */
     QString ns() const;
 
-    CutelystContext* c() const;
-    void setContext(CutelystContext *c);
-
 protected:
     virtual void dispatchBegin();
     virtual void dispatchAuto();
     virtual void dispatchAction();
     virtual void dispatchEnd();
 
+    CutelystContext *c;
+
 private:
+    friend class CutelystAction;
+
     Q_INVOKABLE void _DISPATCH();
     Q_INVOKABLE bool _BEGIN();
     Q_INVOKABLE bool _AUTO();
     Q_INVOKABLE bool _ACTION();
     Q_INVOKABLE bool _END();
-
-    CutelystContext *m_c;
 };
 
 Q_DECLARE_METATYPE(CutelystController*)
