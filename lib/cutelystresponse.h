@@ -27,11 +27,26 @@ class CutelystResponse : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CutelystResponse)
+    Q_ENUMS(HttpStatus)
 public:
+    enum HttpStatus {
+        Ok                    = 200,
+        MovedPermanently      = 301,
+        Found                 = 302,
+        NotModified           = 304,
+        BadRequest            = 400,
+        AuthorizationRequired = 401,
+        Forbidden             = 403,
+        NotFound              = 404,
+        MethodNotAllowed      = 405,
+        InternalServerError   = 500
+    };
     explicit CutelystResponse(QObject *parent = 0);
     ~CutelystResponse();
 
-    int status() const;
+    HttpStatus status() const;
+    void setStatus(HttpStatus status);
+    QString statusString() const;
     bool finalizedHeaders() const;
     QString redirect() const;
 
@@ -45,9 +60,9 @@ public:
     void setCookie(const QString &key, const QString &value);
     void setCookies(const QHash<QString, QString> &cookies);
 
-    void setRedirect(const QString &url, quint16 status = 302);
+    void setRedirect(const QString &url, HttpStatus status = Found);
     void setLocation(const QString &location);
-    void setStatus(quint64 status);
+    QMap<QString, QString> headers() const;
     void write(const QByteArray &data);
 
 protected:

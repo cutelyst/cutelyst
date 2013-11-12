@@ -138,8 +138,15 @@ void CutelystContext::handleRequest(CutelystRequest *req, CutelystResponse *resp
     d->request = req;
     d->response = resp;
 
-    d->dispatcher->prepareAction(this);
-    dispatch();
+    if (d->dispatcher->prepareAction(this)) {
+        dispatch();
+    } else {
+        qDebug() << Q_FUNC_INFO << "Bad Request";
+        d->response->setStatus(CutelystResponse::BadRequest);
+        d->response->setContentType(QLatin1String("text/plain"));
+        d->response->setBody("Bad Request");
+    }
+
     d->status = finalize();
 }
 

@@ -30,9 +30,44 @@ CutelystResponse::~CutelystResponse()
     delete d_ptr;
 }
 
-int CutelystResponse::status() const
+CutelystResponse::HttpStatus CutelystResponse::status() const
 {
-    return 0;
+    Q_D(const CutelystResponse);
+    return d->status;
+}
+
+void CutelystResponse::setStatus(CutelystResponse::HttpStatus status)
+{
+    Q_D(CutelystResponse);
+    d->status = status;
+}
+
+QString CutelystResponse::statusString() const
+{
+    Q_D(const CutelystResponse);
+    switch (d->status) {
+    case Ok:
+        return QLatin1String("OK");
+    case MovedPermanently:
+        return QLatin1String("Moved Permanently");
+    case Found:
+        return QLatin1String("Found");
+    case NotModified:
+        return QLatin1String("Not Modified");
+    case BadRequest:
+        return QLatin1String("Bad Request");
+    case AuthorizationRequired:
+        return QLatin1String("Authorization Required");
+    case Forbidden:
+        return QLatin1String("Forbidden");
+    case NotFound:
+        return QLatin1String("Not Found");
+    case MethodNotAllowed:
+        return QLatin1String("Method Not Allowed");
+    case InternalServerError:
+        return QLatin1String("Internal Server Error");
+    }
+    return QLatin1String("");
 }
 
 bool CutelystResponse::finalizedHeaders() const
@@ -83,16 +118,29 @@ void CutelystResponse::setContentType(const QString &encoding)
     d->contentType = encoding;
 }
 
-void CutelystResponse::setRedirect(const QString &url, quint16 status)
+void CutelystResponse::setRedirect(const QString &url, CutelystResponse::HttpStatus status)
 {
     Q_D(CutelystResponse);
     d->redirect = url;
     d->status = status;
 }
 
+QMap<QString, QString> CutelystResponse::headers() const
+{
+    Q_D(const CutelystResponse);
+
+    QMap<QString, QString> ret;
+    ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
+    ret.insert(QLatin1String("Content-Type"), d->contentType);
+    // TODO use version macro here
+    ret.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));
+
+    return ret;
+}
+
 CutelystResponsePrivate::CutelystResponsePrivate() :
     finalizedHeaders(false),
-    status(0),
+    status(CutelystResponse::Ok),
     contentLength(0)
 {
 

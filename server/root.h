@@ -19,6 +19,7 @@ public:
     Q_INVOKABLE void users(const QString &name, const QString &age, Args, Local);
     Q_INVOKABLE void admin(const QString &name, const QString &age, Global);
 
+private:
     Q_INVOKABLE virtual void dispatchBegin();
 };
 

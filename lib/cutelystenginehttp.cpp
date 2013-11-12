@@ -24,6 +24,8 @@
 #include "cutelystrequest_p.h"
 
 #include <QStringList>
+#include <QStringBuilder>
+#include <QDateTime>
 
 CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     CutelystEngine(socket, dispatcher, parent),
@@ -38,12 +40,28 @@ void CutelystEngineHttp::finalizeCookies(CutelystContext *c)
 
 void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
 {
+    QByteArray header;
+    header.append(QString::fromLatin1("HTTP/1.1 %1 %2\r\n").arg(QString::number(c->response()->status()),
+                                                                c->response()->statusString()));
 
+    QMap<QString, QString> headers = c->response()->headers();
+    headers.insert(QLatin1String("Date"), QDateTime::currentDateTime().toString(Qt::ISODate));
+    headers.insert(QLatin1String("Server"), QLatin1String("CutelystEngineHttp"));
+
+    QMap<QString, QString>::ConstIterator it = headers.constBegin();
+    while (it != headers.constEnd()) {
+        header.append(it.key() % QLatin1String(": ") % it.value() % QLatin1String("\r\n"));
+        ++it;
+    }
+    header.append(QLatin1String("\r\n"));
+
+    write(header);
 }
 
 void CutelystEngineHttp::finalizeBody(CutelystContext *c)
 {
     write(c->response()->body());
+    deleteLater();
 }
 
 void CutelystEngineHttp::finalizeError(CutelystContext *c)
@@ -110,25 +128,27 @@ void CutelystEngineHttp::parse(const QByteArray &request)
 
     CutelystRequest *req = new CutelystRequest(requestPriv);
 
-//    qDebug() << request;
+    qDebug() << request;
 
     handleRequest(req);
 
-    //    while (request.end())
-    QByteArray data;
-    data = "<!DOCTYPE html>"
-            "<html lang=\"en\">"
-            "    <head>"
-            "        <meta charset=\"utf-8\">"
-            "        <title>Hello World</title>"
-            "    </head>"
-            "    <body>"
-            "        <h1>Hello World</h1>"
-            "        <p>"
-            "            Jamie was here."
-            "        </p>"
-            "    </body>"
-            "</html>";
-    write(data);
-    deleteLater();
+
+//    //    while (request.end())
+
+    //    deleteLater();
+}
+
+QString CutelystEngineHttp::statusText(quint16 status)
+{
+    switch (status) {
+    case 200:
+        return QLatin1String("OK");
+    case 400:
+        return QLatin1String("Bad Request");
+    case 404:
+        return QLatin1String("Not Found");
+    default:
+        return QLatin1String("Unknown");
+    }
+
 }

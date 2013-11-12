@@ -121,7 +121,7 @@ bool CutelystDispatcher::forward(CutelystContext *c, const QString &opname, cons
     return false;
 }
 
-void CutelystDispatcher::prepareAction(CutelystContext *c)
+bool CutelystDispatcher::prepareAction(CutelystContext *c)
 {
     Q_D(CutelystDispatcher);
 
@@ -155,6 +155,8 @@ void CutelystDispatcher::prepareAction(CutelystContext *c)
 
     qDebug() << Q_FUNC_INFO << "Path is " << path;
     qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
+
+    return dispatch;
 }
 
 CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString &ns)

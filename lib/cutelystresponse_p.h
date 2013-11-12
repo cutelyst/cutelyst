@@ -30,7 +30,7 @@ class CutelystResponsePrivate
 public:
     CutelystResponsePrivate();
 
-    int status;
+    CutelystResponse::HttpStatus status;
     quint16 finalizedHeaders;
     // We use a map since QHash *might*
     // cause issues in browsers due to
