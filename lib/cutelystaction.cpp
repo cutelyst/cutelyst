@@ -108,6 +108,10 @@ CutelystController *CutelystAction::controller() const
 
 bool CutelystAction::dispatch(CutelystContext *c)
 {
+    if (c->detached()) {
+        return false;
+    }
+
     m_controller->c = c;
 
     QStringList args = c->args();
@@ -116,7 +120,7 @@ bool CutelystAction::dispatch(CutelystContext *c)
         args << QString();
     }
 
-    qDebug() << Q_FUNC_INFO << m_name << c->args();
+    qDebug() << Q_FUNC_INFO << m_name << c->args() << c->detached();
 
     if (m_method.returnType() == QMetaType::Bool) {
         bool methodRet;

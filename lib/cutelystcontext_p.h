@@ -14,6 +14,7 @@ public:
     CutelystResponse *response;
     CutelystAction *action;
     CutelystDispatcher *dispatcher;
+    bool detached;
     QString match;
     int status;
 };

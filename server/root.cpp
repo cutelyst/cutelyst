@@ -23,6 +23,8 @@ void Root::begin(const QString &name, Path)
 void Root::users(const QString &name, const QString &age, Args, CutelystController::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
+    c->response()->redirect(QLatin1String("http://www.uol.com.br"));
+    c->detach();
 }
 
 void Root::admin(const QString &name, const QString &age, CutelystController::Global)

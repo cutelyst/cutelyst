@@ -19,6 +19,8 @@
 
 #include "cutelystresponse_p.h"
 
+#include <QDebug>
+
 CutelystResponse::CutelystResponse(QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystResponsePrivate)
@@ -46,7 +48,7 @@ QString CutelystResponse::statusString() const
 {
     Q_D(const CutelystResponse);
     switch (d->status) {
-    case Ok:
+    case OK:
         return QLatin1String("OK");
     case MovedPermanently:
         return QLatin1String("Moved Permanently");
@@ -54,6 +56,8 @@ QString CutelystResponse::statusString() const
         return QLatin1String("Found");
     case NotModified:
         return QLatin1String("Not Modified");
+    case TemporaryRedirect:
+        return QLatin1String("Temporary Redirect");
     case BadRequest:
         return QLatin1String("Bad Request");
     case AuthorizationRequired:
@@ -76,7 +80,7 @@ bool CutelystResponse::finalizedHeaders() const
     return d->finalizedHeaders;
 }
 
-QString CutelystResponse::redirect() const
+QUrl CutelystResponse::redirect() const
 {
     Q_D(const CutelystResponse);
     return d->redirect;
@@ -118,7 +122,7 @@ void CutelystResponse::setContentType(const QString &encoding)
     d->contentType = encoding;
 }
 
-void CutelystResponse::setRedirect(const QString &url, CutelystResponse::HttpStatus status)
+void CutelystResponse::redirect(const QString &url, quint16 status)
 {
     Q_D(CutelystResponse);
     d->redirect = url;
@@ -129,7 +133,7 @@ QMap<QString, QString> CutelystResponse::headers() const
 {
     Q_D(const CutelystResponse);
 
-    QMap<QString, QString> ret;
+    QMap<QString, QString> ret = d->headers;
     ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
     ret.insert(QLatin1String("Content-Type"), d->contentType);
     // TODO use version macro here
@@ -140,7 +144,7 @@ QMap<QString, QString> CutelystResponse::headers() const
 
 CutelystResponsePrivate::CutelystResponsePrivate() :
     finalizedHeaders(false),
-    status(CutelystResponse::Ok),
+    status(CutelystResponse::OK),
     contentLength(0)
 {
 

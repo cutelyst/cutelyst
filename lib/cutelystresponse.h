@@ -30,10 +30,15 @@ class CutelystResponse : public QObject
     Q_ENUMS(HttpStatus)
 public:
     enum HttpStatus {
-        Ok                    = 200,
+        OK                    = 200,
+        MultipleChoices       = 300,
         MovedPermanently      = 301,
         Found                 = 302,
+        SeeOther              = 303, // Since HTTP/1.1
         NotModified           = 304,
+        UseProxy              = 305, // Since HTTP/1.1
+        TemporaryRedirect     = 307, // Since HTTP/1.1
+        PermanentRedirect     = 308, // Since HTTP/1.1
         BadRequest            = 400,
         AuthorizationRequired = 401,
         Forbidden             = 403,
@@ -48,7 +53,7 @@ public:
     void setStatus(quint16 status);
     QString statusString() const;
     bool finalizedHeaders() const;
-    QString redirect() const;
+    QUrl redirect() const;
 
     void setHeaderValue(const QString &key, const QString &value);
     bool hasBody() const;
@@ -60,7 +65,14 @@ public:
     void setCookie(const QString &key, const QString &value);
     void setCookies(const QHash<QString, QString> &cookies);
 
-    void setRedirect(const QString &url, HttpStatus status = Found);
+    /**
+     * Causes the response to redirect to the specified URL. The default status is 302.
+     * This is a convenience method that sets the Location header to the redirect
+     * destination, and then sets the response status. You will want to return false or
+     * c->detach() to interrupt the normal processing flow if you want the redirect to
+     * occur straight away.
+     */
+    void redirect(const QString &url, quint16 status = Found);
     void setLocation(const QString &location);
     QMap<QString, QString> headers() const;
     void write(const QByteArray &data);

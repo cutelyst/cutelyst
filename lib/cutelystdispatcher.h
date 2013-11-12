@@ -37,7 +37,7 @@ public:
     ~CutelystDispatcher();
     void setupActions();
 
-    void dispatch(CutelystContext *c);
+    bool dispatch(CutelystContext *c);
     bool forward(CutelystContext *c, const QString &opname, const QStringList &arguments);
     bool prepareAction(CutelystContext *c);
     CutelystAction* getAction(const QString &name, const QString &ns);

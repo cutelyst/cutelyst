@@ -102,23 +102,22 @@ void CutelystDispatcher::setupActions()
     printActions();
 }
 
-void CutelystDispatcher::dispatch(CutelystContext *c)
+bool CutelystDispatcher::dispatch(CutelystContext *c)
 {
     if (c->action()) {
-        c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
+        return c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
     }
+    return false;
 }
 
 bool CutelystDispatcher::forward(CutelystContext *c, const QString &opname, const QStringList &arguments)
 {
     CutelystAction *action = command2Action(c, opname);
-    qDebug() << Q_FUNC_INFO << opname << action;
     if (action) {
-        qDebug() << Q_FUNC_INFO << action->name();
         return action->dispatch(c);
-    } else {
-        qWarning() << "Action not found" << action;
     }
+
+    qWarning() << Q_FUNC_INFO << "Action not found" << action;
     return false;
 }
 

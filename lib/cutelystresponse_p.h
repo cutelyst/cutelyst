@@ -23,6 +23,7 @@
 #include "cutelystresponse.h"
 
 #include <QMap>
+#include <QUrl>
 
 class CutelystEngine;
 class CutelystResponsePrivate
@@ -37,7 +38,7 @@ public:
     // it's random ordering
     QMap<QString, QString> headers;
     QByteArray body;
-    QString redirect;
+    QUrl redirect;
     QString contentType;
     quint64 contentLength;
     CutelystEngine *engine;

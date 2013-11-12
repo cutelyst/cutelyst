@@ -51,7 +51,9 @@ public:
 
     QVariantHash* stash();
 
-    void dispatch();
+    bool dispatch();
+    bool detached() const;
+    void detach();
     bool forward(const QString &action, const QStringList &arguments = QStringList());
     CutelystAction *getAction(const QString &action, const QString &ns = QString());
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());

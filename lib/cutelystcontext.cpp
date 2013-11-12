@@ -107,10 +107,22 @@ QString CutelystContext::match() const
     return d->match;
 }
 
-void CutelystContext::dispatch()
+bool CutelystContext::dispatch()
 {
     Q_D(CutelystContext);
-    d->dispatcher->dispatch(this);
+    return d->dispatcher->dispatch(this);
+}
+
+bool CutelystContext::detached() const
+{
+    Q_D(const CutelystContext);
+    return d->detached;
+}
+
+void CutelystContext::detach()
+{
+    Q_D(CutelystContext);
+    d->detached = true;
 }
 
 bool CutelystContext::forward(const QString &action, const QStringList &arguments)
@@ -159,22 +171,23 @@ void CutelystContext::finalizeHeaders()
         return;
     }
 
-    if (!response->redirect().isEmpty()) {
-        response->setHeaderValue(QLatin1String("Location"), response->redirect());
+    if (response->redirect().isValid()) {
+        response->setHeaderValue(QLatin1String("Location"), response->redirect().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;
-            data = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
-                   "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
-                   "  <head>"
-                   "    <title>Moved</title>"
-                   "  </head>"
-                   "  <body>"
+            data = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+                   "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                   "  <head>\n"
+                   "    <title>Moved</title>\n"
+                   "  </head>\n"
+                   "  <body>\n"
                    "     <p>This item has moved <a href=";
-            data.append(QUrl::toPercentEncoding(response->redirect()));
-            data.append(">here</a>.</p>"
-                   "  </body>"
-                   "</html>");
+            data.append(response->redirect().toEncoded());
+            data.append(">here</a>.</p>\n"
+                   "  </body>\n"
+                   "</html>\n");
+            response->setBody(data);
             response->setContentType(QLatin1String("text/html; charset=utf-8"));
         }
     }
@@ -222,6 +235,7 @@ int CutelystContext::finalize()
 }
 
 CutelystContextPrivate::CutelystContextPrivate(CutelystContext *parent) :
-    action(0)
+    action(0),
+    detached(false)
 {
 }
