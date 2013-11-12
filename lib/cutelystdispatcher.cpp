@@ -65,7 +65,6 @@ void CutelystDispatcher::setupActions()
 //                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
 //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
-
                     if (!d->actionHash.contains(action->privateName())) {
                         d->actionHash.insert(action->privateName(), action);
                         d->containerHash[action->ns()] << action;
@@ -169,7 +168,6 @@ CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString
     QString _ns = cleanNamespace(ns);
 
     QString action = _ns % QLatin1Char('/') % name;
-    qDebug() << Q_FUNC_INFO << "Action is " << action;
     if (d->actionHash.contains(action)) {
         return d->actionHash.value(action);
     }

@@ -6,6 +6,7 @@
 #include <CutelystApplication>
 
 #include "root.h"
+#include "users.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion("0.0.1");
 
     qRegisterMetaType<Root*>();
+    qRegisterMetaType<Users*>();
 
     CutelystApplication app(argc, argv);
 

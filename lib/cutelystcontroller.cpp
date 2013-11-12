@@ -48,7 +48,7 @@ QString CutelystController::ns() const
 
     QString className = metaObject()->className();
     if (ret.isNull()) {
-        bool lastWasUpper = false;
+        bool lastWasUpper = true;
         for (int i = 0; i < className.length(); ++i) {
             if (className.at(i).toLower() == className.at(i)) {
                 ret.append(className.at(i));
@@ -63,10 +63,6 @@ QString CutelystController::ns() const
             }
         }
     }
-
-//    if (!ret.startsWith(QLatin1Char('/'))) {
-//        ret.prepend(QLatin1Char('/'));
-//    }
 
     return ret;
 }

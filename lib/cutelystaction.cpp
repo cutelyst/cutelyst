@@ -120,8 +120,6 @@ bool CutelystAction::dispatch(CutelystContext *c)
         args << QString();
     }
 
-    qDebug() << Q_FUNC_INFO << m_name << c->args() << c->detached();
-
     if (m_method.returnType() == QMetaType::Bool) {
         bool methodRet;
         bool ret;
@@ -141,6 +139,11 @@ bool CutelystAction::dispatch(CutelystContext *c)
         if (ret) {
             return methodRet;
         }
+
+        // TODO when the method returns false it probably means
+        // we should detach, make sure this would be enough
+        c->detach();
+
         return false;
     } else {
         return m_method.invoke(m_controller,

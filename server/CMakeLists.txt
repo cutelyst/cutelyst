@@ -5,6 +5,7 @@ include_directories(
 
 set(server_SRCS
     root.cpp
+    users.cpp
     main.cpp
 )
 
