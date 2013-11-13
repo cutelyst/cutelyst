@@ -26,6 +26,16 @@ CutelystDispatchType::CutelystDispatchType(QObject *parent) :
 {
 }
 
+void CutelystDispatchType::list() const
+{
+}
+
+bool CutelystDispatchType::registerAction(CutelystAction *action)
+{
+    Q_UNUSED(action)
+    return true;
+}
+
 bool CutelystDispatchType::isLowPrecedence() const
 {
     return false;

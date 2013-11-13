@@ -87,6 +87,16 @@ void CutelystController::dispatchEnd()
 
 }
 
+void CutelystController::dispatchDefault()
+{
+
+}
+
+void CutelystController::dispatchIndex()
+{
+
+}
+
 void CutelystController::_DISPATCH()
 {
     qDebug() << Q_FUNC_INFO;

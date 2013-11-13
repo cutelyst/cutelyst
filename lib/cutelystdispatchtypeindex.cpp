@@ -17,18 +17,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHER_P_H
-#define CUTELYSTDISPATCHER_P_H
+#include "cutelystdispatchtypeindex.h"
+#include "cutelystcontext.h"
+#include "cutelystrequest.h"
 
-#include "cutelystdispatcher.h"
-
-class CutelystDispatcherPrivate
+CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
+    CutelystDispatchType(parent)
 {
-public:
-    CutelystActionList getContainers(const QString &ns);
-    QHash<QString, CutelystAction*> actionHash;
-    QHash<QString, CutelystActionList> containerHash;
-    QList<CutelystDispatchType*> dispatchers;
-};
+}
 
-#endif // CUTELYSTDISPATCHER_P_H
+bool CutelystDispatchTypeIndex::match(CutelystContext *c, const QString &path) const
+{
+    if (!c->req()->args().isEmpty()) {
+        return false;
+    }
+
+    QList<CutelystAction *> actions = c->getActions(QLatin1String("dispatchIndex"), c->req()->path());
+    if (actions.size()) {
+        CutelystAction *action = actions.last();
+        setupMatchedAction(c, action, QString());
+
+        return true;
+    }
+    return false;
+}
+
+bool CutelystDispatchTypeIndex::isLowPrecedence() const
+{
+    return true;
+}

@@ -34,7 +34,7 @@ public:
      * @brief list the registered actions
      * To be implemented by subclasses
      */
-    virtual void list() const = 0;
+    virtual void list() const;
 
     /**
      * Return true if the dispatchType matches the given path
@@ -46,7 +46,7 @@ public:
      * @param action
      * @return
      */
-    virtual bool registerAction(CutelystAction *action) = 0;
+    virtual bool registerAction(CutelystAction *action);
 
     /**
      * Returns true if the dispatch type has low precedence

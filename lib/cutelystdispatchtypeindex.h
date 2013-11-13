@@ -17,18 +17,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHER_P_H
-#define CUTELYSTDISPATCHER_P_H
+#ifndef CUTELYSTDISPATCHTYPEINDEX_H
+#define CUTELYSTDISPATCHTYPEINDEX_H
 
-#include "cutelystdispatcher.h"
+#include "cutelystdispatchtype.h"
 
-class CutelystDispatcherPrivate
+class CutelystDispatchTypeIndex : public CutelystDispatchType
 {
+    Q_OBJECT
 public:
-    CutelystActionList getContainers(const QString &ns);
-    QHash<QString, CutelystAction*> actionHash;
-    QHash<QString, CutelystActionList> containerHash;
-    QList<CutelystDispatchType*> dispatchers;
+    explicit CutelystDispatchTypeIndex(QObject *parent = 0);
+
+    /**
+     * Check if there's an index action for a given path,
+     * and set it up to use it if there is; only matches a
+     * full URI - if c->req->args is already set this
+     * DispatchType is guaranteed not to match.
+     */
+    virtual bool match(CutelystContext *c, const QString &path) const;
+
+    virtual bool isLowPrecedence() const;
 };
 
-#endif // CUTELYSTDISPATCHER_P_H
+#endif // CUTELYSTDISPATCHTYPEINDEX_H

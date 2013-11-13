@@ -103,6 +103,9 @@ protected:
     virtual void dispatchAction();
     virtual void dispatchEnd();
 
+    virtual void dispatchDefault();
+    virtual void dispatchIndex();
+
     CutelystContext *c;
 
 private:

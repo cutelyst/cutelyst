@@ -17,18 +17,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHER_P_H
-#define CUTELYSTDISPATCHER_P_H
+#ifndef CUTELYSTDISPATCHTYPEDEFAULT_H
+#define CUTELYSTDISPATCHTYPEDEFAULT_H
 
-#include "cutelystdispatcher.h"
+#include "cutelystdispatchtype.h"
 
-class CutelystDispatcherPrivate
+class CutelystDispatchTypeDefault : public CutelystDispatchType
 {
+    Q_OBJECT
 public:
-    CutelystActionList getContainers(const QString &ns);
-    QHash<QString, CutelystAction*> actionHash;
-    QHash<QString, CutelystActionList> containerHash;
-    QList<CutelystDispatchType*> dispatchers;
+    explicit CutelystDispatchTypeDefault(QObject *parent = 0);
+
+    /**
+     * If path is empty (i.e. all path parts have been converted
+     * into args), attempts to find a default for the namespace
+     * constructed from the args, or the last inherited default
+     * otherwise and will match that.
+     *
+     * If path is not empty, never matches since Default will
+     * only match if all other possibilities have been exhausted.
+     */
+    virtual bool match(CutelystContext *c, const QString &path) const;
+
+    virtual bool isLowPrecedence() const;
 };
 
-#endif // CUTELYSTDISPATCHER_P_H
+#endif // CUTELYSTDISPATCHTYPEDEFAULT_H

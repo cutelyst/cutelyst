@@ -24,6 +24,8 @@
 #include "cutelystaction.h"
 #include "cutelystrequest_p.h"
 #include "cutelystdispatchtypepath.h"
+#include "cutelystdispatchtypeindex.h"
+#include "cutelystdispatchtypedefault.h"
 
 #include <QUrl>
 #include <QMetaMethod>
@@ -37,6 +39,8 @@ CutelystDispatcher::CutelystDispatcher(QObject *parent) :
 {
     Q_D(CutelystDispatcher);
     d->dispatchers << new CutelystDispatchTypePath(this);
+    d->dispatchers << new CutelystDispatchTypeIndex(this);
+    d->dispatchers << new CutelystDispatchTypeDefault(this);
 }
 
 CutelystDispatcher::~CutelystDispatcher()
