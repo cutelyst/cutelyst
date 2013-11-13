@@ -59,7 +59,7 @@ quint16 CutelystRequest::peerPort() const
 QString CutelystRequest::path() const
 {
     Q_D(const CutelystRequest);
-    return d->path;
+    return d->url.path();
 }
 
 QStringList CutelystRequest::args() const

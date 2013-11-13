@@ -24,13 +24,14 @@
 
 #include <QStringList>
 #include <QHostAddress>
+#include <QUrl>
 
 class CutelystEngine;
 class CutelystRequestPrivate
 {
 public:
     QString method;
-    QString path;
+    QUrl url;
     QStringList args;
     QString protocol;
     QHash<QString, QString> cookies;

@@ -26,7 +26,9 @@
 #include <QStringList>
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QHostInfo>
 #include <QDateTime>
+#include <QUrl>
 
 CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     CutelystEngine(socket, dispatcher, parent),
@@ -111,10 +113,30 @@ void CutelystEngineHttp::parse(const QByteArray &request)
         }
     }
 
+    QUrl url;
+    url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
+
+
+    // Parse the query (GET) parameters ie ?foo=bar&bar=baz
+    QMultiHash<QString, QString> queryParam;
+    foreach (const QString &parameter, url.query().split(QLatin1Char('&'))) {
+        if (parameter.isEmpty()) {
+            continue;
+        }
+
+        QStringList parts = parameter.split(QLatin1Char('='));
+        if (parts.size() == 2) {
+            queryParam.insertMulti(parts.at(0), parts.at(1));
+        } else {
+            queryParam.insertMulti(parts.first(), QString());
+        }
+    }
+
     CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
     requestPriv->engine = this;
     requestPriv->method = m_method;
-    requestPriv->path = m_path;
+    requestPriv->url = url;
+    requestPriv->queryParam = queryParam;
     requestPriv->protocol = m_protocol;
     requestPriv->headers = m_headers;
 
