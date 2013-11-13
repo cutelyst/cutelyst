@@ -44,36 +44,6 @@ void CutelystResponse::setStatus(quint16 status)
     d->status = status;
 }
 
-QString CutelystResponse::statusString() const
-{
-    Q_D(const CutelystResponse);
-    switch (d->status) {
-    case OK:
-        return QLatin1String("OK");
-    case MovedPermanently:
-        return QLatin1String("Moved Permanently");
-    case Found:
-        return QLatin1String("Found");
-    case NotModified:
-        return QLatin1String("Not Modified");
-    case TemporaryRedirect:
-        return QLatin1String("Temporary Redirect");
-    case BadRequest:
-        return QLatin1String("Bad Request");
-    case AuthorizationRequired:
-        return QLatin1String("Authorization Required");
-    case Forbidden:
-        return QLatin1String("Forbidden");
-    case NotFound:
-        return QLatin1String("Not Found");
-    case MethodNotAllowed:
-        return QLatin1String("Method Not Allowed");
-    case InternalServerError:
-        return QLatin1String("Internal Server Error");
-    }
-    return QLatin1String("");
-}
-
 bool CutelystResponse::finalizedHeaders() const
 {
     Q_D(const CutelystResponse);

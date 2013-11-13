@@ -51,7 +51,6 @@ public:
 
     quint16 status() const;
     void setStatus(quint16 status);
-    QString statusString() const;
     bool finalizedHeaders() const;
 
     void setHeaderValue(const QString &key, const QString &value);

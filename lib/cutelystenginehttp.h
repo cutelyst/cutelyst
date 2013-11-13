@@ -38,9 +38,10 @@ public:
 
 protected:
     virtual void parse(const QByteArray &request);
-    QString statusText(quint16 status);
 
 private:
+    QString statusString(quint16 status) const;
+
     QVariantHash m_data;
     QByteArray m_buffer;
     quint64 m_bufLastIndex;

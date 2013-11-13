@@ -68,6 +68,49 @@ QStringList CutelystRequest::args() const
     return d->args;
 }
 
+QString CutelystRequest::base() const
+{
+
+}
+
+QString CutelystRequest::body() const
+{
+
+}
+
+QMultiHash<QString, QString> CutelystRequest::bodyParameters() const
+{
+    Q_D(const CutelystRequest);
+    return d->bodyParam;
+}
+
+QMultiHash<QString, QString> CutelystRequest::bodyParam() const
+{
+    return bodyParameters();
+}
+
+QMultiHash<QString, QString> CutelystRequest::queryParameters() const
+{
+    Q_D(const CutelystRequest);
+    return d->queryParam;
+}
+
+QMultiHash<QString, QString> CutelystRequest::queryParam() const
+{
+    return queryParameters();
+}
+
+QMultiHash<QString, QString> CutelystRequest::parameters() const
+{
+    Q_D(const CutelystRequest);
+    return d->bodyParam + d->queryParam;
+}
+
+QMultiHash<QString, QString> CutelystRequest::param() const
+{
+    return parameters();
+}
+
 QString CutelystRequest::cookie(const QString &key) const
 {
     Q_D(const CutelystRequest);

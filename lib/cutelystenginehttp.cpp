@@ -42,8 +42,7 @@ void CutelystEngineHttp::finalizeCookies(CutelystContext *c)
 void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
 {
     QByteArray header;
-    header.append(QString::fromLatin1("HTTP/1.1 %1 %2\r\n").arg(QString::number(c->response()->status()),
-                                                                c->response()->statusString()));
+    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(c->response()->status())));
 
     QMap<QString, QString> headers = c->response()->headers();
     headers.insert(QLatin1String("Date"), QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -126,17 +125,47 @@ void CutelystEngineHttp::parse(const QByteArray &request)
     handleRequest(req);
 }
 
-QString CutelystEngineHttp::statusText(quint16 status)
+QString CutelystEngineHttp::statusString(quint16 status) const
 {
+    QString ret;
     switch (status) {
-    case 200:
-        return QLatin1String("OK");
-    case 400:
-        return QLatin1String("Bad Request");
-    case 404:
-        return QLatin1String("Not Found");
-    default:
-        return QLatin1String("Unknown");
+    case CutelystResponse::OK:
+        ret = QLatin1String("OK");
+        break;
+    case CutelystResponse::MovedPermanently:
+        ret = QLatin1String("Moved Permanently");
+        break;
+    case CutelystResponse::Found:
+        ret = QLatin1String("Found");
+        break;
+    case CutelystResponse::NotModified:
+        ret = QLatin1String("Not Modified");
+        break;
+    case CutelystResponse::TemporaryRedirect:
+        ret = QLatin1String("Temporary Redirect");
+        break;
+    case CutelystResponse::BadRequest:
+        ret = QLatin1String("Bad Request");
+        break;
+    case CutelystResponse::AuthorizationRequired:
+        ret = QLatin1String("Authorization Required");
+        break;
+    case CutelystResponse::Forbidden:
+        ret = QLatin1String("Forbidden");
+        break;
+    case CutelystResponse::NotFound:
+        ret = QLatin1String("Not Found");
+        break;
+    case CutelystResponse::MethodNotAllowed:
+        ret = QLatin1String("Method Not Allowed");
+        break;
+    case CutelystResponse::InternalServerError:
+        ret = QLatin1String("Internal Server Error");
+        break;
     }
 
+    if (ret.isEmpty()) {
+        return QString::number(status);
+    }
+    return QString::number(status) % QLatin1Char(' ') % ret;
 }

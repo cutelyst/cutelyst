@@ -53,7 +53,37 @@ public:
     QStringList args() const;
     QString base() const;
     QString body() const;
-    QVariantHash bodyParameters() const;
+
+    /**
+     * Returns a QMultiHash of body (POST) parameters
+     */
+    QMultiHash<QString, QString> bodyParameters() const;
+
+    /**
+     * Short for \sa bodyParameters()
+     */
+    QMultiHash<QString, QString> bodyParam() const;
+
+    /**
+     * Returns a QMultiHash containing the query string (GET) parameters
+     */
+    QMultiHash<QString, QString> queryParameters() const;
+
+    /**
+     * Short for \sa queryParameters()
+     */
+    QMultiHash<QString, QString> queryParam() const;
+
+    /**
+     * Returns a QMultiHash containing both the query parameters (GET)
+     * and the body parameters (POST)
+     */
+    QMultiHash<QString, QString> parameters() const;
+
+    /**
+     * Short for \sa parameters()
+     */
+    QMultiHash<QString, QString> param() const;
     QString contentEncoding() const;
     QString cookie(const QString &key) const;
     QHash<QString, QString> cookies() const;

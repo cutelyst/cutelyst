@@ -35,6 +35,8 @@ public:
     QString protocol;
     QHash<QString, QString> cookies;
     QHash<QString, QString> headers;
+    QMultiHash<QString, QString> bodyParam;
+    QMultiHash<QString, QString> queryParam;
     CutelystEngine *engine;
 };
 
