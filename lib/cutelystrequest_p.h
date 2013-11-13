@@ -38,7 +38,7 @@ public:
     QHash<QString, QString> headers;
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
-    CutelystEngine *engine;
+    const CutelystEngine *engine;
 };
 
 #endif // CUTELYSTREQUEST_P_H

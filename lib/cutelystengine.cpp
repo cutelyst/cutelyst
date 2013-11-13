@@ -19,10 +19,12 @@
 
 #include "cutelystengine_p.h"
 
-#include "cutelystrequest.h"
+#include "cutelystrequest_p.h"
 #include "cutelystresponse.h"
 #include "cutelystdispatcher.h"
 #include "cutelystcontext_p.h"
+
+#include <QUrl>
 
 CutelystEngine::CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     QObject(parent),
@@ -72,6 +74,36 @@ void CutelystEngine::handleRequest(CutelystRequest *request)
     CutelystContext *c = new CutelystContext(this, d->dispatcher);
 
     c->handleRequest(request, new CutelystResponse);
+}
+
+CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QString> &headers) const
+{
+    // Parse the query (GET) parameters ie ?foo=bar&bar=baz
+    QMultiHash<QString, QString> queryParam;
+    foreach (const QString &parameter, url.query(QUrl::FullyEncoded).split(QLatin1Char('&'))) {
+        if (parameter.isEmpty()) {
+            continue;
+        }
+
+        QStringList parts = parameter.split(QLatin1Char('='));
+        if (parts.size() == 2) {
+            queryParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0).toUtf8()),
+                                   QUrl::fromPercentEncoding(parts.at(1).toUtf8()));
+        } else {
+            queryParam.insertMulti(QUrl::fromPercentEncoding(parts.first().toUtf8()),
+                                   QString());
+        }
+    }
+
+    CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
+    requestPriv->engine = this;
+    requestPriv->method = method;
+    requestPriv->url = url;
+    requestPriv->protocol = protocol;
+    requestPriv->queryParam = queryParam;
+    requestPriv->headers = headers;
+
+    return new CutelystRequest(requestPriv);
 }
 
 void CutelystEngine::readyRead()

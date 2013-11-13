@@ -21,7 +21,6 @@
 
 #include "cutelystcontext.h"
 #include "cutelystresponse.h"
-#include "cutelystrequest_p.h"
 
 #include <QStringList>
 #include <QRegularExpression>
@@ -114,35 +113,18 @@ void CutelystEngineHttp::parse(const QByteArray &request)
     }
 
     QUrl url;
-    url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
-
-
-    // Parse the query (GET) parameters ie ?foo=bar&bar=baz
-    QMultiHash<QString, QString> queryParam;
-    foreach (const QString &parameter, url.query().split(QLatin1Char('&'))) {
-        if (parameter.isEmpty()) {
-            continue;
-        }
-
-        QStringList parts = parameter.split(QLatin1Char('='));
-        if (parts.size() == 2) {
-            queryParam.insertMulti(parts.at(0), parts.at(1));
-        } else {
-            queryParam.insertMulti(parts.first(), QString());
-        }
+    if (m_headers.contains(QLatin1String("Host"))) {
+        url = QLatin1String("http://") % m_headers[QLatin1String("Host")] % m_path;
+    } else {
+        url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
     }
 
-    CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
-    requestPriv->engine = this;
-    requestPriv->method = m_method;
-    requestPriv->url = url;
-    requestPriv->queryParam = queryParam;
-    requestPriv->protocol = m_protocol;
-    requestPriv->headers = m_headers;
+    CutelystRequest *req = createRequest(url,
+                                         m_method,
+                                         m_protocol,
+                                         m_headers);
 
-    CutelystRequest *req = new CutelystRequest(requestPriv);
-
-    qDebug() << request;
+//    qDebug() << request;
 
     handleRequest(req);
 }

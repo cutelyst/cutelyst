@@ -49,6 +49,10 @@ protected:
     virtual void parse(const QByteArray &data) = 0;
     qint64 write(const QByteArray &data);
     void handleRequest(CutelystRequest *request);
+    CutelystRequest *createRequest(const QUrl &url,
+                                   const QString &method,
+                                   const QString &protocol,
+                                   const QHash<QString, QString> &headers) const;
 
     CutelystEnginePrivate *d_ptr;
 
