@@ -25,7 +25,7 @@
 class CutelystDispatcherPrivate
 {
 public:
-    CutelystActionList getContainers(const QString &ns);
+    CutelystActionList getContainers(const QString &ns) const;
     QMap<QString, CutelystAction*> actionHash;
     QMap<QString, CutelystActionList> containerHash;
     QList<CutelystDispatchType*> dispatchers;

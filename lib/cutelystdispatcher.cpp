@@ -162,9 +162,9 @@ bool CutelystDispatcher::prepareAction(CutelystContext *c)
     return dispatch;
 }
 
-CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString &ns)
+CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString &ns) const
 {
-    Q_D(CutelystDispatcher);
+    Q_D(const CutelystDispatcher);
     if (name.isEmpty()) {
         return 0;
     }
@@ -174,9 +174,9 @@ CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString
     return d->actionHash.value(_ns % QLatin1Char('/') % name);
 }
 
-CutelystActionList CutelystDispatcher::getActions(const QString &name, const QString &ns)
+CutelystActionList CutelystDispatcher::getActions(const QString &name, const QString &ns) const
 {
-    Q_D(CutelystDispatcher);
+    Q_D(const CutelystDispatcher);
 
     CutelystActionList ret;
     if (name.isEmpty()) {
@@ -263,7 +263,7 @@ void CutelystDispatcher::printActions()
 CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams)
 {
     Q_D(CutelystDispatcher);
-    qDebug() << Q_FUNC_INFO << "Command" << command;
+//    qDebug() << Q_FUNC_INFO << "Command" << command;
 
     CutelystAction *ret = d->actionHash.value(command);
     if (!ret) {
@@ -335,7 +335,7 @@ QString CutelystDispatcher::cleanNamespace(const QString &ns) const
 }
 
 
-CutelystActionList CutelystDispatcherPrivate::getContainers(const QString &ns)
+CutelystActionList CutelystDispatcherPrivate::getContainers(const QString &ns) const
 {
     CutelystActionList ret;
 
