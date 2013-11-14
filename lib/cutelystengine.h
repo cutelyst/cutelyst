@@ -40,7 +40,7 @@ public:
     QString peerName() const;
     QHostAddress peerAddress() const;
 
-    virtual void finalizeCookies(CutelystContext *c) = 0;
+    void finalizeCookies(CutelystContext *c);
     virtual void finalizeHeaders(CutelystContext *c) = 0;
     virtual void finalizeBody(CutelystContext *c) = 0;
     virtual void finalizeError(CutelystContext *c) = 0;
@@ -52,7 +52,7 @@ protected:
     CutelystRequest *createRequest(const QUrl &url,
                                    const QString &method,
                                    const QString &protocol,
-                                   const QHash<QString, QString> &headers) const;
+                                   const QHash<QString, QByteArray> &headers) const;
 
     CutelystEnginePrivate *d_ptr;
 

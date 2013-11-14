@@ -111,13 +111,18 @@ QMultiHash<QString, QString> CutelystRequest::param() const
     return parameters();
 }
 
-QString CutelystRequest::cookie(const QString &key) const
+QNetworkCookie CutelystRequest::cookie(const QByteArray &name) const
 {
     Q_D(const CutelystRequest);
-    return d->cookies.value(key);
+    foreach (const QNetworkCookie &cookie, d->cookies) {
+        if (cookie.name() == name) {
+            return cookie;
+        }
+    }
+    return QNetworkCookie();
 }
 
-QHash<QString, QString> CutelystRequest::cookies() const
+QList<QNetworkCookie> CutelystRequest::cookies() const
 {
     Q_D(const CutelystRequest);
     return d->cookies;
@@ -129,7 +134,7 @@ QString CutelystRequest::header(const QString &key) const
     return d->headers.value(key);
 }
 
-QHash<QString, QString> CutelystRequest::headers() const
+QHash<QString, QByteArray> CutelystRequest::headers() const
 {
     Q_D(const CutelystRequest);
     return d->headers;

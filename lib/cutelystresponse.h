@@ -21,6 +21,7 @@
 #define CUTELYSTRESPONSE_H
 
 #include <QObject>
+#include <QNetworkCookie>
 
 class CutelystResponsePrivate;
 class CutelystResponse : public QObject
@@ -53,15 +54,16 @@ public:
     void setStatus(quint16 status);
     bool finalizedHeaders() const;
 
-    void setHeaderValue(const QString &key, const QString &value);
+    void addHeaderValue(const QString &key, const QByteArray &value);
     bool hasBody() const;
     QByteArray body() const;
     void setBody(const QByteArray &body);
     void setContentEncoding(const QString &encoding);
     void setContentLength(quint64 length);
     void setContentType(const QString &encoding);
-    void setCookie(const QString &key, const QString &value);
-    void setCookies(const QHash<QString, QString> &cookies);
+    QList<QNetworkCookie> cookies() const;
+    void addCookie(const QNetworkCookie &cookie);
+    void setCookies(const QList<QNetworkCookie> &cookies);
 
     /**
      * Causes the response to redirect to the specified URL. The default status is 302.

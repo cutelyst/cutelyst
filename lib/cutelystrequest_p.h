@@ -34,8 +34,8 @@ public:
     QUrl url;
     QStringList args;
     QString protocol;
-    QHash<QString, QString> cookies;
-    QHash<QString, QString> headers;
+    QList<QNetworkCookie> cookies;
+    QHash<QString, QByteArray> headers;
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
     const CutelystEngine *engine;

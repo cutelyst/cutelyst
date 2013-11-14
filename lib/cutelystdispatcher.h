@@ -27,6 +27,7 @@
 #include "cutelystaction.h"
 
 class CutelystContext;
+class CutelystController;
 class CutelystDispatchType;
 class CutelystDispatcherPrivate;
 class CutelystDispatcher : public QObject
@@ -42,6 +43,7 @@ public:
     bool prepareAction(CutelystContext *c);
     CutelystAction* getAction(const QString &name, const QString &ns) const;
     CutelystActionList getActions(const QString &name, const QString &ns) const;
+    QHash<QString, CutelystController*> controllers() const;
 
 private:
     void printActions();

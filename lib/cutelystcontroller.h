@@ -22,7 +22,10 @@
 
 #include <QObject>
 
-class CutelystContext;
+#include "cutelystcontext.h"
+#include "cutelystrequest.h"
+#include "cutelystresponse.h"
+
 class CutelystController : public QObject
 {
     Q_OBJECT

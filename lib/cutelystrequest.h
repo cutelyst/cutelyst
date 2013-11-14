@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QNetworkCookie>
 
 class CutelystRequestPrivate;
 class CutelystRequest
@@ -85,10 +86,18 @@ public:
      */
     QMultiHash<QString, QString> param() const;
     QString contentEncoding() const;
-    QString cookie(const QString &key) const;
-    QHash<QString, QString> cookies() const;
+
+    /**
+     * Returns the cookie with the given name
+     */
+    QNetworkCookie cookie(const QByteArray &name) const;
+
+    /**
+     * Returns all the cookie from the request
+     */
+    QList<QNetworkCookie> cookies() const;
     QString header(const QString &key) const;
-    QHash<QString, QString> headers() const;
+    QHash<QString, QByteArray> headers() const;
     QString method() const;
     QString protocol() const;
     QString userAgent() const;

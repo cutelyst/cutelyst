@@ -102,6 +102,16 @@ CutelystDispatcher *CutelystContext::dispatcher() const
     return d->dispatcher;
 }
 
+CutelystController *CutelystContext::controller(const QString &name) const
+{
+    Q_D(const CutelystContext);
+    if (name.isEmpty()) {
+        return d->action->controller();
+    } else {
+        return d->dispatcher->controllers().value(name);
+    }
+}
+
 QString CutelystContext::ns() const
 {
     Q_D(const CutelystContext);
@@ -179,7 +189,7 @@ void CutelystContext::finalizeHeaders()
     }
 
     if (response->location().isValid()) {
-        response->setHeaderValue(QLatin1String("Location"), response->location().toEncoded());
+        response->addHeaderValue(QLatin1String("Location"), response->location().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;

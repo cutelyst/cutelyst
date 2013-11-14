@@ -31,7 +31,6 @@ class CutelystEngineHttp : public CutelystEngine
 public:
     explicit CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
 
-    virtual void finalizeCookies(CutelystContext *c);
     virtual void finalizeHeaders(CutelystContext *c);
     virtual void finalizeBody(CutelystContext *c);
     virtual void finalizeError(CutelystContext *c);
@@ -48,7 +47,7 @@ private:
     QString m_method;
     QString m_path;
     QString m_protocol;
-    QHash<QString, QString> m_headers;
+    QHash<QString, QByteArray> m_headers;
 };
 
 #endif // CUTELYSTENGINEHTTP_H

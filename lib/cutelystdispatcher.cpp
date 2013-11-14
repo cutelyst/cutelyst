@@ -62,8 +62,8 @@ void CutelystDispatcher::setupActions()
             CutelystController *controller = qobject_cast<CutelystController*>(meta->newInstance());
             qDebug() << "Found a controller:" << controller << meta->className();
 
-            int i = 0;
-            while (i < meta->methodCount()) {
+            bool controllerUsed = false;
+            for (int i = 0; i < meta->methodCount(); ++i) {
                 QMetaMethod method = meta->method(i);
                 if (method.methodType() == QMetaMethod::Method) {
 //                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
@@ -72,6 +72,7 @@ void CutelystDispatcher::setupActions()
                     if (!d->actionHash.contains(action->privateName())) {
                         d->actionHash.insert(action->privateName(), action);
                         d->containerHash[action->ns()] << action;
+                        controllerUsed = true;
 
                         if (!action->attributes().contains(QLatin1String("Private"))) {
                             bool registered = false;
@@ -91,14 +92,15 @@ void CutelystDispatcher::setupActions()
                         delete action;
                     }
                 }
-                ++i;
+            }
+
+            if (controllerUsed) {
+                d->constrollerHash.insert(meta->className(), controller);
+            } else {
+                delete controller;
             }
         }
 
-        if (meta->classInfoCount()) {
-            QMetaClassInfo classInfo = meta->classInfo(0);
-            qDebug() << Q_FUNC_INFO << classInfo.name() << classInfo.value();
-        }
         ++metaType;
     }
 
@@ -193,6 +195,12 @@ CutelystActionList CutelystDispatcher::getActions(const QString &name, const QSt
     }
 
     return ret;
+}
+
+QHash<QString, CutelystController *> CutelystDispatcher::controllers() const
+{
+    Q_D(const CutelystDispatcher);
+    return d->constrollerHash;
 }
 
 void CutelystDispatcher::printActions()

@@ -28,6 +28,7 @@ public:
     CutelystActionList getContainers(const QString &ns) const;
     QMap<QString, CutelystAction*> actionHash;
     QMap<QString, CutelystActionList> containerHash;
+    QHash<QString, CutelystController *> constrollerHash;
     QList<CutelystDispatchType*> dispatchers;
 };
 

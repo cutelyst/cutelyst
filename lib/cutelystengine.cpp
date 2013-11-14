@@ -76,7 +76,7 @@ void CutelystEngine::handleRequest(CutelystRequest *request)
     c->handleRequest(request, new CutelystResponse);
 }
 
-CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QString> &headers) const
+CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QByteArray> &headers) const
 {
     // Parse the query (GET) parameters ie ?foo=bar&bar=baz
     QMultiHash<QString, QString> queryParam;
@@ -95,6 +95,8 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &m
         }
     }
 
+    QByteArray cookies = headers.value(QLatin1String("Cookie"));
+
     CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
     requestPriv->engine = this;
     requestPriv->method = method;
@@ -102,6 +104,7 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &m
     requestPriv->protocol = protocol;
     requestPriv->queryParam = queryParam;
     requestPriv->headers = headers;
+    requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
 
     return new CutelystRequest(requestPriv);
 }
@@ -138,4 +141,11 @@ QHostAddress CutelystEngine::peerAddress() const
 {
     Q_D(const CutelystEngine);
     return d->socket->peerAddress();
+}
+
+void CutelystEngine::finalizeCookies(CutelystContext *c)
+{
+    foreach (const QNetworkCookie &cookie, c->response()->cookies()) {
+        c->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
+    }
 }

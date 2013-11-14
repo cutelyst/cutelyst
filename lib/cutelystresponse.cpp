@@ -50,10 +50,10 @@ bool CutelystResponse::finalizedHeaders() const
     return d->finalizedHeaders;
 }
 
-void CutelystResponse::setHeaderValue(const QString &key, const QString &value)
+void CutelystResponse::addHeaderValue(const QString &key, const QByteArray &value)
 {
     Q_D(CutelystResponse);
-    d->headers[key] = value;
+    d->headers.insertMulti(key, value);
 }
 
 bool CutelystResponse::hasBody() const
@@ -86,6 +86,24 @@ void CutelystResponse::setContentType(const QString &encoding)
     d->contentType = encoding;
 }
 
+QList<QNetworkCookie> CutelystResponse::cookies() const
+{
+    Q_D(const CutelystResponse);
+    return d->cookies;
+}
+
+void CutelystResponse::addCookie(const QNetworkCookie &cookie)
+{
+    Q_D(CutelystResponse);
+    d->cookies << cookie;
+}
+
+void CutelystResponse::setCookies(const QList<QNetworkCookie> &cookies)
+{
+    Q_D(CutelystResponse);
+    d->cookies = cookies;
+}
+
 void CutelystResponse::redirect(const QString &url, quint16 status)
 {
     Q_D(CutelystResponse);
@@ -103,7 +121,7 @@ QMap<QString, QString> CutelystResponse::headers() const
 {
     Q_D(const CutelystResponse);
 
-    QMap<QString, QString> ret = d->headers;
+    QMultiMap<QString, QString> ret = d->headers;
     ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
     ret.insert(QLatin1String("Content-Type"), d->contentType);
     // TODO use version macro here

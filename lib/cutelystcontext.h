@@ -28,6 +28,7 @@ class CutelystEngine;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystDispatcher;
+class CutelystController;
 class CutelystContextPrivate;
 class CutelystContext : public QObject
 {
@@ -51,6 +52,7 @@ public:
     CutelystResponse *response() const;
     CutelystAction *action() const;
     CutelystDispatcher *dispatcher() const;
+    CutelystController *controller(const QString &name = QString()) const;
     QString ns() const;
     QString match() const;
 

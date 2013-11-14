@@ -35,11 +35,6 @@ CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatche
 {
 }
 
-void CutelystEngineHttp::finalizeCookies(CutelystContext *c)
-{
-
-}
-
 void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
 {
     QByteArray header;
@@ -108,7 +103,7 @@ void CutelystEngineHttp::parse(const QByteArray &request)
         m_bufLastIndex = newLine + 1;
 
         if (!section.isEmpty()) {
-            m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed();
+            m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
         }
     }
 
