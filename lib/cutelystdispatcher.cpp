@@ -171,12 +171,7 @@ CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString
 
     QString _ns = cleanNamespace(ns);
 
-    QString action = _ns % QLatin1Char('/') % name;
-    if (d->actionHash.contains(action)) {
-        return d->actionHash.value(action);
-    }
-
-    return 0;
+    return d->actionHash.value(_ns % QLatin1Char('/') % name);
 }
 
 CutelystActionList CutelystDispatcher::getActions(const QString &name, const QString &ns)
@@ -193,7 +188,7 @@ CutelystActionList CutelystDispatcher::getActions(const QString &name, const QSt
     CutelystActionList containers = d->getContainers(_ns);
     foreach (CutelystAction *action, containers) {
         if (action->name() == name) {
-            ret << action;
+            ret.prepend(action);
         }
     }
 
@@ -212,7 +207,7 @@ void CutelystDispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QHash<QString, CutelystAction*>::ConstIterator it = d->actionHash.constBegin();
+    QMap<QString, CutelystAction*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         CutelystAction *action = it.value();
         QString path = it.key();
@@ -270,10 +265,8 @@ CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QSt
     Q_D(CutelystDispatcher);
     qDebug() << Q_FUNC_INFO << "Command" << command;
 
-    CutelystAction *ret = 0;
-    if (d->actionHash.contains(command)) {
-        ret = d->actionHash.value(command);
-    } else {
+    CutelystAction *ret = d->actionHash.value(command);
+    if (!ret) {
         ret = invokeAsPath(c, command, c->args());
     }
 

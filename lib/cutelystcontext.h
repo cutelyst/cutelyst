@@ -37,7 +37,12 @@ public:
     ~CutelystContext();
 
     bool error() const;
+
+    /**
+     * Contains the return value of the last executed action.
+     */
     bool state() const;
+    void setState(bool state);
     QStringList args() const;
     QString uriPrefix() const;
     CutelystEngine *engine() const;

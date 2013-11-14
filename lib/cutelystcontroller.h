@@ -98,13 +98,12 @@ public:
     QString ns() const;
 
 protected:
-    virtual void dispatchBegin();
-    virtual void dispatchAuto();
-    virtual void dispatchAction();
-    virtual void dispatchEnd();
+    virtual void Begin();
+    virtual void Auto();
+    virtual void End();
 
-    virtual void dispatchDefault();
-    virtual void dispatchIndex();
+    virtual void Default();
+    virtual void Index();
 
     CutelystContext *c;
 

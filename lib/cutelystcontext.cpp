@@ -50,7 +50,14 @@ bool CutelystContext::error() const
 
 bool CutelystContext::state() const
 {
-    return true;
+    Q_D(const CutelystContext);
+    return d->state;
+}
+
+void CutelystContext::setState(bool state)
+{
+    Q_D(CutelystContext);
+    d->state = state;
 }
 
 QStringList CutelystContext::args() const
@@ -236,6 +243,7 @@ int CutelystContext::finalize()
 
 CutelystContextPrivate::CutelystContextPrivate(CutelystContext *parent) :
     action(0),
-    detached(false)
+    detached(false),
+    state(false)
 {
 }

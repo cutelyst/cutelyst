@@ -67,32 +67,27 @@ QString CutelystController::ns() const
     return ret;
 }
 
-void CutelystController::dispatchBegin()
+void CutelystController::Begin()
 {
 
 }
 
-void CutelystController::dispatchAuto()
+void CutelystController::Auto()
 {
 
 }
 
-void CutelystController::dispatchAction()
+void CutelystController::End()
 {
 
 }
 
-void CutelystController::dispatchEnd()
+void CutelystController::Default()
 {
 
 }
 
-void CutelystController::dispatchDefault()
-{
-
-}
-
-void CutelystController::dispatchIndex()
+void CutelystController::Index()
 {
 
 }
@@ -117,7 +112,7 @@ bool CutelystController::_BEGIN()
 {
     qDebug() << Q_FUNC_INFO;
     QList<CutelystAction*> beginList;
-    beginList = c->getActions(QLatin1String("dispatchBegin"), c->ns());
+    beginList = c->getActions(QLatin1String("Begin"), c->ns());
     if (!beginList.isEmpty()) {
         CutelystAction *begin = beginList.last();
         qDebug() << Q_FUNC_INFO << begin;
@@ -130,10 +125,10 @@ bool CutelystController::_BEGIN()
 bool CutelystController::_AUTO()
 {
     qDebug() << Q_FUNC_INFO;
-    QList<CutelystAction*> autoList = c->getActions(QLatin1String("dispatchAuto"));
+    QList<CutelystAction*> autoList = c->getActions(QLatin1String("Auto"), c->ns());
     foreach (CutelystAction *autoAction, autoList) {
         autoAction->dispatch(c);
-        if (c->state()) {
+        if (!c->state()) {
             return false;
         }
     }
@@ -153,7 +148,7 @@ bool CutelystController::_END()
 {
     qDebug() << Q_FUNC_INFO;
     QList<CutelystAction*> endList;
-    endList = c->getActions(QLatin1String("dispatchEnd"), c->ns());
+    endList = c->getActions(QLatin1String("End"), c->ns());
     if (!endList.isEmpty()) {
         CutelystAction *end = endList.last();
         qDebug() << Q_FUNC_INFO << end;

@@ -135,7 +135,7 @@ bool CutelystAction::dispatch(CutelystContext *c)
                               Q_ARG(QString, args.at(7)),
                               Q_ARG(QString, args.at(8)));
 
-        qDebug() << "Called " << m_name << ret << methodRet;
+        c->setState(ret);
         if (ret) {
             return methodRet;
         }
@@ -146,16 +146,18 @@ bool CutelystAction::dispatch(CutelystContext *c)
 
         return false;
     } else {
-        return m_method.invoke(m_controller,
-                               Q_ARG(QString, args.at(0)),
-                               Q_ARG(QString, args.at(1)),
-                               Q_ARG(QString, args.at(2)),
-                               Q_ARG(QString, args.at(3)),
-                               Q_ARG(QString, args.at(4)),
-                               Q_ARG(QString, args.at(5)),
-                               Q_ARG(QString, args.at(6)),
-                               Q_ARG(QString, args.at(7)),
-                               Q_ARG(QString, args.at(8)));
+        bool ret = m_method.invoke(m_controller,
+                                   Q_ARG(QString, args.at(0)),
+                                   Q_ARG(QString, args.at(1)),
+                                   Q_ARG(QString, args.at(2)),
+                                   Q_ARG(QString, args.at(3)),
+                                   Q_ARG(QString, args.at(4)),
+                                   Q_ARG(QString, args.at(5)),
+                                   Q_ARG(QString, args.at(6)),
+                                   Q_ARG(QString, args.at(7)),
+                                   Q_ARG(QString, args.at(8)));
+        c->setState(ret);
+        return ret;
     }
 }
 

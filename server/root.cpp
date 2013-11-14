@@ -47,7 +47,17 @@ void Root::admin(const QString &name, const QString &age, CutelystController::Gl
     c->response()->setBody(data);
 }
 
-void Root::dispatchBegin()
+void Root::Begin()
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << "*** Root::Begin()";
+}
+
+void Root::Auto()
+{
+    qDebug() << "*** Root::Auto()";
+}
+
+void Root::End()
+{
+    qDebug() << "*** Root::End()";
 }

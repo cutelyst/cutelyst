@@ -36,6 +36,7 @@ public:
     bool detached;
     QString match;
     int status;
+    bool state;
 };
 
 #endif // CUTELYSTCONTEXT_P_H

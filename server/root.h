@@ -19,8 +19,9 @@ public:
     Q_INVOKABLE void users(const QString &name, const QString &age, Args, Local);
     Q_INVOKABLE void admin(const QString &name, const QString &age, Global);
 
-private:
-    Q_INVOKABLE virtual void dispatchBegin();
+    Q_INVOKABLE void Begin();
+    Q_INVOKABLE void Auto();
+    Q_INVOKABLE void End();
 };
 
 #endif // ROOT_H
