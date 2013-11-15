@@ -31,7 +31,8 @@
 
 CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
     CutelystEngine(socket, dispatcher, parent),
-    m_bufLastIndex(0)
+    m_bufLastIndex(0),
+    m_finishedHeaders(false)
 {
 }
 
@@ -98,13 +99,29 @@ void CutelystEngineHttp::parse(const QByteArray &request)
         }
     }
 
-    while ((newLine = request.indexOf('\n', m_bufLastIndex)) != -1) {
-        QString section = request.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
-        m_bufLastIndex = newLine + 1;
+    if (!m_finishedHeaders) {
+        while ((newLine = request.indexOf('\n', m_bufLastIndex)) != -1) {
+            QString section = request.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
+//            qDebug() << "[header] " << section << section.isEmpty();
+            m_bufLastIndex = newLine + 1;
 
-        if (!section.isEmpty()) {
-            m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
+            if (!section.isEmpty()) {
+                m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
+            } else {
+                m_bodySize = m_headers.value(QLatin1String("Content-Length")).toULongLong();
+                m_finishedHeaders = true;
+            }
         }
+    }
+
+    if (!m_finishedHeaders) {
+        return;
+    }
+
+    m_body = request.mid(m_bufLastIndex, m_bodySize);
+//    qDebug() << "m_bodySize " << m_bodySize << m_body.size() << m_body;
+    if (m_bodySize != m_body.size()) {
+        return;
     }
 
     QUrl url;
@@ -117,7 +134,8 @@ void CutelystEngineHttp::parse(const QByteArray &request)
     CutelystRequest *req = createRequest(url,
                                          m_method,
                                          m_protocol,
-                                         m_headers);
+                                         m_headers,
+                                         m_body);
 
 //    qDebug() << request;
 

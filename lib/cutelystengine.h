@@ -52,7 +52,8 @@ protected:
     CutelystRequest *createRequest(const QUrl &url,
                                    const QString &method,
                                    const QString &protocol,
-                                   const QHash<QString, QByteArray> &headers) const;
+                                   const QHash<QString, QByteArray> &headers,
+                                   const QByteArray &body) const;
 
     CutelystEnginePrivate *d_ptr;
 

@@ -19,6 +19,7 @@
 
 #include "cutelystresponse_p.h"
 
+#include <QMimeDatabase>
 #include <QDebug>
 
 CutelystResponse::CutelystResponse(QObject *parent) :
@@ -123,7 +124,22 @@ QMap<QString, QString> CutelystResponse::headers() const
 
     QMultiMap<QString, QString> ret = d->headers;
     ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
-    ret.insert(QLatin1String("Content-Type"), d->contentType);
+    if (!d->contentType.isEmpty()) {
+        ret.insert(QLatin1String("Content-Type"), d->contentType);
+    } else {
+        QMimeDatabase db;
+        QMimeType mimeType = db.mimeTypeForData(d->body);
+        if (mimeType.isValid()) {
+            if (mimeType.name() == QLatin1String("text/html")) {
+                ret.insert(QLatin1String("Content-Type"),
+                           QLatin1String("text/html; charset=utf-8"));
+            } else {
+                ret.insert(QLatin1String("Content-Type"),
+                           mimeType.name());
+            }
+        }
+        qDebug() << mimeType.comment() << mimeType.name();
+    }
     // TODO use version macro here
     ret.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));
 

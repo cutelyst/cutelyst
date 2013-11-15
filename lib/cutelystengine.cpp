@@ -76,9 +76,9 @@ void CutelystEngine::handleRequest(CutelystRequest *request)
     c->handleRequest(request, new CutelystResponse);
 }
 
-CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QByteArray> &headers) const
+CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body) const
 {
-    // Parse the query (GET) parameters ie ?foo=bar&bar=baz
+    // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;
     foreach (const QString &parameter, url.query(QUrl::FullyEncoded).split(QLatin1Char('&'))) {
         if (parameter.isEmpty()) {
@@ -95,6 +95,26 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &m
         }
     }
 
+    QMultiHash<QString, QString> bodyParam;
+    if (headers.value(QLatin1String("Content-Type")) == "application/x-www-form-urlencoded") {
+        // Parse the query (BODY) "application/x-www-form-urlencoded"
+        // parameters ie "?foo=bar&bar=baz"
+        foreach (const QByteArray &parameter, body.split('&')) {
+            if (parameter.isEmpty()) {
+                continue;
+            }
+
+            QList<QByteArray> parts = parameter.split('=');
+            if (parts.size() == 2) {
+                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+                                      QUrl::fromPercentEncoding(parts.at(1)));
+            } else {
+                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+                                      QString());
+            }
+        }
+    }
+
     QByteArray cookies = headers.value(QLatin1String("Cookie"));
 
     CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
@@ -103,8 +123,11 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &m
     requestPriv->url = url;
     requestPriv->protocol = protocol;
     requestPriv->queryParam = queryParam;
+    requestPriv->bodyParam = bodyParam;
+    requestPriv->param = queryParam + bodyParam;
     requestPriv->headers = headers;
     requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
+    requestPriv->body = body;
 
     return new CutelystRequest(requestPriv);
 }

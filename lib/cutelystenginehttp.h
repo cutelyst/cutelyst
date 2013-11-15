@@ -41,8 +41,11 @@ protected:
 private:
     QString statusString(quint16 status) const;
 
+    bool m_finishedHeaders;
     QVariantHash m_data;
     QByteArray m_buffer;
+    QByteArray m_body;
+    quint64 m_bodySize;
     quint64 m_bufLastIndex;
     QString m_method;
     QString m_path;

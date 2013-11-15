@@ -103,7 +103,7 @@ QMultiHash<QString, QString> CutelystRequest::queryParam() const
 QMultiHash<QString, QString> CutelystRequest::parameters() const
 {
     Q_D(const CutelystRequest);
-    return d->bodyParam + d->queryParam;
+    return d->param;
 }
 
 QMultiHash<QString, QString> CutelystRequest::param() const

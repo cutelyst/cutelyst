@@ -36,8 +36,10 @@ public:
     QString protocol;
     QList<QNetworkCookie> cookies;
     QHash<QString, QByteArray> headers;
+    QByteArray body;
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
+    QMultiHash<QString, QString> param;
     const CutelystEngine *engine;
 };
 
