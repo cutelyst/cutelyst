@@ -33,6 +33,7 @@ set(cutelystqt_HEADERS
     cutelystcontext.h
     cutelystengine.h
     cutelystcontroller.h
+    CutelystController
     cutelystapplication.h
     CutelystApplication
 )

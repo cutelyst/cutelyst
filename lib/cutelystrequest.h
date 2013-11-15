@@ -21,7 +21,7 @@
 #define CUTELYSTREQUEST_H
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QHostAddress>
 #include <QNetworkCookie>
 
 class CutelystRequestPrivate;
