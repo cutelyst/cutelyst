@@ -26,7 +26,7 @@
 
 #include "cutelystaction.h"
 
-class CutelystContext;
+class Cutelyst;
 class CutelystController;
 class CutelystDispatchType;
 class CutelystDispatcherPrivate;
@@ -38,19 +38,19 @@ public:
     ~CutelystDispatcher();
     void setupActions();
 
-    bool dispatch(CutelystContext *c);
-    bool forward(CutelystContext *c, const QString &opname, const QStringList &arguments);
-    bool prepareAction(CutelystContext *c);
+    bool dispatch(Cutelyst *c);
+    bool forward(Cutelyst *c, const QString &opname, const QStringList &arguments);
+    bool prepareAction(Cutelyst *c);
     CutelystAction* getAction(const QString &name, const QString &ns) const;
     CutelystActionList getActions(const QString &name, const QString &ns) const;
     QHash<QString, CutelystController*> controllers() const;
 
 private:
     void printActions();
-    CutelystAction *command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams = QStringList());
+    CutelystAction *command2Action(Cutelyst *c, const QString &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QStringList &args);
-    QString actionRel2Abs(CutelystContext *c, const QString &path);
-    CutelystAction *invokeAsPath(CutelystContext *c, const QString &relativePath, const QStringList &args);
+    QString actionRel2Abs(Cutelyst *c, const QString &path);
+    CutelystAction *invokeAsPath(Cutelyst *c, const QString &relativePath, const QStringList &args);
     QString cleanNamespace(const QString &ns) const;
 
 protected:

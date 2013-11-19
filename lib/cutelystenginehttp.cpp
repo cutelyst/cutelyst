@@ -19,7 +19,7 @@
 
 #include "cutelystenginehttp.h"
 
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 #include "cutelystresponse.h"
 
 #include <QStringList>
@@ -36,7 +36,7 @@ CutelystEngineHttp::CutelystEngineHttp(int socket, CutelystDispatcher *dispatche
 {
 }
 
-void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
+void CutelystEngineHttp::finalizeHeaders(Cutelyst *c)
 {
     QByteArray header;
     header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(c->response()->status())));
@@ -55,13 +55,13 @@ void CutelystEngineHttp::finalizeHeaders(CutelystContext *c)
     write(header);
 }
 
-void CutelystEngineHttp::finalizeBody(CutelystContext *c)
+void CutelystEngineHttp::finalizeBody(Cutelyst *c)
 {
     write(c->response()->body());
     deleteLater();
 }
 
-void CutelystEngineHttp::finalizeError(CutelystContext *c)
+void CutelystEngineHttp::finalizeError(Cutelyst *c)
 {
 
 }

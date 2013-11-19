@@ -18,7 +18,7 @@
  */
 
 #include "cutelystdispatchtypedefault.h"
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 #include "cutelystrequest.h"
 
 CutelystDispatchTypeDefault::CutelystDispatchTypeDefault(QObject *parent) :
@@ -26,7 +26,7 @@ CutelystDispatchTypeDefault::CutelystDispatchTypeDefault(QObject *parent) :
 {
 }
 
-bool CutelystDispatchTypeDefault::match(CutelystContext *c, const QString &path) const
+bool CutelystDispatchTypeDefault::match(Cutelyst *c, const QString &path) const
 {
     if (!path.isEmpty()) {
         return false;

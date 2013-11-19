@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
@@ -108,7 +108,7 @@ protected:
     virtual void Default();
     virtual void Index();
 
-    CutelystContext *c;
+    Cutelyst *c;
 
 private:
     friend class CutelystAction;

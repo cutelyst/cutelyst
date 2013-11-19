@@ -8,8 +8,8 @@ set(cutelystqt_SRC
     cutelystrequest_p.h
     cutelystresponse.cpp
     cutelystresponse_p.h
-    cutelystcontext.cpp
-    cutelystcontext_p.h
+    cutelyst.cpp
+    cutelyst_p.h
     cutelystaction.cpp
     cutelystengine.cpp
     cutelystengine_p.h
@@ -30,7 +30,7 @@ set(cutelystqt_SRC
 set(cutelystqt_HEADERS
     cutelystrequest.h
     cutelystresponse.h
-    cutelystcontext.h
+    cutelyst.h
     cutelystengine.h
     cutelystcontroller.h
     CutelystController

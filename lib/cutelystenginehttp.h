@@ -31,9 +31,9 @@ class CutelystEngineHttp : public CutelystEngine
 public:
     explicit CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
 
-    virtual void finalizeHeaders(CutelystContext *c);
-    virtual void finalizeBody(CutelystContext *c);
-    virtual void finalizeError(CutelystContext *c);
+    virtual void finalizeHeaders(Cutelyst *c);
+    virtual void finalizeBody(Cutelyst *c);
+    virtual void finalizeError(Cutelyst *c);
 
 protected:
     virtual void parse(const QByteArray &request);

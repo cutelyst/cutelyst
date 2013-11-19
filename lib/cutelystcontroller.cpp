@@ -19,7 +19,6 @@
 
 #include "cutelystcontroller.h"
 
-#include "cutelystcontext.h"
 #include "cutelystaction.h"
 
 #include <QMetaClassInfo>

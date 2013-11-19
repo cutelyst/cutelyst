@@ -17,16 +17,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCONTEXT_P_H
-#define CUTELYSTCONTEXT_P_H
+#ifndef CUTELYST_P_H
+#define CUTELYST_P_H
 
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 
-class CutelystContextPrivate
+class CutelystPrivate
 {
-//    Q_DECLARE_PUBLIC(CutelystContext)
+//    Q_DECLARE_PUBLIC(Cutelyst)
 public:
-    CutelystContextPrivate(CutelystContext *parent);
+    CutelystPrivate(Cutelyst *parent);
 
     CutelystEngine *engine;
     CutelystRequest *request;
@@ -39,4 +39,4 @@ public:
     bool state;
 };
 
-#endif // CUTELYSTCONTEXT_P_H
+#endif // CUTELYST_P_H

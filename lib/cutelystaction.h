@@ -24,7 +24,7 @@
 #include <QStringList>
 #include <QMetaMethod>
 
-class CutelystContext;
+class Cutelyst;
 class CutelystController;
 class CutelystAction : public QObject
 {
@@ -52,13 +52,13 @@ public:
     /**
      * @brief dispatch Dispatch this action against a context
      */
-    bool dispatch(CutelystContext *c);
+    bool dispatch(Cutelyst *c);
 
     /**
      * @brief Check Args attribute, and makes sure number of
      * args matches the setting. Always returns true if Args is omitted.
      */
-    bool match(CutelystContext *c) const;
+    bool match(Cutelyst *c) const;
 
     /**
      * @brief Can be implemented by action class
@@ -70,7 +70,7 @@ public:
      * match to continue, returning makes the chain not match
      * (and alternate, less preferred chains will be attempted).
      */
-    bool matchCaptures(CutelystContext *c) const;
+    bool matchCaptures(Cutelyst *c) const;
 
     /**
      * @brief name

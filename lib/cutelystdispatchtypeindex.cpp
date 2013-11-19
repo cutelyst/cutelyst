@@ -18,7 +18,7 @@
  */
 
 #include "cutelystdispatchtypeindex.h"
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 #include "cutelystrequest.h"
 
 CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
@@ -26,7 +26,7 @@ CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
 {
 }
 
-bool CutelystDispatchTypeIndex::match(CutelystContext *c, const QString &path) const
+bool CutelystDispatchTypeIndex::match(Cutelyst *c, const QString &path) const
 {
     if (!c->req()->args().isEmpty()) {
         return false;

@@ -22,7 +22,7 @@
 #include "cutelystrequest_p.h"
 #include "cutelystresponse.h"
 #include "cutelystdispatcher.h"
-#include "cutelystcontext_p.h"
+#include "cutelyst_p.h"
 
 #include <QUrl>
 
@@ -71,7 +71,7 @@ qint64 CutelystEngine::write(const QByteArray &data)
 void CutelystEngine::handleRequest(CutelystRequest *request)
 {
     Q_D(CutelystEngine);
-    CutelystContext *c = new CutelystContext(this, d->dispatcher);
+    Cutelyst *c = new Cutelyst(this, d->dispatcher);
 
     c->handleRequest(request, new CutelystResponse);
 }
@@ -166,7 +166,7 @@ QHostAddress CutelystEngine::peerAddress() const
     return d->socket->peerAddress();
 }
 
-void CutelystEngine::finalizeCookies(CutelystContext *c)
+void CutelystEngine::finalizeCookies(Cutelyst *c)
 {
     foreach (const QNetworkCookie &cookie, c->response()->cookies()) {
         c->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());

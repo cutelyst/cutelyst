@@ -1,6 +1,6 @@
 #include "root.h"
 
-#include <cutelystcontext.h>
+#include <cutelyst.h>
 #include <cutelystresponse.h>
 
 #include <QDebug>

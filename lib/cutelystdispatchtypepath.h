@@ -32,7 +32,7 @@ public:
 
     virtual void list() const;
 
-    virtual bool match(CutelystContext *c, const QString &path) const;
+    virtual bool match(Cutelyst *c, const QString &path) const;
 
     virtual bool registerAction(CutelystAction *action);
 

@@ -29,13 +29,13 @@ class CutelystRequest;
 class CutelystResponse;
 class CutelystDispatcher;
 class CutelystController;
-class CutelystContextPrivate;
-class CutelystContext : public QObject
+class CutelystPrivate;
+class Cutelyst : public QObject
 {
     Q_OBJECT
 public:
-    CutelystContext(CutelystEngine *engine, CutelystDispatcher *dispatcher);
-    ~CutelystContext();
+    Cutelyst(CutelystEngine *engine, CutelystDispatcher *dispatcher);
+    ~Cutelyst();
 
     bool error() const;
 
@@ -75,10 +75,10 @@ protected:
 
     friend class CutelystEngine;
     friend class CutelystDispatchType;
-    CutelystContextPrivate *d_ptr;
+    CutelystPrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(CutelystContext)
+    Q_DECLARE_PRIVATE(Cutelyst)
 };
 
 #endif // CUTELYST_H

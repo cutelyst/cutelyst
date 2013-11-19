@@ -34,7 +34,7 @@ public:
      * full URI - if c->req->args is already set this
      * DispatchType is guaranteed not to match.
      */
-    virtual bool match(CutelystContext *c, const QString &path) const;
+    virtual bool match(Cutelyst *c, const QString &path) const;
 
     virtual bool isLowPrecedence() const;
 };

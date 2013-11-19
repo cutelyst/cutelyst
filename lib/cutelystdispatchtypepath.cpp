@@ -100,7 +100,7 @@ void CutelystDispatchTypePath::list() const
              << ".\n";
 }
 
-bool CutelystDispatchTypePath::match(CutelystContext *c, const QString &path) const
+bool CutelystDispatchTypePath::match(Cutelyst *c, const QString &path) const
 {
     QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(path);
     while (i != m_paths.constEnd() && i.key() == path) {

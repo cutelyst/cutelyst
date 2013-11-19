@@ -19,7 +19,7 @@
 
 #include "cutelystaction.h"
 #include "cutelystcontroller.h"
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 
 #include <QMetaClassInfo>
 #include <QStringBuilder>
@@ -106,7 +106,7 @@ CutelystController *CutelystAction::controller() const
     return m_controller;
 }
 
-bool CutelystAction::dispatch(CutelystContext *c)
+bool CutelystAction::dispatch(Cutelyst *c)
 {
     if (c->detached()) {
         return false;
@@ -161,7 +161,7 @@ bool CutelystAction::dispatch(CutelystContext *c)
     }
 }
 
-bool CutelystAction::match(CutelystContext *c) const
+bool CutelystAction::match(Cutelyst *c) const
 {
     if (m_attributes.contains(QLatin1String("Args")) &&
             m_attributes.value(QLatin1String("Args")).isEmpty()) {
@@ -170,7 +170,7 @@ bool CutelystAction::match(CutelystContext *c) const
     return m_numberOfArgs == 0 || m_numberOfArgs == c->args().size();
 }
 
-bool CutelystAction::matchCaptures(CutelystContext *c) const
+bool CutelystAction::matchCaptures(Cutelyst *c) const
 {
     return m_numberOfCaptures == 0 || m_numberOfCaptures == c->args().size();
 }

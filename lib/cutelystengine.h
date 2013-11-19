@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QHostAddress>
 
-class CutelystContext;
+class Cutelyst;
 class CutelystDispatcher;
 class CutelystRequest;
 class CutelystEnginePrivate;
@@ -40,10 +40,10 @@ public:
     QString peerName() const;
     QHostAddress peerAddress() const;
 
-    void finalizeCookies(CutelystContext *c);
-    virtual void finalizeHeaders(CutelystContext *c) = 0;
-    virtual void finalizeBody(CutelystContext *c) = 0;
-    virtual void finalizeError(CutelystContext *c) = 0;
+    void finalizeCookies(Cutelyst *c);
+    virtual void finalizeHeaders(Cutelyst *c) = 0;
+    virtual void finalizeBody(Cutelyst *c) = 0;
+    virtual void finalizeError(Cutelyst *c) = 0;
 
 protected:
     virtual void parse(const QByteArray &data) = 0;

@@ -19,7 +19,7 @@
 
 #include "cutelystdispatcher_p.h"
 
-#include "cutelystcontext.h"
+#include "cutelyst.h"
 #include "cutelystcontroller.h"
 #include "cutelystaction.h"
 #include "cutelystrequest_p.h"
@@ -109,7 +109,7 @@ void CutelystDispatcher::setupActions()
     printActions();
 }
 
-bool CutelystDispatcher::dispatch(CutelystContext *c)
+bool CutelystDispatcher::dispatch(Cutelyst *c)
 {
     if (c->action()) {
         return c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
@@ -117,7 +117,7 @@ bool CutelystDispatcher::dispatch(CutelystContext *c)
     return false;
 }
 
-bool CutelystDispatcher::forward(CutelystContext *c, const QString &opname, const QStringList &arguments)
+bool CutelystDispatcher::forward(Cutelyst *c, const QString &opname, const QStringList &arguments)
 {
     CutelystAction *action = command2Action(c, opname);
     if (action) {
@@ -128,7 +128,7 @@ bool CutelystDispatcher::forward(CutelystContext *c, const QString &opname, cons
     return false;
 }
 
-bool CutelystDispatcher::prepareAction(CutelystContext *c)
+bool CutelystDispatcher::prepareAction(Cutelyst *c)
 {
     Q_D(CutelystDispatcher);
 
@@ -270,7 +270,7 @@ void CutelystDispatcher::printActions()
     }
 }
 
-CutelystAction *CutelystDispatcher::command2Action(CutelystContext *c, const QString &command, const QStringList &extraParams)
+CutelystAction *CutelystDispatcher::command2Action(Cutelyst *c, const QString &command, const QStringList &extraParams)
 {
     Q_D(CutelystDispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command;
@@ -292,7 +292,7 @@ QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)
     return ret;
 }
 
-QString CutelystDispatcher::actionRel2Abs(CutelystContext *c, const QString &path)
+QString CutelystDispatcher::actionRel2Abs(Cutelyst *c, const QString &path)
 {
     QString ret = path;
     if (!ret.startsWith(QLatin1Char('/'))) {
@@ -309,7 +309,7 @@ QString CutelystDispatcher::actionRel2Abs(CutelystContext *c, const QString &pat
     return ret;
 }
 
-CutelystAction *CutelystDispatcher::invokeAsPath(CutelystContext *c, const QString &relativePath, const QStringList &args)
+CutelystAction *CutelystDispatcher::invokeAsPath(Cutelyst *c, const QString &relativePath, const QStringList &args)
 {
     Q_D(CutelystDispatcher);
 

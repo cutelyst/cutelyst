@@ -37,7 +37,7 @@ public:
      * If path is not empty, never matches since Default will
      * only match if all other possibilities have been exhausted.
      */
-    virtual bool match(CutelystContext *c, const QString &path) const;
+    virtual bool match(Cutelyst *c, const QString &path) const;
 
     virtual bool isLowPrecedence() const;
 };
