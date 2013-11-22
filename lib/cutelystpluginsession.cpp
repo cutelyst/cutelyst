@@ -18,8 +18,31 @@
  */
 
 #include "cutelystpluginsession.h"
+#include "cutelystapplication.h"
+#include "cutelystrequest.h"
+#include "cutelyst.h"
+
+#include <QDebug>
 
 CutelystPluginSession::CutelystPluginSession(QObject *parent) :
-    QObject(parent)
+    CutelystPlugin(parent)
 {
+}
+
+bool CutelystPluginSession::setup(CutelystApplication *app)
+{
+    connect(app, &CutelystApplication::beforeDispatch,
+            this, &CutelystPluginSession::restoreSession);
+    connect(app, &CutelystApplication::afterDispatch,
+            this, &CutelystPluginSession::saveSession);
+}
+
+void CutelystPluginSession::restoreSession(Cutelyst *c)
+{
+    qDebug() << Q_FUNC_INFO << c->req()->cookies();
+}
+
+void CutelystPluginSession::saveSession(Cutelyst *c)
+{
+    qDebug() << Q_FUNC_INFO << c->stash();
 }

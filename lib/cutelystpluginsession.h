@@ -20,18 +20,21 @@
 #ifndef CUTELYSTPLUGINSESSION_H
 #define CUTELYSTPLUGINSESSION_H
 
+#include "cutelystplugin.h"
+
 #include <QObject>
 
-class CutelystPluginSession : public QObject
+class Cutelyst;
+class CutelystPluginSession : public CutelystPlugin
 {
     Q_OBJECT
 public:
     explicit CutelystPluginSession(QObject *parent = 0);
 
-signals:
+    bool setup(CutelystApplication *app);
 
-public slots:
-
+    virtual void restoreSession(Cutelyst *c);
+    virtual void saveSession(Cutelyst *c);
 };
 
 #endif // CUTELYSTPLUGINSESSION_H

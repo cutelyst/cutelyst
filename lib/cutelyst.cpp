@@ -146,6 +146,12 @@ QString Cutelyst::match() const
     return d->match;
 }
 
+QVariantHash *Cutelyst::stash()
+{
+    Q_D(Cutelyst);
+    return &d->stash;
+}
+
 bool Cutelyst::dispatch()
 {
     Q_D(Cutelyst);

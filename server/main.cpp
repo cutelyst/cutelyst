@@ -9,6 +9,7 @@
 #include "users.h"
 
 #include "cpstaticsimple.h"
+#include "cutelystpluginsession.h"
 
 using namespace std;
 
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
     QCoreApplication::installTranslator(&qtTranslator);
 
     app.registerPlugin(new CPStaticSimple);
+    app.registerPlugin(new CutelystPluginSession);
 
     if (app.parseArgs() && app.setup()) {
         return app.exec();

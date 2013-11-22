@@ -22,6 +22,8 @@
 
 #include "cutelyst.h"
 
+#include <QVariantHash>
+
 class CutelystPrivate
 {
 //    Q_DECLARE_PUBLIC(Cutelyst)
@@ -36,6 +38,7 @@ public:
     bool detached;
     QString match;
     QStringList error;
+    QVariantHash stash;
     int status;
     bool state;
     QTime *stats;

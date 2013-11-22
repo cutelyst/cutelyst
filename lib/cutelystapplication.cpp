@@ -51,11 +51,13 @@ void CutelystApplication::registerPlugin(CutelystPlugin *plugin, const QString &
 
     QString pluginName = name;
     if (pluginName.isEmpty()) {
-        pluginName = plugin->objectName();
+        pluginName = plugin->metaObject()->className();
     }
 
     if (!d->plugins.contains(pluginName)) {
         d->plugins.insert(pluginName, plugin);
+    } else {
+        qWarning() << Q_FUNC_INFO << "Failed to register plugin" << pluginName << plugin;
     }
 }
 
@@ -100,7 +102,10 @@ bool CutelystApplication::setup(CutelystEngine *engine)
 
     QHash<QString, CutelystPlugin *>::Iterator it = d->plugins.begin();
     while (it != d->plugins.end()) {
-        it.value()->setup(this);
+        if (!it.value()->setup(this)) {
+            qWarning() << Q_FUNC_INFO << "Failed to setup plugin" << it.key() << it.value();
+            return false;
+        }
         ++it;
     }
 
