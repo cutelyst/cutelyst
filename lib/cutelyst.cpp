@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QStringBuilder>
 #include <QStringList>
+#include <QTime>
 
 Cutelyst::Cutelyst(CutelystEngine *engine, CutelystDispatcher *dispatcher) :
     QObject(engine),
@@ -45,7 +46,22 @@ Cutelyst::~Cutelyst()
 
 bool Cutelyst::error() const
 {
-    return false;
+    Q_D(const Cutelyst);
+    return !d->error.isEmpty();
+}
+
+void Cutelyst::error(const QString &error)
+{
+    Q_D(Cutelyst);
+    if (!error.isEmpty()) {
+        d->error << error;
+    }
+}
+
+QStringList Cutelyst::errors() const
+{
+    Q_D(const Cutelyst);
+    return d->error;
 }
 
 bool Cutelyst::state() const
@@ -73,6 +89,12 @@ CutelystEngine *Cutelyst::engine() const
 }
 
 CutelystResponse *Cutelyst::response() const
+{
+    Q_D(const Cutelyst);
+    return d->response;
+}
+
+CutelystResponse *Cutelyst::res() const
 {
     Q_D(const Cutelyst);
     return d->response;
@@ -168,17 +190,14 @@ void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
     d->response = resp;
 
     bool skipMethod = false;
-    beforePrepareAction(&skipMethod);
+    beforePrepareAction(this, &skipMethod);
     if (!skipMethod) {
         prepareAction();
-        afterPrepareAction();
-    }
+        afterPrepareAction(this);
 
-    skipMethod = false;
-    beforeDispatch(&skipMethod);
-    if (!skipMethod) {
+        beforeDispatch(this);
         dispatch();
-        afterDispatch();
+        afterDispatch(this);
     }
 
     d->status = finalize();
@@ -251,6 +270,10 @@ int Cutelyst::finalize()
 {
     Q_D(Cutelyst);
 
+    if (error()) {
+        finalizeError();
+    }
+
     finalizeHeaders();
 
     if (d->request->method() == QLatin1String("HEAD")) {
@@ -259,12 +282,19 @@ int Cutelyst::finalize()
 
     finalizeBody();
 
+    if (d->stats) {
+        qDebug("[info] Request took: %d ms", d->stats->elapsed());
+    }
+
     return d->response->status();
 }
 
 CutelystPrivate::CutelystPrivate(Cutelyst *parent) :
     action(0),
     detached(false),
-    state(false)
+    state(false),
+    stats(0)
 {
+    stats = new QTime;
+    stats->start();
 }

@@ -112,6 +112,16 @@ bool CutelystDispatcher::dispatch(Cutelyst *c)
 {
     if (c->action()) {
         return c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
+    } else {
+        QString error;
+        QString path = c->req()->path();
+        if (path.isEmpty()) {
+            error = QLatin1String("No default action defined");
+        } else {
+            error = QLatin1String("Unknown resource \"") % path % QLatin1Char('"');
+        }
+        qDebug() << Q_FUNC_INFO << error;
+        c->error(error);
     }
     return false;
 }

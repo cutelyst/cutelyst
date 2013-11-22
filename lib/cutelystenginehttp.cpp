@@ -220,6 +220,13 @@ void CutelystEngineHttp::parse(const QByteArray &request)
                                          m_body);
 
     handleRequest(req, new CutelystResponse);
+    m_buffer.clear();
+    m_body.clear();
+    m_headers.clear();
+    m_method.clear();
+    m_protocol.clear();
+    m_bufLastIndex = 0;
+    m_finishedHeaders = false;
 }
 
 QString CutelystEngineHttp::statusString(quint16 status) const

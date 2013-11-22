@@ -22,19 +22,30 @@
 
 #include <QCoreApplication>
 
+class Cutelyst;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystEngine;
+class CutelystPlugin;
 class CutelystApplicationPrivate;
 class CutelystApplication : public QCoreApplication
 {
+    Q_OBJECT
 public:
     CutelystApplication(int &argc, char **argv);
     ~CutelystApplication();
 
+    void registerPlugin(CutelystPlugin *plugin, const QString &name = QString());
+
     bool parseArgs();
     int printError();
     bool setup(CutelystEngine *engine = 0);
+
+Q_SIGNALS:
+    void beforePrepareAction(Cutelyst *c, bool *skipMethod);
+    void afterPrepareAction(Cutelyst *c);
+    void beforeDispatch(Cutelyst *c);
+    void afterDispatch(Cutelyst *c);
 
 protected:
     CutelystApplicationPrivate *d_ptr;

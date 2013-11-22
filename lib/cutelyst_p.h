@@ -35,8 +35,10 @@ public:
     CutelystDispatcher *dispatcher;
     bool detached;
     QString match;
+    QStringList error;
     int status;
     bool state;
+    QTime *stats;
 };
 
 #endif // CUTELYST_P_H

@@ -8,6 +8,8 @@
 #include "root.h"
 #include "users.h"
 
+#include "cpstaticsimple.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -26,6 +28,8 @@ int main(int argc, char *argv[])
     qtTranslator.load("qt_" + QLocale::system().name(),
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
+
+    app.registerPlugin(new CPStaticSimple);
 
     if (app.parseArgs() && app.setup()) {
         return app.exec();

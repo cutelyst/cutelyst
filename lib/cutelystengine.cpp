@@ -117,3 +117,21 @@ void CutelystEngine::finalizeCookies(Cutelyst *c)
         c->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
     }
 }
+
+void CutelystEngine::finalizeError(Cutelyst *c)
+{
+    c->res()->setContentType("text/html; charset=utf-8");
+
+    QByteArray body;
+
+    // Trick IE. Old versions of IE would display their own error page instead
+    // of ours if we'd give it less than 512 bytes.
+    body.reserve(512);
+
+    body.append(c->errors().join(QLatin1Char('\n')));
+
+    c->res()->setBody(body);
+
+    // Return 500
+    c->res()->setStatus(CutelystResponse::InternalServerError);
+}

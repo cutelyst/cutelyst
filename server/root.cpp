@@ -17,7 +17,7 @@ void Root::hugeNameQuiteLong(const QString &nome, Local)
 
 void Root::begin(const QString &name, Path)
 {
-    qDebug() << Q_FUNC_INFO << name;
+    qDebug() << Q_FUNC_INFO << name << sender();
 }
 
 void Root::users(const QString &name, const QString &age, Args, CutelystController::Local)
@@ -49,7 +49,7 @@ void Root::admin(const QString &name, const QString &age, CutelystController::Gl
 
 void Root::Begin()
 {
-    qDebug() << "*** Root::Begin()";
+    qDebug() << "*** Root::Begin()" << sender();
 }
 
 void Root::Auto()

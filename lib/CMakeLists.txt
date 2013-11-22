@@ -25,9 +25,11 @@ set(cutelystqt_SRC
     cutelystdispatcher_p.h
     cutelystchildprocess.cpp
     cutelystchildprocess_p.h
+    cutelystplugin.cpp
     cutelystapplication.cpp
     cutelystapplication_p.h
     cutelystpluginsession.cpp
+    cpstaticsimple.cpp
     uwsgi.h
 )
 

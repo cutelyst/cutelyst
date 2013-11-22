@@ -38,6 +38,8 @@ public:
     ~Cutelyst();
 
     bool error() const;
+    void error(const QString &error);
+    QStringList errors() const;
 
     /**
      * Contains the return value of the last executed action.
@@ -48,6 +50,7 @@ public:
     QString uriPrefix() const;
     CutelystEngine *engine() const;
     CutelystResponse *response() const;
+    CutelystResponse *res() const;
 
     /**
      * Returns a pointer to the current action
@@ -87,10 +90,10 @@ public:
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
 
 Q_SIGNALS:
-    void beforePrepareAction(bool *skipMethod);
-    void afterPrepareAction();
-    void beforeDispatch(bool *skipMethod);
-    void afterDispatch();
+    void beforePrepareAction(Cutelyst *c, bool *skipMethod);
+    void afterPrepareAction(Cutelyst *c);
+    void beforeDispatch(Cutelyst *c);
+    void afterDispatch(Cutelyst *c);
 
 protected:
     void handleRequest(CutelystRequest *req, CutelystResponse *resp);

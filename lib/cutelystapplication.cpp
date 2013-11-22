@@ -25,6 +25,8 @@
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
+#include "cpstaticsimple.h"
+
 #include <iostream>
 
 #include <QStringList>
@@ -41,6 +43,20 @@ CutelystApplication::CutelystApplication(int &argc, char **argv) :
 CutelystApplication::~CutelystApplication()
 {
     delete d_ptr;
+}
+
+void CutelystApplication::registerPlugin(CutelystPlugin *plugin, const QString &name)
+{
+    Q_D(CutelystApplication);
+
+    QString pluginName = name;
+    if (pluginName.isEmpty()) {
+        pluginName = plugin->objectName();
+    }
+
+    if (!d->plugins.contains(pluginName)) {
+        d->plugins.insert(pluginName, plugin);
+    }
 }
 
 bool CutelystApplication::parseArgs()
@@ -82,6 +98,12 @@ bool CutelystApplication::setup(CutelystEngine *engine)
     connect(d->engine, &CutelystEngine::handleRequest,
             this, &CutelystApplication::handleRequest);
 
+    QHash<QString, CutelystPlugin *>::Iterator it = d->plugins.begin();
+    while (it != d->plugins.end()) {
+        it.value()->setup(this);
+        ++it;
+    }
+
     return d->engine->init();
 }
 
@@ -90,5 +112,10 @@ void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *
     Q_D(CutelystApplication);
 
     Cutelyst *c = new Cutelyst(d->engine, d->dispatcher);
+    connect(c, &Cutelyst::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
+    connect(c, &Cutelyst::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);
+    connect(c, &Cutelyst::beforeDispatch, this, &CutelystApplication::beforeDispatch);
+    connect(c, &Cutelyst::afterDispatch, this, &CutelystApplication::afterDispatch);
     c->handleRequest(req, resp);
+    delete c;
 }

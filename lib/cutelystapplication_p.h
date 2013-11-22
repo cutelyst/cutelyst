@@ -23,6 +23,7 @@
 #include "cutelystapplication.h"
 #include "cutelystdispatcher.h"
 #include "cutelystengine.h"
+#include "cutelystplugin.h"
 
 class CutelystApplicationPrivate
 {
@@ -35,6 +36,7 @@ public:
 
     CutelystDispatcher *dispatcher;
     CutelystEngine *engine;
+    QHash<QString, CutelystPlugin *> plugins;
 };
 
 #endif // CUTELYSTAPPLICATION_P_H

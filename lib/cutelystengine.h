@@ -44,7 +44,7 @@ public:
     void finalizeCookies(Cutelyst *c);
     virtual void finalizeHeaders(Cutelyst *c) = 0;
     virtual void finalizeBody(Cutelyst *c) = 0;
-    virtual void finalizeError(Cutelyst *c) = 0;
+    void finalizeError(Cutelyst *c);
 
 Q_SIGNALS:
     void handleRequest(CutelystRequest *request, CutelystResponse *response);
