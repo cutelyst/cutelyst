@@ -102,10 +102,15 @@ void CutelystDispatchTypePath::list() const
 
 bool CutelystDispatchTypePath::match(Cutelyst *c, const QString &path) const
 {
-    QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(path);
-    while (i != m_paths.constEnd() && i.key() == path) {
+    QString _path = path;
+    if (_path.isEmpty()) {
+        _path = QLatin1Char('/');
+    }
+
+    QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(_path);
+    while (i != m_paths.constEnd() && i.key() == _path) {
         if (i.value()->match(c)) {
-            setupMatchedAction(c, i.value(), path);
+            setupMatchedAction(c, i.value(), _path);
             return true;
         }
 
@@ -131,8 +136,6 @@ bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
 
 void CutelystDispatchTypePath::registerPath(const QString &path, CutelystAction *action)
 {
-//    qDebug() << Q_FUNC_INFO << path;
-
     QString _path = path;
     if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);

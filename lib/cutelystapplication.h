@@ -22,6 +22,9 @@
 
 #include <QCoreApplication>
 
+class CutelystRequest;
+class CutelystResponse;
+class CutelystEngine;
 class CutelystApplicationPrivate;
 class CutelystApplication : public QCoreApplication
 {
@@ -31,6 +34,7 @@ public:
 
     bool parseArgs();
     int printError();
+    bool setup(CutelystEngine *engine = 0);
 
 protected:
     CutelystApplicationPrivate *d_ptr;
@@ -38,7 +42,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(CutelystApplication)
 
-    void onNewConnection();
+    void handleRequest(CutelystRequest *req, CutelystResponse *resp);
 };
 
 #endif // CUTELYSTAPPLICATION_H

@@ -40,7 +40,7 @@ public:
 
     bool dispatch(Cutelyst *c);
     bool forward(Cutelyst *c, const QString &opname, const QStringList &arguments);
-    bool prepareAction(Cutelyst *c);
+    void prepareAction(Cutelyst *c);
     CutelystAction* getAction(const QString &name, const QString &ns) const;
     CutelystActionList getActions(const QString &name, const QString &ns) const;
     QHash<QString, CutelystController*> controllers() const;

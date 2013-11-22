@@ -21,30 +21,20 @@
 #define CUTELYSTAPPLICATION_P_H
 
 #include "cutelystapplication.h"
+#include "cutelystdispatcher.h"
+#include "cutelystengine.h"
 
-#include <QSocketNotifier>
-#include <QTcpServer>
-
-class CutelystChildProcess;
 class CutelystApplicationPrivate
 {
-    Q_DECLARE_PUBLIC(CutelystApplication)
 public:
-    CutelystApplicationPrivate(CutelystApplication *parent);
-    ~CutelystApplicationPrivate();
-
     CutelystApplication *q_ptr;
-    QSocketNotifier *notifier;
     QString error;
     int childFD;
     int parentFD;
     int childPID;
 
-    quint16 port;
-    QHostAddress address;
-    QString pluginApplication;
-    QTcpServer *server;
-    QList<CutelystChildProcess*> child;
+    CutelystDispatcher *dispatcher;
+    CutelystEngine *engine;
 };
 
 #endif // CUTELYSTAPPLICATION_P_H

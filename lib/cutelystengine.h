@@ -24,31 +24,33 @@
 #include <QHostAddress>
 
 class Cutelyst;
-class CutelystDispatcher;
 class CutelystRequest;
+class CutelystResponse;
 class CutelystEnginePrivate;
 class CutelystEngine : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
+    explicit CutelystEngine(QObject *parent = 0);
     ~CutelystEngine();
 
-    bool isValid() const;
     CutelystRequest* request() const;
-    quint16 peerPort() const;
-    QString peerName() const;
-    QHostAddress peerAddress() const;
+    virtual quint16 peerPort() const = 0;
+    virtual QString peerName() const = 0;
+    virtual QHostAddress peerAddress() const = 0;
+
+    virtual bool init() = 0;
 
     void finalizeCookies(Cutelyst *c);
     virtual void finalizeHeaders(Cutelyst *c) = 0;
     virtual void finalizeBody(Cutelyst *c) = 0;
     virtual void finalizeError(Cutelyst *c) = 0;
 
+Q_SIGNALS:
+    void handleRequest(CutelystRequest *request, CutelystResponse *response);
+
 protected:
     virtual void parse(const QByteArray &data) = 0;
-    qint64 write(const QByteArray &data);
-    void handleRequest(CutelystRequest *request);
     CutelystRequest *createRequest(const QUrl &url,
                                    const QString &method,
                                    const QString &protocol,
@@ -59,8 +61,6 @@ protected:
 
 private:
     Q_DECLARE_PRIVATE(CutelystEngine)
-
-    void readyRead();
 };
 
 #endif // CUTELYSTENGINE_H

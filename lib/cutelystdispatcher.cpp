@@ -45,7 +45,6 @@ CutelystDispatcher::CutelystDispatcher(QObject *parent) :
 
 CutelystDispatcher::~CutelystDispatcher()
 {
-    qDebug() << Q_FUNC_INFO;
     delete d_ptr;
 }
 
@@ -128,7 +127,7 @@ bool CutelystDispatcher::forward(Cutelyst *c, const QString &opname, const QStri
     return false;
 }
 
-bool CutelystDispatcher::prepareAction(Cutelyst *c)
+void CutelystDispatcher::prepareAction(Cutelyst *c)
 {
     Q_D(CutelystDispatcher);
 
@@ -136,6 +135,9 @@ bool CutelystDispatcher::prepareAction(Cutelyst *c)
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
     CutelystDispatchType *dispatch = 0;
+
+    // Take off the root action
+    pathParts.takeFirst();
 
     while (!pathParts.isEmpty()) {
         path = pathParts.join(QLatin1Char('/'));
@@ -145,7 +147,6 @@ bool CutelystDispatcher::prepareAction(Cutelyst *c)
 
         foreach (CutelystDispatchType *type, d->dispatchers) {
             if (type->match(c, path)) {
-                qDebug() << Q_FUNC_INFO << "Found a dispatcher type" << type;
                 dispatch = type;
                 break;
             }
@@ -160,10 +161,13 @@ bool CutelystDispatcher::prepareAction(Cutelyst *c)
 
     }
 
-    qDebug() << Q_FUNC_INFO << "Path is " << path;
-    qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
+    if (!path.isEmpty()) {
+        qDebug() << Q_FUNC_INFO << "Path is " << path;
+    }
 
-    return dispatch;
+    if (!c->args().isEmpty()) {
+        qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
+    }
 }
 
 CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString &ns) const

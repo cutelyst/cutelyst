@@ -36,6 +36,7 @@ CutelystRequest::CutelystRequest(CutelystRequestPrivate *prv) :
 
 CutelystRequest::~CutelystRequest()
 {
+    delete d_ptr;
 }
 
 QHostAddress CutelystRequest::peerAddress() const

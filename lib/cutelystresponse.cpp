@@ -126,7 +126,7 @@ QMap<QString, QString> CutelystResponse::headers() const
     ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
     if (!d->contentType.isEmpty()) {
         ret.insert(QLatin1String("Content-Type"), d->contentType);
-    } else {
+    } else if (!d->body.isEmpty()) {
         QMimeDatabase db;
         QMimeType mimeType = db.mimeTypeForData(d->body);
         if (mimeType.isValid()) {
@@ -138,7 +138,7 @@ QMap<QString, QString> CutelystResponse::headers() const
                            mimeType.name());
             }
         }
-        qDebug() << mimeType.comment() << mimeType.name();
+        qDebug() << Q_FUNC_INFO << mimeType.comment() << mimeType.name();
     }
     // TODO use version macro here
     ret.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));

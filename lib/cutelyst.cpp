@@ -72,18 +72,6 @@ CutelystEngine *Cutelyst::engine() const
     return d->engine;
 }
 
-CutelystRequest *Cutelyst::request() const
-{
-    Q_D(const Cutelyst);
-    return d->request;
-}
-
-CutelystRequest *Cutelyst::req() const
-{
-    Q_D(const Cutelyst);
-    return d->request;
-}
-
 CutelystResponse *Cutelyst::response() const
 {
     Q_D(const Cutelyst);
@@ -94,6 +82,24 @@ CutelystAction *Cutelyst::action() const
 {
     Q_D(const Cutelyst);
     return d->action;
+}
+
+QString Cutelyst::ns() const
+{
+    Q_D(const Cutelyst);
+    return d->action->ns();
+}
+
+CutelystRequest *Cutelyst::request() const
+{
+    Q_D(const Cutelyst);
+    return d->request;
+}
+
+CutelystRequest *Cutelyst::req() const
+{
+    Q_D(const Cutelyst);
+    return d->request;
 }
 
 CutelystDispatcher *Cutelyst::dispatcher() const
@@ -110,12 +116,6 @@ CutelystController *Cutelyst::controller(const QString &name) const
     } else {
         return d->dispatcher->controllers().value(name);
     }
-}
-
-QString Cutelyst::ns() const
-{
-    Q_D(const Cutelyst);
-    return d->action->ns();
 }
 
 QString Cutelyst::match() const
@@ -167,16 +167,27 @@ void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
     d->request = req;
     d->response = resp;
 
-    if (d->dispatcher->prepareAction(this)) {
+    bool skipMethod = false;
+    beforePrepareAction(&skipMethod);
+    if (!skipMethod) {
+        prepareAction();
+        afterPrepareAction();
+    }
+
+    skipMethod = false;
+    beforeDispatch(&skipMethod);
+    if (!skipMethod) {
         dispatch();
-    } else {
-        qDebug() << Q_FUNC_INFO << "Bad Request";
-        d->response->setStatus(CutelystResponse::BadRequest);
-        d->response->setContentType(QLatin1String("text/plain"));
-        d->response->setBody("Bad Request");
+        afterDispatch();
     }
 
     d->status = finalize();
+}
+
+void Cutelyst::prepareAction()
+{
+    Q_D(Cutelyst);
+    d->dispatcher->prepareAction(this);
 }
 
 void Cutelyst::finalizeHeaders()

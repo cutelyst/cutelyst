@@ -47,13 +47,34 @@ public:
     QStringList args() const;
     QString uriPrefix() const;
     CutelystEngine *engine() const;
-    CutelystRequest *request() const;
-    CutelystRequest *req() const;
     CutelystResponse *response() const;
+
+    /**
+     * Returns a pointer to the current action
+     */
     CutelystAction *action() const;
+
+    /**
+     * Returns the namespace of the current action.
+     * i.e. the URI prefix corresponding to the controller
+     * of the current action. For example:
+     * // a class named FooBar which inherits CutelystController
+     * c->ns(); // returns 'foo/bar'
+     */
+    QString ns() const;
+
+    /**
+     * Returns the current CutelystRequest object containing
+     * information about the client request \sa CutelystRequest
+     */
+    CutelystRequest *request() const;
+
+    /**
+     * Short for the method above
+     */
+    CutelystRequest *req() const;
     CutelystDispatcher *dispatcher() const;
     CutelystController *controller(const QString &name = QString()) const;
-    QString ns() const;
     QString match() const;
 
     QVariantHash* stash();
@@ -65,15 +86,22 @@ public:
     CutelystAction *getAction(const QString &action, const QString &ns = QString());
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
 
+Q_SIGNALS:
+    void beforePrepareAction(bool *skipMethod);
+    void afterPrepareAction();
+    void beforeDispatch(bool *skipMethod);
+    void afterDispatch();
+
 protected:
     void handleRequest(CutelystRequest *req, CutelystResponse *resp);
+    void prepareAction();
     void finalizeHeaders();
     void finalizeCookies();
     void finalizeBody();
     void finalizeError();
     int finalize();
 
-    friend class CutelystEngine;
+    friend class CutelystApplication;
     friend class CutelystDispatchType;
     CutelystPrivate *d_ptr;
 

@@ -17,33 +17,21 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCHILDPROCESS_H
-#define CUTELYSTCHILDPROCESS_H
+#ifndef CUTELYSTPLUGINSESSION_H
+#define CUTELYSTPLUGINSESSION_H
 
 #include <QObject>
 
-class CutelystChildProcessPrivate;
-class CutelystChildProcess : public QObject
+class CutelystPluginSession : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystChildProcess(bool &childProcess, QObject *parent = 0);
-    ~CutelystChildProcess();
+    explicit CutelystPluginSession(QObject *parent = 0);
 
-    bool initted() const;
-    bool sendFD(int fd);
+signals:
 
-Q_SIGNALS:
-    void newConnection(int socket);
+public slots:
 
-protected:
-    CutelystChildProcessPrivate *d_ptr;
-
-private:
-    Q_DECLARE_PRIVATE(CutelystChildProcess)
-
-    void initChild(int socket);
-    void gotFD(int socket);
 };
 
-#endif // CUTELYSTCHILDPROCESS_H
+#endif // CUTELYSTPLUGINSESSION_H

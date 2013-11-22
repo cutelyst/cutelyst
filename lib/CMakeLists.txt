@@ -13,7 +13,9 @@ set(cutelystqt_SRC
     cutelystaction.cpp
     cutelystengine.cpp
     cutelystengine_p.h
+    #cutelystengineuwsgi.cpp
     cutelystenginehttp.cpp
+    cutelystenginehttp_p.h
     cutelystcontroller.cpp
     cutelystdispatchtype.cpp
     cutelystdispatchtypepath.cpp
@@ -25,6 +27,8 @@ set(cutelystqt_SRC
     cutelystchildprocess_p.h
     cutelystapplication.cpp
     cutelystapplication_p.h
+    cutelystpluginsession.cpp
+    uwsgi.h
 )
 
 set(cutelystqt_HEADERS
@@ -48,7 +52,9 @@ add_library(cutelyst-qt5 SHARED ${cutelystqt_SRC} ${cutelystqt_HEADERS} ${cutely
 set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
 
 qt5_use_modules(cutelyst-qt5 Core Network DBus)
-target_link_libraries(cutelyst-qt5)
+target_link_libraries(cutelyst-qt5
+
+)
 
 set_property(TARGET cutelyst-qt5 PROPERTY COMPILE_DEFINITIONS CUTELYST_STATIC)
 

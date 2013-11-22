@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
 
-    if (app.parseArgs()) {
+    if (app.parseArgs() && app.setup()) {
         return app.exec();
     }
     return app.printError();

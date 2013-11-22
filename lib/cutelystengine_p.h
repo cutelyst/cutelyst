@@ -22,8 +22,6 @@
 
 #include "cutelystengine.h"
 
-#include <QTcpSocket>
-
 class CutelystEnginePrivate
 {
     Q_DECLARE_PUBLIC(CutelystEngine)
@@ -32,10 +30,7 @@ public:
     ~CutelystEnginePrivate();
 
     CutelystEngine *q_ptr;
-    QTcpSocket *socket;
-    bool valid;
     CutelystRequest *request;
-    CutelystDispatcher *dispatcher;
 };
 
 #endif // CUTELYSTENGINE_P_H

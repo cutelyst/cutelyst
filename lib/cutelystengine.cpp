@@ -21,59 +21,28 @@
 
 #include "cutelystrequest_p.h"
 #include "cutelystresponse.h"
-#include "cutelystdispatcher.h"
 #include "cutelyst_p.h"
 
 #include <QUrl>
 
-CutelystEngine::CutelystEngine(int socket, CutelystDispatcher *dispatcher, QObject *parent) :
+CutelystEngine::CutelystEngine(QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystEnginePrivate(this))
 {
     Q_D(CutelystEngine);
-
-    d->dispatcher = dispatcher;
-    d->socket = new QTcpSocket(this);
-    d->valid = d->socket->setSocketDescriptor(socket);
-    if (d->valid) {
-        connect(d->socket, &QTcpSocket::readyRead,
-                this, &CutelystEngine::readyRead);
-    }
 }
 
 CutelystEngine::~CutelystEngine()
 {
     Q_D(CutelystEngine);
 
-    d->socket->waitForBytesWritten();
-    d->socket->close();
     delete d_ptr;
-}
-
-bool CutelystEngine::isValid() const
-{
-    Q_D(const CutelystEngine);
-    return d->valid;
 }
 
 CutelystRequest *CutelystEngine::request() const
 {
     Q_D(const CutelystEngine);
     return d->request;
-}
-
-qint64 CutelystEngine::write(const QByteArray &data)
-{
-    Q_D(CutelystEngine);
-    return d->socket->write(data);
-}
-
-void CutelystEngine::handleRequest(CutelystRequest *request)
-{
-    Q_D(CutelystEngine);
-    Cutelyst *c = new Cutelyst(this, d->dispatcher);
-
-    c->handleRequest(request, new CutelystResponse);
 }
 
 CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body) const
@@ -132,12 +101,6 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &m
     return new CutelystRequest(requestPriv);
 }
 
-void CutelystEngine::readyRead()
-{
-    Q_D(CutelystEngine);
-    parse(d->socket->readAll());
-}
-
 CutelystEnginePrivate::CutelystEnginePrivate(CutelystEngine *parent) :
     q_ptr(parent),
     request(new CutelystRequest)
@@ -146,24 +109,6 @@ CutelystEnginePrivate::CutelystEnginePrivate(CutelystEngine *parent) :
 
 CutelystEnginePrivate::~CutelystEnginePrivate()
 {
-}
-
-quint16 CutelystEngine::peerPort() const
-{
-    Q_D(const CutelystEngine);
-    return d->socket->peerPort();
-}
-
-QString CutelystEngine::peerName() const
-{
-    Q_D(const CutelystEngine);
-    return d->socket->peerName();
-}
-
-QHostAddress CutelystEngine::peerAddress() const
-{
-    Q_D(const CutelystEngine);
-    return d->socket->peerAddress();
 }
 
 void CutelystEngine::finalizeCookies(Cutelyst *c)

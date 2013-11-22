@@ -19,29 +19,28 @@
 
 #include "cutelystapplication_p.h"
 
-#include "cutelystchildprocess.h"
+#include "cutelystenginehttp.h"
+#include "cutelystengineuwsgi.h"
+#include "cutelyst.h"
+#include "cutelystrequest.h"
+#include "cutelystresponse.h"
 
 #include <iostream>
 
 #include <QStringList>
-#include <QTcpSocket>
 #include <QDebug>
 
 using namespace std;
 
 CutelystApplication::CutelystApplication(int &argc, char **argv) :
     QCoreApplication(argc, argv),
-    d_ptr(new CutelystApplicationPrivate(this))
+    d_ptr(new CutelystApplicationPrivate)
 {
-    Q_D(CutelystApplication);
-
-    d->server = new QTcpServer(this);
-    connect(d->server, &QTcpServer::newConnection,
-            this, &CutelystApplication::onNewConnection);
 }
 
 CutelystApplication::~CutelystApplication()
 {
+    delete d_ptr;
 }
 
 bool CutelystApplication::parseArgs()
@@ -60,42 +59,7 @@ bool CutelystApplication::parseArgs()
         return false;
     }
 
-    for (int i = 0; i < args.count(); ++i) {
-        QString argument = args.at(i);
-        if (argument.startsWith(QLatin1String("--port="))) {
-            if (argument.length() > 7) {
-                d->port = argument.mid(7).toInt();
-                qDebug() << "Using custom port:" << d->port;
-            }
-            continue;
-        }
-    }
-
-    if (d->server->listen(d->address, d->port)) {
-        qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
-
-        int childCount = 1;
-        for (int i = 0; i < childCount; ++i) {
-            bool childProcess;
-            CutelystChildProcess *child = new CutelystChildProcess(childProcess, this);
-            if (childProcess) {
-                // We are not the parent anymore,
-                // so we don't need the server class
-                delete d->server;
-                return true;
-            } else if (child->initted()) {
-                d->child << child;
-            } else {
-                delete child;
-            }
-        }
-        qDebug() << "Listening on:" << d->server->serverAddress() << d->server->serverPort();
-        qDebug() << "Number of child process:" << d->child.size();
-    } else {
-        qWarning() << "Failed to listen on" << d->address.toString() << d->port;
-    }
-
-    return !d->child.isEmpty();
+    return true;
 }
 
 int CutelystApplication::printError()
@@ -103,31 +67,28 @@ int CutelystApplication::printError()
     return 1;
 }
 
-void CutelystApplication::onNewConnection()
+bool CutelystApplication::setup(CutelystEngine *engine)
 {
     Q_D(CutelystApplication);
 
-    QTcpSocket *socket = d->server->nextPendingConnection();
-    if (socket) {
-        if (!d->child.isEmpty()) {
-            if (d->child.first()->sendFD(socket->socketDescriptor())) {
-//                qDebug() << "fd sent";
-            }
-            delete socket;
-        }
+    d->dispatcher = new CutelystDispatcher(this);
+    d->dispatcher->setupActions();
+
+    if (engine) {
+        d->engine = engine;
+    } else {
+        d->engine = new CutelystEngineHttp(this);
     }
+    connect(d->engine, &CutelystEngine::handleRequest,
+            this, &CutelystApplication::handleRequest);
+
+    return d->engine->init();
 }
 
-
-CutelystApplicationPrivate::CutelystApplicationPrivate(CutelystApplication *parent) :
-    q_ptr(parent),
-    port(3000),
-    address(QHostAddress::Any)
+void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *resp)
 {
+    Q_D(CutelystApplication);
 
-}
-
-CutelystApplicationPrivate::~CutelystApplicationPrivate()
-{
-
+    Cutelyst *c = new Cutelyst(d->engine, d->dispatcher);
+    c->handleRequest(req, resp);
 }

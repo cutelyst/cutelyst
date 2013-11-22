@@ -22,24 +22,37 @@
 
 #include "cutelystengine.h"
 
-#include <QTcpSocket>
 #include <QStringList>
 
+class CutelystEngineHttpPrivate;
 class CutelystEngineHttp : public CutelystEngine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineHttp(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
+    explicit CutelystEngineHttp(QObject *parent = 0);
+    ~CutelystEngineHttp();
+
+    bool init();
+
+    quint16 peerPort() const;
+    QString peerName() const;
+    QHostAddress peerAddress() const;
 
     virtual void finalizeHeaders(Cutelyst *c);
     virtual void finalizeBody(Cutelyst *c);
     virtual void finalizeError(Cutelyst *c);
 
 protected:
+    CutelystEngineHttpPrivate *d_ptr;
+
     virtual void parse(const QByteArray &request);
 
 private:
+    Q_DECLARE_PRIVATE(CutelystEngineHttp)
     QString statusString(quint16 status) const;
+    void onNewServerConnection();
+    void onNewClientConnection(int socket);
+    void readyRead();
 
     bool m_finishedHeaders;
     QVariantHash m_data;

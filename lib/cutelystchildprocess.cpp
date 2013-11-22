@@ -19,22 +19,13 @@
 
 #include "cutelystchildprocess_p.h"
 
-#include "cutelystenginehttp.h"
-#include "cutelystcontroller.h"
-#include "cutelyst.h"
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 
-#include <QCoreApplication>
 #include <QSocketNotifier>
-#include <QTcpSocket>
 #include <QDebug>
-
-#include <QMetaType>
-#include <QMetaClassInfo>
 
 CutelystChildProcess::CutelystChildProcess(bool &childProcess, QObject *parent) :
     QObject(parent),
@@ -112,8 +103,7 @@ void CutelystChildProcess::initChild(int socket)
     QSocketNotifier *notifier = new QSocketNotifier(socket, QSocketNotifier::Read, this);
     connect(notifier, &QSocketNotifier::activated,
             this, &CutelystChildProcess::gotFD);
-    d->dispatcher = new CutelystDispatcher(this);
-    d->dispatcher->setupActions();
+
 }
 
 void CutelystChildProcess::gotFD(int socket)
@@ -123,12 +113,7 @@ void CutelystChildProcess::gotFD(int socket)
     int fd;
     char buf[16];
     if (d->readFD(socket, buf, sizeof(buf), &fd) == 1) {
-        CutelystEngineHttp *engine = new CutelystEngineHttp(fd, d->dispatcher, this);
-        if (engine->isValid()) {
-
-        } else {
-            delete engine;
-        }
+        newConnection(fd);
     } else {
         qWarning() << Q_FUNC_INFO << "Failed to read file descriptor";
     }
