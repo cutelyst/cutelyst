@@ -35,6 +35,10 @@ public:
 
     virtual void restoreSession(Cutelyst *c);
     virtual void saveSession(Cutelyst *c);
+
+private:
+    QString sessionName() const;
+    QVariantHash loadSession(Cutelyst *c);
 };
 
 #endif // CUTELYSTPLUGINSESSION_H

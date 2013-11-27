@@ -22,6 +22,9 @@
 #include "cutelystrequest.h"
 #include "cutelyst.h"
 
+#include <QCoreApplication>
+#include <QStringBuilder>
+#include <QSettings>
 #include <QDebug>
 
 CutelystPluginSession::CutelystPluginSession(QObject *parent) :
@@ -45,4 +48,35 @@ void CutelystPluginSession::restoreSession(Cutelyst *c)
 void CutelystPluginSession::saveSession(Cutelyst *c)
 {
     qDebug() << Q_FUNC_INFO << c->stash();
+}
+
+QString CutelystPluginSession::sessionName() const
+{
+    return QCoreApplication::applicationName() % QLatin1String("_session");
+}
+
+QVariantHash CutelystPluginSession::loadSession(Cutelyst *c)
+{
+    QVariant property = c->property("CutelystPluginSession::_session");
+    if (!property.isNull()) {
+        return property.value<QVariantHash>();
+    }
+
+    QString sessionid;
+    foreach (const QNetworkCookie &cookie, c->req()->cookies()) {
+        if (cookie.name() == sessionName()) {
+            sessionid = cookie.value();
+            qDebug() << Q_FUNC_INFO << "Found sessionid" << sessionid << "in cookie";
+        }
+    }
+
+    if (!sessionid.isEmpty()) {
+        QSettings settings;
+        settings.beginGroup("CutelystPluginSession::_session");
+        QVariantHash value = settings.value(sessionid).value<QVariantHash>();
+        c->setProperty("CutelystPluginSession::_session", value);
+        settings.endGroup();
+        return value;
+    }
+    return QVariantHash();
 }
