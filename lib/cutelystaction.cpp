@@ -28,6 +28,7 @@
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
+    m_valid(true),
     m_name(parent->ns() % QLatin1Char('/') % method.name()),
     m_ns(parent->ns()),
     m_method(method),
@@ -55,12 +56,24 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
         }
     }
 
+    if (m_method.access() == QMetaMethod::Private) {
+        m_attributes.insertMulti(QLatin1String("Private"), QString());
+    }
+
     // if the method has the CaptureArgs as an argument
     // set it on the attributes
     int parameterCount = 0;
     bool ignoreParameters = false;
-    foreach (const QByteArray &type, method.parameterTypes()) {
-        if (type == "QString" && !ignoreParameters) {
+    QList<QByteArray> parameterTypes = method.parameterTypes();
+    for (int i = 0; i < parameterTypes.size(); ++i) {
+        const QByteArray &type = parameterTypes.at(i);
+
+        if (i = 0) {
+            if (type != "Cutelyst*") {
+                m_valid = false;
+                return;
+            }
+        } else if (type == "QString" && !ignoreParameters) {
             ++parameterCount;
         } else {
             // Make sure the user defines specia
@@ -85,10 +98,6 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
             }
         }
     }
-
-    if (m_method.access() == QMetaMethod::Private) {
-        m_attributes.insertMulti(QLatin1String("Private"), QString());
-    }
 }
 
 QMultiHash<QString, QString> CutelystAction::attributes() const
@@ -112,11 +121,9 @@ bool CutelystAction::dispatch(Cutelyst *c)
         return false;
     }
 
-    m_controller->c = c;
-
     QStringList args = c->args();
     // Fill the missing arguments
-    for (int i = args.count(); i < 9; ++i) {
+    for (int i = args.count(); i < 8; ++i) {
         args << QString();
     }
 
@@ -125,6 +132,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
         bool ret;
         ret = m_method.invoke(m_controller,
                               Q_RETURN_ARG(bool, methodRet),
+                              Q_ARG(Cutelyst*, c),
                               Q_ARG(QString, args.at(0)),
                               Q_ARG(QString, args.at(1)),
                               Q_ARG(QString, args.at(2)),
@@ -132,8 +140,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
                               Q_ARG(QString, args.at(4)),
                               Q_ARG(QString, args.at(5)),
                               Q_ARG(QString, args.at(6)),
-                              Q_ARG(QString, args.at(7)),
-                              Q_ARG(QString, args.at(8)));
+                              Q_ARG(QString, args.at(7)));
 
         c->setState(ret);
         if (ret) {
@@ -147,6 +154,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
         return false;
     } else {
         bool ret = m_method.invoke(m_controller,
+                                   Q_ARG(Cutelyst*, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
                                    Q_ARG(QString, args.at(2)),
@@ -154,8 +162,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
                                    Q_ARG(QString, args.at(4)),
                                    Q_ARG(QString, args.at(5)),
                                    Q_ARG(QString, args.at(6)),
-                                   Q_ARG(QString, args.at(7)),
-                                   Q_ARG(QString, args.at(8)));
+                                   Q_ARG(QString, args.at(7)));
         c->setState(ret);
         return ret;
     }

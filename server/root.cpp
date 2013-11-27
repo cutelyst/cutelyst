@@ -10,24 +10,24 @@ Root::Root()
     qDebug() << Q_FUNC_INFO;
 }
 
-void Root::hugeNameQuiteLong(const QString &nome, Local)
+void Root::hugeNameQuiteLong(Cutelyst *c, const QString &nome, Local)
 {
 
 }
 
-void Root::begin(const QString &name, Path)
+void Root::begin(Cutelyst *c, const QString &name, Path)
 {
     qDebug() << Q_FUNC_INFO << name << sender();
 }
 
-void Root::users(const QString &name, const QString &age, Args, CutelystController::Local)
+void Root::users(Cutelyst *c, const QString &name, const QString &age, Args, CutelystController::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
     c->response()->redirect(QLatin1String("http://www.uol.com.br"));
     c->detach();
 }
 
-void Root::admin(const QString &name, const QString &age, CutelystController::Global)
+void Root::admin(Cutelyst *c, const QString &name, const QString &age, CutelystController::Global)
 {
     qDebug() << Q_FUNC_INFO << name << age;
     QByteArray data;
@@ -47,17 +47,17 @@ void Root::admin(const QString &name, const QString &age, CutelystController::Gl
     c->response()->setBody(data);
 }
 
-void Root::Begin()
+void Root::Begin(Cutelyst *c)
 {
     qDebug() << "*** Root::Begin()" << sender();
 }
 
-void Root::Auto()
+void Root::Auto(Cutelyst *c)
 {
     qDebug() << "*** Root::Auto()";
 }
 
-void Root::End()
+void Root::End(Cutelyst *c)
 {
     qDebug() << "*** Root::End()";
 }

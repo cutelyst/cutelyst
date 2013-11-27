@@ -7,16 +7,20 @@
 
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QMimeDatabase>
 #include <QFile>
 #include <QDir>
 #include <QDebug>
 
 using namespace CutelystPlugin;
 
-StaticSimple::StaticSimple(QObject *parent) :
+StaticSimple::StaticSimple(const QString &path, QObject *parent) :
     Plugin(parent),
-    m_rootDir(QDir::currentPath())
+    m_rootDir(path)
 {
+    if (m_rootDir.isNull()) {
+        m_rootDir = QDir::currentPath();
+    }
 }
 
 void StaticSimple::setRootDir(const QString &path)
@@ -53,12 +57,18 @@ bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
 {
     path = m_rootDir % path;
     QFile file(path);
-    qDebug() << Q_FUNC_INFO << "tying to serve" << path << file.fileName();
     if (file.exists() && file.open(QFile::ReadOnly)) {
+        qDebug() << Q_FUNC_INFO << "Serving" << path;
         c->response()->setBody(file.readAll());
+        QMimeDatabase db;
+        // use the extension to match to be faster
+        QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
+        if (mimeType.isValid()) {
+            c->res()->setContentType(mimeType.name() % QLatin1String("; charset=utf-8"));
+        }
         return true;
-    } else {
-        qDebug() << Q_FUNC_INFO << "not serving" << file.errorString();
     }
+
+    qDebug() << Q_FUNC_INFO << "Could not serve" << path << file.errorString();
     return false;
 }

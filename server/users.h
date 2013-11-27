@@ -9,10 +9,10 @@ class Users : public CutelystController
 public:
     Q_INVOKABLE Users();
 
-    Q_INVOKABLE void list(const QString &name, const QString &age, Args, Local);
+    Q_INVOKABLE void list(Cutelyst *c, const QString &name, const QString &age, Args, Local);
 
-    Q_INVOKABLE void Begin();
-    Q_INVOKABLE void Auto();
+    Q_INVOKABLE void Begin(Cutelyst *c);
+    Q_INVOKABLE void Auto(Cutelyst *c);
 //    Q_INVOKABLE void End();
 };
 

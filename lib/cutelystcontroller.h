@@ -101,23 +101,21 @@ public:
     QString ns() const;
 
 protected:
-    virtual void Begin();
-    virtual void Auto();
-    virtual void End();
+    virtual void Begin(Cutelyst *c);
+    virtual void Auto(Cutelyst *c);
+    virtual void End(Cutelyst *c);
 
-    virtual void Default();
-    virtual void Index();
-
-    Cutelyst *c;
+    virtual void Default(Cutelyst *c);
+    virtual void Index(Cutelyst *c);
 
 private:
     friend class CutelystAction;
 
-    Q_INVOKABLE void _DISPATCH();
-    Q_INVOKABLE bool _BEGIN();
-    Q_INVOKABLE bool _AUTO();
-    Q_INVOKABLE bool _ACTION();
-    Q_INVOKABLE bool _END();
+    Q_INVOKABLE void _DISPATCH(Cutelyst *c);
+    Q_INVOKABLE bool _BEGIN(Cutelyst *c);
+    Q_INVOKABLE bool _AUTO(Cutelyst *c);
+    Q_INVOKABLE bool _ACTION(Cutelyst *c);
+    Q_INVOKABLE bool _END(Cutelyst *c);
 };
 
 Q_DECLARE_METATYPE(CutelystController*)

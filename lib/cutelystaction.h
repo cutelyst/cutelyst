@@ -110,7 +110,10 @@ public:
      */
     QMetaMethod meta() const;
 
+    bool valid() const;
+
 private:
+    bool m_valid;
     QString m_name;
     QString m_ns;
     QMetaMethod m_method;
