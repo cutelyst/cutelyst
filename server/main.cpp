@@ -8,8 +8,8 @@
 #include "root.h"
 #include "users.h"
 
-#include "Plugins/cstaticsimple.h"
-#include "Plugins/csession.h"
+#include "Plugin/staticsimple.h"
+#include "Plugin/session.h"
 
 using namespace std;
 
@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
 
-    app.registerPlugin(new CPStaticSimple);
-    app.registerPlugin(new CutelystPluginSession);
+    app.registerPlugin(new CutelystPlugin::StaticSimple);
+    app.registerPlugin(new CutelystPlugin::Session);
 
     if (app.parseArgs() && app.setup()) {
         return app.exec();

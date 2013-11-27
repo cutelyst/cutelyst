@@ -25,11 +25,11 @@ set(cutelystqt_SRC
     cutelystdispatcher_p.h
     cutelystchildprocess.cpp
     cutelystchildprocess_p.h
-    cutelystplugin.cpp
     cutelystapplication.cpp
     cutelystapplication_p.h
-    Plugins/csession.cpp
-    Plugins/cstaticsimple.cpp
+    Plugin/plugin.cpp
+    Plugin/session.cpp
+    Plugin/staticsimple.cpp
     uwsgi.h
 )
 
@@ -43,10 +43,14 @@ set(cutelystqt_HEADERS
     CutelystController
     cutelystapplication.h
     CutelystApplication
-    Plugins/csession.h
-    Plugins/CSession
-    Plugins/cstaticsimple.h
-    Plugins/CStaticSimple
+)
+
+set(cutelystqt_plugin_HEADERS
+    Plugin/plugin.h
+    Plugin/session.h
+    Plugin/Session
+    Plugin/staticsimple.h
+    Plugin/StaticSimple
 )
 
 set(cutelystqt_HEADERS_PRIVATE
@@ -76,6 +80,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
 )
 install(FILES ${cutelystqt_HEADERS}
         DESTINATION include/CutelystQt5
+)
+install(FILES ${cutelystqt_plugin_HEADERS}
+        DESTINATION include/CutelystQt5/Plugin
 )
 
 add_subdirectory(modules)

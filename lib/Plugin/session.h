@@ -17,26 +17,32 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTAPPLICATION_P_H
-#define CUTELYSTAPPLICATION_P_H
+#ifndef CSESSION_H
+#define CSESSION_H
 
-#include "cutelystapplication.h"
-#include "cutelystdispatcher.h"
-#include "cutelystengine.h"
-#include "Plugin/plugin.h"
+#include "plugin.h"
 
-class CutelystApplicationPrivate
+#include <QObject>
+
+class Cutelyst;
+namespace CutelystPlugin {
+
+class Session : public Plugin
 {
+    Q_OBJECT
 public:
-    CutelystApplication *q_ptr;
-    QString error;
-    int childFD;
-    int parentFD;
-    int childPID;
+    explicit Session(QObject *parent = 0);
 
-    CutelystDispatcher *dispatcher;
-    CutelystEngine *engine;
-    QHash<QString, CutelystPlugin::Plugin *> plugins;
+    bool setup(CutelystApplication *app);
+
+    virtual void restoreSession(Cutelyst *c);
+    virtual void saveSession(Cutelyst *c);
+
+private:
+    QString sessionName() const;
+    QVariantHash loadSession(Cutelyst *c);
 };
 
-#endif // CUTELYSTAPPLICATION_P_H
+}
+
+#endif // CSESSION_H

@@ -17,26 +17,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTAPPLICATION_P_H
-#define CUTELYSTAPPLICATION_P_H
+#ifndef CUTELYSTPLUGIN_H
+#define CUTELYSTPLUGIN_H
 
-#include "cutelystapplication.h"
-#include "cutelystdispatcher.h"
-#include "cutelystengine.h"
-#include "Plugin/plugin.h"
+#include <QObject>
 
-class CutelystApplicationPrivate
+class CutelystApplication;
+
+namespace CutelystPlugin {
+
+class Plugin : public QObject
 {
+    Q_OBJECT
 public:
-    CutelystApplication *q_ptr;
-    QString error;
-    int childFD;
-    int parentFD;
-    int childPID;
+    explicit Plugin(QObject *parent = 0);
 
-    CutelystDispatcher *dispatcher;
-    CutelystEngine *engine;
-    QHash<QString, CutelystPlugin::Plugin *> plugins;
+    /**
+     * Reimplement this if you need to connect to
+     * the signals emitted from CutelystApplication
+     */
+    virtual bool setup(CutelystApplication *app);
 };
 
-#endif // CUTELYSTAPPLICATION_P_H
+}
+
+#endif // CUTELYSTPLUGIN_H

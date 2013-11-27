@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "csession.h"
+#include "session.h"
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"
 #include "cutelyst.h"
@@ -27,37 +27,39 @@
 #include <QSettings>
 #include <QDebug>
 
-CutelystPluginSession::CutelystPluginSession(QObject *parent) :
-    CutelystPlugin(parent)
+using namespace CutelystPlugin;
+
+Session::Session(QObject *parent) :
+    Plugin(parent)
 {
 }
 
-bool CutelystPluginSession::setup(CutelystApplication *app)
+bool Session::setup(CutelystApplication *app)
 {
     connect(app, &CutelystApplication::beforeDispatch,
-            this, &CutelystPluginSession::restoreSession);
+            this, &Session::restoreSession);
     connect(app, &CutelystApplication::afterDispatch,
-            this, &CutelystPluginSession::saveSession);
+            this, &Session::saveSession);
 }
 
-void CutelystPluginSession::restoreSession(Cutelyst *c)
+void Session::restoreSession(Cutelyst *c)
 {
     qDebug() << Q_FUNC_INFO << c->req()->cookies();
 }
 
-void CutelystPluginSession::saveSession(Cutelyst *c)
+void Session::saveSession(Cutelyst *c)
 {
     qDebug() << Q_FUNC_INFO << c->stash();
 }
 
-QString CutelystPluginSession::sessionName() const
+QString Session::sessionName() const
 {
     return QCoreApplication::applicationName() % QLatin1String("_session");
 }
 
-QVariantHash CutelystPluginSession::loadSession(Cutelyst *c)
+QVariantHash Session::loadSession(Cutelyst *c)
 {
-    QVariant property = c->property("CutelystPluginSession::_session");
+    QVariant property = c->property("Session::_session");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
@@ -72,9 +74,9 @@ QVariantHash CutelystPluginSession::loadSession(Cutelyst *c)
 
     if (!sessionid.isEmpty()) {
         QSettings settings;
-        settings.beginGroup("CutelystPluginSession::_session");
+        settings.beginGroup("Session::_session");
         QVariantHash value = settings.value(sessionid).value<QVariantHash>();
-        c->setProperty("CutelystPluginSession::_session", value);
+        c->setProperty("Session::_session", value);
         settings.endGroup();
         return value;
     }

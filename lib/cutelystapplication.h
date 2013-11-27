@@ -22,11 +22,13 @@
 
 #include <QCoreApplication>
 
+namespace CutelystPlugin {
+class Plugin;
+}
 class Cutelyst;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystEngine;
-class CutelystPlugin;
 class CutelystApplicationPrivate;
 class CutelystApplication : public QCoreApplication
 {
@@ -35,7 +37,7 @@ public:
     CutelystApplication(int &argc, char **argv);
     ~CutelystApplication();
 
-    void registerPlugin(CutelystPlugin *plugin, const QString &name = QString());
+    void registerPlugin(CutelystPlugin::Plugin *plugin, const QString &name = QString());
 
     bool parseArgs();
     int printError();

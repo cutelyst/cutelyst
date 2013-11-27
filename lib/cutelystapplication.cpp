@@ -43,7 +43,7 @@ CutelystApplication::~CutelystApplication()
     delete d_ptr;
 }
 
-void CutelystApplication::registerPlugin(CutelystPlugin *plugin, const QString &name)
+void CutelystApplication::registerPlugin(CutelystPlugin::Plugin *plugin, const QString &name)
 {
     Q_D(CutelystApplication);
 
@@ -98,7 +98,7 @@ bool CutelystApplication::setup(CutelystEngine *engine)
     connect(d->engine, &CutelystEngine::handleRequest,
             this, &CutelystApplication::handleRequest);
 
-    QHash<QString, CutelystPlugin *>::Iterator it = d->plugins.begin();
+    QHash<QString, CutelystPlugin::Plugin *>::Iterator it = d->plugins.begin();
     while (it != d->plugins.end()) {
         if (!it.value()->setup(this)) {
             qWarning() << Q_FUNC_INFO << "Failed to setup plugin" << it.key() << it.value();
