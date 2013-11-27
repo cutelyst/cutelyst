@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelystpluginsession.h"
+#include "csession.h"
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"
 #include "cutelyst.h"

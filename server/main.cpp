@@ -8,8 +8,8 @@
 #include "root.h"
 #include "users.h"
 
-#include "cpstaticsimple.h"
-#include "cutelystpluginsession.h"
+#include "Plugins/cstaticsimple.h"
+#include "Plugins/csession.h"
 
 using namespace std;
 

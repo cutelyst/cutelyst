@@ -1,4 +1,4 @@
-#include "cpstaticsimple.h"
+#include "cstaticsimple.h"
 
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"

@@ -25,8 +25,6 @@
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
-#include "cpstaticsimple.h"
-
 #include <iostream>
 
 #include <QStringList>

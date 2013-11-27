@@ -28,8 +28,8 @@ set(cutelystqt_SRC
     cutelystplugin.cpp
     cutelystapplication.cpp
     cutelystapplication_p.h
-    cutelystpluginsession.cpp
-    cpstaticsimple.cpp
+    Plugins/csession.cpp
+    Plugins/cstaticsimple.cpp
     uwsgi.h
 )
 
@@ -43,6 +43,10 @@ set(cutelystqt_HEADERS
     CutelystController
     cutelystapplication.h
     CutelystApplication
+    Plugins/csession.h
+    Plugins/CSession
+    Plugins/cstaticsimple.h
+    Plugins/CStaticSimple
 )
 
 set(cutelystqt_HEADERS_PRIVATE
