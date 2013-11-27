@@ -20,6 +20,9 @@
 #include "cutelystdispatchtypeindex.h"
 #include "cutelyst.h"
 #include "cutelystrequest.h"
+#include "cutelystaction.h"
+
+#include <QStringBuilder>
 
 CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
     CutelystDispatchType(parent)
@@ -40,6 +43,15 @@ bool CutelystDispatchTypeIndex::match(Cutelyst *c, const QString &path) const
         return true;
     }
     return false;
+}
+
+QString CutelystDispatchTypeIndex::uriForAction(CutelystAction *action, const QStringList &captures) const
+{
+    if (captures.isEmpty()) {
+        return QString();
+    }
+
+    return QLatin1Char('/') % action->ns();
 }
 
 bool CutelystDispatchTypeIndex::isLowPrecedence() const

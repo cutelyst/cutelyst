@@ -163,13 +163,13 @@ void CutelystEngineHttp::parse(const QByteArray &request)
             bool badRequest = false;
             QRegularExpressionMatch match = methodProtocolRE.match(section);
             if (match.hasMatch()) {
-                m_method = match.captured(1);
+                m_method = match.captured(1).toLocal8Bit();
                 m_path = match.captured(2);
                 m_protocol = match.captured(3);
             } else {
                 match = methodRE.match(section);
                 if (match.hasMatch()) {
-                    m_method = match.captured(1);
+                    m_method = match.captured(1).toLocal8Bit();
                     m_path = match.captured(2);
                 }
             }

@@ -42,6 +42,11 @@ public:
     virtual bool match(Cutelyst *c, const QString &path) const = 0;
 
     /**
+     * Returns an uri for an action //TODO
+     */
+    virtual QString uriForAction(CutelystAction *action, const QStringList &captures) const;
+
+    /**
      * @brief registerAction
      * @param action
      * @return

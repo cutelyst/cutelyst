@@ -152,6 +152,12 @@ QVariantHash *Cutelyst::stash()
     return &d->stash;
 }
 
+QString Cutelyst::uriFor(const QString &path, const QStringList &args)
+{
+    Q_D(Cutelyst);
+    return d->dispatcher->uriForAction(d->dispatcher->getAction(path), args);
+}
+
 bool Cutelyst::dispatch()
 {
     Q_D(Cutelyst);
@@ -282,7 +288,7 @@ int Cutelyst::finalize()
 
     finalizeHeaders();
 
-    if (d->request->method() == QLatin1String("HEAD")) {
+    if (d->request->method() == "HEAD") {
         d->response->setBody(QByteArray());
     }
 

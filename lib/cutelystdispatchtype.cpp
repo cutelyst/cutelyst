@@ -30,6 +30,11 @@ void CutelystDispatchType::list() const
 {
 }
 
+QString CutelystDispatchType::uriForAction(CutelystAction *action, const QStringList &captures) const
+{
+    return QString();
+}
+
 bool CutelystDispatchType::registerAction(CutelystAction *action)
 {
     Q_UNUSED(action)

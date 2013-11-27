@@ -41,9 +41,10 @@ public:
     bool dispatch(Cutelyst *c);
     bool forward(Cutelyst *c, const QString &opname, const QStringList &arguments);
     void prepareAction(Cutelyst *c);
-    CutelystAction* getAction(const QString &name, const QString &ns) const;
+    CutelystAction* getAction(const QString &name, const QString &ns = QString()) const;
     CutelystActionList getActions(const QString &name, const QString &ns) const;
     QHash<QString, CutelystController*> controllers() const;
+    QString uriForAction(CutelystAction *action, const QStringList &captures);
 
 private:
     void printActions();

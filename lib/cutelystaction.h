@@ -110,7 +110,7 @@ public:
      */
     QMetaMethod meta() const;
 
-    bool valid() const;
+    bool isValid() const;
 
 private:
     bool m_valid;

@@ -82,6 +82,8 @@ public:
 
     QVariantHash* stash();
 
+    QString uriFor(const QString &path, const QStringList &args = QStringList());
+
     bool dispatch();
     bool detached() const;
     void detach();

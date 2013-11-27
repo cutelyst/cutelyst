@@ -36,6 +36,8 @@ public:
 
     virtual bool registerAction(CutelystAction *action);
 
+    virtual QString uriForAction(CutelystAction *action, const QStringList &captures) const;
+
 private:
     void registerPath(const QString &path, CutelystAction *action);
 

@@ -60,7 +60,7 @@ private:
     QByteArray m_body;
     quint64 m_bodySize;
     quint64 m_bufLastIndex;
-    QString m_method;
+    QByteArray m_method;
     QString m_path;
     QString m_protocol;
     QHash<QString, QByteArray> m_headers;

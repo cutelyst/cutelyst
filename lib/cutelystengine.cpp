@@ -45,7 +45,7 @@ CutelystRequest *CutelystEngine::request() const
     return d->request;
 }
 
-CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QString &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body) const
+CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body) const
 {
     // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;

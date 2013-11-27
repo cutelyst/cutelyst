@@ -68,7 +68,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     for (int i = 0; i < parameterTypes.size(); ++i) {
         const QByteArray &type = parameterTypes.at(i);
 
-        if (i = 0) {
+        if (i == 0) {
             if (type != "Cutelyst*") {
                 m_valid = false;
                 return;
@@ -205,4 +205,9 @@ quint8 CutelystAction::numberOfArgs() const
 quint8 CutelystAction::numberOfCaptures() const
 {
     return m_numberOfCaptures;
+}
+
+bool CutelystAction::isValid() const
+{
+    return m_valid;
 }

@@ -30,7 +30,7 @@ class CutelystEngine;
 class CutelystRequestPrivate
 {
 public:
-    QString method;
+    QByteArray method;
     QUrl url;
     QStringList args;
     QString protocol;

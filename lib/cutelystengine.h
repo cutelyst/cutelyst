@@ -52,7 +52,7 @@ Q_SIGNALS:
 protected:
     virtual void parse(const QByteArray &data) = 0;
     CutelystRequest *createRequest(const QUrl &url,
-                                   const QString &method,
+                                   const QByteArray &method,
                                    const QString &protocol,
                                    const QHash<QString, QByteArray> &headers,
                                    const QByteArray &body) const;

@@ -72,7 +72,7 @@ void CutelystDispatcher::setupActions()
 //                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
 //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
                     CutelystAction *action = new CutelystAction(method, controller);
-                    if (!d->actionHash.contains(action->privateName())) {
+                    if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                         d->actionHash.insert(action->privateName(), action);
                         d->containerHash[action->ns()] << action;
                         controllerUsed = true;
@@ -217,6 +217,18 @@ QHash<QString, CutelystController *> CutelystDispatcher::controllers() const
 {
     Q_D(const CutelystDispatcher);
     return d->constrollerHash;
+}
+
+QString CutelystDispatcher::uriForAction(CutelystAction *action, const QStringList &captures)
+{
+    Q_D(const CutelystDispatcher);
+    foreach (CutelystDispatchType *dispatch, d->dispatchers) {
+        QString uri = dispatch->uriForAction(action, captures);
+        if (!uri.isNull()) {
+            return uri.isEmpty() ? QLatin1String("/") : uri;
+        }
+    }
+    return QString();
 }
 
 void CutelystDispatcher::printActions()

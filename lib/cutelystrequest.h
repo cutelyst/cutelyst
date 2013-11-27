@@ -98,7 +98,7 @@ public:
     QList<QNetworkCookie> cookies() const;
     QString header(const QString &key) const;
     QHash<QString, QByteArray> headers() const;
-    QString method() const;
+    QByteArray method() const;
     QString protocol() const;
     QString userAgent() const;
 

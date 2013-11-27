@@ -134,6 +134,19 @@ bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
     return m_paths.size() != pathsCount;
 }
 
+QString CutelystDispatchTypePath::uriForAction(CutelystAction *action, const QStringList &captures) const
+{
+    QString path = action->attributes().value(QLatin1String("Path"));
+    if (!path.isNull()) {
+        if (path.isEmpty()) {
+            return QLatin1String("/");
+        } else {
+            return path;
+        }
+    }
+    return QString();
+}
+
 void CutelystDispatchTypePath::registerPath(const QString &path, CutelystAction *action)
 {
     QString _path = path;
