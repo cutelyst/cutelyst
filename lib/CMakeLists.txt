@@ -37,6 +37,7 @@ set(cutelystqt_HEADERS
     cutelystrequest.h
     cutelystresponse.h
     cutelyst.h
+    Cutelyst
     cutelystengine.h
     cutelystcontroller.h
     CutelystController
