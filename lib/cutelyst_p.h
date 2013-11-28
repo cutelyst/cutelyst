@@ -21,20 +21,21 @@
 #define CUTELYST_P_H
 
 #include "cutelyst.h"
+#include "Plugin/plugin.h"
 
 #include <QVariantHash>
 
 class CutelystPrivate
 {
-//    Q_DECLARE_PUBLIC(Cutelyst)
 public:
-    CutelystPrivate(Cutelyst *parent);
+    CutelystPrivate();
 
     CutelystEngine *engine;
     CutelystRequest *request;
     CutelystResponse *response;
     CutelystAction *action;
     CutelystDispatcher *dispatcher;
+    QHash<QString, CutelystPlugin::Plugin *> plugins;
     bool detached;
     QString match;
     QStringList error;

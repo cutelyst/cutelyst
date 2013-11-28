@@ -21,7 +21,7 @@
 
 #include "cutelystenginehttp.h"
 #include "cutelystengineuwsgi.h"
-#include "cutelyst.h"
+#include "cutelyst_p.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
@@ -114,7 +114,11 @@ void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *
 {
     Q_D(CutelystApplication);
 
-    Cutelyst *c = new Cutelyst(d->engine, d->dispatcher);
+    CutelystPrivate *priv = new CutelystPrivate;
+    priv->engine = d->engine;
+    priv->dispatcher = d->dispatcher;
+    priv->plugins = d->plugins;
+    Cutelyst *c = new Cutelyst(priv);
     connect(c, &Cutelyst::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
     connect(c, &Cutelyst::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);
     connect(c, &Cutelyst::beforeDispatch, this, &CutelystApplication::beforeDispatch);

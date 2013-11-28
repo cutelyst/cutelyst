@@ -23,6 +23,7 @@
 #include "plugin.h"
 
 #include <QObject>
+#include <QVariant>
 
 class Cutelyst;
 namespace CutelystPlugin {
@@ -35,12 +36,29 @@ public:
 
     bool setup(CutelystApplication *app);
 
-    virtual void restoreSession(Cutelyst *c);
-    virtual void saveSession(Cutelyst *c);
+    QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setValue(Cutelyst *c, const QString &key, const QVariant &value);
+
+protected:
+    /**
+     * This method is used to call the storage class and retrieve
+     * the session, the default implementation does that by using a file
+     */
+    virtual QVariantHash retrieveSession(const QString &sessionId) const;
+
+    /**
+     * This methos is used to call the storage class and persist
+     * the session data, the default implementation does that by using a file
+     */
+    virtual void persistSession(const QString &sessionId, const QVariantHash &data) const;
 
 private:
+    void saveSession(Cutelyst *c);
     QString sessionName() const;
-    QVariantHash loadSession(Cutelyst *c);
+    QVariantHash loadSession(Cutelyst *c) const;
+    QString generateSessionId() const;
+    QString getSessionId(Cutelyst *c) const;
+    QString filePath(const QString &sessionId) const;
 };
 
 }

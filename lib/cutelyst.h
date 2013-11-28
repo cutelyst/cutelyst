@@ -21,7 +21,12 @@
 #define CUTELYST_H
 
 #include <QObject>
+#include <QHash>
 #include <QStringList>
+
+namespace CutelystPlugin {
+class Plugin;
+}
 
 class CutelystAction;
 class CutelystEngine;
@@ -34,7 +39,7 @@ class Cutelyst : public QObject
 {
     Q_OBJECT
 public:
-    Cutelyst(CutelystEngine *engine, CutelystDispatcher *dispatcher);
+    Cutelyst(CutelystPrivate *priv);
     ~Cutelyst();
 
     bool error() const;
@@ -90,6 +95,21 @@ public:
     bool forward(const QString &action, const QStringList &arguments = QStringList());
     CutelystAction *getAction(const QString &action, const QString &ns = QString());
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
+
+    QHash<QString, CutelystPlugin::Plugin *> plugins();
+
+    template <typename T>
+    T plugin()
+    {
+        QHash<QString, CutelystPlugin::Plugin *>::Iterator it = plugins().begin();
+        while (it != plugins().end()) {
+            if (qobject_cast<T>(it.value())) {
+                return qobject_cast<T>(it.value());
+            }
+            ++it;
+        }
+        return 0;
+    }
 
 Q_SIGNALS:
     void beforePrepareAction(Cutelyst *c, bool *skipMethod);

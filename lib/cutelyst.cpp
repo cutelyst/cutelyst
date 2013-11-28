@@ -30,13 +30,9 @@
 #include <QStringList>
 #include <QTime>
 
-Cutelyst::Cutelyst(CutelystEngine *engine, CutelystDispatcher *dispatcher) :
-    QObject(engine),
-    d_ptr(new CutelystPrivate(this))
+Cutelyst::Cutelyst(CutelystPrivate *priv) :
+    d_ptr(priv)
 {
-    Q_D(Cutelyst);
-    d->engine = engine;
-    d->dispatcher = dispatcher;
 }
 
 Cutelyst::~Cutelyst()
@@ -155,7 +151,13 @@ QVariantHash *Cutelyst::stash()
 QString Cutelyst::uriFor(const QString &path, const QStringList &args)
 {
     Q_D(Cutelyst);
-    return d->dispatcher->uriForAction(d->dispatcher->getAction(path), args);
+
+    CutelystAction *action = d->dispatcher->getAction(path);
+    if (action) {
+        return d->dispatcher->uriForAction(action, args);
+    } else {
+        return path;
+    }
 }
 
 bool Cutelyst::dispatch()
@@ -192,6 +194,12 @@ QList<CutelystAction *> Cutelyst::getActions(const QString &action, const QStrin
 {
     Q_D(Cutelyst);
     return d->dispatcher->getActions(action, ns);
+}
+
+QHash<QString, CutelystPlugin::Plugin *> Cutelyst::plugins()
+{
+    Q_D(Cutelyst);
+    return d->plugins;
 }
 
 void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
@@ -301,7 +309,7 @@ int Cutelyst::finalize()
     return d->response->status();
 }
 
-CutelystPrivate::CutelystPrivate(Cutelyst *parent) :
+CutelystPrivate::CutelystPrivate() :
     action(0),
     detached(false),
     state(false),

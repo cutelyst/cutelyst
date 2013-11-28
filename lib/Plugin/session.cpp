@@ -20,11 +20,15 @@
 #include "session.h"
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"
+#include "cutelystresponse.h"
 #include "cutelyst.h"
 
 #include <QCoreApplication>
 #include <QStringBuilder>
+#include <QRegularExpression>
 #include <QSettings>
+#include <QUuid>
+#include <QDir>
 #include <QDebug>
 
 using namespace CutelystPlugin;
@@ -36,20 +40,59 @@ Session::Session(QObject *parent) :
 
 bool Session::setup(CutelystApplication *app)
 {
-    connect(app, &CutelystApplication::beforeDispatch,
-            this, &Session::restoreSession);
     connect(app, &CutelystApplication::afterDispatch,
             this, &Session::saveSession);
 }
 
-void Session::restoreSession(Cutelyst *c)
+QVariant Session::value(Cutelyst *c, const QString &key, const QVariant &defaultValue) const
 {
-    qDebug() << Q_FUNC_INFO << c->req()->cookies();
+    QVariantHash session = loadSession(c);
+    return session.value(key, defaultValue);
+}
+
+void Session::setValue(Cutelyst *c, const QString &key, const QVariant &value)
+{
+    QVariantHash session = loadSession(c);
+    session.insert(key, value);
+    c->setProperty("Session::_session", session);
+    c->setProperty("Session::_sessionsave", true);
+}
+
+QVariantHash Session::retrieveSession(const QString &sessionId) const
+{
+    qDebug() << Q_FUNC_INFO << filePath(sessionId);
+    QVariantHash ret;
+    QSettings settings(filePath(sessionId), QSettings::IniFormat);
+    foreach (const QString &key, settings.allKeys()) {
+        ret.insert(key, settings.value(key));
+    }
+    return ret;
+}
+
+void Session::persistSession(const QString &sessionId, const QVariantHash &data) const
+{
+    qDebug() << Q_FUNC_INFO << filePath(sessionId);
+    QSettings settings(filePath(sessionId), QSettings::IniFormat);
+    QVariantHash::ConstIterator it = data.constBegin();
+    while (it != data.end()) {
+        settings.setValue(it.key(), it.value());
+        ++it;
+    }
 }
 
 void Session::saveSession(Cutelyst *c)
 {
-    qDebug() << Q_FUNC_INFO << c->stash();
+    qDebug() << Q_FUNC_INFO;
+    if (!c->property("Session::_sessionsave").toBool()) {
+        return;
+    }
+
+    QString sessionId = getSessionId(c);
+    QNetworkCookie sessionCookie(sessionName().toLocal8Bit(),
+                                 sessionId.toLocal8Bit());
+    c->res()->addCookie(sessionCookie);
+    persistSession(sessionId,
+                   loadSession(c));
 }
 
 QString Session::sessionName() const
@@ -57,28 +100,55 @@ QString Session::sessionName() const
     return QCoreApplication::applicationName() % QLatin1String("_session");
 }
 
-QVariantHash Session::loadSession(Cutelyst *c)
+QVariantHash Session::loadSession(Cutelyst *c) const
 {
     QVariant property = c->property("Session::_session");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
 
-    QString sessionid;
+    QString sessionid = getSessionId(c);
+    if (!sessionid.isEmpty()) {
+        QVariantHash session = retrieveSession(sessionid);
+        c->setProperty("Session::_session", session);
+        return session;
+    }
+    return QVariantHash();
+}
+
+QString Session::generateSessionId() const
+{
+    return QUuid::createUuid().toString().remove(QRegularExpression("-|{|}"));
+}
+
+QString Session::getSessionId(Cutelyst *c) const
+{
+    QVariant property = c->property("Session::_sessionid");
+    if (!property.isNull()) {
+        return property.value<QString>();
+    }
+
+    QString sessionId;
     foreach (const QNetworkCookie &cookie, c->req()->cookies()) {
         if (cookie.name() == sessionName()) {
-            sessionid = cookie.value();
-            qDebug() << Q_FUNC_INFO << "Found sessionid" << sessionid << "in cookie";
+            sessionId = cookie.value();
+            qDebug() << Q_FUNC_INFO << "Found sessionid" << sessionId << "in cookie";
         }
     }
 
-    if (!sessionid.isEmpty()) {
-        QSettings settings;
-        settings.beginGroup("Session::_session");
-        QVariantHash value = settings.value(sessionid).value<QVariantHash>();
-        c->setProperty("Session::_session", value);
-        settings.endGroup();
-        return value;
+    if (sessionId.isEmpty()) {
+        sessionId = generateSessionId();
+        qDebug() << Q_FUNC_INFO << "Created session" << sessionId;
     }
-    return QVariantHash();
+    c->setProperty("Session::_sessionid", sessionId);
+
+    return sessionId;
+}
+
+QString Session::filePath(const QString &sessionId) const
+{
+    QString path = QDir::tempPath() % QLatin1Char('/') % QCoreApplication::applicationName();
+    QDir dir;
+    dir.mkpath(path);
+    return path % QLatin1Char('/') % sessionId;
 }
