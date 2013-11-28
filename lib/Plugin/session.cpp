@@ -44,7 +44,7 @@ bool Session::setup(CutelystApplication *app)
             this, &Session::saveSession);
 }
 
-QVariant Session::value(Cutelyst *c, const QString &key, const QVariant &defaultValue) const
+QVariant Session::value(Cutelyst *c, const QString &key, const QVariant &defaultValue)
 {
     QVariantHash session = loadSession(c);
     return session.value(key, defaultValue);
@@ -54,8 +54,8 @@ void Session::setValue(Cutelyst *c, const QString &key, const QVariant &value)
 {
     QVariantHash session = loadSession(c);
     session.insert(key, value);
-    c->setProperty("Session::_session", session);
-    c->setProperty("Session::_sessionsave", true);
+    setPluginProperty(c, "sessionvalues", session);
+    setPluginProperty(c, "sessionsave", true);
 }
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
@@ -83,7 +83,7 @@ void Session::persistSession(const QString &sessionId, const QVariantHash &data)
 void Session::saveSession(Cutelyst *c)
 {
     qDebug() << Q_FUNC_INFO;
-    if (!c->property("Session::_sessionsave").toBool()) {
+    if (!pluginProperty(c, "sessionsave").toBool()) {
         return;
     }
 
@@ -100,9 +100,9 @@ QString Session::sessionName() const
     return QCoreApplication::applicationName() % QLatin1String("_session");
 }
 
-QVariantHash Session::loadSession(Cutelyst *c) const
+QVariantHash Session::loadSession(Cutelyst *c)
 {
-    QVariant property = c->property("Session::_session");
+    QVariant property = pluginProperty(c, "sessionvalues");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
@@ -110,7 +110,7 @@ QVariantHash Session::loadSession(Cutelyst *c) const
     QString sessionid = getSessionId(c);
     if (!sessionid.isEmpty()) {
         QVariantHash session = retrieveSession(sessionid);
-        c->setProperty("Session::_session", session);
+        setPluginProperty(c, "sessionvalues", session);
         return session;
     }
     return QVariantHash();

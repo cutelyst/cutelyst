@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QVariant>
 #include <QStringList>
 
 namespace CutelystPlugin {
@@ -96,17 +97,15 @@ public:
     CutelystAction *getAction(const QString &action, const QString &ns = QString());
     QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
 
-    QHash<QString, CutelystPlugin::Plugin *> plugins();
+    QList<CutelystPlugin::Plugin *> plugins();
 
     template <typename T>
     T plugin()
     {
-        QHash<QString, CutelystPlugin::Plugin *>::Iterator it = plugins().begin();
-        while (it != plugins().end()) {
-            if (qobject_cast<T>(it.value())) {
-                return qobject_cast<T>(it.value());
+        foreach (CutelystPlugin::Plugin *plugin, plugins()) {
+            if (static_cast<T>(plugin)) {
+                return static_cast<T>(plugin);
             }
-            ++it;
         }
         return 0;
     }
@@ -126,8 +125,12 @@ protected:
     void finalizeError();
     int finalize();
 
+    QVariant pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &name, const QVariant &value);
+
     friend class CutelystApplication;
     friend class CutelystDispatchType;
+    friend class CutelystPlugin::Plugin;
     CutelystPrivate *d_ptr;
 
 private:

@@ -37,7 +37,7 @@ public:
     CutelystApplication(int &argc, char **argv);
     ~CutelystApplication();
 
-    void registerPlugin(CutelystPlugin::Plugin *plugin, const QString &name = QString());
+    void registerPlugin(CutelystPlugin::Plugin *plugin);
 
     bool parseArgs();
     int printError();

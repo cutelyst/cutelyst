@@ -21,10 +21,15 @@
 #define CUTELYSTPLUGIN_H
 
 #include <QObject>
+#include <QHash>
+#include <QVariant>
 
+class Cutelyst;
 class CutelystApplication;
 
 namespace CutelystPlugin {
+
+typedef QHash<QString, QString> CStringHash;
 
 class Plugin : public QObject
 {
@@ -37,6 +42,10 @@ public:
      * the signals emitted from CutelystApplication
      */
     virtual bool setup(CutelystApplication *app);
+
+protected:
+    QVariant pluginProperty(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setPluginProperty(Cutelyst *c, const QString &key, const QVariant &value);
 };
 
 }

@@ -30,6 +30,8 @@ set(cutelystqt_SRC
     Plugin/plugin.cpp
     Plugin/session.cpp
     Plugin/staticsimple.cpp
+    Plugin/authentication.cpp
+    Plugin/authentication_p.h
     uwsgi.h
 )
 
@@ -51,6 +53,7 @@ set(cutelystqt_plugin_HEADERS
     Plugin/Session
     Plugin/staticsimple.h
     Plugin/StaticSimple
+    Plugin/authentication.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE

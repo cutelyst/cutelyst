@@ -36,7 +36,7 @@ public:
 
     bool setup(CutelystApplication *app);
 
-    QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant());
     void setValue(Cutelyst *c, const QString &key, const QVariant &value);
 
 protected:
@@ -55,7 +55,7 @@ protected:
 private:
     void saveSession(Cutelyst *c);
     QString sessionName() const;
-    QVariantHash loadSession(Cutelyst *c) const;
+    QVariantHash loadSession(Cutelyst *c);
     QString generateSessionId() const;
     QString getSessionId(Cutelyst *c) const;
     QString filePath(const QString &sessionId) const;

@@ -35,7 +35,7 @@ public:
     CutelystResponse *response;
     CutelystAction *action;
     CutelystDispatcher *dispatcher;
-    QHash<QString, CutelystPlugin::Plugin *> plugins;
+    QHash<CutelystPlugin::Plugin *, QVariantHash> plugins;
     bool detached;
     QString match;
     QStringList error;

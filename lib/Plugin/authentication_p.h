@@ -17,29 +17,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "plugin.h"
+#ifndef AUTHENTICATION_P_H
+#define AUTHENTICATION_P_H
 
-#include "cutelyst.h"
+#include "authentication.h"
 
-using namespace CutelystPlugin;
+namespace CutelystPlugin {
 
-Plugin::Plugin(QObject *parent) :
-    QObject(parent)
+class AuthenticationPrivate
 {
+public:
+    AuthenticationPrivate();
+
+    Authentication::Realm* realm(const QString &realmName) const;
+
+    QString defaultRealm;
+    QHash<QString, Authentication::Realm*> realms;
+};
+
 }
 
-bool Plugin::setup(CutelystApplication *app)
-{
-    Q_UNUSED(app)
-    return true;
-}
-
-QVariant Plugin::pluginProperty(Cutelyst *c, const QString &key, const QVariant &defaultValue) const
-{
-    return c->pluginProperty(const_cast<CutelystPlugin::Plugin*>(this), key, defaultValue);
-}
-
-void Plugin::setPluginProperty(Cutelyst *c, const QString &key, const QVariant &value)
-{
-    c->setPluginProperty(this, key, value);
-}
+#endif // AUTHENTICATION_P_H

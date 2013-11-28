@@ -43,17 +43,14 @@ CutelystApplication::~CutelystApplication()
     delete d_ptr;
 }
 
-void CutelystApplication::registerPlugin(CutelystPlugin::Plugin *plugin, const QString &name)
+void CutelystApplication::registerPlugin(CutelystPlugin::Plugin *plugin)
 {
     Q_D(CutelystApplication);
 
-    QString pluginName = name;
-    if (pluginName.isEmpty()) {
-        pluginName = plugin->metaObject()->className();
-    }
+    QString pluginName = plugin->metaObject()->className();
 
-    if (!d->plugins.contains(pluginName)) {
-        d->plugins.insert(pluginName, plugin);
+    if (!d->plugins.contains(plugin)) {
+        d->plugins << plugin;
     } else {
         qWarning() << Q_FUNC_INFO << "Failed to register plugin" << pluginName << plugin;
     }
@@ -98,13 +95,11 @@ bool CutelystApplication::setup(CutelystEngine *engine)
     connect(d->engine, &CutelystEngine::handleRequest,
             this, &CutelystApplication::handleRequest);
 
-    QHash<QString, CutelystPlugin::Plugin *>::Iterator it = d->plugins.begin();
-    while (it != d->plugins.end()) {
-        if (!it.value()->setup(this)) {
-            qWarning() << Q_FUNC_INFO << "Failed to setup plugin" << it.key() << it.value();
+    foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
+        if (!plugin->setup(this)) {
+            qWarning() << Q_FUNC_INFO << "Failed to setup plugin" << plugin;
             return false;
         }
-        ++it;
     }
 
     return d->engine->init();
@@ -117,7 +112,10 @@ void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *
     CutelystPrivate *priv = new CutelystPrivate;
     priv->engine = d->engine;
     priv->dispatcher = d->dispatcher;
-    priv->plugins = d->plugins;
+    foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
+        priv->plugins.insert(plugin, QVariantHash());
+    }
+
     Cutelyst *c = new Cutelyst(priv);
     connect(c, &Cutelyst::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
     connect(c, &Cutelyst::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);

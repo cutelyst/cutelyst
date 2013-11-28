@@ -196,10 +196,10 @@ QList<CutelystAction *> Cutelyst::getActions(const QString &action, const QStrin
     return d->dispatcher->getActions(action, ns);
 }
 
-QHash<QString, CutelystPlugin::Plugin *> Cutelyst::plugins()
+QList<CutelystPlugin::Plugin *> Cutelyst::plugins()
 {
     Q_D(Cutelyst);
-    return d->plugins;
+    return d->plugins.keys();
 }
 
 void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
@@ -307,6 +307,18 @@ int Cutelyst::finalize()
     }
 
     return d->response->status();
+}
+
+QVariant Cutelyst::pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
+{
+    Q_D(const Cutelyst);
+    return d->plugins.value(plugin).value(key, defaultValue);
+}
+
+void Cutelyst::setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &key, const QVariant &value)
+{
+    Q_D(Cutelyst);
+    d->plugins[plugin].insert(key, value);
 }
 
 CutelystPrivate::CutelystPrivate() :

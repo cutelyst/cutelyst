@@ -36,7 +36,7 @@ public:
 
     CutelystDispatcher *dispatcher;
     CutelystEngine *engine;
-    QHash<QString, CutelystPlugin::Plugin *> plugins;
+    QList<CutelystPlugin::Plugin *> plugins;
 };
 
 #endif // CUTELYSTAPPLICATION_P_H
