@@ -18,7 +18,6 @@
  */
 
 #include "authentication_p.h"
-#include "Authentication/user.h"
 
 #include "cutelyst.h"
 #include "session.h"
@@ -30,6 +29,11 @@ using namespace CutelystPlugin;
 Authentication::Authentication(QObject *parent) :
     Plugin(parent)
 {
+}
+
+void Authentication::addRealm(Authentication::Realm *realm)
+{
+    addRealm(QLatin1String("default"), realm);
 }
 
 void Authentication::addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm)
@@ -75,7 +79,7 @@ Authentication::User Authentication::authenticate(Cutelyst *c, const User &useri
     return User();
 }
 
-bool Authentication::findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm)
+Authentication::User Authentication::findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm)
 {
     Q_D(Authentication);
 
@@ -85,7 +89,7 @@ bool Authentication::findUser(Cutelyst *c, const CStringHash &userinfo, const QS
     }
 
     qWarning() << Q_FUNC_INFO << "Could not find realm" << realm;
-    return false;
+    return User();
 }
 
 Authentication::User Authentication::user(Cutelyst *c)
@@ -202,11 +206,11 @@ Authentication::Realm::Realm(Authentication::Store *store, Authentication::Crede
 
 }
 
-bool Authentication::Realm::findUser(Cutelyst *c, const CStringHash &userinfo)
+Authentication::User Authentication::Realm::findUser(Cutelyst *c, const CStringHash &userinfo)
 {
-    bool ret = m_store;
+    User ret = m_store->findUser(c, userinfo);
 
-    if (!ret) {
+    if (ret.isNull()) {
         if (m_store->canAutoCreateUser()) {
             ret = m_store->autoCreateUser(c, userinfo);
         }
@@ -217,7 +221,7 @@ bool Authentication::Realm::findUser(Cutelyst *c, const CStringHash &userinfo)
     return ret;
 }
 
-Authentication::User Authentication::Realm::authenticate(Cutelyst *c, const User &authinfo)
+Authentication::User Authentication::Realm::authenticate(Cutelyst *c, const CStringHash &authinfo)
 {
     User user = m_credential->authenticate(c, this, authinfo);
     if (!user.isNull()) {
@@ -272,9 +276,9 @@ bool Authentication::Store::canAutoCreateUser() const
     return false;
 }
 
-bool Authentication::Store::autoCreateUser(Cutelyst *c, const CStringHash &userinfo) const
+Authentication::User Authentication::Store::autoCreateUser(Cutelyst *c, const CStringHash &userinfo) const
 {
-    return false;
+    return User();
 }
 
 bool Authentication::Store::canAutoUpdateUser() const
@@ -282,9 +286,9 @@ bool Authentication::Store::canAutoUpdateUser() const
     return false;
 }
 
-bool Authentication::Store::autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const
+Authentication::User Authentication::Store::autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const
 {
-    return false;
+    return User();
 }
 
 Authentication::User Authentication::Store::forSession(Cutelyst *c, const User &user)
@@ -293,7 +297,23 @@ Authentication::User Authentication::Store::forSession(Cutelyst *c, const User &
 }
 
 
-Authentication::User Authentication::Credential::authenticate(Cutelyst *c, Realm *realm, const User &authinfo)
+Authentication::User::User()
 {
-    return User();
+
+}
+
+Authentication::User::User(const QString &id) :
+    m_id(id)
+{
+
+}
+
+QString Authentication::User::id() const
+{
+    return m_id;
+}
+
+bool Authentication::User::isNull() const
+{
+    return m_id.isNull();
 }

@@ -32,11 +32,26 @@ class Authentication : public Plugin
 {
     Q_OBJECT
 public:
-    class User;
     class Realm;
+    class User : public CStringHash
+    {
+    public:
+        User();
+        User(const QString &id);
+
+        /**
+         * A unique ID by which a user can be retrieved from the store.
+         */
+        QString id() const;
+        bool isNull() const;
+
+    private:
+        QString m_id;
+    };
+
     class Credential {
     public:
-        virtual User authenticate(Cutelyst *c, Realm *realm, const User &authinfo);
+        virtual User authenticate(Cutelyst *c, Realm *realm, const CStringHash &authinfo) = 0;
     };
 
     class Store {
@@ -51,7 +66,7 @@ public:
          * Reimplement this if your store supports
          * automatic user creation
          */
-        virtual bool autoCreateUser(Cutelyst *c, const CStringHash &userinfo) const;
+        virtual User autoCreateUser(Cutelyst *c, const CStringHash &userinfo) const;
 
         /**
          * Reimplement this if your store supports
@@ -63,7 +78,9 @@ public:
          * Reimplement this if your store supports
          * automatic user update
          */
-        virtual bool autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const;
+        virtual User autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const;
+
+        virtual User findUser(Cutelyst *c, const CStringHash &userinfo) = 0;
 
         User forSession(Cutelyst *c, const User &user);
     };
@@ -72,8 +89,8 @@ public:
     {
     public:
         Realm(Store *store, Credential *credential);
-        virtual bool findUser(Cutelyst *c, const CStringHash &userinfo);
-        virtual User authenticate(Cutelyst *c, const User &authinfo);
+        virtual User findUser(Cutelyst *c, const CStringHash &userinfo);
+        virtual User authenticate(Cutelyst *c, const CStringHash &authinfo);
 
     protected:
         User persistUser(Cutelyst *c, const Authentication::User &user);
@@ -92,6 +109,7 @@ public:
 
     explicit Authentication(QObject *parent = 0);
 
+    void addRealm(Authentication::Realm *realm);
     void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = true);
 
     void setUseSession(bool use);
@@ -99,7 +117,7 @@ public:
 
     User authenticate(Cutelyst *c, const QString &username, const QString &password, const QString &realm = QString());
     User authenticate(Cutelyst *c, const User &userinfo, const QString &realm = QString());
-    bool findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
+    User findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
     User user(Cutelyst *c);
     bool userExists(Cutelyst *c) const;
     bool userInRealm(Cutelyst *c, const QString &realm) const;
@@ -124,5 +142,7 @@ class Nuts : public Authentication::Realm
 };
 
 }
+
+Q_DECLARE_METATYPE(CutelystPlugin::Authentication::User)
 
 #endif // AUTHENTICATION_H

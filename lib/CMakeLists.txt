@@ -32,7 +32,8 @@ set(cutelystqt_SRC
     Plugin/staticsimple.cpp
     Plugin/authentication.cpp
     Plugin/authentication_p.h
-    Plugin/Authentication/user.cpp
+    Plugin/Authentication/minimal.cpp
+    Plugin/Authentication/credentialpassword.cpp
     uwsgi.h
 )
 
@@ -55,8 +56,15 @@ set(cutelystqt_plugin_HEADERS
     Plugin/staticsimple.h
     Plugin/StaticSimple
     Plugin/authentication.h
-    Plugin/Authentication/user.h
+    Plugin/Authentication/minimal.h
+    Plugin/Authentication/credentialpassword.h
 )
+
+set(cutelystqt_plugin_authentication_HEADERS
+    Plugin/Authentication/minimal.h
+    Plugin/Authentication/credentialpassword.h
+)
+
 
 set(cutelystqt_HEADERS_PRIVATE
     common.h
@@ -88,6 +96,9 @@ install(FILES ${cutelystqt_HEADERS}
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/CutelystQt5/Plugin
+)
+install(FILES ${cutelystqt_plugin_authentication_HEADERS}
+        DESTINATION include/CutelystQt5/Plugin/Authentication
 )
 
 add_subdirectory(modules)
