@@ -30,6 +30,8 @@ Authentication::Authentication(QObject *parent) :
     Plugin(parent),
     d_ptr(new AuthenticationPrivate)
 {
+    qRegisterMetaType<User>();
+    qRegisterMetaTypeStreamOperators<User>();
 }
 
 Authentication::~Authentication()
@@ -75,11 +77,8 @@ Authentication::User Authentication::authenticate(Cutelyst *c, const QString &us
 Authentication::User Authentication::authenticate(Cutelyst *c, const CStringHash &userinfo, const QString &realm)
 {
     Q_D(Authentication);
-    qDebug() << Q_FUNC_INFO << c << realm << userinfo;
 
     Authentication::Realm *realmPtr = d->realm(realm);
-    qDebug() << Q_FUNC_INFO << realmPtr;
-
     if (realmPtr) {
         return realmPtr->authenticate(c, userinfo);
     }
@@ -133,16 +132,10 @@ void Authentication::setAuthenticated(Cutelyst *c, const User &user, const QStri
 {
     Q_D(Authentication);
 
-    qDebug() << Q_FUNC_INFO << user.id();
-
     setPluginProperty(c, "user", qVariantFromValue(user));
-
-    qDebug() << Q_FUNC_INFO << "Set plugin value";
 
 
     Authentication::Realm *realmPtr = d->realm(realmName);
-    qDebug() << Q_FUNC_INFO << "realm" << realmPtr;
-
     if (!realmPtr) {
         qWarning() << Q_FUNC_INFO << "Called with invalid realm" << realmName;
     }
@@ -150,29 +143,22 @@ void Authentication::setAuthenticated(Cutelyst *c, const User &user, const QStri
 //    $user->auth_realm($realm->name);
 
     persistUser(c, user, realmName);
-    qDebug() << Q_FUNC_INFO << user.id();
 }
 
 void Authentication::persistUser(Cutelyst *c, const User &user, const QString &realmName)
 {
     Q_D(Authentication);
-    qDebug() << Q_FUNC_INFO << "persisting" << user;
 
     if (userExists(c)) {
-        qDebug() << Q_FUNC_INFO << "persisting1" << user;
-
         Session *session = c->plugin<Session*>();
         if (session && session->isValid(c)) {
             session->setValue(c, "Authentication::userRealm", realmName);
         }
-        qDebug() << Q_FUNC_INFO << "persisting2" << user;
 
         Authentication::Realm *realmPtr = d->realm(realmName);
         if (realmPtr) {
             realmPtr->persistUser(c, user);
         }
-        qDebug() << Q_FUNC_INFO << "persisting3" << user;
-
     }
 }
 
@@ -250,13 +236,10 @@ Authentication::User Authentication::Realm::findUser(Cutelyst *c, const CStringH
 
 Authentication::User Authentication::Realm::authenticate(Cutelyst *c, const CStringHash &authinfo)
 {
-    qDebug() << Q_FUNC_INFO << m_credential;
     User user = m_credential->authenticate(c, this, authinfo);
-    qDebug() << Q_FUNC_INFO << user.id();
     if (!user.isNull()) {
         c->plugin<Authentication*>()->setAuthenticated(c, user, m_name);
     }
-    qDebug() << Q_FUNC_INFO << user.id();
 
     return user;
 }
@@ -265,13 +248,7 @@ Authentication::User Authentication::Realm::persistUser(Cutelyst *c, const Authe
 {
     Session *session = c->plugin<Session*>();
     if (session && session->isValid(c)) {
-        QVariant value;
-        if (m_store->canForSession()) {
-            value = m_store->forSession(c, user);
-        } else {
-            value = user.forSession(c);
-        }
-        session->setValue(c, "Authentication::user", value);
+        session->setValue(c, "Authentication::user", qVariantFromValue(user));
     }
 
     return user;
@@ -338,17 +315,6 @@ Authentication::User Authentication::Store::autoUpdateUser(Cutelyst *c, const CS
     return User();
 }
 
-bool Authentication::Store::canForSession() const
-{
-    return false;
-}
-
-QVariant Authentication::Store::forSession(Cutelyst *c, const User &user)
-{
-    return QVariant();
-}
-
-
 Authentication::User::User()
 {
 
@@ -365,17 +331,28 @@ QString Authentication::User::id() const
     return m_id;
 }
 
+void Authentication::User::setId(const QString &id)
+{
+    m_id = id;
+}
+
 bool Authentication::User::isNull() const
 {
     return m_id.isNull();
 }
 
-QVariant Authentication::User::forSession(Cutelyst *c) const
+QDataStream &operator<<(QDataStream &out, const Authentication::User &user)
 {
-    return QVariant();
+    out << user.id() << static_cast<CStringHash>(user);
+    return out;
 }
 
-void Authentication::User::fromSession(Cutelyst *c)
+QDataStream &operator>>(QDataStream &in, Authentication::User &user)
 {
-
+    QString id;
+    CStringHash hash;
+    in >> id >> hash;
+    user.setId(id);
+    user.swap(hash);
+    return in;
 }

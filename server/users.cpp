@@ -24,9 +24,10 @@ void Users::Begin(Cutelyst *c)
     qDebug() << "*** Users::Begin()";
 }
 
-void Users::Auto(Cutelyst *c)
+bool Users::Auto(Cutelyst *c)
 {
     qDebug() << "*** Users::Auto()";
+    return true;
 }
 
 //void Users::End(Cutelyst *c)

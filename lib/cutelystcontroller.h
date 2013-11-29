@@ -102,7 +102,7 @@ public:
 
 protected:
     virtual void Begin(Cutelyst *c);
-    virtual void Auto(Cutelyst *c);
+    virtual bool Auto(Cutelyst *c);
     virtual void End(Cutelyst *c);
 
     virtual void Default(Cutelyst *c);

@@ -12,7 +12,7 @@ public:
     Q_INVOKABLE void list(Cutelyst *c, const QString &name, const QString &age, Args, Local);
 
     Q_INVOKABLE void Begin(Cutelyst *c);
-    Q_INVOKABLE void Auto(Cutelyst *c);
+    Q_INVOKABLE bool Auto(Cutelyst *c);
 //    Q_INVOKABLE void End();
 };
 

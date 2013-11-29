@@ -43,10 +43,8 @@ public:
          * A unique ID by which a user can be retrieved from the store.
          */
         QString id() const;
+        void setId(const QString &id);
         bool isNull() const;
-
-        QVariant forSession(Cutelyst *c) const;
-        void fromSession(Cutelyst *c);
 
     private:
         QString m_id;
@@ -84,10 +82,6 @@ public:
         virtual User autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const;
 
         virtual User findUser(Cutelyst *c, const CStringHash &userinfo) = 0;
-
-        virtual bool canForSession() const;
-
-        virtual QVariant forSession(Cutelyst *c, const User &user);
     };
 
     class Realm
@@ -142,13 +136,10 @@ private:
     Q_DECLARE_PRIVATE(Authentication)
 };
 
-class Nuts : public Authentication::Realm
-{
-
-};
-
 }
 
 Q_DECLARE_METATYPE(CutelystPlugin::Authentication::User)
+QDataStream &operator<<(QDataStream &out, const CutelystPlugin::Authentication::User &myObj);
+QDataStream &operator>>(QDataStream &in, CutelystPlugin::Authentication::User &myObj);
 
 #endif // AUTHENTICATION_H

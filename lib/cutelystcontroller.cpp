@@ -70,9 +70,9 @@ void CutelystController::Begin(Cutelyst *c)
 
 }
 
-void CutelystController::Auto(Cutelyst *c)
+bool CutelystController::Auto(Cutelyst *c)
 {
-
+    return true;
 }
 
 void CutelystController::End(Cutelyst *c)

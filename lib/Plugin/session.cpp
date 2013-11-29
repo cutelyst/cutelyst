@@ -73,9 +73,11 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
     qDebug() << Q_FUNC_INFO << filePath(sessionId);
     QVariantHash ret;
     QSettings settings(filePath(sessionId), QSettings::IniFormat);
+    settings.beginGroup(QLatin1String("Data"));
     foreach (const QString &key, settings.allKeys()) {
         ret.insert(key, settings.value(key));
     }
+    settings.endGroup();
     return ret;
 }
 
@@ -86,13 +88,19 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
     if (data.isNull()) {
         settings.clear();
     } else {
+        settings.beginGroup(QLatin1String("Data"));
         QVariantHash hash = data.value<QVariantHash>();
         QVariantHash::ConstIterator it = hash.constBegin();
-        while (it != hash.end()) {
-            qDebug() << Q_FUNC_INFO << it.key();
+        while (it != hash.constEnd()) {
+            qDebug() << Q_FUNC_INFO << "next" << hash.count() << (it != hash.constEnd());
+
+            qDebug() << Q_FUNC_INFO << it.key() << it.value();
             settings.setValue(it.key(), it.value());
             ++it;
+
         }
+        settings.endGroup();
+
         qDebug() << Q_FUNC_INFO << "finished";
     }
 }

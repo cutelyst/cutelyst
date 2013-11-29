@@ -55,7 +55,7 @@ void CutelystDispatcher::setupActions()
     // Find all the User classes
     for (int metaType = QMetaType::User; QMetaType::isRegistered(metaType); ++metaType) {
         const QMetaObject *meta = QMetaType::metaObjectForType(metaType);
-        if (qstrcmp(meta->superClass()->className(), "CutelystController") == 0) {
+        if (meta && qstrcmp(meta->superClass()->className(), "CutelystController") == 0) {
             // App controller
             CutelystController *controller = qobject_cast<CutelystController*>(meta->newInstance());
             if (controller) {
@@ -64,6 +64,7 @@ void CutelystDispatcher::setupActions()
                 qWarning() << "Could not instantiate controller:" << meta->className();
                 continue;
             }
+            controller->setObjectName(meta->className());
 
             bool controllerUsed = false;
             for (int i = 0; i < meta->methodCount(); ++i) {

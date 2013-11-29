@@ -52,9 +52,10 @@ void Root::Begin(Cutelyst *c)
     qDebug() << "*** Root::Begin()" << sender();
 }
 
-void Root::Auto(Cutelyst *c)
+bool Root::Auto(Cutelyst *c)
 {
     qDebug() << "*** Root::Auto()";
+    return true;
 }
 
 void Root::End(Cutelyst *c)

@@ -20,7 +20,7 @@ public:
     Q_INVOKABLE void admin(Cutelyst *c, const QString &name, const QString &age, Global);
 
     Q_INVOKABLE void Begin(Cutelyst *c);
-    Q_INVOKABLE void Auto(Cutelyst *c);
+    Q_INVOKABLE bool Auto(Cutelyst *c);
     Q_INVOKABLE void End(Cutelyst *c);
 };
 
