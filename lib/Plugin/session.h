@@ -39,6 +39,8 @@ public:
     QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant());
     void setValue(Cutelyst *c, const QString &key, const QVariant &value);
 
+    bool isValid(Cutelyst *c);
+
 protected:
     /**
      * This method is used to call the storage class and retrieve
@@ -50,12 +52,12 @@ protected:
      * This methos is used to call the storage class and persist
      * the session data, the default implementation does that by using a file
      */
-    virtual void persistSession(const QString &sessionId, const QVariantHash &data) const;
+    virtual void persistSession(const QString &sessionId, const QVariant &data) const;
 
 private:
     void saveSession(Cutelyst *c);
     QString sessionName() const;
-    QVariantHash loadSession(Cutelyst *c);
+    QVariant loadSession(Cutelyst *c);
     QString generateSessionId() const;
     QString getSessionId(Cutelyst *c) const;
     QString filePath(const QString &sessionId) const;

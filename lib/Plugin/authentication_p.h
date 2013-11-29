@@ -22,6 +22,8 @@
 
 #include "authentication.h"
 
+#include <QStringList>
+
 namespace CutelystPlugin {
 
 class AuthenticationPrivate
@@ -33,6 +35,7 @@ public:
 
     QString defaultRealm;
     QHash<QString, Authentication::Realm*> realms;
+    QStringList realmsOrder;
 };
 
 }
