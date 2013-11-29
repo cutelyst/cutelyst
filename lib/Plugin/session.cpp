@@ -89,9 +89,11 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
         QVariantHash hash = data.value<QVariantHash>();
         QVariantHash::ConstIterator it = hash.constBegin();
         while (it != hash.end()) {
+            qDebug() << Q_FUNC_INFO << it.key();
             settings.setValue(it.key(), it.value());
             ++it;
         }
+        qDebug() << Q_FUNC_INFO << "finished";
     }
 }
 

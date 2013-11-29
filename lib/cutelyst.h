@@ -103,8 +103,8 @@ public:
     T plugin()
     {
         foreach (CutelystPlugin::Plugin *plugin, plugins()) {
-            if (static_cast<T>(plugin)) {
-                return static_cast<T>(plugin);
+            if (qobject_cast<T>(plugin)) {
+                return qobject_cast<T>(plugin);
             }
         }
         return 0;

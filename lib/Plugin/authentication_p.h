@@ -29,8 +29,6 @@ namespace CutelystPlugin {
 class AuthenticationPrivate
 {
 public:
-    AuthenticationPrivate();
-
     Authentication::Realm* realm(const QString &realmName) const;
 
     QString defaultRealm;

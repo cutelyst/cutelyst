@@ -45,6 +45,9 @@ public:
         QString id() const;
         bool isNull() const;
 
+        QVariant forSession(Cutelyst *c) const;
+        void fromSession(Cutelyst *c);
+
     private:
         QString m_id;
     };
@@ -82,7 +85,9 @@ public:
 
         virtual User findUser(Cutelyst *c, const CStringHash &userinfo) = 0;
 
-        User forSession(Cutelyst *c, const User &user);
+        virtual bool canForSession() const;
+
+        virtual QVariant forSession(Cutelyst *c, const User &user);
     };
 
     class Realm
@@ -108,6 +113,7 @@ public:
     };
 
     explicit Authentication(QObject *parent = 0);
+    ~Authentication();
 
     void addRealm(Authentication::Realm *realm);
     void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = true);
@@ -116,11 +122,11 @@ public:
     bool useSession() const;
 
     User authenticate(Cutelyst *c, const QString &username, const QString &password, const QString &realm = QString());
-    User authenticate(Cutelyst *c, const User &userinfo, const QString &realm = QString());
+    User authenticate(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
     User findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
     User user(Cutelyst *c);
-    bool userExists(Cutelyst *c) const;
-    bool userInRealm(Cutelyst *c, const QString &realm) const;
+    bool userExists(Cutelyst *c);
+    bool userInRealm(Cutelyst *c, const QString &realm);
     void logout(Cutelyst *c);
 
 protected:
