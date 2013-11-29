@@ -38,6 +38,7 @@ public:
 
     QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant());
     void setValue(Cutelyst *c, const QString &key, const QVariant &value);
+    void deleteValue(Cutelyst *c, const QString &keys);
 
     bool isValid(Cutelyst *c);
 

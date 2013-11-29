@@ -125,7 +125,12 @@ bool Authentication::userInRealm(Cutelyst *c, const QString &realm)
 
 void Authentication::logout(Cutelyst *c)
 {
+    setPluginProperty(c, "user", QVariant());
 
+    Authentication::Realm *realm = findRealmForPersistedUser(c);
+    if (realm) {
+        realm->removePersistedUser(c);
+    }
 }
 
 void Authentication::setAuthenticated(Cutelyst *c, const User &user, const QString &realmName)
@@ -242,6 +247,15 @@ Authentication::User Authentication::Realm::authenticate(Cutelyst *c, const CStr
     }
 
     return user;
+}
+
+void Authentication::Realm::removePersistedUser(Cutelyst *c)
+{
+    Session *session = c->plugin<Session*>();
+    if (session && session->isValid(c)) {
+        session->deleteValue(c, "Authentication::user");
+        session->deleteValue(c, "Authentication::userRealm");
+    }
 }
 
 Authentication::User Authentication::Realm::persistUser(Cutelyst *c, const Authentication::User &user)

@@ -92,6 +92,7 @@ public:
         virtual User authenticate(Cutelyst *c, const CStringHash &authinfo);
 
     protected:
+        void removePersistedUser(Cutelyst *c);
         User persistUser(Cutelyst *c, const Authentication::User &user);
         User restoreUser(Cutelyst *c, const User &frozenUser);
         User userIsRestorable(Cutelyst *c);

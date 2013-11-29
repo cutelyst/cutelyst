@@ -63,6 +63,11 @@ void Session::setValue(Cutelyst *c, const QString &key, const QVariant &value)
     setPluginProperty(c, "sessionsave", true);
 }
 
+void Session::deleteValue(Cutelyst *c, const QString &key)
+{
+    setValue(c, key, QVariant());
+}
+
 bool Session::isValid(Cutelyst *c)
 {
     return !loadSession(c).isNull();
@@ -92,10 +97,11 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
         QVariantHash hash = data.value<QVariantHash>();
         QVariantHash::ConstIterator it = hash.constBegin();
         while (it != hash.constEnd()) {
-            qDebug() << Q_FUNC_INFO << "next" << hash.count() << (it != hash.constEnd());
-
-            qDebug() << Q_FUNC_INFO << it.key() << it.value();
-            settings.setValue(it.key(), it.value());
+            if (it.value().isNull()) {
+                settings.remove(it.key());
+            } else {
+                settings.setValue(it.key(), it.value());
+            }
             ++it;
 
         }
