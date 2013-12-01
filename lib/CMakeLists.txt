@@ -11,6 +11,7 @@ set(cutelystqt_SRC
     cutelyst.cpp
     cutelyst_p.h
     cutelystaction.cpp
+    cutelystaction_p.h
     cutelystengine.cpp
     cutelystengine_p.h
     #cutelystengineuwsgi.cpp

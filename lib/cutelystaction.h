@@ -26,6 +26,7 @@
 
 class Cutelyst;
 class CutelystController;
+class CutelystActionPrivate;
 class CutelystAction : public QObject
 {
     Q_OBJECT
@@ -112,15 +113,11 @@ public:
 
     bool isValid() const;
 
+protected:
+    CutelystActionPrivate *d_ptr;
+
 private:
-    bool m_valid;
-    QString m_name;
-    QString m_ns;
-    QMetaMethod m_method;
-    QMultiHash<QString, QString> m_attributes;
-    CutelystController *m_controller;
-    quint8 m_numberOfArgs;
-    quint8 m_numberOfCaptures;
+    Q_DECLARE_PRIVATE(CutelystAction)
 };
 
 typedef QList<CutelystAction*> CutelystActionList;

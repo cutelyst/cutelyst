@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelystaction.h"
+#include "cutelystaction_p.h"
 #include "cutelystcontroller.h"
 #include "cutelyst.h"
 
@@ -28,20 +28,16 @@
 
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
-    m_valid(true),
-    m_name(parent->ns() % QLatin1Char('/') % method.name()),
-    m_ns(parent->ns()),
-    m_method(method),
-    m_controller(parent),
-    m_numberOfArgs(0),
-    m_numberOfCaptures(0)
+    d_ptr(new CutelystActionPrivate(method, parent))
 {
+    Q_D(CutelystAction);
+
     QString actionNamespace;
     // Parse the Method attributes declared with Q_CLASSINFO
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
-    QRegularExpression regex(m_name % QLatin1String("_(\\w+)"));
+    QRegularExpression regex(d->name % QLatin1String("_(\\w+)"));
     for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
         QString name = classInfo.name();
@@ -52,12 +48,12 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
 
         QRegularExpressionMatch match = regex.match(name);
         if (match.hasMatch()) {
-            m_attributes.insertMulti(match.captured(1), classInfo.value());
+            d->attributes.insertMulti(match.captured(1), classInfo.value());
         }
     }
 
-    if (m_method.access() == QMetaMethod::Private) {
-        m_attributes.insertMulti(QLatin1String("Private"), QString());
+    if (method.access() == QMetaMethod::Private) {
+        d->attributes.insertMulti(QLatin1String("Private"), QString());
     }
 
     // if the method has the CaptureArgs as an argument
@@ -70,7 +66,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
 
         if (i == 0) {
             if (type != "Cutelyst*") {
-                m_valid = false;
+                d->valid = false;
                 return;
             }
         } else if (type == "QString" && !ignoreParameters) {
@@ -80,21 +76,21 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
             // parameters types AFTER the ones to be captured
             ignoreParameters = true;
             if (type == "Global") {
-                if (m_name.startsWith(QLatin1Char('/'))) {
-                    m_attributes.insertMulti(QLatin1String("Path"), m_name);
+                if (d->name.startsWith(QLatin1Char('/'))) {
+                    d->attributes.insertMulti(QLatin1String("Path"), d->name);
                 } else {
-                    m_attributes.insertMulti(QLatin1String("Path"), QLatin1Char('/') % m_name);
+                    d->attributes.insertMulti(QLatin1String("Path"), QLatin1Char('/') % d->name);
                 }
             } else if (type == "Local") {
-                m_attributes.insertMulti(QLatin1String("Path"), m_name);
+                d->attributes.insertMulti(QLatin1String("Path"), d->name);
             } else if (type == "Path") {
-                m_attributes.insertMulti(QLatin1String("Path"), controller()->ns());
-            } else if (type == "Args" && !m_attributes.contains(QLatin1String("Args"))) {
-                m_numberOfArgs = parameterCount;
-                m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfArgs));
-            } else if (type == "CaptureArgs" && !m_attributes.contains(QLatin1String("CaptureArgs"))) {
-                m_numberOfCaptures = parameterCount;
-                m_attributes.insertMulti(QLatin1String("Args"), QString::number(m_numberOfCaptures));
+                d->attributes.insertMulti(QLatin1String("Path"), controller()->ns());
+            } else if (type == "Args" && !d->attributes.contains(QLatin1String("Args"))) {
+                d->numberOfArgs = parameterCount;
+                d->attributes.insertMulti(QLatin1String("Args"), QString::number(d->numberOfArgs));
+            } else if (type == "CaptureArgs" && !d->attributes.contains(QLatin1String("CaptureArgs"))) {
+                d->numberOfCaptures = parameterCount;
+                d->attributes.insertMulti(QLatin1String("Args"), QString::number(d->numberOfCaptures));
             }
         }
     }
@@ -102,7 +98,8 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
 
 QMultiHash<QString, QString> CutelystAction::attributes() const
 {
-    return m_attributes;
+    Q_D(const CutelystAction);
+    return d->attributes;
 }
 
 QString CutelystAction::className() const
@@ -112,11 +109,14 @@ QString CutelystAction::className() const
 
 CutelystController *CutelystAction::controller() const
 {
-    return m_controller;
+    Q_D(const CutelystAction);
+    return d->controller;
 }
 
 bool CutelystAction::dispatch(Cutelyst *c)
 {
+    Q_D(CutelystAction);
+
     if (c->detached()) {
         return false;
     }
@@ -127,10 +127,10 @@ bool CutelystAction::dispatch(Cutelyst *c)
         args << QString();
     }
 
-    if (m_method.returnType() == QMetaType::Bool) {
+    if (d->method.returnType() == QMetaType::Bool) {
         bool methodRet;
         bool ret;
-        ret = m_method.invoke(m_controller,
+        ret = d->method.invoke(d->controller,
                               Q_RETURN_ARG(bool, methodRet),
                               Q_ARG(Cutelyst*, c),
                               Q_ARG(QString, args.at(0)),
@@ -154,7 +154,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
 
         return false;
     } else {
-        bool ret = m_method.invoke(m_controller,
+        bool ret = d->method.invoke(d->controller,
                                    Q_ARG(Cutelyst*, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
@@ -171,44 +171,65 @@ bool CutelystAction::dispatch(Cutelyst *c)
 
 bool CutelystAction::match(Cutelyst *c) const
 {
-    if (m_attributes.contains(QLatin1String("Args")) &&
-            m_attributes.value(QLatin1String("Args")).isEmpty()) {
+    Q_D(const CutelystAction);
+    if (d->attributes.contains(QLatin1String("Args")) &&
+            d->attributes.value(QLatin1String("Args")).isEmpty()) {
         return true;
     }
-    return m_numberOfArgs == 0 || m_numberOfArgs == c->args().size();
+    return d->numberOfArgs == 0 || d->numberOfArgs == c->args().size();
 }
 
 bool CutelystAction::matchCaptures(Cutelyst *c) const
 {
-    return m_numberOfCaptures == 0 || m_numberOfCaptures == c->args().size();
+    Q_D(const CutelystAction);
+    return d->numberOfCaptures == 0 || d->numberOfCaptures == c->args().size();
 }
 
 QString CutelystAction::name() const
 {
-    return m_method.name();
+    Q_D(const CutelystAction);
+    return d->method.name();
 }
 
 QString CutelystAction::privateName() const
 {
-    return m_name;
+    Q_D(const CutelystAction);
+    return d->name;
 }
 
 QString CutelystAction::ns() const
 {
-    return m_ns;
+    Q_D(const CutelystAction);
+    return d->ns;
 }
 
 quint8 CutelystAction::numberOfArgs() const
 {
-    return m_numberOfArgs;
+    Q_D(const CutelystAction);
+    return d->numberOfArgs;
 }
 
 quint8 CutelystAction::numberOfCaptures() const
 {
-    return m_numberOfCaptures;
+    Q_D(const CutelystAction);
+    return d->numberOfCaptures;
 }
 
 bool CutelystAction::isValid() const
 {
-    return m_valid;
+    Q_D(const CutelystAction);
+    return d->valid;
+}
+
+
+CutelystActionPrivate::CutelystActionPrivate(const QMetaMethod &method, CutelystController *parent) :
+    valid(true),
+    name(parent->ns() % QLatin1Char('/') % method.name()),
+    ns(parent->ns()),
+    method(method),
+    controller(parent),
+    numberOfArgs(0),
+    numberOfCaptures(0)
+{
+
 }
