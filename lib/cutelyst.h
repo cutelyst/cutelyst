@@ -86,7 +86,7 @@ public:
     CutelystController *controller(const QString &name = QString()) const;
     QString match() const;
 
-    QVariantHash* stash();
+    QVariantHash &stash();
 
     QString uriFor(const QString &path, const QStringList &args = QStringList());
 

@@ -142,10 +142,10 @@ QString Cutelyst::match() const
     return d->match;
 }
 
-QVariantHash *Cutelyst::stash()
+QVariantHash &Cutelyst::stash()
 {
     Q_D(Cutelyst);
-    return &d->stash;
+    return d->stash;
 }
 
 QString Cutelyst::uriFor(const QString &path, const QStringList &args)
@@ -303,7 +303,7 @@ int Cutelyst::finalize()
     finalizeBody();
 
     if (d->stats) {
-        qDebug("[info] Request took: %d ms", d->stats->elapsed());
+        qDebug("Request took: %d ms", d->stats->elapsed());
     }
 
     return d->response->status();
