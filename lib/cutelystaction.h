@@ -32,6 +32,7 @@ class CutelystAction : public QObject
     Q_OBJECT
 public:
     explicit CutelystAction(const QMetaMethod &method, CutelystController *parent = 0);
+    ~CutelystAction();
 
     /**
      * @return The sub attributes that are set for this action,

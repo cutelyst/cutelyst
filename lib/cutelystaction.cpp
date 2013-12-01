@@ -96,6 +96,11 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     }
 }
 
+CutelystAction::~CutelystAction()
+{
+    delete d_ptr;
+}
+
 QMultiHash<QString, QString> CutelystAction::attributes() const
 {
     Q_D(const CutelystAction);
@@ -131,16 +136,16 @@ bool CutelystAction::dispatch(Cutelyst *c)
         bool methodRet;
         bool ret;
         ret = d->method.invoke(d->controller,
-                              Q_RETURN_ARG(bool, methodRet),
-                              Q_ARG(Cutelyst*, c),
-                              Q_ARG(QString, args.at(0)),
-                              Q_ARG(QString, args.at(1)),
-                              Q_ARG(QString, args.at(2)),
-                              Q_ARG(QString, args.at(3)),
-                              Q_ARG(QString, args.at(4)),
-                              Q_ARG(QString, args.at(5)),
-                              Q_ARG(QString, args.at(6)),
-                              Q_ARG(QString, args.at(7)));
+                               Q_RETURN_ARG(bool, methodRet),
+                               Q_ARG(Cutelyst*, c),
+                               Q_ARG(QString, args.at(0)),
+                               Q_ARG(QString, args.at(1)),
+                               Q_ARG(QString, args.at(2)),
+                               Q_ARG(QString, args.at(3)),
+                               Q_ARG(QString, args.at(4)),
+                               Q_ARG(QString, args.at(5)),
+                               Q_ARG(QString, args.at(6)),
+                               Q_ARG(QString, args.at(7)));
 
         if (ret) {
             c->setState(methodRet);
@@ -155,15 +160,15 @@ bool CutelystAction::dispatch(Cutelyst *c)
         return false;
     } else {
         bool ret = d->method.invoke(d->controller,
-                                   Q_ARG(Cutelyst*, c),
-                                   Q_ARG(QString, args.at(0)),
-                                   Q_ARG(QString, args.at(1)),
-                                   Q_ARG(QString, args.at(2)),
-                                   Q_ARG(QString, args.at(3)),
-                                   Q_ARG(QString, args.at(4)),
-                                   Q_ARG(QString, args.at(5)),
-                                   Q_ARG(QString, args.at(6)),
-                                   Q_ARG(QString, args.at(7)));
+                                    Q_ARG(Cutelyst*, c),
+                                    Q_ARG(QString, args.at(0)),
+                                    Q_ARG(QString, args.at(1)),
+                                    Q_ARG(QString, args.at(2)),
+                                    Q_ARG(QString, args.at(3)),
+                                    Q_ARG(QString, args.at(4)),
+                                    Q_ARG(QString, args.at(5)),
+                                    Q_ARG(QString, args.at(6)),
+                                    Q_ARG(QString, args.at(7)));
         c->setState(ret);
         return ret;
     }
