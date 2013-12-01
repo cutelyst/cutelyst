@@ -25,6 +25,10 @@
 #include <QStringBuilder>
 #include <QDebug>
 
+#include <iostream>
+
+using namespace std;
+
 CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
     CutelystDispatchType(parent)
 {
@@ -32,7 +36,7 @@ CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
 
 void CutelystDispatchTypePath::list() const
 {
-    qDebug() << "Loaded Path actions:";
+    cout << "Loaded Path actions:" << endl;
     QString pathTitle("Path");
     QString privateTitle("Private");
     int pathLength = pathTitle.length();
@@ -61,15 +65,15 @@ void CutelystDispatchTypePath::list() const
         ++it;
     }
 
-    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << ".";
-    qDebug() << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
-             << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
-             << "|";
-    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << ".";
+    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "." << endl;
+    cout << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
+         << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+         << "|" << endl;
+    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "." << endl;
 
     it = m_paths.constBegin();
     while (it != m_paths.constEnd()) {
@@ -89,15 +93,15 @@ void CutelystDispatchTypePath::list() const
             privateName.prepend(QLatin1String("/"));
         }
 
-        qDebug() << "|" << path.leftJustified(pathLength).toUtf8().data()
-                 << "|" << privateName.leftJustified(privateLength).toUtf8().data()
-                 << "|";
+        cout << "|" << path.leftJustified(pathLength).toUtf8().data()
+             << "|" << privateName.leftJustified(privateLength).toUtf8().data()
+             << "|" << endl;
         ++it;
     }
 
-    qDebug() << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << ".\n";
+    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "." << endl << endl;
 }
 
 bool CutelystDispatchTypePath::match(Cutelyst *c, const QString &path) const

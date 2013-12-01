@@ -32,10 +32,30 @@
 
 using namespace std;
 
+void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "[debug] %s\n", localMsg.constData());
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "[warn] %s\n", localMsg.constData());
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "[crit] %s\n", localMsg.constData());
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "[fatal] %s\n", localMsg.constData());
+        abort();
+    }
+}
+
 CutelystApplication::CutelystApplication(int &argc, char **argv) :
     QCoreApplication(argc, argv),
     d_ptr(new CutelystApplicationPrivate)
 {
+    qInstallMessageHandler(cuteOutput);
 }
 
 CutelystApplication::~CutelystApplication()

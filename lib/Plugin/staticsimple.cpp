@@ -30,7 +30,6 @@ void StaticSimple::setRootDir(const QString &path)
 
 bool StaticSimple::setup(CutelystApplication *app)
 {
-    qDebug() << Q_FUNC_INFO << m_rootDir;
     connect(app, &CutelystApplication::beforePrepareAction,
             this, &StaticSimple::beforePrepareAction);
 }
@@ -45,7 +44,6 @@ void StaticSimple::beforePrepareAction(Cutelyst *c, bool *skipMethod)
     QRegularExpression re("\\.\\S+$");
     QRegularExpressionMatch match = re.match(path);
     if (match.hasMatch()) {
-        qDebug() << Q_FUNC_INFO << path << sender();
         if (locateStaticFile(c, path)) {
             *skipMethod = true;
         }
@@ -58,7 +56,6 @@ bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
     path = m_rootDir % path;
     QFile file(path);
     if (file.exists() && file.open(QFile::ReadOnly)) {
-        qDebug() << Q_FUNC_INFO << "Serving" << path;
         c->response()->setBody(file.readAll());
         QMimeDatabase db;
         // use the extension to match to be faster
@@ -69,6 +66,6 @@ bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
         return true;
     }
 
-    qDebug() << Q_FUNC_INFO << "Could not serve" << path << file.errorString();
+    qWarning() << "Could not serve" << path << file.errorString();
     return false;
 }

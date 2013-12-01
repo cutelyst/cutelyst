@@ -33,6 +33,10 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+#include <iostream>
+
+using namespace std;
+
 CutelystDispatcher::CutelystDispatcher(QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystDispatcherPrivate)
@@ -237,7 +241,7 @@ void CutelystDispatcher::printActions()
     Q_D(CutelystDispatcher);
 
     bool showInternalActions = true;
-    qDebug() << "Loaded Private actions:";
+    cout << "Loaded Private actions:" << endl;
     QString privateTitle("Private");
     QString classTitle("Class");
     QString methodTitle("Method");
@@ -257,18 +261,18 @@ void CutelystDispatcher::printActions()
         ++it;
     }
 
-    qDebug() << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-             << ".";
-    qDebug() << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
-             << "|" << classTitle.leftJustified(classLength).toUtf8().data()
-             << "|" << methodTitle.leftJustified(actionLength).toUtf8().data()
-             << "|";
-    qDebug() << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-             << ".";
+    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+         << "." << endl;
+    cout << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+         << "|" << classTitle.leftJustified(classLength).toUtf8().data()
+         << "|" << methodTitle.leftJustified(actionLength).toUtf8().data()
+         << "|" << endl;
+    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+         << "." << endl;
 
     it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
@@ -278,18 +282,18 @@ void CutelystDispatcher::printActions()
             if (!path.startsWith(QLatin1String("/"))) {
                 path.prepend(QLatin1String("/"));
             }
-            qDebug() << "|" << path.leftJustified(privateLength).toUtf8().data()
-                     << "|" << action->className().leftJustified(classLength).toUtf8().data()
-                     << "|" << action->name().leftJustified(actionLength).toUtf8().data()
-                     << "|";
+            cout << "|" << path.leftJustified(privateLength).toUtf8().data()
+                 << "|" << action->className().leftJustified(classLength).toUtf8().data()
+                 << "|" << action->name().leftJustified(actionLength).toUtf8().data()
+                 << "|" << endl;
         }
         ++it;
     }
 
-    qDebug() << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-             << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-             << ".\n";
+    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+         << "."  << endl << endl;
 
     // List all public actions
     foreach (CutelystDispatchType *dispatch, d->dispatchers) {

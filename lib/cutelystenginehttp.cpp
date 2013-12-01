@@ -63,8 +63,6 @@ bool CutelystEngineHttp::init()
     Q_D(CutelystEngineHttp);
 
     if (d->server->listen(d->address, d->port)) {
-        qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
-
         int childCount = 1;
         for (int i = 0; i < childCount; ++i) {
             bool childProcess;
