@@ -65,6 +65,11 @@ QString CutelystController::ns() const
     return ret;
 }
 
+bool CutelystController::operator==(const char *className)
+{
+    return !qstrcmp(metaObject()->className(), className);
+}
+
 void CutelystController::Begin(Cutelyst *c)
 {
 
@@ -124,8 +129,7 @@ bool CutelystController::_AUTO(Cutelyst *c)
 //    qDebug() << Q_FUNC_INFO;
     QList<CutelystAction*> autoList = c->getActions(QLatin1String("Auto"), c->ns());
     foreach (CutelystAction *autoAction, autoList) {
-        autoAction->dispatch(c);
-        if (!c->state()) {
+        if (!autoAction->dispatch(c)) {
             return false;
         }
     }

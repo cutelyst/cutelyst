@@ -100,6 +100,8 @@ public:
      */
     QString ns() const;
 
+    bool operator==(const char *className);
+
 protected:
     virtual void Begin(Cutelyst *c);
     virtual bool Auto(Cutelyst *c);

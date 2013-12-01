@@ -142,14 +142,15 @@ bool CutelystAction::dispatch(Cutelyst *c)
                               Q_ARG(QString, args.at(6)),
                               Q_ARG(QString, args.at(7)));
 
-        c->setState(ret);
         if (ret) {
+            c->setState(methodRet);
             return methodRet;
         }
 
-        // TODO when the method returns false it probably means
+        // TODO when the method failed to be called it probably means
         // we should detach, make sure this would be enough
         c->detach();
+        c->setState(false);
 
         return false;
     } else {
