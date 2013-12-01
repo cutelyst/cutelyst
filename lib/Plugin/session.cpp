@@ -75,7 +75,6 @@ bool Session::isValid(Cutelyst *c)
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
 {
-    qDebug() << Q_FUNC_INFO << filePath(sessionId);
     QVariantHash ret;
     QSettings settings(filePath(sessionId), QSettings::IniFormat);
     settings.beginGroup(QLatin1String("Data"));
@@ -88,7 +87,6 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
 
 void Session::persistSession(const QString &sessionId, const QVariant &data) const
 {
-    qDebug() << Q_FUNC_INFO << filePath(sessionId);
     QSettings settings(filePath(sessionId), QSettings::IniFormat);
     if (data.isNull()) {
         settings.clear();
@@ -106,14 +104,11 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
 
         }
         settings.endGroup();
-
-        qDebug() << Q_FUNC_INFO << "finished";
     }
 }
 
 void Session::saveSession(Cutelyst *c)
 {
-    qDebug() << Q_FUNC_INFO;
     if (!pluginProperty(c, "sessionsave").toBool()) {
         return;
     }
@@ -163,13 +158,13 @@ QString Session::getSessionId(Cutelyst *c) const
     foreach (const QNetworkCookie &cookie, c->req()->cookies()) {
         if (cookie.name() == sessionName()) {
             sessionId = cookie.value();
-            qDebug() << Q_FUNC_INFO << "Found sessionid" << sessionId << "in cookie";
+            qDebug() << "Found sessionid" << sessionId << "in cookie";
         }
     }
 
     if (sessionId.isEmpty()) {
         sessionId = generateSessionId();
-        qDebug() << Q_FUNC_INFO << "Created session" << sessionId;
+        qDebug() << "Created session" << sessionId;
     }
     c->setProperty("Session::_sessionid", sessionId);
 

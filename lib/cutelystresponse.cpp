@@ -138,7 +138,6 @@ QMap<QString, QString> CutelystResponse::headers() const
                            mimeType.name());
             }
         }
-        qDebug() << Q_FUNC_INFO << mimeType.comment() << mimeType.name();
     }
     // TODO use version macro here
     ret.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));

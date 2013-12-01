@@ -138,7 +138,7 @@ bool CutelystDispatcher::forward(Cutelyst *c, const QString &opname, const QStri
         return action->dispatch(c);
     }
 
-    qWarning() << Q_FUNC_INFO << "Action not found" << action;
+    qCritical() << "Action not found" << action;
     return false;
 }
 
@@ -177,11 +177,11 @@ void CutelystDispatcher::prepareAction(Cutelyst *c)
     }
 
     if (!path.isEmpty()) {
-        qDebug() << Q_FUNC_INFO << "Path is " << path;
+        qDebug() << "Path is" << path;
     }
 
     if (!c->args().isEmpty()) {
-        qDebug() << Q_FUNC_INFO << "Arguments are " << c->args().join(QLatin1Char('/'));
+        qDebug() << "Arguments are" << c->args().join(QLatin1Char('/'));
     }
 }
 
