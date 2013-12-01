@@ -100,6 +100,11 @@ public:
      */
     QString ns() const;
 
+    /**
+     * Returns the action object for the given private name
+     */
+    CutelystAction *actionFor(Cutelyst *c, const QString &name);
+
     bool operator==(const char *className);
 
 protected:

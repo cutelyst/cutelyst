@@ -19,6 +19,7 @@
 
 #include "cutelystcontroller.h"
 
+#include "cutelystdispatcher.h"
 #include "cutelystaction.h"
 
 #include <QMetaClassInfo>
@@ -63,6 +64,11 @@ QString CutelystController::ns() const
     }
 
     return ret;
+}
+
+CutelystAction *CutelystController::actionFor(Cutelyst *c, const QString &name)
+{
+    return c->dispatcher()->getAction(name, ns());
 }
 
 bool CutelystController::operator==(const char *className)
