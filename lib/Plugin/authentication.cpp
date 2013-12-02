@@ -83,7 +83,7 @@ Authentication::User Authentication::authenticate(Cutelyst *c, const CStringHash
         return realmPtr->authenticate(c, userinfo);
     }
 
-    qWarning() << Q_FUNC_INFO << "Could not find realm" << realm;
+    qWarning() << "Could not find realm" << realm;
     return User();
 }
 
@@ -96,7 +96,7 @@ Authentication::User Authentication::findUser(Cutelyst *c, const CStringHash &us
         return realmPtr->findUser(c, userinfo);
     }
 
-    qWarning() << Q_FUNC_INFO << "Could not find realm" << realm;
+    qWarning()   << "Could not find realm" << realm;
     return User();
 }
 
@@ -104,9 +104,18 @@ Authentication::User Authentication::user(Cutelyst *c)
 {
     QVariant user = pluginProperty(c, "user");
     if (user.isNull()) {
-        return restoreUser(c, User(), QString());
+        return restoreUser(c, QVariant(), QString());
     }
     return user.value<User>();
+}
+
+void Authentication::setUser(Cutelyst *c, const Authentication::User &user)
+{
+    if (user.isNull()) {
+        setPluginProperty(c, "user", QVariant());
+    } else {
+        setPluginProperty(c, "user", qVariantFromValue(user));
+    }
 }
 
 bool Authentication::userExists(Cutelyst *c)
@@ -118,14 +127,14 @@ bool Authentication::userInRealm(Cutelyst *c, const QString &realm)
 {
     QVariant user = pluginProperty(c, "user");
     if (user.isNull()) {
-        return !restoreUser(c, User(), realm).isNull();
+        return !restoreUser(c, QVariant(), realm).isNull();
     }
     return false;
 }
 
 void Authentication::logout(Cutelyst *c)
 {
-    setPluginProperty(c, "user", QVariant());
+    setUser(c, User());
 
     Authentication::Realm *realm = findRealmForPersistedUser(c);
     if (realm) {
@@ -137,8 +146,7 @@ void Authentication::setAuthenticated(Cutelyst *c, const User &user, const QStri
 {
     Q_D(Authentication);
 
-    setPluginProperty(c, "user", qVariantFromValue(user));
-
+    setUser(c, user);
 
     Authentication::Realm *realmPtr = d->realm(realmName);
     if (!realmPtr) {
@@ -167,22 +175,22 @@ void Authentication::persistUser(Cutelyst *c, const User &user, const QString &r
     }
 }
 
-Authentication::User Authentication::restoreUser(Cutelyst *c, const User &frozenUser, const QString &realmName)
+Authentication::User Authentication::restoreUser(Cutelyst *c, const QVariant &frozenUser, const QString &realmName)
 {
     Q_D(Authentication);
 
-    Authentication::Realm *realmPtr;
-    if (!realmName.isNull()) {
-//        c = d->realm(realmName);
-    } else {
+    Authentication::Realm *realmPtr = d->realms.value(realmName);
+    if (!realmPtr) {
         realmPtr = findRealmForPersistedUser(c);
     }
 
-    User user;
-    if (realmPtr) {
-        return realmPtr->restoreUser(c, frozenUser);
+    if (!realmPtr) {
+        return User();
     }
 
+    User user = realmPtr->restoreUser(c, frozenUser);
+
+    setUser(c, user);
     // TODO
     // $user->auth_realm($realm->name) if $user;
 
@@ -262,41 +270,45 @@ Authentication::User Authentication::Realm::persistUser(Cutelyst *c, const Authe
 {
     Session *session = c->plugin<Session*>();
     if (session && session->isValid(c)) {
-        session->setValue(c, "Authentication::user", qVariantFromValue(user));
+        session->setValue(c, "Authentication::user",
+                          m_store->forSession(c, user));
     }
 
     return user;
 }
 
-Authentication::User Authentication::Realm::restoreUser(Cutelyst *c, const User &frozenUser)
+Authentication::User Authentication::Realm::restoreUser(Cutelyst *c, const QVariant &frozenUser)
 {
-    User user = frozenUser;
-    if (user.isNull()) {
-        user = userIsRestorable(c);
+    QVariant _frozenUser = frozenUser;
+    if (_frozenUser.isNull()) {
+        _frozenUser = userIsRestorable(c);
     }
 
-    // TODO restore a User object
-    Session *session = c->plugin<Session*>();
-    if (session && session->isValid(c)) {
-//        QVariant value;
-//        if (m_store->canForSession()) {
-//            value = m_store->forSession(c, user);
-//        } else {
-//            value = user.forSession(c);
-//        }
-        return session->value(c, "Authentication::user").value<User>();
+    if (_frozenUser.isNull()) {
+        return User();
+    }
+
+    User user = m_store->fromSession(c, _frozenUser);
+
+    if (!user.isNull()) {
+        c->plugin<Authentication*>()->setUser(c, user);
+
+        // Sets the realm the user originated in
+        user.setAuthRealm(this);
+    } else {
+        qWarning("Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?");
     }
 
     return user;
 }
 
-Authentication::User Authentication::Realm::userIsRestorable(Cutelyst *c)
+QVariant Authentication::Realm::userIsRestorable(Cutelyst *c)
 {
     Session *session = c->plugin<Session*>();
     if (session && session->isValid(c)) {
-        return session->value(c, "Authentication::user").value<User>();
+        return session->value(c, "Authentication::user");
     }
-    return User();
+    return QVariant();
 }
 
 Authentication::Realm *AuthenticationPrivate::realm(const QString &realmName) const
@@ -355,6 +367,16 @@ bool Authentication::User::isNull() const
     return m_id.isNull();
 }
 
+Authentication::Realm *Authentication::User::authRealm()
+{
+    return m_realm;
+}
+
+void Authentication::User::setAuthRealm(Authentication::Realm *authRealm)
+{
+    m_realm = authRealm;
+}
+
 QDataStream &operator<<(QDataStream &out, const Authentication::User &user)
 {
     out << user.id() << static_cast<CStringHash>(user);
@@ -369,4 +391,16 @@ QDataStream &operator>>(QDataStream &in, Authentication::User &user)
     user.setId(id);
     user.swap(hash);
     return in;
+}
+
+QVariant CutelystPlugin::Authentication::Store::forSession(Cutelyst *c, const CutelystPlugin::Authentication::User &user)
+{
+    Q_UNUSED(c)
+    return qVariantFromValue(user);
+}
+
+Authentication::User Authentication::Store::fromSession(Cutelyst *c, const QVariant &frozenUser)
+{
+    Q_UNUSED(c)
+    return frozenUser.value<User>();
 }
