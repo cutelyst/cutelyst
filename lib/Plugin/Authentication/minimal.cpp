@@ -13,11 +13,11 @@ void StoreMinimal::addUser(const Authentication::User &user)
 }
 
 
-Authentication::User CutelystPlugin::StoreMinimal::findUser(Cutelyst *c, const CutelystPlugin::CStringHash &userinfo)
+Authentication::User CutelystPlugin::StoreMinimal::findUser(Cutelyst *c, const CutelystPlugin::CStringHash &userInfo)
 {
-    QString id = userinfo[QLatin1String("id")];
+    QString id = userInfo[QLatin1String("id")];
     if (id.isEmpty()) {
-        id = userinfo[QLatin1String("username")];
+        id = userInfo[QLatin1String("username")];
     }
 
     foreach (const Authentication::User &user, m_users) {
@@ -27,4 +27,16 @@ Authentication::User CutelystPlugin::StoreMinimal::findUser(Cutelyst *c, const C
     }
 
     return Authentication::User();
+}
+
+QVariant StoreMinimal::forSession(Cutelyst *c, const Authentication::User &user)
+{
+    return user.id();
+}
+
+Authentication::User StoreMinimal::fromSession(Cutelyst *c, const QVariant &frozenUser)
+{
+    CStringHash userInfo;
+    userInfo[QLatin1String("id")] = frozenUser.toString();
+    return findUser(c, userInfo);
 }

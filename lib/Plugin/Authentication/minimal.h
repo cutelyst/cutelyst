@@ -13,7 +13,11 @@ public:
 
     void addUser(const Authentication::User &user);
 
-    Authentication::User findUser(Cutelyst *c, const CStringHash &userinfo);
+    Authentication::User findUser(Cutelyst *c, const CStringHash &userInfo);
+
+    virtual QVariant forSession(Cutelyst *c, const Authentication::User &user);
+
+    virtual Authentication::User fromSession(Cutelyst *c, const QVariant &frozenUser);
 
 private:
     QList<Authentication::User> m_users;

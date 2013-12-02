@@ -94,7 +94,7 @@ public:
          * The default implementation just returns
          * the user.
          */
-        virtual QVariant forSession(Cutelyst *c, const User &user);
+        virtual QVariant forSession(Cutelyst *c, const Authentication::User &user);
 
         /**
          * Reimplement this so that you return a
