@@ -45,7 +45,7 @@ CutelystRequest *CutelystEngine::request() const
     return d->request;
 }
 
-CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body) const
+void CutelystEngine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body)
 {
     // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;
@@ -88,6 +88,7 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QByteArray
 
     CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
     requestPriv->engine = this;
+    requestPriv->connectionId = connectionId;
     requestPriv->method = method;
     requestPriv->url = url;
     requestPriv->protocol = protocol;
@@ -98,7 +99,7 @@ CutelystRequest *CutelystEngine::createRequest(const QUrl &url, const QByteArray
     requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
     requestPriv->body = body;
 
-    return new CutelystRequest(requestPriv);
+    handleRequest(new CutelystRequest(requestPriv), new CutelystResponse);
 }
 
 CutelystEnginePrivate::CutelystEnginePrivate(CutelystEngine *parent) :

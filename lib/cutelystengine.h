@@ -49,14 +49,14 @@ public:
 Q_SIGNALS:
     void handleRequest(CutelystRequest *request, CutelystResponse *response);
 
+protected Q_SLOTS:
+    void createRequest(int connectionId,
+                       const QUrl &url,
+                       const QByteArray &method,
+                       const QString &protocol,
+                       const QHash<QString, QByteArray> &headers,
+                       const QByteArray &body);
 protected:
-    virtual void parse(const QByteArray &data) = 0;
-    CutelystRequest *createRequest(const QUrl &url,
-                                   const QByteArray &method,
-                                   const QString &protocol,
-                                   const QHash<QString, QByteArray> &headers,
-                                   const QByteArray &body) const;
-
     CutelystEnginePrivate *d_ptr;
 
 private:

@@ -66,6 +66,9 @@ set(cutelystqt_plugin_HEADERS
     Plugin/staticsimple.h
     Plugin/StaticSimple
     Plugin/authentication.h
+)
+
+set(cutelystqt_view_HEADERS
     View/clearsilver.h
 )
 
@@ -106,6 +109,9 @@ install(FILES ${cutelystqt_HEADERS}
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/CutelystQt5/Plugin
+)
+install(FILES ${cutelystqt_view_HEADERS}
+        DESTINATION include/CutelystQt5/View
 )
 install(FILES ${cutelystqt_plugin_authentication_HEADERS}
         DESTINATION include/CutelystQt5/Plugin/Authentication

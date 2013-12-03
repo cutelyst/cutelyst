@@ -52,18 +52,6 @@ private:
     QString statusString(quint16 status) const;
     void onNewServerConnection();
     void onNewClientConnection(int socket);
-    void readyRead();
-
-    bool m_finishedHeaders;
-    QVariantHash m_data;
-    QByteArray m_buffer;
-    QByteArray m_body;
-    quint64 m_bodySize;
-    quint64 m_bufLastIndex;
-    QByteArray m_method;
-    QString m_path;
-    QString m_protocol;
-    QHash<QString, QByteArray> m_headers;
 };
 
 #endif // CUTELYSTENGINEHTTP_H

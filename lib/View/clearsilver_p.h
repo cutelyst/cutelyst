@@ -8,9 +8,13 @@
 class ClearSilverPrivate
 {
 public:
-    HDF *hdfForStash(const QVariantHash &stash);
+    HDF *hdfForStash(Cutelyst *ctx, const QVariantHash &stash);
+    bool render(Cutelyst *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output);
+    void renderError(Cutelyst *ctx, const QString &error);
 
-    QString rootPath;
+    QString includePath;
+    QString extension;
+    QString wrapper;
 };
 
 #endif // CLEARSILVER_P_H

@@ -57,6 +57,12 @@ quint16 CutelystRequest::peerPort() const
     return d->engine->peerPort();
 }
 
+int CutelystRequest::connectionId() const
+{
+    Q_D(const CutelystRequest);
+    return d->connectionId;
+}
+
 QString CutelystRequest::path() const
 {
     Q_D(const CutelystRequest);

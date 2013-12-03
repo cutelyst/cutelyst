@@ -21,6 +21,7 @@
 
 #include "cutelyst.h"
 #include "cutelystresponse.h"
+#include "cutelystrequest_p.h"
 
 #include <QCoreApplication>
 #include <QStringList>
@@ -33,9 +34,8 @@
 
 CutelystEngineHttp::CutelystEngineHttp(QObject *parent) :
     CutelystEngine(parent),
-    d_ptr(new CutelystEngineHttpPrivate),
-    m_bufLastIndex(0),
-    m_finishedHeaders(false)
+    d_ptr(new CutelystEngineHttpPrivate)
+
 {
     Q_D(CutelystEngineHttp);
 
@@ -92,19 +92,19 @@ bool CutelystEngineHttp::init()
 quint16 CutelystEngineHttp::peerPort() const
 {
     Q_D(const CutelystEngineHttp);
-    return d->socket->peerPort();
+    return 0;//d->socket->peerPort();
 }
 
 QString CutelystEngineHttp::peerName() const
 {
     Q_D(const CutelystEngineHttp);
-    return d->socket->peerName();
+    return QString();//d->socket->peerName();
 }
 
 QHostAddress CutelystEngineHttp::peerAddress() const
 {
     Q_D(const CutelystEngineHttp);
-    return d->socket->peerAddress();
+    return QHostAddress();//d->socket->peerAddress();
 }
 
 void CutelystEngineHttp::finalizeHeaders(Cutelyst *c)
@@ -125,18 +125,19 @@ void CutelystEngineHttp::finalizeHeaders(Cutelyst *c)
     }
     header.append(QLatin1String("\r\n"));
 
-    d->socket->write(header);
+    d->requests[c->req()->connectionId()]->write(header);
 }
 
 void CutelystEngineHttp::finalizeBody(Cutelyst *c)
 {
     Q_D(CutelystEngineHttp);
 
-    d->socket->write(c->response()->body());
-    d->socket->waitForBytesWritten();
-    d->socket->close();
-    delete d->socket;
-    d->socket = 0;
+    CutelystEngineHttpRequest *req = d->requests.value(c->req()->connectionId());
+    req->write(c->response()->body());
+    req->waitForBytesWritten();
+    req->close();
+//    delete req;
+    d->requests.remove(c->req()->connectionId());
 }
 
 void CutelystEngineHttp::finalizeError(Cutelyst *c)
@@ -146,85 +147,7 @@ void CutelystEngineHttp::finalizeError(Cutelyst *c)
 
 void CutelystEngineHttp::parse(const QByteArray &request)
 {
-    m_buffer.append(request);
 
-//    qDebug() << request;
-
-    int newLine;
-    if (m_method.isEmpty()) {
-        if ((newLine = request.indexOf('\n', m_bufLastIndex)) != -1) {
-            QByteArray section = request.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
-            m_bufLastIndex = newLine + 1;
-
-            QRegularExpression methodProtocolRE("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$");
-            QRegularExpression methodRE("(\\w+)\\s+(.*)");
-            bool badRequest = false;
-            QRegularExpressionMatch match = methodProtocolRE.match(section);
-            if (match.hasMatch()) {
-                m_method = match.captured(1).toLocal8Bit();
-                m_path = match.captured(2);
-                m_protocol = match.captured(3);
-            } else {
-                match = methodRE.match(section);
-                if (match.hasMatch()) {
-                    m_method = match.captured(1).toLocal8Bit();
-                    m_path = match.captured(2);
-                }
-            }
-
-            if (badRequest) {
-                qDebug() << "BAD REQUEST" << request;
-                return;
-            }
-        }
-    }
-
-    if (!m_finishedHeaders) {
-        while ((newLine = request.indexOf('\n', m_bufLastIndex)) != -1) {
-            QString section = request.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
-//            qDebug() << "[header] " << section << section.isEmpty();
-            m_bufLastIndex = newLine + 1;
-
-            if (!section.isEmpty()) {
-                m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
-            } else {
-                m_bodySize = m_headers.value(QLatin1String("Content-Length")).toULongLong();
-                m_finishedHeaders = true;
-            }
-        }
-    }
-
-    if (!m_finishedHeaders) {
-        return;
-    }
-
-    m_body = request.mid(m_bufLastIndex, m_bodySize);
-//    qDebug() << "m_bodySize " << m_bodySize << m_body.size() << m_body;
-    if (m_bodySize != m_body.size()) {
-        return;
-    }
-
-    QUrl url;
-    if (m_headers.contains(QLatin1String("Host"))) {
-        url = QLatin1String("http://") % m_headers[QLatin1String("Host")] % m_path;
-    } else {
-        url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
-    }
-
-    CutelystRequest *req = createRequest(url,
-                                         m_method,
-                                         m_protocol,
-                                         m_headers,
-                                         m_body);
-
-    handleRequest(req, new CutelystResponse);
-    m_buffer.clear();
-    m_body.clear();
-    m_headers.clear();
-    m_method.clear();
-    m_protocol.clear();
-    m_bufLastIndex = 0;
-    m_finishedHeaders = false;
 }
 
 QString CutelystEngineHttp::statusString(quint16 status) const
@@ -291,34 +214,112 @@ void CutelystEngineHttp::onNewClientConnection(int socket)
 {
     Q_D(CutelystEngineHttp);
 
-    QTcpSocket *tcpSocket = new QTcpSocket(this);
+    CutelystEngineHttpRequest *tcpSocket = new CutelystEngineHttpRequest(socket, this);
     if (tcpSocket->setSocketDescriptor(socket)) {
-        if (!d->socket) {
-            d->socket = tcpSocket;
-            connect(tcpSocket, &QTcpSocket::readyRead,
-                    this, &CutelystEngineHttp::readyRead);
-        } else {
-            // TODO queue the socket
-            tcpSocket->close();
-            delete tcpSocket;
-            qDebug() << Q_FUNC_INFO << "closing " << socket;
-        }
-        qDebug() << Q_FUNC_INFO << socket;
+        d->requests.insert(socket, tcpSocket);
+        connect(tcpSocket, &CutelystEngineHttpRequest::requestReady,
+                this, &CutelystEngineHttp::createRequest);
     } else {
         delete tcpSocket;
     }
 }
 
-void CutelystEngineHttp::readyRead()
-{
-    Q_D(CutelystEngineHttp);
-    qDebug() << Q_FUNC_INFO;
-    parse(d->socket->readAll());
-}
-
 CutelystEngineHttpPrivate::CutelystEngineHttpPrivate() :
     port(3000),
-    address(QHostAddress::Any),
-    socket(0)
+    address(QHostAddress::Any)
 {
+}
+
+CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent) :
+    QTcpSocket(parent),
+    m_bufLastIndex(0),
+    m_finishedHeaders(false)
+{
+    connect(this, &CutelystEngineHttpRequest::readyRead,
+            this, &CutelystEngineHttpRequest::process);
+}
+
+void CutelystEngineHttpRequest::process()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    m_buffer.append(readAll());
+
+//    qDebug() << request;
+
+    int newLine;
+    if (m_method.isEmpty()) {
+        if ((newLine = m_buffer.indexOf('\n', m_bufLastIndex)) != -1) {
+            QByteArray section = m_buffer.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
+            m_bufLastIndex = newLine + 1;
+
+            QRegularExpression methodProtocolRE("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$");
+            QRegularExpression methodRE("(\\w+)\\s+(.*)");
+            bool badRequest = false;
+            QRegularExpressionMatch match = methodProtocolRE.match(section);
+            if (match.hasMatch()) {
+                m_method = match.captured(1).toLocal8Bit();
+                m_path = match.captured(2);
+                m_protocol = match.captured(3);
+            } else {
+                match = methodRE.match(section);
+                if (match.hasMatch()) {
+                    m_method = match.captured(1).toLocal8Bit();
+                    m_path = match.captured(2);
+                }
+            }
+
+            if (badRequest) {
+                qDebug() << "BAD REQUEST" << m_buffer;
+                return;
+            }
+        }
+    }
+
+    if (!m_finishedHeaders) {
+        while ((newLine = m_buffer.indexOf('\n', m_bufLastIndex)) != -1) {
+            QString section = m_buffer.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
+//            qDebug() << "[header] " << section << section.isEmpty();
+            m_bufLastIndex = newLine + 1;
+
+            if (!section.isEmpty()) {
+                m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
+            } else {
+                m_bodySize = m_headers.value(QLatin1String("Content-Length")).toULongLong();
+                m_finishedHeaders = true;
+            }
+        }
+    }
+
+    if (!m_finishedHeaders) {
+        return;
+    }
+
+    m_body = m_buffer.mid(m_bufLastIndex, m_bodySize);
+//    qDebug() << "m_bodySize " << m_bodySize << m_body.size() << m_body;
+    if (m_bodySize != m_body.size()) {
+        return;
+    }
+
+    QUrl url;
+    if (m_headers.contains(QLatin1String("Host"))) {
+        url = QLatin1String("http://") % m_headers[QLatin1String("Host")] % m_path;
+    } else {
+        url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
+    }
+
+    requestReady(socketDescriptor(),
+                 url,
+                 m_method,
+                 m_protocol,
+                 m_headers,
+                 m_body);
+
+    m_buffer.clear();
+    m_body.clear();
+    m_headers.clear();
+    m_method.clear();
+    m_protocol.clear();
+    m_bufLastIndex = 0;
+    m_finishedHeaders = false;
 }

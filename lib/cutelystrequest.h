@@ -50,6 +50,8 @@ public:
      */
     quint16 peerPort() const;
 
+    int connectionId() const;
+
     QString path() const;
     QStringList args() const;
     QString base() const;

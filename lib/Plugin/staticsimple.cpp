@@ -43,10 +43,8 @@ void StaticSimple::beforePrepareAction(Cutelyst *c, bool *skipMethod)
     QString path = c->req()->path();
     QRegularExpression re("\\.\\S+$");
     QRegularExpressionMatch match = re.match(path);
-    if (match.hasMatch()) {
-        if (locateStaticFile(c, path)) {
-            *skipMethod = true;
-        }
+    if (match.hasMatch() && locateStaticFile(c, path)) {
+        *skipMethod = true;
     }
 }
 
@@ -56,6 +54,7 @@ bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
     path = m_rootDir % path;
     QFile file(path);
     if (file.exists() && file.open(QFile::ReadOnly)) {
+        qWarning() << "Serving" << path;
         c->response()->body() = file.readAll();
         QMimeDatabase db;
         // use the extension to match to be faster

@@ -24,6 +24,37 @@
 #include "cutelystchildprocess.h"
 
 #include <QTcpServer>
+#include <QTcpSocket>
+
+class CutelystEngineHttpRequest : public QTcpSocket
+{
+    Q_OBJECT
+public:
+    explicit CutelystEngineHttpRequest(int socket, QObject *parent = 0);
+
+public slots:
+    void process();
+
+Q_SIGNALS:
+    void requestReady(int connectionId,
+                      const QUrl &url,
+                      const QByteArray &method,
+                      const QString &protocol,
+                      const QHash<QString, QByteArray> &headers,
+                      const QByteArray &body);
+
+private:
+    bool m_finishedHeaders;
+    QVariantHash m_data;
+    QByteArray m_buffer;
+    QByteArray m_body;
+    quint64 m_bodySize;
+    quint64 m_bufLastIndex;
+    QByteArray m_method;
+    QString m_path;
+    QString m_protocol;
+    QHash<QString, QByteArray> m_headers;
+};
 
 class CutelystEngineHttpPrivate
 {
@@ -34,7 +65,7 @@ public:
     QHostAddress address;
     QTcpServer *server;
     QList<CutelystChildProcess*> child;
-    QTcpSocket *socket;
+    QHash<int, CutelystEngineHttpRequest*> requests;
 };
 
 #endif // CUTELYSTENGINEHTTP_P_H

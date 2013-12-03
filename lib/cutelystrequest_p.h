@@ -41,6 +41,7 @@ public:
     QMultiHash<QString, QString> queryParam;
     QMultiHash<QString, QString> param;
     const CutelystEngine *engine;
+    int connectionId;
 };
 
 #endif // CUTELYSTREQUEST_P_H

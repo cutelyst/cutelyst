@@ -61,6 +61,7 @@ public:
     /**
      * Returns a pointer to the current action
      */
+    Q_PROPERTY(CutelystAction* action READ action)
     CutelystAction *action() const;
 
     /**
@@ -70,6 +71,7 @@ public:
      * // a class named FooBar which inherits CutelystController
      * c->ns(); // returns 'foo/bar'
      */
+    Q_PROPERTY(QString ns READ ns)
     QString ns() const;
 
     /**
