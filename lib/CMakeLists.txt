@@ -1,7 +1,12 @@
-include_directories(${CMAKE_BINARY_DIR}
-		    ${CMAKE_CURRENT_BINARY_DIR}
-		    ${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    /usr/include/ClearSilver
 )
+
+find_library(CLEAR_SILVER_CS   libneo_cs.a)
+find_library(CLEAR_SILVER_UTIL libneo_utl.a)
 
 set(cutelystqt_SRC
     cutelystrequest.cpp
@@ -24,6 +29,7 @@ set(cutelystqt_SRC
     cutelystdispatchtypedefault.cpp
     cutelystdispatcher.cpp
     cutelystdispatcher_p.h
+    cutelystview.cpp
     cutelystchildprocess.cpp
     cutelystchildprocess_p.h
     cutelystapplication.cpp
@@ -35,6 +41,8 @@ set(cutelystqt_SRC
     Plugin/authentication_p.h
     Plugin/Authentication/minimal.cpp
     Plugin/Authentication/credentialpassword.cpp
+    View/clearsilver.cpp
+    View/clearsilver_p.h
     uwsgi.h
 )
 
@@ -46,6 +54,7 @@ set(cutelystqt_HEADERS
     cutelystengine.h
     cutelystcontroller.h
     CutelystController
+    cutelystview.h
     cutelystapplication.h
     CutelystApplication
 )
@@ -57,8 +66,7 @@ set(cutelystqt_plugin_HEADERS
     Plugin/staticsimple.h
     Plugin/StaticSimple
     Plugin/authentication.h
-    Plugin/Authentication/minimal.h
-    Plugin/Authentication/credentialpassword.h
+    View/clearsilver.h
 )
 
 set(cutelystqt_plugin_authentication_HEADERS
@@ -78,7 +86,8 @@ set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERS
 
 qt5_use_modules(cutelyst-qt5 Core Network DBus)
 target_link_libraries(cutelyst-qt5
-
+    ${CLEAR_SILVER_CS}
+    ${CLEAR_SILVER_UTIL}
 )
 
 set_property(TARGET cutelyst-qt5 PROPERTY COMPILE_DEFINITIONS CUTELYST_STATIC)
