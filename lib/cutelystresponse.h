@@ -56,8 +56,7 @@ public:
 
     void addHeaderValue(const QString &key, const QByteArray &value);
     bool hasBody() const;
-    QByteArray body() const;
-    void setBody(const QByteArray &body);
+    QByteArray &body();
     void setContentEncoding(const QString &encoding);
     void setContentLength(quint64 length);
     void setContentType(const QString &encoding);

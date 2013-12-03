@@ -56,7 +56,7 @@ bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
     path = m_rootDir % path;
     QFile file(path);
     if (file.exists() && file.open(QFile::ReadOnly)) {
-        c->response()->setBody(file.readAll());
+        c->response()->body() = file.readAll();
         QMimeDatabase db;
         // use the extension to match to be faster
         QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);

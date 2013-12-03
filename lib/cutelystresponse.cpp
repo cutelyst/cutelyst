@@ -63,16 +63,10 @@ bool CutelystResponse::hasBody() const
     return !d->body.isEmpty();
 }
 
-QByteArray CutelystResponse::body() const
-{
-    Q_D(const CutelystResponse);
-    return d->body;
-}
-
-void CutelystResponse::setBody(const QByteArray &body)
+QByteArray &CutelystResponse::body()
 {
     Q_D(CutelystResponse);
-    d->body = body;
+    return d->body;
 }
 
 void CutelystResponse::setContentLength(quint64 length)

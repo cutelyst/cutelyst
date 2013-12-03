@@ -29,9 +29,7 @@ NEOERR* cutelyst_render(void *user, char *data)
 {
     Cutelyst *c = static_cast<Cutelyst*>(user);
     if (c) {
-        QByteArray body = c->res()->body();
-        body.append(data);
-        c->res()->setBody(body);
+        c->res()->body().append(data);
     }
     qWarning() << "cutelyst_render" << c << data;
     return 0;
@@ -78,7 +76,7 @@ bool ClearSilver::process(Cutelyst *c)
         QString errorMsg;
         errorMsg = QString::fromLatin1("Failed to parse template file:\n%1").arg(msg->buf);
         qCritical() << errorMsg;
-        c->res()->setBody(errorMsg.toUtf8());
+        c->res()->body() = errorMsg.toUtf8();
 
         nerr_log_error(error);
         hdf_destroy(&hdf);

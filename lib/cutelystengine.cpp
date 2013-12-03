@@ -130,7 +130,7 @@ void CutelystEngine::finalizeError(Cutelyst *c)
 
     body.append(c->errors().join(QLatin1Char('\n')));
 
-    c->res()->setBody(body);
+    c->res()->body() = body;
 
     // Return 500
     c->res()->setStatus(CutelystResponse::InternalServerError);

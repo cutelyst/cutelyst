@@ -254,7 +254,7 @@ void Cutelyst::finalizeHeaders()
             data.append(">here</a>.</p>\n"
                    "  </body>\n"
                    "</html>\n");
-            response->setBody(data);
+            response->body() = data;
             response->setContentType(QLatin1String("text/html; charset=utf-8"));
         }
     }
@@ -297,7 +297,7 @@ int Cutelyst::finalize()
     finalizeHeaders();
 
     if (d->request->method() == "HEAD") {
-        d->response->setBody(QByteArray());
+        d->response->body().clear();
     }
 
     finalizeBody();

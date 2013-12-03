@@ -44,7 +44,7 @@ void Root::admin(Cutelyst *c, const QString &name, const QString &age, CutelystC
             "        </p>"
             "    </body>"
             "</html>";
-    c->response()->setBody(data);
+    c->response()->body() = data;
 }
 
 void Root::Begin(Cutelyst *c)
