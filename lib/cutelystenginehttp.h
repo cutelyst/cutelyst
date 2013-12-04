@@ -47,6 +47,9 @@ protected:
 
     virtual void parse(const QByteArray &request);
 
+private Q_SLOTS:
+    void removeConnection();
+
 private:
     Q_DECLARE_PRIVATE(CutelystEngineHttp)
     QString statusString(quint16 status) const;

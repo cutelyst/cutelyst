@@ -25,6 +25,7 @@
 
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTimer>
 
 class CutelystEngineHttpRequest : public QTcpSocket
 {
@@ -32,8 +33,13 @@ class CutelystEngineHttpRequest : public QTcpSocket
 public:
     explicit CutelystEngineHttpRequest(int socket, QObject *parent = 0);
 
+    int connectionId();
+    bool processing();
+    void finish();
+
 public slots:
     void process();
+    void timeout();
 
 Q_SIGNALS:
     void requestReady(int connectionId,
@@ -45,6 +51,8 @@ Q_SIGNALS:
 
 private:
     bool m_finishedHeaders;
+    bool m_processing;
+    int m_connectionId;
     QVariantHash m_data;
     QByteArray m_buffer;
     QByteArray m_body;
@@ -53,6 +61,7 @@ private:
     QByteArray m_method;
     QString m_path;
     QString m_protocol;
+    QTimer m_timeoutTimer;
     QHash<QString, QByteArray> m_headers;
 };
 

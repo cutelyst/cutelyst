@@ -132,11 +132,9 @@ void CutelystEngineHttp::finalizeBody(Cutelyst *c)
 {
     Q_D(CutelystEngineHttp);
 
-    CutelystEngineHttpRequest *req = d->requests.take(c->req()->connectionId());
+    CutelystEngineHttpRequest *req = d->requests.value(c->req()->connectionId());
     req->write(c->response()->body());
-    req->waitForBytesWritten();
-    req->close();
-    req->deleteLater();
+    req->finish();
 }
 
 void CutelystEngineHttp::finalizeError(Cutelyst *c)
@@ -147,6 +145,15 @@ void CutelystEngineHttp::finalizeError(Cutelyst *c)
 void CutelystEngineHttp::parse(const QByteArray &request)
 {
 
+}
+
+void CutelystEngineHttp::removeConnection()
+{
+    Q_D(CutelystEngineHttp);
+    CutelystEngineHttpRequest *req = static_cast<CutelystEngineHttpRequest*>(sender());
+    if (req) {
+        d->requests.take(req->connectionId());
+    }
 }
 
 QString CutelystEngineHttp::statusString(quint16 status) const
@@ -218,6 +225,8 @@ void CutelystEngineHttp::onNewClientConnection(int socket)
         d->requests.insert(socket, tcpSocket);
         connect(tcpSocket, &CutelystEngineHttpRequest::requestReady,
                 this, &CutelystEngineHttp::createRequest);
+        connect(tcpSocket, &CutelystEngineHttpRequest::destroyed,
+                this, &CutelystEngineHttp::removeConnection);
     } else {
         delete tcpSocket;
     }
@@ -232,19 +241,53 @@ CutelystEngineHttpPrivate::CutelystEngineHttpPrivate() :
 CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent) :
     QTcpSocket(parent),
     m_bufLastIndex(0),
-    m_finishedHeaders(false)
+    m_finishedHeaders(false),
+    m_processing(false),
+    m_connectionId(socket)
 {
     connect(this, &CutelystEngineHttpRequest::readyRead,
             this, &CutelystEngineHttpRequest::process);
+    connect(this, &CutelystEngineHttpRequest::bytesWritten,
+            this, &CutelystEngineHttpRequest::timeout);
+    connect(&m_timeoutTimer, &QTimer::timeout,
+            this, &CutelystEngineHttpRequest::timeout);
+    m_timeoutTimer.setInterval(5000);
+    m_timeoutTimer.setSingleShot(true);
+    m_timeoutTimer.start();
+}
+
+int CutelystEngineHttpRequest::connectionId()
+{
+    return m_connectionId;
+}
+
+bool CutelystEngineHttpRequest::processing()
+{
+    return m_processing;
+}
+
+void CutelystEngineHttpRequest::finish()
+{
+    m_processing = false;
+    if (!m_buffer.isNull() && bytesAvailable() == 0) {
+        QTimer::singleShot(0, this, SLOT(process()));
+    } else {
+        m_timeoutTimer.start();
+    }
 }
 
 void CutelystEngineHttpRequest::process()
 {
-//    qDebug() << Q_FUNC_INFO;
-
+//    qDebug() << Q_FUNC_INFO << connectionId() << m_processing << m_buffer.size() << sender() << bytesAvailable();
     m_buffer.append(readAll());
 
-//    qDebug() << request;
+    if (m_processing) {
+        return;
+    }
+
+    m_timeoutTimer.start();
+
+//    qDebug() << m_buffer;
 
     int newLine;
     if (m_method.isEmpty()) {
@@ -307,18 +350,30 @@ void CutelystEngineHttpRequest::process()
         url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
     }
 
-    requestReady(socketDescriptor(),
+    m_buffer.clear();
+    m_bufLastIndex = 0;
+    m_finishedHeaders = false;
+    m_processing = true;
+    requestReady(connectionId(),
                  url,
                  m_method,
                  m_protocol,
                  m_headers,
                  m_body);
 
-    m_buffer.clear();
     m_body.clear();
     m_headers.clear();
     m_method.clear();
     m_protocol.clear();
-    m_bufLastIndex = 0;
-    m_finishedHeaders = false;
+}
+
+void CutelystEngineHttpRequest::timeout()
+{
+    QTimer *timer = qobject_cast<QTimer*>(sender());
+    if (timer && bytesToWrite() == 0 && bytesAvailable() == 0) {
+        close();
+        deleteLater();
+    } else {
+        m_timeoutTimer.start();
+    }
 }
