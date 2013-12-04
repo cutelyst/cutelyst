@@ -132,12 +132,11 @@ void CutelystEngineHttp::finalizeBody(Cutelyst *c)
 {
     Q_D(CutelystEngineHttp);
 
-    CutelystEngineHttpRequest *req = d->requests.value(c->req()->connectionId());
+    CutelystEngineHttpRequest *req = d->requests.take(c->req()->connectionId());
     req->write(c->response()->body());
     req->waitForBytesWritten();
     req->close();
-//    delete req;
-    d->requests.remove(c->req()->connectionId());
+    req->deleteLater();
 }
 
 void CutelystEngineHttp::finalizeError(Cutelyst *c)
@@ -241,7 +240,7 @@ CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent
 
 void CutelystEngineHttpRequest::process()
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
 
     m_buffer.append(readAll());
 
