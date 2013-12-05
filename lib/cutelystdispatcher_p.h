@@ -22,14 +22,18 @@
 
 #include "cutelystdispatcher.h"
 
+namespace Cutelyst {
+
 class CutelystDispatcherPrivate
 {
 public:
-    CutelystActionList getContainers(const QString &ns) const;
+    ActionList getContainers(const QString &ns) const;
     QMap<QString, CutelystAction*> actionHash;
-    QMap<QString, CutelystActionList> containerHash;
+    QMap<QString, ActionList> containerHash;
     QHash<QString, CutelystController *> constrollerHash;
     QList<CutelystDispatchType*> dispatchers;
 };
+
+}
 
 #endif // CUTELYSTDISPATCHER_P_H

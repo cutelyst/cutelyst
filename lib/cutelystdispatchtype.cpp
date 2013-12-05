@@ -21,6 +21,8 @@
 
 #include "context_p.h"
 
+using namespace Cutelyst;
+
 CutelystDispatchType::CutelystDispatchType(QObject *parent) :
     QObject(parent)
 {

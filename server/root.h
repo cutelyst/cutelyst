@@ -3,6 +3,8 @@
 
 #include <cutelystcontroller.h>
 
+using namespace Cutelyst;
+
 class Root : public CutelystController
 {
     Q_OBJECT

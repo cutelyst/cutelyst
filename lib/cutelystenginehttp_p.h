@@ -27,6 +27,8 @@
 #include <QTcpSocket>
 #include <QTimer>
 
+namespace Cutelyst {
+
 class CutelystEngineHttpRequest : public QTcpSocket
 {
     Q_OBJECT
@@ -76,5 +78,7 @@ public:
     QList<CutelystChildProcess*> child;
     QHash<int, CutelystEngineHttpRequest*> requests;
 };
+
+}
 
 #endif // CUTELYSTENGINEHTTP_P_H

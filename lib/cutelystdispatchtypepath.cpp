@@ -28,6 +28,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Cutelyst;
 
 CutelystDispatchTypePath::CutelystDispatchTypePath(QObject *parent) :
     CutelystDispatchType(parent)

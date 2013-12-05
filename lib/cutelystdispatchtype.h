@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+namespace Cutelyst {
+
 class Context;
 class CutelystAction;
 class CutelystDispatchType : public QObject
@@ -63,5 +65,7 @@ public:
 protected:
     void setupMatchedAction(Context *ctx, CutelystAction *action, const QString &match) const;
 };
+
+}
 
 #endif // CUTELYSTDISPATCHTYPE_H

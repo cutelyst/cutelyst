@@ -31,6 +31,7 @@
 #include <QDebug>
 
 using namespace std;
+using namespace Cutelyst;
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

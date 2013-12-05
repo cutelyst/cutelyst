@@ -5,6 +5,8 @@
 
 #include <ClearSilver/ClearSilver.h>
 
+namespace Cutelyst {
+
 class ClearSilverPrivate
 {
 public:
@@ -16,5 +18,7 @@ public:
     QString extension;
     QString wrapper;
 };
+
+}
 
 #endif // CLEARSILVER_P_H

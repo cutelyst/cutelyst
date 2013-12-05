@@ -5,6 +5,8 @@
 
 #include "cutelystview.h"
 
+namespace Cutelyst {
+
 class ClearSilverPrivate;
 class ClearSilver : public CutelystView
 {
@@ -31,5 +33,7 @@ public:
 protected:
     ClearSilverPrivate *d_ptr;
 };
+
+}
 
 #endif // CLEARSILVER_H

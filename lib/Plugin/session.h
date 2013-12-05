@@ -25,6 +25,8 @@
 #include <QObject>
 #include <QVariant>
 
+namespace Cutelyst {
+
 class Context;
 namespace CutelystPlugin {
 
@@ -63,6 +65,8 @@ private:
     QString getSessionId(Context *ctx) const;
     QString filePath(const QString &sessionId) const;
 };
+
+}
 
 }
 

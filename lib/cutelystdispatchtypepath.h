@@ -24,6 +24,8 @@
 
 #include <QHash>
 
+namespace Cutelyst {
+
 class CutelystDispatchTypePath : public CutelystDispatchType
 {
     Q_OBJECT
@@ -43,5 +45,7 @@ private:
 
     QMultiHash<QString, CutelystAction*> m_paths;
 };
+
+}
 
 #endif // CUTELYSTDISPATCHTYPEPATH_H

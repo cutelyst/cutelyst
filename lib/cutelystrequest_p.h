@@ -26,6 +26,8 @@
 #include <QHostAddress>
 #include <QUrl>
 
+namespace Cutelyst {
+
 class CutelystEngine;
 class CutelystRequestPrivate
 {
@@ -43,5 +45,7 @@ public:
     const CutelystEngine *engine;
     int connectionId;
 };
+
+}
 
 #endif // CUTELYSTREQUEST_P_H

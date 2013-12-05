@@ -25,6 +25,8 @@
 
 #include <QUrl>
 
+using namespace Cutelyst;
+
 CutelystEngine::CutelystEngine(QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystEnginePrivate(this))

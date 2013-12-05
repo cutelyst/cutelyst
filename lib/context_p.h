@@ -25,6 +25,8 @@
 
 #include <QVariantHash>
 
+namespace Cutelyst {
+
 class ContextPrivate
 {
 public:
@@ -44,5 +46,7 @@ public:
     bool state;
     QTime *stats;
 };
+
+}
 
 #endif // CUTELYST_P_H

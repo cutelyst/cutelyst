@@ -9,6 +9,8 @@
 #include <QFile>
 #include <QDebug>
 
+using namespace Cutelyst;
+
 ClearSilver::ClearSilver(QObject *parent) :
     CutelystView(parent),
     d_ptr(new ClearSilverPrivate)

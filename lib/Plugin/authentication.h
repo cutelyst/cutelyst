@@ -24,7 +24,8 @@
 
 #include <QObject>
 
-class Cutelyst;
+namespace Cutelyst {
+
 namespace CutelystPlugin {
 
 class AuthenticationPrivate;
@@ -165,8 +166,10 @@ private:
 
 }
 
-Q_DECLARE_METATYPE(CutelystPlugin::Authentication::User)
-QDataStream &operator<<(QDataStream &out, const CutelystPlugin::Authentication::User &myObj);
-QDataStream &operator>>(QDataStream &in, CutelystPlugin::Authentication::User &myObj);
+}
+
+Q_DECLARE_METATYPE(Cutelyst::CutelystPlugin::Authentication::User)
+QDataStream &operator<<(QDataStream &out, const Cutelyst::CutelystPlugin::Authentication::User &myObj);
+QDataStream &operator>>(QDataStream &in, Cutelyst::CutelystPlugin::Authentication::User &myObj);
 
 #endif // AUTHENTICATION_H

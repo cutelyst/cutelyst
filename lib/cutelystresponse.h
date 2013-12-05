@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QNetworkCookie>
 
+namespace Cutelyst {
+
 class CutelystResponsePrivate;
 class CutelystResponse : public QObject
 {
@@ -85,5 +87,7 @@ public:
 protected:
     CutelystResponsePrivate *d_ptr;
 };
+
+}
 
 #endif // CUTELYSTRESPONSE_H

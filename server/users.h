@@ -3,6 +3,8 @@
 
 #include <cutelystcontroller.h>
 
+using namespace Cutelyst;
+
 class Users : public CutelystController
 {
     Q_OBJECT

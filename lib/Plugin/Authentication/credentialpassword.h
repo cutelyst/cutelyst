@@ -3,6 +3,7 @@
 
 #include "Plugin/authentication.h"
 
+namespace Cutelyst {
 namespace CutelystPlugin {
 
 class CredentialPassword : public Authentication::Credential
@@ -17,5 +18,6 @@ private:
 };
 
 } // namespace CutelystPlugin
+}
 
 #endif // CUTELYSTPLUGIN_CREDENTIALPASSWORD_H

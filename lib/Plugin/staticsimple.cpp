@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QDebug>
 
+using namespace Cutelyst;
 using namespace CutelystPlugin;
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :

@@ -24,6 +24,8 @@
 #include <QStringList>
 #include <QMetaMethod>
 
+namespace Cutelyst {
+
 class Context;
 class CutelystController;
 class CutelystActionPrivate;
@@ -121,6 +123,8 @@ private:
     Q_DECLARE_PRIVATE(CutelystAction)
 };
 
-typedef QList<CutelystAction*> CutelystActionList;
+typedef QList<CutelystAction*> ActionList;
+
+}
 
 #endif // CUTELYSTACTION_H

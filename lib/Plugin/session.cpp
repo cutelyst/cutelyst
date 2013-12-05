@@ -31,6 +31,7 @@
 #include <QDir>
 #include <QDebug>
 
+using namespace Cutelyst;
 using namespace CutelystPlugin;
 
 Session::Session(QObject *parent) :

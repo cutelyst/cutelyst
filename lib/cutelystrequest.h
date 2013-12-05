@@ -24,6 +24,8 @@
 #include <QHostAddress>
 #include <QNetworkCookie>
 
+namespace Cutelyst {
+
 class CutelystRequestPrivate;
 class CutelystRequest
 {
@@ -113,5 +115,7 @@ private:
     friend class CutelystDispatcher;
     Q_DECLARE_PRIVATE(CutelystRequest)
 };
+
+}
 
 #endif // CUTELYSTREQUEST_H

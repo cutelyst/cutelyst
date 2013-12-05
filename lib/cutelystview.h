@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+namespace Cutelyst {
+
 class Context;
 class CutelystView : public QObject
 {
@@ -18,5 +20,7 @@ public:
      */
     virtual bool render(Context *ctx);
 };
+
+}
 
 #endif // CUTELYSTVIEW_H

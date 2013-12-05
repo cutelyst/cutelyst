@@ -22,6 +22,8 @@
 
 #include "cutelystdispatchtype.h"
 
+namespace Cutelyst {
+
 class CutelystDispatchTypeDefault : public CutelystDispatchType
 {
     Q_OBJECT
@@ -41,5 +43,7 @@ public:
 
     virtual bool isLowPrecedence() const;
 };
+
+}
 
 #endif // CUTELYSTDISPATCHTYPEDEFAULT_H

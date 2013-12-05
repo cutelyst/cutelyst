@@ -26,6 +26,8 @@
 
 #include "cutelystaction.h"
 
+namespace Cutelyst {
+
 class Context;
 class CutelystController;
 class CutelystDispatchType;
@@ -42,7 +44,7 @@ public:
     bool forward(Context *ctx, const QString &opname, const QStringList &arguments);
     void prepareAction(Context *ctx);
     CutelystAction* getAction(const QString &name, const QString &ns = QString()) const;
-    CutelystActionList getActions(const QString &name, const QString &ns) const;
+    ActionList getActions(const QString &name, const QString &ns) const;
     QHash<QString, CutelystController*> controllers() const;
     QString uriForAction(CutelystAction *action, const QStringList &captures);
 
@@ -60,5 +62,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(CutelystDispatcher)
 };
+
+}
 
 #endif // CUTELYSTDISPATCHER_H

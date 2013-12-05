@@ -23,6 +23,8 @@
 // TODO make this configurable
 #define TIMEOUT 3000
 
+using namespace Cutelyst;
+
 CutelystRequest::CutelystRequest() :
     d_ptr(new CutelystRequestPrivate)
 {

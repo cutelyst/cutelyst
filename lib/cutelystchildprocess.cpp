@@ -27,6 +27,8 @@
 #include <QSocketNotifier>
 #include <QDebug>
 
+using namespace Cutelyst;
+
 CutelystChildProcess::CutelystChildProcess(bool &childProcess, QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystChildProcessPrivate(this))

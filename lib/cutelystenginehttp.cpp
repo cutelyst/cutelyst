@@ -32,6 +32,8 @@
 #include <QTcpSocket>
 #include <QUrl>
 
+using namespace Cutelyst;
+
 CutelystEngineHttp::CutelystEngineHttp(QObject *parent) :
     CutelystEngine(parent),
     d_ptr(new CutelystEngineHttpPrivate)

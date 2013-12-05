@@ -3,6 +3,8 @@
 #include "cutelystresponse.h"
 #include "cutelystrequest.h"
 
+using namespace Cutelyst;
+
 CutelystView::CutelystView(QObject *parent) :
     QObject(parent)
 {

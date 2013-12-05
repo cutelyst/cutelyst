@@ -30,6 +30,8 @@
 #include <QStringList>
 #include <QTime>
 
+using namespace Cutelyst;
+
 Context::Context(ContextPrivate *priv) :
     d_ptr(priv)
 {

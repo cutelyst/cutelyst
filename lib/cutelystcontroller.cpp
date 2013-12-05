@@ -26,6 +26,8 @@
 #include <QStringBuilder>
 #include <QDebug>
 
+using namespace Cutelyst;
+
 CutelystController::CutelystController(QObject *parent) :
     QObject(parent)
 {

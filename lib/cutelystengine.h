@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QHostAddress>
 
+namespace Cutelyst {
+
 class Context;
 class CutelystRequest;
 class CutelystResponse;
@@ -62,5 +64,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(CutelystEngine)
 };
+
+}
 
 #endif // CUTELYSTENGINE_H

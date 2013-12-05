@@ -26,6 +26,8 @@
 #include <QRegularExpression>
 #include <QDebug>
 
+using namespace Cutelyst;
+
 CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
     QObject(parent),
     d_ptr(new CutelystActionPrivate(method, parent))

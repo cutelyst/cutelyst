@@ -22,6 +22,8 @@
 
 #include "cutelystengine.h"
 
+namespace Cutelyst {
+
 class CutelystEnginePrivate
 {
     Q_DECLARE_PUBLIC(CutelystEngine)
@@ -32,5 +34,7 @@ public:
     CutelystEngine *q_ptr;
     CutelystRequest *request;
 };
+
+}
 
 #endif // CUTELYSTENGINE_P_H

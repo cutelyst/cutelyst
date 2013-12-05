@@ -22,6 +22,8 @@
 #include <QMimeDatabase>
 #include <QDebug>
 
+using namespace Cutelyst;
+
 CutelystResponse::CutelystResponse(QObject *parent) :
     QObject(parent),
     d_ptr(new CutelystResponsePrivate)

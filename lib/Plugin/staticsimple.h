@@ -5,6 +5,8 @@
 
 #include "plugin.h"
 
+namespace Cutelyst {
+
 class Context;
 class CutelystApplication;
 
@@ -26,6 +28,8 @@ private:
 
     QString m_rootDir;
 };
+
+}
 
 }
 

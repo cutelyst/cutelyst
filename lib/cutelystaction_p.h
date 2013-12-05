@@ -22,6 +22,8 @@
 
 #include "cutelystaction.h"
 
+namespace Cutelyst {
+
 class CutelystActionPrivate
 {
 public:
@@ -36,5 +38,7 @@ public:
     quint8 numberOfArgs;
     quint8 numberOfCaptures;
 };
+
+}
 
 #endif // CUTELYSTACTION_P_H

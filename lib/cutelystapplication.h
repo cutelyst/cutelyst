@@ -22,6 +22,8 @@
 
 #include <QCoreApplication>
 
+namespace Cutelyst {
+
 namespace CutelystPlugin {
 class Plugin;
 }
@@ -57,5 +59,7 @@ private:
 
     void handleRequest(CutelystRequest *req, CutelystResponse *resp);
 };
+
+}
 
 #endif // CUTELYSTAPPLICATION_H

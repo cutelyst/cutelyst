@@ -24,6 +24,7 @@
 
 #include <QDebug>
 
+using namespace Cutelyst;
 using namespace CutelystPlugin;
 
 Authentication::Authentication(QObject *parent) :

@@ -25,6 +25,8 @@
 #include "cutelystengine.h"
 #include "Plugin/plugin.h"
 
+namespace Cutelyst {
+
 class CutelystApplicationPrivate
 {
 public:
@@ -38,5 +40,7 @@ public:
     CutelystEngine *engine;
     QList<CutelystPlugin::Plugin *> plugins;
 };
+
+}
 
 #endif // CUTELYSTAPPLICATION_P_H

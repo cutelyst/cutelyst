@@ -36,6 +36,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Cutelyst;
 
 CutelystDispatcher::CutelystDispatcher(QObject *parent) :
     QObject(parent),
@@ -198,18 +199,18 @@ CutelystAction *CutelystDispatcher::getAction(const QString &name, const QString
     return d->actionHash.value(_ns % QLatin1Char('/') % name);
 }
 
-CutelystActionList CutelystDispatcher::getActions(const QString &name, const QString &ns) const
+ActionList CutelystDispatcher::getActions(const QString &name, const QString &ns) const
 {
     Q_D(const CutelystDispatcher);
 
-    CutelystActionList ret;
+    ActionList ret;
     if (name.isEmpty()) {
         return ret;
     }
 
     QString _ns = cleanNamespace(ns);
 
-    CutelystActionList containers = d->getContainers(_ns);
+    ActionList containers = d->getContainers(_ns);
     foreach (CutelystAction *action, containers) {
         if (action->name() == name) {
             ret.prepend(action);
@@ -377,9 +378,9 @@ QString CutelystDispatcher::cleanNamespace(const QString &ns) const
 }
 
 
-CutelystActionList CutelystDispatcherPrivate::getContainers(const QString &ns) const
+ActionList CutelystDispatcherPrivate::getContainers(const QString &ns) const
 {
-    CutelystActionList ret;
+    ActionList ret;
 
     QString _ns = ns;
     if (_ns == QLatin1String("/")) {

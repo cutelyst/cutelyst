@@ -21,6 +21,7 @@
 
 #include "context.h"
 
+using namespace Cutelyst;
 using namespace CutelystPlugin;
 
 Plugin::Plugin(QObject *parent) :

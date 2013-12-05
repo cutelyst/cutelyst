@@ -24,6 +24,8 @@
 
 #include <QStringList>
 
+namespace Cutelyst {
+
 class CutelystEngineHttpPrivate;
 class CutelystEngineHttp : public CutelystEngine
 {
@@ -56,5 +58,7 @@ private:
     void onNewServerConnection();
     void onNewClientConnection(int socket);
 };
+
+}
 
 #endif // CUTELYSTENGINEHTTP_H

@@ -24,6 +24,8 @@
 
 #include <QStringBuilder>
 
+using namespace Cutelyst;
+
 CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
     CutelystDispatchType(parent)
 {

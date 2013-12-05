@@ -26,6 +26,8 @@
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
+namespace  Cutelyst {
+
 class CutelystController : public QObject
 {
     Q_OBJECT
@@ -125,6 +127,8 @@ private:
     Q_INVOKABLE bool _END(Context *ctx);
 };
 
-Q_DECLARE_METATYPE(CutelystController*)
+}
+
+Q_DECLARE_METATYPE(Cutelyst::CutelystController*)
 
 #endif // CUTELYSTCONTROLLER_H

@@ -25,6 +25,8 @@
 
 #include <QSocketNotifier>
 
+namespace Cutelyst {
+
 class CutelystChildProcessPrivate
 {
     Q_DECLARE_PUBLIC(CutelystChildProcess)
@@ -44,5 +46,7 @@ public:
     int parentFD;
     int childPID;
 };
+
+}
 
 #endif // CUTELYSTCHILDPROCESS_P_H

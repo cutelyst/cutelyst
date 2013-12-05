@@ -25,6 +25,8 @@
 #include <QVariant>
 #include <QStringList>
 
+namespace Cutelyst {
+
 namespace CutelystPlugin {
 class Plugin;
 }
@@ -138,5 +140,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Context)
 };
+
+}
 
 #endif // CUTELYST_CONTEXT_H

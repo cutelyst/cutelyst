@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+namespace Cutelyst {
+
 class CutelystChildProcessPrivate;
 class CutelystChildProcess : public QObject
 {
@@ -45,5 +47,7 @@ private:
     void initChild(int socket);
     void gotFD(int socket);
 };
+
+}
 
 #endif // CUTELYSTCHILDPROCESS_H

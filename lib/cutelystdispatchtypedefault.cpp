@@ -21,6 +21,8 @@
 #include "context.h"
 #include "cutelystrequest.h"
 
+using namespace Cutelyst;
+
 CutelystDispatchTypeDefault::CutelystDispatchTypeDefault(QObject *parent) :
     CutelystDispatchType(parent)
 {

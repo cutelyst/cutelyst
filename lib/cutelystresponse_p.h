@@ -25,6 +25,8 @@
 #include <QMap>
 #include <QUrl>
 
+namespace Cutelyst {
+
 class CutelystEngine;
 class CutelystResponsePrivate
 {
@@ -44,5 +46,7 @@ public:
     quint64 contentLength;
     CutelystEngine *engine;
 };
+
+}
 
 #endif // CUTELYSTRESPONSE_P_H
