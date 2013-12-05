@@ -58,6 +58,7 @@ void CutelystDispatcher::setupActions()
 
     // Find all the User classes
     for (int metaType = QMetaType::User; QMetaType::isRegistered(metaType); ++metaType) {
+        qDebug() << "Type name:" << QMetaType::typeName(metaType);
         const QMetaObject *meta = QMetaType::metaObjectForType(metaType);
         if (meta && qstrcmp(meta->superClass()->className(), "CutelystController") == 0) {
             // App controller

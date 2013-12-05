@@ -10,11 +10,13 @@ class CutelystView : public QObject
 public:
     explicit CutelystView(QObject *parent = 0);
 
+    bool process(Cutelyst *c);
+
     /**
      * All subclasses must reimplement this to
      * do it's rendering.
      */
-    virtual bool process(Cutelyst *c);
+    virtual bool render(Cutelyst *c);
 };
 
 #endif // CUTELYSTVIEW_H

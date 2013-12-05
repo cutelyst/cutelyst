@@ -75,6 +75,12 @@ void CutelystResponse::setContentLength(quint64 length)
     d->contentLength = length;
 }
 
+QString CutelystResponse::contentType() const
+{
+    Q_D(const CutelystResponse);
+    return d->contentType;
+}
+
 void CutelystResponse::setContentType(const QString &encoding)
 {
     Q_D(CutelystResponse);

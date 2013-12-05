@@ -66,7 +66,7 @@ NEOERR* cutelyst_render(void *user, char *data)
     return 0;
 }
 
-bool ClearSilver::process(Cutelyst *c)
+bool ClearSilver::render(Cutelyst *c)
 {
     Q_D(ClearSilver);
 

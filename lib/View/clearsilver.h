@@ -26,7 +26,7 @@ public:
     QString wrapper() const;
     void setWrapper(const QString &name);
 
-    bool process(Cutelyst *c);
+    bool render(Cutelyst *c);
 
 protected:
     ClearSilverPrivate *d_ptr;
