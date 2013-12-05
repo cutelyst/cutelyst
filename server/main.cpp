@@ -3,13 +3,13 @@
 #include <QLibraryInfo>
 #include <QDebug>
 
-#include <CutelystApplication>
+#include <Cutelyst/Application>
 
 #include "root.h"
 #include "users.h"
 
-#include "Plugin/staticsimple.h"
-#include "Plugin/session.h"
+#include <Cutelyst/Plugin/staticsimple.h>
+#include <Cutelyst/Plugin/session.h>
 
 using namespace std;
 

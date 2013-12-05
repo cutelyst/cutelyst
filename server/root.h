@@ -1,7 +1,7 @@
 #ifndef ROOT_H
 #define ROOT_H
 
-#include <cutelystcontroller.h>
+#include <Cutelyst/controller.h>
 
 using namespace Cutelyst;
 

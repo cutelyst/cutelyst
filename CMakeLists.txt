@@ -79,5 +79,6 @@ include_directories(
     ${Qt5Core_INCLUDE_DIRS}
 )
 
-add_subdirectory(lib)
+add_subdirectory(Cutelyst)
+
 add_subdirectory(server)

@@ -1,7 +1,7 @@
 #ifndef USERS_H
 #define USERS_H
 
-#include <cutelystcontroller.h>
+#include <Cutelyst/controller.h>
 
 using namespace Cutelyst;
 

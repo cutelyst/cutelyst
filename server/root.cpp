@@ -1,7 +1,7 @@
 #include "root.h"
 
-#include <context.h>
-#include <cutelystresponse.h>
+#include <Cutelyst/context.h>
+#include <Cutelyst/response.h>
 
 #include <QDebug>
 

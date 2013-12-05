@@ -1,0 +1,11 @@
+# - Config information for Cutelyst
+# This file defines:
+#
+#  CutelystQt5_INCLUDE_DIR - the Cutelyst include directory
+#  CutelystQt5_LIBRARY - Link these to use Cutelyst
+
+SET(prefix "@CMAKE_INSTALL_PREFIX@")
+SET(exec_prefix "@CMAKE_INSTALL_PREFIX@")
+SET(CutelystQt5_LIBRARY "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/libcutelyst-qt5.so" CACHE FILEPATH "Libraries for Cutelyst")
+SET(CutelystQt5_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/cutelyst-qt5/" CACHE PATH "Include path for Cutelyst")
+SET(CutelystQt5_FOUND "TRUE")
