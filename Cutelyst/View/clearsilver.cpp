@@ -84,10 +84,6 @@ bool ClearSilver::render(Context *ctx)
         }
     }
 
-//    if (!templateFile.startsWith(QLatin1String("/"))) {
-//        templateFile = d->includePath % QLatin1Char('/') % templateFile;
-//    }
-
     qDebug() << "Rendering template" <<templateFile;
     QByteArray output;
     if (d->wrapper.isEmpty()) {
@@ -96,9 +92,6 @@ bool ClearSilver::render(Context *ctx)
         }
     } else {
         QString wrapperFile = d->wrapper;
-//        if (!wrapperFile.startsWith(QLatin1String("/"))) {
-//            wrapperFile = d->includePath % QLatin1Char('/') % wrapperFile;
-//        }
 
         QVariantHash data = ctx->stash();
         data["template"] = templateFile;
@@ -114,8 +107,6 @@ bool ClearSilver::render(Context *ctx)
 
 NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
 {
-    qWarning() << "FIND FILE" << filename;
-
     ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(ctx);
     if (!priv) {
         return nerr_raise(NERR_NOMEM, "Cound not cast ClearSilverPrivate");
@@ -124,15 +115,17 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
     QFile file(priv->includePath % QLatin1Char('/') % filename);
 
     if (!file.exists()) {
+        qWarning("Cound not find file: %s", file.fileName().toLocal8Bit().data());
         return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
     }
 
     if (!file.open(QFile::ReadOnly)) {
-        return nerr_raise(NERR_NOT_FOUND, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
+        qWarning("Cound not open file: %s", file.errorString().toLocal8Bit().data());
+        return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
     }
 
     *contents = qstrdup(file.readAll().data());
-    qWarning() << "Served" << file.fileName();;
+    qDebug() << "Rendering template:" << file.fileName();;
     return 0;
 }
 
