@@ -25,7 +25,7 @@
 #include <QObject>
 #include <QVariant>
 
-class Cutelyst;
+class Context;
 namespace CutelystPlugin {
 
 class Session : public Plugin
@@ -36,11 +36,11 @@ public:
 
     bool setup(CutelystApplication *app);
 
-    QVariant value(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant());
-    void setValue(Cutelyst *c, const QString &key, const QVariant &value);
-    void deleteValue(Cutelyst *c, const QString &keys);
+    QVariant value(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant());
+    void setValue(Context *ctx, const QString &key, const QVariant &value);
+    void deleteValue(Context *ctx, const QString &keys);
 
-    bool isValid(Cutelyst *c);
+    bool isValid(Context *ctx);
 
 protected:
     /**
@@ -56,11 +56,11 @@ protected:
     virtual void persistSession(const QString &sessionId, const QVariant &data) const;
 
 private:
-    void saveSession(Cutelyst *c);
+    void saveSession(Context *ctx);
     QString sessionName() const;
-    QVariant loadSession(Cutelyst *c);
+    QVariant loadSession(Context *ctx);
     QString generateSessionId() const;
-    QString getSessionId(Cutelyst *c) const;
+    QString getSessionId(Context *ctx) const;
     QString filePath(const QString &sessionId) const;
 };
 

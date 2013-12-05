@@ -7,7 +7,7 @@ Users::Users()
 
 }
 
-void Users::list(Cutelyst *c, const QString &name, const QString &age, CutelystController::Args, CutelystController::Local)
+void Users::list(Context *ctx, const QString &name, const QString &age, CutelystController::Args, CutelystController::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
 //    qDebug() << "Cookies" << c->req()->cookies();
@@ -16,21 +16,21 @@ void Users::list(Cutelyst *c, const QString &name, const QString &age, CutelystC
     cookie.setName("bar");
     cookie.setValue("lolololo");
     cookie.setPath("/");
-    c->response()->addCookie(cookie);
+    ctx->response()->addCookie(cookie);
 }
 
-void Users::Begin(Cutelyst *c)
+void Users::Begin(Context *ctx)
 {
     qDebug() << "*** Users::Begin()";
 }
 
-bool Users::Auto(Cutelyst *c)
+bool Users::Auto(Context *ctx)
 {
     qDebug() << "*** Users::Auto()";
     return true;
 }
 
-//void Users::End(Cutelyst *c)
+//void Users::End(Context *ctx)
 //{
 //    qDebug() << "*** Users::End()";
 //}

@@ -20,15 +20,15 @@
 #ifndef CUTELYST_P_H
 #define CUTELYST_P_H
 
-#include "cutelyst.h"
+#include "context.h"
 #include "Plugin/plugin.h"
 
 #include <QVariantHash>
 
-class CutelystPrivate
+class ContextPrivate
 {
 public:
-    CutelystPrivate();
+    ContextPrivate();
 
     CutelystEngine *engine;
     CutelystRequest *request;

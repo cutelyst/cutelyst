@@ -22,8 +22,8 @@
 
 #include <QObject>
 
+class Context;
 class CutelystAction;
-class Cutelyst;
 class CutelystDispatchType : public QObject
 {
     Q_OBJECT
@@ -39,7 +39,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Cutelyst *c, const QString &path) const = 0;
+    virtual bool match(Context *ctx, const QString &path) const = 0;
 
     /**
      * Returns an uri for an action //TODO
@@ -61,7 +61,7 @@ public:
     virtual bool isLowPrecedence() const;
 
 protected:
-    void setupMatchedAction(Cutelyst *c, CutelystAction *action, const QString &match) const;
+    void setupMatchedAction(Context *ctx, CutelystAction *action, const QString &match) const;
 };
 
 #endif // CUTELYSTDISPATCHTYPE_H

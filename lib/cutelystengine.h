@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QHostAddress>
 
-class Cutelyst;
+class Context;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystEnginePrivate;
@@ -41,10 +41,10 @@ public:
 
     virtual bool init() = 0;
 
-    void finalizeCookies(Cutelyst *c);
-    virtual void finalizeHeaders(Cutelyst *c) = 0;
-    virtual void finalizeBody(Cutelyst *c) = 0;
-    void finalizeError(Cutelyst *c);
+    void finalizeCookies(Context *ctx);
+    virtual void finalizeHeaders(Context *ctx) = 0;
+    virtual void finalizeBody(Context *ctx) = 0;
+    void finalizeError(Context *ctx);
 
 Q_SIGNALS:
     void handleRequest(CutelystRequest *request, CutelystResponse *response);

@@ -10,7 +10,7 @@ class CredentialPassword : public Authentication::Credential
 public:
     CredentialPassword();
 
-    Authentication::User authenticate(Cutelyst *c, Authentication::Realm *realm, const CStringHash &authinfo);
+    Authentication::User authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
 
 private:
     bool checkPassword(const Authentication::User &user, const CStringHash &authinfo);

@@ -3,20 +3,20 @@
 
 #include <QObject>
 
-class Cutelyst;
+class Context;
 class CutelystView : public QObject
 {
     Q_OBJECT
 public:
     explicit CutelystView(QObject *parent = 0);
 
-    bool process(Cutelyst *c);
+    bool process(Context *ctx);
 
     /**
      * All subclasses must reimplement this to
      * do it's rendering.
      */
-    virtual bool render(Cutelyst *c);
+    virtual bool render(Context *ctx);
 };
 
 #endif // CUTELYSTVIEW_H

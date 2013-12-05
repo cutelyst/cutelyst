@@ -38,9 +38,9 @@ public:
     QString peerName() const;
     QHostAddress peerAddress() const;
 
-    virtual void finalizeHeaders(Cutelyst *c);
-    virtual void finalizeBody(Cutelyst *c);
-    virtual void finalizeError(Cutelyst *c);
+    virtual void finalizeHeaders(Context *ctx);
+    virtual void finalizeBody(Context *ctx);
+    virtual void finalizeError(Context *ctx);
 
 protected:
     CutelystEngineHttpPrivate *d_ptr;

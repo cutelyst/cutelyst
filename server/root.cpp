@@ -1,6 +1,6 @@
 #include "root.h"
 
-#include <cutelyst.h>
+#include <context.h>
 #include <cutelystresponse.h>
 
 #include <QDebug>
@@ -10,24 +10,24 @@ Root::Root()
     qDebug() << Q_FUNC_INFO;
 }
 
-void Root::hugeNameQuiteLong(Cutelyst *c, const QString &nome, Local)
+void Root::hugeNameQuiteLong(Context *ctx, const QString &nome, Local)
 {
 
 }
 
-void Root::begin(Cutelyst *c, const QString &name, Path)
+void Root::begin(Context *ctx, const QString &name, Path)
 {
     qDebug() << Q_FUNC_INFO << name << sender();
 }
 
-void Root::users(Cutelyst *c, const QString &name, const QString &age, Args, CutelystController::Local)
+void Root::users(Context *ctx, const QString &name, const QString &age, Args, CutelystController::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
-    c->response()->redirect(QLatin1String("http://www.uol.com.br"));
-    c->detach();
+    ctx->response()->redirect(QLatin1String("http://www.uol.com.br"));
+    ctx->detach();
 }
 
-void Root::admin(Cutelyst *c, const QString &name, const QString &age, CutelystController::Global)
+void Root::admin(Context *ctx, const QString &name, const QString &age, CutelystController::Global)
 {
     qDebug() << Q_FUNC_INFO << name << age;
     QByteArray data;
@@ -44,21 +44,21 @@ void Root::admin(Cutelyst *c, const QString &name, const QString &age, CutelystC
             "        </p>"
             "    </body>"
             "</html>";
-    c->response()->body() = data;
+    ctx->response()->body() = data;
 }
 
-void Root::Begin(Cutelyst *c)
+void Root::Begin(Context *ctx)
 {
     qDebug() << "*** Root::Begin()" << sender();
 }
 
-bool Root::Auto(Cutelyst *c)
+bool Root::Auto(Context *ctx)
 {
     qDebug() << "*** Root::Auto()";
     return true;
 }
 
-void Root::End(Cutelyst *c)
+void Root::End(Context *ctx)
 {
     qDebug() << "*** Root::End()";
 }

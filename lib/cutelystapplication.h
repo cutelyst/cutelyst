@@ -25,7 +25,7 @@
 namespace CutelystPlugin {
 class Plugin;
 }
-class Cutelyst;
+class Context;
 class CutelystRequest;
 class CutelystResponse;
 class CutelystEngine;
@@ -44,10 +44,10 @@ public:
     bool setup(CutelystEngine *engine = 0);
 
 Q_SIGNALS:
-    void beforePrepareAction(Cutelyst *c, bool *skipMethod);
-    void afterPrepareAction(Cutelyst *c);
-    void beforeDispatch(Cutelyst *c);
-    void afterDispatch(Cutelyst *c);
+    void beforePrepareAction(Context *ctx, bool *skipMethod);
+    void afterPrepareAction(Context *ctx);
+    void beforeDispatch(Context *ctx);
+    void afterDispatch(Context *ctx);
 
 protected:
     CutelystApplicationPrivate *d_ptr;

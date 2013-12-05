@@ -3,7 +3,7 @@
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
-#include "cutelyst.h"
+#include "context.h"
 
 #include <QRegularExpression>
 #include <QStringBuilder>
@@ -34,33 +34,33 @@ bool StaticSimple::setup(CutelystApplication *app)
             this, &StaticSimple::beforePrepareAction);
 }
 
-void StaticSimple::beforePrepareAction(Cutelyst *c, bool *skipMethod)
+void StaticSimple::beforePrepareAction(Context *ctx, bool *skipMethod)
 {
     if (*skipMethod) {
         return;
     }
 
-    QString path = c->req()->path();
+    QString path = ctx->req()->path();
     QRegularExpression re("\\.\\S+$");
     QRegularExpressionMatch match = re.match(path);
-    if (match.hasMatch() && locateStaticFile(c, path)) {
+    if (match.hasMatch() && locateStaticFile(ctx, path)) {
         *skipMethod = true;
     }
 }
 
 
-bool StaticSimple::locateStaticFile(Cutelyst *c, QString &path)
+bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
 {
     path = m_rootDir % path;
     QFile file(path);
     if (file.exists() && file.open(QFile::ReadOnly)) {
         qWarning() << "Serving" << path;
-        c->response()->body() = file.readAll();
+        ctx->response()->body() = file.readAll();
         QMimeDatabase db;
         // use the extension to match to be faster
         QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
         if (mimeType.isValid()) {
-            c->res()->setContentType(mimeType.name() % QLatin1String("; charset=utf-8"));
+            ctx->res()->setContentType(mimeType.name() % QLatin1String("; charset=utf-8"));
         }
         return true;
     }

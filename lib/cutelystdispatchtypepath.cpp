@@ -104,7 +104,7 @@ void CutelystDispatchTypePath::list() const
          << "." << endl << endl;
 }
 
-bool CutelystDispatchTypePath::match(Cutelyst *c, const QString &path) const
+bool CutelystDispatchTypePath::match(Context *ctx, const QString &path) const
 {
     QString _path = path;
     if (_path.isEmpty()) {
@@ -113,8 +113,8 @@ bool CutelystDispatchTypePath::match(Cutelyst *c, const QString &path) const
 
     QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(_path);
     while (i != m_paths.constEnd() && i.key() == _path) {
-        if (i.value()->match(c)) {
-            setupMatchedAction(c, i.value(), _path);
+        if (i.value()->match(ctx)) {
+            setupMatchedAction(ctx, i.value(), _path);
             return true;
         }
 

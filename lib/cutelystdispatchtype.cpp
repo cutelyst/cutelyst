@@ -19,7 +19,7 @@
 
 #include "cutelystdispatchtype.h"
 
-#include "cutelyst_p.h"
+#include "context_p.h"
 
 CutelystDispatchType::CutelystDispatchType(QObject *parent) :
     QObject(parent)
@@ -46,8 +46,8 @@ bool CutelystDispatchType::isLowPrecedence() const
     return false;
 }
 
-void CutelystDispatchType::setupMatchedAction(Cutelyst *c, CutelystAction *action, const QString &match) const
+void CutelystDispatchType::setupMatchedAction(Context *ctx, CutelystAction *action, const QString &match) const
 {
-    c->d_ptr->action = action;
-    c->d_ptr->match = match;
+    ctx->d_ptr->action = action;
+    ctx->d_ptr->match = match;
 }

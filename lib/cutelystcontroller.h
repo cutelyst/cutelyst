@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
@@ -103,26 +103,26 @@ public:
     /**
      * Returns the action object for the given private name
      */
-    CutelystAction *actionFor(Cutelyst *c, const QString &name);
+    CutelystAction *actionFor(Context *ctx, const QString &name);
 
     bool operator==(const char *className);
 
 protected:
-    virtual void Begin(Cutelyst *c);
-    virtual bool Auto(Cutelyst *c);
-    virtual void End(Cutelyst *c);
+    virtual void Begin(Context *ctx);
+    virtual bool Auto(Context *ctx);
+    virtual void End(Context *ctx);
 
-    virtual void Default(Cutelyst *c);
-    virtual void Index(Cutelyst *c);
+    virtual void Default(Context *ctx);
+    virtual void Index(Context *ctx);
 
 private:
     friend class CutelystAction;
 
-    Q_INVOKABLE void _DISPATCH(Cutelyst *c);
-    Q_INVOKABLE bool _BEGIN(Cutelyst *c);
-    Q_INVOKABLE bool _AUTO(Cutelyst *c);
-    Q_INVOKABLE bool _ACTION(Cutelyst *c);
-    Q_INVOKABLE bool _END(Cutelyst *c);
+    Q_INVOKABLE void _DISPATCH(Context *ctx);
+    Q_INVOKABLE bool _BEGIN(Context *ctx);
+    Q_INVOKABLE bool _AUTO(Context *ctx);
+    Q_INVOKABLE bool _ACTION(Context *ctx);
+    Q_INVOKABLE bool _END(Context *ctx);
 };
 
 Q_DECLARE_METATYPE(CutelystController*)

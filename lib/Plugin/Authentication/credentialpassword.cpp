@@ -8,9 +8,9 @@ CredentialPassword::CredentialPassword()
 {
 }
 
-Authentication::User CredentialPassword::authenticate(Cutelyst *c, Authentication::Realm *realm, const CStringHash &authinfo)
+Authentication::User CredentialPassword::authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
 {
-    Authentication::User user = realm->findUser(c, authinfo);
+    Authentication::User user = realm->findUser(ctx, authinfo);
     if (!user.isNull()) {
         if (checkPassword(user, authinfo)) {
             return user;

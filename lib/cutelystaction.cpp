@@ -19,7 +19,7 @@
 
 #include "cutelystaction_p.h"
 #include "cutelystcontroller.h"
-#include "cutelyst.h"
+#include "context.h"
 
 #include <QMetaClassInfo>
 #include <QStringBuilder>
@@ -118,15 +118,15 @@ CutelystController *CutelystAction::controller() const
     return d->controller;
 }
 
-bool CutelystAction::dispatch(Cutelyst *c)
+bool CutelystAction::dispatch(Context *ctx)
 {
     Q_D(CutelystAction);
 
-    if (c->detached()) {
+    if (ctx->detached()) {
         return false;
     }
 
-    QStringList args = c->args();
+    QStringList args = ctx->args();
     // Fill the missing arguments
     for (int i = args.count(); i < 8; ++i) {
         args << QString();
@@ -137,7 +137,7 @@ bool CutelystAction::dispatch(Cutelyst *c)
         bool ret;
         ret = d->method.invoke(d->controller,
                                Q_RETURN_ARG(bool, methodRet),
-                               Q_ARG(Cutelyst*, c),
+                               Q_ARG(Context*, ctx),
                                Q_ARG(QString, args.at(0)),
                                Q_ARG(QString, args.at(1)),
                                Q_ARG(QString, args.at(2)),
@@ -148,19 +148,19 @@ bool CutelystAction::dispatch(Cutelyst *c)
                                Q_ARG(QString, args.at(7)));
 
         if (ret) {
-            c->setState(methodRet);
+            ctx->setState(methodRet);
             return methodRet;
         }
 
         // TODO when the method failed to be called it probably means
         // we should detach, make sure this would be enough
-        c->detach();
-        c->setState(false);
+        ctx->detach();
+        ctx->setState(false);
 
         return false;
     } else {
         bool ret = d->method.invoke(d->controller,
-                                    Q_ARG(Cutelyst*, c),
+                                    Q_ARG(Context*, ctx),
                                     Q_ARG(QString, args.at(0)),
                                     Q_ARG(QString, args.at(1)),
                                     Q_ARG(QString, args.at(2)),
@@ -169,25 +169,25 @@ bool CutelystAction::dispatch(Cutelyst *c)
                                     Q_ARG(QString, args.at(5)),
                                     Q_ARG(QString, args.at(6)),
                                     Q_ARG(QString, args.at(7)));
-        c->setState(ret);
+        ctx->setState(ret);
         return ret;
     }
 }
 
-bool CutelystAction::match(Cutelyst *c) const
+bool CutelystAction::match(Context *ctx) const
 {
     Q_D(const CutelystAction);
     if (d->attributes.contains(QLatin1String("Args")) &&
             d->attributes.value(QLatin1String("Args")).isEmpty()) {
         return true;
     }
-    return d->numberOfArgs == 0 || d->numberOfArgs == c->args().size();
+    return d->numberOfArgs == 0 || d->numberOfArgs == ctx->args().size();
 }
 
-bool CutelystAction::matchCaptures(Cutelyst *c) const
+bool CutelystAction::matchCaptures(Context *ctx) const
 {
     Q_D(const CutelystAction);
-    return d->numberOfCaptures == 0 || d->numberOfCaptures == c->args().size();
+    return d->numberOfCaptures == 0 || d->numberOfCaptures == ctx->args().size();
 }
 
 QString CutelystAction::name() const

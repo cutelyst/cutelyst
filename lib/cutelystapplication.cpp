@@ -21,7 +21,7 @@
 
 #include "cutelystenginehttp.h"
 #include "cutelystengineuwsgi.h"
-#include "cutelyst_p.h"
+#include "context_p.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
 
@@ -129,18 +129,18 @@ void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *
 {
     Q_D(CutelystApplication);
 
-    CutelystPrivate *priv = new CutelystPrivate;
+    ContextPrivate *priv = new ContextPrivate;
     priv->engine = d->engine;
     priv->dispatcher = d->dispatcher;
     foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
         priv->plugins.insert(plugin, QVariantHash());
     }
 
-    Cutelyst *c = new Cutelyst(priv);
-    connect(c, &Cutelyst::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
-    connect(c, &Cutelyst::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);
-    connect(c, &Cutelyst::beforeDispatch, this, &CutelystApplication::beforeDispatch);
-    connect(c, &Cutelyst::afterDispatch, this, &CutelystApplication::afterDispatch);
+    Context *c = new Context(priv);
+    connect(c, &Context::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
+    connect(c, &Context::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);
+    connect(c, &Context::beforeDispatch, this, &CutelystApplication::beforeDispatch);
+    connect(c, &Context::afterDispatch, this, &CutelystApplication::afterDispatch);
     c->handleRequest(req, resp);
     delete c;
 }

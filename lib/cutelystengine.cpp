@@ -21,7 +21,7 @@
 
 #include "cutelystrequest_p.h"
 #include "cutelystresponse.h"
-#include "cutelyst_p.h"
+#include "context_p.h"
 
 #include <QUrl>
 
@@ -112,16 +112,16 @@ CutelystEnginePrivate::~CutelystEnginePrivate()
 {
 }
 
-void CutelystEngine::finalizeCookies(Cutelyst *c)
+void CutelystEngine::finalizeCookies(Context *ctx)
 {
-    foreach (const QNetworkCookie &cookie, c->response()->cookies()) {
-        c->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
+    foreach (const QNetworkCookie &cookie, ctx->response()->cookies()) {
+        ctx->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
     }
 }
 
-void CutelystEngine::finalizeError(Cutelyst *c)
+void CutelystEngine::finalizeError(Context *ctx)
 {
-    c->res()->setContentType("text/html; charset=utf-8");
+    ctx->res()->setContentType("text/html; charset=utf-8");
 
     QByteArray body;
 
@@ -129,10 +129,10 @@ void CutelystEngine::finalizeError(Cutelyst *c)
     // of ours if we'd give it less than 512 bytes.
     body.reserve(512);
 
-    body.append(c->errors().join(QLatin1Char('\n')));
+    body.append(ctx->errors().join(QLatin1Char('\n')));
 
-    c->res()->body() = body;
+    ctx->res()->body() = body;
 
     // Return 500
-    c->res()->setStatus(CutelystResponse::InternalServerError);
+    ctx->res()->setStatus(CutelystResponse::InternalServerError);
 }

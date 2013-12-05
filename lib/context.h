@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_H
-#define CUTELYST_H
+#ifndef CUTELYST_CONTEXT_H
+#define CUTELYST_CONTEXT_H
 
 #include <QObject>
 #include <QHash>
@@ -35,13 +35,13 @@ class CutelystRequest;
 class CutelystResponse;
 class CutelystDispatcher;
 class CutelystController;
-class CutelystPrivate;
-class Cutelyst : public QObject
+class ContextPrivate;
+class Context : public QObject
 {
     Q_OBJECT
 public:
-    Cutelyst(CutelystPrivate *priv);
-    ~Cutelyst();
+    Context(ContextPrivate *priv);
+    ~Context();
 
     bool error() const;
     void error(const QString &error);
@@ -113,10 +113,10 @@ public:
     }
 
 Q_SIGNALS:
-    void beforePrepareAction(Cutelyst *c, bool *skipMethod);
-    void afterPrepareAction(Cutelyst *c);
-    void beforeDispatch(Cutelyst *c);
-    void afterDispatch(Cutelyst *c);
+    void beforePrepareAction(Context *ctx, bool *skipMethod);
+    void afterPrepareAction(Context *ctx);
+    void beforeDispatch(Context *ctx);
+    void afterDispatch(Context *ctx);
 
 protected:
     void handleRequest(CutelystRequest *req, CutelystResponse *resp);
@@ -133,10 +133,10 @@ protected:
     friend class CutelystApplication;
     friend class CutelystDispatchType;
     friend class CutelystPlugin::Plugin;
-    CutelystPrivate *d_ptr;
+    ContextPrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(Cutelyst)
+    Q_DECLARE_PRIVATE(Context)
 };
 
-#endif // CUTELYST_H
+#endif // CUTELYST_CONTEXT_H

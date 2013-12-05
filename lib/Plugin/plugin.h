@@ -24,7 +24,7 @@
 #include <QHash>
 #include <QVariant>
 
-class Cutelyst;
+class Context;
 class CutelystApplication;
 
 namespace CutelystPlugin {
@@ -44,8 +44,8 @@ public:
     virtual bool setup(CutelystApplication *app);
 
 protected:
-    QVariant pluginProperty(Cutelyst *c, const QString &key, const QVariant &defaultValue = QVariant()) const;
-    void setPluginProperty(Cutelyst *c, const QString &key, const QVariant &value);
+    QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setPluginProperty(Context *ctx, const QString &key, const QVariant &value);
 };
 
 }

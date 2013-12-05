@@ -5,7 +5,7 @@
 
 #include "plugin.h"
 
-class Cutelyst;
+class Context;
 class CutelystApplication;
 
 namespace CutelystPlugin {
@@ -21,8 +21,8 @@ public:
     bool setup(CutelystApplication *app);
 
 private:
-    void beforePrepareAction(Cutelyst *c, bool *skipMethod);
-    bool locateStaticFile(Cutelyst *c, QString &path);
+    void beforePrepareAction(Context *ctx, bool *skipMethod);
+    bool locateStaticFile(Context *ctx, QString &path);
 
     QString m_rootDir;
 };

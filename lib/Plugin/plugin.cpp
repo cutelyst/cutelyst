@@ -19,7 +19,7 @@
 
 #include "plugin.h"
 
-#include "cutelyst.h"
+#include "context.h"
 
 using namespace CutelystPlugin;
 
@@ -34,12 +34,12 @@ bool Plugin::setup(CutelystApplication *app)
     return true;
 }
 
-QVariant Plugin::pluginProperty(Cutelyst *c, const QString &key, const QVariant &defaultValue) const
+QVariant Plugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
 {
-    return c->pluginProperty(const_cast<CutelystPlugin::Plugin*>(this), key, defaultValue);
+    return ctx->pluginProperty(const_cast<CutelystPlugin::Plugin*>(this), key, defaultValue);
 }
 
-void Plugin::setPluginProperty(Cutelyst *c, const QString &key, const QVariant &value)
+void Plugin::setPluginProperty(Context *ctx, const QString &key, const QVariant &value)
 {
-    c->setPluginProperty(this, key, value);
+    ctx->setPluginProperty(this, key, value);
 }

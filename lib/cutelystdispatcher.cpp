@@ -19,7 +19,7 @@
 
 #include "cutelystdispatcher_p.h"
 
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystcontroller.h"
 #include "cutelystaction.h"
 #include "cutelystrequest_p.h"
@@ -114,40 +114,40 @@ void CutelystDispatcher::setupActions()
     printActions();
 }
 
-bool CutelystDispatcher::dispatch(Cutelyst *c)
+bool CutelystDispatcher::dispatch(Context *ctx)
 {
-    if (c->action()) {
-        return c->forward(QLatin1Char('/') % c->action()->ns() % QLatin1String("/_DISPATCH"));
+    if (ctx->action()) {
+        return ctx->forward(QLatin1Char('/') % ctx->action()->ns() % QLatin1String("/_DISPATCH"));
     } else {
         QString error;
-        QString path = c->req()->path();
+        QString path = ctx->req()->path();
         if (path.isEmpty()) {
             error = QLatin1String("No default action defined");
         } else {
             error = QLatin1String("Unknown resource \"") % path % QLatin1Char('"');
         }
         qDebug() << Q_FUNC_INFO << error;
-        c->error(error);
+        ctx->error(error);
     }
     return false;
 }
 
-bool CutelystDispatcher::forward(Cutelyst *c, const QString &opname, const QStringList &arguments)
+bool CutelystDispatcher::forward(Context *ctx, const QString &opname, const QStringList &arguments)
 {
-    CutelystAction *action = command2Action(c, opname);
+    CutelystAction *action = command2Action(ctx, opname);
     if (action) {
-        return action->dispatch(c);
+        return action->dispatch(ctx);
     }
 
     qCritical() << "Action not found" << action;
     return false;
 }
 
-void CutelystDispatcher::prepareAction(Cutelyst *c)
+void CutelystDispatcher::prepareAction(Context *ctx)
 {
     Q_D(CutelystDispatcher);
 
-    QString path = c->req()->path();
+    QString path = ctx->req()->path();
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
     CutelystDispatchType *dispatch = 0;
@@ -162,7 +162,7 @@ void CutelystDispatcher::prepareAction(Cutelyst *c)
         }
 
         foreach (CutelystDispatchType *type, d->dispatchers) {
-            if (type->match(c, path)) {
+            if (type->match(ctx, path)) {
                 dispatch = type;
                 break;
             }
@@ -173,7 +173,7 @@ void CutelystDispatcher::prepareAction(Cutelyst *c)
         }
 
         args.prepend(pathParts.takeLast());
-        c->req()->d_ptr->args = unexcapedArgs(args);
+        ctx->req()->d_ptr->args = unexcapedArgs(args);
 
     }
 
@@ -181,8 +181,8 @@ void CutelystDispatcher::prepareAction(Cutelyst *c)
         qDebug() << "Path is" << path;
     }
 
-    if (!c->args().isEmpty()) {
-        qDebug() << "Arguments are" << c->args().join(QLatin1Char('/'));
+    if (!ctx->args().isEmpty()) {
+        qDebug() << "Arguments are" << ctx->args().join(QLatin1Char('/'));
     }
 }
 
@@ -302,14 +302,14 @@ void CutelystDispatcher::printActions()
     }
 }
 
-CutelystAction *CutelystDispatcher::command2Action(Cutelyst *c, const QString &command, const QStringList &extraParams)
+CutelystAction *CutelystDispatcher::command2Action(Context *ctx, const QString &command, const QStringList &extraParams)
 {
     Q_D(CutelystDispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command;
 
     CutelystAction *ret = d->actionHash.value(command);
     if (!ret) {
-        ret = invokeAsPath(c, command, c->args());
+        ret = invokeAsPath(ctx, command, ctx->args());
     }
 
     return ret;
@@ -324,13 +324,13 @@ QStringList CutelystDispatcher::unexcapedArgs(const QStringList &args)
     return ret;
 }
 
-QString CutelystDispatcher::actionRel2Abs(Cutelyst *c, const QString &path)
+QString CutelystDispatcher::actionRel2Abs(Context *ctx, const QString &path)
 {
     QString ret = path;
     if (!ret.startsWith(QLatin1Char('/'))) {
         // TODO at Catalyst it uses
         // c->stack->last()->namespace
-        QString ns = c->action()->ns();
+        QString ns = ctx->action()->ns();
         ret = ns % QLatin1Char('/') % path;
     }
 
@@ -341,12 +341,12 @@ QString CutelystDispatcher::actionRel2Abs(Cutelyst *c, const QString &path)
     return ret;
 }
 
-CutelystAction *CutelystDispatcher::invokeAsPath(Cutelyst *c, const QString &relativePath, const QStringList &args)
+CutelystAction *CutelystDispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
 {
     Q_D(CutelystDispatcher);
 
     CutelystAction *ret = 0;
-    QString path = actionRel2Abs(c, relativePath);
+    QString path = actionRel2Abs(ctx, relativePath);
 
     QRegularExpression re("^(?:(.*)/)?(\\w+)?$");
     while (!path.isEmpty()) {

@@ -1,6 +1,6 @@
 #include "clearsilver_p.h"
 
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystaction.h"
 #include "cutelystresponse.h"
 
@@ -66,14 +66,14 @@ NEOERR* cutelyst_render(void *user, char *data)
     return 0;
 }
 
-bool ClearSilver::render(Cutelyst *c)
+bool ClearSilver::render(Context *ctx)
 {
     Q_D(ClearSilver);
 
-    QString templateFile = c->stash()[QLatin1String("template")].toString();
+    QString templateFile = ctx->stash()[QLatin1String("template")].toString();
     if (templateFile.isEmpty()) {
-        if (c->action() && !c->action()->privateName().isEmpty()) {
-            templateFile = c->action()->privateName() % d->extension;
+        if (ctx->action() && !ctx->action()->privateName().isEmpty()) {
+            templateFile = ctx->action()->privateName() % d->extension;
         }
 
         if (templateFile.isEmpty()) {
@@ -89,7 +89,7 @@ bool ClearSilver::render(Cutelyst *c)
     qDebug() << "Rendering template" <<templateFile;
     QByteArray output;
     if (d->wrapper.isEmpty()) {
-        if (!d->render(c, templateFile, c->stash(), output)) {
+        if (!d->render(ctx, templateFile, ctx->stash(), output)) {
             return false;
         }
     } else {
@@ -98,15 +98,15 @@ bool ClearSilver::render(Cutelyst *c)
 //            wrapperFile = d->includePath % QLatin1Char('/') % wrapperFile;
 //        }
 
-        QVariantHash data = c->stash();
+        QVariantHash data = ctx->stash();
         data["template"] = templateFile;
 
-        if (!d->render(c, wrapperFile, data, output)) {
+        if (!d->render(ctx, wrapperFile, data, output)) {
             return false;
         }
     }
 
-    c->res()->body() = output;
+    ctx->res()->body() = output;
     return true;
 }
 
@@ -134,7 +134,7 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
     return 0;
 }
 
-bool ClearSilverPrivate::render(Cutelyst *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output)
+bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output)
 {
     HDF *hdf = hdfForStash(ctx, stash);
     CSPARSE *cs;
@@ -179,13 +179,13 @@ bool ClearSilverPrivate::render(Cutelyst *ctx, const QString &filename, const QV
     return true;
 }
 
-void ClearSilverPrivate::renderError(Cutelyst *ctx, const QString &error)
+void ClearSilverPrivate::renderError(Context *ctx, const QString &error)
 {
     qCritical() << error;
     ctx->res()->body() = error.toUtf8();
 }
 
-HDF *ClearSilverPrivate::hdfForStash(Cutelyst *ctx, const QVariantHash &stash)
+HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash)
 {
     HDF *hdf = 0;
     hdf_init(&hdf);

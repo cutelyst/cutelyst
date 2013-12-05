@@ -1,5 +1,5 @@
 #include "cutelystview.h"
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystresponse.h"
 #include "cutelystrequest.h"
 
@@ -8,32 +8,32 @@ CutelystView::CutelystView(QObject *parent) :
 {
 }
 
-bool CutelystView::process(Cutelyst *c)
+bool CutelystView::process(Context *ctx)
 {
-    if (c->res()->contentType().isEmpty()) {
-        c->res()->setContentType(QLatin1String("text/html; charset=utf-8"));
+    if (ctx->res()->contentType().isEmpty()) {
+        ctx->res()->setContentType(QLatin1String("text/html; charset=utf-8"));
     }
 
-    if (c->req()->method() == "HEAD") {
+    if (ctx->req()->method() == "HEAD") {
         return true;
     }
 
-    if (!c->res()->body().isNull()) {
+    if (!ctx->res()->body().isNull()) {
         return true;
     }
 
-    if (c->res()->status() == 204 ||
-            (c->res()->status() >= 300 &&
-             c->res()->status() < 400)) {
+    if (ctx->res()->status() == 204 ||
+            (ctx->res()->status() >= 300 &&
+             ctx->res()->status() < 400)) {
             return true;
     }
 
-    return render(c);
+    return render(ctx);
 }
 
-bool CutelystView::render(Cutelyst *c)
+bool CutelystView::render(Context *ctx)
 {
-    Q_UNUSED(c)
+    Q_UNUSED(ctx)
     qFatal("directly inherits from Catalyst::View. You need to\n"
            " inherit from a subclass like Cutelyst::View::ClearSilver instead.\n");
     return false;

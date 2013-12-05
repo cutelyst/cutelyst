@@ -56,7 +56,7 @@ public:
 
     class Credential {
     public:
-        virtual User authenticate(Cutelyst *c, Realm *realm, const CStringHash &authinfo) = 0;
+        virtual User authenticate(Context *ctx, Realm *realm, const CStringHash &authinfo) = 0;
     };
 
     class Store {
@@ -71,7 +71,7 @@ public:
          * Reimplement this if your store supports
          * automatic user creation
          */
-        virtual User autoCreateUser(Cutelyst *c, const CStringHash &userinfo) const;
+        virtual User autoCreateUser(Context *ctx, const CStringHash &userinfo) const;
 
         /**
          * Reimplement this if your store supports
@@ -83,9 +83,12 @@ public:
          * Reimplement this if your store supports
          * automatic user update
          */
-        virtual User autoUpdateUser(Cutelyst *c, const CStringHash &userinfo) const;
+        virtual User autoUpdateUser(Context *ctx, const CStringHash &userinfo) const;
 
-        virtual User findUser(Cutelyst *c, const CStringHash &userinfo) = 0;
+        /**
+         * Retrieve the user that matches the user info
+         */
+        virtual User findUser(Context *ctx, const CStringHash &userinfo) = 0;
 
         /**
          * Reimplement this so that you return a
@@ -94,7 +97,7 @@ public:
          * The default implementation just returns
          * the user.
          */
-        virtual QVariant forSession(Cutelyst *c, const Authentication::User &user);
+        virtual QVariant forSession(Context *ctx, const Authentication::User &user);
 
         /**
          * Reimplement this so that you return a
@@ -103,21 +106,21 @@ public:
          * The default implementation just returns
          * the user.
          */
-        virtual User fromSession(Cutelyst *c, const QVariant &frozenUser);
+        virtual User fromSession(Context *ctx, const QVariant &frozenUser);
     };
 
     class Realm
     {
     public:
         Realm(Store *store, Credential *credential);
-        virtual User findUser(Cutelyst *c, const CStringHash &userinfo);
-        virtual User authenticate(Cutelyst *c, const CStringHash &authinfo);
+        virtual User findUser(Context *ctx, const CStringHash &userinfo);
+        virtual User authenticate(Context *ctx, const CStringHash &authinfo);
 
     protected:
-        void removePersistedUser(Cutelyst *c);
-        User persistUser(Cutelyst *c, const Authentication::User &user);
-        User restoreUser(Cutelyst *c, const QVariant &frozenUser);
-        QVariant userIsRestorable(Cutelyst *c);
+        void removePersistedUser(Context *ctx);
+        User persistUser(Context *ctx, const Authentication::User &user);
+        User restoreUser(Context *ctx, const QVariant &frozenUser);
+        QVariant userIsRestorable(Context *ctx);
 
         Authentication *m_autehntication;
 
@@ -138,20 +141,20 @@ public:
     void setUseSession(bool use);
     bool useSession() const;
 
-    User authenticate(Cutelyst *c, const QString &username, const QString &password, const QString &realm = QString());
-    User authenticate(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
-    User findUser(Cutelyst *c, const CStringHash &userinfo, const QString &realm = QString());
-    User user(Cutelyst *c);
-    void setUser(Cutelyst *c, const User &user);
-    bool userExists(Cutelyst *c);
-    bool userInRealm(Cutelyst *c, const QString &realm);
-    void logout(Cutelyst *c);
+    User authenticate(Context *ctx, const QString &username, const QString &password, const QString &realm = QString());
+    User authenticate(Context *ctx, const CStringHash &userinfo, const QString &realm = QString());
+    User findUser(Context *ctx, const CStringHash &userinfo, const QString &realm = QString());
+    User user(Context *ctx);
+    void setUser(Context *ctx, const User &user);
+    bool userExists(Context *ctx);
+    bool userInRealm(Context *ctx, const QString &realm);
+    void logout(Context *ctx);
 
 protected:
-    void setAuthenticated(Cutelyst *c, const User &user, const QString &realmName);
-    void persistUser(Cutelyst *c, const User &user, const QString &realmName);
-    User restoreUser(Cutelyst *c, const QVariant &frozenUser, const QString &realmName);
-    Realm* findRealmForPersistedUser(Cutelyst *c);
+    void setAuthenticated(Context *ctx, const User &user, const QString &realmName);
+    void persistUser(Context *ctx, const User &user, const QString &realmName);
+    User restoreUser(Context *ctx, const QVariant &frozenUser, const QString &realmName);
+    Realm* findRealmForPersistedUser(Context *ctx);
 
     AuthenticationPrivate *d_ptr;
 

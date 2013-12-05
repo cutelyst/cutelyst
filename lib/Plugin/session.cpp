@@ -21,7 +21,7 @@
 #include "cutelystapplication.h"
 #include "cutelystrequest.h"
 #include "cutelystresponse.h"
-#include "cutelyst.h"
+#include "context.h"
 
 #include <QCoreApplication>
 #include <QStringBuilder>
@@ -44,9 +44,9 @@ bool Session::setup(CutelystApplication *app)
             this, &Session::saveSession);
 }
 
-QVariant Session::value(Cutelyst *c, const QString &key, const QVariant &defaultValue)
+QVariant Session::value(Context *ctx, const QString &key, const QVariant &defaultValue)
 {
-    QVariant data = loadSession(c);
+    QVariant data = loadSession(ctx);
     if (data.isNull()) {
         return defaultValue;
     }
@@ -55,22 +55,22 @@ QVariant Session::value(Cutelyst *c, const QString &key, const QVariant &default
     return session.value(key, defaultValue);
 }
 
-void Session::setValue(Cutelyst *c, const QString &key, const QVariant &value)
+void Session::setValue(Context *ctx, const QString &key, const QVariant &value)
 {
-    QVariantHash session = loadSession(c).value<QVariantHash>();
+    QVariantHash session = loadSession(ctx).value<QVariantHash>();
     session.insert(key, value);
-    setPluginProperty(c, "sessionvalues", session);
-    setPluginProperty(c, "sessionsave", true);
+    setPluginProperty(ctx, "sessionvalues", session);
+    setPluginProperty(ctx, "sessionsave", true);
 }
 
-void Session::deleteValue(Cutelyst *c, const QString &key)
+void Session::deleteValue(Context *ctx, const QString &key)
 {
-    setValue(c, key, QVariant());
+    setValue(ctx, key, QVariant());
 }
 
-bool Session::isValid(Cutelyst *c)
+bool Session::isValid(Context *ctx)
 {
-    return !loadSession(c).isNull();
+    return !loadSession(ctx).isNull();
 }
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
@@ -107,18 +107,18 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
     }
 }
 
-void Session::saveSession(Cutelyst *c)
+void Session::saveSession(Context *ctx)
 {
-    if (!pluginProperty(c, "sessionsave").toBool()) {
+    if (!pluginProperty(ctx, "sessionsave").toBool()) {
         return;
     }
 
-    QString sessionId = getSessionId(c);
+    QString sessionId = getSessionId(ctx);
     QNetworkCookie sessionCookie(sessionName().toLocal8Bit(),
                                  sessionId.toLocal8Bit());
-    c->res()->addCookie(sessionCookie);
+    ctx->res()->addCookie(sessionCookie);
     persistSession(sessionId,
-                   loadSession(c));
+                   loadSession(ctx));
 }
 
 QString Session::sessionName() const
@@ -126,17 +126,17 @@ QString Session::sessionName() const
     return QCoreApplication::applicationName() % QLatin1String("_session");
 }
 
-QVariant Session::loadSession(Cutelyst *c)
+QVariant Session::loadSession(Context *ctx)
 {
-    QVariant property = pluginProperty(c, "sessionvalues");
+    QVariant property = pluginProperty(ctx, "sessionvalues");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
 
-    QString sessionid = getSessionId(c);
+    QString sessionid = getSessionId(ctx);
     if (!sessionid.isEmpty()) {
         QVariantHash session = retrieveSession(sessionid);
-        setPluginProperty(c, "sessionvalues", session);
+        setPluginProperty(ctx, "sessionvalues", session);
         return session;
     }
     return QVariant();
@@ -147,15 +147,15 @@ QString Session::generateSessionId() const
     return QUuid::createUuid().toString().remove(QRegularExpression("-|{|}"));
 }
 
-QString Session::getSessionId(Cutelyst *c) const
+QString Session::getSessionId(Context *ctx) const
 {
-    QVariant property = c->property("Session::_sessionid");
+    QVariant property = ctx->property("Session::_sessionid");
     if (!property.isNull()) {
         return property.value<QString>();
     }
 
     QString sessionId;
-    foreach (const QNetworkCookie &cookie, c->req()->cookies()) {
+    foreach (const QNetworkCookie &cookie, ctx->req()->cookies()) {
         if (cookie.name() == sessionName()) {
             sessionId = cookie.value();
             qDebug() << "Found sessionid" << sessionId << "in cookie";
@@ -166,7 +166,7 @@ QString Session::getSessionId(Cutelyst *c) const
         sessionId = generateSessionId();
         qDebug() << "Created session" << sessionId;
     }
-    c->setProperty("Session::_sessionid", sessionId);
+    ctx->setProperty("Session::_sessionid", sessionId);
 
     return sessionId;
 }

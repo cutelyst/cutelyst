@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "cutelyst_p.h"
+#include "context_p.h"
 
 #include "cutelystengine.h"
 #include "cutelystrequest.h"
@@ -30,105 +30,105 @@
 #include <QStringList>
 #include <QTime>
 
-Cutelyst::Cutelyst(CutelystPrivate *priv) :
+Context::Context(ContextPrivate *priv) :
     d_ptr(priv)
 {
 }
 
-Cutelyst::~Cutelyst()
+Context::~Context()
 {
     delete d_ptr;
 }
 
-bool Cutelyst::error() const
+bool Context::error() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return !d->error.isEmpty();
 }
 
-void Cutelyst::error(const QString &error)
+void Context::error(const QString &error)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     if (!error.isEmpty()) {
         d->error << error;
     }
 }
 
-QStringList Cutelyst::errors() const
+QStringList Context::errors() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->error;
 }
 
-bool Cutelyst::state() const
+bool Context::state() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->state;
 }
 
-void Cutelyst::setState(bool state)
+void Context::setState(bool state)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->state = state;
 }
 
-QStringList Cutelyst::args() const
+QStringList Context::args() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->request->args();
 }
 
-CutelystEngine *Cutelyst::engine() const
+CutelystEngine *Context::engine() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->engine;
 }
 
-CutelystResponse *Cutelyst::response() const
+CutelystResponse *Context::response() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->response;
 }
 
-CutelystResponse *Cutelyst::res() const
+CutelystResponse *Context::res() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->response;
 }
 
-CutelystAction *Cutelyst::action() const
+CutelystAction *Context::action() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->action;
 }
 
-QString Cutelyst::ns() const
+QString Context::ns() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->action->ns();
 }
 
-CutelystRequest *Cutelyst::request() const
+CutelystRequest *Context::request() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->request;
 }
 
-CutelystRequest *Cutelyst::req() const
+CutelystRequest *Context::req() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->request;
 }
 
-CutelystDispatcher *Cutelyst::dispatcher() const
+CutelystDispatcher *Context::dispatcher() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->dispatcher;
 }
 
-CutelystController *Cutelyst::controller(const QString &name) const
+CutelystController *Context::controller(const QString &name) const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     if (name.isEmpty()) {
         return d->action->controller();
     } else {
@@ -136,21 +136,21 @@ CutelystController *Cutelyst::controller(const QString &name) const
     }
 }
 
-QString Cutelyst::match() const
+QString Context::match() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->match;
 }
 
-QVariantHash &Cutelyst::stash()
+QVariantHash &Context::stash()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->stash;
 }
 
-QString Cutelyst::uriFor(const QString &path, const QStringList &args)
+QString Context::uriFor(const QString &path, const QStringList &args)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
 
     CutelystAction *action = d->dispatcher->getAction(path);
     if (action) {
@@ -160,51 +160,51 @@ QString Cutelyst::uriFor(const QString &path, const QStringList &args)
     }
 }
 
-bool Cutelyst::dispatch()
+bool Context::dispatch()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->dispatcher->dispatch(this);
 }
 
-bool Cutelyst::detached() const
+bool Context::detached() const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->detached;
 }
 
-void Cutelyst::detach()
+void Context::detach()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->detached = true;
 }
 
-bool Cutelyst::forward(const QString &action, const QStringList &arguments)
+bool Context::forward(const QString &action, const QStringList &arguments)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->dispatcher->forward(this, action, arguments);
 }
 
-CutelystAction *Cutelyst::getAction(const QString &action, const QString &ns)
+CutelystAction *Context::getAction(const QString &action, const QString &ns)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QList<CutelystAction *> Cutelyst::getActions(const QString &action, const QString &ns)
+QList<CutelystAction *> Context::getActions(const QString &action, const QString &ns)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->dispatcher->getActions(action, ns);
 }
 
-QList<CutelystPlugin::Plugin *> Cutelyst::plugins()
+QList<CutelystPlugin::Plugin *> Context::plugins()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     return d->plugins.keys();
 }
 
-void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
+void Context::handleRequest(CutelystRequest *req, CutelystResponse *resp)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
 
     d->request = req;
     d->response = resp;
@@ -223,15 +223,15 @@ void Cutelyst::handleRequest(CutelystRequest *req, CutelystResponse *resp)
     d->status = finalize();
 }
 
-void Cutelyst::prepareAction()
+void Context::prepareAction()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->dispatcher->prepareAction(this);
 }
 
-void Cutelyst::finalizeHeaders()
+void Context::finalizeHeaders()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
 
     CutelystResponse *response = d->response;
     if (response->finalizedHeaders()) {
@@ -268,27 +268,27 @@ void Cutelyst::finalizeHeaders()
     d->engine->finalizeHeaders(this);
 }
 
-void Cutelyst::finalizeCookies()
+void Context::finalizeCookies()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->engine->finalizeCookies(this);
 }
 
-void Cutelyst::finalizeBody()
+void Context::finalizeBody()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->engine->finalizeBody(this);
 }
 
-void Cutelyst::finalizeError()
+void Context::finalizeError()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->engine->finalizeError(this);
 }
 
-int Cutelyst::finalize()
+int Context::finalize()
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
 
     if (error()) {
         finalizeError();
@@ -309,19 +309,19 @@ int Cutelyst::finalize()
     return d->response->status();
 }
 
-QVariant Cutelyst::pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
+QVariant Context::pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
 {
-    Q_D(const Cutelyst);
+    Q_D(const Context);
     return d->plugins.value(plugin).value(key, defaultValue);
 }
 
-void Cutelyst::setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &key, const QVariant &value)
+void Context::setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &key, const QVariant &value)
 {
-    Q_D(Cutelyst);
+    Q_D(Context);
     d->plugins[plugin].insert(key, value);
 }
 
-CutelystPrivate::CutelystPrivate() :
+ContextPrivate::ContextPrivate() :
     action(0),
     detached(false),
     state(false),

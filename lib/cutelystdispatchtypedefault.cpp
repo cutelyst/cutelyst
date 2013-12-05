@@ -18,7 +18,7 @@
  */
 
 #include "cutelystdispatchtypedefault.h"
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystrequest.h"
 
 CutelystDispatchTypeDefault::CutelystDispatchTypeDefault(QObject *parent) :
@@ -26,16 +26,16 @@ CutelystDispatchTypeDefault::CutelystDispatchTypeDefault(QObject *parent) :
 {
 }
 
-bool CutelystDispatchTypeDefault::match(Cutelyst *c, const QString &path) const
+bool CutelystDispatchTypeDefault::match(Context *ctx, const QString &path) const
 {
     if (!path.isEmpty()) {
         return false;
     }
 
-    QList<CutelystAction *> actions = c->getActions(QLatin1String("dispatchDefault"), c->req()->path());
+    QList<CutelystAction *> actions = ctx->getActions(QLatin1String("dispatchDefault"), ctx->req()->path());
     if (actions.size()) {
         CutelystAction *action = actions.last();
-        setupMatchedAction(c, action, QString());
+        setupMatchedAction(ctx, action, QString());
 
         return true;
     }

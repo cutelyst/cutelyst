@@ -18,7 +18,7 @@
  */
 
 #include "cutelystdispatchtypeindex.h"
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystrequest.h"
 #include "cutelystaction.h"
 
@@ -29,16 +29,16 @@ CutelystDispatchTypeIndex::CutelystDispatchTypeIndex(QObject *parent) :
 {
 }
 
-bool CutelystDispatchTypeIndex::match(Cutelyst *c, const QString &path) const
+bool CutelystDispatchTypeIndex::match(Context *ctx, const QString &path) const
 {
-    if (!c->req()->args().isEmpty()) {
+    if (!ctx->req()->args().isEmpty()) {
         return false;
     }
 
-    QList<CutelystAction *> actions = c->getActions(QLatin1String("dispatchIndex"), c->req()->path());
+    QList<CutelystAction *> actions = ctx->getActions(QLatin1String("dispatchIndex"), ctx->req()->path());
     if (actions.size()) {
         CutelystAction *action = actions.last();
-        setupMatchedAction(c, action, QString());
+        setupMatchedAction(ctx, action, QString());
 
         return true;
     }

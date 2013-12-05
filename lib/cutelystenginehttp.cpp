@@ -19,7 +19,7 @@
 
 #include "cutelystenginehttp_p.h"
 
-#include "cutelyst.h"
+#include "context.h"
 #include "cutelystresponse.h"
 #include "cutelystrequest_p.h"
 
@@ -107,14 +107,14 @@ QHostAddress CutelystEngineHttp::peerAddress() const
     return QHostAddress();//d->socket->peerAddress();
 }
 
-void CutelystEngineHttp::finalizeHeaders(Cutelyst *c)
+void CutelystEngineHttp::finalizeHeaders(Context *ctx)
 {
     Q_D(CutelystEngineHttp);
 
     QByteArray header;
-    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(c->response()->status())));
+    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(ctx->response()->status())));
 
-    QMap<QString, QString> headers = c->response()->headers();
+    QMap<QString, QString> headers = ctx->response()->headers();
     headers.insert(QLatin1String("Date"), QDateTime::currentDateTime().toString(Qt::ISODate));
     headers.insert(QLatin1String("Server"), QLatin1String("CutelystEngineHttp"));
 
@@ -125,21 +125,21 @@ void CutelystEngineHttp::finalizeHeaders(Cutelyst *c)
     }
     header.append(QLatin1String("\r\n"));
 
-    d->requests[c->req()->connectionId()]->write(header);
+    d->requests[ctx->req()->connectionId()]->write(header);
 }
 
-void CutelystEngineHttp::finalizeBody(Cutelyst *c)
+void CutelystEngineHttp::finalizeBody(Context *ctx)
 {
     Q_D(CutelystEngineHttp);
 
-    CutelystEngineHttpRequest *req = d->requests.value(c->req()->connectionId());
-    req->write(c->response()->body());
+    CutelystEngineHttpRequest *req = d->requests.value(ctx->req()->connectionId());
+    req->write(ctx->response()->body());
     req->finish();
 }
 
-void CutelystEngineHttp::finalizeError(Cutelyst *c)
+void CutelystEngineHttp::finalizeError(Context *ctx)
 {
-
+    Q_UNUSED(ctx)
 }
 
 void CutelystEngineHttp::parse(const QByteArray &request)
