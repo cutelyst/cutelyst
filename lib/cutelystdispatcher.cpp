@@ -61,18 +61,18 @@ void CutelystDispatcher::setupActions()
     for (int metaType = QMetaType::User; QMetaType::isRegistered(metaType); ++metaType) {
         qDebug() << "Type name:" << QMetaType::typeName(metaType);
         const QMetaObject *meta = QMetaType::metaObjectForType(metaType);
-        if (meta && qstrcmp(meta->superClass()->className(), "CutelystController") == 0) {
+        if (!meta) {
+            continue;
+        }
+
+        bool instanceUsed = false;
+        QObject *instance = meta->newInstance();
+        CutelystController *controller = qobject_cast<CutelystController*>(instance);
+        if (controller) {
             // App controller
-            CutelystController *controller = qobject_cast<CutelystController*>(meta->newInstance());
-            if (controller) {
-                qDebug() << "Found a controller:" << controller << meta->className();
-            } else {
-                qWarning() << "Could not instantiate controller:" << meta->className();
-                continue;
-            }
+            qDebug() << "Found a controller:" << controller << meta->className();
             controller->setObjectName(meta->className());
 
-            bool controllerUsed = false;
             for (int i = 0; i < meta->methodCount(); ++i) {
                 QMetaMethod method = meta->method(i);
                 if (method.methodType() == QMetaMethod::Method) {
@@ -82,7 +82,7 @@ void CutelystDispatcher::setupActions()
                     if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                         d->actionHash.insert(action->privateName(), action);
                         d->containerHash[action->ns()] << action;
-                        controllerUsed = true;
+                        instanceUsed = true;
 
                         if (!action->attributes().contains(QLatin1String("Private"))) {
                             bool registered = false;
@@ -104,11 +104,13 @@ void CutelystDispatcher::setupActions()
                 }
             }
 
-            if (controllerUsed) {
+            if (instanceUsed) {
                 d->constrollerHash.insert(meta->className(), controller);
-            } else {
-                delete controller;
             }
+        }
+
+        if (!instanceUsed) {
+            delete instance;
         }
     }
 

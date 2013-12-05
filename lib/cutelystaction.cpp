@@ -67,7 +67,7 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
         const QByteArray &type = parameterTypes.at(i);
 
         if (i == 0) {
-            if (type != "Cutelyst*") {
+            if (!type.endsWith("Context*")) {
                 d->valid = false;
                 return;
             }
