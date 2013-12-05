@@ -38,7 +38,7 @@ public:
      */
     virtual bool match(Context *ctx, const QString &path) const;
 
-    virtual QString uriForAction(CutelystAction *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const;
 
     virtual bool isLowPrecedence() const;
 };

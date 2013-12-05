@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTACTION_H
-#define CUTELYSTACTION_H
+#ifndef CUTELYST_ACTION_H
+#define CUTELYST_ACTION_H
 
 #include <QObject>
 #include <QStringList>
@@ -27,14 +27,14 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystController;
-class CutelystActionPrivate;
-class CutelystAction : public QObject
+class Controller;
+class ActionPrivate;
+class Action : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystAction(const QMetaMethod &method, CutelystController *parent = 0);
-    ~CutelystAction();
+    explicit Action(const QMetaMethod &method, Controller *parent = 0);
+    ~Action();
 
     /**
      * @return The sub attributes that are set for this action,
@@ -51,7 +51,7 @@ public:
     /**
      * @return Returns the controller where this action is defined
      */
-    CutelystController* controller() const;
+    Controller* controller() const;
 
     /**
      * @brief dispatch Dispatch this action against a context
@@ -117,14 +117,14 @@ public:
     bool isValid() const;
 
 protected:
-    CutelystActionPrivate *d_ptr;
+    ActionPrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(CutelystAction)
+    Q_DECLARE_PRIVATE(Action)
 };
 
-typedef QList<CutelystAction*> ActionList;
+typedef QList<Action*> ActionList;
 
 }
 
-#endif // CUTELYSTACTION_H
+#endif // CUTELYST_ACTION_H

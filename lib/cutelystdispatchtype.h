@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystAction;
+class Action;
 class CutelystDispatchType : public QObject
 {
     Q_OBJECT
@@ -46,14 +46,14 @@ public:
     /**
      * Returns an uri for an action //TODO
      */
-    virtual QString uriForAction(CutelystAction *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const;
 
     /**
      * @brief registerAction
      * @param action
      * @return
      */
-    virtual bool registerAction(CutelystAction *action);
+    virtual bool registerAction(Action *action);
 
     /**
      * Returns true if the dispatch type has low precedence
@@ -63,7 +63,7 @@ public:
     virtual bool isLowPrecedence() const;
 
 protected:
-    void setupMatchedAction(Context *ctx, CutelystAction *action, const QString &match) const;
+    void setupMatchedAction(Context *ctx, Action *action, const QString &match) const;
 };
 
 }

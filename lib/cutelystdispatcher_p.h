@@ -17,23 +17,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHER_P_H
-#define CUTELYSTDISPATCHER_P_H
+#ifndef CUTELYST_DISPATCHER_P_H
+#define CUTELYST_DISPATCHER_P_H
 
 #include "cutelystdispatcher.h"
 
 namespace Cutelyst {
 
-class CutelystDispatcherPrivate
+class DispatcherPrivate
 {
 public:
     ActionList getContainers(const QString &ns) const;
-    QMap<QString, CutelystAction*> actionHash;
+    QMap<QString, Action*> actionHash;
     QMap<QString, ActionList> containerHash;
-    QHash<QString, CutelystController *> constrollerHash;
+    QHash<QString, Controller *> constrollerHash;
     QList<CutelystDispatchType*> dispatchers;
 };
 
 }
 
-#endif // CUTELYSTDISPATCHER_P_H
+#endif // CUTELYST_DISPATCHER_P_H

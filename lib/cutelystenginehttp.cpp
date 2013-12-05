@@ -35,7 +35,7 @@
 using namespace Cutelyst;
 
 CutelystEngineHttp::CutelystEngineHttp(QObject *parent) :
-    CutelystEngine(parent),
+    Engine(parent),
     d_ptr(new CutelystEngineHttpPrivate)
 
 {
@@ -162,37 +162,37 @@ QString CutelystEngineHttp::statusString(quint16 status) const
 {
     QString ret;
     switch (status) {
-    case CutelystResponse::OK:
+    case Response::OK:
         ret = QLatin1String("OK");
         break;
-    case CutelystResponse::MovedPermanently:
+    case Response::MovedPermanently:
         ret = QLatin1String("Moved Permanently");
         break;
-    case CutelystResponse::Found:
+    case Response::Found:
         ret = QLatin1String("Found");
         break;
-    case CutelystResponse::NotModified:
+    case Response::NotModified:
         ret = QLatin1String("Not Modified");
         break;
-    case CutelystResponse::TemporaryRedirect:
+    case Response::TemporaryRedirect:
         ret = QLatin1String("Temporary Redirect");
         break;
-    case CutelystResponse::BadRequest:
+    case Response::BadRequest:
         ret = QLatin1String("Bad Request");
         break;
-    case CutelystResponse::AuthorizationRequired:
+    case Response::AuthorizationRequired:
         ret = QLatin1String("Authorization Required");
         break;
-    case CutelystResponse::Forbidden:
+    case Response::Forbidden:
         ret = QLatin1String("Forbidden");
         break;
-    case CutelystResponse::NotFound:
+    case Response::NotFound:
         ret = QLatin1String("Not Found");
         break;
-    case CutelystResponse::MethodNotAllowed:
+    case Response::MethodNotAllowed:
         ret = QLatin1String("Method Not Allowed");
         break;
-    case CutelystResponse::InternalServerError:
+    case Response::InternalServerError:
         ret = QLatin1String("Internal Server Error");
         break;
     }

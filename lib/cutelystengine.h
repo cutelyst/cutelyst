@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTENGINE_H
-#define CUTELYSTENGINE_H
+#ifndef CUTELYST_ENGINE_H
+#define CUTELYST_ENGINE_H
 
 #include <QObject>
 #include <QHostAddress>
@@ -26,17 +26,16 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystRequest;
-class CutelystResponse;
-class CutelystEnginePrivate;
-class CutelystEngine : public QObject
+class Request;
+class Response;
+class EnginePrivate;
+class Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystEngine(QObject *parent = 0);
-    ~CutelystEngine();
+    explicit Engine(QObject *parent = 0);
+    ~Engine();
 
-    CutelystRequest* request() const;
     virtual quint16 peerPort() const = 0;
     virtual QString peerName() const = 0;
     virtual QHostAddress peerAddress() const = 0;
@@ -49,7 +48,7 @@ public:
     void finalizeError(Context *ctx);
 
 Q_SIGNALS:
-    void handleRequest(CutelystRequest *request, CutelystResponse *response);
+    void handleRequest(Request *request, Response *response);
 
 protected Q_SLOTS:
     void createRequest(int connectionId,
@@ -59,12 +58,12 @@ protected Q_SLOTS:
                        const QHash<QString, QByteArray> &headers,
                        const QByteArray &body);
 protected:
-    CutelystEnginePrivate *d_ptr;
+    EnginePrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(CutelystEngine)
+    Q_DECLARE_PRIVATE(Engine)
 };
 
 }
 
-#endif // CUTELYSTENGINE_H
+#endif // CUTELYST_ENGINE_H

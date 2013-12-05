@@ -32,12 +32,12 @@ void CutelystDispatchType::list() const
 {
 }
 
-QString CutelystDispatchType::uriForAction(CutelystAction *action, const QStringList &captures) const
+QString CutelystDispatchType::uriForAction(Action *action, const QStringList &captures) const
 {
     return QString();
 }
 
-bool CutelystDispatchType::registerAction(CutelystAction *action)
+bool CutelystDispatchType::registerAction(Action *action)
 {
     Q_UNUSED(action)
     return true;
@@ -48,7 +48,7 @@ bool CutelystDispatchType::isLowPrecedence() const
     return false;
 }
 
-void CutelystDispatchType::setupMatchedAction(Context *ctx, CutelystAction *action, const QString &match) const
+void CutelystDispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match) const
 {
     ctx->d_ptr->action = action;
     ctx->d_ptr->match = match;

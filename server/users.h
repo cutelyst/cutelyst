@@ -5,7 +5,7 @@
 
 using namespace Cutelyst;
 
-class Users : public CutelystController
+class Users : public Controller
 {
     Q_OBJECT
 public:

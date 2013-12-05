@@ -27,27 +27,21 @@
 
 using namespace Cutelyst;
 
-CutelystEngine::CutelystEngine(QObject *parent) :
+Engine::Engine(QObject *parent) :
     QObject(parent),
-    d_ptr(new CutelystEnginePrivate(this))
+    d_ptr(new EnginePrivate(this))
 {
-    Q_D(CutelystEngine);
+    Q_D(Engine);
 }
 
-CutelystEngine::~CutelystEngine()
+Engine::~Engine()
 {
-    Q_D(CutelystEngine);
+    Q_D(Engine);
 
     delete d_ptr;
 }
 
-CutelystRequest *CutelystEngine::request() const
-{
-    Q_D(const CutelystEngine);
-    return d->request;
-}
-
-void CutelystEngine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body)
+void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body)
 {
     // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;
@@ -88,7 +82,7 @@ void CutelystEngine::createRequest(int connectionId, const QUrl &url, const QByt
 
     QByteArray cookies = headers.value(QLatin1String("Cookie"));
 
-    CutelystRequestPrivate *requestPriv = new CutelystRequestPrivate;
+    RequestPrivate *requestPriv = new RequestPrivate;
     requestPriv->engine = this;
     requestPriv->connectionId = connectionId;
     requestPriv->method = method;
@@ -101,27 +95,26 @@ void CutelystEngine::createRequest(int connectionId, const QUrl &url, const QByt
     requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
     requestPriv->body = body;
 
-    handleRequest(new CutelystRequest(requestPriv), new CutelystResponse);
+    handleRequest(new Request(requestPriv), new Response);
 }
 
-CutelystEnginePrivate::CutelystEnginePrivate(CutelystEngine *parent) :
-    q_ptr(parent),
-    request(new CutelystRequest)
+EnginePrivate::EnginePrivate(Engine *parent) :
+    q_ptr(parent)
 {
 }
 
-CutelystEnginePrivate::~CutelystEnginePrivate()
+EnginePrivate::~EnginePrivate()
 {
 }
 
-void CutelystEngine::finalizeCookies(Context *ctx)
+void Engine::finalizeCookies(Context *ctx)
 {
     foreach (const QNetworkCookie &cookie, ctx->response()->cookies()) {
         ctx->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
     }
 }
 
-void CutelystEngine::finalizeError(Context *ctx)
+void Engine::finalizeError(Context *ctx)
 {
     ctx->res()->setContentType("text/html; charset=utf-8");
 
@@ -136,5 +129,5 @@ void CutelystEngine::finalizeError(Context *ctx)
     ctx->res()->body() = body;
 
     // Return 500
-    ctx->res()->setStatus(CutelystResponse::InternalServerError);
+    ctx->res()->setStatus(Response::InternalServerError);
 }

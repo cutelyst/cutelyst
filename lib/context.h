@@ -31,12 +31,12 @@ namespace CutelystPlugin {
 class Plugin;
 }
 
-class CutelystAction;
-class CutelystEngine;
-class CutelystRequest;
-class CutelystResponse;
-class CutelystDispatcher;
-class CutelystController;
+class Action;
+class Engine;
+class Request;
+class Response;
+class Dispatcher;
+class Controller;
 class ContextPrivate;
 class Context : public QObject
 {
@@ -56,38 +56,38 @@ public:
     void setState(bool state);
     QStringList args() const;
     QString uriPrefix() const;
-    CutelystEngine *engine() const;
-    CutelystResponse *response() const;
-    CutelystResponse *res() const;
+    Engine *engine() const;
+    Response *response() const;
+    Response *res() const;
 
     /**
      * Returns a pointer to the current action
      */
-    Q_PROPERTY(CutelystAction* action READ action)
-    CutelystAction *action() const;
+    Q_PROPERTY(Action* action READ action)
+    Action *action() const;
 
     /**
      * Returns the namespace of the current action.
      * i.e. the URI prefix corresponding to the controller
      * of the current action. For example:
-     * // a class named FooBar which inherits CutelystController
+     * // a class named FooBar which inherits Controller
      * c->ns(); // returns 'foo/bar'
      */
     Q_PROPERTY(QString ns READ ns)
     QString ns() const;
 
     /**
-     * Returns the current CutelystRequest object containing
-     * information about the client request \sa CutelystRequest
+     * Returns the current Request object containing
+     * information about the client request \sa Request
      */
-    CutelystRequest *request() const;
+    Request *request() const;
 
     /**
      * Short for the method above
      */
-    CutelystRequest *req() const;
-    CutelystDispatcher *dispatcher() const;
-    CutelystController *controller(const QString &name = QString()) const;
+    Request *req() const;
+    Dispatcher *dispatcher() const;
+    Controller *controller(const QString &name = QString()) const;
     QString match() const;
 
     QVariantHash &stash();
@@ -98,8 +98,8 @@ public:
     bool detached() const;
     void detach();
     bool forward(const QString &action, const QStringList &arguments = QStringList());
-    CutelystAction *getAction(const QString &action, const QString &ns = QString());
-    QList<CutelystAction*> getActions(const QString &action, const QString &ns = QString());
+    Action *getAction(const QString &action, const QString &ns = QString());
+    QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
     QList<CutelystPlugin::Plugin *> plugins();
 
@@ -121,7 +121,7 @@ Q_SIGNALS:
     void afterDispatch(Context *ctx);
 
 protected:
-    void handleRequest(CutelystRequest *req, CutelystResponse *resp);
+    void handleRequest(Request *req, Response *resp);
     void prepareAction();
     void finalizeHeaders();
     void finalizeCookies();
@@ -132,7 +132,7 @@ protected:
     QVariant pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &name, const QVariant &value);
 
-    friend class CutelystApplication;
+    friend class Application;
     friend class CutelystDispatchType;
     friend class CutelystPlugin::Plugin;
     ContextPrivate *d_ptr;

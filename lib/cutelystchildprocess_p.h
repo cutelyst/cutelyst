@@ -40,7 +40,7 @@ public:
 
     CutelystChildProcess *q_ptr;
     QSocketNotifier *notifier;
-    CutelystDispatcher *dispatcher;
+    Dispatcher *dispatcher;
     QString error;
     int childFD;
     int parentFD;

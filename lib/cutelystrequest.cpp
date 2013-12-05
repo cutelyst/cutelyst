@@ -25,104 +25,104 @@
 
 using namespace Cutelyst;
 
-CutelystRequest::CutelystRequest() :
-    d_ptr(new CutelystRequestPrivate)
+Request::Request() :
+    d_ptr(new RequestPrivate)
 {
 }
 
-CutelystRequest::CutelystRequest(CutelystRequestPrivate *prv) :
+Request::Request(RequestPrivate *prv) :
     d_ptr(prv)
 {
 
 }
 
-CutelystRequest::~CutelystRequest()
+Request::~Request()
 {
     delete d_ptr;
 }
 
-QHostAddress CutelystRequest::peerAddress() const
+QHostAddress Request::peerAddress() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->engine->peerAddress();
 }
 
-QString CutelystRequest::peerName() const
+QString Request::peerName() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->engine->peerName();
 }
 
-quint16 CutelystRequest::peerPort() const
+quint16 Request::peerPort() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->engine->peerPort();
 }
 
-int CutelystRequest::connectionId() const
+int Request::connectionId() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->connectionId;
 }
 
-QString CutelystRequest::path() const
+QString Request::path() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->url.path();
 }
 
-QStringList CutelystRequest::args() const
+QStringList Request::args() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->args;
 }
 
-QString CutelystRequest::base() const
+QString Request::base() const
 {
 
 }
 
-QString CutelystRequest::body() const
+QString Request::body() const
 {
 
 }
 
-QMultiHash<QString, QString> CutelystRequest::bodyParameters() const
+QMultiHash<QString, QString> Request::bodyParameters() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->bodyParam;
 }
 
-QMultiHash<QString, QString> CutelystRequest::bodyParam() const
+QMultiHash<QString, QString> Request::bodyParam() const
 {
     return bodyParameters();
 }
 
-QMultiHash<QString, QString> CutelystRequest::queryParameters() const
+QMultiHash<QString, QString> Request::queryParameters() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->queryParam;
 }
 
-QMultiHash<QString, QString> CutelystRequest::queryParam() const
+QMultiHash<QString, QString> Request::queryParam() const
 {
     return queryParameters();
 }
 
-QMultiHash<QString, QString> CutelystRequest::parameters() const
+QMultiHash<QString, QString> Request::parameters() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->param;
 }
 
-QMultiHash<QString, QString> CutelystRequest::param() const
+QMultiHash<QString, QString> Request::param() const
 {
     return parameters();
 }
 
-QNetworkCookie CutelystRequest::cookie(const QByteArray &name) const
+QNetworkCookie Request::cookie(const QByteArray &name) const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     foreach (const QNetworkCookie &cookie, d->cookies) {
         if (cookie.name() == name) {
             return cookie;
@@ -131,32 +131,32 @@ QNetworkCookie CutelystRequest::cookie(const QByteArray &name) const
     return QNetworkCookie();
 }
 
-QList<QNetworkCookie> CutelystRequest::cookies() const
+QList<QNetworkCookie> Request::cookies() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->cookies;
 }
 
-QString CutelystRequest::header(const QString &key) const
+QString Request::header(const QString &key) const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->headers.value(key);
 }
 
-QHash<QString, QByteArray> CutelystRequest::headers() const
+QHash<QString, QByteArray> Request::headers() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->headers;
 }
 
-QByteArray CutelystRequest::method() const
+QByteArray Request::method() const
 {
-    Q_D(const CutelystRequest);
+    Q_D(const Request);
     return d->method;
 }
 
-void CutelystRequest::setArgs(const QStringList &args)
+void Request::setArgs(const QStringList &args)
 {
-    Q_D(CutelystRequest);
+    Q_D(Request);
     d->args = args;
 }

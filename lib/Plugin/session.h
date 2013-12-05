@@ -36,7 +36,7 @@ class Session : public Plugin
 public:
     explicit Session(QObject *parent = 0);
 
-    bool setup(CutelystApplication *app);
+    bool setup(Application *app);
 
     QVariant value(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant());
     void setValue(Context *ctx, const QString &key, const QVariant &value);

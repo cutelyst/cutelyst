@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHER_H
-#define CUTELYSTDISPATCHER_H
+#ifndef CUTELYST_DISPATCHER_H
+#define CUTELYST_DISPATCHER_H
 
 #include <QObject>
 #include <QHash>
@@ -29,40 +29,40 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystController;
+class Controller;
 class CutelystDispatchType;
-class CutelystDispatcherPrivate;
-class CutelystDispatcher : public QObject
+class DispatcherPrivate;
+class Dispatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystDispatcher(QObject *parent = 0);
-    ~CutelystDispatcher();
+    explicit Dispatcher(QObject *parent = 0);
+    ~Dispatcher();
     void setupActions();
 
     bool dispatch(Context *ctx);
     bool forward(Context *ctx, const QString &opname, const QStringList &arguments);
     void prepareAction(Context *ctx);
-    CutelystAction* getAction(const QString &name, const QString &ns = QString()) const;
+    Action* getAction(const QString &name, const QString &ns = QString()) const;
     ActionList getActions(const QString &name, const QString &ns) const;
-    QHash<QString, CutelystController*> controllers() const;
-    QString uriForAction(CutelystAction *action, const QStringList &captures);
+    QHash<QString, Controller*> controllers() const;
+    QString uriForAction(Action *action, const QStringList &captures);
 
 private:
     void printActions();
-    CutelystAction *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList());
+    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QStringList &args);
     QString actionRel2Abs(Context *ctx, const QString &path);
-    CutelystAction *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args);
+    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args);
     QString cleanNamespace(const QString &ns) const;
 
 protected:
-    CutelystDispatcherPrivate *d_ptr;
+    DispatcherPrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(CutelystDispatcher)
+    Q_DECLARE_PRIVATE(Dispatcher)
 };
 
 }
 
-#endif // CUTELYSTDISPATCHER_H
+#endif // CUTELYST_DISPATCHER_H

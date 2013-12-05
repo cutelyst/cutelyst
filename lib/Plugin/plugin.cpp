@@ -29,7 +29,7 @@ Plugin::Plugin(QObject *parent) :
 {
 }
 
-bool Plugin::setup(CutelystApplication *app)
+bool Plugin::setup(Application *app)
 {
     Q_UNUSED(app)
     return true;

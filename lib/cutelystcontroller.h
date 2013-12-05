@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTCONTROLLER_H
-#define CUTELYSTCONTROLLER_H
+#ifndef CUTELYST_CONTROLLER_H
+#define CUTELYST_CONTROLLER_H
 
 #include <QObject>
 
@@ -28,7 +28,7 @@
 
 namespace  Cutelyst {
 
-class CutelystController : public QObject
+class Controller : public QObject
 {
     Q_OBJECT
     /**
@@ -88,8 +88,8 @@ public:
      */
     typedef int Args;
 
-    Q_INVOKABLE explicit CutelystController(QObject *parent = 0);
-    ~CutelystController();
+    Q_INVOKABLE explicit Controller(QObject *parent = 0);
+    ~Controller();
 
     /**
      * This specifies the internal namespace the controller should
@@ -105,7 +105,7 @@ public:
     /**
      * Returns the action object for the given private name
      */
-    CutelystAction *actionFor(Context *ctx, const QString &name);
+    Action *actionFor(Context *ctx, const QString &name);
 
     bool operator==(const char *className);
 
@@ -118,7 +118,7 @@ protected:
     virtual void Index(Context *ctx);
 
 private:
-    friend class CutelystAction;
+    friend class Action;
 
     Q_INVOKABLE void _DISPATCH(Context *ctx);
     Q_INVOKABLE bool _BEGIN(Context *ctx);
@@ -129,6 +129,4 @@ private:
 
 }
 
-Q_DECLARE_METATYPE(Cutelyst::CutelystController*)
-
-#endif // CUTELYSTCONTROLLER_H
+#endif // CUTELYST_CONTROLLER_H

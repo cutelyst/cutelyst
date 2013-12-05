@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTAPPLICATION_H
-#define CUTELYSTAPPLICATION_H
+#ifndef CUTELYST_APPLICATION_H
+#define CUTELYST_APPLICATION_H
 
 #include <QCoreApplication>
 
@@ -28,22 +28,22 @@ namespace CutelystPlugin {
 class Plugin;
 }
 class Context;
-class CutelystRequest;
-class CutelystResponse;
-class CutelystEngine;
-class CutelystApplicationPrivate;
-class CutelystApplication : public QCoreApplication
+class Request;
+class Response;
+class Engine;
+class ApplicationPrivate;
+class Application : public QCoreApplication
 {
     Q_OBJECT
 public:
-    CutelystApplication(int &argc, char **argv);
-    ~CutelystApplication();
+    Application(int &argc, char **argv);
+    ~Application();
 
     void registerPlugin(CutelystPlugin::Plugin *plugin);
 
     bool parseArgs();
     int printError();
-    bool setup(CutelystEngine *engine = 0);
+    bool setup(Engine *engine = 0);
 
 Q_SIGNALS:
     void beforePrepareAction(Context *ctx, bool *skipMethod);
@@ -52,14 +52,14 @@ Q_SIGNALS:
     void afterDispatch(Context *ctx);
 
 protected:
-    CutelystApplicationPrivate *d_ptr;
+    ApplicationPrivate *d_ptr;
 
 private:
-    Q_DECLARE_PRIVATE(CutelystApplication)
+    Q_DECLARE_PRIVATE(Application)
 
-    void handleRequest(CutelystRequest *req, CutelystResponse *resp);
+    void handleRequest(Request *req, Response *resp);
 };
 
 }
 
-#endif // CUTELYSTAPPLICATION_H
+#endif // CUTELYST_APPLICATION_H

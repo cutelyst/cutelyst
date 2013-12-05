@@ -19,6 +19,7 @@
 
 #include "cutelystdispatchtypedefault.h"
 #include "context.h"
+#include "cutelystaction.h"
 #include "cutelystrequest.h"
 
 using namespace Cutelyst;
@@ -34,9 +35,9 @@ bool CutelystDispatchTypeDefault::match(Context *ctx, const QString &path) const
         return false;
     }
 
-    QList<CutelystAction *> actions = ctx->getActions(QLatin1String("dispatchDefault"), ctx->req()->path());
+    ActionList actions = ctx->getActions(QLatin1String("dispatchDefault"), ctx->req()->path());
     if (actions.size()) {
-        CutelystAction *action = actions.last();
+        Action *action = actions.last();
         setupMatchedAction(ctx, action, QString());
 
         return true;

@@ -5,11 +5,11 @@
 
 namespace Cutelyst {
 
-class CutelystEngineUwsgi : public CutelystEngine
+class CutelystEngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineUwsgi(int socket, CutelystDispatcher *dispatcher, QObject *parent = 0);
+    explicit CutelystEngineUwsgi(int socket, Dispatcher *dispatcher, QObject *parent = 0);
 
 };
 

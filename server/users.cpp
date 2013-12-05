@@ -7,7 +7,7 @@ Users::Users()
 
 }
 
-void Users::list(Context *ctx, const QString &name, const QString &age, CutelystController::Args, CutelystController::Local)
+void Users::list(Context *ctx, const QString &name, const QString &age, Controller::Args, Controller::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
 //    qDebug() << "Cookies" << c->req()->cookies();

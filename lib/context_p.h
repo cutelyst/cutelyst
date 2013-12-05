@@ -32,11 +32,11 @@ class ContextPrivate
 public:
     ContextPrivate();
 
-    CutelystEngine *engine;
-    CutelystRequest *request;
-    CutelystResponse *response;
-    CutelystAction *action;
-    CutelystDispatcher *dispatcher;
+    Engine *engine;
+    Request *request;
+    Response *response;
+    Action *action;
+    Dispatcher *dispatcher;
     QHash<CutelystPlugin::Plugin *, QVariantHash> plugins;
     bool detached;
     QString match;

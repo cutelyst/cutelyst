@@ -39,9 +39,9 @@ Session::Session(QObject *parent) :
 {
 }
 
-bool Session::setup(CutelystApplication *app)
+bool Session::setup(Application *app)
 {
-    connect(app, &CutelystApplication::afterDispatch,
+    connect(app, &Application::afterDispatch,
             this, &Session::saveSession);
 }
 

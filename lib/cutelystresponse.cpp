@@ -24,105 +24,105 @@
 
 using namespace Cutelyst;
 
-CutelystResponse::CutelystResponse(QObject *parent) :
+Response::Response(QObject *parent) :
     QObject(parent),
-    d_ptr(new CutelystResponsePrivate)
+    d_ptr(new ResponsePrivate)
 {
 }
 
-CutelystResponse::~CutelystResponse()
+Response::~Response()
 {
     delete d_ptr;
 }
 
-quint16 CutelystResponse::status() const
+quint16 Response::status() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return d->status;
 }
 
-void CutelystResponse::setStatus(quint16 status)
+void Response::setStatus(quint16 status)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->status = status;
 }
 
-bool CutelystResponse::finalizedHeaders() const
+bool Response::finalizedHeaders() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return d->finalizedHeaders;
 }
 
-void CutelystResponse::addHeaderValue(const QString &key, const QByteArray &value)
+void Response::addHeaderValue(const QString &key, const QByteArray &value)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->headers.insertMulti(key, value);
 }
 
-bool CutelystResponse::hasBody() const
+bool Response::hasBody() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return !d->body.isEmpty();
 }
 
-QByteArray &CutelystResponse::body()
+QByteArray &Response::body()
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     return d->body;
 }
 
-void CutelystResponse::setContentLength(quint64 length)
+void Response::setContentLength(quint64 length)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->contentLength = length;
 }
 
-QString CutelystResponse::contentType() const
+QString Response::contentType() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return d->contentType;
 }
 
-void CutelystResponse::setContentType(const QString &encoding)
+void Response::setContentType(const QString &encoding)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->contentType = encoding;
 }
 
-QList<QNetworkCookie> CutelystResponse::cookies() const
+QList<QNetworkCookie> Response::cookies() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return d->cookies;
 }
 
-void CutelystResponse::addCookie(const QNetworkCookie &cookie)
+void Response::addCookie(const QNetworkCookie &cookie)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->cookies << cookie;
 }
 
-void CutelystResponse::setCookies(const QList<QNetworkCookie> &cookies)
+void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->cookies = cookies;
 }
 
-void CutelystResponse::redirect(const QString &url, quint16 status)
+void Response::redirect(const QString &url, quint16 status)
 {
-    Q_D(CutelystResponse);
+    Q_D(Response);
     d->location = url;
     d->status = status;
 }
 
-QUrl CutelystResponse::location() const
+QUrl Response::location() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
     return d->location;
 }
 
-QMap<QString, QString> CutelystResponse::headers() const
+QMap<QString, QString> Response::headers() const
 {
-    Q_D(const CutelystResponse);
+    Q_D(const Response);
 
     QMultiMap<QString, QString> ret = d->headers;
     ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
@@ -147,9 +147,9 @@ QMap<QString, QString> CutelystResponse::headers() const
     return ret;
 }
 
-CutelystResponsePrivate::CutelystResponsePrivate() :
+ResponsePrivate::ResponsePrivate() :
     finalizedHeaders(false),
-    status(CutelystResponse::OK),
+    status(Response::OK),
     contentLength(0)
 {
 

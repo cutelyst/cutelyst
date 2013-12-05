@@ -29,9 +29,9 @@ void StaticSimple::setRootDir(const QString &path)
     m_rootDir = path;
 }
 
-bool StaticSimple::setup(CutelystApplication *app)
+bool StaticSimple::setup(Application *app)
 {
-    connect(app, &CutelystApplication::beforePrepareAction,
+    connect(app, &Application::beforePrepareAction,
             this, &StaticSimple::beforePrepareAction);
 }
 

@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTRESPONSE_P_H
-#define CUTELYSTRESPONSE_P_H
+#ifndef CUTELYST_RESPONSE_P_H
+#define CUTELYST_RESPONSE_P_H
 
 #include "cutelystresponse.h"
 
@@ -28,10 +28,10 @@
 namespace Cutelyst {
 
 class CutelystEngine;
-class CutelystResponsePrivate
+class ResponsePrivate
 {
 public:
-    CutelystResponsePrivate();
+    ResponsePrivate();
 
     quint16 status;
     quint16 finalizedHeaders;
@@ -49,4 +49,4 @@ public:
 
 }
 
-#endif // CUTELYSTRESPONSE_P_H
+#endif // CUTELYST_RESPONSE_P_H

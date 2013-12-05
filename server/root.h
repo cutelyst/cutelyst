@@ -5,7 +5,7 @@
 
 using namespace Cutelyst;
 
-class Root : public CutelystController
+class Root : public Controller
 {
     Q_OBJECT
     Q_CLASSINFO("Namespace", "")

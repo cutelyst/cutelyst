@@ -8,7 +8,7 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystApplication;
+class Application;
 
 namespace CutelystPlugin {
 
@@ -20,7 +20,7 @@ public:
 
     void setRootDir(const QString &path);
 
-    bool setup(CutelystApplication *app);
+    bool setup(Application *app);
 
 private:
     void beforePrepareAction(Context *ctx, bool *skipMethod);

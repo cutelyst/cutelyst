@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTREQUEST_H
-#define CUTELYSTREQUEST_H
+#ifndef CUTELYST_REQUEST_H
+#define CUTELYST_REQUEST_H
 
 #include <QObject>
 #include <QHostAddress>
@@ -26,13 +26,13 @@
 
 namespace Cutelyst {
 
-class CutelystRequestPrivate;
-class CutelystRequest
+class RequestPrivate;
+class Request
 {
 public:
-    CutelystRequest();
-    CutelystRequest(CutelystRequestPrivate *prv);
-    ~CutelystRequest();
+    Request();
+    Request(RequestPrivate *prv);
+    ~Request();
 
     /**
      * @brief peerAddress
@@ -109,13 +109,13 @@ public:
 protected:
     void setArgs(const QStringList &args);
 
-    CutelystRequestPrivate *d_ptr;
+    RequestPrivate *d_ptr;
 
 private:
-    friend class CutelystDispatcher;
-    Q_DECLARE_PRIVATE(CutelystRequest)
+    friend class Dispatcher;
+    Q_DECLARE_PRIVATE(Request)
 };
 
 }
 
-#endif // CUTELYSTREQUEST_H
+#endif // CUTELYST_REQUEST_H

@@ -36,14 +36,14 @@ public:
 
     virtual bool match(Context *ctx, const QString &path) const;
 
-    virtual bool registerAction(CutelystAction *action);
+    virtual bool registerAction(Action *action);
 
-    virtual QString uriForAction(CutelystAction *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const;
 
 private:
-    void registerPath(const QString &path, CutelystAction *action);
+    void registerPath(const QString &path, Action *action);
 
-    QMultiHash<QString, CutelystAction*> m_paths;
+    QMultiHash<QString, Action*> m_paths;
 };
 
 }

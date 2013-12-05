@@ -42,9 +42,9 @@ void CutelystDispatchTypePath::list() const
     QString privateTitle("Private");
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
-    QHash<QString, CutelystAction*>::ConstIterator it = m_paths.constBegin();
+    QHash<QString, Action*>::ConstIterator it = m_paths.constBegin();
     while (it != m_paths.constEnd()) {
-        CutelystAction *action = it.value();
+        Action *action = it.value();
         QString path = QLatin1Char('/') % it.key();
         QString args = action->attributes().value(QLatin1String("Args"));
         if (args.isEmpty()) {
@@ -78,7 +78,7 @@ void CutelystDispatchTypePath::list() const
 
     it = m_paths.constBegin();
     while (it != m_paths.constEnd()) {
-        CutelystAction *action = it.value();
+        Action *action = it.value();
         QString path = QLatin1Char('/') % it.key();
         if (!action->attributes().contains(QLatin1String("Args"))) {
             path.append(QLatin1String("/..."));
@@ -112,7 +112,7 @@ bool CutelystDispatchTypePath::match(Context *ctx, const QString &path) const
         _path = QLatin1Char('/');
     }
 
-    QHash<QString, CutelystAction*>::ConstIterator i = m_paths.constFind(_path);
+    QHash<QString, Action*>::ConstIterator i = m_paths.constFind(_path);
     while (i != m_paths.constEnd() && i.key() == _path) {
         if (i.value()->match(ctx)) {
             setupMatchedAction(ctx, i.value(), _path);
@@ -124,7 +124,7 @@ bool CutelystDispatchTypePath::match(Context *ctx, const QString &path) const
     return false;
 }
 
-bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
+bool CutelystDispatchTypePath::registerAction(Action *action)
 {
     int pathsCount = m_paths.size();
 
@@ -139,7 +139,7 @@ bool CutelystDispatchTypePath::registerAction(CutelystAction *action)
     return m_paths.size() != pathsCount;
 }
 
-QString CutelystDispatchTypePath::uriForAction(CutelystAction *action, const QStringList &captures) const
+QString CutelystDispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
 {
     QString path = action->attributes().value(QLatin1String("Path"));
     if (!path.isNull()) {
@@ -152,7 +152,7 @@ QString CutelystDispatchTypePath::uriForAction(CutelystAction *action, const QSt
     return QString();
 }
 
-void CutelystDispatchTypePath::registerPath(const QString &path, CutelystAction *action)
+void CutelystDispatchTypePath::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
     if (_path.startsWith(QLatin1Char('/'))) {

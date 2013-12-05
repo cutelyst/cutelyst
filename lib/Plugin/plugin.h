@@ -27,7 +27,7 @@
 namespace Cutelyst {
 
 class Context;
-class CutelystApplication;
+class Application;
 
 namespace CutelystPlugin {
 
@@ -41,9 +41,9 @@ public:
 
     /**
      * Reimplement this if you need to connect to
-     * the signals emitted from CutelystApplication
+     * the signals emitted from Cutelyst::Application
      */
-    virtual bool setup(CutelystApplication *app);
+    virtual bool setup(Application *app);
 
 protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;

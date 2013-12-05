@@ -17,19 +17,19 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTRESPONSE_H
-#define CUTELYSTRESPONSE_H
+#ifndef CUTELYST_RESPONSE_H
+#define CUTELYST_RESPONSE_H
 
 #include <QObject>
 #include <QNetworkCookie>
 
 namespace Cutelyst {
 
-class CutelystResponsePrivate;
-class CutelystResponse : public QObject
+class ResponsePrivate;
+class Response : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(CutelystResponse)
+    Q_DECLARE_PRIVATE(Response)
     Q_ENUMS(HttpStatus)
 public:
     enum HttpStatus {
@@ -49,8 +49,8 @@ public:
         MethodNotAllowed      = 405,
         InternalServerError   = 500
     };
-    explicit CutelystResponse(QObject *parent = 0);
-    ~CutelystResponse();
+    explicit Response(QObject *parent = 0);
+    ~Response();
 
     quint16 status() const;
     void setStatus(quint16 status);
@@ -85,9 +85,9 @@ public:
     void write(const QByteArray &data);
 
 protected:
-    CutelystResponsePrivate *d_ptr;
+    ResponsePrivate *d_ptr;
 };
 
 }
 
-#endif // CUTELYSTRESPONSE_H
+#endif // CUTELYST_RESPONSE_H

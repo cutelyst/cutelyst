@@ -37,9 +37,9 @@ bool CutelystDispatchTypeIndex::match(Context *ctx, const QString &path) const
         return false;
     }
 
-    QList<CutelystAction *> actions = ctx->getActions(QLatin1String("dispatchIndex"), ctx->req()->path());
+    ActionList actions = ctx->getActions(QLatin1String("dispatchIndex"), ctx->req()->path());
     if (actions.size()) {
-        CutelystAction *action = actions.last();
+        Action *action = actions.last();
         setupMatchedAction(ctx, action, QString());
 
         return true;
@@ -47,7 +47,7 @@ bool CutelystDispatchTypeIndex::match(Context *ctx, const QString &path) const
     return false;
 }
 
-QString CutelystDispatchTypeIndex::uriForAction(CutelystAction *action, const QStringList &captures) const
+QString CutelystDispatchTypeIndex::uriForAction(Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
         return QString();

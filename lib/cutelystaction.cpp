@@ -28,11 +28,11 @@
 
 using namespace Cutelyst;
 
-CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *parent) :
+Action::Action(const QMetaMethod &method, Controller *parent) :
     QObject(parent),
-    d_ptr(new CutelystActionPrivate(method, parent))
+    d_ptr(new ActionPrivate(method, parent))
 {
-    Q_D(CutelystAction);
+    Q_D(Action);
 
     QString actionNamespace;
     // Parse the Method attributes declared with Q_CLASSINFO
@@ -98,31 +98,31 @@ CutelystAction::CutelystAction(const QMetaMethod &method, CutelystController *pa
     }
 }
 
-CutelystAction::~CutelystAction()
+Action::~Action()
 {
     delete d_ptr;
 }
 
-QMultiHash<QString, QString> CutelystAction::attributes() const
+QMultiHash<QString, QString> Action::attributes() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->attributes;
 }
 
-QString CutelystAction::className() const
+QString Action::className() const
 {
     return parent()->metaObject()->className();
 }
 
-CutelystController *CutelystAction::controller() const
+Controller *Action::controller() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->controller;
 }
 
-bool CutelystAction::dispatch(Context *ctx)
+bool Action::dispatch(Context *ctx)
 {
-    Q_D(CutelystAction);
+    Q_D(Action);
 
     if (ctx->detached()) {
         return false;
@@ -176,9 +176,9 @@ bool CutelystAction::dispatch(Context *ctx)
     }
 }
 
-bool CutelystAction::match(Context *ctx) const
+bool Action::match(Context *ctx) const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     if (d->attributes.contains(QLatin1String("Args")) &&
             d->attributes.value(QLatin1String("Args")).isEmpty()) {
         return true;
@@ -186,50 +186,50 @@ bool CutelystAction::match(Context *ctx) const
     return d->numberOfArgs == 0 || d->numberOfArgs == ctx->args().size();
 }
 
-bool CutelystAction::matchCaptures(Context *ctx) const
+bool Action::matchCaptures(Context *ctx) const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->numberOfCaptures == 0 || d->numberOfCaptures == ctx->args().size();
 }
 
-QString CutelystAction::name() const
+QString Action::name() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->method.name();
 }
 
-QString CutelystAction::privateName() const
+QString Action::privateName() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->name;
 }
 
-QString CutelystAction::ns() const
+QString Action::ns() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->ns;
 }
 
-quint8 CutelystAction::numberOfArgs() const
+quint8 Action::numberOfArgs() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->numberOfArgs;
 }
 
-quint8 CutelystAction::numberOfCaptures() const
+quint8 Action::numberOfCaptures() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->numberOfCaptures;
 }
 
-bool CutelystAction::isValid() const
+bool Action::isValid() const
 {
-    Q_D(const CutelystAction);
+    Q_D(const Action);
     return d->valid;
 }
 
 
-CutelystActionPrivate::CutelystActionPrivate(const QMetaMethod &method, CutelystController *parent) :
+ActionPrivate::ActionPrivate(const QMetaMethod &method, Controller *parent) :
     valid(true),
     name(parent->ns() % QLatin1Char('/') % method.name()),
     ns(parent->ns()),

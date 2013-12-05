@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<Root*>();
     qRegisterMetaType<Users*>();
 
-    CutelystApplication app(argc, argv);
+    Application app(argc, argv);
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(),

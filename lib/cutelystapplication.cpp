@@ -52,21 +52,21 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     }
 }
 
-CutelystApplication::CutelystApplication(int &argc, char **argv) :
+Application::Application(int &argc, char **argv) :
     QCoreApplication(argc, argv),
-    d_ptr(new CutelystApplicationPrivate)
+    d_ptr(new ApplicationPrivate)
 {
     qInstallMessageHandler(cuteOutput);
 }
 
-CutelystApplication::~CutelystApplication()
+Application::~Application()
 {
     delete d_ptr;
 }
 
-void CutelystApplication::registerPlugin(CutelystPlugin::Plugin *plugin)
+void Application::registerPlugin(CutelystPlugin::Plugin *plugin)
 {
-    Q_D(CutelystApplication);
+    Q_D(Application);
 
     QString pluginName = plugin->metaObject()->className();
 
@@ -77,9 +77,9 @@ void CutelystApplication::registerPlugin(CutelystPlugin::Plugin *plugin)
     }
 }
 
-bool CutelystApplication::parseArgs()
+bool Application::parseArgs()
 {
-    Q_D(CutelystApplication);
+    Q_D(Application);
 
     QStringList args = QCoreApplication::arguments();
     if (args.contains(QLatin1String("--about")) ||
@@ -96,16 +96,16 @@ bool CutelystApplication::parseArgs()
     return true;
 }
 
-int CutelystApplication::printError()
+int Application::printError()
 {
     return 1;
 }
 
-bool CutelystApplication::setup(CutelystEngine *engine)
+bool Application::setup(Engine *engine)
 {
-    Q_D(CutelystApplication);
+    Q_D(Application);
 
-    d->dispatcher = new CutelystDispatcher(this);
+    d->dispatcher = new Dispatcher(this);
     d->dispatcher->setupActions();
 
     if (engine) {
@@ -113,8 +113,8 @@ bool CutelystApplication::setup(CutelystEngine *engine)
     } else {
         d->engine = new CutelystEngineHttp(this);
     }
-    connect(d->engine, &CutelystEngine::handleRequest,
-            this, &CutelystApplication::handleRequest);
+    connect(d->engine, &Engine::handleRequest,
+            this, &Application::handleRequest);
 
     foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
         if (!plugin->setup(this)) {
@@ -126,9 +126,9 @@ bool CutelystApplication::setup(CutelystEngine *engine)
     return d->engine->init();
 }
 
-void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *resp)
+void Application::handleRequest(Request *req, Response *resp)
 {
-    Q_D(CutelystApplication);
+    Q_D(Application);
 
     ContextPrivate *priv = new ContextPrivate;
     priv->engine = d->engine;
@@ -138,10 +138,10 @@ void CutelystApplication::handleRequest(CutelystRequest *req, CutelystResponse *
     }
 
     Context *c = new Context(priv);
-    connect(c, &Context::beforePrepareAction, this, &CutelystApplication::beforePrepareAction);
-    connect(c, &Context::afterPrepareAction, this, &CutelystApplication::afterPrepareAction);
-    connect(c, &Context::beforeDispatch, this, &CutelystApplication::beforeDispatch);
-    connect(c, &Context::afterDispatch, this, &CutelystApplication::afterDispatch);
+    connect(c, &Context::beforePrepareAction, this, &Application::beforePrepareAction);
+    connect(c, &Context::afterPrepareAction, this, &Application::afterPrepareAction);
+    connect(c, &Context::beforeDispatch, this, &Application::beforeDispatch);
+    connect(c, &Context::afterDispatch, this, &Application::afterDispatch);
     c->handleRequest(req, resp);
     delete c;
 }

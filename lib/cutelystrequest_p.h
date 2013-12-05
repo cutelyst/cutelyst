@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTREQUEST_P_H
-#define CUTELYSTREQUEST_P_H
+#ifndef CUTELYST_REQUEST_P_H
+#define CUTELYST_REQUEST_P_H
 
 #include "cutelystrequest.h"
 
@@ -28,8 +28,8 @@
 
 namespace Cutelyst {
 
-class CutelystEngine;
-class CutelystRequestPrivate
+class Engine;
+class RequestPrivate
 {
 public:
     QByteArray method;
@@ -42,10 +42,10 @@ public:
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
     QMultiHash<QString, QString> param;
-    const CutelystEngine *engine;
+    const Engine *engine;
     int connectionId;
 };
 
 }
 
-#endif // CUTELYSTREQUEST_P_H
+#endif // CUTELYST_REQUEST_P_H

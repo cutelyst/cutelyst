@@ -20,14 +20,14 @@ void Root::begin(Context *ctx, const QString &name, Path)
     qDebug() << Q_FUNC_INFO << name << sender();
 }
 
-void Root::users(Context *ctx, const QString &name, const QString &age, Args, CutelystController::Local)
+void Root::users(Context *ctx, const QString &name, const QString &age, Args, Controller::Local)
 {
     qDebug() << Q_FUNC_INFO << name << age;
     ctx->response()->redirect(QLatin1String("http://www.uol.com.br"));
     ctx->detach();
 }
 
-void Root::admin(Context *ctx, const QString &name, const QString &age, CutelystController::Global)
+void Root::admin(Context *ctx, const QString &name, const QString &age, Controller::Global)
 {
     qDebug() << Q_FUNC_INFO << name << age;
     QByteArray data;

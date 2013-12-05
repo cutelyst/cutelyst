@@ -80,25 +80,25 @@ QStringList Context::args() const
     return d->request->args();
 }
 
-CutelystEngine *Context::engine() const
+Engine *Context::engine() const
 {
     Q_D(const Context);
     return d->engine;
 }
 
-CutelystResponse *Context::response() const
+Response *Context::response() const
 {
     Q_D(const Context);
     return d->response;
 }
 
-CutelystResponse *Context::res() const
+Response *Context::res() const
 {
     Q_D(const Context);
     return d->response;
 }
 
-CutelystAction *Context::action() const
+Action *Context::action() const
 {
     Q_D(const Context);
     return d->action;
@@ -110,25 +110,25 @@ QString Context::ns() const
     return d->action->ns();
 }
 
-CutelystRequest *Context::request() const
+Request *Context::request() const
 {
     Q_D(const Context);
     return d->request;
 }
 
-CutelystRequest *Context::req() const
+Request *Context::req() const
 {
     Q_D(const Context);
     return d->request;
 }
 
-CutelystDispatcher *Context::dispatcher() const
+Dispatcher *Context::dispatcher() const
 {
     Q_D(const Context);
     return d->dispatcher;
 }
 
-CutelystController *Context::controller(const QString &name) const
+Controller *Context::controller(const QString &name) const
 {
     Q_D(const Context);
     if (name.isEmpty()) {
@@ -154,7 +154,7 @@ QString Context::uriFor(const QString &path, const QStringList &args)
 {
     Q_D(Context);
 
-    CutelystAction *action = d->dispatcher->getAction(path);
+    Action *action = d->dispatcher->getAction(path);
     if (action) {
         return d->dispatcher->uriForAction(action, args);
     } else {
@@ -186,13 +186,13 @@ bool Context::forward(const QString &action, const QStringList &arguments)
     return d->dispatcher->forward(this, action, arguments);
 }
 
-CutelystAction *Context::getAction(const QString &action, const QString &ns)
+Action *Context::getAction(const QString &action, const QString &ns)
 {
     Q_D(Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QList<CutelystAction *> Context::getActions(const QString &action, const QString &ns)
+QList<Action *> Context::getActions(const QString &action, const QString &ns)
 {
     Q_D(Context);
     return d->dispatcher->getActions(action, ns);
@@ -204,7 +204,7 @@ QList<CutelystPlugin::Plugin *> Context::plugins()
     return d->plugins.keys();
 }
 
-void Context::handleRequest(CutelystRequest *req, CutelystResponse *resp)
+void Context::handleRequest(Request *req, Response *resp)
 {
     Q_D(Context);
 
@@ -235,7 +235,7 @@ void Context::finalizeHeaders()
 {
     Q_D(Context);
 
-    CutelystResponse *response = d->response;
+    Response *response = d->response;
     if (response->finalizedHeaders()) {
         return;
     }

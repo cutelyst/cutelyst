@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTAPPLICATION_P_H
-#define CUTELYSTAPPLICATION_P_H
+#ifndef CUTELYST_APPLICATION_P_H
+#define CUTELYST_APPLICATION_P_H
 
 #include "cutelystapplication.h"
 #include "cutelystdispatcher.h"
@@ -27,20 +27,20 @@
 
 namespace Cutelyst {
 
-class CutelystApplicationPrivate
+class ApplicationPrivate
 {
 public:
-    CutelystApplication *q_ptr;
+    Application *q_ptr;
     QString error;
     int childFD;
     int parentFD;
     int childPID;
 
-    CutelystDispatcher *dispatcher;
-    CutelystEngine *engine;
+    Dispatcher *dispatcher;
+    Engine *engine;
     QList<CutelystPlugin::Plugin *> plugins;
 };
 
 }
 
-#endif // CUTELYSTAPPLICATION_P_H
+#endif // CUTELYST_APPLICATION_P_H

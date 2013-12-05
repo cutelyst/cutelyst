@@ -17,28 +17,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTACTION_P_H
-#define CUTELYSTACTION_P_H
+#ifndef CUTELYST_ACTION_P_H
+#define CUTELYST_ACTION_P_H
 
 #include "cutelystaction.h"
 
 namespace Cutelyst {
 
-class CutelystActionPrivate
+class ActionPrivate
 {
 public:
-    CutelystActionPrivate(const QMetaMethod &method, CutelystController *parent);
+    ActionPrivate(const QMetaMethod &method, Controller *parent);
 
     bool valid;
     QString name;
     QString ns;
     QMetaMethod method;
     QMultiHash<QString, QString> attributes;
-    CutelystController *controller;
+    Controller *controller;
     quint8 numberOfArgs;
     quint8 numberOfCaptures;
 };
 
 }
 
-#endif // CUTELYSTACTION_P_H
+#endif // CUTELYST_ACTION_P_H

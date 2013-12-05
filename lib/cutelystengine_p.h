@@ -17,24 +17,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTENGINE_P_H
-#define CUTELYSTENGINE_P_H
+#ifndef CUTELYST_ENGINE_P_H
+#define CUTELYST_ENGINE_P_H
 
 #include "cutelystengine.h"
 
 namespace Cutelyst {
 
-class CutelystEnginePrivate
+class EnginePrivate
 {
-    Q_DECLARE_PUBLIC(CutelystEngine)
+    Q_DECLARE_PUBLIC(Engine)
 public:
-    CutelystEnginePrivate(CutelystEngine *parent);
-    ~CutelystEnginePrivate();
+    EnginePrivate(Engine *parent);
+    ~EnginePrivate();
 
-    CutelystEngine *q_ptr;
-    CutelystRequest *request;
+    Engine *q_ptr;
 };
 
 }
 
-#endif // CUTELYSTENGINE_P_H
+#endif // CUTELYST_ENGINE_P_H
