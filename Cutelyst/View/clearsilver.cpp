@@ -190,7 +190,7 @@ HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash)
     const QMetaObject *meta = ctx->metaObject();
     for (int i = 0; i < meta->propertyCount(); ++i) {
         QMetaProperty prop = meta->property(i);
-        QString name = QLatin1String("c.") % prop.name();
+        QString name = QLatin1String("ctx.") % prop.name();
         QVariant value = prop.read(ctx);
         serializeVariant(hdf, value, name);
     }

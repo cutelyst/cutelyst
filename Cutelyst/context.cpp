@@ -24,6 +24,7 @@
 #include "response.h"
 #include "action.h"
 #include "dispatcher.h"
+#include "controller.h"
 
 #include <QUrl>
 #include <QStringBuilder>
@@ -104,6 +105,12 @@ Action *Context::action() const
     return d->action;
 }
 
+QString Context::actionName() const
+{
+    Q_D(const Context);
+    return d->action->name();
+}
+
 QString Context::ns() const
 {
     Q_D(const Context);
@@ -126,6 +133,12 @@ Dispatcher *Context::dispatcher() const
 {
     Q_D(const Context);
     return d->dispatcher;
+}
+
+QString Cutelyst::Context::controllerName() const
+{
+    Q_D(const Context);
+    return d->action->controller()->metaObject()->className();
 }
 
 Controller *Context::controller(const QString &name) const

@@ -66,6 +66,10 @@ public:
     Q_PROPERTY(Action* action READ action)
     Action *action() const;
 
+    Q_PROPERTY(QString actionName READ actionName)
+    QString actionName() const;
+
+
     /**
      * Returns the namespace of the current action.
      * i.e. the URI prefix corresponding to the controller
@@ -87,6 +91,10 @@ public:
      */
     Request *req() const;
     Dispatcher *dispatcher() const;
+
+    Q_PROPERTY(QString controllerName READ controllerName)
+    QString controllerName() const;
+
     Controller *controller(const QString &name = QString()) const;
     QString match() const;
 
