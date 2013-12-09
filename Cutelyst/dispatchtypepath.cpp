@@ -42,7 +42,7 @@ void DispatchTypePath::list() const
     QString privateTitle("Private");
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
-    QHash<QString, Action*>::ConstIterator it = m_paths.constBegin();
+    QMap<QString, Action*>::ConstIterator it = m_paths.constBegin();
     while (it != m_paths.constEnd()) {
         Action *action = it.value();
         QString path = QLatin1Char('/') % it.key();
@@ -112,7 +112,7 @@ bool DispatchTypePath::match(Context *ctx, const QString &path) const
         _path = QLatin1Char('/');
     }
 
-    QHash<QString, Action*>::ConstIterator i = m_paths.constFind(_path);
+    QMap<QString, Action*>::ConstIterator i = m_paths.constFind(_path);
     while (i != m_paths.constEnd() && i.key() == _path) {
         if (i.value()->match(ctx)) {
             setupMatchedAction(ctx, i.value(), _path);

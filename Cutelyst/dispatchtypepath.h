@@ -22,7 +22,7 @@
 
 #include "dispatchtype.h"
 
-#include <QHash>
+#include <QMap>
 
 namespace Cutelyst {
 
@@ -43,7 +43,7 @@ public:
 private:
     void registerPath(const QString &path, Action *action);
 
-    QMultiHash<QString, Action*> m_paths;
+    QMap<QString, Action*> m_paths;
 };
 
 }
