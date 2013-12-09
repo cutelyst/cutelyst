@@ -185,49 +185,67 @@ HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash)
     HDF *hdf = 0;
     hdf_init(&hdf);
 
-    QVariantHash::ConstIterator it = stash.constBegin();
-    while (it != stash.constEnd()) {
-        const QVariant &value = it.value();
-        qCritical() << it.key() << it.value() << it.value().type();
-
-        switch (value.type()) {
-        case QVariant::String:
-            qCritical() << it.key() << it.value();
-            hdf_set_value(hdf, it.key().toLocal8Bit().data(), value.toString().toLocal8Bit().data());
-            break;
-        case QVariant::Int:
-            hdf_set_int_value(hdf, it.key().toLocal8Bit().data(), value.toInt());
-            break;
-        default:
-            if (value.canConvert(QVariant::String)) {
-                hdf_set_value(hdf, it.key().toLocal8Bit().data(), value.toString().toLocal8Bit().data());
-            }
-            break;
-        }
-//        hdf->setValue()
-        ++it;
-    }
+    serializeHash(hdf, stash);
 
     const QMetaObject *meta = ctx->metaObject();
     for (int i = 0; i < meta->propertyCount(); ++i) {
         QMetaProperty prop = meta->property(i);
         QString name = QLatin1String("c.") % prop.name();
         QVariant value = prop.read(ctx);
-        switch (prop.type()) {
-        case QVariant::String:
-            qCritical() << name << value;
-            hdf_set_value(hdf, name.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
-            break;
-        case QVariant::Int:
-            hdf_set_int_value(hdf, name.toLocal8Bit().data(), value.toInt());
-            break;
-        default:
-            if (value.canConvert(QVariant::String)) {
-                hdf_set_value(hdf, name.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
-            }
-            break;
-        }
-
+        serializeVariant(hdf, value, name);
     }
     return hdf;
+}
+
+void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix)
+{
+    QString _prefix;
+    if (!prefix.isNull()) {
+        _prefix = prefix % QLatin1Char('.');
+    }
+
+    QVariantHash::ConstIterator it = hash.constBegin();
+    while (it != hash.constEnd()) {
+        serializeVariant(hdf, it.value(), _prefix % it.key());
+        ++it;
+    }
+}
+
+void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix)
+{
+    QString _prefix;
+    if (!prefix.isNull()) {
+        _prefix = prefix % QLatin1Char('.');
+    }
+
+    QVariantMap::ConstIterator it = map.constBegin();
+    while (it != map.constEnd()) {
+        serializeVariant(hdf, it.value(), _prefix % it.key());
+        ++it;
+    }
+}
+
+void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const QString &key)
+{
+//    qDebug() << key;
+
+    switch (value.type()) {
+    case QVariant::String:
+        hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
+        break;
+    case QVariant::Int:
+        hdf_set_int_value(hdf, key.toLocal8Bit().data(), value.toInt());
+        break;
+    case QVariant::Hash:
+        serializeHash(hdf, value.toHash(), key);
+        break;
+    case QVariant::Map:
+        serializeMap(hdf, value.toMap(), key);
+        break;
+    default:
+        if (value.canConvert(QVariant::String)) {
+            hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
+        }
+        break;
+    }
 }
