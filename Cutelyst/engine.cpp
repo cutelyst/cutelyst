@@ -24,6 +24,7 @@
 #include "context_p.h"
 
 #include <QUrl>
+#include <QDebug>
 
 using namespace Cutelyst;
 
@@ -71,8 +72,10 @@ void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &
 
             QList<QByteArray> parts = parameter.split('=');
             if (parts.size() == 2) {
+                QByteArray value = parts.at(1);
+                value.replace('+', ' ');
                 bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                      QUrl::fromPercentEncoding(parts.at(1)));
+                                      QUrl::fromPercentEncoding(value));
             } else {
                 bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
                                       QString());
