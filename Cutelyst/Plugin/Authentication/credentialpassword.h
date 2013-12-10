@@ -4,7 +4,7 @@
 #include <Cutelyst/Plugin/authentication.h>
 
 namespace Cutelyst {
-namespace CutelystPlugin {
+namespace Plugin {
 
 class CredentialPassword : public Authentication::Credential
 {

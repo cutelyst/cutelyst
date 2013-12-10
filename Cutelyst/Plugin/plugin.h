@@ -29,15 +29,15 @@ namespace Cutelyst {
 class Context;
 class Application;
 
-namespace CutelystPlugin {
+namespace Plugin {
 
 typedef QHash<QString, QString> CStringHash;
 
-class Plugin : public QObject
+class AbstractPlugin : public QObject
 {
     Q_OBJECT
 public:
-    explicit Plugin(QObject *parent = 0);
+    explicit AbstractPlugin(QObject *parent = 0);
 
     /**
      * Reimplement this if you need to connect to

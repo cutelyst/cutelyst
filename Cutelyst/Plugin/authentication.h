@@ -26,10 +26,10 @@
 
 namespace Cutelyst {
 
-namespace CutelystPlugin {
+namespace Plugin {
 
 class AuthenticationPrivate;
-class Authentication : public Plugin
+class Authentication : public AbstractPlugin
 {
     Q_OBJECT
 public:
@@ -136,26 +136,28 @@ public:
     explicit Authentication(QObject *parent = 0);
     ~Authentication();
 
+    bool setup(Context *ctx);
+
     void addRealm(Authentication::Realm *realm);
     void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = true);
 
     void setUseSession(bool use);
     bool useSession() const;
 
-    User authenticate(Context *ctx, const QString &username, const QString &password, const QString &realm = QString());
-    User authenticate(Context *ctx, const CStringHash &userinfo, const QString &realm = QString());
-    User findUser(Context *ctx, const CStringHash &userinfo, const QString &realm = QString());
-    User user(Context *ctx);
-    void setUser(Context *ctx, const User &user);
-    bool userExists(Context *ctx);
-    bool userInRealm(Context *ctx, const QString &realm);
-    void logout(Context *ctx);
+    User authenticate(const QString &username, const QString &password, const QString &realm = QString());
+    User authenticate(const CStringHash &userinfo, const QString &realm = QString());
+    User findUser(const CStringHash &userinfo, const QString &realm = QString());
+    User user();
+    void setUser(const User &user);
+    bool userExists();
+    bool userInRealm(const QString &realm);
+    void logout();
 
 protected:
-    void setAuthenticated(Context *ctx, const User &user, const QString &realmName);
-    void persistUser(Context *ctx, const User &user, const QString &realmName);
-    User restoreUser(Context *ctx, const QVariant &frozenUser, const QString &realmName);
-    Realm* findRealmForPersistedUser(Context *ctx);
+    void setAuthenticated(const User &user, const QString &realmName);
+    void persistUser(const User &user, const QString &realmName);
+    User restoreUser(const QVariant &frozenUser, const QString &realmName);
+    Realm* findRealmForPersistedUser();
 
     AuthenticationPrivate *d_ptr;
 
@@ -168,8 +170,8 @@ private:
 
 }
 
-Q_DECLARE_METATYPE(Cutelyst::CutelystPlugin::Authentication::User)
-QDataStream &operator<<(QDataStream &out, const Cutelyst::CutelystPlugin::Authentication::User &myObj);
-QDataStream &operator>>(QDataStream &in, Cutelyst::CutelystPlugin::Authentication::User &myObj);
+Q_DECLARE_METATYPE(Cutelyst::Plugin::Authentication::User)
+QDataStream &operator<<(QDataStream &out, const Cutelyst::Plugin::Authentication::User &myObj);
+QDataStream &operator>>(QDataStream &in, Cutelyst::Plugin::Authentication::User &myObj);
 
 #endif // AUTHENTICATION_H

@@ -211,7 +211,7 @@ QList<Action *> Context::getActions(const QString &action, const QString &ns)
     return d->dispatcher->getActions(action, ns);
 }
 
-bool Context::registerPlugin(CutelystPlugin::Plugin *plugin, bool takeOwnership)
+bool Context::registerPlugin(Plugin::AbstractPlugin *plugin, bool takeOwnership)
 {
     Q_D(Context);
     if (plugin->setup(this)) {
@@ -224,7 +224,7 @@ bool Context::registerPlugin(CutelystPlugin::Plugin *plugin, bool takeOwnership)
     return false;
 }
 
-QList<CutelystPlugin::Plugin *> Context::plugins()
+QList<Plugin::AbstractPlugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins.keys();
@@ -235,14 +235,14 @@ void Context::handleRequest()
     Q_D(Context);
 
     bool skipMethod = false;
-    beforePrepareAction(this, &skipMethod);
+    beforePrepareAction(&skipMethod);
     if (!skipMethod) {
         prepareAction();
-        afterPrepareAction(this);
+        afterPrepareAction();
 
-        beforeDispatch(this);
+        beforeDispatch();
         dispatch();
-        afterDispatch(this);
+        afterDispatch();
     }
 
     d->status = finalize();
@@ -334,13 +334,13 @@ int Context::finalize()
     return d->response->status();
 }
 
-QVariant Context::pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
+QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Context);
     return d->plugins.value(plugin).value(key, defaultValue);
 }
 
-void Context::setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &key, const QVariant &value)
+void Context::setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &key, const QVariant &value)
 {
     Q_D(Context);
     d->plugins[plugin].insert(key, value);

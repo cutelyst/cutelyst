@@ -22,25 +22,25 @@
 #include "context.h"
 
 using namespace Cutelyst;
-using namespace CutelystPlugin;
+using namespace Plugin;
 
-Plugin::Plugin(QObject *parent) :
+AbstractPlugin::AbstractPlugin(QObject *parent) :
     QObject(parent)
 {
 }
 
-bool Plugin::setup(Context *ctx)
+bool AbstractPlugin::setup(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-QVariant Plugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
+QVariant AbstractPlugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
 {
-    return ctx->pluginProperty(const_cast<CutelystPlugin::Plugin*>(this), key, defaultValue);
+    return ctx->pluginProperty(const_cast<Plugin::AbstractPlugin*>(this), key, defaultValue);
 }
 
-void Plugin::setPluginProperty(Context *ctx, const QString &key, const QVariant &value)
+void AbstractPlugin::setPluginProperty(Context *ctx, const QString &key, const QVariant &value)
 {
     ctx->setPluginProperty(this, key, value);
 }

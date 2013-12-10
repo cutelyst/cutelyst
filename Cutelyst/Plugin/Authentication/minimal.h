@@ -6,7 +6,7 @@
 
 namespace Cutelyst {
 
-namespace CutelystPlugin {
+namespace Plugin {
 
 class StoreMinimal : public Authentication::Store
 {

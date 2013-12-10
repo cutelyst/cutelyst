@@ -1,7 +1,6 @@
 #include "minimal.h"
 
-using namespace Cutelyst;
-using namespace CutelystPlugin;
+using namespace Cutelyst::Plugin;
 
 StoreMinimal::StoreMinimal()
 {
@@ -14,7 +13,7 @@ void StoreMinimal::addUser(const Authentication::User &user)
 }
 
 
-Authentication::User CutelystPlugin::StoreMinimal::findUser(Context *c, const CutelystPlugin::CStringHash &userInfo)
+Authentication::User StoreMinimal::findUser(Context *ctx, const CStringHash &userInfo)
 {
     QString id = userInfo[QLatin1String("id")];
     if (id.isEmpty()) {

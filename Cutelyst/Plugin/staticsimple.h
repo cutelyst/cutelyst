@@ -10,9 +10,9 @@ namespace Cutelyst {
 class Context;
 class Application;
 
-namespace CutelystPlugin {
+namespace Plugin {
 
-class StaticSimple : public Plugin
+class StaticSimple : public AbstractPlugin
 {
     Q_OBJECT
 public:
@@ -23,7 +23,7 @@ public:
     bool setup(Context *ctx);
 
 private:
-    void beforePrepareAction(Context *ctx, bool *skipMethod);
+    void beforePrepareAction(bool *skipMethod);
     bool locateStaticFile(Context *ctx, QString &path);
 
     QString m_rootDir;

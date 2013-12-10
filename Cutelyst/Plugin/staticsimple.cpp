@@ -14,10 +14,10 @@
 #include <QDebug>
 
 using namespace Cutelyst;
-using namespace CutelystPlugin;
+using namespace Plugin;
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :
-    Plugin(parent),
+    AbstractPlugin(parent),
     m_rootDir(path)
 {
     if (m_rootDir.isNull()) {
@@ -37,9 +37,10 @@ bool StaticSimple::setup(Context *ctx)
     return true;
 }
 
-void StaticSimple::beforePrepareAction(Context *ctx, bool *skipMethod)
+void StaticSimple::beforePrepareAction(bool *skipMethod)
 {
-    if (*skipMethod) {
+    Context *ctx = static_cast<Context *>(sender());
+    if (*skipMethod || !ctx) {
         return;
     }
 

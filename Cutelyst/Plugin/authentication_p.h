@@ -26,13 +26,14 @@
 
 namespace Cutelyst {
 
-namespace CutelystPlugin {
+namespace Plugin {
 
 class AuthenticationPrivate
 {
 public:
     Authentication::Realm* realm(const QString &realmName) const;
 
+    Context *ctx;
     QString defaultRealm;
     QHash<QString, Authentication::Realm*> realms;
     QStringList realmsOrder;

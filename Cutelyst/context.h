@@ -27,8 +27,8 @@
 
 namespace Cutelyst {
 
-namespace CutelystPlugin {
-class Plugin;
+namespace Plugin {
+class AbstractPlugin;
 }
 
 class Action;
@@ -108,13 +108,13 @@ public:
     Action *getAction(const QString &action, const QString &ns = QString());
     QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
-    bool registerPlugin(CutelystPlugin::Plugin *plugin, bool takeOwnership = true);
-    QList<CutelystPlugin::Plugin *> plugins();
+    bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);
+    QList<Plugin::AbstractPlugin *> plugins();
 
     template <typename T>
     T plugin()
     {
-        foreach (CutelystPlugin::Plugin *plugin, plugins()) {
+        foreach (Plugin::AbstractPlugin *plugin, plugins()) {
             if (qobject_cast<T>(plugin)) {
                 return qobject_cast<T>(plugin);
             }
@@ -123,10 +123,10 @@ public:
     }
 
 Q_SIGNALS:
-    void beforePrepareAction(Context *ctx, bool *skipMethod);
-    void afterPrepareAction(Context *ctx);
-    void beforeDispatch(Context *ctx);
-    void afterDispatch(Context *ctx);
+    void beforePrepareAction(bool *skipMethod);
+    void afterPrepareAction();
+    void beforeDispatch();
+    void afterDispatch();
 
 protected:
     void handleRequest();
@@ -137,12 +137,12 @@ protected:
     void finalizeError();
     int finalize();
 
-    QVariant pluginProperty(CutelystPlugin::Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
-    void setPluginProperty(CutelystPlugin::Plugin *plugin, const QString &name, const QVariant &value);
+    QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);
 
     friend class Application;
     friend class CutelystDispatchType;
-    friend class CutelystPlugin::Plugin;
+    friend class Plugin::AbstractPlugin;
     ContextPrivate *d_ptr;
 
 private:

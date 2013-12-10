@@ -2,8 +2,7 @@
 
 #include <QDebug>
 
-using namespace Cutelyst;
-using namespace CutelystPlugin;
+using namespace Cutelyst::Plugin;
 
 CredentialPassword::CredentialPassword()
 {

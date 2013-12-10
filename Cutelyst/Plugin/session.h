@@ -28,9 +28,9 @@
 namespace Cutelyst {
 
 class Context;
-namespace CutelystPlugin {
+namespace Plugin {
 
-class Session : public Plugin
+class Session : public AbstractPlugin
 {
     Q_OBJECT
 public:

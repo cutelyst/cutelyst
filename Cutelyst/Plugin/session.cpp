@@ -32,10 +32,10 @@
 #include <QDebug>
 
 using namespace Cutelyst;
-using namespace CutelystPlugin;
+using namespace Plugin;
 
 Session::Session(QObject *parent) :
-    Plugin(parent)
+    AbstractPlugin(parent)
 {
 }
 

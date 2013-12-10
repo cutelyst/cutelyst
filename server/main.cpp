@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 
     QObject::connect(&app, &Application::registerPlugins,
                 [=](Context *ctx) {
-        ctx->registerPlugin(new CutelystPlugin::StaticSimple);
-        ctx->registerPlugin(new CutelystPlugin::Session);
+        ctx->registerPlugin(new Plugin::StaticSimple);
+        ctx->registerPlugin(new Plugin::Session);
     });
 
     if (app.parseArgs() && app.setup()) {

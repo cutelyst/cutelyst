@@ -37,7 +37,7 @@ public:
     Response *response;
     Action *action;
     Dispatcher *dispatcher;
-    QHash<CutelystPlugin::Plugin *, QVariantHash> plugins;
+    QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
     bool detached;
     QString match;
     QStringList error;
