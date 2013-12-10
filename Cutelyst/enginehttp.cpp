@@ -30,6 +30,7 @@
 #include <QHostInfo>
 #include <QDateTime>
 #include <QTcpSocket>
+#include <QMimeDatabase>
 #include <QUrl>
 
 using namespace Cutelyst;
@@ -119,6 +120,7 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
     QMap<QString, QString> headers = ctx->response()->headers();
     headers.insert(QLatin1String("Date"), QDateTime::currentDateTime().toString(Qt::ISODate));
     headers.insert(QLatin1String("Server"), QLatin1String("EngineHttp"));
+    headers.insert(QLatin1String("Connection"), QLatin1String("keep-alive"));
 
     QMap<QString, QString>::ConstIterator it = headers.constBegin();
     while (it != headers.constEnd()) {
@@ -126,6 +128,23 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
         ++it;
     }
     header.append(QLatin1String("\r\n"));
+
+    if (!headers.contains(QLatin1String("Content-Type")) &&
+            !ctx->res()->body().isEmpty()) {
+        QMimeDatabase db;
+        QMimeType mimeType = db.mimeTypeForData(ctx->res()->body());
+        if (mimeType.isValid()) {
+            if (mimeType.name() == QLatin1String("text/html")) {
+                headers.insert(QLatin1String("Content-Type"),
+                               QLatin1String("text/html; charset=utf-8"));
+            } else {
+                headers.insert(QLatin1String("Content-Type"),
+                               mimeType.name());
+            }
+        }
+    }
+
+    qDebug() << headers;
 
     d->requests[ctx->req()->connectionId()]->write(header);
 }

@@ -38,12 +38,10 @@ public:
     // We use a map since QHash *might*
     // cause issues in browsers due to
     // it's random ordering
-    QMultiMap<QString, QString> headers;
+    QMap<QString, QString> headers;
     QList<QNetworkCookie> cookies;
     QByteArray body;
     QUrl location;
-    QString contentType;
-    quint64 contentLength;
     CutelystEngine *engine;
 };
 

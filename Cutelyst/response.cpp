@@ -19,7 +19,6 @@
 
 #include "response_p.h"
 
-#include <QMimeDatabase>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -71,22 +70,28 @@ QByteArray &Response::body()
     return d->body;
 }
 
+quint64 Response::contentLength() const
+{
+    Q_D(const Response);
+    return d->headers.value(QLatin1String("Content-Length")).toULongLong();
+}
+
 void Response::setContentLength(quint64 length)
 {
     Q_D(Response);
-    d->contentLength = length;
+    d->headers[QLatin1String("Content-Length")] = QString::number(length);
 }
 
 QString Response::contentType() const
 {
     Q_D(const Response);
-    return d->contentType;
+    return d->headers.value(QLatin1String("Content-Type"));
 }
 
 void Response::setContentType(const QString &encoding)
 {
     Q_D(Response);
-    d->contentType = encoding;
+    d->headers[QLatin1String("Content-Type")] = encoding;
 }
 
 QList<QNetworkCookie> Response::cookies() const
@@ -120,37 +125,17 @@ QUrl Response::location() const
     return d->location;
 }
 
-QMap<QString, QString> Response::headers() const
+QMap<QString, QString> &Response::headers()
 {
-    Q_D(const Response);
-
-    QMultiMap<QString, QString> ret = d->headers;
-    ret.insert(QLatin1String("Content-Length"), QString::number(d->contentLength));
-    if (!d->contentType.isEmpty()) {
-        ret.insert(QLatin1String("Content-Type"), d->contentType);
-    } else if (!d->body.isEmpty()) {
-        QMimeDatabase db;
-        QMimeType mimeType = db.mimeTypeForData(d->body);
-        if (mimeType.isValid()) {
-            if (mimeType.name() == QLatin1String("text/html")) {
-                ret.insert(QLatin1String("Content-Type"),
-                           QLatin1String("text/html; charset=utf-8"));
-            } else {
-                ret.insert(QLatin1String("Content-Type"),
-                           mimeType.name());
-            }
-        }
-    }
-    // TODO use version macro here
-    ret.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));
-
-    return ret;
+    Q_D(Response);
+    return d->headers;
 }
 
 ResponsePrivate::ResponsePrivate() :
     finalizedHeaders(false),
-    status(Response::OK),
-    contentLength(0)
+    status(Response::OK)
 {
-
+    // TODO use version macro here
+    headers.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));
+    headers.insert(QLatin1String("Content-Length"), QLatin1String("0"));
 }

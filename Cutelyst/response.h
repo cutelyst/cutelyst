@@ -60,6 +60,7 @@ public:
     bool hasBody() const;
     QByteArray &body();
     void setContentEncoding(const QString &encoding);
+    quint64 contentLength() const;
     void setContentLength(quint64 length);
     QString contentType() const;
     void setContentType(const QString &encoding);
@@ -81,7 +82,7 @@ public:
      */
     QUrl location() const;
 
-    QMap<QString, QString> headers() const;
+    QMap<QString, QString> &headers();
     void write(const QByteArray &data);
 
 protected:

@@ -10,6 +10,7 @@
 #include <QMimeDatabase>
 #include <QFile>
 #include <QDir>
+#include <QDateTime>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -53,19 +54,40 @@ void StaticSimple::beforePrepareAction(Context *ctx, bool *skipMethod)
 bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
 {
     path = m_rootDir % path;
-    QFile file(path);
-    if (file.exists() && file.open(QFile::ReadOnly)) {
-        qWarning() << "Serving" << path;
-        ctx->response()->body() = file.readAll();
-        QMimeDatabase db;
-        // use the extension to match to be faster
-        QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
-        if (mimeType.isValid()) {
-            ctx->res()->setContentType(mimeType.name() % QLatin1String("; charset=utf-8"));
+    QFileInfo fileInfo(path);
+    if (fileInfo.exists()) {
+        QDateTime utc = fileInfo.lastModified();
+        utc.setTimeSpec(Qt::UTC);
+        QString lastModified;
+        lastModified = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+
+        if (lastModified == ctx->req()->headers()[QLatin1String("If-Modified-Since")]) {
+            ctx->res()->setStatus(Response::NotModified);
+            return true;
         }
-        return true;
+
+        QFile file(path);
+        if (file.open(QFile::ReadOnly)) {
+            qWarning() << "Serving" << path;
+            ctx->response()->body() = file.readAll();
+            QMimeDatabase db;
+            // use the extension to match to be faster
+            QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
+            if (mimeType.isValid()) {
+                ctx->res()->setContentType(mimeType.name() % QLatin1String("; charset=utf-8"));
+            }
+
+            ctx->res()->headers()[QLatin1String("Last-Modified")] = lastModified;
+            ctx->res()->headers()[QLatin1String("Cache-Control")] = QLatin1String("public");
+            qWarning() << "File headers" << ctx->res()->headers();
+
+            return true;
+        }
+
+        qWarning() << "Could not serve" << path << file.errorString();
+        return false;
     }
 
-    qWarning() << "Could not serve" << path << file.errorString();
+    qWarning() << "File not found" << path;
     return false;
 }
