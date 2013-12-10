@@ -58,8 +58,6 @@ void Authentication::addRealm(const QString &name, Authentication::Realm *realm,
     }
     d->realms.insert(name, realm);
     d->realmsOrder.append(name);
-    realm->m_autehntication = this;
-    realm->m_name = name;
 }
 
 void Authentication::setUseSession(bool use)
@@ -86,7 +84,10 @@ Authentication::User Authentication::authenticate(const CStringHash &userinfo, c
 
     Authentication::Realm *realmPtr = d->realm(realm);
     if (realmPtr) {
-        return realmPtr->authenticate(d->ctx, userinfo);
+        User user = realmPtr->authenticate(d->ctx, userinfo);
+        if (!user.isNull()) {
+            setAuthenticated(user, realm);
+        }
     }
 
     qWarning() << "Could not find realm" << realm;
@@ -259,12 +260,7 @@ Authentication::User Authentication::Realm::findUser(Context *ctx, const CString
 
 Authentication::User Authentication::Realm::authenticate(Context *ctx, const CStringHash &authinfo)
 {
-    User user = m_credential->authenticate(ctx, this, authinfo);
-    if (!user.isNull()) {
-        ctx->plugin<Authentication*>()->setAuthenticated(user, m_name);
-    }
-
-    return user;
+    return m_credential->authenticate(ctx, this, authinfo);
 }
 
 void Authentication::Realm::removePersistedUser(Context *ctx)

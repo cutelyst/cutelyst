@@ -123,14 +123,11 @@ public:
         User restoreUser(Context *ctx, const QVariant &frozenUser);
         QVariant userIsRestorable(Context *ctx);
 
-        Authentication *m_autehntication;
-
     private:
         friend class Authentication;
 
         Store *m_store;
         Credential *m_credential;
-        QString m_name;
     };
 
     explicit Authentication(QObject *parent = 0);
