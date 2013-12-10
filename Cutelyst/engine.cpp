@@ -113,7 +113,7 @@ EnginePrivate::~EnginePrivate()
 void Engine::finalizeCookies(Context *ctx)
 {
     foreach (const QNetworkCookie &cookie, ctx->response()->cookies()) {
-        ctx->response()->addHeaderValue(QLatin1String("Set-Cookie"), cookie.toRawForm());
+        ctx->response()->addHeaderValue("Set-Cookie", cookie.toRawForm());
     }
 }
 

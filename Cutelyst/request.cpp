@@ -132,7 +132,7 @@ QList<QNetworkCookie> Request::cookies() const
     return d->cookies;
 }
 
-QString Request::header(const QString &key) const
+QByteArray Request::header(const QString &key) const
 {
     Q_D(const Request);
     return d->headers.value(key);

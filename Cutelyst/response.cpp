@@ -52,7 +52,7 @@ bool Response::finalizedHeaders() const
     return d->finalizedHeaders;
 }
 
-void Response::addHeaderValue(const QString &key, const QByteArray &value)
+void Response::addHeaderValue(const QByteArray &key, const QByteArray &value)
 {
     Q_D(Response);
     d->headers.insertMulti(key, value);
@@ -73,25 +73,25 @@ QByteArray &Response::body()
 quint64 Response::contentLength() const
 {
     Q_D(const Response);
-    return d->headers.value(QLatin1String("Content-Length")).toULongLong();
+    return d->headers.value("Content-Length").toULongLong();
 }
 
 void Response::setContentLength(quint64 length)
 {
     Q_D(Response);
-    d->headers[QLatin1String("Content-Length")] = QString::number(length);
+    d->headers["Content-Length"] = QString::number(length).toLocal8Bit();
 }
 
 QString Response::contentType() const
 {
     Q_D(const Response);
-    return d->headers.value(QLatin1String("Content-Type"));
+    return d->headers.value("Content-Type");
 }
 
-void Response::setContentType(const QString &encoding)
+void Response::setContentType(const QByteArray &encoding)
 {
     Q_D(Response);
-    d->headers[QLatin1String("Content-Type")] = encoding;
+    d->headers["Content-Type"] = encoding;
 }
 
 QList<QNetworkCookie> Response::cookies() const
@@ -125,7 +125,7 @@ QUrl Response::location() const
     return d->location;
 }
 
-QMap<QString, QString> &Response::headers()
+QMap<QByteArray, QByteArray> &Response::headers()
 {
     Q_D(Response);
     return d->headers;
@@ -136,6 +136,6 @@ ResponsePrivate::ResponsePrivate() :
     status(Response::OK)
 {
     // TODO use version macro here
-    headers.insert(QLatin1String("X-Cutelyst"), QLatin1String("0.1"));
-    headers.insert(QLatin1String("Content-Length"), QLatin1String("0"));
+    headers.insert("X-Cutelyst", "0.1");
+    headers.insert("Content-Length", "0");
 }

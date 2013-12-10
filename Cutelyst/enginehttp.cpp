@@ -117,29 +117,31 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
     QByteArray header;
     header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(ctx->response()->status())));
 
-    QMap<QString, QString> headers = ctx->response()->headers();
-    headers.insert(QLatin1String("Date"), QDateTime::currentDateTime().toString(Qt::ISODate));
-    headers.insert(QLatin1String("Server"), QLatin1String("EngineHttp"));
-    headers.insert(QLatin1String("Connection"), QLatin1String("keep-alive"));
+    QMap<QByteArray, QByteArray> headers = ctx->response()->headers();
 
-    QMap<QString, QString>::ConstIterator it = headers.constBegin();
+    QDateTime utc = QDateTime::currentDateTime();
+    utc.setTimeSpec(Qt::UTC);
+    QString date = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    headers.insert("Date", date.toLocal8Bit());
+    headers.insert("Server", "Cutelyst-HTTP-Engine");
+    headers.insert("Connection", "keep-alive");
+
+    QMap<QByteArray, QByteArray>::ConstIterator it = headers.constBegin();
     while (it != headers.constEnd()) {
         header.append(it.key() % QLatin1String(": ") % it.value() % QLatin1String("\r\n"));
         ++it;
     }
     header.append(QLatin1String("\r\n"));
 
-    if (!headers.contains(QLatin1String("Content-Type")) &&
+    if (!headers.contains("Content-Type") &&
             !ctx->res()->body().isEmpty()) {
         QMimeDatabase db;
         QMimeType mimeType = db.mimeTypeForData(ctx->res()->body());
         if (mimeType.isValid()) {
             if (mimeType.name() == QLatin1String("text/html")) {
-                headers.insert(QLatin1String("Content-Type"),
-                               QLatin1String("text/html; charset=utf-8"));
+                headers.insert("Content-Type", "text/html; charset=utf-8");
             } else {
-                headers.insert(QLatin1String("Content-Type"),
-                               mimeType.name());
+                headers.insert("Content-Type", mimeType.name().toLocal8Bit());
             }
         }
     }

@@ -32,7 +32,7 @@ CutelystView::CutelystView(QObject *parent) :
 bool CutelystView::process(Context *ctx)
 {
     if (ctx->res()->contentType().isEmpty()) {
-        ctx->res()->setContentType(QLatin1String("text/html; charset=utf-8"));
+        ctx->res()->setContentType("text/html; charset=utf-8");
     }
 
     if (ctx->req()->method() == "HEAD") {

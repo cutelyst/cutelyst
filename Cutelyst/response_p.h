@@ -38,7 +38,7 @@ public:
     // We use a map since QHash *might*
     // cause issues in browsers due to
     // it's random ordering
-    QMap<QString, QString> headers;
+    QMap<QByteArray, QByteArray> headers;
     QList<QNetworkCookie> cookies;
     QByteArray body;
     QUrl location;

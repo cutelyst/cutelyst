@@ -254,7 +254,7 @@ void Context::finalizeHeaders()
     }
 
     if (response->location().isValid()) {
-        response->addHeaderValue(QLatin1String("Location"), response->location().toEncoded());
+        response->addHeaderValue("Location", response->location().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;
@@ -270,7 +270,7 @@ void Context::finalizeHeaders()
                    "  </body>\n"
                    "</html>\n");
             response->body() = data;
-            response->setContentType(QLatin1String("text/html; charset=utf-8"));
+            response->setContentType("text/html; charset=utf-8");
         }
     }
 
