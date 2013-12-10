@@ -41,6 +41,7 @@ Session::Session(QObject *parent) :
 
 bool Session::setup(Context *ctx)
 {
+    m_ctx = ctx;
     connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
     return true;

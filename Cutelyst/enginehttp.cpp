@@ -146,8 +146,6 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
         }
     }
 
-    qDebug() << headers;
-
     d->requests[ctx->req()->connectionId()]->write(header);
 }
 

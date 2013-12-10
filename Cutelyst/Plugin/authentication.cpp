@@ -110,7 +110,7 @@ Authentication::User Authentication::user()
 {
     Q_D(Authentication);
     QVariant user = pluginProperty(d->ctx, "user");
-    if (user.isNull()) {
+    if (user.isNull()) {        
         return restoreUser(QVariant(), QString());
     }
     return user.value<User>();
@@ -189,7 +189,7 @@ Authentication::User Authentication::restoreUser(const QVariant &frozenUser, con
 {
     Q_D(Authentication);
 
-    Authentication::Realm *realmPtr = d->realms.value(realmName);
+    Authentication::Realm *realmPtr = d->realm(realmName);
     if (!realmPtr) {
         realmPtr = findRealmForPersistedUser();
     }
