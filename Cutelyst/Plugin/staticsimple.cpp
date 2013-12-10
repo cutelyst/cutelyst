@@ -30,10 +30,11 @@ void StaticSimple::setRootDir(const QString &path)
     m_rootDir = path;
 }
 
-bool StaticSimple::setup(Application *app)
+bool StaticSimple::setup(Context *ctx)
 {
-    connect(app, &Application::beforePrepareAction,
+    connect(ctx, &Context::beforePrepareAction,
             this, &StaticSimple::beforePrepareAction);
+    return true;
 }
 
 void StaticSimple::beforePrepareAction(Context *ctx, bool *skipMethod)

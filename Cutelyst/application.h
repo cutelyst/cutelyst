@@ -39,17 +39,12 @@ public:
     Application(int &argc, char **argv);
     ~Application();
 
-    void registerPlugin(CutelystPlugin::Plugin *plugin);
-
     bool parseArgs();
     int printError();
     bool setup(Engine *engine = 0);
 
 Q_SIGNALS:
-    void beforePrepareAction(Context *ctx, bool *skipMethod);
-    void afterPrepareAction(Context *ctx);
-    void beforeDispatch(Context *ctx);
-    void afterDispatch(Context *ctx);
+    void registerPlugins(Context *ctx);
 
 protected:
     ApplicationPrivate *d_ptr;

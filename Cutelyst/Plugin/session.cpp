@@ -39,15 +39,16 @@ Session::Session(QObject *parent) :
 {
 }
 
-bool Session::setup(Application *app)
+bool Session::setup(Context *ctx)
 {
-    connect(app, &Application::afterDispatch,
+    connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
+    return true;
 }
 
-QVariant Session::value(Context *ctx, const QString &key, const QVariant &defaultValue)
+QVariant Session::value(const QString &key, const QVariant &defaultValue)
 {
-    QVariant data = loadSession(ctx);
+    QVariant data = loadSession();
     if (data.isNull()) {
         return defaultValue;
     }
@@ -56,22 +57,22 @@ QVariant Session::value(Context *ctx, const QString &key, const QVariant &defaul
     return session.value(key, defaultValue);
 }
 
-void Session::setValue(Context *ctx, const QString &key, const QVariant &value)
+void Session::setValue(const QString &key, const QVariant &value)
 {
-    QVariantHash session = loadSession(ctx).value<QVariantHash>();
+    QVariantHash session = loadSession().value<QVariantHash>();
     session.insert(key, value);
-    setPluginProperty(ctx, "sessionvalues", session);
-    setPluginProperty(ctx, "sessionsave", true);
+    setPluginProperty(m_ctx, "sessionvalues", session);
+    setPluginProperty(m_ctx, "sessionsave", true);
 }
 
-void Session::deleteValue(Context *ctx, const QString &key)
+void Session::deleteValue(const QString &key)
 {
-    setValue(ctx, key, QVariant());
+    setValue(key, QVariant());
 }
 
-bool Session::isValid(Context *ctx)
+bool Session::isValid()
 {
-    return !loadSession(ctx).isNull();
+    return !loadSession().isNull();
 }
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
@@ -108,18 +109,18 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
     }
 }
 
-void Session::saveSession(Context *ctx)
+void Session::saveSession()
 {
-    if (!pluginProperty(ctx, "sessionsave").toBool()) {
+    if (!pluginProperty(m_ctx, "sessionsave").toBool()) {
         return;
     }
 
-    QString sessionId = getSessionId(ctx);
+    QString sessionId = getSessionId();
     QNetworkCookie sessionCookie(sessionName().toLocal8Bit(),
                                  sessionId.toLocal8Bit());
-    ctx->res()->addCookie(sessionCookie);
+    m_ctx->res()->addCookie(sessionCookie);
     persistSession(sessionId,
-                   loadSession(ctx));
+                   loadSession());
 }
 
 QString Session::sessionName() const
@@ -127,17 +128,17 @@ QString Session::sessionName() const
     return QCoreApplication::applicationName() % QLatin1String("_session");
 }
 
-QVariant Session::loadSession(Context *ctx)
+QVariant Session::loadSession()
 {
-    QVariant property = pluginProperty(ctx, "sessionvalues");
+    QVariant property = pluginProperty(m_ctx, "sessionvalues");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
 
-    QString sessionid = getSessionId(ctx);
+    QString sessionid = getSessionId();
     if (!sessionid.isEmpty()) {
         QVariantHash session = retrieveSession(sessionid);
-        setPluginProperty(ctx, "sessionvalues", session);
+        setPluginProperty(m_ctx, "sessionvalues", session);
         return session;
     }
     return QVariant();
@@ -148,15 +149,15 @@ QString Session::generateSessionId() const
     return QUuid::createUuid().toString().remove(QRegularExpression("-|{|}"));
 }
 
-QString Session::getSessionId(Context *ctx) const
+QString Session::getSessionId() const
 {
-    QVariant property = ctx->property("Session::_sessionid");
+    QVariant property = m_ctx->property("Session::_sessionid");
     if (!property.isNull()) {
         return property.value<QString>();
     }
 
     QString sessionId;
-    foreach (const QNetworkCookie &cookie, ctx->req()->cookies()) {
+    foreach (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
         if (cookie.name() == sessionName()) {
             sessionId = cookie.value();
             qDebug() << "Found sessionid" << sessionId << "in cookie";
@@ -167,7 +168,7 @@ QString Session::getSessionId(Context *ctx) const
         sessionId = generateSessionId();
         qDebug() << "Created session" << sessionId;
     }
-    ctx->setProperty("Session::_sessionid", sessionId);
+    m_ctx->setProperty("Session::_sessionid", sessionId);
 
     return sessionId;
 }

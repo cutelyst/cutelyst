@@ -36,13 +36,13 @@ class Session : public Plugin
 public:
     explicit Session(QObject *parent = 0);
 
-    bool setup(Application *app);
+    bool setup(Context *ctx);
 
-    QVariant value(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant());
-    void setValue(Context *ctx, const QString &key, const QVariant &value);
-    void deleteValue(Context *ctx, const QString &keys);
+    QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
+    void setValue(const QString &key, const QVariant &value);
+    void deleteValue(const QString &keys);
 
-    bool isValid(Context *ctx);
+    bool isValid();
 
 protected:
     /**
@@ -58,12 +58,14 @@ protected:
     virtual void persistSession(const QString &sessionId, const QVariant &data) const;
 
 private:
-    void saveSession(Context *ctx);
+    void saveSession();
     QString sessionName() const;
-    QVariant loadSession(Context *ctx);
+    QVariant loadSession();
     QString generateSessionId() const;
-    QString getSessionId(Context *ctx) const;
+    QString getSessionId() const;
     QString filePath(const QString &sessionId) const;
+
+    Context *m_ctx;
 };
 
 }

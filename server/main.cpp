@@ -13,6 +13,11 @@
 
 using namespace std;
 
+void registerPlugins(Context *ctx)
+{
+
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationName("Cecilet Ti");
@@ -30,8 +35,11 @@ int main(int argc, char *argv[])
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
 
-    app.registerPlugin(new CutelystPlugin::StaticSimple);
-    app.registerPlugin(new CutelystPlugin::Session);
+    QObject::connect(&app, &Application::registerPlugins,
+                [=](Context *ctx) {
+        ctx->registerPlugin(new CutelystPlugin::StaticSimple);
+        ctx->registerPlugin(new CutelystPlugin::Session);
+    });
 
     if (app.parseArgs() && app.setup()) {
         return app.exec();

@@ -165,8 +165,8 @@ void Authentication::persistUser(Context *ctx, const User &user, const QString &
 
     if (userExists(ctx)) {
         Session *session = ctx->plugin<Session*>();
-        if (session && session->isValid(ctx)) {
-            session->setValue(ctx, "Authentication::userRealm", realmName);
+        if (session && session->isValid()) {
+            session->setValue("Authentication::userRealm", realmName);
         }
 
         Authentication::Realm *realmPtr = d->realm(realmName);
@@ -206,9 +206,9 @@ Authentication::Realm *Authentication::findRealmForPersistedUser(Context *ctx)
 
     Session *session = ctx->plugin<Session*>();
     if (session &&
-            session->isValid(ctx) &&
-            !session->value(ctx, "Authentication::userRealm").isNull()) {
-        QString realmName = session->value(ctx, "Authentication::userRealm").toString();
+            session->isValid() &&
+            !session->value("Authentication::userRealm").isNull()) {
+        QString realmName = session->value("Authentication::userRealm").toString();
         realm = d->realms.value(realmName);
         if (realm && !realm->userIsRestorable(ctx).isNull()) {
             return realm;
@@ -261,17 +261,17 @@ Authentication::User Authentication::Realm::authenticate(Context *ctx, const CSt
 void Authentication::Realm::removePersistedUser(Context *ctx)
 {
     Session *session = ctx->plugin<Session*>();
-    if (session && session->isValid(ctx)) {
-        session->deleteValue(ctx, "Authentication::user");
-        session->deleteValue(ctx, "Authentication::userRealm");
+    if (session && session->isValid()) {
+        session->deleteValue("Authentication::user");
+        session->deleteValue("Authentication::userRealm");
     }
 }
 
 Authentication::User Authentication::Realm::persistUser(Context *ctx, const Authentication::User &user)
 {
     Session *session = ctx->plugin<Session*>();
-    if (session && session->isValid(ctx)) {
-        session->setValue(ctx, "Authentication::user",
+    if (session && session->isValid()) {
+        session->setValue("Authentication::user",
                           m_store->forSession(ctx, user));
     }
 
@@ -306,8 +306,8 @@ Authentication::User Authentication::Realm::restoreUser(Context *ctx, const QVar
 QVariant Authentication::Realm::userIsRestorable(Context *ctx)
 {
     Session *session = ctx->plugin<Session*>();
-    if (session && session->isValid(ctx)) {
-        return session->value(ctx, "Authentication::user");
+    if (session && session->isValid()) {
+        return session->value("Authentication::user");
     }
     return QVariant();
 }

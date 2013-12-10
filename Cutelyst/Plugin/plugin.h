@@ -43,7 +43,7 @@ public:
      * Reimplement this if you need to connect to
      * the signals emitted from Cutelyst::Application
      */
-    virtual bool setup(Application *app);
+    virtual bool setup(Context *ctx);
 
 protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;

@@ -20,7 +20,7 @@ public:
 
     void setRootDir(const QString &path);
 
-    bool setup(Application *app);
+    bool setup(Context *ctx);
 
 private:
     void beforePrepareAction(Context *ctx, bool *skipMethod);

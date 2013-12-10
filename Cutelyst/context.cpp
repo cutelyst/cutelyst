@@ -211,18 +211,28 @@ QList<Action *> Context::getActions(const QString &action, const QString &ns)
     return d->dispatcher->getActions(action, ns);
 }
 
+bool Context::registerPlugin(CutelystPlugin::Plugin *plugin, bool takeOwnership)
+{
+    Q_D(Context);
+    if (plugin->setup(this)) {
+        if (takeOwnership) {
+            plugin->setParent(this);
+        }
+        d->plugins.insert(plugin, QVariantHash());
+        return true;
+    }
+    return false;
+}
+
 QList<CutelystPlugin::Plugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins.keys();
 }
 
-void Context::handleRequest(Request *req, Response *resp)
+void Context::handleRequest()
 {
     Q_D(Context);
-
-    d->request = req;
-    d->response = resp;
 
     bool skipMethod = false;
     beforePrepareAction(this, &skipMethod);

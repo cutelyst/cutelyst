@@ -9,6 +9,8 @@ set(server_SRCS
     main.cpp
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+
 add_executable(cuteserver
     ${server_SRCS}
 )

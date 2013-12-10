@@ -38,7 +38,6 @@ public:
 
     Dispatcher *dispatcher;
     Engine *engine;
-    QList<CutelystPlugin::Plugin *> plugins;
 };
 
 }

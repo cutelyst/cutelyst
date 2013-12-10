@@ -64,19 +64,6 @@ Application::~Application()
     delete d_ptr;
 }
 
-void Application::registerPlugin(CutelystPlugin::Plugin *plugin)
-{
-    Q_D(Application);
-
-    QString pluginName = plugin->metaObject()->className();
-
-    if (!d->plugins.contains(plugin)) {
-        d->plugins << plugin;
-    } else {
-        qWarning() << Q_FUNC_INFO << "Failed to register plugin" << pluginName << plugin;
-    }
-}
-
 bool Application::parseArgs()
 {
     Q_D(Application);
@@ -116,13 +103,6 @@ bool Application::setup(Engine *engine)
     connect(d->engine, &Engine::handleRequest,
             this, &Application::handleRequest);
 
-    foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
-        if (!plugin->setup(this)) {
-            qWarning() << Q_FUNC_INFO << "Failed to setup plugin" << plugin;
-            return false;
-        }
-    }
-
     return d->engine->init();
 }
 
@@ -133,15 +113,13 @@ void Application::handleRequest(Request *req, Response *resp)
     ContextPrivate *priv = new ContextPrivate;
     priv->engine = d->engine;
     priv->dispatcher = d->dispatcher;
-    foreach (CutelystPlugin::Plugin *plugin, d->plugins) {
-        priv->plugins.insert(plugin, QVariantHash());
-    }
+    priv->request = req;
+    priv->response = resp;
+    Context *ctx = new Context(priv);
 
-    Context *c = new Context(priv);
-    connect(c, &Context::beforePrepareAction, this, &Application::beforePrepareAction);
-    connect(c, &Context::afterPrepareAction, this, &Application::afterPrepareAction);
-    connect(c, &Context::beforeDispatch, this, &Application::beforeDispatch);
-    connect(c, &Context::afterDispatch, this, &Application::afterDispatch);
-    c->handleRequest(req, resp);
-    delete c;
+    registerPlugins(ctx);
+
+    ctx->handleRequest();
+
+    delete ctx;
 }

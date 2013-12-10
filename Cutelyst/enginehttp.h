@@ -42,12 +42,9 @@ public:
 
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
-    virtual void finalizeError(Context *ctx);
 
 protected:
     CutelystEngineHttpPrivate *d_ptr;
-
-    virtual void parse(const QByteArray &request);
 
 private Q_SLOTS:
     void removeConnection();

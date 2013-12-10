@@ -29,9 +29,9 @@ Plugin::Plugin(QObject *parent) :
 {
 }
 
-bool Plugin::setup(Application *app)
+bool Plugin::setup(Context *ctx)
 {
-    Q_UNUSED(app)
+    Q_UNUSED(ctx)
     return true;
 }
 

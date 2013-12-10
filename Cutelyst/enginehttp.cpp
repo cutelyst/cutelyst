@@ -160,16 +160,6 @@ void CutelystEngineHttp::finalizeBody(Context *ctx)
     req->finish();
 }
 
-void CutelystEngineHttp::finalizeError(Context *ctx)
-{
-    Q_UNUSED(ctx)
-}
-
-void CutelystEngineHttp::parse(const QByteArray &request)
-{
-
-}
-
 void CutelystEngineHttp::removeConnection()
 {
     Q_D(CutelystEngineHttp);

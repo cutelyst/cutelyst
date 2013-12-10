@@ -69,7 +69,6 @@ public:
     Q_PROPERTY(QString actionName READ actionName)
     QString actionName() const;
 
-
     /**
      * Returns the namespace of the current action.
      * i.e. the URI prefix corresponding to the controller
@@ -109,6 +108,7 @@ public:
     Action *getAction(const QString &action, const QString &ns = QString());
     QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
+    bool registerPlugin(CutelystPlugin::Plugin *plugin, bool takeOwnership = true);
     QList<CutelystPlugin::Plugin *> plugins();
 
     template <typename T>
@@ -129,7 +129,7 @@ Q_SIGNALS:
     void afterDispatch(Context *ctx);
 
 protected:
-    void handleRequest(Request *req, Response *resp);
+    void handleRequest();
     void prepareAction();
     void finalizeHeaders();
     void finalizeCookies();
