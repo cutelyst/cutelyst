@@ -24,8 +24,6 @@
 #include "action.h"
 #include "request_p.h"
 #include "dispatchtypepath.h"
-#include "dispatchtypeindex.h"
-#include "dispatchtypedefault.h"
 
 #include <QUrl>
 #include <QMetaMethod>
@@ -44,8 +42,6 @@ Dispatcher::Dispatcher(QObject *parent) :
 {
     Q_D(Dispatcher);
     d->dispatchers << new DispatchTypePath(this);
-    d->dispatchers << new DispatchTypeIndex(this);
-    d->dispatchers << new DispatchTypeDefault(this);
 }
 
 Dispatcher::~Dispatcher()
@@ -84,7 +80,7 @@ void Dispatcher::setupActions()
                         d->containerHash[action->ns()] << action;
                         instanceUsed = true;
 
-                        if (!action->attributes().contains(QLatin1String("Private"))) {
+                        if (!action->attributes().contains("Private")) {
                             bool registered = false;
 
                             // Register the action with each dispatcher

@@ -93,16 +93,6 @@ void Controller::End(Context *ctx)
 
 }
 
-void Controller::Default(Context *ctx)
-{
-
-}
-
-void Controller::Index(Context *ctx)
-{
-
-}
-
 void Controller::_DISPATCH(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;

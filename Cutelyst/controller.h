@@ -79,14 +79,21 @@ public:
     typedef int Path;
 
     /**
-     * @brief Args - When used with "Path"  indicates the number of
-     * arguments expected in the path.
+     * @brief Args - When used with "Path" it indicates the number of
+     * arguments in the path.
+     * The number is computed by counting the arguments the method expects.
      * However if no Args value is set, assumed to 'slurp' all
      * remaining path parts under this namespace.
      * This is ignored if Q_CLASSINFO has defined it before
      * Always add it to the end of the argument list of the methods.
      */
     typedef int Args;
+
+    /**
+     * @brief ZeroArgs - When used with "Path" it indicates
+     * that the path must match exactly 0 (zero) args.
+     */
+    typedef int ZeroArgs;
 
     Q_INVOKABLE explicit Controller(QObject *parent = 0);
     ~Controller();
@@ -113,9 +120,6 @@ protected:
     virtual void Begin(Context *ctx);
     virtual bool Auto(Context *ctx);
     virtual void End(Context *ctx);
-
-    virtual void Default(Context *ctx);
-    virtual void Index(Context *ctx);
 
 private:
     friend class Action;

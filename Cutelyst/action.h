@@ -41,7 +41,7 @@ public:
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    QMultiHash<QString, QString> attributes() const;
+    QMultiHash<QByteArray, QByteArray> attributes() const;
 
     /**
      * @return Returns the name of the component where this action is defined

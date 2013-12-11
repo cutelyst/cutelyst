@@ -50,12 +50,13 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
 
         QRegularExpressionMatch match = regex.match(name);
         if (match.hasMatch()) {
-            d->attributes.insertMulti(match.captured(1), classInfo.value());
+            d->attributes.insertMulti(match.captured(1).toLocal8Bit(),
+                                      classInfo.value());
         }
     }
 
     if (method.access() == QMetaMethod::Private) {
-        d->attributes.insertMulti(QLatin1String("Private"), QString());
+        d->attributes.insertMulti("Private", QByteArray());
     }
 
     // if the method has the CaptureArgs as an argument
@@ -77,22 +78,25 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
             // Make sure the user defines specia
             // parameters types AFTER the ones to be captured
             ignoreParameters = true;
+            QByteArray name = d->name.toLocal8Bit();
             if (type == "Global") {
-                if (d->name.startsWith(QLatin1Char('/'))) {
-                    d->attributes.insertMulti(QLatin1String("Path"), d->name);
-                } else {
-                    d->attributes.insertMulti(QLatin1String("Path"), QLatin1Char('/') % d->name);
+                if (!d->name.startsWith(QLatin1Char('/'))) {
+                    name.prepend('/');
                 }
+                d->attributes.insertMulti("Path", name);
             } else if (type == "Local") {
-                d->attributes.insertMulti(QLatin1String("Path"), d->name);
+                d->attributes.insertMulti("Path", name);
             } else if (type == "Path") {
-                d->attributes.insertMulti(QLatin1String("Path"), controller()->ns());
-            } else if (type == "Args" && !d->attributes.contains(QLatin1String("Args"))) {
+                d->attributes.insertMulti("Path", controller()->ns().toLocal8Bit());
+            } else if (type == "Args" && !d->attributes.contains("Args")) {
                 d->numberOfArgs = parameterCount;
-                d->attributes.insertMulti(QLatin1String("Args"), QString::number(d->numberOfArgs));
-            } else if (type == "CaptureArgs" && !d->attributes.contains(QLatin1String("CaptureArgs"))) {
+                d->attributes.insertMulti("Args", QByteArray::number(d->numberOfArgs));
+            } else if (type == "CaptureArgs" && !d->attributes.contains("CaptureArgs")) {
                 d->numberOfCaptures = parameterCount;
-                d->attributes.insertMulti(QLatin1String("Args"), QString::number(d->numberOfCaptures));
+                d->attributes.insertMulti("Args", QByteArray::number(d->numberOfCaptures));
+            } else if (type == "ZeroArgs") {
+                d->numberOfArgs = 0;
+                d->attributes.insertMulti("Args", QByteArray::number(0));
             }
         }
     }
@@ -103,7 +107,7 @@ Action::~Action()
     delete d_ptr;
 }
 
-QMultiHash<QString, QString> Action::attributes() const
+QMultiHash<QByteArray, QByteArray> Action::attributes() const
 {
     Q_D(const Action);
     return d->attributes;
@@ -179,17 +183,21 @@ bool Action::dispatch(Context *ctx)
 bool Action::match(Context *ctx) const
 {
     Q_D(const Action);
-    if (d->attributes.contains(QLatin1String("Args")) &&
-            d->attributes.value(QLatin1String("Args")).isEmpty()) {
-        return true;
-    }
-    return d->numberOfArgs == 0 || d->numberOfArgs == ctx->args().size();
+    // If the number of args is -1 (not defined)
+    // it will slurp all args so we don't care
+    // about how many args was passed, otherwise
+    // count them
+    return d->numberOfArgs == -1 || d->numberOfArgs == ctx->args().size();
 }
 
 bool Action::matchCaptures(Context *ctx) const
 {
     Q_D(const Action);
-    return d->numberOfCaptures == 0 || d->numberOfCaptures == ctx->args().size();
+    // If the number of capture args is -1 (not defined)
+    // it will slurp all args so we don't care
+    // about how many args was passed, otherwise
+    // count them
+    return d->numberOfCaptures == -1 || d->numberOfCaptures == ctx->args().size();
 }
 
 QString Action::name() const
@@ -235,8 +243,8 @@ ActionPrivate::ActionPrivate(const QMetaMethod &method, Controller *parent) :
     ns(parent->ns()),
     method(method),
     controller(parent),
-    numberOfArgs(0),
-    numberOfCaptures(0)
+    numberOfArgs(-1),
+    numberOfCaptures(-1)
 {
 
 }

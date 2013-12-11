@@ -46,7 +46,7 @@ void DispatchTypePath::list() const
     while (it != m_paths.constEnd()) {
         Action *action = it.value();
         QString path = QLatin1Char('/') % it.key();
-        QString args = action->attributes().value(QLatin1String("Args"));
+        QString args = action->attributes().value("Args");
         if (args.isEmpty()) {
             path.append(QLatin1String("/..."));
         } else {
@@ -80,7 +80,7 @@ void DispatchTypePath::list() const
     while (it != m_paths.constEnd()) {
         Action *action = it.value();
         QString path = QLatin1Char('/') % it.key();
-        if (!action->attributes().contains(QLatin1String("Args"))) {
+        if (!action->attributes().contains("Args")) {
             path.append(QLatin1String("/..."));
         } else {
             for (int i = 0; i < action->numberOfArgs(); ++i) {
@@ -128,9 +128,9 @@ bool DispatchTypePath::registerAction(Action *action)
 {
     int pathsCount = m_paths.size();
 
-    QMultiHash<QString, QString> attributes = action->attributes();
-    QMultiHash<QString, QString>::iterator i = attributes.find(QLatin1String("Path"));
-    while (i != attributes.end() && i.key() == QLatin1String("Path")) {
+    QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
+    QMultiHash<QByteArray, QByteArray>::iterator i = attributes.find("Path");
+    while (i != attributes.end() && i.key() == "Path") {
         registerPath(i.value(), action);
 
         ++i;
@@ -141,7 +141,7 @@ bool DispatchTypePath::registerAction(Action *action)
 
 QString DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
 {
-    QString path = action->attributes().value(QLatin1String("Path"));
+    QString path = action->attributes().value("Path");
     if (!path.isNull()) {
         if (path.isEmpty()) {
             return QLatin1String("/");

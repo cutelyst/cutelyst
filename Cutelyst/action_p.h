@@ -33,10 +33,10 @@ public:
     QString name;
     QString ns;
     QMetaMethod method;
-    QMultiHash<QString, QString> attributes;
+    QMultiHash<QByteArray, QByteArray> attributes;
     Controller *controller;
-    quint8 numberOfArgs;
-    quint8 numberOfCaptures;
+    qint8 numberOfArgs;
+    qint8 numberOfCaptures;
 };
 
 }
