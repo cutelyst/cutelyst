@@ -21,6 +21,7 @@
 #define CUTELYST_DISPATCHTYPEPATH_H
 
 #include "dispatchtype.h"
+#include "action.h"
 
 #include <QMap>
 
@@ -43,7 +44,7 @@ public:
 private:
     void registerPath(const QString &path, Action *action);
 
-    QMap<QString, Action*> m_paths;
+    QHash<QString, ActionList> m_paths;
 };
 
 }

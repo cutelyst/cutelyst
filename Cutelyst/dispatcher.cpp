@@ -149,39 +149,30 @@ void Dispatcher::prepareAction(Context *ctx)
     QString path = ctx->req()->path();
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
-    CutelystDispatchType *dispatch = 0;
 
-    // Take off the root action
-    pathParts.takeFirst();
+    // Root action
+    pathParts.prepend(QLatin1String(""));
 
     while (!pathParts.isEmpty()) {
         path = pathParts.join(QLatin1Char('/'));
-        if (path.startsWith(QLatin1Char('/'))) {
-            path.remove(0, 1);
-        }
+        path.remove(QRegularExpression("^/+"));
 
         foreach (CutelystDispatchType *type, d->dispatchers) {
             if (type->match(ctx, path)) {
-                dispatch = type;
-                break;
-            }
-        }
+                if (!path.isEmpty()) {
+                    qDebug() << "Path is" << path;
+                }
 
-        if (dispatch) {
-            break;
+                if (!ctx->args().isEmpty()) {
+                    qDebug() << "Arguments are" << ctx->args().join(QLatin1Char('/'));
+                }
+
+                return;
+            }
         }
 
         args.prepend(pathParts.takeLast());
         ctx->req()->d_ptr->args = unexcapedArgs(args);
-
-    }
-
-    if (!path.isEmpty()) {
-        qDebug() << "Path is" << path;
-    }
-
-    if (!ctx->args().isEmpty()) {
-        qDebug() << "Arguments are" << ctx->args().join(QLatin1Char('/'));
     }
 }
 

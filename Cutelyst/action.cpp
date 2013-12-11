@@ -93,7 +93,7 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
                 d->attributes.insertMulti("Args", QByteArray::number(d->numberOfArgs));
             } else if (type == "CaptureArgs" && !d->attributes.contains("CaptureArgs")) {
                 d->numberOfCaptures = parameterCount;
-                d->attributes.insertMulti("Args", QByteArray::number(d->numberOfCaptures));
+                d->attributes.insertMulti("CaptureArgs", QByteArray::number(d->numberOfCaptures));
             }
         }
     }

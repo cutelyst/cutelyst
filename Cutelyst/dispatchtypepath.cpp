@@ -19,8 +19,6 @@
 
 #include "dispatchtypepath.h"
 
-#include "action.h"
-
 #include <QRegularExpression>
 #include <QStringBuilder>
 #include <QDebug>
@@ -42,28 +40,29 @@ void DispatchTypePath::list() const
     QString privateTitle("Private");
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
-    QMap<QString, Action*>::ConstIterator it = m_paths.constBegin();
-    while (it != m_paths.constEnd()) {
-        Action *action = it.value();
-        QString path = QLatin1Char('/') % it.key();
-        QString args = action->attributes().value("Args");
-        if (args.isEmpty()) {
-            path.append(QLatin1String("/..."));
-        } else {
-            for (int i = 0; i < action->numberOfArgs(); ++i) {
-                path.append(QLatin1String("/*"));
+
+    QStringList keys = m_paths.keys();
+    keys.sort();
+    foreach (QString path, keys) {
+        foreach (Action *action, m_paths.value(path)) {
+            path = QLatin1Char('/') % path;
+            QString args = action->attributes().value("Args");
+            if (args.isEmpty()) {
+                path.append(QLatin1String("/..."));
+            } else {
+                for (int i = 0; i < action->numberOfArgs(); ++i) {
+                    path.append(QLatin1String("/*"));
+                }
             }
-        }
-        path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
-        pathLength = qMax(pathLength, path.length() + 1);
+            path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            pathLength = qMax(pathLength, path.length() + 1);
 
-        QString privateName = action->privateName();
-        if (!privateName.startsWith(QLatin1String("/"))) {
-            privateName.prepend(QLatin1String("/"));
+            QString privateName = action->privateName();
+            if (!privateName.startsWith(QLatin1String("/"))) {
+                privateName.prepend(QLatin1String("/"));
+            }
+            privateLength = qMax(privateLength, privateName.length());
         }
-        privateLength = qMax(privateLength, privateName.length());
-
-        ++it;
     }
 
     cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
@@ -76,28 +75,27 @@ void DispatchTypePath::list() const
          << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
          << "." << endl;
 
-    it = m_paths.constBegin();
-    while (it != m_paths.constEnd()) {
-        Action *action = it.value();
-        QString path = QLatin1Char('/') % it.key();
-        if (!action->attributes().contains("Args")) {
-            path.append(QLatin1String("/..."));
-        } else {
-            for (int i = 0; i < action->numberOfArgs(); ++i) {
-                path.append(QLatin1String("/*"));
+    foreach (QString path, keys) {
+        foreach (Action *action, m_paths.value(path)) {
+            path = QLatin1Char('/') % path;
+            if (!action->attributes().contains("Args")) {
+                path.append(QLatin1String("/..."));
+            } else {
+                for (int i = 0; i < action->numberOfArgs(); ++i) {
+                    path.append(QLatin1String("/*"));
+                }
             }
-        }
-        path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
 
-        QString privateName = action->privateName();
-        if (!privateName.startsWith(QLatin1String("/"))) {
-            privateName.prepend(QLatin1String("/"));
-        }
+            QString privateName = action->privateName();
+            if (!privateName.startsWith(QLatin1String("/"))) {
+                privateName.prepend(QLatin1String("/"));
+            }
 
-        cout << "|" << path.leftJustified(pathLength).toUtf8().data()
-             << "|" << privateName.leftJustified(privateLength).toUtf8().data()
-             << "|" << endl;
-        ++it;
+            cout << "|" << path.leftJustified(pathLength).toUtf8().data()
+                 << "|" << privateName.leftJustified(privateLength).toUtf8().data()
+                 << "|" << endl;
+        }
     }
 
     cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
@@ -112,14 +110,12 @@ bool DispatchTypePath::match(Context *ctx, const QString &path) const
         _path = QLatin1Char('/');
     }
 
-    QMap<QString, Action*>::ConstIterator i = m_paths.constFind(_path);
-    while (i != m_paths.constEnd() && i.key() == _path) {
-        if (i.value()->match(ctx)) {
-            setupMatchedAction(ctx, i.value(), _path);
+    const ActionList &actions = m_paths.value(_path);
+    foreach (Action *action, actions) {
+        if (action->match(ctx)) {
+            setupMatchedAction(ctx, action, _path);
             return true;
         }
-
-        ++i;
     }
     return false;
 }
@@ -152,6 +148,11 @@ QString DispatchTypePath::uriForAction(Action *action, const QStringList &captur
     return QString();
 }
 
+bool actionLessThan(Action *a1, Action *a2)
+{
+    return a1->numberOfArgs() < a2->numberOfArgs();
+}
+
 void DispatchTypePath::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
@@ -165,5 +166,8 @@ void DispatchTypePath::registerPath(const QString &path, Action *action)
         _path = QLatin1Char('/');
     }
 
-    m_paths.insertMulti(_path, action);
+    ActionList actions = m_paths.value(_path);
+    actions << action;
+    qSort(actions.begin(), actions.end(), actionLessThan);
+    m_paths.insert(_path, actions);
 }
