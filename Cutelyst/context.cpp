@@ -328,7 +328,7 @@ int Context::finalize()
     finalizeBody();
 
     if (d->stats) {
-        qDebug("Request took: %d ms", d->stats->elapsed());
+        qDebug("Request took: %5.3fs", d->stats->elapsed() / 1000.0);
     }
 
     return d->response->status();
