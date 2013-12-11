@@ -89,12 +89,6 @@ public:
      */
     typedef int Args;
 
-    /**
-     * @brief ZeroArgs - When used with "Path" it indicates
-     * that the path must match exactly 0 (zero) args.
-     */
-    typedef int ZeroArgs;
-
     Q_INVOKABLE explicit Controller(QObject *parent = 0);
     ~Controller();
 

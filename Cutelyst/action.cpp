@@ -94,9 +94,6 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
             } else if (type == "CaptureArgs" && !d->attributes.contains("CaptureArgs")) {
                 d->numberOfCaptures = parameterCount;
                 d->attributes.insertMulti("Args", QByteArray::number(d->numberOfCaptures));
-            } else if (type == "ZeroArgs") {
-                d->numberOfArgs = 0;
-                d->attributes.insertMulti("Args", QByteArray::number(0));
             }
         }
     }
