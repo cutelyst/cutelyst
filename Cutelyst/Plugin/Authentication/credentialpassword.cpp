@@ -6,6 +6,7 @@ using namespace Cutelyst::Plugin;
 
 CredentialPassword::CredentialPassword()
 {
+    m_passwordField = QLatin1String("password");
 }
 
 Authentication::User CredentialPassword::authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
@@ -22,12 +23,22 @@ Authentication::User CredentialPassword::authenticate(Context *ctx, Authenticati
     return Authentication::User();
 }
 
+QString CredentialPassword::passwordField() const
+{
+    return m_passwordField;
+}
+
+void CredentialPassword::setPasswordField(const QString &fieldName)
+{
+    m_passwordField = fieldName;
+}
+
 bool CredentialPassword::checkPassword(const Authentication::User &user, const CStringHash &authinfo)
 {
     QString passwordType = "clear";
 
-    QString password = authinfo.value("password");
-    QString storedPassword = user.value("password");
+    QString password = authinfo.value(m_passwordField);
+    QString storedPassword = user.value(m_passwordField);
 
     if (passwordType == "clear") {
         return password == storedPassword;

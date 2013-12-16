@@ -89,6 +89,8 @@ Authentication::User Authentication::authenticate(const CStringHash &userinfo, c
         if (!user.isNull()) {
             setAuthenticated(user, realm);
         }
+
+        return user;
     }
 
     qWarning() << "Could not find realm" << realm;
