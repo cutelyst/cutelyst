@@ -43,6 +43,7 @@ bool Authentication::setup(Context *ctx)
 {
     Q_D(Authentication);
     d->ctx = ctx;
+    return true;
 }
 
 void Authentication::addRealm(Authentication::Realm *realm)
