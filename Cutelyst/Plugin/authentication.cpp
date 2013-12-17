@@ -61,16 +61,6 @@ void Authentication::addRealm(const QString &name, Authentication::Realm *realm,
     d->realmsOrder.append(name);
 }
 
-void Authentication::setUseSession(bool use)
-{
-
-}
-
-bool Authentication::useSession() const
-{
-
-}
-
 Authentication::User Authentication::authenticate(const QString &username, const QString &password, const QString &realm)
 {
     CStringHash userinfo;

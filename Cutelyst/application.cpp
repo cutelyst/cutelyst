@@ -66,8 +66,6 @@ Application::~Application()
 
 bool Application::parseArgs()
 {
-    Q_D(Application);
-
     QStringList args = QCoreApplication::arguments();
     if (args.contains(QLatin1String("--about")) ||
             args.contains(QLatin1String("--sobre")) ||

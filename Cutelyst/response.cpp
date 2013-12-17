@@ -132,8 +132,8 @@ QMap<QByteArray, QByteArray> &Response::headers()
 }
 
 ResponsePrivate::ResponsePrivate() :
-    finalizedHeaders(false),
-    status(Response::OK)
+    status(Response::OK),
+    finalizedHeaders(false)
 {
     // TODO use version macro here
     headers.insert("X-Cutelyst", "0.1");

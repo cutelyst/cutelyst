@@ -56,7 +56,7 @@ public:
     QString path() const;
     QStringList args() const;
     QString base() const;
-    QString body() const;
+    QByteArray body() const;
 
     /**
      * Returns a QMultiHash of body (POST) parameters

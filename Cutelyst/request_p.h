@@ -42,6 +42,9 @@ public:
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
     QMultiHash<QString, QString> param;
+    QHostAddress peerAddress;
+    QString peerName;
+    quint16 peerPort;
     const Engine *engine;
     int connectionId;
 };

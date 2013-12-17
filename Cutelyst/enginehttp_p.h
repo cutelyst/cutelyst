@@ -58,7 +58,7 @@ private:
     QVariantHash m_data;
     QByteArray m_buffer;
     QByteArray m_body;
-    quint64 m_bodySize;
+    int m_bodySize;
     quint64 m_bufLastIndex;
     QByteArray m_method;
     QString m_path;

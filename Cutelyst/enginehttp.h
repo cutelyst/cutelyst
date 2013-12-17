@@ -36,10 +36,6 @@ public:
 
     bool init();
 
-    quint16 peerPort() const;
-    QString peerName() const;
-    QHostAddress peerAddress() const;
-
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
 

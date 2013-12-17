@@ -333,8 +333,6 @@ QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
 
 Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
 {
-    Q_D(Dispatcher);
-
     Action *ret = 0;
     QString path = actionRel2Abs(ctx, relativePath);
 
@@ -343,8 +341,8 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, cons
         QRegularExpressionMatch match = re.match(path);
         if (match.hasMatch()) {
             path = match.captured(1);
-            const QString &tail = match.captured(2);
-            if (ret = getAction(tail, path)) {
+            ret = getAction(match.captured(2), path);
+            if (ret) {
                 break;
             }
         } else {

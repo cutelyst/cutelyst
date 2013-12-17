@@ -39,19 +39,19 @@ Request::~Request()
 QHostAddress Request::peerAddress() const
 {
     Q_D(const Request);
-    return d->engine->peerAddress();
+    return d->peerAddress;
 }
 
 QString Request::peerName() const
 {
     Q_D(const Request);
-    return d->engine->peerName();
+    return d->peerName;
 }
 
 quint16 Request::peerPort() const
 {
     Q_D(const Request);
-    return d->engine->peerPort();
+    return d->peerPort;
 }
 
 int Request::connectionId() const
@@ -74,12 +74,14 @@ QStringList Request::args() const
 
 QString Request::base() const
 {
-
+    // TODO
+    return QString();
 }
 
-QString Request::body() const
+QByteArray Request::body() const
 {
-
+    Q_D(const Request);
+    return d->body;
 }
 
 QMultiHash<QString, QString> Request::bodyParameters() const

@@ -92,24 +92,6 @@ bool CutelystEngineHttp::init()
     return !d->child.isEmpty();
 }
 
-quint16 CutelystEngineHttp::peerPort() const
-{
-    Q_D(const CutelystEngineHttp);
-    return 0;//d->socket->peerPort();
-}
-
-QString CutelystEngineHttp::peerName() const
-{
-    Q_D(const CutelystEngineHttp);
-    return QString();//d->socket->peerName();
-}
-
-QHostAddress CutelystEngineHttp::peerAddress() const
-{
-    Q_D(const CutelystEngineHttp);
-    return QHostAddress();//d->socket->peerAddress();
-}
-
 void CutelystEngineHttp::finalizeHeaders(Context *ctx)
 {
     Q_D(CutelystEngineHttp);
@@ -251,10 +233,10 @@ CutelystEngineHttpPrivate::CutelystEngineHttpPrivate() :
 
 CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent) :
     QTcpSocket(parent),
-    m_bufLastIndex(0),
     m_finishedHeaders(false),
     m_processing(false),
-    m_connectionId(socket)
+    m_connectionId(socket),
+    m_bufLastIndex(0)
 {
     connect(this, &CutelystEngineHttpRequest::readyRead,
             this, &CutelystEngineHttpRequest::process);

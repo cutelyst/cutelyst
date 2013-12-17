@@ -101,7 +101,6 @@ bool CutelystChildProcess::sendFD(int fd)
 
 void CutelystChildProcess::initChild(int socket)
 {
-    Q_D(CutelystChildProcess);
     QSocketNotifier *notifier = new QSocketNotifier(socket, QSocketNotifier::Read, this);
     connect(notifier, &QSocketNotifier::activated,
             this, &CutelystChildProcess::gotFD);

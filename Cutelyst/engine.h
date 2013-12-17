@@ -36,10 +36,6 @@ public:
     explicit Engine(QObject *parent = 0);
     ~Engine();
 
-    virtual quint16 peerPort() const = 0;
-    virtual QString peerName() const = 0;
-    virtual QHostAddress peerAddress() const = 0;
-
     virtual bool init() = 0;
 
     void finalizeCookies(Context *ctx);
