@@ -89,10 +89,6 @@ void Dispatcher::setupActions()
                                     registered = true;
                                 }
                             }
-
-                            if (!registered) {
-                                qWarning() << "***Could NOT register the action" << action->name() << "with any dispatcher";
-                            }
                         }
                     } else {
                         delete action;
