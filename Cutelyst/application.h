@@ -24,8 +24,8 @@
 
 namespace Cutelyst {
 
-namespace CutelystPlugin {
-class Plugin;
+namespace Plugin {
+class AbstractPlugin;
 }
 class Context;
 class Request;
@@ -43,7 +43,20 @@ public:
     int printError();
     bool setup(Engine *engine = 0);
 
+    /**
+     * Registers a global plugin ie one that doesn't need
+     * to be created explicity for a single request and returns
+     * true on plugin->isApplicationPlugin();
+     *
+     * @return true if the plugin could be registered
+     */
+    bool registerPlugin(Plugin::AbstractPlugin  *plugin);
+
 Q_SIGNALS:
+    /**
+     * Emited so that you register all plugins that are specifically
+     * to each request
+     */
     void registerPlugins(Context *ctx);
 
 protected:

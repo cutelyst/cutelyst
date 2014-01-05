@@ -22,6 +22,8 @@ public:
 
     bool setup(Context *ctx);
 
+    virtual bool isApplicationPlugin() const;
+
 private:
     void beforePrepareAction(bool *skipMethod);
     bool locateStaticFile(Context *ctx, QString &path);

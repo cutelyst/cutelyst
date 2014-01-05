@@ -37,6 +37,11 @@ bool StaticSimple::setup(Context *ctx)
     return true;
 }
 
+bool StaticSimple::isApplicationPlugin() const
+{
+    return true;
+}
+
 void StaticSimple::beforePrepareAction(bool *skipMethod)
 {
     Context *ctx = static_cast<Context *>(sender());

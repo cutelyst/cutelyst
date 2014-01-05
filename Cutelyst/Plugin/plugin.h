@@ -45,6 +45,17 @@ public:
      */
     virtual bool setup(Context *ctx);
 
+    /**
+     * Reimplement this if the plugin can be
+     * used as an Application plugin, for
+     * example a plugin that doesn't need to keep
+     * request information like the StaticSimple plugin.
+     *
+     * @return true if the plugin can be used as an
+     * Application plugin (false is the default).
+     */
+    virtual bool isApplicationPlugin() const;
+
 protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Context *ctx, const QString &key, const QVariant &value);

@@ -104,6 +104,18 @@ bool Application::setup(Engine *engine)
     return d->engine->init();
 }
 
+bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
+{
+    Q_D(Application);
+
+    if (plugin->isApplicationPlugin()) {
+        d->plugins << plugin;
+        return true;
+    }
+    qWarning() << "The plugin:" << plugin->metaObject()->className() << "isn't an Application Plugin and cannot be registered";
+    return false;
+}
+
 void Application::handleRequest(Request *req, Response *resp)
 {
     Q_D(Application);
@@ -115,6 +127,12 @@ void Application::handleRequest(Request *req, Response *resp)
     priv->response = resp;
     Context *ctx = new Context(priv);
 
+    // Register application plugins
+    foreach (Plugin::AbstractPlugin *plugin, d->plugins) {
+        ctx->registerPlugin(plugin, false);
+    }
+
+    // Register context plugins
     registerPlugins(ctx);
 
     ctx->handleRequest();

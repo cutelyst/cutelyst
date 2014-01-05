@@ -35,6 +35,11 @@ bool AbstractPlugin::setup(Context *ctx)
     return true;
 }
 
+bool AbstractPlugin::isApplicationPlugin() const
+{
+    return false;
+}
+
 QVariant AbstractPlugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
 {
     return ctx->pluginProperty(const_cast<Plugin::AbstractPlugin*>(this), key, defaultValue);

@@ -38,6 +38,7 @@ public:
 
     Dispatcher *dispatcher;
     Engine *engine;
+    QList<Plugin::AbstractPlugin*> plugins;
 };
 
 }
