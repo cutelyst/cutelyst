@@ -74,22 +74,26 @@ void Dispatcher::setupActions()
                 if (method.methodType() == QMetaMethod::Method) {
 //                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
 //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
+                    bool registered = false;
                     Action *action = new Action(method, controller);
                     if (action->isValid() && !d->actionHash.contains(action->privateName())) {
-                        d->actionHash.insert(action->privateName(), action);
-                        d->containerHash[action->ns()] << action;
-                        instanceUsed = true;
-
                         if (!action->attributes().contains("Private")) {
-                            bool registered = false;
-
                             // Register the action with each dispatcher
                             foreach (CutelystDispatchType *dispatch, d->dispatchers) {
                                 if (dispatch->registerAction(action)) {
                                     registered = true;
                                 }
                             }
+                        } else {
+                            // We register private actions
+                            registered = true;
                         }
+                    }
+
+                    if (registered) {
+                        d->actionHash.insert(action->privateName(), action);
+                        d->containerHash[action->ns()] << action;
+                        instanceUsed = true;
                     } else {
                         delete action;
                     }
