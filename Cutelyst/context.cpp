@@ -217,6 +217,10 @@ bool Context::registerPlugin(Plugin::AbstractPlugin *plugin, bool takeOwnership)
     if (plugin->setup(this)) {
         if (takeOwnership) {
             plugin->setParent(this);
+
+            if (plugin->isApplicationPlugin()) {
+                qWarning() << "The plugin:" << plugin->metaObject()->className() << "is an Application plugin and should be registered there";
+            }
         }
         d->plugins.insert(plugin, QVariantHash());
         return true;
