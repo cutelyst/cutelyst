@@ -4,9 +4,11 @@
 
 using namespace Cutelyst::Plugin;
 
-CredentialPassword::CredentialPassword()
+CredentialPassword::CredentialPassword() :
+    m_passwordField(QLatin1String("password")),
+    m_passwordType(None),
+    m_hashType(QCryptographicHash::Md5)
 {
-    m_passwordField = QLatin1String("password");
 }
 
 Authentication::User CredentialPassword::authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
@@ -33,17 +35,48 @@ void CredentialPassword::setPasswordField(const QString &fieldName)
     m_passwordField = fieldName;
 }
 
+CredentialPassword::Type CredentialPassword::passwordType() const
+{
+    return m_passwordType;
+}
+
+void CredentialPassword::setPasswordType(CredentialPassword::Type type)
+{
+    m_passwordType = type;
+}
+
+QCryptographicHash::Algorithm CredentialPassword::hashType() const
+{
+    return m_hashType;
+}
+
+void CredentialPassword::setHashType(QCryptographicHash::Algorithm type)
+{
+    m_hashType = type;
+}
+
 bool CredentialPassword::checkPassword(const Authentication::User &user, const CStringHash &authinfo)
 {
-    QString passwordType = "clear";
-
     QString password = authinfo.value(m_passwordField);
     QString storedPassword = user.value(m_passwordField);
 
-    if (passwordType == "clear") {
-        return password == storedPassword;
-    } else {
+    if (m_passwordType == None) {
+        return true;
+    } else if (m_passwordType == Clear) {
+        return storedPassword == password;
+    } else if (m_passwordType == Hashed) {
+        QCryptographicHash hash(m_hashType);
+        hash.addData(m_passwordPreSalt.toUtf8());
+        hash.addData(password.toUtf8());
+        hash.addData(m_passwordPostSalt.toUtf8());
+        QByteArray result =  hash.result();
 
+        return storedPassword == result ||
+                storedPassword == result.toHex() ||
+                storedPassword == result.toBase64();
+    } else if (m_passwordType == SelfCheck) {
+        return user.checkPassword(password);
     }
+
     return false;
 }

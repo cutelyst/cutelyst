@@ -351,6 +351,10 @@ Authentication::User::User(const QString &id) :
 
 }
 
+Authentication::User::~User()
+{
+}
+
 QString Authentication::User::id() const
 {
     return m_id;
@@ -374,6 +378,12 @@ Authentication::Realm *Authentication::User::authRealm()
 void Authentication::User::setAuthRealm(Authentication::Realm *authRealm)
 {
     m_realm = authRealm;
+}
+
+bool Authentication::User::checkPassword(const QString &password) const
+{
+    Q_UNUSED(password)
+    return false;
 }
 
 QDataStream &operator<<(QDataStream &out, const Authentication::User &user)

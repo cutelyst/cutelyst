@@ -39,6 +39,7 @@ public:
     public:
         User();
         User(const QString &id);
+        virtual ~User();
 
         /**
          * A unique ID by which a user can be retrieved from the store.
@@ -49,6 +50,8 @@ public:
 
         Realm *authRealm();
         void setAuthRealm(Realm *authRealm);
+
+        virtual bool checkPassword(const QString &password) const;
 
     private:
         QString m_id;
