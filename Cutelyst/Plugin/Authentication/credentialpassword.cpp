@@ -55,6 +55,26 @@ void CredentialPassword::setHashType(QCryptographicHash::Algorithm type)
     m_hashType = type;
 }
 
+QString CredentialPassword::passwordPreSalt() const
+{
+    return m_passwordPreSalt;
+}
+
+void CredentialPassword::setPasswordPreSalt(const QString &passwordPreSalt)
+{
+    m_passwordPreSalt = passwordPreSalt;
+}
+
+QString CredentialPassword::passwordPostSalt() const
+{
+    return m_passwordPostSalt;
+}
+
+void CredentialPassword::setPasswordPostSalt(const QString &passwordPostSalt)
+{
+    m_passwordPostSalt = passwordPostSalt;
+}
+
 bool CredentialPassword::checkPassword(const Authentication::User &user, const CStringHash &authinfo)
 {
     QString password = authinfo.value(m_passwordField);
