@@ -34,7 +34,7 @@ class Action : public QObject
     Q_OBJECT
 public:
     explicit Action(const QMetaMethod &method, Controller *parent = 0);
-    ~Action();
+    virtual ~Action();
 
     /**
      * @return The sub attributes that are set for this action,

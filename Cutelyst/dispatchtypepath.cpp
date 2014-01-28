@@ -122,8 +122,6 @@ bool DispatchTypePath::match(Context *ctx, const QString &path) const
 
 bool DispatchTypePath::registerAction(Action *action)
 {
-    int pathsCount = m_paths.size();
-
     QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
     QMultiHash<QByteArray, QByteArray>::iterator i = attributes.find("Path");
     while (i != attributes.end() && i.key() == "Path") {
@@ -132,7 +130,8 @@ bool DispatchTypePath::registerAction(Action *action)
         ++i;
     }
 
-    return m_paths.size() != pathsCount;
+    // We always register valid actions
+    return true;
 }
 
 QString DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
@@ -166,8 +165,14 @@ void DispatchTypePath::registerPath(const QString &path, Action *action)
         _path = QLatin1Char('/');
     }
 
-    ActionList actions = m_paths.value(_path);
-    actions << action;
-    qSort(actions.begin(), actions.end(), actionLessThan);
-    m_paths.insert(_path, actions);
+    if (m_paths.contains(_path)) {
+        ActionList actions = m_paths.value(_path);
+        actions << action;
+        qSort(actions.begin(), actions.end(), actionLessThan);
+        m_paths[_path] = actions;
+    } else {
+        ActionList actions;
+        actions << action;
+        m_paths.insert(_path, actions);
+    }
 }
