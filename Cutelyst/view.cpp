@@ -21,15 +21,43 @@
 #include "context.h"
 #include "response.h"
 #include "request.h"
+#include "Plugin/View/ViewInterface.h"
+
+#include <QDir>
+#include <QPluginLoader>
+#include <QJsonArray>
 
 using namespace Cutelyst;
 
-CutelystView::CutelystView(QObject *parent) :
-    QObject(parent)
+View::View(const QString &engine, QObject *parent) :
+    QObject(parent),
+    interface(0)
 {
+    QDir pluginsDir("/usr/lib/cutelyst-plugins");
+    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        QJsonObject json = pluginLoader.metaData()["MetaData"].toObject();
+        if (json["name"].toString() == engine) {
+            QObject *plugin = pluginLoader.instance();
+            if (plugin) {
+                interface = qobject_cast<ViewInterface *>(plugin);
+                if (!interface) {
+                    qCritical() << "Could not create an instance of the engine:" << engine;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+//    qDebug() << interface;
+
+    if (!interface) {
+        qCritical() << "Engine not loaded:" << engine;
+    }
 }
 
-bool CutelystView::process(Context *ctx)
+bool View::process(Context *ctx)
 {
     if (ctx->res()->contentType().isEmpty()) {
         ctx->res()->setContentType("text/html; charset=utf-8");
@@ -52,10 +80,37 @@ bool CutelystView::process(Context *ctx)
     return render(ctx);
 }
 
-bool CutelystView::render(Context *ctx)
+QString View::includePath() const
 {
-    Q_UNUSED(ctx)
-    qFatal("directly inherits from Catalyst::View. You need to\n"
-           " inherit from a subclass like Cutelyst::View::ClearSilver instead.\n");
-    return false;
+    return interface->includePath();
+}
+
+void View::setIncludePath(const QString &path)
+{
+    interface->setIncludePath(path);
+}
+
+QString View::templateExtension() const
+{
+    return interface->templateExtension();
+}
+
+void View::setTemplateExtension(const QString &extension)
+{
+    interface->setTemplateExtension(extension);
+}
+
+QString View::wrapper() const
+{
+    return interface->wrapper();
+}
+
+void View::setWrapper(const QString &name)
+{
+    interface->setWrapper(name);
+}
+
+bool View::render(Context *ctx)
+{
+    return interface->render(ctx);
 }

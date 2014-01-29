@@ -17,29 +17,44 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_VIEW_H
-#define CUTELYST_VIEW_H
+#ifndef VIEW_H
+#define VIEW_H
 
 #include <QObject>
 
 namespace Cutelyst {
 
 class Context;
-class CutelystView : public QObject
+class ViewInterface;
+class View : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystView(QObject *parent = 0);
+    explicit View(const QString &engine, QObject *parent = 0);
 
     bool process(Context *ctx);
+
+    QString includePath() const;
+    void setIncludePath(const QString &path);
+
+    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    QString templateExtension() const;
+    void setTemplateExtension(const QString &extension);
+
+    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+    QString wrapper() const;
+    void setWrapper(const QString &name);
 
     /**
      * All subclasses must reimplement this to
      * do it's rendering.
      */
     virtual bool render(Context *ctx);
+
+private:
+    ViewInterface *interface;
 };
 
 }
 
-#endif // CUTELYST_VIEW_H
+#endif // VIEW_H

@@ -3,15 +3,17 @@
 
 #include <QObject>
 
-#include <Cutelyst/view.h>
+#include "../ViewInterface.h"
 
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
-class GrantleeView : public CutelystView
+class GrantleeView : public QObject, ViewInterface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
+    Q_PLUGIN_METADATA(IID "org.cutelyst.Grantlee" FILE "metadata.json")
+    Q_INTERFACES(Cutelyst::ViewInterface)
 public:
     explicit GrantleeView(QObject *parent = 0);
     ~GrantleeView();

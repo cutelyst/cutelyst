@@ -3,15 +3,17 @@
 
 #include <QObject>
 
-#include <Cutelyst/view.h>
+#include "../ViewInterface.h"
 
 namespace Cutelyst {
 
 class ClearSilverPrivate;
-class ClearSilver : public CutelystView
+class ClearSilver : public QObject, ViewInterface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)
+    Q_PLUGIN_METADATA(IID "org.cutelyst.ClearSilver" FILE "metadata.json")
+    Q_INTERFACES(Cutelyst::ViewInterface)
 public:
     explicit ClearSilver(QObject *parent = 0);
     ~ClearSilver();

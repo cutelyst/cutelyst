@@ -28,6 +28,7 @@ set(cutelystqt_SRC
     childprocess_p.h
     application.cpp
     application_p.h
+    Plugin/View/ViewInterface.h
     Plugin/plugin.cpp
     Plugin/session.cpp
     Plugin/staticsimple.cpp

@@ -14,7 +14,7 @@
 using namespace Cutelyst;
 
 GrantleeView::GrantleeView(QObject *parent) :
-    CutelystView(parent),
+    QObject(parent),
     d_ptr(new GrantleeViewPrivate)
 {
     Q_D(GrantleeView);

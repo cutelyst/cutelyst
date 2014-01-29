@@ -2,6 +2,8 @@ include_directories(
     ${Grantlee_INCLUDES}
 )
 
+add_definitions(-DQT_PLUGIN)
+
 set(grantlee_plugin_SRC
     grantleeview.cpp
     grantleeview_p.h

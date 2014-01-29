@@ -12,7 +12,7 @@
 using namespace Cutelyst;
 
 ClearSilver::ClearSilver(QObject *parent) :
-    CutelystView(parent),
+    QObject(parent),
     d_ptr(new ClearSilverPrivate)
 {
 }
