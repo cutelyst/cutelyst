@@ -116,3 +116,4 @@ install(FILES ${cutelystqt_plugin_authentication_HEADERS}
 )
 
 add_subdirectory(modules)
+add_subdirectory(Plugin)
