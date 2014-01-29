@@ -2,11 +2,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    /usr/include/ClearSilver
 )
-
-find_library(CLEAR_SILVER_CS   libneo_cs.a)
-find_library(CLEAR_SILVER_UTIL libneo_utl.a)
 
 set(cutelystqt_SRC
     request.cpp
@@ -39,8 +35,6 @@ set(cutelystqt_SRC
     Plugin/authentication_p.h
     Plugin/Authentication/minimal.cpp
     Plugin/Authentication/credentialpassword.cpp
-    View/clearsilver.cpp
-    View/clearsilver_p.h
     uwsgi.h
 )
 
@@ -66,15 +60,10 @@ set(cutelystqt_plugin_HEADERS
     Plugin/authentication.h
 )
 
-set(cutelystqt_view_HEADERS
-    View/clearsilver.h
-)
-
 set(cutelystqt_plugin_authentication_HEADERS
     Plugin/Authentication/minimal.h
     Plugin/Authentication/credentialpassword.h
 )
-
 
 set(cutelystqt_HEADERS_PRIVATE
     common.h
@@ -86,10 +75,6 @@ add_library(cutelyst-qt5 SHARED ${cutelystqt_SRC} ${cutelystqt_HEADERS} ${cutely
 set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
 
 qt5_use_modules(cutelyst-qt5 Core Network DBus)
-target_link_libraries(cutelyst-qt5
-    ${CLEAR_SILVER_CS}
-    ${CLEAR_SILVER_UTIL}
-)
 
 set_property(TARGET cutelyst-qt5 PROPERTY COMPILE_DEFINITIONS CUTELYST_STATIC)
 
@@ -107,9 +92,6 @@ install(FILES ${cutelystqt_HEADERS}
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugin
-)
-install(FILES ${cutelystqt_view_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/View
 )
 install(FILES ${cutelystqt_plugin_authentication_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugin/Authentication

@@ -1,9 +1,3 @@
-if (Grantlee_FOUND)
-    message(STATUS "Grantlee templating found.")
-elseif(Grantlee_FOUND)
-    message(STATUS "Grantlee not found.")
-endif (Grantlee_FOUND)
-
 include_directories(
     ${Grantlee_INCLUDES}
 )
