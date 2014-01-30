@@ -20,7 +20,6 @@
 #include "application_p.h"
 
 #include "enginehttp.h"
-#include "engineuwsgi.h"
 #include "context_p.h"
 #include "request.h"
 #include "response.h"
@@ -52,8 +51,8 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     }
 }
 
-Application::Application(int &argc, char **argv) :
-    QCoreApplication(argc, argv),
+Application::Application(QObject *parent) :
+    QObject(parent),
     d_ptr(new ApplicationPrivate)
 {
     qInstallMessageHandler(cuteOutput);

@@ -15,7 +15,6 @@ set(cutelystqt_SRC
     action_p.h
     engine.cpp
     engine_p.h
-    #engineuwsgi.cpp
     enginehttp.cpp
     enginehttp_p.h
     controller.cpp
@@ -36,7 +35,6 @@ set(cutelystqt_SRC
     Plugin/authentication_p.h
     Plugin/Authentication/minimal.cpp
     Plugin/Authentication/credentialpassword.cpp
-    uwsgi.h
 )
 
 set(cutelystqt_HEADERS

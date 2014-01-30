@@ -81,3 +81,5 @@ include_directories(
 add_subdirectory(Cutelyst)
 
 add_subdirectory(server)
+add_subdirectory(uwsgiEngine)
+

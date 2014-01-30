@@ -28,21 +28,22 @@ int main(int argc, char *argv[])
     qRegisterMetaType<Root*>();
     qRegisterMetaType<Users*>();
 
-    Application app(argc, argv);
+    QCoreApplication app(argc, argv);
+    Application server;
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(),
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
 
-    QObject::connect(&app, &Application::registerPlugins,
+    QObject::connect(&server, &Application::registerPlugins,
                 [=](Context *ctx) {
         ctx->registerPlugin(new Plugin::StaticSimple);
         ctx->registerPlugin(new Plugin::Session);
     });
 
-    if (app.parseArgs() && app.setup()) {
+    if (server.parseArgs() && server.setup()) {
         return app.exec();
     }
-    return app.printError();
+    return server.printError();
 }

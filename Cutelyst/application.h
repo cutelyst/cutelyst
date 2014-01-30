@@ -32,12 +32,12 @@ class Request;
 class Response;
 class Engine;
 class ApplicationPrivate;
-class Application : public QCoreApplication
+class Application : public QObject
 {
     Q_OBJECT
 public:
-    Application(int &argc, char **argv);
-    ~Application();
+    explicit Application(QObject *parent = 0);
+    virtual ~Application();
 
     bool parseArgs();
     int printError();
@@ -69,5 +69,9 @@ private:
 };
 
 }
+
+#define CutelystApplicationInterface_iid "org.cutelyst.CutelystApplicationInterface"
+
+Q_DECLARE_INTERFACE(Cutelyst::Application, CutelystApplicationInterface_iid)
 
 #endif // CUTELYST_APPLICATION_H
