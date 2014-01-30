@@ -42,7 +42,7 @@ public:
     virtual QString uriForAction(Action *action, const QStringList &captures) const;
 
 private:
-    void registerPath(const QString &path, Action *action);
+    bool registerPath(const QString &path, Action *action);
 
     QHash<QString, ActionList> m_paths;
 };

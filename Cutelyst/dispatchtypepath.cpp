@@ -122,16 +122,19 @@ bool DispatchTypePath::match(Context *ctx, const QString &path) const
 
 bool DispatchTypePath::registerAction(Action *action)
 {
+    bool ret = false;
     QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
     QMultiHash<QByteArray, QByteArray>::iterator i = attributes.find("Path");
     while (i != attributes.end() && i.key() == "Path") {
-        registerPath(i.value(), action);
+        if (registerPath(i.value(), action)) {
+            ret = true;
+        }
 
         ++i;
     }
 
     // We always register valid actions
-    return true;
+    return ret;
 }
 
 QString DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
@@ -152,7 +155,7 @@ bool actionLessThan(Action *a1, Action *a2)
     return a1->numberOfArgs() < a2->numberOfArgs();
 }
 
-void DispatchTypePath::registerPath(const QString &path, Action *action)
+bool DispatchTypePath::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
     if (_path.startsWith(QLatin1Char('/'))) {
@@ -167,12 +170,20 @@ void DispatchTypePath::registerPath(const QString &path, Action *action)
 
     if (m_paths.contains(_path)) {
         ActionList actions = m_paths.value(_path);
+        foreach (const Action *regAction, actions) {
+            if (regAction->numberOfArgs() == action->numberOfArgs()) {
+                qCritical() << "Not registering Action"
+                            << action->name()
+                            << "because it conflicts with "
+                            << regAction->name();
+                return false;
+            }
+        }
         actions << action;
         qSort(actions.begin(), actions.end(), actionLessThan);
         m_paths[_path] = actions;
     } else {
-        ActionList actions;
-        actions << action;
-        m_paths.insert(_path, actions);
+        m_paths.insert(_path, ActionList() << action);
     }
+    return true;
 }

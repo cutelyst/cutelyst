@@ -30,6 +30,16 @@ bool Users::Auto(Context *ctx)
     return true;
 }
 
+void Users::index(Context *ctx, Controller::Path, Controller::Args)
+{
+
+}
+
+void Users::home(Context *ctx, Controller::Args, Controller::Path)
+{
+
+}
+
 //void Users::End(Context *ctx)
 //{
 //    qDebug() << "*** Users::End()";
