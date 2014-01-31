@@ -38,7 +38,9 @@ struct wsgi_request *_wsgi_req;
 void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
-    uwsgi_response_prepare_headers(_wsgi_req, (char *)"200 OK", 6);
+
+    qDebug() << res->statusCode().data() << res->statusCode().size();
+    uwsgi_response_prepare_headers(_wsgi_req, res->statusCode().data(), res->statusCode().size());
 
     uwsgi_response_add_content_type(_wsgi_req,
                                     res->contentType().data(),

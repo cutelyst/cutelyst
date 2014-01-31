@@ -97,7 +97,7 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
     Q_D(CutelystEngineHttp);
 
     QByteArray header;
-    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusString(ctx->response()->status())));
+    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusCode(ctx->response()->status()).data()));
 
     QMap<QByteArray, QByteArray> headers = ctx->response()->headers();
 
@@ -147,51 +147,6 @@ void CutelystEngineHttp::removeConnection()
     if (req) {
         d->requests.take(req->connectionId());
     }
-}
-
-QString CutelystEngineHttp::statusString(quint16 status) const
-{
-    QString ret;
-    switch (status) {
-    case Response::OK:
-        ret = QLatin1String("OK");
-        break;
-    case Response::MovedPermanently:
-        ret = QLatin1String("Moved Permanently");
-        break;
-    case Response::Found:
-        ret = QLatin1String("Found");
-        break;
-    case Response::NotModified:
-        ret = QLatin1String("Not Modified");
-        break;
-    case Response::TemporaryRedirect:
-        ret = QLatin1String("Temporary Redirect");
-        break;
-    case Response::BadRequest:
-        ret = QLatin1String("Bad Request");
-        break;
-    case Response::AuthorizationRequired:
-        ret = QLatin1String("Authorization Required");
-        break;
-    case Response::Forbidden:
-        ret = QLatin1String("Forbidden");
-        break;
-    case Response::NotFound:
-        ret = QLatin1String("Not Found");
-        break;
-    case Response::MethodNotAllowed:
-        ret = QLatin1String("Method Not Allowed");
-        break;
-    case Response::InternalServerError:
-        ret = QLatin1String("Internal Server Error");
-        break;
-    }
-
-    if (ret.isEmpty()) {
-        return QString::number(status);
-    }
-    return QString::number(status) % QLatin1Char(' ') % ret;
 }
 
 void CutelystEngineHttp::onNewServerConnection()

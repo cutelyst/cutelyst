@@ -18,6 +18,7 @@
  */
 
 #include "response_p.h"
+#include "engine.h"
 
 #include <QDebug>
 
@@ -40,10 +41,17 @@ quint16 Response::status() const
     return d->status;
 }
 
+QByteArray Response::statusCode() const
+{
+    Q_D(const Response);
+    return d->statusCode;
+}
+
 void Response::setStatus(quint16 status)
 {
     Q_D(Response);
     d->status = status;
+    d->statusCode = Engine::statusCode(status);
 }
 
 bool Response::finalizedHeaders() const
@@ -138,4 +146,6 @@ ResponsePrivate::ResponsePrivate() :
     // TODO use version macro here
     headers.insert("X-Cutelyst", "0.1");
     headers.insert("Content-Length", "0");
+
+    statusCode = Engine::statusCode(status);
 }

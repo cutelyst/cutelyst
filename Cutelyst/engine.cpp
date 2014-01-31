@@ -131,3 +131,47 @@ void Engine::finalizeError(Context *ctx)
     // Return 500
     ctx->res()->setStatus(Response::InternalServerError);
 }
+
+QByteArray Engine::statusCode(quint16 status)
+{
+    QByteArray ret = QByteArray::number(status);
+    qDebug() << ret << status;
+    switch (status) {
+    case Response::OK:
+        ret += " OK";
+        break;
+    case Response::MovedPermanently:
+        ret += " Moved Permanently";
+        break;
+    case Response::Found:
+        ret += " Found";
+        break;
+    case Response::NotModified:
+        ret += " Not Modified";
+        break;
+    case Response::TemporaryRedirect:
+        ret += " Temporary Redirect";
+        break;
+    case Response::BadRequest:
+        ret += " Bad Request";
+        break;
+    case Response::AuthorizationRequired:
+        ret += " Authorization Required";
+        break;
+    case Response::Forbidden:
+        ret += " Forbidden";
+        break;
+    case Response::NotFound:
+        ret += " Not Found";
+        break;
+    case Response::MethodNotAllowed:
+        ret += " Method Not Allowed";
+        break;
+    case Response::InternalServerError:
+        ret += " Internal Server Error";
+        break;
+    }
+    qDebug() << ret << status;
+
+    return ret;
+}

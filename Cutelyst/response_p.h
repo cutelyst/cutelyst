@@ -34,6 +34,7 @@ public:
     ResponsePrivate();
 
     quint16 status;
+    QByteArray statusCode;
     quint16 finalizedHeaders;
     // We use a map since QHash *might*
     // cause issues in browsers due to

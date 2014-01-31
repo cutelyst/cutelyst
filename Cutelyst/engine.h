@@ -46,6 +46,9 @@ public:
 Q_SIGNALS:
     void handleRequest(Request *request, Response *response);
 
+public:
+    static QByteArray statusCode(quint16 status);
+
 protected Q_SLOTS:
     void createRequest(int connectionId,
                        const QUrl &url,

@@ -47,7 +47,7 @@ private Q_SLOTS:
 
 private:
     Q_DECLARE_PRIVATE(CutelystEngineHttp)
-    QString statusString(quint16 status) const;
+
     void onNewServerConnection();
     void onNewClientConnection(int socket);
 };
