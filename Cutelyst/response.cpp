@@ -82,7 +82,7 @@ void Response::setContentLength(quint64 length)
     d->headers["Content-Length"] = QString::number(length).toLocal8Bit();
 }
 
-QString Response::contentType() const
+QByteArray Response::contentType() const
 {
     Q_D(const Response);
     return d->headers.value("Content-Type");

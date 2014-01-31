@@ -37,11 +37,14 @@ struct wsgi_request *_wsgi_req;
 
 void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 {
-    QByteArray body = ctx->res()->body();
-    qDebug() << "BODY" << body;
+    Response *res = ctx->res();
     uwsgi_response_prepare_headers(_wsgi_req, (char *)"200 OK", 6);
-    uwsgi_response_add_content_type(_wsgi_req, (char *)"text/html", 9);
-    uwsgi_response_write_body_do(_wsgi_req, body.data(), body.size());
+
+    uwsgi_response_add_content_type(_wsgi_req,
+                                    res->contentType().data(),
+                                    res->contentType().size());
+
+    uwsgi_response_write_body_do(_wsgi_req, res->body().data(), res->body().size());
 }
 
 void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
@@ -63,7 +66,7 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
     QByteArray remote(remote_addr, remote_addr_len);
     QByteArray method(request_method, request_method_len);
     QByteArray protocol(server_protocol, server_protocol_len);
-    QHash<QString, QByteArray> headers;
+    QHash<QByteArray, QByteArray> headers;
 
     QUrl url;
     if (!remote.isEmpty()) {

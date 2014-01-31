@@ -48,7 +48,7 @@ Q_SIGNALS:
                       const QUrl &url,
                       const QByteArray &method,
                       const QString &protocol,
-                      const QHash<QString, QByteArray> &headers,
+                      const QHash<QByteArray, QByteArray> &headers,
                       const QByteArray &body);
 
 private:
@@ -64,7 +64,7 @@ private:
     QString m_path;
     QString m_protocol;
     QTimer m_timeoutTimer;
-    QHash<QString, QByteArray> m_headers;
+    QHash<QByteArray, QByteArray> m_headers;
 };
 
 class CutelystEngineHttpPrivate

@@ -134,13 +134,13 @@ QList<QNetworkCookie> Request::cookies() const
     return d->cookies;
 }
 
-QByteArray Request::header(const QString &key) const
+QByteArray Request::header(const QByteArray &key) const
 {
     Q_D(const Request);
     return d->headers.value(key);
 }
 
-QHash<QString, QByteArray> Request::headers() const
+QHash<QByteArray, QByteArray> Request::headers() const
 {
     Q_D(const Request);
     return d->headers;

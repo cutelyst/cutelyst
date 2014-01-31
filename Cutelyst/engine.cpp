@@ -39,7 +39,7 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QString, QByteArray> &headers, const QByteArray &body)
+void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
 {
     // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;
@@ -59,7 +59,7 @@ void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &
     }
 
     QMultiHash<QString, QString> bodyParam;
-    if (headers.value(QLatin1String("Content-Type")) == "application/x-www-form-urlencoded") {
+    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         foreach (const QByteArray &parameter, body.split('&')) {
@@ -80,7 +80,7 @@ void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &
         }
     }
 
-    QByteArray cookies = headers.value(QLatin1String("Cookie"));
+    QByteArray cookies = headers.value("Cookie");
 
     RequestPrivate *requestPriv = new RequestPrivate;
     requestPriv->engine = this;

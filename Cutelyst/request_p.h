@@ -37,7 +37,7 @@ public:
     QStringList args;
     QString protocol;
     QList<QNetworkCookie> cookies;
-    QHash<QString, QByteArray> headers;
+    QHash<QByteArray, QByteArray> headers;
     QByteArray body;
     QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;

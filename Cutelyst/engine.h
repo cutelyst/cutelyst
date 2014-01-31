@@ -51,7 +51,7 @@ protected Q_SLOTS:
                        const QUrl &url,
                        const QByteArray &method,
                        const QString &protocol,
-                       const QHash<QString, QByteArray> &headers,
+                       const QHash<QByteArray, QByteArray> &headers,
                        const QByteArray &body);
 protected:
     EnginePrivate *d_ptr;

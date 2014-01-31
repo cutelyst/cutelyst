@@ -99,8 +99,8 @@ public:
      * Returns all the cookie from the request
      */
     QList<QNetworkCookie> cookies() const;
-    QByteArray header(const QString &key) const;
-    QHash<QString, QByteArray> headers() const;
+    QByteArray header(const QByteArray &key) const;
+    QHash<QByteArray, QByteArray> headers() const;
     QByteArray method() const;
     QString protocol() const;
     QString userAgent() const;

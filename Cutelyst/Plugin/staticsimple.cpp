@@ -68,7 +68,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
         QString lastModified;
         lastModified = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
 
-        if (lastModified == ctx->req()->headers()[QLatin1String("If-Modified-Since")]) {
+        if (lastModified == ctx->req()->headers()["If-Modified-Since"]) {
             ctx->res()->setStatus(Response::NotModified);
             return true;
         }

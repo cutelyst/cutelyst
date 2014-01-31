@@ -318,9 +318,9 @@ void CutelystEngineHttpRequest::process()
             m_bufLastIndex = newLine + 1;
 
             if (!section.isEmpty()) {
-                m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
+                m_headers[section.section(QLatin1Char(':'), 0, 0).toUtf8()] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
             } else {
-                m_bodySize = m_headers.value(QLatin1String("Content-Length")).toULongLong();
+                m_bodySize = m_headers.value("Content-Length").toULongLong();
                 m_finishedHeaders = true;
             }
         }
@@ -337,8 +337,8 @@ void CutelystEngineHttpRequest::process()
     }
 
     QUrl url;
-    if (m_headers.contains(QLatin1String("Host"))) {
-        url = QLatin1String("http://") % m_headers[QLatin1String("Host")] % m_path;
+    if (m_headers.contains("Host")) {
+        url = QLatin1String("http://") % m_headers["Host"] % m_path;
     } else {
         url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
     }
