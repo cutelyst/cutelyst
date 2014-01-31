@@ -6,6 +6,8 @@
 
 #include <QPluginLoader>
 #include <QUrl>
+#include <QHostInfo>
+#include <QStringBuilder>
 
 extern struct uwsgi_server uwsgi;
 
@@ -44,17 +46,40 @@ void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 
 void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
 {
-    char *url;
-    uint16_t url_len;
-    url = uwsgi_get_var(req, (char *) "PATH_INFO", 9, &url_len);
+    uint16_t path_info_len;
+    char *path_info = uwsgi_get_var(req, (char *) "PATH_INFO", 9, &path_info_len);
 
-    QUrl urlParsed = QString(url).trimmed();
-    qDebug() << url << urlParsed;
+    uint16_t remote_addr_len = 0;
+    char *remote_addr = uwsgi_get_var(req, (char *) "REMOTE_ADDR", 11, &remote_addr_len);
+
+    uint16_t request_method_len;
+    char *request_method = uwsgi_get_var(req, (char *) "REQUEST_METHOD", 14, &request_method_len);
+
+    uint16_t server_protocol_len;
+    char *server_protocol = uwsgi_get_var(req, (char *) "SERVER_PROTOCOL", 15, &server_protocol_len);
+
+
+    QString path = QByteArray(path_info, path_info_len);
+    QByteArray remote(remote_addr, remote_addr_len);
+    QByteArray method(request_method, request_method_len);
+    QByteArray protocol(server_protocol, server_protocol_len);
+    QHash<QString, QByteArray> headers;
+
+    QUrl url;
+    if (!remote.isEmpty()) {
+        // TODO I think SERVER_NAME:SERVER_PORT is what we want here
+        url = QLatin1String("http://") % remote % path;
+    } else {
+        // This is a hack just in case remote is not set
+        url = QLatin1String("http://") % QHostInfo::localHostName() % path;
+    }
+
+    qDebug() << url << method << remote << path << protocol;
     createRequest(0,
-                  urlParsed,
-                  "GET",
-                  QString(),
-                  QHash<QString, QByteArray>(),
+                  url,
+                  method,
+                  protocol,
+                  headers,
                   QByteArray());
 }
 
