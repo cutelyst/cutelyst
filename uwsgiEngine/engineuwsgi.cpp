@@ -39,35 +39,27 @@ void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
 
-    qDebug() << res->statusCode().data() << res->statusCode().size();
-    uwsgi_response_prepare_headers(_wsgi_req, res->statusCode().data(), res->statusCode().size());
+    if (uwsgi_response_prepare_headers(_wsgi_req,
+                                       res->statusCode().data(),
+                                       res->statusCode().size())) {
+        return;
+    }
 
-    uwsgi_response_add_content_type(_wsgi_req,
-                                    res->contentType().data(),
-                                    res->contentType().size());
+    if (uwsgi_response_add_content_type(_wsgi_req,
+                                        res->contentType().data(),
+                                        res->contentType().size())) {
+        return;
+    }
 
     uwsgi_response_write_body_do(_wsgi_req, res->body().data(), res->body().size());
 }
 
 void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
 {
-    uint16_t path_info_len;
-    char *path_info = uwsgi_get_var(req, (char *) "PATH_INFO", 9, &path_info_len);
-
-    uint16_t remote_addr_len = 0;
-    char *remote_addr = uwsgi_get_var(req, (char *) "REMOTE_ADDR", 11, &remote_addr_len);
-
-    uint16_t request_method_len;
-    char *request_method = uwsgi_get_var(req, (char *) "REQUEST_METHOD", 14, &request_method_len);
-
-    uint16_t server_protocol_len;
-    char *server_protocol = uwsgi_get_var(req, (char *) "SERVER_PROTOCOL", 15, &server_protocol_len);
-
-
-    QString path = QByteArray(path_info, path_info_len);
-    QByteArray remote(remote_addr, remote_addr_len);
-    QByteArray method(request_method, request_method_len);
-    QByteArray protocol(server_protocol, server_protocol_len);
+    QString path = QByteArray(req->path_info, req->path_info_len);
+    QByteArray remote(req->remote_addr, req->remote_addr_len);
+    QByteArray method(req->method, req->method_len);
+    QByteArray protocol(req->protocol, req->protocol_len);
     QHash<QByteArray, QByteArray> headers;
 
     QUrl url;
@@ -100,22 +92,6 @@ bool CutelystEngineUwsgi::init()
 
 CutelystEngineUwsgi *engine;
 
-class FakeClass {
-
-public:
-    char *foobar;
-    uint16_t foobar_len;
-    void hello_world(struct wsgi_request *);
-
-};
-
-void FakeClass::hello_world(struct wsgi_request *wsgi_req) {
-
-    uwsgi_response_prepare_headers(wsgi_req, (char *)"200 OK", 6);
-    uwsgi_response_add_content_type(wsgi_req, (char *)"text/html", 9);
-    uwsgi_response_write_body_do(wsgi_req, foobar, foobar_len);
-}
-
 extern "C" int uwsgi_cplusplus_init(){
     uwsgi_log("Initializing Cutelyst C++ plugin\n");
     engine = new CutelystEngineUwsgi("/home/daniel/code/iglooshop/build/srv/libcuteserver.so");
@@ -127,8 +103,6 @@ extern "C" int uwsgi_cplusplus_request(struct wsgi_request *wsgi_req) {
 
 
     uwsgi_log("New request.\n");
-
-    FakeClass *fc;
 
     // empty request ?
     if (!wsgi_req->uh->pktsize) {

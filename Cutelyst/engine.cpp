@@ -171,7 +171,6 @@ QByteArray Engine::statusCode(quint16 status)
         ret += " Internal Server Error";
         break;
     }
-    qDebug() << ret << status;
 
     return ret;
 }
