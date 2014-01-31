@@ -63,21 +63,29 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
     QByteArray protocol(req->protocol, req->protocol_len);
     QByteArray queryString(req->query_string, req->query_string_len);
 
-    QByteArray body;
-    size_t remains = req->post_cl;
+    size_t remains = req->post_pos;
     qDebug() << "remains" << remains << "query string" << queryString;
-    while(remains > 0) {
-        qDebug() << "remains1" << remains;
-        ssize_t body_len = 0;
-        char *body_part =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
-        qDebug() << "remains2" << body_part;
-        if (!body_part || body_part == uwsgi.empty) {
-            break;
-        }
-        body.append(body_part, body_len);
-    }
+    qDebug() << "document_root" << QByteArray(req->document_root, req->document_root_len);
+    qDebug() << "cookie" << QByteArray(req->cookie, req->cookie_len);
+    qDebug() << "content_type" << QByteArray(req->content_type, req->content_type_len);
+    qDebug() << "post_pos" << req->post_pos;
+    qDebug() << "header_cnt" << req->header_cnt;
+    qDebug() << "var_cnt" << req->var_cnt;
+    qDebug() << "headers->len" << req->headers;
+//    qDebug() << "header" << QByteArray(req->headers->buf);
+
+
+//    for (size_t i = 0; i < req->headers->len; ++i) {
+//        qDebug() << "header" << i << QByteArray(req->headers->buf);
+//    }
+
+    ssize_t body_len = 0;
+    char *body_char =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
+    QByteArray body(body_char, body_len);
 
     QHash<QByteArray, QByteArray> headers;
+    headers.insert("Content-Type", QByteArray(req->content_type, req->content_type_len));
+    headers.insert("Cookie", QByteArray(req->cookie, req->cookie_len));
 
     QUrl url;
     if (!remote.isEmpty()) {
