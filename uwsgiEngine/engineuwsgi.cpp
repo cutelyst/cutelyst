@@ -3,6 +3,7 @@
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
+#include <Cutelyst/request.h>
 
 #include <QPluginLoader>
 #include <QUrl>
@@ -33,25 +34,25 @@ CutelystEngineUwsgi::CutelystEngineUwsgi(const QString &app, QObject *parent) :
     }
 }
 
-struct wsgi_request *_wsgi_req;
-
 void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
 
-    if (uwsgi_response_prepare_headers(_wsgi_req,
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
+
+    if (uwsgi_response_prepare_headers(wsgi_req,
                                        res->statusCode().data(),
                                        res->statusCode().size())) {
         return;
     }
 
-    if (uwsgi_response_add_content_type(_wsgi_req,
+    if (uwsgi_response_add_content_type(wsgi_req,
                                         res->contentType().data(),
                                         res->contentType().size())) {
         return;
     }
 
-    uwsgi_response_write_body_do(_wsgi_req, res->body().data(), res->body().size());
+    uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
 
 void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
@@ -60,6 +61,22 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
     QByteArray remote(req->remote_addr, req->remote_addr_len);
     QByteArray method(req->method, req->method_len);
     QByteArray protocol(req->protocol, req->protocol_len);
+    QByteArray queryString(req->query_string, req->query_string_len);
+
+    QByteArray body;
+    size_t remains = req->post_cl;
+    qDebug() << "remains" << remains << "query string" << queryString;
+    while(remains > 0) {
+        qDebug() << "remains1" << remains;
+        ssize_t body_len = 0;
+        char *body_part =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
+        qDebug() << "remains2" << body_part;
+        if (!body_part || body_part == uwsgi.empty) {
+            break;
+        }
+        body.append(body_part, body_len);
+    }
+
     QHash<QByteArray, QByteArray> headers;
 
     QUrl url;
@@ -72,12 +89,13 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
     }
 
     qDebug() << url << method << remote << path << protocol;
-    createRequest(0,
+    qDebug() << body;
+    createRequest(req,
                   url,
                   method,
                   protocol,
                   headers,
-                  QByteArray());
+                  body);
 }
 
 void CutelystEngineUwsgi::finalizeHeaders(Context *ctx)
@@ -99,9 +117,8 @@ extern "C" int uwsgi_cplusplus_init(){
     return 0;
 }
 
-extern "C" int uwsgi_cplusplus_request(struct wsgi_request *wsgi_req) {
-
-
+extern "C" int uwsgi_cplusplus_request(struct wsgi_request *wsgi_req)
+{
     uwsgi_log("New request.\n");
 
     // empty request ?
@@ -116,18 +133,7 @@ extern "C" int uwsgi_cplusplus_request(struct wsgi_request *wsgi_req) {
         goto clear;
     }
 
-    _wsgi_req = wsgi_req;
     engine->processRequest(wsgi_req);
-    //        fc = new FakeClass();
-    //        // get PATH_INFO
-    //        fc->foobar = uwsgi_get_var(wsgi_req, (char *) "PATH_INFO", 9, &fc->foobar_len);
-
-    //        if (fc->foobar) {
-    //                // send output
-    //                fc->hello_world(wsgi_req);
-    //        }
-
-    //        delete fc;
 
 clear:
     return UWSGI_OK;

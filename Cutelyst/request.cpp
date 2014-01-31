@@ -54,7 +54,7 @@ quint16 Request::peerPort() const
     return d->peerPort;
 }
 
-int Request::connectionId() const
+void *Request::connectionId() const
 {
     Q_D(const Request);
     return d->connectionId;

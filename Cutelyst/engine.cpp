@@ -39,7 +39,7 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+void Engine::createRequest(void *data, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
 {
     // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
     QMultiHash<QString, QString> queryParam;
@@ -84,7 +84,7 @@ void Engine::createRequest(int connectionId, const QUrl &url, const QByteArray &
 
     RequestPrivate *requestPriv = new RequestPrivate;
     requestPriv->engine = this;
-    requestPriv->connectionId = connectionId;
+    requestPriv->connectionId = data;
     requestPriv->method = method;
     requestPriv->url = url;
     requestPriv->protocol = protocol;

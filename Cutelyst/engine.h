@@ -50,7 +50,7 @@ public:
     static QByteArray statusCode(quint16 status);
 
 protected Q_SLOTS:
-    void createRequest(int connectionId,
+    void createRequest(void *data,
                        const QUrl &url,
                        const QByteArray &method,
                        const QString &protocol,

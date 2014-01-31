@@ -128,14 +128,16 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
         }
     }
 
-    d->requests[ctx->req()->connectionId()]->write(header);
+    int *id = static_cast<int*>(ctx->req()->connectionId());
+    d->requests[*id]->write(header);
 }
 
 void CutelystEngineHttp::finalizeBody(Context *ctx)
 {
     Q_D(CutelystEngineHttp);
 
-    CutelystEngineHttpRequest *req = d->requests.value(ctx->req()->connectionId());
+    int *id = static_cast<int*>(ctx->req()->connectionId());
+    CutelystEngineHttpRequest *req = d->requests.value(*id);
     req->write(ctx->response()->body());
     req->finish();
 }
@@ -302,7 +304,7 @@ void CutelystEngineHttpRequest::process()
     m_bufLastIndex = 0;
     m_finishedHeaders = false;
     m_processing = true;
-    requestReady(connectionId(),
+    requestReady(&m_connectionId,
                  url,
                  m_method,
                  m_protocol,

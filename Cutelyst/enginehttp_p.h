@@ -44,7 +44,7 @@ public slots:
     void timeout();
 
 Q_SIGNALS:
-    void requestReady(int connectionId,
+    void requestReady(void *requestData,
                       const QUrl &url,
                       const QByteArray &method,
                       const QString &protocol,
