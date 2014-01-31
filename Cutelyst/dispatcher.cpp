@@ -90,7 +90,10 @@ void Dispatcher::setupActions()
                         }
                     }
 
-                    if (registered) {
+                    // The Begin, Auto, End actions are not
+                    // registered by Dispatchers but we need them
+                    // as private actions anyway
+                    if (registered || action->isValid()) {
                         d->actionHash.insert(action->privateName(), action);
                         d->containerHash[action->ns()] << action;
                         instanceUsed = true;
