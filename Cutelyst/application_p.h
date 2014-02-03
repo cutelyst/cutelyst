@@ -36,7 +36,7 @@ public:
     int parentFD;
     int childPID;
     QString applicationName;
-    QString applicationVersion;
+    QString applicationVersion = "0.0.0";
 
     Dispatcher *dispatcher;
     Engine *engine;

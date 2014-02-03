@@ -15,7 +15,7 @@ add_executable(cuteserver
     ${server_SRCS}
 )
 
-qt5_use_modules(cuteserver Core Network DBus)
+qt5_use_modules(cuteserver Core Network)
 target_link_libraries(cuteserver
     cutelyst-qt5
 )

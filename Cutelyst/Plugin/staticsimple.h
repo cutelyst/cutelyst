@@ -16,7 +16,7 @@ class StaticSimple : public AbstractPlugin
 {
     Q_OBJECT
 public:
-    explicit StaticSimple(const QString &path = QString(), QObject *parent = 0);
+    StaticSimple(Application *parent, const QString &path = QString());
 
     void setRootDir(const QString &path);
 

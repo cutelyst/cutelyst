@@ -23,7 +23,6 @@
 #include "response.h"
 #include "context.h"
 
-#include <QCoreApplication>
 #include <QStringBuilder>
 #include <QRegularExpression>
 #include <QSettings>
@@ -34,7 +33,7 @@
 using namespace Cutelyst;
 using namespace Plugin;
 
-Session::Session(QObject *parent) :
+Session::Session(Application *parent) :
     AbstractPlugin(parent)
 {
 }
@@ -126,7 +125,7 @@ void Session::saveSession()
 
 QString Session::sessionName() const
 {
-    return QCoreApplication::applicationName() % QLatin1String("_session");
+    return application()->applicationName() % QLatin1String("_session");
 }
 
 QVariant Session::loadSession()
@@ -158,10 +157,13 @@ QString Session::getSessionId() const
     }
 
     QString sessionId;
+    QString name = sessionName();
     foreach (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
-        if (cookie.name() == sessionName()) {
+        if (cookie.name() == name) {
             sessionId = cookie.value();
             qDebug() << "Found sessionid" << sessionId << "in cookie";
+        } else {
+            qDebug() << "session" << cookie.name() << cookie;
         }
     }
 
@@ -176,8 +178,10 @@ QString Session::getSessionId() const
 
 QString Session::filePath(const QString &sessionId) const
 {
-    QString path = QDir::tempPath() % QLatin1Char('/') % QCoreApplication::applicationName();
+    QString path = QDir::tempPath() % QLatin1Char('/') % application()->applicationName();
     QDir dir;
-    dir.mkpath(path);
+    if (!dir.mkpath(path)) {
+        qWarning() << "Failed to create path for session object" << path;
+    }
     return path % QLatin1Char('/') % sessionId;
 }

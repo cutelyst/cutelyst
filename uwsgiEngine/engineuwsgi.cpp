@@ -24,6 +24,9 @@ CutelystEngineUwsgi::CutelystEngineUwsgi(const QString &app, QObject *parent) :
         if (instance) {
             m_app = qobject_cast<Application *>(instance);
             if (m_app) {
+                qDebug() << "Application"
+                         << m_app->applicationName()
+                         << "loaded.";
                 m_app->setup(this);
             } else {
                 qCritical() << "Could not create an instance of the application:" << instance;
@@ -73,7 +76,7 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "post_pos" << wsgi_req->post_pos;
     qDebug() << "header_cnt" << wsgi_req->header_cnt;
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
-    qDebug() << "headers->len" << wsgi_req->headers;
+    qDebug() << "headers_size" << wsgi_req->headers_size;
 //    qDebug() << "header" << QByteArray(req->headers->buf);
 
 

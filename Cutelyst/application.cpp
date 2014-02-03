@@ -133,6 +133,9 @@ bool Application::registerController(Controller *controller)
 QString Application::applicationName() const
 {
     Q_D(const Application);
+    if (d->applicationName.isNull()) {
+        return metaObject()->className();
+    }
     return d->applicationName;
 }
 

@@ -73,6 +73,9 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     request->d_ptr->body = body;
     request->d_ptr->peerAddress = address;
 
+    QByteArray cookies = headers.value("Cookie");
+    request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
+
     if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
@@ -97,52 +100,6 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     }
     request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
 }
-
-//void Engine::createRequest(void *data, const QUrl &uri, const QByteArray &path, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
-//{
-//    RequestPrivate *requestPriv = new RequestPrivate;
-
-//    QUrlQuery queryString = uri.query()
-//    foreach (const StringPair &queryItem, queryString.queryItems()) {
-//        requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);
-//    }
-
-//    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
-//        // Parse the query (BODY) of type "application/x-www-form-urlencoded"
-//        // parameters ie "?foo=bar&bar=baz"
-//        foreach (const QByteArray &parameter, body.split('&')) {
-//            if (parameter.isEmpty()) {
-//                continue;
-//            }
-
-//            QList<QByteArray> parts = parameter.split('=');
-//            if (parts.size() == 2) {
-//                QByteArray value = parts.at(1);
-//                value.replace('+', ' ');
-//                requestPriv->bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-//                                                   QUrl::fromPercentEncoding(value));
-//            } else {
-//                requestPriv->bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-//                                                   QString());
-//            }
-//        }
-//    }
-//    requestPriv->param = requestPriv->bodyParam + requestPriv->queryParam;
-//    requestPriv->body = body;
-
-//    QByteArray cookies = headers.value("Cookie");
-
-//    requestPriv->engine = this;
-//    requestPriv->connectionId = data;
-//    requestPriv->method = method;
-//    requestPriv->uri = uri;
-//    requestPriv->path = path;
-//    requestPriv->protocol = protocol;
-//    requestPriv->headers = headers;
-//    requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
-
-//    handleRequest(new Request(requestPriv), new Response);
-//}
 
 EnginePrivate::EnginePrivate(Engine *parent) :
     q_ptr(parent)

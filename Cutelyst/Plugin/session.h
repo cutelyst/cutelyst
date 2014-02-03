@@ -34,7 +34,7 @@ class Session : public AbstractPlugin
 {
     Q_OBJECT
 public:
-    explicit Session(QObject *parent = 0);
+    Session(Application *parent);
 
     bool setup(Context *ctx);
 

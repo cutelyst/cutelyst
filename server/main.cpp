@@ -25,25 +25,24 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("CuteWeb");
     QCoreApplication::setApplicationVersion("0.0.1");
 
-    qRegisterMetaType<Root*>();
-    qRegisterMetaType<Users*>();
-
     QCoreApplication app(argc, argv);
-    Application server;
+    Application *server = new Application;
+    server->registerController(new Root);
+    server->registerController(new Users);
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(),
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
 
-    QObject::connect(&server, &Application::registerPlugins,
+    QObject::connect(server, &Application::registerPlugins,
                 [=](Context *ctx) {
-        ctx->registerPlugin(new Plugin::StaticSimple);
-        ctx->registerPlugin(new Plugin::Session);
+        ctx->registerPlugin(new Plugin::StaticSimple(server));
+        ctx->registerPlugin(new Plugin::Session(server));
     });
 
-    if (server.parseArgs() && server.setup()) {
+    if (server->parseArgs() && server->setup()) {
         return app.exec();
     }
-    return server.printError();
+    return server->printError();
 }

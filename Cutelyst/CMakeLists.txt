@@ -68,12 +68,12 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-qt5_wrap_cpp(cutelystqt_MOC_SRC ${cutelystqt_HEADERS} ${cutelystqt_HEADERS_PRIVATE})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 add_library(cutelyst-qt5 SHARED ${cutelystqt_SRC} ${cutelystqt_HEADERS} ${cutelystqt_HEADERS_PRIVATE})
 set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
 
-qt5_use_modules(cutelyst-qt5 Core Network DBus)
+qt5_use_modules(cutelyst-qt5 Core Network)
 
 set_property(TARGET cutelyst-qt5 PROPERTY COMPILE_DEFINITIONS CUTELYST_STATIC)
 

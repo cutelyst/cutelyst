@@ -16,7 +16,7 @@
 using namespace Cutelyst;
 using namespace Plugin;
 
-StaticSimple::StaticSimple(const QString &path, QObject *parent) :
+StaticSimple::StaticSimple(Application *parent, const QString &path) :
     AbstractPlugin(parent),
     m_rootDir(path)
 {
@@ -56,7 +56,6 @@ void StaticSimple::beforePrepareAction(bool *skipMethod)
         *skipMethod = true;
     }
 }
-
 
 bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
 {
