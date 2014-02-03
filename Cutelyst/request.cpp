@@ -60,22 +60,31 @@ void *Request::connectionId() const
     return d->connectionId;
 }
 
-QString Request::path() const
+QUrl Request::uri() const
 {
     Q_D(const Request);
-    return d->url.path();
+    return d->uri;
+}
+
+QByteArray Request::base() const
+{
+    Q_D(const Request);
+    return d->uri.toString(QUrl::RemoveUserInfo |
+                           QUrl::RemovePath |
+                           QUrl::RemoveQuery |
+                           QUrl::RemoveFragment).toLocal8Bit();
+}
+
+QByteArray Request::path() const
+{
+    Q_D(const Request);
+    return d->path;
 }
 
 QStringList Request::args() const
 {
     Q_D(const Request);
     return d->args;
-}
-
-QString Request::base() const
-{
-    // TODO
-    return QString();
 }
 
 QByteArray Request::body() const
@@ -115,6 +124,12 @@ QMultiHash<QString, QString> Request::parameters() const
 QMultiHash<QString, QString> Request::param() const
 {
     return parameters();
+}
+
+QByteArray Request::contentType() const
+{
+    Q_D(const Request);
+    return d->headers.value("Content-Type");
 }
 
 QNetworkCookie Request::cookie(const QByteArray &name) const

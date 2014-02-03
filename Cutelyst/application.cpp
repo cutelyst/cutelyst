@@ -115,6 +115,30 @@ bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
     return false;
 }
 
+QString Application::applicationName() const
+{
+    Q_D(const Application);
+    return d->applicationName;
+}
+
+void Application::setApplicationName(const QString &applicationName)
+{
+    Q_D(Application);
+    d->applicationName = applicationName;
+}
+
+QString Application::applicationVersion() const
+{
+    Q_D(const Application);
+    return d->applicationVersion;
+}
+
+void Application::setApplicationVersion(const QString &applicationVersion)
+{
+    Q_D(Application);
+    d->applicationVersion = applicationVersion;
+}
+
 void Application::handleRequest(Request *req, Response *resp)
 {
     Q_D(Application);

@@ -35,6 +35,8 @@ public:
     int childFD;
     int parentFD;
     int childPID;
+    QString applicationName;
+    QString applicationVersion;
 
     Dispatcher *dispatcher;
     Engine *engine;

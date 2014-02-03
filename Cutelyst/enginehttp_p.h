@@ -47,7 +47,7 @@ Q_SIGNALS:
     void requestReady(void *requestData,
                       const QUrl &url,
                       const QByteArray &method,
-                      const QString &protocol,
+                      const QByteArray &protocol,
                       const QHash<QByteArray, QByteArray> &headers,
                       const QByteArray &body);
 
@@ -62,7 +62,7 @@ private:
     quint64 m_bufLastIndex;
     QByteArray m_method;
     QString m_path;
-    QString m_protocol;
+    QByteArray m_protocol;
     QTimer m_timeoutTimer;
     QHash<QByteArray, QByteArray> m_headers;
 };

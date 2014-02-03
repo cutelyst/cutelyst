@@ -26,9 +26,9 @@
 namespace Cutelyst {
 
 class ResponsePrivate;
-class Response : public QObject
+class Response
 {
-    Q_OBJECT
+    Q_GADGET
     Q_DECLARE_PRIVATE(Response)
     Q_ENUMS(HttpStatus)
 public:
@@ -49,7 +49,7 @@ public:
         MethodNotAllowed      = 405,
         InternalServerError   = 500
     };
-    explicit Response(QObject *parent = 0);
+    Response();
     ~Response();
 
     quint16 status() const;

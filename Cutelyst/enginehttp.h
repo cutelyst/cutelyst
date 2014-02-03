@@ -44,6 +44,12 @@ protected:
 
 private Q_SLOTS:
     void removeConnection();
+    void processRequest(void *requestData,
+                        const QUrl &url,
+                        const QByteArray &method,
+                        const QByteArray &protocol,
+                        const QHash<QByteArray, QByteArray> &headers,
+                        const QByteArray &body);
 
 private:
     Q_DECLARE_PRIVATE(CutelystEngineHttp)

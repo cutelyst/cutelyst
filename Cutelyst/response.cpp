@@ -24,8 +24,7 @@
 
 using namespace Cutelyst;
 
-Response::Response(QObject *parent) :
-    QObject(parent),
+Response::Response() :
     d_ptr(new ResponsePrivate)
 {
 }
@@ -81,13 +80,13 @@ QByteArray &Response::body()
 quint64 Response::contentLength() const
 {
     Q_D(const Response);
-    return d->headers.value("Content-Length").toULongLong();
+    return d->contentLength;
 }
 
 void Response::setContentLength(quint64 length)
 {
     Q_D(Response);
-    d->headers["Content-Length"] = QString::number(length).toLocal8Bit();
+    d->contentLength = length;
 }
 
 QByteArray Response::contentType() const
@@ -124,7 +123,7 @@ void Response::redirect(const QString &url, quint16 status)
 {
     Q_D(Response);
     d->location = url;
-    d->status = status;
+    setStatus(status);
 }
 
 QUrl Response::location() const
@@ -141,11 +140,11 @@ QMap<QByteArray, QByteArray> &Response::headers()
 
 ResponsePrivate::ResponsePrivate() :
     status(Response::OK),
-    finalizedHeaders(false)
+    finalizedHeaders(false),
+    contentLength(0)
 {
     // TODO use version macro here
     headers.insert("X-Cutelyst", "0.1");
-    headers.insert("Content-Length", "0");
 
     statusCode = Engine::statusCode(status);
 }

@@ -7,7 +7,7 @@
 
 #include <QPluginLoader>
 #include <QUrl>
-#include <QHostInfo>
+#include <QDebug>
 #include <QStringBuilder>
 
 extern struct uwsgi_server uwsgi;
@@ -37,41 +37,43 @@ CutelystEngineUwsgi::CutelystEngineUwsgi(const QString &app, QObject *parent) :
 void CutelystEngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
-
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
-
-    if (uwsgi_response_prepare_headers(wsgi_req,
-                                       res->statusCode().data(),
-                                       res->statusCode().size())) {
-        return;
-    }
-
-    if (uwsgi_response_add_content_type(wsgi_req,
-                                        res->contentType().data(),
-                                        res->contentType().size())) {
-        return;
-    }
 
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
 
-void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
+void CutelystEngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 {
-    QString path = QByteArray(req->path_info, req->path_info_len);
-    QByteArray remote(req->remote_addr, req->remote_addr_len);
-    QByteArray method(req->method, req->method_len);
-    QByteArray protocol(req->protocol, req->protocol_len);
-    QByteArray queryString(req->query_string, req->query_string_len);
+    Request *request;
+    QByteArray host(wsgi_req->host, wsgi_req->host_len);
+    QByteArray path(wsgi_req->path_info, wsgi_req->path_info_len);
+    QUrlQuery queryString(QByteArray(wsgi_req->query_string, wsgi_req->query_string_len));
+    request = newRequest(wsgi_req,
+                         wsgi_req->https_len ? "http" : "https",
+                         host,
+                         path,
+                         queryString);
 
-    size_t remains = req->post_pos;
-    qDebug() << "remains" << remains << "query string" << queryString;
-    qDebug() << "document_root" << QByteArray(req->document_root, req->document_root_len);
-    qDebug() << "cookie" << QByteArray(req->cookie, req->cookie_len);
-    qDebug() << "content_type" << QByteArray(req->content_type, req->content_type_len);
-    qDebug() << "post_pos" << req->post_pos;
-    qDebug() << "header_cnt" << req->header_cnt;
-    qDebug() << "var_cnt" << req->var_cnt;
-    qDebug() << "headers->len" << req->headers;
+    QByteArray remote(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
+
+    QByteArray method(wsgi_req->method, wsgi_req->method_len);
+
+    QByteArray protocol(wsgi_req->protocol, wsgi_req->protocol_len);
+
+    size_t remains = wsgi_req->post_pos;
+    qDebug() << "remains" << remains << "query string" << QByteArray(wsgi_req->query_string, wsgi_req->query_string_len);
+    qDebug() << "document_root" << QByteArray(wsgi_req->document_root, wsgi_req->document_root_len);
+    qDebug() << "cookie" << QByteArray(wsgi_req->cookie, wsgi_req->cookie_len);
+    qDebug() << "uri" << QByteArray(wsgi_req->uri, wsgi_req->uri_len);
+    qDebug() << "path_info" << QByteArray(wsgi_req->path_info, wsgi_req->path_info_len);
+    qDebug() << "host" << QByteArray(wsgi_req->host, wsgi_req->host_len);
+    qDebug() << "remote_addr" << QByteArray(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
+    qDebug() << "https" << QByteArray(wsgi_req->https, wsgi_req->https_len);
+    qDebug() << "content_type" << QByteArray(wsgi_req->content_type, wsgi_req->content_type_len);
+    qDebug() << "post_pos" << wsgi_req->post_pos;
+    qDebug() << "header_cnt" << wsgi_req->header_cnt;
+    qDebug() << "var_cnt" << wsgi_req->var_cnt;
+    qDebug() << "headers->len" << wsgi_req->headers;
 //    qDebug() << "header" << QByteArray(req->headers->buf);
 
 
@@ -80,35 +82,68 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *req)
 //    }
 
     ssize_t body_len = 0;
-    char *body_char =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
+    char *body_char =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
     QByteArray body(body_char, body_len);
 
+    QByteArray cookies(wsgi_req->cookie, wsgi_req->cookie_len);
+
     QHash<QByteArray, QByteArray> headers;
-    headers.insert("Content-Type", QByteArray(req->content_type, req->content_type_len));
-    headers.insert("Cookie", QByteArray(req->cookie, req->cookie_len));
+    headers.insert("Content-Type", QByteArray(wsgi_req->content_type, wsgi_req->content_type_len));
+    headers.insert("Content-Length", QByteArray::number(body.size()));
+    headers.insert("User-Agent", QByteArray(wsgi_req->user_agent, wsgi_req->user_agent_len));
+    headers.insert("Cookie", cookies);
 
-    QUrl url;
-    if (!remote.isEmpty()) {
-        // TODO I think SERVER_NAME:SERVER_PORT is what we want here
-        url = QLatin1String("http://") % remote % path;
-    } else {
-        // This is a hack just in case remote is not set
-        url = QLatin1String("http://") % QHostInfo::localHostName() % path;
-    }
+    setupRequest(request,
+                 method,
+                 protocol,
+                 headers,
+                 body,
+                 QHostAddress(remote.data()));
 
-    qDebug() << url << method << remote << path << protocol;
+    qDebug() << method << remote << path << protocol;
     qDebug() << body;
-    createRequest(req,
-                  url,
-                  method,
-                  protocol,
-                  headers,
-                  body);
+
+    qDebug() << "---> URI" << request->uri();
+    qDebug() << "---> base" << request->base();
+    qDebug() << "---> path" << request->path();
+    qDebug() << "---> peerAddress" << request->peerAddress();
+    qDebug() << "---> queryParam" << request->queryParam();
+
+    handleRequest(request, new Response);
 }
 
 void CutelystEngineUwsgi::finalizeHeaders(Context *ctx)
 {
+    Response *res = ctx->res();
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
 
+    if (uwsgi_response_prepare_headers(wsgi_req,
+                                       res->statusCode().data(),
+                                       res->statusCode().size())) {
+        return;
+    }
+
+    QMap<QByteArray, QByteArray> headers = ctx->res()->headers();
+    if (uwsgi_response_add_content_type(wsgi_req,
+                                        res->contentType().data(),
+                                        res->contentType().size())) {
+        return;
+    }
+    headers.remove("Content-Type");
+
+    QMap<QByteArray, QByteArray>::Iterator it = headers.begin();
+    while (it != headers.end()) {
+        QByteArray key = it.key();
+        qCritical() << key << it.value();
+        if (uwsgi_response_add_header(wsgi_req,
+                                      key.data(),
+                                      key.size(),
+                                      it.value().data(),
+                                      it.value().size())) {
+            return;
+        }
+        ++it;
+    }
 }
 
 bool CutelystEngineUwsgi::init()

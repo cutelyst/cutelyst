@@ -107,6 +107,7 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
     headers.insert("Date", date.toLocal8Bit());
     headers.insert("Server", "Cutelyst-HTTP-Engine");
     headers.insert("Connection", "keep-alive");
+    headers.insert("Content-Length", QString::number(ctx->res()->contentLength()).toLocal8Bit());
 
     QMap<QByteArray, QByteArray>::ConstIterator it = headers.constBegin();
     while (it != headers.constEnd()) {
@@ -151,6 +152,17 @@ void CutelystEngineHttp::removeConnection()
     }
 }
 
+void CutelystEngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+{
+    Request *request;
+    request = newRequest(requestData,
+                         url.scheme().toLocal8Bit(),
+                         url.host().toLocal8Bit(),
+                         url.path().toLocal8Bit(),
+                         QUrlQuery(url.query()));
+    setupRequest(request, method, protocol, headers, body, QHostAddress());
+}
+
 void CutelystEngineHttp::onNewServerConnection()
 {
     Q_D(CutelystEngineHttp);
@@ -174,7 +186,7 @@ void CutelystEngineHttp::onNewClientConnection(int socket)
     if (tcpSocket->setSocketDescriptor(socket)) {
         d->requests.insert(socket, tcpSocket);
         connect(tcpSocket, &CutelystEngineHttpRequest::requestReady,
-                this, &CutelystEngineHttp::createRequest);
+                this, &CutelystEngineHttp::processRequest);
         connect(tcpSocket, &CutelystEngineHttpRequest::destroyed,
                 this, &CutelystEngineHttp::removeConnection);
     } else {
@@ -252,7 +264,7 @@ void CutelystEngineHttpRequest::process()
             if (match.hasMatch()) {
                 m_method = match.captured(1).toLocal8Bit();
                 m_path = match.captured(2);
-                m_protocol = match.captured(3);
+                m_protocol = match.captured(3).toLocal8Bit();
             } else {
                 match = methodRE.match(section);
                 if (match.hasMatch()) {

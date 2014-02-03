@@ -52,6 +52,12 @@ public:
      */
     bool registerPlugin(Plugin::AbstractPlugin  *plugin);
 
+    QString applicationName() const;
+    void setApplicationName(const QString &applicationName);
+
+    QString applicationVersion() const;
+    void setApplicationVersion(const QString &applicationVersion);
+
 Q_SIGNALS:
     /**
      * Emited so that you register all plugins that are specifically

@@ -24,9 +24,12 @@
 #include "context_p.h"
 
 #include <QUrl>
+#include <QHostInfo>
 #include <QDebug>
 
 using namespace Cutelyst;
+
+typedef QPair<QString, QString> StringPair;
 
 Engine::Engine(QObject *parent) :
     QObject(parent),
@@ -39,29 +42,41 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::createRequest(void *data, const QUrl &url, const QByteArray &method, const QString &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const QByteArray &hostAndPort, const QByteArray &path, const QUrlQuery &queryString)
 {
-    // Parse the query (GET) parameters ie "?foo=bar&bar=baz"
-    QMultiHash<QString, QString> queryParam;
-    foreach (const QString &parameter, url.query(QUrl::FullyEncoded).split(QLatin1Char('&'))) {
-        if (parameter.isEmpty()) {
-            continue;
-        }
+    RequestPrivate *requestPriv = new RequestPrivate;
+    requestPriv->connectionId = requestData;
 
-        QStringList parts = parameter.split(QLatin1Char('='));
-        if (parts.size() == 2) {
-            queryParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0).toUtf8()),
-                                   QUrl::fromPercentEncoding(parts.at(1).toUtf8()));
-        } else {
-            queryParam.insertMulti(QUrl::fromPercentEncoding(parts.first().toUtf8()),
-                                   QString());
-        }
+    QUrl uri;
+    if (hostAndPort.isEmpty()) {
+        // This is a hack just in case remote is not set
+        uri = scheme + "://" + QHostInfo::localHostName() + path;
+    } else {
+        uri = scheme + "://" + hostAndPort + path;
+    }
+    uri.setQuery(queryString);
+
+    requestPriv->path = path;
+    requestPriv->uri = uri;
+    foreach (const StringPair &queryItem, queryString.queryItems()) {
+        requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);
     }
 
-    QMultiHash<QString, QString> bodyParam;
+    return new Request(requestPriv);
+}
+
+void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body, const QHostAddress &address)
+{
+    request->d_ptr->method = method;
+    request->d_ptr->protocol = protocol;
+    request->d_ptr->headers = headers;
+    request->d_ptr->body = body;
+    request->d_ptr->peerAddress = address;
+
     if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
-        // Parse the query (BODY) "application/x-www-form-urlencoded"
+        // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
+        QMultiHash<QString, QString> bodyParam;
         foreach (const QByteArray &parameter, body.split('&')) {
             if (parameter.isEmpty()) {
                 continue;
@@ -78,25 +93,56 @@ void Engine::createRequest(void *data, const QUrl &url, const QByteArray &method
                                       QString());
             }
         }
+        request->d_ptr->bodyParam = bodyParam;
     }
-
-    QByteArray cookies = headers.value("Cookie");
-
-    RequestPrivate *requestPriv = new RequestPrivate;
-    requestPriv->engine = this;
-    requestPriv->connectionId = data;
-    requestPriv->method = method;
-    requestPriv->url = url;
-    requestPriv->protocol = protocol;
-    requestPriv->queryParam = queryParam;
-    requestPriv->bodyParam = bodyParam;
-    requestPriv->param = queryParam + bodyParam;
-    requestPriv->headers = headers;
-    requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
-    requestPriv->body = body;
-
-    handleRequest(new Request(requestPriv), new Response);
+    request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
 }
+
+//void Engine::createRequest(void *data, const QUrl &uri, const QByteArray &path, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+//{
+//    RequestPrivate *requestPriv = new RequestPrivate;
+
+//    QUrlQuery queryString = uri.query()
+//    foreach (const StringPair &queryItem, queryString.queryItems()) {
+//        requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);
+//    }
+
+//    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
+//        // Parse the query (BODY) of type "application/x-www-form-urlencoded"
+//        // parameters ie "?foo=bar&bar=baz"
+//        foreach (const QByteArray &parameter, body.split('&')) {
+//            if (parameter.isEmpty()) {
+//                continue;
+//            }
+
+//            QList<QByteArray> parts = parameter.split('=');
+//            if (parts.size() == 2) {
+//                QByteArray value = parts.at(1);
+//                value.replace('+', ' ');
+//                requestPriv->bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+//                                                   QUrl::fromPercentEncoding(value));
+//            } else {
+//                requestPriv->bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+//                                                   QString());
+//            }
+//        }
+//    }
+//    requestPriv->param = requestPriv->bodyParam + requestPriv->queryParam;
+//    requestPriv->body = body;
+
+//    QByteArray cookies = headers.value("Cookie");
+
+//    requestPriv->engine = this;
+//    requestPriv->connectionId = data;
+//    requestPriv->method = method;
+//    requestPriv->uri = uri;
+//    requestPriv->path = path;
+//    requestPriv->protocol = protocol;
+//    requestPriv->headers = headers;
+//    requestPriv->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
+
+//    handleRequest(new Request(requestPriv), new Response);
+//}
 
 EnginePrivate::EnginePrivate(Engine *parent) :
     q_ptr(parent)
@@ -135,7 +181,6 @@ void Engine::finalizeError(Context *ctx)
 QByteArray Engine::statusCode(quint16 status)
 {
     QByteArray ret = QByteArray::number(status);
-    qDebug() << ret << status;
     switch (status) {
     case Response::OK:
         ret += " OK";

@@ -29,8 +29,8 @@ namespace Cutelyst {
 class RequestPrivate;
 class Request
 {
+    Q_GADGET
 public:
-    Request(RequestPrivate *prv);
     ~Request();
 
     /**
@@ -53,9 +53,33 @@ public:
 
     void *connectionId() const;
 
-    QString path() const;
+    /**
+     * @brief uri
+     * @return the uri as close as possible to what
+     * the user has in his browser url.
+     */
+    QUrl uri() const;
+
+    /**
+     * @brief base
+     * @return Contains the URI base. This will always have a trailing slash.
+     * Note that the URI scheme (e.g., http vs. https) must be determined through
+     * heuristics; depending on your server configuration, it may be incorrect.
+     * See \sa secure() for more info.
+     *
+     * If your application was queried with the URI http://localhost:3000/some/path
+     * then base is http://localhost:3000/.
+     */
+    QByteArray base() const;
+
+    /**
+     * @brief path
+     * @return the path, i.e. the part of the URI after base(), for the current request.
+     * for  http://localhost/path/foo
+     * path will contain 'path/foo'
+     */
+    QByteArray path() const;
     QStringList args() const;
-    QString base() const;
     QByteArray body() const;
 
     /**
@@ -88,7 +112,15 @@ public:
      * Short for \sa parameters()
      */
     QMultiHash<QString, QString> param() const;
+
+
     QString contentEncoding() const;
+
+    /**
+     * @brief contentType
+     * @return
+     */
+    QByteArray contentType() const;
 
     /**
      * Returns the cookie with the given name
@@ -101,17 +133,34 @@ public:
     QList<QNetworkCookie> cookies() const;
     QByteArray header(const QByteArray &key) const;
     QHash<QByteArray, QByteArray> headers() const;
+
+    /**
+     * @brief method
+     * @return the request method (GET, POST, HEAD, etc).
+     */
     QByteArray method() const;
-    QString protocol() const;
+
+    /**
+     * @brief protocol
+     * @return the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
+     */
+    QByteArray protocol() const;
+
+    /**
+     * @brief userAgent
+     * @return the user agent (browser) version string.
+     */
     QString userAgent() const;
 
 protected:
+    Request(RequestPrivate *prv);
     void setArgs(const QStringList &args);
 
     RequestPrivate *d_ptr;
 
 private:
     friend class Dispatcher;
+    friend class Engine;
     Q_DECLARE_PRIVATE(Request)
 };
 

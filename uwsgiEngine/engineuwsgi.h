@@ -21,7 +21,7 @@ public:
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
 
-    void processRequest(wsgi_request *req);
+    void processRequest(wsgi_request *wsgi_req);
 
 private:
     QPluginLoader *m_loader;

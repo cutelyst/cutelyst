@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include <QUrlQuery>
 
 namespace Cutelyst {
 
@@ -49,13 +50,18 @@ Q_SIGNALS:
 public:
     static QByteArray statusCode(quint16 status);
 
-protected Q_SLOTS:
-    void createRequest(void *data,
-                       const QUrl &url,
-                       const QByteArray &method,
-                       const QString &protocol,
-                       const QHash<QByteArray, QByteArray> &headers,
-                       const QByteArray &body);
+protected:
+    Request *newRequest(void *requestData,
+                        const QByteArray &scheme,
+                        const QByteArray &hostAndPort,
+                        const QByteArray &path,
+                        const QUrlQuery &queryString);
+    void setupRequest(Request *request,
+                      const QByteArray &method,
+                      const QByteArray &protocol,
+                      const QHash<QByteArray, QByteArray> &headers,
+                      const QByteArray &body,
+                      const QHostAddress &address);
 protected:
     EnginePrivate *d_ptr;
 
