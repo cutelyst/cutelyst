@@ -28,6 +28,7 @@ namespace Plugin {
 class AbstractPlugin;
 }
 class Context;
+class Controller;
 class Request;
 class Response;
 class Engine;
@@ -51,6 +52,8 @@ public:
      * @return true if the plugin could be registered
      */
     bool registerPlugin(Plugin::AbstractPlugin  *plugin);
+
+    bool registerController(Controller *controller);
 
     QString applicationName() const;
     void setApplicationName(const QString &applicationName);

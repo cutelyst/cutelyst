@@ -38,7 +38,9 @@ class Dispatcher : public QObject
 public:
     explicit Dispatcher(QObject *parent = 0);
     ~Dispatcher();
-    void setupActions();
+
+protected:
+    void setupActions(const QList<Controller *> &controllers);
 
     bool dispatch(Context *ctx);
     bool forward(Context *ctx, const QString &opname, const QStringList &arguments);
@@ -57,6 +59,9 @@ private:
     QString cleanNamespace(const QString &ns) const;
 
 protected:
+    friend class Application;
+    friend class Context;
+    friend class Controller;
     DispatcherPrivate *d_ptr;
 
 private:

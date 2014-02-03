@@ -49,67 +49,52 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions()
+void Dispatcher::setupActions(const QList<Controller*> &controllers)
 {
     Q_D(Dispatcher);
 
-    // Find all the User classes
-    for (int metaType = QMetaType::User; QMetaType::isRegistered(metaType); ++metaType) {
-        qDebug() << "Type name:" << QMetaType::typeName(metaType);
-        const QMetaObject *meta = QMetaType::metaObjectForType(metaType);
-        if (!meta) {
-            continue;
-        }
-
+    foreach (Controller *controller, controllers) {
+        // App controller
+//        qDebug() << "Found a controller:" << controller << meta->className();
+        const QMetaObject *meta = controller->metaObject();
+        controller->setObjectName(meta->className());
         bool instanceUsed = false;
-        QObject *instance = meta->newInstance();
-        Controller *controller = qobject_cast<Controller*>(instance);
-        if (controller) {
-            // App controller
-            qDebug() << "Found a controller:" << controller << meta->className();
-            controller->setObjectName(meta->className());
-
-            for (int i = 0; i < meta->methodCount(); ++i) {
-                QMetaMethod method = meta->method(i);
-                if (method.methodType() == QMetaMethod::Method) {
-//                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
-//                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
-                    bool registered = false;
-                    Action *action = new Action(method, controller);
-                    if (action->isValid() && !d->actionHash.contains(action->privateName())) {
-                        if (!action->attributes().contains("Private")) {
-                            // Register the action with each dispatcher
-                            foreach (CutelystDispatchType *dispatch, d->dispatchers) {
-                                if (dispatch->registerAction(action)) {
-                                    registered = true;
-                                }
+        for (int i = 0; i < meta->methodCount(); ++i) {
+            QMetaMethod method = meta->method(i);
+            if (method.methodType() == QMetaMethod::Method) {
+                //                    qDebug() << Q_FUNC_INFO << method.name() << method.attributes() << method.methodType() << method.methodSignature();
+                //                    qDebug() << Q_FUNC_INFO << method.parameterTypes() << method.tag() << method.access();
+                bool registered = false;
+                Action *action = new Action(method, controller);
+                if (action->isValid() && !d->actionHash.contains(action->privateName())) {
+                    if (!action->attributes().contains("Private")) {
+                        // Register the action with each dispatcher
+                        foreach (CutelystDispatchType *dispatch, d->dispatchers) {
+                            if (dispatch->registerAction(action)) {
+                                registered = true;
                             }
-                        } else {
-                            // We register private actions
-                            registered = true;
                         }
-                    }
-
-                    // The Begin, Auto, End actions are not
-                    // registered by Dispatchers but we need them
-                    // as private actions anyway
-                    if (registered || action->isValid()) {
-                        d->actionHash.insert(action->privateName(), action);
-                        d->containerHash[action->ns()] << action;
-                        instanceUsed = true;
                     } else {
-                        delete action;
+                        // We register private actions
+                        registered = true;
                     }
                 }
-            }
 
-            if (instanceUsed) {
-                d->constrollerHash.insert(meta->className(), controller);
+                // The Begin, Auto, End actions are not
+                // registered by Dispatchers but we need them
+                // as private actions anyway
+                if (registered || action->isValid()) {
+                    d->actionHash.insert(action->privateName(), action);
+                    d->containerHash[action->ns()] << action;
+                    instanceUsed = true;
+                } else {
+                    delete action;
+                }
             }
         }
 
-        if (!instanceUsed) {
-            delete instance;
+        if (instanceUsed) {
+            d->constrollerHash.insert(meta->className(), controller);
         }
     }
 
@@ -234,7 +219,7 @@ void Dispatcher::printActions()
 {
     Q_D(Dispatcher);
 
-    bool showInternalActions = true;
+    bool showInternalActions = false;
     cout << "Loaded Private actions:" << endl;
     QString privateTitle("Private");
     QString classTitle("Class");

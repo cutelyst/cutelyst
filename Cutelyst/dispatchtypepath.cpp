@@ -18,6 +18,7 @@
  */
 
 #include "dispatchtypepath.h"
+#include "controller.h"
 
 #include <QRegularExpression>
 #include <QStringBuilder>
@@ -172,10 +173,12 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
         ActionList actions = m_paths.value(_path);
         foreach (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == action->numberOfArgs()) {
-                qCritical() << "Not registering Action"
-                            << action->name()
-                            << "because it conflicts with "
-                            << regAction->name();
+                qWarning() << "Not registering Action"
+                           << action->name()
+                           << "of controller"
+                           << action->controller()->objectName()
+                           << "because it conflicts with "
+                           << regAction->name();
                 return false;
             }
         }

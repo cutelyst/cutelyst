@@ -22,6 +22,7 @@
 #include "enginehttp.h"
 #include "context_p.h"
 #include "request.h"
+#include "controller.h"
 #include "response.h"
 
 #include <iostream>
@@ -55,6 +56,7 @@ Application::Application(QObject *parent) :
     QObject(parent),
     d_ptr(new ApplicationPrivate)
 {
+    d_ptr->dispatcher = 0;
     qInstallMessageHandler(cuteOutput);
 }
 
@@ -90,7 +92,7 @@ bool Application::setup(Engine *engine)
     Q_D(Application);
 
     d->dispatcher = new Dispatcher(this);
-    d->dispatcher->setupActions();
+    d->dispatcher->setupActions(d->controllers);
 
     if (engine) {
         d->engine = engine;
@@ -113,6 +115,19 @@ bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
     }
     qWarning() << "The plugin:" << plugin->metaObject()->className() << "isn't an Application Plugin and cannot be registered";
     return false;
+}
+
+bool Application::registerController(Controller *controller)
+{
+    Q_D(Application);
+
+    if (d_ptr->dispatcher) {
+        return false;
+    }
+
+    controller->setParent(this);
+    d->controllers << controller;
+    return true;
 }
 
 QString Application::applicationName() const
