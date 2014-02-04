@@ -90,12 +90,30 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "header_cnt" << wsgi_req->header_cnt;
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
     qDebug() << "headers_size" << wsgi_req->headers_size;
+    qDebug() << "var_cnt" << wsgi_req->var_cnt;
 //    qDebug() << "header" << QByteArray(req->headers->buf);
 
 
 //    for (size_t i = 0; i < req->headers->len; ++i) {
 //        qDebug() << "header" << i << QByteArray(req->headers->buf);
 //    }
+
+    for (int i = 0; i < wsgi_req->var_cnt; i += 2) {
+//#ifdef UWSGI_DEBUG
+        uwsgi_debug("%.*s: %.*s\n", wsgi_req->hvec[i].iov_len, wsgi_req->hvec[i].iov_base, wsgi_req->hvec[i+1].iov_len, wsgi_req->hvec[i+1].iov_base);
+//#endif
+        if (wsgi_req->hvec[i].iov_len < 6) {
+            continue;
+        }
+
+//        if (!uwsgi_startswith(const_cast<char *>(wsgi_req->hvec[i].iov_base),
+//                              const_cast<char *>("HTTP_"), 5)) {
+//            (void) uwsgi_lower(wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
+            qDebug() << "key" << QByteArray((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
+            qDebug() << "value" << QByteArray((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
+
+//        }
+    }
 
     ssize_t body_len = 0;
     char *body_char =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
@@ -150,7 +168,6 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
     QMap<QByteArray, QByteArray>::Iterator it = headers.begin();
     while (it != headers.end()) {
         QByteArray key = it.key();
-        qCritical() << key << it.value();
         if (uwsgi_response_add_header(wsgi_req,
                                       key.data(),
                                       key.size(),
@@ -207,6 +224,9 @@ extern "C" void uwsgi_cutelyst_init_apps()
         return;
     }
 
-
-    qDebug()  << "LOAD" << options.app;
+    qDebug()  << "Loading" << path;
+    if (!engine->loadApplication(path)) {
+        qCritical() << "Could not load application:" << path;
+        return;
+    }
 }

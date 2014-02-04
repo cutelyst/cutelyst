@@ -104,7 +104,9 @@ bool Application::registerController(Controller *controller)
 {
     Q_D(Application);
 
-    if (d_ptr->dispatcher) {
+    if (d->engine) {
+        qWarning() << "Tryied to register Controller after the Engine was setup, ignoring"
+                   << controller->metaObject()->className();
         return false;
     }
 

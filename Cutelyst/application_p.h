@@ -39,7 +39,7 @@ public:
     QString applicationVersion = "0.0.0";
 
     Dispatcher *dispatcher;
-    Engine *engine;
+    Engine *engine = 0;
     QList<Plugin::AbstractPlugin*> plugins;
     QList<Controller*> controllers;
 };
