@@ -181,7 +181,7 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
 
 bool EngineUwsgi::init()
 {
-
+    return true;
 }
 
 EngineUwsgi *engine;
