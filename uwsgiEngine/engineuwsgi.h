@@ -14,7 +14,7 @@ class CutelystEngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineUwsgi(const QString &app, QObject *parent = 0);
+    CutelystEngineUwsgi(Application *parent);
 
     virtual bool init();
 
@@ -25,7 +25,6 @@ public:
 
 private:
     QPluginLoader *m_loader;
-    Application *m_app;
 };
 
 }

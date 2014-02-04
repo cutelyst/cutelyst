@@ -26,12 +26,8 @@ namespace Cutelyst {
 
 class EnginePrivate
 {
-    Q_DECLARE_PUBLIC(Engine)
 public:
-    EnginePrivate(Engine *parent);
-    ~EnginePrivate();
-
-    Engine *q_ptr;
+    Application *app;
 };
 
 }

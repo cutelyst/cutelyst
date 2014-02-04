@@ -70,10 +70,8 @@ private:
 class CutelystEngineHttpPrivate
 {
 public:
-    CutelystEngineHttpPrivate();
-
-    quint16 port;
-    QHostAddress address;
+    quint16 port = 3000;
+    QHostAddress address = QHostAddress::Any;
     QTcpServer *server;
     QList<CutelystChildProcess*> child;
     QHash<int, CutelystEngineHttpRequest*> requests;

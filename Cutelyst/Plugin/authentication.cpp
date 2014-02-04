@@ -26,7 +26,7 @@
 
 using namespace Cutelyst::Plugin;
 
-Authentication::Authentication(Application *parent) :
+Authentication::Authentication(QObject *parent) :
     AbstractPlugin(parent),
     d_ptr(new AuthenticationPrivate)
 {

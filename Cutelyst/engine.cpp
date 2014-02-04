@@ -20,6 +20,7 @@
 #include "engine_p.h"
 
 #include "request_p.h"
+#include "application.h"
 #include "response.h"
 #include "context_p.h"
 
@@ -31,10 +32,11 @@ using namespace Cutelyst;
 
 typedef QPair<QString, QString> StringPair;
 
-Engine::Engine(QObject *parent) :
+Engine::Engine(Application *parent) :
     QObject(parent),
-    d_ptr(new EnginePrivate(this))
+    d_ptr(new EnginePrivate)
 {
+    d_ptr->app = parent;
 }
 
 Engine::~Engine()
@@ -101,15 +103,6 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
 }
 
-EnginePrivate::EnginePrivate(Engine *parent) :
-    q_ptr(parent)
-{
-}
-
-EnginePrivate::~EnginePrivate()
-{
-}
-
 void Engine::finalizeCookies(Context *ctx)
 {
     foreach (const QNetworkCookie &cookie, ctx->response()->cookies()) {
@@ -133,6 +126,13 @@ void Engine::finalizeError(Context *ctx)
 
     // Return 500
     ctx->res()->setStatus(Response::InternalServerError);
+}
+
+Application *Engine::app() const
+{
+    Q_D(const Engine);
+    Q_ASSERT(d->app);
+    return d->app;
 }
 
 QByteArray Engine::statusCode(quint16 status)

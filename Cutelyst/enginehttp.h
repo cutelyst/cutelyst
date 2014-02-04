@@ -31,7 +31,7 @@ class CutelystEngineHttp : public Engine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineHttp(QObject *parent = 0);
+    explicit CutelystEngineHttp(Application *parent = 0);
     ~CutelystEngineHttp();
 
     bool init();

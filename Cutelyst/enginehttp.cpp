@@ -35,7 +35,7 @@
 
 using namespace Cutelyst;
 
-CutelystEngineHttp::CutelystEngineHttp(QObject *parent) :
+CutelystEngineHttp::CutelystEngineHttp(Application *parent) :
     Engine(parent),
     d_ptr(new CutelystEngineHttpPrivate)
 
@@ -192,12 +192,6 @@ void CutelystEngineHttp::onNewClientConnection(int socket)
     } else {
         delete tcpSocket;
     }
-}
-
-CutelystEngineHttpPrivate::CutelystEngineHttpPrivate() :
-    port(3000),
-    address(QHostAddress::Any)
-{
 }
 
 CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent) :

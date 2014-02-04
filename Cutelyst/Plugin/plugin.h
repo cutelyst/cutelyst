@@ -37,7 +37,7 @@ class AbstractPlugin : public QObject
 {
     Q_OBJECT
 public:
-    AbstractPlugin(Application *parent);
+    explicit AbstractPlugin(QObject *parent = 0);
 
     /**
      * Reimplement this if you need to connect to
@@ -56,14 +56,9 @@ public:
      */
     virtual bool isApplicationPlugin() const;
 
-    Application *application() const;
-
 protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Context *ctx, const QString &key, const QVariant &value);
-
-private:
-    Application *m_app;
 };
 
 }

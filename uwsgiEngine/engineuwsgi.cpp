@@ -14,27 +14,9 @@ extern struct uwsgi_server uwsgi;
 
 using namespace Cutelyst;
 
-CutelystEngineUwsgi::CutelystEngineUwsgi(const QString &app, QObject *parent) :
-    Engine(parent),
-    m_app(0)
+CutelystEngineUwsgi::CutelystEngineUwsgi(Application *parent) :
+    Engine(parent)
 {
-    m_loader = new QPluginLoader(app, this);
-    if (m_loader->load()) {
-        QObject *instance = m_loader->instance();
-        if (instance) {
-            m_app = qobject_cast<Application *>(instance);
-            if (m_app) {
-                qDebug() << "Application"
-                         << m_app->applicationName()
-                         << "loaded.";
-                m_app->setup(this);
-            } else {
-                qCritical() << "Could not create an instance of the application:" << instance;
-            }
-        }
-    } else {
-        qWarning() << "Failed to open app:" << m_loader->errorString();
-    }
 }
 
 void CutelystEngineUwsgi::finalizeBody(Context *ctx)
@@ -158,7 +140,26 @@ CutelystEngineUwsgi *engine;
 
 extern "C" int uwsgi_cplusplus_init(){
     uwsgi_log("Initializing Cutelyst C++ plugin\n");
-    engine = new CutelystEngineUwsgi("/home/daniel/code/iglooshop/build/srv/libcuteserver.so");
+
+    QPluginLoader *loader = new QPluginLoader("/home/daniel/code/iglooshop/build/srv/libcuteserver.so");
+    if (loader->load()) {
+        QObject *instance = loader->instance();
+        if (instance) {
+            Application *app = qobject_cast<Application *>(instance);
+            if (app) {
+                qDebug() << "Application"
+                         << app->applicationName()
+                         << "loaded.";
+                engine = new CutelystEngineUwsgi(app);
+                app->setup(engine);
+            } else {
+                qCritical() << "Could not create an instance of the application:" << instance;
+            }
+        }
+    } else {
+        qWarning() << "Failed to open app:" << loader->errorString();
+    }
+    delete loader;
     //        uwsgi_add_app()
     return 0;
 }

@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 
     QObject::connect(server, &Application::registerPlugins,
                 [=](Context *ctx) {
-        ctx->registerPlugin(new Plugin::StaticSimple(server));
-        ctx->registerPlugin(new Plugin::Session(server));
+        ctx->registerPlugin(new Plugin::StaticSimple);
+        ctx->registerPlugin(new Plugin::Session);
     });
 
     if (server->parseArgs() && server->setup()) {

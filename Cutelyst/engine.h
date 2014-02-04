@@ -26,6 +26,7 @@
 
 namespace Cutelyst {
 
+class Application;
 class Context;
 class Request;
 class Response;
@@ -34,7 +35,7 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit Engine(QObject *parent = 0);
+    Engine(Application *parent);
     ~Engine();
 
     virtual bool init() = 0;
@@ -43,6 +44,8 @@ public:
     virtual void finalizeHeaders(Context *ctx) = 0;
     virtual void finalizeBody(Context *ctx) = 0;
     void finalizeError(Context *ctx);
+
+    Application *app() const;
 
 Q_SIGNALS:
     void handleRequest(Request *request, Response *response);

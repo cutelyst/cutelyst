@@ -22,6 +22,7 @@
 #include "request.h"
 #include "response.h"
 #include "context.h"
+#include "engine.h"
 
 #include <QStringBuilder>
 #include <QRegularExpression>
@@ -33,7 +34,7 @@
 using namespace Cutelyst;
 using namespace Plugin;
 
-Session::Session(Application *parent) :
+Session::Session(QObject *parent) :
     AbstractPlugin(parent)
 {
 }
@@ -41,6 +42,7 @@ Session::Session(Application *parent) :
 bool Session::setup(Context *ctx)
 {
     m_ctx = ctx;
+    m_sessionName = ctx->engine()->app()->applicationName() % QLatin1String("_session");
     connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
     return true;
@@ -116,16 +118,11 @@ void Session::saveSession()
     }
 
     QString sessionId = getSessionId();
-    QNetworkCookie sessionCookie(sessionName().toLocal8Bit(),
+    QNetworkCookie sessionCookie(m_sessionName.toLocal8Bit(),
                                  sessionId.toLocal8Bit());
     m_ctx->res()->addCookie(sessionCookie);
     persistSession(sessionId,
                    loadSession());
-}
-
-QString Session::sessionName() const
-{
-    return application()->applicationName() % QLatin1String("_session");
 }
 
 QVariant Session::loadSession()
@@ -157,13 +154,10 @@ QString Session::getSessionId() const
     }
 
     QString sessionId;
-    QString name = sessionName();
     foreach (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
-        if (cookie.name() == name) {
+        if (cookie.name() == m_sessionName) {
             sessionId = cookie.value();
             qDebug() << "Found sessionid" << sessionId << "in cookie";
-        } else {
-            qDebug() << "session" << cookie.name() << cookie;
         }
     }
 
@@ -178,7 +172,7 @@ QString Session::getSessionId() const
 
 QString Session::filePath(const QString &sessionId) const
 {
-    QString path = QDir::tempPath() % QLatin1Char('/') % application()->applicationName();
+    QString path = QDir::tempPath() % QLatin1Char('/') % m_ctx->engine()->app()->applicationName();
     QDir dir;
     if (!dir.mkpath(path)) {
         qWarning() << "Failed to create path for session object" << path;

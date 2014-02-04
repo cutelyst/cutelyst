@@ -19,15 +19,13 @@
 
 #include "plugin.h"
 
-#include "application.h"
 #include "context.h"
 
 using namespace Cutelyst;
 using namespace Plugin;
 
-AbstractPlugin::AbstractPlugin(Application *parent) :
-    QObject(parent),
-    m_app(parent)
+AbstractPlugin::AbstractPlugin(QObject *parent) :
+    QObject(parent)
 {
 }
 
@@ -40,11 +38,6 @@ bool AbstractPlugin::setup(Context *ctx)
 bool AbstractPlugin::isApplicationPlugin() const
 {
     return false;
-}
-
-Application *AbstractPlugin::application() const
-{
-    return m_app;
 }
 
 QVariant AbstractPlugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const

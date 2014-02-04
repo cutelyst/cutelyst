@@ -8,7 +8,6 @@
 namespace Cutelyst {
 
 class Context;
-class Application;
 
 namespace Plugin {
 
@@ -16,7 +15,7 @@ class StaticSimple : public AbstractPlugin
 {
     Q_OBJECT
 public:
-    StaticSimple(Application *parent, const QString &path = QString());
+    explicit StaticSimple(const QString &path = QString(), QObject *parent = 0);
 
     void setRootDir(const QString &path);
 

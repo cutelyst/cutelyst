@@ -133,7 +133,7 @@ public:
         Credential *m_credential;
     };
 
-    Authentication(Application *parent);
+    explicit Authentication(QObject *parent = 0);
     ~Authentication();
 
     bool setup(Context *ctx);

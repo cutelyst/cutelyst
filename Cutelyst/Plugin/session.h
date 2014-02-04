@@ -34,7 +34,7 @@ class Session : public AbstractPlugin
 {
     Q_OBJECT
 public:
-    Session(Application *parent);
+    explicit Session(QObject *parent = 0);
 
     bool setup(Context *ctx);
 
@@ -59,13 +59,13 @@ protected:
 
 private:
     void saveSession();
-    QString sessionName() const;
     QVariant loadSession();
     QString generateSessionId() const;
     QString getSessionId() const;
     QString filePath(const QString &sessionId) const;
 
     Context *m_ctx;
+    QString m_sessionName;
 };
 
 }
