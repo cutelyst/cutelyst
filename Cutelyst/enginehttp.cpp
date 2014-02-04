@@ -35,16 +35,15 @@
 
 using namespace Cutelyst;
 
-CutelystEngineHttp::CutelystEngineHttp(Application *parent) :
+EngineHttp::EngineHttp(QObject *parent) :
     Engine(parent),
-    d_ptr(new CutelystEngineHttpPrivate)
-
+    d_ptr(new EngineHttpPrivate)
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
     d->server = new QTcpServer(this);
     connect(d->server, &QTcpServer::newConnection,
-            this, &CutelystEngineHttp::onNewServerConnection);
+            this, &EngineHttp::onNewServerConnection);
 
     QStringList args = QCoreApplication::arguments();
     for (int i = 0; i < args.count(); ++i) {
@@ -56,14 +55,14 @@ CutelystEngineHttp::CutelystEngineHttp(Application *parent) :
     }
 }
 
-CutelystEngineHttp::~CutelystEngineHttp()
+EngineHttp::~EngineHttp()
 {
     delete d_ptr;
 }
 
-bool CutelystEngineHttp::init()
+bool EngineHttp::init()
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
     if (d->server->listen(d->address, d->port)) {
         int childCount = 1;
@@ -74,7 +73,7 @@ bool CutelystEngineHttp::init()
                 // We are not the parent anymore,
                 // so we don't need the server class
                 connect(child, &CutelystChildProcess::newConnection,
-                        this, &CutelystEngineHttp::onNewClientConnection);
+                        this, &EngineHttp::onNewClientConnection);
                 delete d->server;
                 return true;
             } else if (child->initted()) {
@@ -92,9 +91,9 @@ bool CutelystEngineHttp::init()
     return !d->child.isEmpty();
 }
 
-void CutelystEngineHttp::finalizeHeaders(Context *ctx)
+void EngineHttp::finalizeHeaders(Context *ctx)
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
     QByteArray header;
     header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusCode(ctx->response()->status()).data()));
@@ -133,26 +132,26 @@ void CutelystEngineHttp::finalizeHeaders(Context *ctx)
     d->requests[*id]->write(header);
 }
 
-void CutelystEngineHttp::finalizeBody(Context *ctx)
+void EngineHttp::finalizeBody(Context *ctx)
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
     int *id = static_cast<int*>(ctx->req()->connectionId());
-    CutelystEngineHttpRequest *req = d->requests.value(*id);
+    EngineHttpRequest *req = d->requests.value(*id);
     req->write(ctx->response()->body());
     req->finish();
 }
 
-void CutelystEngineHttp::removeConnection()
+void EngineHttp::removeConnection()
 {
-    Q_D(CutelystEngineHttp);
-    CutelystEngineHttpRequest *req = static_cast<CutelystEngineHttpRequest*>(sender());
+    Q_D(EngineHttp);
+    EngineHttpRequest *req = static_cast<EngineHttpRequest*>(sender());
     if (req) {
         d->requests.take(req->connectionId());
     }
 }
 
-void CutelystEngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
 {
     Request *request;
     request = newRequest(requestData,
@@ -163,9 +162,9 @@ void CutelystEngineHttp::processRequest(void *requestData, const QUrl &url, cons
     setupRequest(request, method, protocol, headers, body, QHostAddress());
 }
 
-void CutelystEngineHttp::onNewServerConnection()
+void EngineHttp::onNewServerConnection()
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
     QTcpSocket *socket = d->server->nextPendingConnection();
     if (socket) {
@@ -178,51 +177,51 @@ void CutelystEngineHttp::onNewServerConnection()
     }
 }
 
-void CutelystEngineHttp::onNewClientConnection(int socket)
+void EngineHttp::onNewClientConnection(int socket)
 {
-    Q_D(CutelystEngineHttp);
+    Q_D(EngineHttp);
 
-    CutelystEngineHttpRequest *tcpSocket = new CutelystEngineHttpRequest(socket, this);
+    EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket, this);
     if (tcpSocket->setSocketDescriptor(socket)) {
         d->requests.insert(socket, tcpSocket);
-        connect(tcpSocket, &CutelystEngineHttpRequest::requestReady,
-                this, &CutelystEngineHttp::processRequest);
-        connect(tcpSocket, &CutelystEngineHttpRequest::destroyed,
-                this, &CutelystEngineHttp::removeConnection);
+        connect(tcpSocket, &EngineHttpRequest::requestReady,
+                this, &EngineHttp::processRequest);
+        connect(tcpSocket, &EngineHttpRequest::destroyed,
+                this, &EngineHttp::removeConnection);
     } else {
         delete tcpSocket;
     }
 }
 
-CutelystEngineHttpRequest::CutelystEngineHttpRequest(int socket, QObject *parent) :
+EngineHttpRequest::EngineHttpRequest(int socket, QObject *parent) :
     QTcpSocket(parent),
     m_finishedHeaders(false),
     m_processing(false),
     m_connectionId(socket),
     m_bufLastIndex(0)
 {
-    connect(this, &CutelystEngineHttpRequest::readyRead,
-            this, &CutelystEngineHttpRequest::process);
-    connect(this, &CutelystEngineHttpRequest::bytesWritten,
-            this, &CutelystEngineHttpRequest::timeout);
+    connect(this, &EngineHttpRequest::readyRead,
+            this, &EngineHttpRequest::process);
+    connect(this, &EngineHttpRequest::bytesWritten,
+            this, &EngineHttpRequest::timeout);
     connect(&m_timeoutTimer, &QTimer::timeout,
-            this, &CutelystEngineHttpRequest::timeout);
+            this, &EngineHttpRequest::timeout);
     m_timeoutTimer.setInterval(5000);
     m_timeoutTimer.setSingleShot(true);
     m_timeoutTimer.start();
 }
 
-int CutelystEngineHttpRequest::connectionId()
+int EngineHttpRequest::connectionId()
 {
     return m_connectionId;
 }
 
-bool CutelystEngineHttpRequest::processing()
+bool EngineHttpRequest::processing()
 {
     return m_processing;
 }
 
-void CutelystEngineHttpRequest::finish()
+void EngineHttpRequest::finish()
 {
     m_processing = false;
     if (!m_buffer.isNull() && bytesAvailable() == 0) {
@@ -232,7 +231,7 @@ void CutelystEngineHttpRequest::finish()
     }
 }
 
-void CutelystEngineHttpRequest::process()
+void EngineHttpRequest::process()
 {
 //    qDebug() << Q_FUNC_INFO << connectionId() << m_processing << m_buffer.size() << sender() << bytesAvailable();
     m_buffer.append(readAll());
@@ -323,7 +322,7 @@ void CutelystEngineHttpRequest::process()
     m_protocol.clear();
 }
 
-void CutelystEngineHttpRequest::timeout()
+void EngineHttpRequest::timeout()
 {
     QTimer *timer = qobject_cast<QTimer*>(sender());
     if (timer && bytesToWrite() == 0 && bytesAvailable() == 0) {

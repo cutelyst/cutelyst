@@ -32,11 +32,10 @@ using namespace Cutelyst;
 
 typedef QPair<QString, QString> StringPair;
 
-Engine::Engine(Application *parent) :
+Engine::Engine(QObject *parent) :
     QObject(parent),
     d_ptr(new EnginePrivate)
 {
-    d_ptr->app = parent;
 }
 
 Engine::~Engine()
@@ -48,6 +47,7 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
 {
     RequestPrivate *requestPriv = new RequestPrivate;
     requestPriv->connectionId = requestData;
+    requestPriv->engine = this;
 
     QUrl uri;
     if (hostAndPort.isEmpty()) {
@@ -135,6 +135,14 @@ Application *Engine::app() const
     return d->app;
 }
 
+bool Engine::setupApplication(Application *app)
+{
+    Q_D(Engine);
+    d->app = app;
+    app->setup(this);
+    return init();
+}
+
 QByteArray Engine::statusCode(quint16 status)
 {
     QByteArray ret = QByteArray::number(status);
@@ -176,3 +184,11 @@ QByteArray Engine::statusCode(quint16 status)
 
     return ret;
 }
+
+void Engine::handleRequest(Request *request, Response *response)
+{
+    Q_D(Engine);
+    Q_ASSERT(d->app);
+    d->app->handleRequest(request, response);
+}
+

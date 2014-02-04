@@ -36,13 +36,13 @@ class ApplicationPrivate;
 class Application : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(Application)
 public:
     explicit Application(QObject *parent = 0);
     virtual ~Application();
 
     bool parseArgs();
     int printError();
-    bool setup(Engine *engine = 0);
 
     /**
      * Registers a global plugin ie one that doesn't need
@@ -69,12 +69,11 @@ Q_SIGNALS:
     void registerPlugins(Context *ctx);
 
 protected:
-    ApplicationPrivate *d_ptr;
-
-private:
-    Q_DECLARE_PRIVATE(Application)
-
+    friend class Engine;
+    void setup(Engine *engine);
     void handleRequest(Request *req, Response *resp);
+
+    ApplicationPrivate *d_ptr;
 };
 
 }

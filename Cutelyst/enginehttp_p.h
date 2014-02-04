@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTENGINEHTTP_P_H
-#define CUTELYSTENGINEHTTP_P_H
+#ifndef ENGINE_HTTP_P_H
+#define ENGINE_HTTP_P_H
 
 #include "enginehttp.h"
 #include "childprocess.h"
@@ -29,11 +29,11 @@
 
 namespace Cutelyst {
 
-class CutelystEngineHttpRequest : public QTcpSocket
+class EngineHttpRequest : public QTcpSocket
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineHttpRequest(int socket, QObject *parent = 0);
+    explicit EngineHttpRequest(int socket, QObject *parent = 0);
 
     int connectionId();
     bool processing();
@@ -67,16 +67,16 @@ private:
     QHash<QByteArray, QByteArray> m_headers;
 };
 
-class CutelystEngineHttpPrivate
+class EngineHttpPrivate
 {
 public:
     quint16 port = 3000;
     QHostAddress address = QHostAddress::Any;
     QTcpServer *server;
     QList<CutelystChildProcess*> child;
-    QHash<int, CutelystEngineHttpRequest*> requests;
+    QHash<int, EngineHttpRequest*> requests;
 };
 
 }
 
-#endif // CUTELYSTENGINEHTTP_P_H
+#endif // ENGINE_HTTP_P_H

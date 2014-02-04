@@ -35,25 +35,72 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
-    Engine(Application *parent);
+    explicit Engine(QObject *parent = 0);
     ~Engine();
 
     virtual bool init() = 0;
 
-    void finalizeCookies(Context *ctx);
-    virtual void finalizeHeaders(Context *ctx) = 0;
-    virtual void finalizeBody(Context *ctx) = 0;
-    void finalizeError(Context *ctx);
+    /**
+     * @brief finalizeCookies first called if no error
+     * @param ctx
+     * Reimplement if you need a custom way
+     * to Set-Cookie, the default implementation
+     * writes them to ctx->res()->headers()
+     */
+    virtual void finalizeCookies(Context *ctx);
 
+    /**
+     * @brief finalizeHeaders called after finalizeCookies
+     * @param ctx
+     * Engines must reimplement this to write response
+     * headers back to the caller
+     */
+    virtual void finalizeHeaders(Context *ctx) = 0;
+
+    /**
+     * @brief finalizeBody called after finalizeHeaders
+     * @param ctx
+     * Engines must reimplement this to write the
+     * response body back to the caller
+     */
+    virtual void finalizeBody(Context *ctx) = 0;
+
+    /**
+     * @brief finalizeError called on error
+     * @param ctx
+     * Engines should overwrite this if they
+     * want to to make custom error messages.
+     * Default implementation render an html
+     * with errors.
+     */
+    virtual void finalizeError(Context *ctx);
+
+    /**
+     * @brief app
+     * @return the Application object we are dealing with
+     */
     Application *app() const;
 
-Q_SIGNALS:
-    void handleRequest(Request *request, Response *response);
+    /**
+     * @brief setupApplication
+     * @param app
+     * @return true if succeded
+     * This method init the application and
+     * call init on the engine.
+     */
+    bool setupApplication(Application *app);
 
-public:
     static QByteArray statusCode(quint16 status);
 
 protected:
+    /**
+     * @brief handleRequest
+     * @param request
+     * @param response
+     * Engines must call this when the Request/Response objects
+     * are ready for to be processed
+     */
+    void handleRequest(Request *request, Response *response);
     Request *newRequest(void *requestData,
                         const QByteArray &scheme,
                         const QByteArray &hostAndPort,
@@ -65,6 +112,7 @@ protected:
                       const QHash<QByteArray, QByteArray> &headers,
                       const QByteArray &body,
                       const QHostAddress &address);
+
 protected:
     EnginePrivate *d_ptr;
 

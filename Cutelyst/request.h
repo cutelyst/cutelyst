@@ -26,6 +26,7 @@
 
 namespace Cutelyst {
 
+class Engine;
 class RequestPrivate;
 class Request
 {
@@ -151,6 +152,8 @@ public:
      * @return the user agent (browser) version string.
      */
     QString userAgent() const;
+
+    Engine *engine() const;
 
 protected:
     Request(RequestPrivate *prv);

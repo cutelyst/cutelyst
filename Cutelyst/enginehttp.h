@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTENGINEHTTP_H
-#define CUTELYSTENGINEHTTP_H
+#ifndef ENGINE_HTTP_H
+#define ENGINE_HTTP_H
 
 #include "engine.h"
 
@@ -26,13 +26,13 @@
 
 namespace Cutelyst {
 
-class CutelystEngineHttpPrivate;
-class CutelystEngineHttp : public Engine
+class EngineHttpPrivate;
+class EngineHttp : public Engine
 {
     Q_OBJECT
 public:
-    explicit CutelystEngineHttp(Application *parent = 0);
-    ~CutelystEngineHttp();
+    explicit EngineHttp(QObject *parent = 0);
+    ~EngineHttp();
 
     bool init();
 
@@ -40,7 +40,7 @@ public:
     virtual void finalizeBody(Context *ctx);
 
 protected:
-    CutelystEngineHttpPrivate *d_ptr;
+    EngineHttpPrivate *d_ptr;
 
 private Q_SLOTS:
     void removeConnection();
@@ -52,7 +52,7 @@ private Q_SLOTS:
                         const QByteArray &body);
 
 private:
-    Q_DECLARE_PRIVATE(CutelystEngineHttp)
+    Q_DECLARE_PRIVATE(EngineHttp)
 
     void onNewServerConnection();
     void onNewClientConnection(int socket);
@@ -60,4 +60,4 @@ private:
 
 }
 
-#endif // CUTELYSTENGINEHTTP_H
+#endif // ENGINE_HTTP_H

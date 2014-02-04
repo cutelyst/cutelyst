@@ -46,7 +46,7 @@ public:
     QHostAddress peerAddress;
     QString peerName;
     quint16 peerPort;
-    const Engine *engine;
+    Engine *engine;
     void *connectionId;
 };
 

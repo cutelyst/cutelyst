@@ -1,5 +1,5 @@
-#ifndef CUTELYSTENGINEUWSGI_H
-#define CUTELYSTENGINEUWSGI_H
+#ifndef ENGINE_UWSGI_H
+#define ENGINE_UWSGI_H
 
 #include "uwsgi.h"
 
@@ -10,11 +10,13 @@ namespace Cutelyst {
 
 class Dispatcher;
 class Application;
-class CutelystEngineUwsgi : public Engine
+class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    CutelystEngineUwsgi(Application *parent);
+    explicit EngineUwsgi(QObject *parent = 0);
+
+    bool loadApplication(const QString &path);
 
     virtual bool init();
 
@@ -29,4 +31,4 @@ private:
 
 }
 
-#endif // CUTELYSTENGINEUWSGI_H
+#endif // ENGINE_UWSGI_H

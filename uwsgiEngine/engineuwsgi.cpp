@@ -1,4 +1,5 @@
 #include "engineuwsgi.h"
+#include "plugin.h"
 
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
@@ -14,12 +15,42 @@ extern struct uwsgi_server uwsgi;
 
 using namespace Cutelyst;
 
-CutelystEngineUwsgi::CutelystEngineUwsgi(Application *parent) :
-    Engine(parent)
+EngineUwsgi::EngineUwsgi(QObject *parent) :
+    Engine(parent),
+    m_loader(0)
 {
 }
 
-void CutelystEngineUwsgi::finalizeBody(Context *ctx)
+bool EngineUwsgi::loadApplication(const QString &path)
+{
+    if (m_loader) {
+        delete m_loader->instance();
+        delete m_loader;
+    }
+
+    m_loader = new QPluginLoader(path);
+    if (m_loader->load()) {
+        QObject *instance = m_loader->instance();
+        if (instance) {
+            Application *app = qobject_cast<Application *>(instance);
+            if (app) {
+                qDebug() << "Application"
+                         << app->applicationName()
+                         << "loaded.";
+                return setupApplication(app);
+            } else {
+                qCritical() << "Could not create an instance of the application:" << instance;
+            }
+        } else {
+            qCritical() << "Could not create an instance:" << path;
+        }
+    } else {
+        qWarning() << "Failed to open app:" << m_loader->errorString();
+    }
+    return false;
+}
+
+void EngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
@@ -27,7 +58,7 @@ void CutelystEngineUwsgi::finalizeBody(Context *ctx)
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
 
-void CutelystEngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
+void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 {
     Request *request;
     QByteArray host(wsgi_req->host, wsgi_req->host_len);
@@ -97,7 +128,7 @@ void CutelystEngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     handleRequest(request, new Response);
 }
 
-void CutelystEngineUwsgi::finalizeHeaders(Context *ctx)
+void EngineUwsgi::finalizeHeaders(Context *ctx)
 {
     Response *res = ctx->res();
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
@@ -131,43 +162,23 @@ void CutelystEngineUwsgi::finalizeHeaders(Context *ctx)
     }
 }
 
-bool CutelystEngineUwsgi::init()
+bool EngineUwsgi::init()
 {
 
 }
 
-CutelystEngineUwsgi *engine;
+EngineUwsgi *engine;
 
-extern "C" int uwsgi_cplusplus_init(){
-    uwsgi_log("Initializing Cutelyst C++ plugin\n");
+extern "C" int uwsgi_cutelyst_init(){
+    uwsgi_log("Initializing Cutelyst plugin\n");
 
-    QPluginLoader *loader = new QPluginLoader("/home/daniel/code/iglooshop/build/srv/libcuteserver.so");
-    if (loader->load()) {
-        QObject *instance = loader->instance();
-        if (instance) {
-            Application *app = qobject_cast<Application *>(instance);
-            if (app) {
-                qDebug() << "Application"
-                         << app->applicationName()
-                         << "loaded.";
-                engine = new CutelystEngineUwsgi(app);
-                app->setup(engine);
-            } else {
-                qCritical() << "Could not create an instance of the application:" << instance;
-            }
-        }
-    } else {
-        qWarning() << "Failed to open app:" << loader->errorString();
-    }
-    delete loader;
-    //        uwsgi_add_app()
+    engine = new EngineUwsgi;
+
     return 0;
 }
 
-extern "C" int uwsgi_cplusplus_request(struct wsgi_request *wsgi_req)
+extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 {
-    uwsgi_log("New request.\n");
-
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
         uwsgi_log( "Invalid request. skip.\n");
@@ -186,12 +197,16 @@ clear:
     return UWSGI_OK;
 }
 
-extern "C" void uwsgi_cplusplus_after_request(struct wsgi_request *wsgi_req) {
-    // call log_request(wsgi_req) if you want a standard logline
-    uwsgi_log("logging c++ request\n");
-}
-
 extern "C" void uwsgi_cutelyst_init_apps()
 {
-    uwsgi_log("CUTELYST INIT APPS\n");
+    uwsgi_log("Cutelyst Init App\n");
+
+    QString path(options.app);
+    if (path.isEmpty()) {
+        qCritical() << "Cytelyst Application was not set";
+        return;
+    }
+
+
+    qDebug()  << "LOAD" << options.app;
 }

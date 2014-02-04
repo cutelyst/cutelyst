@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include <Cutelyst/Application>
+#include <Cutelyst/enginehttp.h>
 
 #include "root.h"
 #include "users.h"
@@ -41,7 +42,8 @@ int main(int argc, char *argv[])
         ctx->registerPlugin(new Plugin::Session);
     });
 
-    if (server->parseArgs() && server->setup()) {
+    EngineHttp *engine = new EngineHttp;
+    if (server->parseArgs() && engine->setupApplication(server)) {
         return app.exec();
     }
     return server->printError();

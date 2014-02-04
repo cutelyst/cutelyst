@@ -167,6 +167,12 @@ QByteArray Request::method() const
     return d->method;
 }
 
+Engine *Request::engine() const
+{
+    Q_D(const Request);
+    return d->engine;
+}
+
 void Request::setArgs(const QStringList &args)
 {
     Q_D(Request);

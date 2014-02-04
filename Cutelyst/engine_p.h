@@ -27,7 +27,7 @@ namespace Cutelyst {
 class EnginePrivate
 {
 public:
-    Application *app;
+    Application *app = 0;
 };
 
 }

@@ -19,7 +19,6 @@
 
 #include "application_p.h"
 
-#include "enginehttp.h"
 #include "context_p.h"
 #include "request.h"
 #include "controller.h"
@@ -56,7 +55,9 @@ Application::Application(QObject *parent) :
     QObject(parent),
     d_ptr(new ApplicationPrivate)
 {
-    d_ptr->dispatcher = 0;
+    Q_D(Application);
+    d->dispatcher = new Dispatcher(this);
+
     qInstallMessageHandler(cuteOutput);
 }
 
@@ -85,24 +86,6 @@ bool Application::parseArgs()
 int Application::printError()
 {
     return 1;
-}
-
-bool Application::setup(Engine *engine)
-{
-    Q_D(Application);
-
-    d->dispatcher = new Dispatcher(this);
-    d->dispatcher->setupActions(d->controllers);
-
-    if (engine) {
-        d->engine = engine;
-    } else {
-        d->engine = new CutelystEngineHttp(this);
-    }
-    connect(d->engine, &Engine::handleRequest,
-            this, &Application::handleRequest);
-
-    return d->engine->init();
 }
 
 bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
@@ -155,6 +138,14 @@ void Application::setApplicationVersion(const QString &applicationVersion)
 {
     Q_D(Application);
     d->applicationVersion = applicationVersion;
+}
+
+void Application::setup(Engine *engine)
+{
+    Q_D(Application);
+
+    d->dispatcher->setupActions(d->controllers);
+    d->engine = engine;
 }
 
 void Application::handleRequest(Request *req, Response *resp)
