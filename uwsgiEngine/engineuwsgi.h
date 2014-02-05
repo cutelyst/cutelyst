@@ -25,6 +25,8 @@ public:
 
     void processRequest(wsgi_request *wsgi_req);
 
+    QByteArray httpCase(const QByteArray &headerKey) const;
+
 private:
     QPluginLoader *m_loader;
 };

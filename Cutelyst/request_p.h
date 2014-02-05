@@ -45,6 +45,7 @@ public:
     QMultiHash<QString, QString> param;
     QHostAddress address;
     quint16 port;
+    QByteArray remoteUser;
     Engine *engine;
     void *connectionId;
 };

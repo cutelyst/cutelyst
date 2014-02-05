@@ -111,7 +111,9 @@ protected:
                       const QByteArray &protocol,
                       const QHash<QByteArray, QByteArray> &headers,
                       const QByteArray &body,
-                      const QHostAddress &address);
+                      const QByteArray &remoteUser,
+                      const QHostAddress &address,
+                      quint16 peerPort);
 
 protected:
     EnginePrivate *d_ptr;

@@ -67,13 +67,15 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
     return new Request(requestPriv);
 }
 
-void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body, const QHostAddress &address)
+void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body, const QByteArray &remoteUser, const QHostAddress &address, quint16 peerPort)
 {
     request->d_ptr->method = method;
     request->d_ptr->protocol = protocol;
-    request->d_ptr->headers = headers;
     request->d_ptr->body = body;
+    request->d_ptr->headers = headers;
+    request->d_ptr->remoteUser = remoteUser;
     request->d_ptr->address = address;
+    request->d_ptr->port = peerPort;
 
     QByteArray cookies = headers.value("Cookie");
     request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));

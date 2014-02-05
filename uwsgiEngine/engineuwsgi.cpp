@@ -91,53 +91,45 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
     qDebug() << "headers_size" << wsgi_req->headers_size;
 
-    uwsgi_parse_vars(wsgi_req);
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
 //    qDebug() << "header" << QByteArray(req->headers->buf);
 
-
-//    for (size_t i = 0; i < req->headers->len; ++i) {
-//        qDebug() << "header" << i << QByteArray(req->headers->buf);
-//    }
-
+    QHash<QByteArray, QByteArray> headers;
     for (int i = 0; i < wsgi_req->var_cnt; i += 2) {
-//#ifdef UWSGI_DEBUG
-        uwsgi_debug("%.*s: %.*s\n", wsgi_req->hvec[i].iov_len, wsgi_req->hvec[i].iov_base, wsgi_req->hvec[i+1].iov_len, wsgi_req->hvec[i+1].iov_base);
-//#endif
         if (wsgi_req->hvec[i].iov_len < 6) {
             continue;
         }
 
-//        if (!uwsgi_startswith(const_cast<char *>(wsgi_req->hvec[i].iov_base),
-//                              const_cast<char *>("HTTP_"), 5)) {
-//            (void) uwsgi_lower(wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
-            qDebug() << "key" << QByteArray((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
-            qDebug() << "value" << QByteArray((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
-
-//        }
+        if (!uwsgi_startswith((char *) wsgi_req->hvec[i].iov_base,
+                              const_cast<char *>("HTTP_"), 5)) {
+            QByteArray key((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
+            QByteArray value((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
+            headers.insert(httpCase(key), value);
+        }
     }
 
-    ssize_t body_len = 0;
+    QByteArray remoteUser(wsgi_req->remote_user, wsgi_req->remote_user_len);
+
+    ssize_t body_len;
     char *body_char =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
     QByteArray body(body_char, body_len);
 
-    QByteArray cookies(wsgi_req->cookie, wsgi_req->cookie_len);
-
-    QHash<QByteArray, QByteArray> headers;
-    headers.insert("Content-Type", QByteArray(wsgi_req->content_type, wsgi_req->content_type_len));
-    headers.insert("Content-Length", QByteArray::number(body.size()));
-    headers.insert("User-Agent", QByteArray(wsgi_req->user_agent, wsgi_req->user_agent_len));
-    headers.insert("Cookie", cookies);
+    uint16_t remote_port_len;
+    char *remote_port = uwsgi_get_var(wsgi_req, (char *) "REMOTE_PORT", 11, &remote_port_len);
+    QByteArray remotePort(remote_port, remote_port_len);
 
     setupRequest(request,
                  method,
                  protocol,
                  headers,
                  body,
-                 QHostAddress(remote.data()));
+                 remoteUser,
+                 QHostAddress(remote.data()),
+                 remotePort.toUInt());
 
     qDebug() << method << remote << path << protocol;
     qDebug() << body;
+    qDebug() << headers;
 
     qDebug() << "---> URI" << request->uri();
     qDebug() << "---> base" << request->base();
@@ -146,6 +138,29 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "---> queryParam" << request->queryParam();
 
     handleRequest(request, new Response);
+}
+
+QByteArray EngineUwsgi::httpCase(const QByteArray &headerKey) const
+{
+    QByteArray ret;
+
+    bool lastWasUnderscore = false;
+
+    for (int i = 0 ; i < headerKey.size() ; ++i) {
+        QChar buf = headerKey[i];
+        if(i == 0 || lastWasUnderscore) {
+            ret += buf.toUpper();
+            lastWasUnderscore = false;
+        } else  if (buf == '_') {
+            ret += '-';
+            lastWasUnderscore = true;
+        } else {
+            ret += buf.toLower();
+            lastWasUnderscore = false;
+        }
+    }
+
+    return ret;
 }
 
 void EngineUwsgi::finalizeHeaders(Context *ctx)

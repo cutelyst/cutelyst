@@ -161,6 +161,30 @@ QByteArray Request::method() const
     return d->method;
 }
 
+QByteArray Request::protocol() const
+{
+    Q_D(const Request);
+    return d->protocol;
+}
+
+QByteArray Request::userAgent() const
+{
+    Q_D(const Request);
+    return d->headers.value("User-Agent");
+}
+
+QByteArray Request::referer() const
+{
+    Q_D(const Request);
+    return d->headers.value("Referer");
+}
+
+QByteArray Request::remoteUser() const
+{
+    Q_D(const Request);
+    return d->remoteUser;
+}
+
 Engine *Request::engine() const
 {
     Q_D(const Request);

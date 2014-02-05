@@ -145,7 +145,19 @@ public:
      * @brief userAgent
      * @return the user agent (browser) version string.
      */
-    QString userAgent() const;
+    QByteArray userAgent() const;
+
+    /**
+     * @brief referer Shortcut for header("Referer")
+     * @return the referring page.
+     */
+    QByteArray referer() const;
+
+    /**
+     * @brief remoteUser
+     * @return the value of the REMOTE_USER environment variable.
+     */
+    QByteArray remoteUser() const;
 
     Engine *engine() const;
 
