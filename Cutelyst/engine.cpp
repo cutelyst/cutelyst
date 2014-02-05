@@ -73,7 +73,7 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     request->d_ptr->protocol = protocol;
     request->d_ptr->headers = headers;
     request->d_ptr->body = body;
-    request->d_ptr->peerAddress = address;
+    request->d_ptr->address = address;
 
     QByteArray cookies = headers.value("Cookie");
     request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));

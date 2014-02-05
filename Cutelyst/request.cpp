@@ -36,22 +36,16 @@ Request::~Request()
     delete d_ptr;
 }
 
-QHostAddress Request::peerAddress() const
+QHostAddress Request::address() const
 {
     Q_D(const Request);
-    return d->peerAddress;
+    return d->address;
 }
 
-QString Request::peerName() const
+quint16 Request::port() const
 {
     Q_D(const Request);
-    return d->peerName;
-}
-
-quint16 Request::peerPort() const
-{
-    Q_D(const Request);
-    return d->peerPort;
+    return d->port;
 }
 
 void *Request::connectionId() const

@@ -90,6 +90,8 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "header_cnt" << wsgi_req->header_cnt;
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
     qDebug() << "headers_size" << wsgi_req->headers_size;
+
+    uwsgi_parse_vars(wsgi_req);
     qDebug() << "var_cnt" << wsgi_req->var_cnt;
 //    qDebug() << "header" << QByteArray(req->headers->buf);
 
@@ -140,7 +142,7 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     qDebug() << "---> URI" << request->uri();
     qDebug() << "---> base" << request->base();
     qDebug() << "---> path" << request->path();
-    qDebug() << "---> peerAddress" << request->peerAddress();
+    qDebug() << "---> peerAddress" << request->address();
     qDebug() << "---> queryParam" << request->queryParam();
 
     handleRequest(request, new Response);
@@ -223,6 +225,14 @@ extern "C" void uwsgi_cutelyst_init_apps()
         qCritical() << "Cytelyst Application was not set";
         return;
     }
+
+    // get the current app id
+//    int id = uwsgi_apps_cnt;
+    // register a new app under a specific "mountpoint"
+//    uwsgi_add_app(id, your_plugin.modifier1, "", 0, NULL, NULL);
+    // if in lazy-apps mode, fix it
+//    uwsgi_emulate_cow_for_apps(id);
+
 
     qDebug()  << "Loading" << path;
     if (!engine->loadApplication(path)) {

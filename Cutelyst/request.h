@@ -38,19 +38,13 @@ public:
      * @brief peerAddress
      * @return the address of the client
      */
-    QHostAddress peerAddress() const;
-
-    /**
-     * @brief peerName
-     * @return the hostname of the client
-     */
-    QString peerName() const;
+    QHostAddress address() const;
 
     /**
      * @brief peerPort
      * @return the originating port of the client
      */
-    quint16 peerPort() const;
+    quint16 port() const;
 
     void *connectionId() const;
 
