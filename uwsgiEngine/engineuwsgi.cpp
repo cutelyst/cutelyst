@@ -76,24 +76,6 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 
     QByteArray protocol(wsgi_req->protocol, wsgi_req->protocol_len);
 
-    size_t remains = wsgi_req->post_pos;
-    qDebug() << "remains" << remains << "query string" << QByteArray(wsgi_req->query_string, wsgi_req->query_string_len);
-    qDebug() << "document_root" << QByteArray(wsgi_req->document_root, wsgi_req->document_root_len);
-    qDebug() << "cookie" << QByteArray(wsgi_req->cookie, wsgi_req->cookie_len);
-    qDebug() << "uri" << QByteArray(wsgi_req->uri, wsgi_req->uri_len);
-    qDebug() << "path_info" << QByteArray(wsgi_req->path_info, wsgi_req->path_info_len);
-    qDebug() << "host" << QByteArray(wsgi_req->host, wsgi_req->host_len);
-    qDebug() << "remote_addr" << QByteArray(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
-    qDebug() << "https" << QByteArray(wsgi_req->https, wsgi_req->https_len);
-    qDebug() << "content_type" << QByteArray(wsgi_req->content_type, wsgi_req->content_type_len);
-    qDebug() << "post_pos" << wsgi_req->post_pos;
-    qDebug() << "header_cnt" << wsgi_req->header_cnt;
-    qDebug() << "var_cnt" << wsgi_req->var_cnt;
-    qDebug() << "headers_size" << wsgi_req->headers_size;
-
-    qDebug() << "var_cnt" << wsgi_req->var_cnt;
-//    qDebug() << "header" << QByteArray(req->headers->buf);
-
     QHash<QByteArray, QByteArray> headers;
     for (int i = 0; i < wsgi_req->var_cnt; i += 2) {
         if (wsgi_req->hvec[i].iov_len < 6) {
@@ -110,9 +92,17 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 
     QByteArray remoteUser(wsgi_req->remote_user, wsgi_req->remote_user_len);
 
-    ssize_t body_len;
-    char *body_char =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
-    QByteArray body(body_char, body_len);
+    QByteArray bodyArray;
+    size_t remains = wsgi_req->post_cl;
+    while(remains > 0) {
+        ssize_t body_len = 0;
+        char *body =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
+        if (!body || body == uwsgi.empty) {
+            break;
+        }
+
+        bodyArray.append(body, body_len);
+    }
 
     uint16_t remote_port_len;
     char *remote_port = uwsgi_get_var(wsgi_req, (char *) "REMOTE_PORT", 11, &remote_port_len);
@@ -122,20 +112,10 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
                  method,
                  protocol,
                  headers,
-                 body,
+                 bodyArray,
                  remoteUser,
                  QHostAddress(remote.data()),
                  remotePort.toUInt());
-
-    qDebug() << method << remote << path << protocol;
-    qDebug() << body;
-    qDebug() << headers;
-
-    qDebug() << "---> URI" << request->uri();
-    qDebug() << "---> base" << request->base();
-    qDebug() << "---> path" << request->path();
-    qDebug() << "---> peerAddress" << request->address();
-    qDebug() << "---> queryParam" << request->queryParam();
 
     handleRequest(request, new Response);
 }
