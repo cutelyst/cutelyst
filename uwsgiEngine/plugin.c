@@ -17,7 +17,7 @@ struct uwsgi_option uwsgi_cutelyst_options[] = {
 struct uwsgi_plugin libcutelyst_uwsgi_plugin = {
 
     .name = "cutelyst",
-    .modifier1 = 0,
+    .modifier1 = CUTELYST_MODIFIER1,
     .init = uwsgi_cutelyst_init,
     .request = uwsgi_cutelyst_request,
     .init_apps = uwsgi_cutelyst_init_apps,

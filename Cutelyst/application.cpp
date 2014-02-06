@@ -115,7 +115,7 @@ bool Application::registerController(Controller *controller)
     return true;
 }
 
-QString Application::applicationName() const
+QByteArray Application::applicationName() const
 {
     Q_D(const Application);
     if (d->applicationName.isNull()) {
@@ -124,19 +124,19 @@ QString Application::applicationName() const
     return d->applicationName;
 }
 
-void Application::setApplicationName(const QString &applicationName)
+void Application::setApplicationName(const QByteArray &applicationName)
 {
     Q_D(Application);
     d->applicationName = applicationName;
 }
 
-QString Application::applicationVersion() const
+QByteArray Application::applicationVersion() const
 {
     Q_D(const Application);
     return d->applicationVersion;
 }
 
-void Application::setApplicationVersion(const QString &applicationVersion)
+void Application::setApplicationVersion(const QByteArray &applicationVersion)
 {
     Q_D(Application);
     d->applicationVersion = applicationVersion;

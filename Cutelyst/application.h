@@ -55,11 +55,11 @@ public:
 
     bool registerController(Controller *controller);
 
-    QString applicationName() const;
-    void setApplicationName(const QString &applicationName);
+    QByteArray applicationName() const;
+    void setApplicationName(const QByteArray &applicationName);
 
-    QString applicationVersion() const;
-    void setApplicationVersion(const QString &applicationVersion);
+    QByteArray applicationVersion() const;
+    void setApplicationVersion(const QByteArray &applicationVersion);
 
 Q_SIGNALS:
     /**

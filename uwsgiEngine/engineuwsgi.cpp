@@ -183,7 +183,8 @@ bool EngineUwsgi::init()
 
 EngineUwsgi *engine;
 
-extern "C" int uwsgi_cutelyst_init(){
+extern "C" int uwsgi_cutelyst_init()
+{
     uwsgi_log("Initializing Cutelyst plugin\n");
 
     engine = new EngineUwsgi;
@@ -221,17 +222,15 @@ extern "C" void uwsgi_cutelyst_init_apps()
         return;
     }
 
-    // get the current app id
-//    int id = uwsgi_apps_cnt;
-    // register a new app under a specific "mountpoint"
-//    uwsgi_add_app(id, your_plugin.modifier1, "", 0, NULL, NULL);
-    // if in lazy-apps mode, fix it
-//    uwsgi_emulate_cow_for_apps(id);
-
-
     qDebug()  << "Loading" << path;
     if (!engine->loadApplication(path)) {
         qCritical() << "Could not load application:" << path;
         return;
     }
+
+    // get the current app id
+    int id = uwsgi_apps_cnt;
+
+    // register a new app under a specific "mountpoint"
+    uwsgi_add_app(id, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
 }
