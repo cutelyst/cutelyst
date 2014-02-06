@@ -33,7 +33,7 @@ struct uwsgi_option uwsgi_cutelyst_options[] = {
 
 };
 
-struct uwsgi_plugin libcutelyst_uwsgi_plugin = {
+struct uwsgi_plugin cutelyst_plugin = {
 
     .name = "cutelyst",
     .modifier1 = CUTELYST_MODIFIER1,

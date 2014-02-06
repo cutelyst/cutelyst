@@ -17,16 +17,7 @@
 #define BUILDDIR "@BUILDDIR@"
 
 /* Name of package */
-#define PACKAGE_NAME "packagekit-qt"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://www.packagekit.org/pk-bugs.html"
-
-/* Define to the home page for this package. */
-#define PACKAGE_URL "http://packagekit.org"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "@VERSION@"
+#define PACKAGE_NAME "cutelyst"
 
 /* Version number of package */
 #define VERSION "@VERSION@"

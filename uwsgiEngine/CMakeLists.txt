@@ -12,10 +12,18 @@ execute_process(COMMAND uwsgi --cflags
 )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 ${UWSGI_CFLAGS}")
 
-add_library(cutelyst_uwsgi_plugin SHARED ${uswgi_engine_SRC})
-qt5_use_modules(cutelyst_uwsgi_plugin Core Network)
-target_link_libraries(cutelyst_uwsgi_plugin
+add_library(cutelyst SHARED ${uswgi_engine_SRC})
+qt5_use_modules(cutelyst Core Network)
+target_link_libraries(cutelyst
     cutelyst-qt5
 )
 
-install(TARGETS cutelyst_uwsgi_plugin DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins)
+SET_TARGET_PROPERTIES(cutelyst
+    PROPERTIES
+    SUFFIX "_plugin.so"
+    PREFIX ""
+)
+
+install(TARGETS cutelyst
+    DESTINATION ${UWSGI_PLUGINS_DIR}
+)

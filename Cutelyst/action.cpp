@@ -155,8 +155,7 @@ bool Action::dispatch(Context *ctx)
             return methodRet;
         }
 
-        // TODO when the method failed to be called it probably means
-        // we should detach, make sure this would be enough
+        // The method failed to be called which means we should detach
         ctx->detach();
         ctx->setState(false);
 

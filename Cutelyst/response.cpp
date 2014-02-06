@@ -19,6 +19,7 @@
 
 #include "response_p.h"
 #include "engine.h"
+#include "config.h"
 
 #include <QDebug>
 
@@ -155,8 +156,7 @@ ResponsePrivate::ResponsePrivate() :
     finalizedHeaders(false),
     contentLength(0)
 {
-    // TODO use version macro here
-    headers.insert("X-Cutelyst", "0.1");
+    headers.insert("X-Cutelyst", VERSION);
 
     statusCode = Engine::statusCode(status);
 }
