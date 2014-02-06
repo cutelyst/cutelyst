@@ -90,6 +90,16 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
         }
     }
 
+    QByteArray contentType(wsgi_req->content_type, wsgi_req->content_type_len);
+    if (!contentType.isNull()) {
+        headers.insert("Content-Type", contentType);
+    }
+
+    QByteArray contentEncoding(wsgi_req->encoding, wsgi_req->encoding_len);
+    if (!contentEncoding.isNull()) {
+        headers.insert("Content-Encoding", contentEncoding);
+    }
+
     QByteArray remoteUser(wsgi_req->remote_user, wsgi_req->remote_user_len);
 
     QByteArray bodyArray;
