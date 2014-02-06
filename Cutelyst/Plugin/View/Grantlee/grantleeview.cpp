@@ -77,6 +77,7 @@ bool GrantleeView::render(Context *ctx)
             return false;
         }
     }
+    templateFile.prepend(d->includePath % QLatin1Char('/'));
 
     Grantlee::Template tmpl;
     Grantlee::Context gCtx;
@@ -90,7 +91,8 @@ bool GrantleeView::render(Context *ctx)
     }
 
     if (!d->wrapper.isEmpty()) {
-        tmpl = d->engine->loadByName(d->wrapper);
+        templateFile = d->includePath % QLatin1Char('/') % d->wrapper;
+        tmpl = d->engine->loadByName(templateFile);
 
         QString wrapper = tmpl->render(&gCtx);
         gCtx.insert(QLatin1String("template"), wrapper);
@@ -103,6 +105,9 @@ bool GrantleeView::render(Context *ctx)
         ctx->res()->body() = body.toUtf8();
     }
 
-    qDebug() << "Rendering template" << tmpl->error() << tmpl->errorString();
+    if (tmpl->error() != Grantlee::NoError) {
+        qCritical() << "Error while rendering template" << tmpl->errorString();
+    }
+
     return tmpl->error() == Grantlee::NoError;
 }

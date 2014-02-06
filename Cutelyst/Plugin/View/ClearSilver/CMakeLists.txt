@@ -11,7 +11,7 @@ set(clearsilver_plugin_SRC
 )
 
 add_library(cutelyst-clearsilver SHARED ${clearsilver_plugin_SRC})
-qt5_use_modules(cutelyst-clearsilver Core Network)
+qt5_use_modules(cutelyst-clearsilver Core)
 target_link_libraries(cutelyst-clearsilver
     ${ClearSilver_CS}
     ${ClearSilver_Util}

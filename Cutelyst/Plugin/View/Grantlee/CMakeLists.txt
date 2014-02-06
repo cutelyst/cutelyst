@@ -11,9 +11,9 @@ set(grantlee_plugin_SRC
 )
 
 add_library(cutelyst-grantlee SHARED ${grantlee_plugin_SRC})
-qt5_use_modules(cutelyst-grantlee Core Network)
+qt5_use_modules(cutelyst-grantlee Core)
 target_link_libraries(cutelyst-grantlee
-    ${Grantlee_LIBRARIES}
+    ${Grantlee_TEMPLATES_LIBRARIES}
     cutelyst-qt5
 )
 
