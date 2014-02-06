@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB. If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
 #include "engineuwsgi.h"
 #include "plugin.h"
 
@@ -53,7 +72,7 @@ bool EngineUwsgi::loadApplication(const QString &path)
 void EngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
 
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
@@ -162,7 +181,7 @@ QByteArray EngineUwsgi::httpCase(const QByteArray &headerKey) const
 void EngineUwsgi::finalizeHeaders(Context *ctx)
 {
     Response *res = ctx->res();
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->connectionId());
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
 
     if (uwsgi_response_prepare_headers(wsgi_req,
                                        res->statusCode().data(),

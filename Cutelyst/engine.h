@@ -101,7 +101,7 @@ protected:
      * Engines must call this when the Request/Response objects
      * are ready for to be processed
      */
-    void handleRequest(Request *request, Response *response);
+    void handleRequest(Request *request, Response *response, bool autoDelete = true);
     Request *newRequest(void *requestData,
                         const QByteArray &scheme,
                         const QByteArray &hostAndPort,
@@ -116,6 +116,7 @@ protected:
                       const QHostAddress &address,
                       quint16 peerPort,
                       QFile *upload);
+    void *requestPtr(Request *request) const;
 
 protected:
     EnginePrivate *d_ptr;

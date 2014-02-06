@@ -128,7 +128,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
         }
     }
 
-    int *id = static_cast<int*>(ctx->req()->connectionId());
+    int *id = static_cast<int*>(requestPtr(ctx->req()));
     d->requests[*id]->write(header);
 }
 
@@ -136,7 +136,7 @@ void EngineHttp::finalizeBody(Context *ctx)
 {
     Q_D(EngineHttp);
 
-    int *id = static_cast<int*>(ctx->req()->connectionId());
+    int *id = static_cast<int*>(requestPtr(ctx->req()));
     EngineHttpRequest *req = d->requests.value(*id);
     req->write(ctx->response()->body());
     req->finish();

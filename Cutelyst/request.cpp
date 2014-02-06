@@ -33,6 +33,8 @@ Request::Request(RequestPrivate *prv) :
 
 Request::~Request()
 {
+    Q_D(Request);
+    delete d->upload;
     delete d_ptr;
 }
 
@@ -46,12 +48,6 @@ quint16 Request::port() const
 {
     Q_D(const Request);
     return d->port;
-}
-
-void *Request::connectionId() const
-{
-    Q_D(const Request);
-    return d->connectionId;
 }
 
 QUrl Request::uri() const

@@ -46,7 +46,7 @@ Engine::~Engine()
 Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const QByteArray &hostAndPort, const QByteArray &path, const QUrlQuery &queryString)
 {
     RequestPrivate *requestPriv = new RequestPrivate;
-    requestPriv->connectionId = requestData;
+    requestPriv->requestPtr = requestData;
     requestPriv->engine = this;
 
     QUrl uri;
@@ -81,7 +81,7 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     QByteArray cookies = headers.value("Cookie");
     request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
 
-    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
+    if (request->contentType() == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         QMultiHash<QString, QString> bodyParam;
@@ -104,6 +104,11 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
         request->d_ptr->bodyParam = bodyParam;
     }
     request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
+}
+
+void *Engine::requestPtr(Request *request) const
+{
+    return request->d_ptr->requestPtr;
 }
 
 void Engine::finalizeCookies(Context *ctx)
@@ -188,10 +193,15 @@ QByteArray Engine::statusCode(quint16 status)
     return ret;
 }
 
-void Engine::handleRequest(Request *request, Response *response)
+void Engine::handleRequest(Request *request, Response *response, bool autoDelete)
 {
     Q_D(Engine);
     Q_ASSERT(d->app);
     d->app->handleRequest(request, response);
+
+    if (autoDelete) {
+        delete request;
+        delete response;
+    }
 }
 

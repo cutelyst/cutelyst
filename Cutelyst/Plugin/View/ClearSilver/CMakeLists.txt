@@ -7,6 +7,7 @@ add_definitions(-DQT_PLUGIN)
 set(clearsilver_plugin_SRC
     clearsilver.cpp
     clearsilver_p.h
+    metadata.json
 )
 
 add_library(cutelyst-clearsilver SHARED ${clearsilver_plugin_SRC})

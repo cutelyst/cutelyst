@@ -47,8 +47,6 @@ public:
      */
     quint16 port() const;
 
-    void *connectionId() const;
-
     /**
      * @brief uri
      * @return the uri as close as possible to what

@@ -48,7 +48,7 @@ public:
     QByteArray remoteUser;
     Engine *engine;
     QFile *upload;
-    void *connectionId;
+    void *requestPtr;
 };
 
 }

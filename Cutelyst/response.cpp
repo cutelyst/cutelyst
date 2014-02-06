@@ -77,6 +77,18 @@ QByteArray &Response::body()
     return d->body;
 }
 
+QByteArray Response::contentEncoding() const
+{
+    Q_D(const Response);
+    return d->headers.value("Content-Encoding");
+}
+
+void Cutelyst::Response::setContentEncoding(const QByteArray &encoding)
+{
+    Q_D(Response);
+    d->headers["Content-Encoding"] = encoding;
+}
+
 quint64 Response::contentLength() const
 {
     Q_D(const Response);

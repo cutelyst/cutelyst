@@ -7,6 +7,7 @@ add_definitions(-DQT_PLUGIN)
 set(grantlee_plugin_SRC
     grantleeview.cpp
     grantleeview_p.h
+    metadata.json
 )
 
 add_library(cutelyst-grantlee SHARED ${grantlee_plugin_SRC})

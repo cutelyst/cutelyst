@@ -45,7 +45,7 @@ private:
     QString m_passwordPostSalt;
 };
 
-} // namespace CutelystPlugin
+} // namespace Plugin
 }
 
 #endif // CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
