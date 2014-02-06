@@ -9,8 +9,6 @@
 #include <QFile>
 #include <QDebug>
 
-#include <grantlee/engine.h>
-
 using namespace Cutelyst;
 
 GrantleeView::GrantleeView(QObject *parent) :
@@ -18,7 +16,9 @@ GrantleeView::GrantleeView(QObject *parent) :
     d_ptr(new GrantleeViewPrivate)
 {
     Q_D(GrantleeView);
+    d->loader = Grantlee::FileSystemTemplateLoader::Ptr(new Grantlee::FileSystemTemplateLoader);
     d->engine = new Grantlee::Engine(this);
+    d->engine->addTemplateLoader(d->loader);
 }
 
 GrantleeView::~GrantleeView()
@@ -35,6 +35,7 @@ QString GrantleeView::includePath() const
 void GrantleeView::setIncludePath(const QString &path)
 {
     Q_D(GrantleeView);
+    d->loader->setTemplateDirs(QStringList() << path);
     d->includePath = path;
 }
 
@@ -77,7 +78,6 @@ bool GrantleeView::render(Context *ctx)
             return false;
         }
     }
-    templateFile.prepend(d->includePath % QLatin1Char('/'));
 
     Grantlee::Template tmpl;
     Grantlee::Context gCtx;
@@ -91,8 +91,7 @@ bool GrantleeView::render(Context *ctx)
     }
 
     if (!d->wrapper.isEmpty()) {
-        templateFile = d->includePath % QLatin1Char('/') % d->wrapper;
-        tmpl = d->engine->loadByName(templateFile);
+        tmpl = d->engine->loadByName(d->wrapper);
 
         QString wrapper = tmpl->render(&gCtx);
         gCtx.insert(QLatin1String("template"), wrapper);

@@ -4,6 +4,7 @@
 #include "grantleeview.h"
 
 #include <grantlee/engine.h>
+#include <grantlee/templateloader.h>
 
 namespace Cutelyst {
 
@@ -14,6 +15,7 @@ public:
     QString extension;
     QString wrapper;
     Grantlee::Engine *engine;
+    Grantlee::FileSystemTemplateLoader::Ptr loader;
 };
 
 }
