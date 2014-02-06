@@ -7,9 +7,9 @@
 #include <Cutelyst/request.h>
 
 #include <QPluginLoader>
+#include <QFile>
 #include <QUrl>
 #include <QDebug>
-#include <QStringBuilder>
 
 extern struct uwsgi_server uwsgi;
 
@@ -108,6 +108,11 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
     char *remote_port = uwsgi_get_var(wsgi_req, (char *) "REMOTE_PORT", 11, &remote_port_len);
     QByteArray remotePort(remote_port, remote_port_len);
 
+    QFile *upload = new QFile;
+    if (wsgi_req->post_file && !upload->open(wsgi_req->post_file, QIODevice::ReadOnly)) {
+        qDebug() << "Could not open upload file";
+    }
+
     setupRequest(request,
                  method,
                  protocol,
@@ -115,7 +120,8 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
                  bodyArray,
                  remoteUser,
                  QHostAddress(remote.data()),
-                 remotePort.toUInt());
+                 remotePort.toUInt(),
+                 upload);
 
     handleRequest(request, new Response);
 }

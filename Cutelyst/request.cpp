@@ -185,6 +185,12 @@ QByteArray Request::remoteUser() const
     return d->remoteUser;
 }
 
+QFile *Request::upload() const
+{
+    Q_D(const Request);
+    return d->upload;
+}
+
 Engine *Request::engine() const
 {
     Q_D(const Request);

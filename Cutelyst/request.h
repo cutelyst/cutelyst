@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QNetworkCookie>
+#include <QFile>
 
 namespace Cutelyst {
 
@@ -158,6 +159,12 @@ public:
      * @return the value of the REMOTE_USER environment variable.
      */
     QByteArray remoteUser() const;
+
+    /**
+     * @brief upload
+     * @return a QFile pointer to the uploaded content, if any
+     */
+    QFile *upload() const;
 
     Engine *engine() const;
 

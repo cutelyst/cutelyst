@@ -47,6 +47,7 @@ public:
     quint16 port;
     QByteArray remoteUser;
     Engine *engine;
+    QFile *upload;
     void *connectionId;
 };
 

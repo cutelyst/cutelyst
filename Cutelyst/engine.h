@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QUrlQuery>
+#include <QFile>
 
 namespace Cutelyst {
 
@@ -113,7 +114,8 @@ protected:
                       const QByteArray &body,
                       const QByteArray &remoteUser,
                       const QHostAddress &address,
-                      quint16 peerPort);
+                      quint16 peerPort,
+                      QFile *upload);
 
 protected:
     EnginePrivate *d_ptr;
