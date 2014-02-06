@@ -155,13 +155,6 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
     }
 
     QMap<QByteArray, QByteArray> headers = ctx->res()->headers();
-    if (uwsgi_response_add_content_type(wsgi_req,
-                                        res->contentType().data(),
-                                        res->contentType().size())) {
-        return;
-    }
-    headers.remove("Content-Type");
-
     QMap<QByteArray, QByteArray>::Iterator it = headers.begin();
     while (it != headers.end()) {
         QByteArray key = it.key();
