@@ -72,7 +72,8 @@ bool ClearSilver::render(Context *ctx)
 {
     Q_D(ClearSilver);
 
-    QString templateFile = ctx->stash()[QLatin1String("template")].toString();
+    const QVariantHash &stash = ctx->stash();
+    QString templateFile = stash.value(QLatin1String("template")).toString();
     if (templateFile.isEmpty()) {
         if (ctx->action() && !ctx->action()->privateName().isEmpty()) {
             templateFile = ctx->action()->privateName() % d->extension;
@@ -87,13 +88,13 @@ bool ClearSilver::render(Context *ctx)
     qDebug() << "Rendering template" <<templateFile;
     QByteArray output;
     if (d->wrapper.isEmpty()) {
-        if (!d->render(ctx, templateFile, ctx->stash(), output)) {
+        if (!d->render(ctx, templateFile, stash, output)) {
             return false;
         }
     } else {
         QString wrapperFile = d->wrapper;
 
-        QVariantHash data = ctx->stash();
+        QVariantHash data = stash;
         data["template"] = templateFile;
 
         if (!d->render(ctx, wrapperFile, data, output)) {
