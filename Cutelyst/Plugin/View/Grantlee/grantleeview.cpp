@@ -90,19 +90,15 @@ bool GrantleeView::render(Context *ctx)
         ++it;
     }
 
-    if (!d->wrapper.isEmpty()) {
+    if (d->wrapper.isEmpty()) {
+        tmpl = d->engine->loadByName(templateFile);
+    } else {
         tmpl = d->engine->loadByName(d->wrapper);
 
-        QString wrapper = tmpl->render(&gCtx);
-        gCtx.insert(QLatin1String("template"), wrapper);
+        gCtx.insert("template", templateFile);
     }
 
-    if (tmpl->error() == Grantlee::NoError) {
-        tmpl = d->engine->loadByName(templateFile);
-
-        QString body = tmpl->render(&gCtx);
-        ctx->res()->body() = body.toUtf8();
-    }
+    ctx->res()->body() = tmpl->render(&gCtx).toUtf8();
 
     if (tmpl->error() != Grantlee::NoError) {
         qCritical() << "Error while rendering template" << tmpl->errorString();
