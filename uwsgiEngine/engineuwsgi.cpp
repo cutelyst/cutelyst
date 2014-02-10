@@ -215,6 +215,9 @@ extern "C" int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
 
+    // This allows for some stuff to run event loops
+    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
+
     engine = new EngineUwsgi;
 
     return 0;
