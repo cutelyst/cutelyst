@@ -81,6 +81,7 @@ bool CredentialPassword::checkPassword(const Authentication::User &user, const C
     QString storedPassword = user.value(m_passwordField);
 
     if (m_passwordType == None) {
+        qDebug() << "CredentialPassword is set to ignore password check";
         return true;
     } else if (m_passwordType == Clear) {
         return storedPassword == password;
