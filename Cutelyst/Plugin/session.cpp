@@ -148,7 +148,7 @@ QString Session::generateSessionId() const
 
 QString Session::getSessionId() const
 {
-    QVariant property = m_ctx->property("Session::_sessionid");
+    QVariant property = m_ctx->property("Session/_sessionid");
     if (!property.isNull()) {
         return property.value<QString>();
     }
@@ -165,7 +165,7 @@ QString Session::getSessionId() const
         sessionId = generateSessionId();
         qDebug() << "Created session" << sessionId;
     }
-    m_ctx->setProperty("Session::_sessionid", sessionId);
+    m_ctx->setProperty("Session/_sessionid", sessionId);
 
     return sessionId;
 }

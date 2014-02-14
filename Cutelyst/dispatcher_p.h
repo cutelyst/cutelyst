@@ -22,6 +22,8 @@
 
 #include "dispatcher.h"
 
+#include <QRegularExpression>
+
 namespace Cutelyst {
 
 class DispatcherPrivate
@@ -32,6 +34,7 @@ public:
     QMap<QString, ActionList> containerHash;
     QHash<QString, Controller *> constrollerHash;
     QList<CutelystDispatchType*> dispatchers;
+    QRegularExpression initialSlash = QRegularExpression("^/+");
 };
 
 }

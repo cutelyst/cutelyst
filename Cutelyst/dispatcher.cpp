@@ -28,7 +28,6 @@
 #include <QUrl>
 #include <QMetaMethod>
 #include <QStringBuilder>
-#include <QRegularExpression>
 #include <QDebug>
 
 #include <iostream>
@@ -107,7 +106,7 @@ bool Dispatcher::dispatch(Context *ctx)
         return ctx->forward(QLatin1Char('/') % ctx->action()->ns() % QLatin1String("/_DISPATCH"));
     } else {
         QString error;
-        QString path = ctx->req()->path();
+        QByteArray path = ctx->req()->path();
         if (path.isEmpty()) {
             error = QLatin1String("No default action defined");
         } else {
@@ -143,7 +142,7 @@ void Dispatcher::prepareAction(Context *ctx)
 
     while (!pathParts.isEmpty()) {
         path = pathParts.join(QLatin1Char('/'));
-        path.remove(QRegularExpression("^/+"));
+        path.remove(d->initialSlash);
 
         foreach (CutelystDispatchType *type, d->dispatchers) {
             if (type->match(ctx, path)) {
