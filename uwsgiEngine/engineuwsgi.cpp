@@ -80,20 +80,20 @@ void EngineUwsgi::finalizeBody(Context *ctx)
 void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 {
     Request *request;
-    QByteArray host(wsgi_req->host, wsgi_req->host_len);
-    QByteArray path(wsgi_req->path_info, wsgi_req->path_info_len);
-    QUrlQuery queryString(QByteArray(wsgi_req->query_string, wsgi_req->query_string_len));
+    QByteArray host = QByteArray::fromRawData(wsgi_req->host, wsgi_req->host_len);
+    QByteArray path = QByteArray::fromRawData(wsgi_req->path_info, wsgi_req->path_info_len);
+    QUrlQuery queryString(QByteArray::fromRawData(wsgi_req->query_string, wsgi_req->query_string_len));
     request = newRequest(wsgi_req,
                          wsgi_req->https_len ? "http" : "https",
                          host,
                          path,
                          queryString);
 
-    QByteArray remote(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
+    QByteArray remote = QByteArray::fromRawData(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
 
-    QByteArray method(wsgi_req->method, wsgi_req->method_len);
+    QByteArray method = QByteArray::fromRawData(wsgi_req->method, wsgi_req->method_len);
 
-    QByteArray protocol(wsgi_req->protocol, wsgi_req->protocol_len);
+    QByteArray protocol = QByteArray::fromRawData(wsgi_req->protocol, wsgi_req->protocol_len);
 
     QHash<QByteArray, QByteArray> headers;
     for (int i = 0; i < wsgi_req->var_cnt; i += 2) {
@@ -103,23 +103,23 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 
         if (!uwsgi_startswith((char *) wsgi_req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            QByteArray key((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
-            QByteArray value((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
+            QByteArray key = QByteArray::fromRawData((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
+            QByteArray value = QByteArray::fromRawData((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
             headers.insert(httpCase(key), value);
         }
     }
 
-    QByteArray contentType(wsgi_req->content_type, wsgi_req->content_type_len);
+    QByteArray contentType = QByteArray::fromRawData(wsgi_req->content_type, wsgi_req->content_type_len);
     if (!contentType.isNull()) {
         headers.insert("Content-Type", contentType);
     }
 
-    QByteArray contentEncoding(wsgi_req->encoding, wsgi_req->encoding_len);
+    QByteArray contentEncoding = QByteArray::fromRawData(wsgi_req->encoding, wsgi_req->encoding_len);
     if (!contentEncoding.isNull()) {
         headers.insert("Content-Encoding", contentEncoding);
     }
 
-    QByteArray remoteUser(wsgi_req->remote_user, wsgi_req->remote_user_len);
+    QByteArray remoteUser = QByteArray::fromRawData(wsgi_req->remote_user, wsgi_req->remote_user_len);
 
     QByteArray bodyArray;
     size_t remains = wsgi_req->post_cl;
@@ -135,7 +135,7 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 
     uint16_t remote_port_len;
     char *remote_port = uwsgi_get_var(wsgi_req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    QByteArray remotePort(remote_port, remote_port_len);
+    QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
 
     QFile *upload = new QFile;
     if (wsgi_req->post_file && !upload->open(wsgi_req->post_file, QIODevice::ReadOnly)) {
