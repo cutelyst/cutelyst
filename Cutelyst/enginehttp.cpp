@@ -35,11 +35,32 @@
 
 using namespace Cutelyst;
 
+void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "[debug] %s\n", localMsg.constData());
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "[warn] %s\n", localMsg.constData());
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "[crit] %s\n", localMsg.constData());
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "[fatal] %s\n", localMsg.constData());
+        abort();
+    }
+}
+
 EngineHttp::EngineHttp(QObject *parent) :
     Engine(parent),
     d_ptr(new EngineHttpPrivate)
 {
     Q_D(EngineHttp);
+
+    qInstallMessageHandler(cuteOutput);
 
     d->server = new QTcpServer(this);
     connect(d->server, &QTcpServer::newConnection,

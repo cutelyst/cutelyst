@@ -34,10 +34,30 @@ extern struct uwsgi_server uwsgi;
 
 using namespace Cutelyst;
 
+void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        uwsgi_log("[debug] %s\n", localMsg.constData());
+        break;
+    case QtWarningMsg:
+        uwsgi_log("[warn] %s\n", localMsg.constData());
+        break;
+    case QtCriticalMsg:
+        uwsgi_log("[crit] %s\n", localMsg.constData());
+        break;
+    case QtFatalMsg:
+        uwsgi_log("[fatal] %s\n", localMsg.constData());
+        abort();
+    }
+}
+
 EngineUwsgi::EngineUwsgi(QObject *parent) :
     Engine(parent),
     m_loader(0)
 {
+    qInstallMessageHandler(cuteOutput);
 }
 
 bool EngineUwsgi::loadApplication(const QString &path)
