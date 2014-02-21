@@ -54,7 +54,11 @@ public:
 
     bool registerController(Controller *controller);
 
-    bool registerDispatcher(DispatchType *dispatcher);
+    /**
+     * Register a custom DispatchType, if none is registered
+     * all the built-in dispatchers types will be registered
+     */
+    void registerDispatcher(DispatchType *dispatcher);
 
     QByteArray applicationName() const;
     void setApplicationName(const QByteArray &applicationName);

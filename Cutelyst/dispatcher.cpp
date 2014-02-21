@@ -40,7 +40,6 @@ Dispatcher::Dispatcher(QObject *parent) :
     d_ptr(new DispatcherPrivate)
 {
     Q_D(Dispatcher);
-    d->dispatchers << new DispatchTypePath(this);
 }
 
 Dispatcher::~Dispatcher()
@@ -51,6 +50,10 @@ Dispatcher::~Dispatcher()
 void Dispatcher::setupActions(const QList<Controller*> &controllers)
 {
     Q_D(Dispatcher);
+
+    if (d->dispatchers.isEmpty()) {
+        registerDispatchType(new DispatchTypePath(this));
+    }
 
     foreach (Controller *controller, controllers) {
         // App controller
@@ -212,6 +215,12 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures)
         }
     }
     return QString();
+}
+
+void Dispatcher::registerDispatchType(DispatchType *dispatchType)
+{
+    Q_D(Dispatcher);
+    d->dispatchers.append(dispatchType);
 }
 
 void Dispatcher::printActions()

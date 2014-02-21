@@ -49,6 +49,7 @@ protected:
     ActionList getActions(const QString &name, const QString &ns) const;
     QHash<QString, Controller*> controllers() const;
     QString uriForAction(Action *action, const QStringList &captures);
+    void registerDispatchType(DispatchType *dispatchType);
 
 private:
     void printActions();

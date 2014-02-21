@@ -72,9 +72,10 @@ bool Application::registerController(Controller *controller)
     return true;
 }
 
-bool Application::registerDispatcher(DispatchType *dispatcher)
+void Application::registerDispatcher(DispatchType *dispatcher)
 {
-
+    Q_D(const Application);
+    d->dispatcher->registerDispatchType(dispatcher);
 }
 
 QByteArray Application::applicationName() const
