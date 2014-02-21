@@ -65,7 +65,7 @@ QByteArray Request::base() const
                            QUrl::RemoveFragment).toLocal8Bit();
 }
 
-QByteArray Request::path() const
+QString Request::path() const
 {
     Q_D(const Request);
     return d->path;

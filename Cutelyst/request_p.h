@@ -34,7 +34,7 @@ class RequestPrivate
 public:
     QByteArray method;
     QUrl uri;
-    QByteArray path;
+    QString path;
     QStringList args;
     QByteArray protocol;
     QList<QNetworkCookie> cookies;

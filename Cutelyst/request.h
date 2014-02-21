@@ -72,7 +72,7 @@ public:
      * for  http://localhost/path/foo
      * path will contain 'path/foo'
      */
-    QByteArray path() const;
+    QString path() const;
     QStringList args() const;
     QByteArray body() const;
 

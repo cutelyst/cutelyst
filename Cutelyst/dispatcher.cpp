@@ -106,7 +106,7 @@ bool Dispatcher::dispatch(Context *ctx)
         return ctx->forward(QLatin1Char('/') % ctx->action()->ns() % QLatin1String("/_DISPATCH"));
     } else {
         QString error;
-        QByteArray path = ctx->req()->path();
+        const QString &path = ctx->req()->path();
         if (path.isEmpty()) {
             error = QLatin1String("No default action defined");
         } else {
