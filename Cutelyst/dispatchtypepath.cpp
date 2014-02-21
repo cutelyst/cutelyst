@@ -30,7 +30,7 @@ using namespace std;
 using namespace Cutelyst;
 
 DispatchTypePath::DispatchTypePath(QObject *parent) :
-    CutelystDispatchType(parent)
+    DispatchType(parent)
 {
 }
 

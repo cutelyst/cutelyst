@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYSTDISPATCHTYPE_H
-#define CUTELYSTDISPATCHTYPE_H
+#ifndef DISPATCHTYPE_H
+#define DISPATCHTYPE_H
 
 #include <QObject>
 
@@ -26,17 +26,17 @@ namespace Cutelyst {
 
 class Context;
 class Action;
-class CutelystDispatchType : public QObject
+class DispatchType : public QObject
 {
     Q_OBJECT
 public:
-    explicit CutelystDispatchType(QObject *parent = 0);
+    explicit DispatchType(QObject *parent = 0);
 
     /**
      * @brief list the registered actions
      * To be implemented by subclasses
      */
-    virtual void list() const;
+    virtual void list() const = 0;
 
     /**
      * Return true if the dispatchType matches the given path
@@ -68,4 +68,4 @@ protected:
 
 }
 
-#endif // CUTELYSTDISPATCHTYPE_H
+#endif // DISPATCHTYPE_H

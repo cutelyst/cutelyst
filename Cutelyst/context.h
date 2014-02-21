@@ -141,7 +141,7 @@ protected:
     void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);
 
     friend class Application;
-    friend class CutelystDispatchType;
+    friend class DispatchType;
     friend class Plugin::AbstractPlugin;
     ContextPrivate *d_ptr;
 

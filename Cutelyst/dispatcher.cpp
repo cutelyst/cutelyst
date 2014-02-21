@@ -68,7 +68,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                     if (!action->attributes().contains("Private")) {
                         // Register the action with each dispatcher
-                        foreach (CutelystDispatchType *dispatch, d->dispatchers) {
+                        foreach (DispatchType *dispatch, d->dispatchers) {
                             if (dispatch->registerAction(action)) {
                                 registered = true;
                             }
@@ -144,7 +144,7 @@ void Dispatcher::prepareAction(Context *ctx)
         path = pathParts.join(QLatin1Char('/'));
         path.remove(d->initialSlash);
 
-        foreach (CutelystDispatchType *type, d->dispatchers) {
+        foreach (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, path)) {
                 if (!path.isEmpty()) {
                     qDebug() << "Path is" << path;
@@ -205,7 +205,7 @@ QHash<QString, Controller *> Dispatcher::controllers() const
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures)
 {
     Q_D(const Dispatcher);
-    foreach (CutelystDispatchType *dispatch, d->dispatchers) {
+    foreach (DispatchType *dispatch, d->dispatchers) {
         QString uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
             return uri.isEmpty() ? QLatin1String("/") : uri;
@@ -274,7 +274,7 @@ void Dispatcher::printActions()
          << "."  << endl << endl;
 
     // List all public actions
-    foreach (CutelystDispatchType *dispatch, d->dispatchers) {
+    foreach (DispatchType *dispatch, d->dispatchers) {
         dispatch->list();
     }
 }

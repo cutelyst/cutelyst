@@ -27,7 +27,7 @@
 
 namespace Cutelyst {
 
-class DispatchTypePath : public CutelystDispatchType
+class DispatchTypePath : public DispatchType
 {
     Q_OBJECT
 public:

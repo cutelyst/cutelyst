@@ -33,7 +33,7 @@ public:
     QMap<QString, Action*> actionHash;
     QMap<QString, ActionList> containerHash;
     QHash<QString, Controller *> constrollerHash;
-    QList<CutelystDispatchType*> dispatchers;
+    QList<DispatchType*> dispatchers;
     QRegularExpression initialSlash = QRegularExpression("^/+");
 };
 

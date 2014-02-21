@@ -23,32 +23,28 @@
 
 using namespace Cutelyst;
 
-CutelystDispatchType::CutelystDispatchType(QObject *parent) :
+DispatchType::DispatchType(QObject *parent) :
     QObject(parent)
 {
 }
 
-void CutelystDispatchType::list() const
-{
-}
-
-QString CutelystDispatchType::uriForAction(Action *action, const QStringList &captures) const
+QString DispatchType::uriForAction(Action *action, const QStringList &captures) const
 {
     return QString();
 }
 
-bool CutelystDispatchType::registerAction(Action *action)
+bool DispatchType::registerAction(Action *action)
 {
     Q_UNUSED(action)
     return true;
 }
 
-bool CutelystDispatchType::isLowPrecedence() const
+bool DispatchType::isLowPrecedence() const
 {
     return false;
 }
 
-void CutelystDispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match) const
+void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match) const
 {
     ctx->d_ptr->action = action;
     ctx->d_ptr->match = match;

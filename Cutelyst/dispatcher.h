@@ -30,7 +30,7 @@ namespace Cutelyst {
 
 class Context;
 class Controller;
-class CutelystDispatchType;
+class DispatchType;
 class DispatcherPrivate;
 class Dispatcher : public QObject
 {

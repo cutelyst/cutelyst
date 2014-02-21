@@ -45,28 +45,6 @@ Application::~Application()
     delete d_ptr;
 }
 
-bool Application::parseArgs()
-{
-    QStringList args = QCoreApplication::arguments();
-    if (args.contains(QLatin1String("--about")) ||
-            args.contains(QLatin1String("--sobre")) ||
-            args.contains(QLatin1String("/sobre"))) {
-        cout << QCoreApplication::applicationName().toStdString() << endl
-             << QCoreApplication::applicationVersion().toStdString() << endl
-             << QCoreApplication::organizationName().toStdString() << endl
-             << QCoreApplication::organizationDomain().toStdString() << endl
-             << "Qt: " << QT_VERSION_STR << endl;
-        return false;
-    }
-
-    return true;
-}
-
-int Application::printError()
-{
-    return 1;
-}
-
 bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
 {
     Q_D(Application);
@@ -92,6 +70,11 @@ bool Application::registerController(Controller *controller)
     controller->setParent(this);
     d->controllers << controller;
     return true;
+}
+
+bool Application::registerDispatcher(DispatchType *dispatcher)
+{
+
 }
 
 QByteArray Application::applicationName() const

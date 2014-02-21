@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
     });
 
     EngineHttp *engine = new EngineHttp;
-    if (server->parseArgs() && engine->setupApplication(server)) {
+    if (engine->setupApplication(server)) {
         return app.exec();
     }
-    return server->printError();
+    return 1;
 }

@@ -27,8 +27,10 @@ namespace Cutelyst {
 namespace Plugin {
 class AbstractPlugin;
 }
+
 class Context;
 class Controller;
+class DispatchType;
 class Request;
 class Response;
 class Engine;
@@ -41,9 +43,6 @@ public:
     explicit Application(QObject *parent = 0);
     virtual ~Application();
 
-    bool parseArgs();
-    int printError();
-
     /**
      * Registers a global plugin ie one that doesn't need
      * to be created explicity for a single request and returns
@@ -54,6 +53,8 @@ public:
     bool registerPlugin(Plugin::AbstractPlugin  *plugin);
 
     bool registerController(Controller *controller);
+
+    bool registerDispatcher(DispatchType *dispatcher);
 
     QByteArray applicationName() const;
     void setApplicationName(const QByteArray &applicationName);
