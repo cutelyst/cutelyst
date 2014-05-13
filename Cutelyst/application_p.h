@@ -35,13 +35,12 @@ public:
     int childFD;
     int parentFD;
     int childPID;
-    QByteArray applicationName;
-    QByteArray applicationVersion = "0.0.0";
 
     Dispatcher *dispatcher;
     Engine *engine = 0;
     QList<Plugin::AbstractPlugin*> plugins;
     QList<Controller*> controllers;
+    QVariantHash config;
 };
 
 }

@@ -80,37 +80,28 @@ void Application::registerDispatcher(DispatchType *dispatcher)
 
 QByteArray Application::applicationName() const
 {
-    Q_D(const Application);
-    if (d->applicationName.isNull()) {
-        return metaObject()->className();
-    }
-    return d->applicationName;
-}
-
-void Application::setApplicationName(const QByteArray &applicationName)
-{
-    Q_D(Application);
-    d->applicationName = applicationName;
+    return QCoreApplication::applicationName().toLocal8Bit();
 }
 
 QByteArray Application::applicationVersion() const
 {
-    Q_D(const Application);
-    return d->applicationVersion;
+    return QCoreApplication::applicationVersion().toLocal8Bit();
 }
 
-void Application::setApplicationVersion(const QByteArray &applicationVersion)
+QVariantHash Application::config(const QString &entity) const
 {
-    Q_D(Application);
-    d->applicationVersion = applicationVersion;
+    Q_D(const Application);
+    return d->config;
 }
 
-void Application::setup(Engine *engine)
+bool Application::setup(Engine *engine)
 {
     Q_D(Application);
 
     d->dispatcher->setupActions(d->controllers);
     d->engine = engine;
+
+    return init();
 }
 
 void Application::handleRequest(Request *req, Response *resp)

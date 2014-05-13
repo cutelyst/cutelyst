@@ -40,8 +40,41 @@ class Application : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Application)
 public:
+    /**
+     * @brief Application
+     * @param parent
+     *
+     * This is the main class of a Cutelyst appplication, here
+     * we configure settings, register controller classes,
+     * plugins and dispatchers.
+     *
+     * A Web Engine will instantiate your application through this
+     * class, next it will load the settings file, and in the end
+     * it will call \sa init() which is where your application
+     * should do it's setup.
+     *
+     * \warning DO NOT register your controllers,
+     * plugins or anything that might want to
+     * use \sa config(), do that in \sa initApplication()
+     *
+     */
     explicit Application(QObject *parent = 0);
     virtual ~Application();
+
+    /**
+     * @brief init
+     *
+     * Do your application initialization here, if your
+     * application should not proceed log some information
+     * that might help on debuggin and return false
+     *
+     * For example if your application only works with
+     * PostgeSQL and the Qt driver is not available it
+     * makes sense to fail here.
+     *
+     * @return true if your application successfuly initted
+     */
+    virtual bool init() = 0;
 
     /**
      * Registers a global plugin ie one that doesn't need
@@ -52,6 +85,18 @@ public:
      */
     bool registerPlugin(Plugin::AbstractPlugin  *plugin);
 
+    /**
+     * @brief registerController
+     *
+     * This method register Controller classes which
+     * are responsible for handlying the Requests,
+     * since they are reused between multiple requests
+     * beaware of not storing data there, instead you
+     * might want to use a session plugin or the stash.
+     *
+     * @param controller class
+     * @return true if succeeded
+     */
     bool registerController(Controller *controller);
 
     /**
@@ -60,11 +105,17 @@ public:
      */
     void registerDispatcher(DispatchType *dispatcher);
 
-    QByteArray applicationName() const;
-    void setApplicationName(const QByteArray &applicationName);
+    /**
+     * @brief applicationName
+     * @return default implementation returns QCoreApplication::applicationName()
+     */
+    virtual QByteArray applicationName() const;
 
-    QByteArray applicationVersion() const;
-    void setApplicationVersion(const QByteArray &applicationVersion);
+    /**
+     * @brief applicationVersion
+     * @return default implementation returns QCoreApplication::applicationVersion()
+     */
+    virtual QByteArray applicationVersion() const;
 
 Q_SIGNALS:
     /**
@@ -74,8 +125,15 @@ Q_SIGNALS:
     void registerPlugins(Context *ctx);
 
 protected:
+    /**
+     * @brief user configuration for the application
+     * @param entity the entity you are interested in
+     * @return the configuration settings
+     */
+    QVariantHash config(const QString &entity) const;
+
     friend class Engine;
-    void setup(Engine *engine);
+    bool setup(Engine *engine);
     void handleRequest(Request *req, Response *resp);
 
     ApplicationPrivate *d_ptr;

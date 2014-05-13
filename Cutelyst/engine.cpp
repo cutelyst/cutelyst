@@ -28,6 +28,10 @@
 #include <QHostInfo>
 #include <QDebug>
 
+#include <QtCore/QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
+
 using namespace Cutelyst;
 
 typedef QPair<QString, QString> StringPair;
@@ -147,8 +151,18 @@ bool Engine::setupApplication(Application *app)
 {
     Q_D(Engine);
     d->app = app;
-    app->setup(this);
-    return init();
+
+    if (!app->setup(this)) {
+        qCCritical(CUTELYST_ENGINE) << "Failed to setup application";
+        return false;
+    }
+
+    if (!init()) {
+        qCCritical(CUTELYST_ENGINE) << "Failed to setup engine";
+        return false;
+    }
+
+    return true;
 }
 
 QByteArray Engine::statusCode(quint16 status)
