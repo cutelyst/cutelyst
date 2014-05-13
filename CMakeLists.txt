@@ -79,7 +79,8 @@ include_directories(
 )
 
 add_subdirectory(Cutelyst)
-
-add_subdirectory(server)
 add_subdirectory(uwsgiEngine)
+
+# TODO rename to examples
+#add_subdirectory(server)
 
