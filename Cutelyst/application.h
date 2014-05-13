@@ -107,7 +107,7 @@ public:
 
     /**
      * @brief applicationName
-     * @return default implementation returns QCoreApplication::applicationName()
+     * @return default implementation returns the class name
      */
     virtual QByteArray applicationName() const;
 

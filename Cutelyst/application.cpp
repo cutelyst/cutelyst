@@ -80,7 +80,7 @@ void Application::registerDispatcher(DispatchType *dispatcher)
 
 QByteArray Application::applicationName() const
 {
-    return QCoreApplication::applicationName().toLocal8Bit();
+    return metaObject()->className();
 }
 
 QByteArray Application::applicationVersion() const
@@ -98,10 +98,16 @@ bool Application::setup(Engine *engine)
 {
     Q_D(Application);
 
+    // Call the virtual application init
+    // to setup Controllers plugins stuff
+    if (!init()) {
+        return false;
+    }
+
     d->dispatcher->setupActions(d->controllers);
     d->engine = engine;
 
-    return init();
+    return true;
 }
 
 void Application::handleRequest(Request *req, Response *resp)

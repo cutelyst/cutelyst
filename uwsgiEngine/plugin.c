@@ -22,6 +22,7 @@
 #include "plugin.h"
 
 int uwsgi_cutelyst_init(void);
+void uwsgi_cutelyst_post_fork(void);
 int uwsgi_cutelyst_request(struct wsgi_request *);
 void uwsgi_cutelyst_init_apps(void);
 
@@ -38,6 +39,7 @@ struct uwsgi_plugin cutelyst_plugin = {
     .name = "cutelyst",
     .modifier1 = CUTELYST_MODIFIER1,
     .init = uwsgi_cutelyst_init,
+    .post_fork = uwsgi_cutelyst_post_fork,
     .request = uwsgi_cutelyst_request,
     .init_apps = uwsgi_cutelyst_init_apps,
     .options = uwsgi_cutelyst_options,

@@ -39,6 +39,8 @@ public:
 
     virtual bool init();
 
+    bool postFork();
+
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
 
@@ -47,7 +49,8 @@ public:
     QByteArray httpCase(const QByteArray &headerKey) const;
 
 private:
-    QPluginLoader *m_loader;
+    QPluginLoader *m_loader = 0;
+    Application *m_app;
 };
 
 }

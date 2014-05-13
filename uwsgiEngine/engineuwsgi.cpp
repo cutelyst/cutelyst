@@ -29,6 +29,9 @@
 #include <QFile>
 #include <QUrl>
 #include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 extern struct uwsgi_server uwsgi;
 
@@ -39,25 +42,23 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
     case QtDebugMsg:
-        uwsgi_log("[debug] %s\n", localMsg.constData());
+        uwsgi_log("%s[debug] %s\n", context.category, localMsg.constData());
         break;
     case QtWarningMsg:
-        uwsgi_log("[warn] %s\n", localMsg.constData());
+        uwsgi_log("%s[warn] %s\n", context.category, localMsg.constData());
         break;
     case QtCriticalMsg:
-        uwsgi_log("[crit] %s\n", localMsg.constData());
+        uwsgi_log("%s[crit] %s\n", context.category, localMsg.constData());
         break;
     case QtFatalMsg:
-        uwsgi_log("[fatal] %s\n", localMsg.constData());
+        uwsgi_log("%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
     }
 }
 
 EngineUwsgi::EngineUwsgi(QObject *parent) :
-    Engine(parent),
-    m_loader(0)
+    Engine(parent)
 {
-    qInstallMessageHandler(cuteOutput);
 }
 
 bool EngineUwsgi::loadApplication(const QString &path)
@@ -71,20 +72,20 @@ bool EngineUwsgi::loadApplication(const QString &path)
     if (m_loader->load()) {
         QObject *instance = m_loader->instance();
         if (instance) {
-            Application *app = qobject_cast<Application *>(instance);
-            if (app) {
-                qDebug() << "Application"
-                         << app->applicationName()
-                         << "loaded.";
-                return setupApplication(app);
+            m_app = qobject_cast<Application *>(instance);
+            if (m_app) {
+                qCDebug(CUTELYST_UWSGI) << "Application"
+                                        << m_app->applicationName()
+                                        << "loaded.";
+                return true;
             } else {
-                qCritical() << "Could not create an instance of the application:" << instance;
+                qCCritical(CUTELYST_UWSGI) << "Could not create an instance of the application:" << instance;
             }
         } else {
-            qCritical() << "Could not create an instance:" << path;
+            qCCritical(CUTELYST_UWSGI) << "Could not create an instance:" << path;
         }
     } else {
-        qWarning() << "Failed to open app:" << m_loader->errorString();
+        qCWarning(CUTELYST_UWSGI) << "Failed to open app:" << m_loader->errorString();
     }
     return false;
 }
@@ -159,7 +160,7 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
 
     QFile *upload = new QFile;
     if (wsgi_req->post_file && !upload->open(wsgi_req->post_file, QIODevice::ReadOnly)) {
-        qDebug() << "Could not open upload file";
+        qCDebug(CUTELYST_UWSGI) << "Could not open upload file";
     }
 
     setupRequest(request,
@@ -229,6 +230,11 @@ bool EngineUwsgi::init()
     return true;
 }
 
+bool EngineUwsgi::postFork()
+{
+    return setupApplication(m_app);
+}
+
 EngineUwsgi *engine;
 
 extern "C" int uwsgi_cutelyst_init()
@@ -238,9 +244,18 @@ extern "C" int uwsgi_cutelyst_init()
     // This allows for some stuff to run event loops
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
+    qInstallMessageHandler(cuteOutput);
+
     engine = new EngineUwsgi;
 
     return 0;
+}
+
+extern "C" void uwsgi_cutelyst_post_fork()
+{
+    if (!engine->postFork()) {
+        qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
+    }
 }
 
 extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
@@ -269,13 +284,13 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     QString path(options.app);
     if (path.isEmpty()) {
-        qCritical() << "Cytelyst Application was not set";
+        qCCritical(CUTELYST_UWSGI) << "Cytelyst Application was not set";
         return;
     }
 
-    qDebug()  << "Loading" << path;
+    qCDebug(CUTELYST_UWSGI) << "Loading" << path;
     if (!engine->loadApplication(path)) {
-        qCritical() << "Could not load application:" << path;
+        qCCritical(CUTELYST_UWSGI) << "Could not load application:" << path;
         return;
     }
 
