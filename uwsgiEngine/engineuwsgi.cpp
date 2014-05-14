@@ -200,6 +200,12 @@ QByteArray EngineUwsgi::httpCase(const QByteArray &headerKey) const
     return ret;
 }
 
+void EngineUwsgi::reload()
+{
+    qCDebug(CUTELYST_UWSGI) << "Reloading application due application request";
+    uwsgi_reload(uwsgi.argv);
+}
+
 void EngineUwsgi::finalizeHeaders(Context *ctx)
 {
     Response *res = ctx->res();
@@ -309,10 +315,8 @@ extern "C" void uwsgi_cutelyst_init_apps()
         return;
     }
 
-    qCDebug(CUTELYST_UWSGI) << "file reload" << options.reload;
     if (options.reload) {
-
-        // Register application reload
+        // Register application auto reload
         char *file = qstrdup(path.toUtf8().constData());
         uwsgi_register_fsmon(file, fsmon_reload, NULL);
     }

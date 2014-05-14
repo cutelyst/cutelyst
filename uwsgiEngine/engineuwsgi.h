@@ -48,6 +48,8 @@ public:
 
     QByteArray httpCase(const QByteArray &headerKey) const;
 
+    virtual void reload();
+
 private:
     QPluginLoader *m_loader = 0;
     Application *m_app;

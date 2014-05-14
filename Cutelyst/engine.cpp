@@ -207,6 +207,10 @@ QByteArray Engine::statusCode(quint16 status)
     return ret;
 }
 
+void Engine::reload()
+{
+}
+
 void Engine::handleRequest(Request *request, Response *response, bool autoDelete)
 {
     Q_D(Engine);

@@ -93,6 +93,20 @@ public:
 
     static QByteArray statusCode(quint16 status);
 
+    /**
+     * @brief reload
+     *
+     * Reloads the engine, in some engines
+     * this means restarting the worker process
+     * others might just ignore.
+     *
+     * Default implementation does nothing.
+     *
+     * \warning Use with care as this might not
+     * properly clean your process.
+     */
+    virtual void reload();
+
 protected:
     /**
      * @brief handleRequest
