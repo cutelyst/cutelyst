@@ -68,7 +68,7 @@ bool EngineUwsgi::loadApplication(const QString &path)
         delete m_loader;
     }
 
-    m_loader = new QPluginLoader(path);
+    m_loader = new QPluginLoader(path, this);
     if (m_loader->load()) {
         QObject *instance = m_loader->instance();
         if (instance) {
@@ -77,6 +77,7 @@ bool EngineUwsgi::loadApplication(const QString &path)
                 qCDebug(CUTELYST_UWSGI) << "Application"
                                         << m_app->applicationName()
                                         << "loaded.";
+
                 return true;
             } else {
                 qCCritical(CUTELYST_UWSGI) << "Could not create an instance of the application:" << instance;
@@ -232,7 +233,12 @@ bool EngineUwsgi::init()
 
 bool EngineUwsgi::postFork()
 {
-    return setupApplication(m_app);
+    if (m_app) {
+        return setupApplication(m_app);
+    } else {
+        qCWarning(CUTELYST_UWSGI) << "Trying to setup an not loaded Application";
+        return false;
+    }
 }
 
 EngineUwsgi *engine;
@@ -240,11 +246,6 @@ EngineUwsgi *engine;
 extern "C" int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
-
-    // This allows for some stuff to run event loops
-    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
-
-    qInstallMessageHandler(cuteOutput);
 
     engine = new EngineUwsgi;
 
@@ -285,6 +286,19 @@ clear:
     return UWSGI_OK;
 }
 
+// register the new loop engine
+extern "C" void uwsgi_cutelyst_on_load() {
+    // This allows for some stuff to run event loops
+    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
+
+    qInstallMessageHandler(cuteOutput);
+}
+
+static void fsmon_reload(struct uwsgi_fsmon *fs) {
+    qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
+    uwsgi_reload(uwsgi.argv);
+}
+
 extern "C" void uwsgi_cutelyst_init_apps()
 {
     uwsgi_log("Cutelyst Init App\n");
@@ -295,15 +309,20 @@ extern "C" void uwsgi_cutelyst_init_apps()
         return;
     }
 
+    qCDebug(CUTELYST_UWSGI) << "file reload" << options.reload;
+    if (options.reload) {
+
+        // Register application reload
+        char *file = qstrdup(path.toUtf8().constData());
+        uwsgi_register_fsmon(file, fsmon_reload, NULL);
+    }
+
     qCDebug(CUTELYST_UWSGI) << "Loading" << path;
     if (!engine->loadApplication(path)) {
         qCCritical(CUTELYST_UWSGI) << "Could not load application:" << path;
         return;
     }
 
-    // get the current app id
-    int id = uwsgi_apps_cnt;
-
     // register a new app under a specific "mountpoint"
-    uwsgi_add_app(id, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
+    uwsgi_add_app(1, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
 }

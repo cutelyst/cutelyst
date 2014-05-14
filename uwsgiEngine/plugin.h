@@ -25,6 +25,7 @@
 struct uwsgi_cutelyst {
     char *app;
     char *config;
+    int reload;
 } options;
 
 #endif // PLUGIN_H
