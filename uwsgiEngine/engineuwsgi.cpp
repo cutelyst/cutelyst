@@ -255,6 +255,13 @@ extern "C" void uwsgi_cutelyst_post_fork()
 {
     if (!engine->postFork()) {
         qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
+
+#ifdef UWSGI_GO_CHEAP_CODE
+        // We need to tell the master process that the
+        // application failed to setup and that it shouldn't
+        // try to respawn the worker
+        exit(UWSGI_GO_CHEAP_CODE);
+#endif // UWSGI_GO_CHEAP_CODE
     }
 }
 
