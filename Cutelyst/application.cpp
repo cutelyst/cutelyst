@@ -19,6 +19,7 @@
 
 #include "application_p.h"
 
+#include "common.h"
 #include "context_p.h"
 #include "request.h"
 #include "controller.h"
@@ -28,8 +29,9 @@
 
 #include <QStringList>
 #include <QDebug>
-#include <QtCore/QLoggingCategory>
 
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
 Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
 
 using namespace std;

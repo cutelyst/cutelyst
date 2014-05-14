@@ -7,7 +7,9 @@
 #include <QString>
 #include <QStringBuilder>
 #include <QFile>
-#include <QDebug>
+#include <QtCore/QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver")
 
 using namespace Cutelyst;
 
@@ -80,12 +82,12 @@ bool ClearSilver::render(Context *ctx)
         }
 
         if (templateFile.isEmpty()) {
-            qCritical("Cannot render template, template name or template stash key not defined");
+            qCritical(CUTELYST_CLEARSILVER, "Cannot render template, template name or template stash key not defined");
             return false;
         }
     }
 
-    qDebug() << "Rendering template" <<templateFile;
+    qCDebug(CUTELYST_CLEARSILVER) << "Rendering template" <<templateFile;
     QByteArray output;
     if (d->wrapper.isEmpty()) {
         if (!d->render(ctx, templateFile, stash, output)) {
@@ -116,17 +118,17 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
     QFile file(priv->includePath % QLatin1Char('/') % filename);
 
     if (!file.exists()) {
-        qWarning("Cound not find file: %s", file.fileName().toLocal8Bit().data());
+        qCWarning(CUTELYST_CLEARSILVER, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
         return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
     }
 
     if (!file.open(QFile::ReadOnly)) {
-        qWarning("Cound not open file: %s", file.errorString().toLocal8Bit().data());
+        qCWarning(CUTELYST_CLEARSILVER, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
         return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
     }
 
     *contents = qstrdup(file.readAll().data());
-    qDebug() << "Rendering template:" << file.fileName();;
+    qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();;
     return 0;
 }
 
@@ -177,7 +179,7 @@ bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVa
 
 void ClearSilverPrivate::renderError(Context *ctx, const QString &error)
 {
-    qCritical() << error;
+    qCCritical(CUTELYST_CLEARSILVER) << error;
     ctx->res()->body() = error.toUtf8();
 }
 

@@ -7,7 +7,9 @@
 #include <QString>
 #include <QStringBuilder>
 #include <QFile>
-#include <QDebug>
+#include <QtCore/QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
 
 using namespace Cutelyst;
 
@@ -75,7 +77,7 @@ bool GrantleeView::render(Context *ctx)
         }
 
         if (templateFile.isEmpty()) {
-            qCritical("Cannot render template, template name or template stash key not defined");
+            qCCritical(CUTELYST_GRANTLEE, "Cannot render template, template name or template stash key not defined");
             return false;
         }
     }
@@ -101,7 +103,7 @@ bool GrantleeView::render(Context *ctx)
     ctx->res()->body() = tmpl->render(&gCtx).toUtf8();
 
     if (tmpl->error() != Grantlee::NoError) {
-        qCritical() << "Error while rendering template" << tmpl->errorString();
+        qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
     }
 
     return tmpl->error() == Grantlee::NoError;

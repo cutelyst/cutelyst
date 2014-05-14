@@ -19,6 +19,7 @@
 
 #include "dispatcher_p.h"
 
+#include "common.h"
 #include "context.h"
 #include "controller.h"
 #include "action.h"
@@ -30,9 +31,6 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-#include <iostream>
-
-using namespace std;
 using namespace Cutelyst;
 
 Dispatcher::Dispatcher(QObject *parent) :
@@ -115,7 +113,7 @@ bool Dispatcher::dispatch(Context *ctx)
         } else {
             error = QLatin1String("Unknown resource \"") % path % QLatin1Char('"');
         }
-        qDebug() << Q_FUNC_INFO << error;
+        qCDebug(CUTELYST_DISPATCHER) << error;
         ctx->error(error);
     }
     return false;
@@ -128,7 +126,7 @@ bool Dispatcher::forward(Context *ctx, const QString &opname, const QStringList 
         return action->dispatch(ctx);
     }
 
-    qCritical() << "Action not found" << action;
+    qCCritical(CUTELYST_DISPATCHER) << "Action not found" << action;
     return false;
 }
 
@@ -150,11 +148,11 @@ void Dispatcher::prepareAction(Context *ctx)
         foreach (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, path)) {
                 if (!path.isEmpty()) {
-                    qDebug() << "Path is" << path;
+                    qCDebug(CUTELYST_DISPATCHER) << "Path is" << path;
                 }
 
                 if (!ctx->args().isEmpty()) {
-                    qDebug() << "Arguments are" << ctx->args().join(QLatin1Char('/'));
+                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << ctx->args().join(QLatin1Char('/'));
                 }
 
                 return;
@@ -227,8 +225,11 @@ void Dispatcher::printActions()
 {
     Q_D(Dispatcher);
 
+    QString buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
     bool showInternalActions = false;
-    cout << "Loaded Private actions:" << endl;
+
+    out << "Loaded Private actions:" << endl;
     QString privateTitle("Private");
     QString classTitle("Class");
     QString methodTitle("Method");
@@ -248,18 +249,18 @@ void Dispatcher::printActions()
         ++it;
     }
 
-    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-         << "." << endl;
-    cout << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
-         << "|" << classTitle.leftJustified(classLength).toUtf8().data()
-         << "|" << methodTitle.leftJustified(actionLength).toUtf8().data()
-         << "|" << endl;
-    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-         << "." << endl;
+    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+        << "." << endl;
+    out << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+        << "|" << classTitle.leftJustified(classLength).toUtf8().data()
+        << "|" << methodTitle.leftJustified(actionLength).toUtf8().data()
+        << "|" << endl;
+    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+        << "." << endl;
 
     it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
@@ -269,18 +270,19 @@ void Dispatcher::printActions()
             if (!path.startsWith(QLatin1String("/"))) {
                 path.prepend(QLatin1String("/"));
             }
-            cout << "|" << path.leftJustified(privateLength).toUtf8().data()
-                 << "|" << action->className().leftJustified(classLength).toUtf8().data()
-                 << "|" << action->name().leftJustified(actionLength).toUtf8().data()
-                 << "|" << endl;
+            out << "|" << path.leftJustified(privateLength).toUtf8().data()
+                << "|" << action->className().leftJustified(classLength).toUtf8().data()
+                << "|" << action->name().leftJustified(actionLength).toUtf8().data()
+                << "|" << endl;
         }
         ++it;
     }
 
-    cout << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-         << "."  << endl << endl;
+    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+        << ".";
+    qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
 
     // List all public actions
     foreach (DispatchType *dispatch, d->dispatchers) {

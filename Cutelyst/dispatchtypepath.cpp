@@ -18,15 +18,15 @@
  */
 
 #include "dispatchtypepath.h"
+
+#include "common.h"
 #include "controller.h"
 
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QBuffer>
 #include <QDebug>
 
-#include <iostream>
-
-using namespace std;
 using namespace Cutelyst;
 
 DispatchTypePath::DispatchTypePath(QObject *parent) :
@@ -36,7 +36,10 @@ DispatchTypePath::DispatchTypePath(QObject *parent) :
 
 void DispatchTypePath::list() const
 {
-    cout << "Loaded Path actions:" << endl;
+    QString buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
+
+    out << "Loaded Path actions:" << endl;
     QString pathTitle("Path");
     QString privateTitle("Private");
     int pathLength = pathTitle.length();
@@ -44,19 +47,19 @@ void DispatchTypePath::list() const
 
     QStringList keys = m_paths.keys();
     keys.sort();
-    foreach (QString path, keys) {
+    foreach (const QString &path, keys) {
         foreach (Action *action, m_paths.value(path)) {
-            path = QLatin1Char('/') % path;
+            QString _path = QLatin1Char('/') % path;
             QString args = action->attributes().value("Args");
             if (args.isEmpty()) {
-                path.append(QLatin1String("/..."));
+                _path.append(QLatin1String("/..."));
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
-                    path.append(QLatin1String("/*"));
+                    _path.append(QLatin1String("/*"));
                 }
             }
-            path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
-            pathLength = qMax(pathLength, path.length() + 1);
+            _path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            pathLength = qMax(pathLength, _path.length() + 1);
 
             QString privateName = action->privateName();
             if (!privateName.startsWith(QLatin1String("/"))) {
@@ -66,42 +69,44 @@ void DispatchTypePath::list() const
         }
     }
 
-    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "." << endl;
-    cout << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
-         << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
-         << "|" << endl;
-    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "." << endl;
+    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << "." << endl;
+    out << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
+        << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+        << "|" << endl;
+    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << "." << endl;
 
-    foreach (QString path, keys) {
+    foreach (const QString &path, keys) {
         foreach (Action *action, m_paths.value(path)) {
-            path = QLatin1Char('/') % path;
+            QString _path = QLatin1Char('/') % path;
             if (!action->attributes().contains("Args")) {
-                path.append(QLatin1String("/..."));
+                _path.append(QLatin1String("/..."));
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
-                    path.append(QLatin1String("/*"));
+                    _path.append(QLatin1String("/*"));
                 }
             }
-            path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            _path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
 
             QString privateName = action->privateName();
             if (!privateName.startsWith(QLatin1String("/"))) {
                 privateName.prepend(QLatin1String("/"));
             }
 
-            cout << "|" << path.leftJustified(pathLength).toUtf8().data()
-                 << "|" << privateName.leftJustified(privateLength).toUtf8().data()
-                 << "|" << endl;
+            out << "|" << _path.leftJustified(pathLength).toUtf8().data()
+                << "|" << privateName.leftJustified(privateLength).toUtf8().data()
+                << "|" << endl;
         }
     }
 
-    cout << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-         << "." << endl << endl;
+    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+        << ".";
+
+    qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
 }
 
 bool DispatchTypePath::match(Context *ctx, const QString &path) const
@@ -173,15 +178,16 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
         ActionList actions = m_paths.value(_path);
         foreach (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == action->numberOfArgs()) {
-                qWarning() << "Not registering Action"
-                           << action->name()
-                           << "of controller"
-                           << action->controller()->objectName()
-                           << "because it conflicts with "
-                           << regAction->name();
+                qCWarning(CUTELYST_DISPATCHER) << "Not registering Action"
+                                               << action->name()
+                                               << "of controller"
+                                               << action->controller()->objectName()
+                                               << "because it conflicts with "
+                                               << regAction->name();
                 return false;
             }
         }
+
         actions << action;
         qSort(actions.begin(), actions.end(), actionLessThan);
         m_paths[_path] = actions;

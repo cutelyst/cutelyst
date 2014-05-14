@@ -17,25 +17,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#define UD2_SERVICE             "org.freedesktop.UDisks2"
-#define UD2_PATH                "/org/freedesktop/UDisks2"
-#define UD2_PATH_MANAGER        "/org/freedesktop/UDisks2/Manager"
-#define UD2_PATH_BLOCK_DEVICES  "/org/freedesktop/UDisks2/block_devices/"
-#define UD2_PATH_DRIVES         "/org/freedesktop/UDisks2/drives/"
-#define UD2_PATH_MDRAID         "/org/freedesktop/UDisks2/mdraid/"
-#define UD2_PATH_JOBS           "/org/freedesktop/UDisks2/jobs/"
+#ifndef COMMON_H
+#define COMMON_H
 
-#define UD2_INTERFACE_MANAGER          "org.freedesktop.UDisks2.Manager"
-#define UD2_INTERFACE_DRIVE            "org.freedesktop.UDisks2.Drive"
-#define UD2_INTERFACE_DRIVE_ATA        "org.freedesktop.UDisks2.Drive.Ata"
-#define UD2_INTERFACE_MDRAID           "org.freedesktop.UDisks2.MDRaid"
-#define UD2_INTERFACE_BLOCK            "org.freedesktop.UDisks2.Block"
-#define UD2_INTERFACE_PARTITION        "org.freedesktop.UDisks2.Partition"
-#define UD2_INTERFACE_PARTITION_TABLE  "org.freedesktop.UDisks2.PartitionTable"
-#define UD2_INTERFACE_FILESYSTEM       "org.freedesktop.UDisks2.Filesystem"
-#define UD2_INTERFACE_SWAPSPACE        "org.freedesktop.UDisks2.Swapspace"
-#define UD2_INTERFACE_ENCRYPTION       "org.freedesktop.UDisks2.Encryption"
-#define UD2_INTERFACE_LOOP             "org.freedesktop.UDisks2.Loop"
-#define UD2_INTERFACE_JOB              "org.freedesktop.UDisks2.Job"
+#include <QtCore/QLoggingCategory>
 
-#define DBUS_PROPERTIES  "org.freedesktop.DBus.Properties"
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_DISPATCHER)
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_ENGINE)
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_CORE)
+
+#endif // COMMON_H

@@ -19,6 +19,7 @@
 
 #include "context_p.h"
 
+#include "common.h"
 #include "engine.h"
 #include "request.h"
 #include "response.h"
@@ -219,7 +220,7 @@ bool Context::registerPlugin(Plugin::AbstractPlugin *plugin, bool takeOwnership)
             plugin->setParent(this);
 
             if (plugin->isApplicationPlugin()) {
-                qWarning() << "The plugin:" << plugin->metaObject()->className() << "is an Application plugin and should be registered there";
+                qCWarning(CUTELYST_CORE) << "The plugin:" << plugin->metaObject()->className() << "is an Application plugin and should be registered there";
             }
         }
         d->plugins.insert(plugin, QVariantHash());
@@ -332,7 +333,7 @@ int Context::finalize()
     finalizeBody();
 
     if (d->stats) {
-        qDebug("Request took: %5.3fs", d->stats->elapsed() / 1000.0);
+        qCDebug(CUTELYST_CORE, "Request took: %5.3fs", d->stats->elapsed() / 1000.0);
     }
 
     return d->response->status();

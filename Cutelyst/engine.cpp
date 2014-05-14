@@ -19,6 +19,7 @@
 
 #include "engine_p.h"
 
+#include "common.h"
 #include "request_p.h"
 #include "application.h"
 #include "response.h"
@@ -27,10 +28,6 @@
 #include <QUrl>
 #include <QHostInfo>
 #include <QDebug>
-
-#include <QtCore/QLoggingCategory>
-
-Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
 
 using namespace Cutelyst;
 
