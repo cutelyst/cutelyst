@@ -28,6 +28,9 @@
 
 #include <QStringList>
 #include <QDebug>
+#include <QtCore/QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
 
 using namespace std;
 using namespace Cutelyst;
@@ -53,7 +56,7 @@ bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
         d->plugins << plugin;
         return true;
     }
-    qWarning() << "The plugin:" << plugin->metaObject()->className() << "isn't an Application Plugin and cannot be registered";
+    qCWarning(CUTELYST_CORE) << "The plugin:" << plugin->metaObject()->className() << "isn't an Application Plugin and cannot be registered";
     return false;
 }
 
@@ -61,9 +64,9 @@ bool Application::registerController(Controller *controller)
 {
     Q_D(Application);
 
-    if (d->engine) {
-        qWarning() << "Tryied to register Controller after the Engine was setup, ignoring"
-                   << controller->metaObject()->className();
+    if (d->init) {
+        qCWarning(CUTELYST_CORE) << "Tryied to register Controller after the Application was initted, ignoring"
+                                 << controller->metaObject()->className();
         return false;
     }
 
@@ -98,16 +101,17 @@ bool Application::setup(Engine *engine)
 {
     Q_D(Application);
 
-    // Call the virtual application init
-    // to setup Controllers plugins stuff
-    if (!init()) {
-        return false;
-    }
-
-    d->dispatcher->setupActions(d->controllers);
     d->engine = engine;
 
-    return true;
+    // Call the virtual application init
+    // to setup Controllers plugins stuff
+    if (init()) {
+        d->dispatcher->setupActions(d->controllers);
+        d->init = true;
+        return true;
+    }
+
+    return false;
 }
 
 void Application::handleRequest(Request *req, Response *resp)

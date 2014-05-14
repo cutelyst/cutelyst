@@ -36,6 +36,7 @@ public:
     int parentFD;
     int childPID;
 
+    bool init = false;
     Dispatcher *dispatcher;
     Engine *engine = 0;
     QList<Plugin::AbstractPlugin*> plugins;
