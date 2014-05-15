@@ -26,6 +26,8 @@ void uwsgi_cutelyst_post_fork(void);
 int uwsgi_cutelyst_request(struct wsgi_request *);
 void uwsgi_cutelyst_init_apps(void);
 void uwsgi_cutelyst_on_load(void);
+void uwsgi_cutelyst_atexit(void);
+void uwsgi_cutelyst_master_cleanup(void);
 
 struct uwsgi_option uwsgi_cutelyst_options[] = {
 
@@ -46,5 +48,7 @@ struct uwsgi_plugin cutelyst_plugin = {
     .request = uwsgi_cutelyst_request,
     .init_apps = uwsgi_cutelyst_init_apps,
     .options = uwsgi_cutelyst_options,
+    .atexit = uwsgi_cutelyst_atexit,
+    .master_cleanup = uwsgi_cutelyst_master_cleanup,
 
 };

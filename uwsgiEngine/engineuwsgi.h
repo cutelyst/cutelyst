@@ -34,6 +34,7 @@ class EngineUwsgi : public Engine
     Q_OBJECT
 public:
     explicit EngineUwsgi(QObject *parent = 0);
+    ~EngineUwsgi();
 
     bool loadApplication(const QString &path);
 
@@ -52,7 +53,7 @@ public:
 
 private:
     QPluginLoader *m_loader = 0;
-    Application *m_app;
+    Application *m_app = 0;
 };
 
 }

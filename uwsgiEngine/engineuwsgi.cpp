@@ -33,9 +33,10 @@
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
-extern struct uwsgi_server uwsgi;
-
 using namespace Cutelyst;
+
+extern struct uwsgi_server uwsgi;
+static EngineUwsgi *engine;
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -59,6 +60,11 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
 EngineUwsgi::EngineUwsgi(QObject *parent) :
     Engine(parent)
 {
+}
+
+EngineUwsgi::~EngineUwsgi()
+{
+    delete m_app;
 }
 
 bool EngineUwsgi::loadApplication(const QString &path)
@@ -247,13 +253,11 @@ bool EngineUwsgi::postFork()
     }
 }
 
-EngineUwsgi *engine;
-
 extern "C" int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
 
-    engine = new EngineUwsgi;
+    engine = new EngineUwsgi(qApp);
 
     return 0;
 }
@@ -300,9 +304,30 @@ extern "C" void uwsgi_cutelyst_on_load() {
     qInstallMessageHandler(cuteOutput);
 }
 
-static void fsmon_reload(struct uwsgi_fsmon *fs) {
+static void fsmon_reload(struct uwsgi_fsmon *fs)
+{
     qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
     uwsgi_reload(uwsgi.argv);
+}
+
+/**
+ * This function is called when the master process is exiting
+ */
+extern "C" void uwsgi_cutelyst_master_cleanup()
+{
+    qCDebug(CUTELYST_UWSGI) << "Master process finishing" << QCoreApplication::applicationPid();
+    delete qApp;
+    qCDebug(CUTELYST_UWSGI) << "Master process finished" << QCoreApplication::applicationPid();
+}
+
+/**
+ * This function is called when the child process is exiting
+ */
+extern "C" void uwsgi_cutelyst_atexit()
+{
+    qCDebug(CUTELYST_UWSGI) << "Child process finishing" << QCoreApplication::applicationPid();
+    delete engine;
+    qCDebug(CUTELYST_UWSGI) << "Child process finished" << QCoreApplication::applicationPid();
 }
 
 extern "C" void uwsgi_cutelyst_init_apps()
