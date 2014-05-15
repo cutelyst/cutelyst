@@ -26,6 +26,19 @@ using namespace Cutelyst;
 
 static EngineUwsgi *engine;
 
+void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
+
+/**
+ * This function is called as soon as
+ * the plugin is loaded
+ */
+extern "C" void uwsgi_cutelyst_on_load() {
+    // This allows for some stuff to run event loops
+    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
+
+    qInstallMessageHandler(cuteOutput);
+}
+
 extern "C" int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
@@ -138,12 +151,4 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
         uwsgi_log("%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
     }
-}
-
-// register the new loop engine
-extern "C" void uwsgi_cutelyst_on_load() {
-    // This allows for some stuff to run event loops
-    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
-
-    qInstallMessageHandler(cuteOutput);
 }

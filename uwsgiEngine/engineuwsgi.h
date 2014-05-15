@@ -29,7 +29,6 @@
 
 extern struct uwsgi_server uwsgi;
 
-
 namespace Cutelyst {
 
 class Dispatcher;
