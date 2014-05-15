@@ -28,6 +28,7 @@ class EnginePrivate
 {
 public:
     Application *app = 0;
+    QHash<QString, QVariantHash> config;
 };
 
 }

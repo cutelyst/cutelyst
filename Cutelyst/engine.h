@@ -107,6 +107,13 @@ public:
      */
     virtual void reload();
 
+    /**
+     * @brief user configuration for the application
+     * @param entity the entity you are interested in
+     * @return the configuration settings
+     */
+    QVariantHash config(const QString &entity) const;
+
 protected:
     /**
      * @brief handleRequest

@@ -41,9 +41,7 @@ extern "C" void uwsgi_cutelyst_on_load() {
 
 extern "C" int uwsgi_cutelyst_init()
 {
-    uwsgi_log("Initializing Cutelyst plugin\n");
-
-    engine = new EngineUwsgi(qApp);
+    qCDebug(CUTELYST_UWSGI, "Initializing Cutelyst plugin");
 
     return 0;
 }
@@ -51,7 +49,7 @@ extern "C" int uwsgi_cutelyst_init()
 extern "C" void uwsgi_cutelyst_post_fork()
 {
     if (!engine->postFork()) {
-        qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
+        qCCritical(CUTELYST_UWSGI, "Could not setup application on post fork");
 
 #ifdef UWSGI_GO_CHEAP_CODE
         // We need to tell the master process that the
@@ -66,13 +64,13 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 {
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
-        uwsgi_log( "Invalid request. skip.\n");
+        qCDebug(CUTELYST_UWSGI, "Invalid request. skip.");
         goto clear;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
-        uwsgi_log("Invalid request. skip.\n");
+        qCDebug(CUTELYST_UWSGI, "Invalid request. skip.");
         goto clear;
     }
 
@@ -84,7 +82,7 @@ clear:
 
 static void fsmon_reload(struct uwsgi_fsmon *fs)
 {
-    qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
+    qCDebug(CUTELYST_UWSGI, "Reloading application due to file change");
     uwsgi_reload(uwsgi.argv);
 }
 
@@ -110,11 +108,11 @@ extern "C" void uwsgi_cutelyst_atexit()
 
 extern "C" void uwsgi_cutelyst_init_apps()
 {
-    uwsgi_log("Cutelyst Init App\n");
+    qCDebug(CUTELYST_UWSGI, "Cutelyst Init App");
 
     QString path(options.app);
     if (path.isEmpty()) {
-        qCCritical(CUTELYST_UWSGI) << "Cytelyst Application was not set";
+        qCCritical(CUTELYST_UWSGI, "Cutelyst Application name or path was not set");
         return;
     }
 
@@ -123,6 +121,13 @@ extern "C" void uwsgi_cutelyst_init_apps()
         char *file = qstrdup(path.toUtf8().constData());
         uwsgi_register_fsmon(file, fsmon_reload, NULL);
     }
+
+    QString config(options.config);
+    if (!config.isNull()) {
+        qputenv("CUTELYST_CONFIG", config.toUtf8());
+    }
+
+    engine = new EngineUwsgi(qApp);
 
     qCDebug(CUTELYST_UWSGI) << "Loading" << path;
     if (!engine->loadApplication(path)) {

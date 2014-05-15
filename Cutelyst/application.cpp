@@ -28,7 +28,6 @@
 #include <iostream>
 
 #include <QStringList>
-#include <QDebug>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
@@ -42,6 +41,7 @@ Application::Application(QObject *parent) :
     d_ptr(new ApplicationPrivate)
 {
     Q_D(Application);
+
     d->dispatcher = new Dispatcher(this);
 }
 
@@ -93,7 +93,7 @@ QByteArray Application::applicationVersion() const
     return QCoreApplication::applicationVersion().toLocal8Bit();
 }
 
-QVariantHash Application::config(const QString &entity) const
+QVariantHash Application::config() const
 {
     Q_D(const Application);
     return d->config;
@@ -104,6 +104,7 @@ bool Application::setup(Engine *engine)
     Q_D(Application);
 
     d->engine = engine;
+    d->config = engine->config(QLatin1String("Application"));
 
     // Call the virtual application init
     // to setup Controllers plugins stuff

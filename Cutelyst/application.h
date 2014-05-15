@@ -127,10 +127,9 @@ Q_SIGNALS:
 protected:
     /**
      * @brief user configuration for the application
-     * @param entity the entity you are interested in
      * @return the configuration settings
      */
-    QVariantHash config(const QString &entity) const;
+    QVariantHash config() const;
 
     friend class Engine;
     bool setup(Engine *engine);

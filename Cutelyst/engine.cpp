@@ -27,6 +27,7 @@
 
 #include <QUrl>
 #include <QHostInfo>
+#include <QSettings>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -37,6 +38,22 @@ Engine::Engine(QObject *parent) :
     QObject(parent),
     d_ptr(new EnginePrivate)
 {
+    Q_D(Engine);
+
+    // Load application configuration
+    if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {
+        QByteArray config = qgetenv("CUTELYST_CONFIG");
+        qCWarning(CUTELYST_CORE, "Reading config file: %s", config.data());
+        QSettings settings(config, QSettings::IniFormat);
+        foreach (const QString &group, settings.childGroups()) {
+            settings.beginGroup(group);
+            QString groupLowered = group.toLower();
+            foreach (const QString &key, settings.childKeys()) {
+                d->config[groupLowered].insert(key, settings.value(key));
+            }
+            settings.endGroup();
+        }
+    }
 }
 
 Engine::~Engine()
@@ -150,12 +167,12 @@ bool Engine::setupApplication(Application *app)
     d->app = app;
 
     if (!app->setup(this)) {
-        qCCritical(CUTELYST_ENGINE) << "Failed to setup application";
+        qCCritical(CUTELYST_ENGINE, "Failed to setup application");
         return false;
     }
 
     if (!init()) {
-        qCCritical(CUTELYST_ENGINE) << "Failed to setup engine";
+        qCCritical(CUTELYST_ENGINE, "Failed to setup engine");
         return false;
     }
 
@@ -206,6 +223,13 @@ QByteArray Engine::statusCode(quint16 status)
 
 void Engine::reload()
 {
+    qCWarning(CUTELYST_ENGINE, "Default reload implementation called, doing nothing");
+}
+
+QVariantHash Engine::config(const QString &entity) const
+{
+    Q_D(const Engine);
+    return d->config.value(entity.toLower());
 }
 
 void Engine::handleRequest(Request *request, Response *response, bool autoDelete)
