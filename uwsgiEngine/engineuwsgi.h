@@ -24,7 +24,12 @@
 
 #include "../Cutelyst/engine.h"
 
-class QPluginLoader;
+#include <QPluginLoader>
+#include <QLoggingCategory>
+
+extern struct uwsgi_server uwsgi;
+
+
 namespace Cutelyst {
 
 class Dispatcher;
@@ -57,5 +62,7 @@ private:
 };
 
 }
+
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)
 
 #endif // ENGINE_UWSGI_H
