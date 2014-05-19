@@ -18,25 +18,31 @@
  */
 
 #include "engineuwsgi.h"
+#include "requesthandler.h"
 #include "plugin.h"
 
 #include <QCoreApplication>
+#include <QSocketNotifier>
 
 using namespace Cutelyst;
 
 static EngineUwsgi *engine;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
+void uwsgi_cutelyst_loop(void);
 
 /**
  * This function is called as soon as
  * the plugin is loaded
  */
-extern "C" void uwsgi_cutelyst_on_load() {
-    // This allows for some stuff to run event loops
+extern "C" void uwsgi_cutelyst_on_load()
+{
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
     qInstallMessageHandler(cuteOutput);
+
+    uwsgi_register_loop( (char *) "qt", uwsgi_cutelyst_loop);
+    uwsgi.loop = (char *) "qt";
 }
 
 extern "C" int uwsgi_cutelyst_init()
@@ -137,6 +143,40 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     // register a new app under a specific "mountpoint"
     uwsgi_add_app(1, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
+}
+
+void uwsgi_cutelyst_loop()
+{
+    qDebug() << Q_FUNC_INFO;
+    // ensure SIGPIPE is ignored
+    signal(SIGPIPE, SIG_IGN);
+//    QCoreApplication app(uwsgi.argc, uwsgi.argv);
+
+    // create a QObject (you need one for each virtual core)
+    RequestHandler *rh = new RequestHandler(&uwsgi.workers[uwsgi.mywid].cores[0].req);
+
+    // monitor signals
+    if (uwsgi.signal_socket > -1) {
+        QSocketNotifier *signal_qsn = new QSocketNotifier(uwsgi.signal_socket, QSocketNotifier::Read);
+        QObject::connect(signal_qsn, &QSocketNotifier::activated,
+                         rh, &RequestHandler::handle_signal);
+
+        QSocketNotifier *my_signal_qsn = new QSocketNotifier(uwsgi.my_signal_socket, QSocketNotifier::Read);
+        QObject::connect(my_signal_qsn, &QSocketNotifier::activated,
+                         rh, &RequestHandler::handle_signal);
+    }
+
+    // monitor sockets
+    struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
+    while(uwsgi_sock) {
+        QSocketNotifier *qsn = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
+        QObject::connect(qsn, &QSocketNotifier::activated,
+                         rh, &RequestHandler::handle_signal);
+        uwsgi_sock = uwsgi_sock->next;
+    }
+
+    // start the qt event loop
+    qApp->exec();
 }
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)

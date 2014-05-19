@@ -16,11 +16,11 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef ENGINE_UWSGI_H
 
+#ifndef ENGINE_UWSGI_H
 #define ENGINE_UWSGI_H
 
-#include "uwsgi.h"
+#include <uwsgi.h>
 
 #include "../Cutelyst/engine.h"
 
