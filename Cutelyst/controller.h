@@ -26,6 +26,8 @@
 #include "request.h"
 #include "response.h"
 
+#define C_NAMESPACE "Namespace"
+
 namespace  Cutelyst {
 
 class Controller : public QObject
