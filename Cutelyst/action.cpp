@@ -39,7 +39,7 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
-    QRegularExpression regex(d->name % QLatin1String("_(\\w+)"));
+    QRegularExpression regex(method.name() % QLatin1String("_(\\w+)"));
     for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
         QString name = classInfo.name();
@@ -50,8 +50,19 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
 
         QRegularExpressionMatch match = regex.match(name);
         if (match.hasMatch()) {
-            d->attributes.insertMulti(match.captured(1).toLocal8Bit(),
-                                      classInfo.value());
+            QString type = match.captured(1);
+            QString value = classInfo.value();
+            if (type == QLatin1String("Path")) {
+                if (value.isEmpty()) {
+                    value = controller()->ns() % QLatin1String("/") % d->name;
+                } else if (value.startsWith(QLatin1String("/"))) {
+                    value = controller()->ns() % QLatin1String("/") % d->name % QLatin1String("/") % value;
+                } else {
+                    value = controller()->ns() % QLatin1String("/") % value;
+                }
+            }
+            d->attributes.insertMulti(type.toLocal8Bit(),
+                                      value.toLocal8Bit());
         }
     }
 

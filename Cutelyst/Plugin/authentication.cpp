@@ -22,9 +22,11 @@
 #include "context.h"
 #include "session.h"
 
-#include <QDebug>
+#include <QLoggingCategory>
 
 using namespace Cutelyst::Plugin;
+
+Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 
 Authentication::Authentication(QObject *parent) :
     AbstractPlugin(parent),
@@ -83,7 +85,7 @@ Authentication::User Authentication::authenticate(const CStringHash &userinfo, c
         return user;
     }
 
-    qWarning() << "Could not find realm" << realm;
+    qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
     return User();
 }
 
@@ -96,7 +98,7 @@ Authentication::User Authentication::findUser(const CStringHash &userinfo, const
         return realmPtr->findUser(d->ctx, userinfo);
     }
 
-    qWarning()   << "Could not find realm" << realm;
+    qCWarning(C_AUTHENTICATION)   << "Could not find realm" << realm;
     return User();
 }
 
@@ -154,7 +156,7 @@ void Authentication::setAuthenticated(const User &user, const QString &realmName
 
     Authentication::Realm *realmPtr = d->realm(realmName);
     if (!realmPtr) {
-        qWarning() << Q_FUNC_INFO << "Called with invalid realm" << realmName;
+        qCWarning(C_AUTHENTICATION) << "Called with invalid realm" << realmName;
     }
     // TODO implement a user class
 //    $user->auth_realm($realm->name);
@@ -295,7 +297,7 @@ Authentication::User Authentication::Realm::restoreUser(Context *ctx, const QVar
         // Sets the realm the user originated in
         user.setAuthRealm(this);
     } else {
-        qWarning("Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?");
+        qCWarning(C_AUTHENTICATION, "Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?");
     }
 
     return user;

@@ -29,10 +29,12 @@
 #include <QSettings>
 #include <QUuid>
 #include <QDir>
-#include <QDebug>
+#include <QLoggingCategory>
 
 using namespace Cutelyst;
 using namespace Plugin;
+
+Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 Session::Session(QObject *parent) :
     AbstractPlugin(parent)
@@ -157,13 +159,13 @@ QString Session::getSessionId() const
     foreach (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
         if (cookie.name() == m_sessionName) {
             sessionId = cookie.value();
-            qDebug() << "Found sessionid" << sessionId << "in cookie";
+            qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
         }
     }
 
     if (sessionId.isEmpty()) {
         sessionId = generateSessionId();
-        qDebug() << "Created session" << sessionId;
+        qCDebug(C_SESSION) << "Created session" << sessionId;
     }
     m_ctx->setProperty("Session/_sessionid", sessionId);
 
@@ -175,7 +177,7 @@ QString Session::filePath(const QString &sessionId) const
     QString path = QDir::tempPath() % QLatin1Char('/') % m_ctx->engine()->app()->applicationName();
     QDir dir;
     if (!dir.mkpath(path)) {
-        qWarning() << "Failed to create path for session object" << path;
+        qCWarning(C_SESSION) << "Failed to create path for session object" << path;
     }
     return path % QLatin1Char('/') % sessionId;
 }
