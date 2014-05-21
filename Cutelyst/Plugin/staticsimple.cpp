@@ -11,10 +11,12 @@
 #include <QFile>
 #include <QDir>
 #include <QDateTime>
-#include <QDebug>
+#include <QLoggingCategory>
 
 using namespace Cutelyst;
 using namespace Plugin;
+
+Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple")
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :
     AbstractPlugin(parent),
@@ -50,7 +52,7 @@ void StaticSimple::beforePrepareAction(bool *skipMethod)
     }
 
     QString path = ctx->req()->path();
-    QRegularExpression re("\\.\\S+$");
+    QRegularExpression re("\\.[^/]+$");
     QRegularExpressionMatch match = re.match(path);
     if (match.hasMatch() && locateStaticFile(ctx, path)) {
         *skipMethod = true;
@@ -75,7 +77,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
 
         QFile file(path);
         if (file.open(QFile::ReadOnly)) {
-            qWarning() << "Serving" << path;
+            qCWarning(C_STATICSIMPLE) << "Serving" << path;
             ctx->response()->body() = file.readAll();
             QMimeDatabase db;
             // use the extension to match to be faster
@@ -87,15 +89,15 @@ bool StaticSimple::locateStaticFile(Context *ctx, QString &path)
 
             ctx->res()->headers()["Last-Modified"] = lastModified.toLocal8Bit();
             ctx->res()->headers()["Cache-Control"] = "public";
-            qWarning() << "File headers" << ctx->res()->headers();
+            qCWarning(C_STATICSIMPLE) << "File headers" << ctx->res()->headers();
 
             return true;
         }
 
-        qWarning() << "Could not serve" << path << file.errorString();
+        qCWarning(C_STATICSIMPLE) << "Could not serve" << path << file.errorString();
         return false;
     }
 
-    qWarning() << "File not found" << path;
+    qCWarning(C_STATICSIMPLE) << "File not found" << path;
     return false;
 }
