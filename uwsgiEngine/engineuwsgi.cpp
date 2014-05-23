@@ -54,8 +54,7 @@ bool EngineUwsgi::loadApplication(const QString &path)
                 qCDebug(CUTELYST_UWSGI) << "Application"
                                         << m_app->applicationName()
                                         << "loaded.";
-
-                return true;
+                return initApplication(m_app, false);
             } else {
                 qCCritical(CUTELYST_UWSGI) << "Could not create an instance of the application:" << instance;
             }
@@ -216,10 +215,5 @@ bool EngineUwsgi::init()
 
 bool EngineUwsgi::postFork()
 {
-    if (m_app) {
-        return setupApplication(m_app);
-    } else {
-        qCWarning(CUTELYST_UWSGI) << "Trying to setup an not loaded Application";
-        return false;
-    }
+    return postForkApplication();
 }
