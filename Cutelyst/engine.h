@@ -39,8 +39,6 @@ public:
     explicit Engine(QObject *parent = 0);
     ~Engine();
 
-    virtual bool init() = 0;
-
     /**
      * @brief finalizeCookies first called if no error
      * @param ctx
@@ -83,13 +81,26 @@ public:
     Application *app() const;
 
     /**
-     * @brief setupApplication
-     * @param app
+     * @brief initApplication
+     *
+     * This method inits the application and
+     * calls init on the engine.
+     *
+     * @param app the Application to init
+     * @param postFork when true it will call postFork on the application
      * @return true if succeded
-     * This method init the application and
-     * call init on the engine.
      */
-    bool setupApplication(Application *app);
+    bool initApplication(Application *app, bool postFork);
+
+    /**
+     * @brief postForkApplication
+     *
+     * Should be called after the engine forks
+     *
+     * @return true if the engine should use this
+     * process
+     */
+    bool postForkApplication();
 
     static QByteArray statusCode(quint16 status);
 
@@ -144,6 +155,12 @@ protected:
 
 private:
     Q_DECLARE_PRIVATE(Engine)
+
+    /**
+     * @brief init the engine
+     * @return true if succeeded
+     */
+    virtual bool init() = 0;
 };
 
 }

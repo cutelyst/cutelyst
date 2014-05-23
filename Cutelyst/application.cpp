@@ -50,6 +50,12 @@ Application::~Application()
     delete d_ptr;
 }
 
+bool Application::postFork()
+{
+    qCDebug(CUTELYST_CORE, "Default postFork called on pid: %d", QCoreApplication::applicationPid());
+    return true;
+}
+
 bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
 {
     Q_D(Application);

@@ -70,11 +70,32 @@ public:
      *
      * For example if your application only works with
      * PostgeSQL and the Qt driver is not available it
-     * makes sense to fail here.
+     * makes sense to fail here. However you should not
+     * initialize resouces that cannot be shared among
+     * process. \sa postFork
      *
      * @return true if your application successfuly initted
      */
     virtual bool init() = 0;
+
+    /**
+     * @brief postFork is called after the engine forks
+     *
+     * After the web engine forks itself it will call
+     * this function so that you can initialize resources
+     * that can't be shared with the parent process, namely
+     * sockets and file descriptors.
+     *
+     * A good example of usage of this function is when
+     * openning a connection to the database which can't
+     * be shared with other process and should probably
+     * make this function return false if it fails to open.
+     *
+     * Default implementation returns true.
+     *
+     * @return false if the engine should not use this process
+     */
+    virtual bool postFork();
 
     /**
      * Registers a global plugin ie one that doesn't need

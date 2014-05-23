@@ -161,7 +161,7 @@ Application *Engine::app() const
     return d->app;
 }
 
-bool Engine::setupApplication(Application *app)
+bool Engine::initApplication(Application *app, bool postFork)
 {
     Q_D(Engine);
     d->app = app;
@@ -176,7 +176,22 @@ bool Engine::setupApplication(Application *app)
         return false;
     }
 
+    if (postFork) {
+        return postForkApplication();
+    }
+
     return true;
+}
+
+bool Engine::postForkApplication()
+{
+    Q_D(Engine);
+
+    if (!d->app) {
+        qCCritical(CUTELYST_ENGINE, "Failed to postForkApplication on a null application");
+        return false;
+    }
+    return d->app->postFork();
 }
 
 QByteArray Engine::statusCode(quint16 status)
