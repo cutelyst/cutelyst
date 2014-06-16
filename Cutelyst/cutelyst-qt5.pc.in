@@ -6,6 +6,6 @@ includedir=${prefix}/include
 Name: cutelyst-qt5
 Description: Cutelyst Web Framework for Qt5
 Version: @VERSION@
-Requires: QtCore, QtDBus
+Requires: QtCore
 Libs: -L${libdir} -lcutelyst-qt5
 Cflags: -I${includedir}/cutelyst-qt5/
