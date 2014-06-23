@@ -116,6 +116,12 @@ QMultiHash<QString, QString> Request::param() const
     return parameters();
 }
 
+QByteArray Request::contentEncoding() const
+{
+    Q_D(const Request);
+    return d->headers.value("Content-Encoding");
+}
+
 QByteArray Request::contentType() const
 {
     Q_D(const Request);

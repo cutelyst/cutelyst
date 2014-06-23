@@ -107,12 +107,15 @@ public:
      */
     QMultiHash<QString, QString> param() const;
 
-
-    QString contentEncoding() const;
+    /**
+     * @brief contentEncoding
+     * @return the Content-Encoding header
+     */
+    QByteArray contentEncoding() const;
 
     /**
      * @brief contentType
-     * @return
+     * @return the Content-Type header
      */
     QByteArray contentType() const;
 
