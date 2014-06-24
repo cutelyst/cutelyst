@@ -20,7 +20,7 @@ Authentication::User StoreMinimal::findUser(Context *ctx, const CStringHash &use
         id = userInfo[QLatin1String("username")];
     }
 
-    foreach (const Authentication::User &user, m_users) {
+    Q_FOREACH (const Authentication::User &user, m_users) {
         if (user.id() == id) {
             return user;
         }

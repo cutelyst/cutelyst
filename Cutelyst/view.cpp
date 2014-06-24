@@ -34,7 +34,7 @@ View::View(const QString &engine, QObject *parent) :
     interface(0)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
-    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+    Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
         QJsonObject json = pluginLoader.metaData()["MetaData"].toObject();
         if (json["name"].toString() == engine) {

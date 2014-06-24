@@ -19,6 +19,10 @@
 
 #include "engineuwsgi.h"
 
+#include "bodyuwsgi.h"
+
+#include <QBuffer>
+
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
@@ -75,55 +79,64 @@ void EngineUwsgi::finalizeBody(Context *ctx)
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
 
-void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
+void EngineUwsgi::processRequest(wsgi_request *req)
 {
     Request *request;
-    QByteArray host = QByteArray::fromRawData(wsgi_req->host, wsgi_req->host_len);
-    QByteArray path = QByteArray::fromRawData(wsgi_req->path_info, wsgi_req->path_info_len);
-    QUrlQuery queryString(QByteArray::fromRawData(wsgi_req->query_string, wsgi_req->query_string_len));
-    request = newRequest(wsgi_req,
-                         wsgi_req->https_len ? "http" : "https",
+    QByteArray host = QByteArray::fromRawData(req->host, req->host_len);
+    QByteArray path = QByteArray::fromRawData(req->path_info, req->path_info_len);
+    QUrlQuery queryString(QByteArray::fromRawData(req->query_string, req->query_string_len));
+    request = newRequest(req,
+                         req->https_len ? "http" : "https",
                          host,
                          path,
                          queryString);
 
-    QByteArray remote = QByteArray::fromRawData(wsgi_req->remote_addr, wsgi_req->remote_addr_len);
+    QHostAddress remoteAddress(QByteArray::fromRawData(req->remote_addr, req->remote_addr_len).data());
 
-    QByteArray method = QByteArray::fromRawData(wsgi_req->method, wsgi_req->method_len);
+    QByteArray method = QByteArray::fromRawData(req->method, req->method_len);
 
-    QByteArray protocol = QByteArray::fromRawData(wsgi_req->protocol, wsgi_req->protocol_len);
+    QByteArray protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
 
     QHash<QByteArray, QByteArray> headers;
-    for (int i = 0; i < wsgi_req->var_cnt; i += 2) {
-        if (wsgi_req->hvec[i].iov_len < 6) {
+    for (int i = 0; i < req->var_cnt; i += 2) {
+        if (req->hvec[i].iov_len < 6) {
             continue;
         }
 
-        if (!uwsgi_startswith((char *) wsgi_req->hvec[i].iov_base,
+        if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            QByteArray key = QByteArray::fromRawData((char *) wsgi_req->hvec[i].iov_base+5, wsgi_req->hvec[i].iov_len-5);
-            QByteArray value = QByteArray::fromRawData((char *) wsgi_req->hvec[i + 1].iov_base, wsgi_req->hvec[i + 1].iov_len);
+            QByteArray key = QByteArray::fromRawData((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
+            QByteArray value = QByteArray::fromRawData((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
             headers.insert(httpCase(key), value);
         }
     }
 
-    QByteArray contentType = QByteArray::fromRawData(wsgi_req->content_type, wsgi_req->content_type_len);
+    QByteArray contentType = QByteArray::fromRawData(req->content_type, req->content_type_len);
     if (!contentType.isNull()) {
         headers.insert("Content-Type", contentType);
     }
 
-    QByteArray contentEncoding = QByteArray::fromRawData(wsgi_req->encoding, wsgi_req->encoding_len);
+    QByteArray contentEncoding = QByteArray::fromRawData(req->encoding, req->encoding_len);
     if (!contentEncoding.isNull()) {
         headers.insert("Content-Encoding", contentEncoding);
     }
 
-    QByteArray remoteUser = QByteArray::fromRawData(wsgi_req->remote_user, wsgi_req->remote_user_len);
+    QByteArray remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
+
+    uint16_t remote_port_len;
+    char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
+    QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
+
+    QFile *upload = new QFile;
+    if (req->post_file && !upload->open(req->post_file, QIODevice::ReadOnly)) {
+        qCDebug(CUTELYST_UWSGI) << "Could not open upload file";
+    }
 
     QByteArray bodyArray;
-    size_t remains = wsgi_req->post_cl;
+    size_t remains = req->post_cl;
     while(remains > 0) {
         ssize_t body_len = 0;
-        char *body =  uwsgi_request_body_read(wsgi_req, UMIN(remains, 32768) , &body_len);
+        char *body =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
         if (!body || body == uwsgi.empty) {
             break;
         }
@@ -131,24 +144,16 @@ void EngineUwsgi::processRequest(struct wsgi_request *wsgi_req)
         bodyArray.append(body, body_len);
     }
 
-    uint16_t remote_port_len;
-    char *remote_port = uwsgi_get_var(wsgi_req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
-
-    QFile *upload = new QFile;
-    if (wsgi_req->post_file && !upload->open(wsgi_req->post_file, QIODevice::ReadOnly)) {
-        qCDebug(CUTELYST_UWSGI) << "Could not open upload file";
-    }
-
+    QBuffer *buffer = new QBuffer(&bodyArray);
+    buffer->open(QBuffer::ReadOnly);
     setupRequest(request,
                  method,
                  protocol,
                  headers,
-                 bodyArray,
+                 buffer,
                  remoteUser,
-                 QHostAddress(remote.data()),
-                 remotePort.toUInt(),
-                 upload);
+                 remoteAddress,
+                 remotePort.toUInt());
 
     handleRequest(request, new Response);
 }

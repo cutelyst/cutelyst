@@ -1,4 +1,5 @@
 set(uswgi_engine_SRC
+    bodyuwsgi.cpp
     engineuwsgi.cpp
     plugin.cpp
     plugin.c

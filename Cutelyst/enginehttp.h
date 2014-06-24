@@ -49,7 +49,7 @@ private Q_SLOTS:
                         const QByteArray &method,
                         const QByteArray &protocol,
                         const QHash<QByteArray, QByteArray> &headers,
-                        const QByteArray &body);
+                        QIODevice *body);
 
 private:
     Q_DECLARE_PRIVATE(EngineHttp)

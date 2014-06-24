@@ -39,7 +39,7 @@ public:
     bool processing();
     void finish();
 
-public slots:
+public Q_SLOTS:
     void process();
     void timeout();
 
@@ -49,7 +49,7 @@ Q_SIGNALS:
                       const QByteArray &method,
                       const QByteArray &protocol,
                       const QHash<QByteArray, QByteArray> &headers,
-                      const QByteArray &body);
+                      QIODevice *body);
 
 private:
     bool m_finishedHeaders;

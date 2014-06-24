@@ -74,7 +74,14 @@ public:
      */
     QString path() const;
     QStringList args() const;
-    QByteArray body() const;
+
+    /**
+     * @brief body
+     * @return the message body of the request as
+     * passed by the Engine, this can even be a file
+     * if the Engine wants to.
+     */
+    QIODevice *body() const;
 
     /**
      * Returns a QMultiHash of body (POST) parameters
@@ -160,12 +167,6 @@ public:
      * @return the value of the REMOTE_USER environment variable.
      */
     QByteArray remoteUser() const;
-
-    /**
-     * @brief upload
-     * @return a QFile pointer to the uploaded content, if any
-     */
-    QFile *upload() const;
 
     Engine *engine() const;
 

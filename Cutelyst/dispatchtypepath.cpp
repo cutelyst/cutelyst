@@ -47,8 +47,8 @@ void DispatchTypePath::list() const
 
     QStringList keys = m_paths.keys();
     keys.sort();
-    foreach (const QString &path, keys) {
-        foreach (Action *action, m_paths.value(path)) {
+    Q_FOREACH (const QString &path, keys) {
+        Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             QString args = action->attributes().value("Args");
             if (args.isEmpty()) {
@@ -79,8 +79,8 @@ void DispatchTypePath::list() const
         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
         << "." << endl;
 
-    foreach (const QString &path, keys) {
-        foreach (Action *action, m_paths.value(path)) {
+    Q_FOREACH (const QString &path, keys) {
+        Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             if (!action->attributes().contains("Args")) {
                 _path.append(QLatin1String("/..."));
@@ -117,7 +117,7 @@ bool DispatchTypePath::match(Context *ctx, const QString &path) const
     }
 
     const ActionList &actions = m_paths.value(_path);
-    foreach (Action *action, actions) {
+    Q_FOREACH (Action *action, actions) {
         if (action->match(ctx)) {
             setupMatchedAction(ctx, action, _path);
             return true;
@@ -176,7 +176,7 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
 
     if (m_paths.contains(_path)) {
         ActionList actions = m_paths.value(_path);
-        foreach (const Action *regAction, actions) {
+        Q_FOREACH (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == action->numberOfArgs()) {
                 qCWarning(CUTELYST_DISPATCHER) << "Not registering Action"
                                                << action->name()

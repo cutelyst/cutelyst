@@ -32,6 +32,7 @@
 #include <QTcpSocket>
 #include <QMimeDatabase>
 #include <QUrl>
+#include <QBuffer>
 
 using namespace Cutelyst;
 
@@ -172,7 +173,7 @@ void EngineHttp::removeConnection()
     }
 }
 
-void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body)
+void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, QIODevice *body)
 {
     Request *request;
     request = newRequest(requestData,
@@ -181,7 +182,7 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
                          url.path().toLocal8Bit(),
                          QUrlQuery(url.query()));
     // TODO delete the file
-    setupRequest(request, method, protocol, headers, body, QByteArray(), QHostAddress(), 0, new QFile);
+    setupRequest(request, method, protocol, headers, body, QByteArray(), QHostAddress(), 0);
 }
 
 void EngineHttp::onNewServerConnection()
@@ -336,7 +337,7 @@ void EngineHttpRequest::process()
                  m_method,
                  m_protocol,
                  m_headers,
-                 m_body);
+                 new QBuffer(&m_body));
 
     m_body.clear();
     m_headers.clear();
