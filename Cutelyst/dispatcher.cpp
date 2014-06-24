@@ -53,7 +53,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         registerDispatchType(new DispatchTypePath(this));
     }
 
-    foreach (Controller *controller, controllers) {
+    Q_FOREACH (Controller *controller, controllers) {
         // App controller
 //        qDebug() << "Found a controller:" << controller << meta->className();
         const QMetaObject *meta = controller->metaObject();
@@ -68,7 +68,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                     if (!action->attributes().contains("Private")) {
                         // Register the action with each dispatcher
-                        foreach (DispatchType *dispatch, d->dispatchers) {
+                        Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
                             if (dispatch->registerAction(action)) {
                                 registered = true;
                             }
@@ -144,7 +144,7 @@ void Dispatcher::prepareAction(Context *ctx)
         path = pathParts.join(QLatin1Char('/'));
         path.remove(d->initialSlash);
 
-        foreach (DispatchType *type, d->dispatchers) {
+        Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, path)) {
                 if (!path.isEmpty()) {
                     qCDebug(CUTELYST_DISPATCHER) << "Path is" << path;
@@ -187,7 +187,7 @@ ActionList Dispatcher::getActions(const QString &name, const QString &ns) const
     QString _ns = cleanNamespace(ns);
 
     ActionList containers = d->getContainers(_ns);
-    foreach (Action *action, containers) {
+    Q_FOREACH (Action *action, containers) {
         if (action->name() == name) {
             ret.prepend(action);
         }
@@ -205,7 +205,7 @@ QHash<QString, Controller *> Dispatcher::controllers() const
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures)
 {
     Q_D(const Dispatcher);
-    foreach (DispatchType *dispatch, d->dispatchers) {
+    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
         QString uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
             return uri.isEmpty() ? QLatin1String("/") : uri;
@@ -284,7 +284,7 @@ void Dispatcher::printActions()
     qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
 
     // List all public actions
-    foreach (DispatchType *dispatch, d->dispatchers) {
+    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
         dispatch->list();
     }
 }
@@ -305,7 +305,7 @@ Action *Dispatcher::command2Action(Context *ctx, const QString &command, const Q
 QStringList Dispatcher::unexcapedArgs(const QStringList &args)
 {
     QStringList ret;
-    foreach (const QString &arg, args) {
+    Q_FOREACH (const QString &arg, args) {
         ret << QUrl::fromPercentEncoding(arg.toLocal8Bit());
     }
     return ret;
@@ -353,7 +353,7 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, cons
 QString Dispatcher::cleanNamespace(const QString &ns) const
 {
     QStringList ret;
-    foreach (const QString &part, ns.split(QLatin1Char('/'))) {
+    Q_FOREACH (const QString &part, ns.split(QLatin1Char('/'))) {
         if (!part.isEmpty()) {
             ret << part;
         }

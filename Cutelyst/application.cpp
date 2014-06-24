@@ -135,7 +135,7 @@ void Application::handleRequest(Request *req, Response *resp)
     Context *ctx = new Context(priv);
 
     // Register application plugins
-    foreach (Plugin::AbstractPlugin *plugin, d->plugins) {
+    Q_FOREACH (Plugin::AbstractPlugin *plugin, d->plugins) {
         ctx->registerPlugin(plugin, false);
     }
 

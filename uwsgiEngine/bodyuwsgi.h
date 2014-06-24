@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,39 +17,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_REQUEST_P_H
-#define CUTELYST_REQUEST_P_H
+#ifndef BODYUWSGI_H
+#define BODYUWSGI_H
 
-#include "request.h"
+#include <QIODevice>
 
-#include <QStringList>
-#include <QHostAddress>
-#include <QUrl>
+struct wsgi_request;
 
-namespace Cutelyst {
-
-class Engine;
-class RequestPrivate
+class BodyUWSGI : public QIODevice
 {
+    Q_OBJECT
 public:
-    QByteArray method;
-    QUrl uri;
-    QString path;
-    QStringList args;
-    QByteArray protocol;
-    QList<QNetworkCookie> cookies;
-    QHash<QByteArray, QByteArray> headers;
-    QIODevice *body;
-    QMultiHash<QString, QString> bodyParam;
-    QMultiHash<QString, QString> queryParam;
-    QMultiHash<QString, QString> param;
-    QHostAddress address;
-    quint16 port;
-    QByteArray remoteUser;
-    Engine *engine;
-    void *requestPtr;
+    explicit BodyUWSGI(struct wsgi_request *request, QObject *parent = 0);
+
+    virtual qint64 pos() const;
+    virtual qint64 size() const;
+    virtual bool seek(qint64 pos);
+
+protected:
+    virtual qint64 readData(char *data, qint64 maxlen);
+    virtual qint64 writeData(const char * data, qint64 maxSize);
+
+private:
+    wsgi_request *m_request;
 };
 
-}
-
-#endif // CUTELYST_REQUEST_P_H
+#endif // BODYUWSGI_H

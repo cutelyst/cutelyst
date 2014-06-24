@@ -34,7 +34,6 @@ Request::Request(RequestPrivate *prv) :
 Request::~Request()
 {
     Q_D(Request);
-    delete d->upload;
     delete d_ptr;
 }
 
@@ -77,7 +76,7 @@ QStringList Request::args() const
     return d->args;
 }
 
-QByteArray Request::body() const
+QIODevice *Request::body() const
 {
     Q_D(const Request);
     return d->body;
@@ -131,7 +130,7 @@ QByteArray Request::contentType() const
 QNetworkCookie Request::cookie(const QByteArray &name) const
 {
     Q_D(const Request);
-    foreach (const QNetworkCookie &cookie, d->cookies) {
+    Q_FOREACH (const QNetworkCookie &cookie, d->cookies) {
         if (cookie.name() == name) {
             return cookie;
         }
@@ -185,12 +184,6 @@ QByteArray Request::remoteUser() const
 {
     Q_D(const Request);
     return d->remoteUser;
-}
-
-QFile *Request::upload() const
-{
-    Q_D(const Request);
-    return d->upload;
 }
 
 Engine *Request::engine() const

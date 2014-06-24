@@ -71,6 +71,8 @@ if (DISABLE_MAINTAINER_CFLAGS)
 endif (DISABLE_MAINTAINER_CFLAGS)
 add_definitions(${MAINTAINER_CFLAGS})
 
+add_definitions(-DQT_NO_KEYWORDS)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/lib

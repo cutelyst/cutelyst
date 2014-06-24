@@ -114,7 +114,7 @@ public:
     template <typename T>
     T plugin()
     {
-        foreach (Plugin::AbstractPlugin *plugin, plugins()) {
+        Q_FOREACH (Plugin::AbstractPlugin *plugin, plugins()) {
             if (qobject_cast<T>(plugin)) {
                 return qobject_cast<T>(plugin);
             }

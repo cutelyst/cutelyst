@@ -100,7 +100,7 @@ void Controller::_DISPATCH(Context *ctx)
     dispatchSteps << QLatin1String("_BEGIN");
     dispatchSteps << QLatin1String("_AUTO");
     dispatchSteps << QLatin1String("_ACTION");
-    foreach (const QString &disp, dispatchSteps) {
+    Q_FOREACH (const QString &disp, dispatchSteps) {
         if (!ctx->forward(disp)) {
             break;
         }
@@ -126,7 +126,7 @@ bool Controller::_AUTO(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList autoList = ctx->getActions(QLatin1String("Auto"), ctx->ns());
-    foreach (Action *autoAction, autoList) {
+    Q_FOREACH (Action *autoAction, autoList) {
         if (!autoAction->dispatch(ctx)) {
             return false;
         }

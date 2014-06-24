@@ -20,9 +20,9 @@
 #ifndef ENGINE_UWSGI_H
 #define ENGINE_UWSGI_H
 
-#include <uwsgi.h>
-
 #include "../Cutelyst/engine.h"
+
+#include <uwsgi.h>
 
 #include <QPluginLoader>
 #include <QLoggingCategory>
@@ -30,9 +30,11 @@
 extern struct uwsgi_server uwsgi;
 
 namespace Cutelyst {
-
 class Dispatcher;
 class Application;
+}
+
+using namespace Cutelyst;
 class EngineUwsgi : public Engine
 {
     Q_OBJECT
@@ -49,7 +51,7 @@ public:
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
 
-    void processRequest(wsgi_request *wsgi_req);
+    void processRequest(wsgi_request *req);
 
     QByteArray httpCase(const QByteArray &headerKey) const;
 
@@ -59,8 +61,6 @@ private:
     QPluginLoader *m_loader = 0;
     Application *m_app = 0;
 };
-
-}
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)
 

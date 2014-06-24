@@ -84,7 +84,7 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
     QVariantHash ret;
     QSettings settings(filePath(sessionId), QSettings::IniFormat);
     settings.beginGroup(QLatin1String("Data"));
-    foreach (const QString &key, settings.allKeys()) {
+    Q_FOREACH (const QString &key, settings.allKeys()) {
         ret.insert(key, settings.value(key));
     }
     settings.endGroup();
@@ -156,7 +156,7 @@ QString Session::getSessionId() const
     }
 
     QString sessionId;
-    foreach (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
+    Q_FOREACH (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
         if (cookie.name() == m_sessionName) {
             sessionId = cookie.value();
             qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";

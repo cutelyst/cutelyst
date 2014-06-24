@@ -45,10 +45,10 @@ Engine::Engine(QObject *parent) :
         QByteArray config = qgetenv("CUTELYST_CONFIG");
         qCWarning(CUTELYST_CORE, "Reading config file: %s", config.data());
         QSettings settings(config, QSettings::IniFormat);
-        foreach (const QString &group, settings.childGroups()) {
+        Q_FOREACH (const QString &group, settings.childGroups()) {
             settings.beginGroup(group);
             QString groupLowered = group.toLower();
-            foreach (const QString &key, settings.childKeys()) {
+            Q_FOREACH (const QString &key, settings.childKeys()) {
                 d->config[groupLowered].insert(key, settings.value(key));
             }
             settings.endGroup();
@@ -78,14 +78,14 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
 
     requestPriv->path = path;
     requestPriv->uri = uri;
-    foreach (const StringPair &queryItem, queryString.queryItems()) {
+    Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
         requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);
     }
 
     return new Request(requestPriv);
 }
 
-void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, const QByteArray &body, const QByteArray &remoteUser, const QHostAddress &address, quint16 peerPort, QFile *upload)
+void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, QIODevice *body, const QByteArray &remoteUser, const QHostAddress &address, quint16 peerPort)
 {
     request->d_ptr->method = method;
     request->d_ptr->protocol = protocol;
@@ -94,7 +94,6 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     request->d_ptr->remoteUser = remoteUser;
     request->d_ptr->address = address;
     request->d_ptr->port = peerPort;
-    request->d_ptr->upload = upload;
 
     QByteArray cookies = headers.value("Cookie");
     request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
@@ -102,8 +101,9 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     if (request->contentType() == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
+        QByteArray bodyArray = body->readAll();
         QMultiHash<QString, QString> bodyParam;
-        foreach (const QByteArray &parameter, body.split('&')) {
+        Q_FOREACH (const QByteArray &parameter, bodyArray.split('&')) {
             if (parameter.isEmpty()) {
                 continue;
             }
@@ -120,6 +120,7 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
             }
         }
         request->d_ptr->bodyParam = bodyParam;
+        body->seek(0);
     }
     request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
 }
@@ -131,7 +132,7 @@ void *Engine::requestPtr(Request *request) const
 
 void Engine::finalizeCookies(Context *ctx)
 {
-    foreach (const QNetworkCookie &cookie, ctx->response()->cookies()) {
+    Q_FOREACH (const QNetworkCookie &cookie, ctx->response()->cookies()) {
         ctx->response()->addHeaderValue("Set-Cookie", cookie.toRawForm());
     }
 }

@@ -143,11 +143,10 @@ protected:
                       const QByteArray &method,
                       const QByteArray &protocol,
                       const QHash<QByteArray, QByteArray> &headers,
-                      const QByteArray &body,
+                      QIODevice *body,
                       const QByteArray &remoteUser,
                       const QHostAddress &address,
-                      quint16 peerPort,
-                      QFile *upload);
+                      quint16 peerPort);
     void *requestPtr(Request *request) const;
 
 protected:
