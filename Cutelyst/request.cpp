@@ -85,6 +85,9 @@ QIODevice *Request::body() const
 QMultiHash<QString, QString> Request::bodyParameters() const
 {
     Q_D(const Request);
+    if (!d->bodyParamParsed) {
+        d->parseBodyParams();
+    }
     return d->bodyParam;
 }
 
@@ -107,6 +110,9 @@ QMultiHash<QString, QString> Request::queryParam() const
 QMultiHash<QString, QString> Request::parameters() const
 {
     Q_D(const Request);
+    if (!d->bodyParamParsed) {
+        d->parseBodyParams();
+    }
     return d->param;
 }
 
@@ -196,4 +202,38 @@ void Request::setArgs(const QStringList &args)
 {
     Q_D(Request);
     d->args = args;
+}
+
+
+void RequestPrivate::parseBodyParams() const
+{
+    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
+        // Parse the query (BODY) of type "application/x-www-form-urlencoded"
+        // parameters ie "?foo=bar&bar=baz"
+        qint64 posOrig = body->pos();
+        body->seek(0);
+        QByteArray bodyArray = body->readAll();
+        Q_FOREACH (const QByteArray &parameter, bodyArray.split('&')) {
+            if (parameter.isEmpty()) {
+                continue;
+            }
+
+            QList<QByteArray> parts = parameter.split('=');
+            if (parts.size() == 2) {
+                QByteArray value = parts.at(1);
+                value.replace('+', ' ');
+                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+                                      QUrl::fromPercentEncoding(value));
+            } else {
+                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+                                      QString());
+            }
+        }
+        body->seek(posOrig);
+        param = queryParam + bodyParam;
+    } else {
+        param = queryParam;
+    }
+
+    bodyParamParsed = true;
 }

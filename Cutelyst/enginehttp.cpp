@@ -181,7 +181,7 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
                          url.host().toLocal8Bit(),
                          url.path().toLocal8Bit(),
                          QUrlQuery(url.query()));
-    // TODO delete the file
+
     setupRequest(request, method, protocol, headers, body, QByteArray(), QHostAddress(), 0);
 }
 

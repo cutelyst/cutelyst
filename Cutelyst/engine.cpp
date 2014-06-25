@@ -97,32 +97,6 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
 
     QByteArray cookies = headers.value("Cookie");
     request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
-
-    if (request->contentType() == "application/x-www-form-urlencoded") {
-        // Parse the query (BODY) of type "application/x-www-form-urlencoded"
-        // parameters ie "?foo=bar&bar=baz"
-        QByteArray bodyArray = body->readAll();
-        QMultiHash<QString, QString> bodyParam;
-        Q_FOREACH (const QByteArray &parameter, bodyArray.split('&')) {
-            if (parameter.isEmpty()) {
-                continue;
-            }
-
-            QList<QByteArray> parts = parameter.split('=');
-            if (parts.size() == 2) {
-                QByteArray value = parts.at(1);
-                value.replace('+', ' ');
-                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                      QUrl::fromPercentEncoding(value));
-            } else {
-                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-                                      QString());
-            }
-        }
-        request->d_ptr->bodyParam = bodyParam;
-        body->seek(0);
-    }
-    request->d_ptr->param = request->d_ptr->bodyParam + request->d_ptr->queryParam;
 }
 
 void *Engine::requestPtr(Request *request) const

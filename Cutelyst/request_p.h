@@ -32,6 +32,8 @@ class Engine;
 class RequestPrivate
 {
 public:
+    void parseBodyParams() const;
+
     QByteArray method;
     QUrl uri;
     QString path;
@@ -40,9 +42,10 @@ public:
     QList<QNetworkCookie> cookies;
     QHash<QByteArray, QByteArray> headers;
     QIODevice *body;
-    QMultiHash<QString, QString> bodyParam;
+    mutable bool bodyParamParsed = false;
+    mutable QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
-    QMultiHash<QString, QString> param;
+    mutable QMultiHash<QString, QString> param;
     QHostAddress address;
     quint16 port;
     QByteArray remoteUser;
