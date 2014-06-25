@@ -25,18 +25,7 @@ BodyUWSGI::BodyUWSGI(wsgi_request *request, QObject *parent) :
     QIODevice(parent),
     m_request(request)
 {
-    open(QIODevice::ReadOnly);
-//    QByteArray bodyArray;
-//    size_t remains = request->post_cl;
-//    while(remains > 0) {
-//        ssize_t body_len = 0;
-//        char *body =  uwsgi_request_body_read(request, UMIN(remains, 32768) , &body_len);
-//        if (!body || body == uwsgi.empty) {
-//            break;
-//        }
-
-//        bodyArray.append(body, body_len);
-//    }
+    open(QIODevice::ReadOnly | QIODevice::Unbuffered);
 }
 
 qint64 BodyUWSGI::pos() const
@@ -58,9 +47,17 @@ bool BodyUWSGI::seek(qint64 pos)
 
 qint64 BodyUWSGI::readData(char *data, qint64 maxlen)
 {
-    Q_UNUSED(data) // avoid unused-but-set-parameter gcc Warning
     ssize_t body_len = 0;
-    data = uwsgi_request_body_read(m_request, maxlen, &body_len);
+    char *body = uwsgi_request_body_read(m_request, maxlen, &body_len);
+    qstrncpy(data, body, body_len);
+    return body_len;
+}
+
+qint64 BodyUWSGI::readLineData(char *data, qint64 maxlen)
+{
+    ssize_t body_len = 0;
+    char *body = uwsgi_request_body_readline(m_request, maxlen, &body_len);
+    qstrncpy(data, body, body_len);
     return body_len;
 }
 

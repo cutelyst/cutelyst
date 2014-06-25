@@ -23,7 +23,6 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QNetworkCookie>
-#include <QFile>
 
 namespace Cutelyst {
 

@@ -21,8 +21,6 @@
 
 #include "bodyuwsgi.h"
 
-#include <QBuffer>
-
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
@@ -127,30 +125,11 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
     QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
 
-    QFile *upload = new QFile;
-    if (req->post_file && !upload->open(req->post_file, QIODevice::ReadOnly)) {
-        qCDebug(CUTELYST_UWSGI) << "Could not open upload file";
-    }
-
-    QByteArray bodyArray;
-    size_t remains = req->post_cl;
-    while(remains > 0) {
-        ssize_t body_len = 0;
-        char *body =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
-        if (!body || body == uwsgi.empty) {
-            break;
-        }
-
-        bodyArray.append(body, body_len);
-    }
-
-    QBuffer *buffer = new QBuffer(&bodyArray);
-    buffer->open(QBuffer::ReadOnly);
     setupRequest(request,
                  method,
                  protocol,
                  headers,
-                 buffer,
+                 new BodyUWSGI(req),
                  remoteUser,
                  remoteAddress,
                  remotePort.toUInt());
