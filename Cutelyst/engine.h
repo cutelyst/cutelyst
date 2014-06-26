@@ -133,7 +133,7 @@ protected:
      * Engines must call this when the Request/Response objects
      * are ready for to be processed
      */
-    void handleRequest(Request *request, Response *response, bool autoDelete = true);
+    void handleRequest(Request *request, bool autoDelete = true);
     Request *newRequest(void *requestData,
                         const QByteArray &scheme,
                         const QByteArray &hostAndPort,

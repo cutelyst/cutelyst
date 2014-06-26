@@ -222,15 +222,14 @@ QVariantHash Engine::config(const QString &entity) const
     return d->config.value(entity.toLower());
 }
 
-void Engine::handleRequest(Request *request, Response *response, bool autoDelete)
+void Engine::handleRequest(Request *request, bool autoDelete)
 {
     Q_D(Engine);
     Q_ASSERT(d->app);
-    d->app->handleRequest(request, response);
+    d->app->handleRequest(request);
 
     if (autoDelete) {
         delete request;
-        delete response;
     }
 }
 

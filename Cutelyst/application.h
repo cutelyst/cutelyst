@@ -154,7 +154,7 @@ protected:
 
     friend class Engine;
     bool setup(Engine *engine);
-    void handleRequest(Request *req, Response *resp);
+    void handleRequest(Request *req);
 
     ApplicationPrivate *d_ptr;
 };

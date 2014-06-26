@@ -31,6 +31,7 @@ class ContextPrivate
 {
 public:
     ContextPrivate();
+    ~ContextPrivate();
 
     Engine *engine;
     Request *request;
