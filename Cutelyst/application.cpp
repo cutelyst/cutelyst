@@ -123,7 +123,7 @@ bool Application::setup(Engine *engine)
     return false;
 }
 
-void Application::handleRequest(Request *req, Response *resp)
+void Application::handleRequest(Request *req)
 {
     Q_D(Application);
 
@@ -131,7 +131,6 @@ void Application::handleRequest(Request *req, Response *resp)
     priv->engine = d->engine;
     priv->dispatcher = d->dispatcher;
     priv->request = req;
-    priv->response = resp;
     Context *ctx = new Context(priv);
 
     // Register application plugins

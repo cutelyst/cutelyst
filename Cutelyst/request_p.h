@@ -32,7 +32,7 @@ class Engine;
 class RequestPrivate
 {
 public:
-    void parseBodyParams() const;
+    void parseBody() const;
 
     QByteArray method;
     QUrl uri;
@@ -42,7 +42,7 @@ public:
     QList<QNetworkCookie> cookies;
     QHash<QByteArray, QByteArray> headers;
     QIODevice *body;
-    mutable bool bodyParamParsed = false;
+    mutable bool bodyParsed = false;
     mutable QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
     mutable QMultiHash<QString, QString> param;

@@ -85,8 +85,8 @@ QIODevice *Request::body() const
 QMultiHash<QString, QString> Request::bodyParameters() const
 {
     Q_D(const Request);
-    if (!d->bodyParamParsed) {
-        d->parseBodyParams();
+    if (!d->bodyParsed) {
+        d->parseBody();
     }
     return d->bodyParam;
 }
@@ -110,8 +110,8 @@ QMultiHash<QString, QString> Request::queryParam() const
 QMultiHash<QString, QString> Request::parameters() const
 {
     Q_D(const Request);
-    if (!d->bodyParamParsed) {
-        d->parseBodyParams();
+    if (!d->bodyParsed) {
+        d->parseBody();
     }
     return d->param;
 }
@@ -205,14 +205,14 @@ void Request::setArgs(const QStringList &args)
 }
 
 
-void RequestPrivate::parseBodyParams() const
+void RequestPrivate::parseBody() const
 {
     if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         qint64 posOrig = body->pos();
         body->seek(0);
-        QByteArray bodyArray = body->readAll();
+        QByteArray bodyArray = body->readLine();
         Q_FOREACH (const QByteArray &parameter, bodyArray.split('&')) {
             if (parameter.isEmpty()) {
                 continue;
@@ -235,5 +235,5 @@ void RequestPrivate::parseBodyParams() const
         param = queryParam;
     }
 
-    bodyParamParsed = true;
+    bodyParsed = true;
 }

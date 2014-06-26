@@ -32,7 +32,7 @@ public:
 
     virtual qint64 pos() const;
     virtual qint64 size() const;
-    virtual bool seek(qint64 pos);
+    virtual bool seek(qint64 off);
 
 protected:
     virtual qint64 readData(char *data, qint64 maxlen);

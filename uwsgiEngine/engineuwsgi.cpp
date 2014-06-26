@@ -26,6 +26,8 @@
 #include <Cutelyst/response.h>
 #include <Cutelyst/request.h>
 
+#include <QBuffer>
+
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
@@ -125,16 +127,36 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
     QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
 
+    QIODevice *body;
+    if (uwsgi.post_buffering || req->post_file) {
+        body = new BodyUWSGI(req);
+    } else {
+        // Since we can't seek with uwsgi we read it all
+        // here and pass a QBuffer
+        body = new QBuffer;
+        body->open(QIODevice::ReadWrite);
+        size_t remains = req->post_cl;
+        while(remains > 0) {
+            ssize_t body_len = 0;
+            char *body_data =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
+            if (!body_data || body_data == uwsgi.empty) {
+                break;
+            }
+            body->write(body_data, body_len);
+        }
+        body->seek(0);
+    }
+
     setupRequest(request,
                  method,
                  protocol,
                  headers,
-                 new BodyUWSGI(req),
+                 body,
                  remoteUser,
                  remoteAddress,
                  remotePort.toUInt());
 
-    handleRequest(request, new Response);
+    handleRequest(request);
 }
 
 QByteArray EngineUwsgi::httpCase(const QByteArray &headerKey) const

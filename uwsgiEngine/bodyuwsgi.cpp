@@ -39,9 +39,9 @@ qint64 BodyUWSGI::size() const
     return m_request->post_cl;
 }
 
-bool BodyUWSGI::seek(qint64 pos)
+bool BodyUWSGI::seek(qint64 off)
 {
-    uwsgi_request_body_seek(m_request, pos);
+    uwsgi_request_body_seek(m_request, off);
     return true;
 }
 
