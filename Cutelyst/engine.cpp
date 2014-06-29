@@ -94,9 +94,6 @@ void Engine::setupRequest(Request *request, const QByteArray &method, const QByt
     request->d_ptr->remoteUser = remoteUser;
     request->d_ptr->address = address;
     request->d_ptr->port = peerPort;
-
-    QByteArray cookies = headers.value("Cookie");
-    request->d_ptr->cookies = QNetworkCookie::parseCookies(cookies.replace(';', '\n'));
 }
 
 void *Engine::requestPtr(Request *request) const

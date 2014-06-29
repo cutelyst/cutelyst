@@ -20,8 +20,8 @@
 #include "request_p.h"
 #include "engine.h"
 
-// TODO make this configurable
-#define TIMEOUT 3000
+#include <QStringBuilder>
+#include <QRegularExpression>
 
 using namespace Cutelyst;
 
@@ -136,6 +136,10 @@ QByteArray Request::contentType() const
 QNetworkCookie Request::cookie(const QByteArray &name) const
 {
     Q_D(const Request);
+    if (!d->cookiesParsed) {
+        d->parseCookies();
+    }
+
     Q_FOREACH (const QNetworkCookie &cookie, d->cookies) {
         if (cookie.name() == name) {
             return cookie;
@@ -147,6 +151,9 @@ QNetworkCookie Request::cookie(const QByteArray &name) const
 QList<QNetworkCookie> Request::cookies() const
 {
     Q_D(const Request);
+    if (!d->cookiesParsed) {
+        d->parseCookies();
+    }
     return d->cookies;
 }
 
@@ -192,6 +199,12 @@ QByteArray Request::remoteUser() const
     return d->remoteUser;
 }
 
+Uploads Request::uploads() const
+{
+    Q_D(const Request);
+    return d->uploads;
+}
+
 Engine *Request::engine() const
 {
     Q_D(const Request);
@@ -207,7 +220,8 @@ void Request::setArgs(const QStringList &args)
 
 void RequestPrivate::parseBody() const
 {
-    if (headers.value("Content-Type") == "application/x-www-form-urlencoded") {
+    const QByteArray &contentType = headers.value("Content-Type");
+    if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         qint64 posOrig = body->pos();
@@ -231,9 +245,94 @@ void RequestPrivate::parseBody() const
         }
         body->seek(posOrig);
         param = queryParam + bodyParam;
+    } else if (contentType.startsWith("multipart/form-data")) {
+        QRegularExpression re("boundary=([^\";]+)");
+        QRegularExpressionMatch match = re.match(contentType);
+        if (!match.hasMatch()) {
+            bodyParsed = true;
+            return;
+        }
+        QByteArray boundary = "--";
+        boundary.append(match.captured(1));
+
+        qDebug() << "Boudary is" << boundary << boundary.length();
+
+        qint64 origPos = body->pos();
+        body->seek(0);
+        Uploads tmpUploads;
+        while (!body->atEnd()) {
+            const QByteArray &line = body->readLine();
+            qDebug() << "line boudary at" << line.size() << line;
+            qDebug() << "line boudary at" << line.left(boundary.length());
+
+            // if the boundary size (+2 = "\r\n") doesn't match we hit
+            // the end boundary
+            if (line.startsWith(boundary) && line.size() == boundary.size() + 2) {
+                tmpUploads.append(parseMultiPart(boundary, body));
+            }
+        }
+        body->seek(origPos);
+
+        qDebug() << "Uploads" << tmpUploads;
+
+        Q_FOREACH (Upload *upload, tmpUploads) {
+            qDebug() << "Upload type" << upload->contentType();
+            upload->save(QString("/tmp/cuteload-%1").arg(QString::number((int) upload)));
+        }
     } else {
         param = queryParam;
     }
 
     bodyParsed = true;
+}
+
+Uploads RequestPrivate::parseMultiPart(const QByteArray &boundary, QIODevice *dev) const
+{
+    Uploads ret;
+
+    qDebug() << "Found boudary at" << dev->pos();
+    UploadPrivate *prv = new UploadPrivate(dev);
+    QMultiHash<QByteArray, QByteArray> headers;
+    while (!dev->atEnd()) {
+        const QByteArray &header = dev->readLine();
+        if (header == "\r\n") {
+            break;
+        }
+
+        int dotdot = header.indexOf(':');
+        headers.insertMulti(header.left(dotdot), header.mid(dotdot + 1).trimmed());
+    }
+    qDebug() << "headers " << headers;
+    prv->headers = headers;
+    qDebug() << "start of data " << dev->pos();
+    prv->startOffset = dev->pos();
+
+    while (!dev->atEnd()) {
+        const QByteArray &dataLine = dev->readLine();
+        if (dataLine.startsWith(boundary)) {
+            // -2 stands for "\r\n"
+            qDebug() << "end of data " << dev->pos() - dataLine.size() - 2;
+            prv->endOffset = dev->pos() - dataLine.size() - 2;
+
+            if (!dev->atEnd()) {
+                ret.append(parseMultiPart(boundary, dev));
+            }
+            break;
+        }
+    }
+
+    if (prv->endOffset < prv->startOffset) {
+        prv->endOffset = prv->startOffset;
+    }
+
+    ret.append(new Upload(prv));
+
+    return ret;
+}
+
+void RequestPrivate::parseCookies() const
+{
+    QByteArray cookiesHeader = headers.value("Cookie");
+    cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n'));
+    cookiesParsed = true;
 }

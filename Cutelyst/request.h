@@ -28,6 +28,10 @@ namespace Cutelyst {
 
 class Engine;
 class RequestPrivate;
+class Upload;
+
+typedef QList<Upload *> Uploads;
+
 class Request
 {
     Q_GADGET
@@ -166,6 +170,8 @@ public:
      * @return the value of the REMOTE_USER environment variable.
      */
     QByteArray remoteUser() const;
+
+    Uploads uploads() const;
 
     Engine *engine() const;
 
