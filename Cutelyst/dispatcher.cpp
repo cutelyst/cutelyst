@@ -37,7 +37,6 @@ Dispatcher::Dispatcher(QObject *parent) :
     QObject(parent),
     d_ptr(new DispatcherPrivate)
 {
-    Q_D(Dispatcher);
 }
 
 Dispatcher::~Dispatcher()
