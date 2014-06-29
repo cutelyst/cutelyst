@@ -33,7 +33,6 @@ Request::Request(RequestPrivate *prv) :
 
 Request::~Request()
 {
-    Q_D(Request);
     delete d_ptr;
 }
 
