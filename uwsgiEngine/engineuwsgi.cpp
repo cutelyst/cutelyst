@@ -20,13 +20,12 @@
 #include "engineuwsgi.h"
 
 #include "bodyuwsgi.h"
+#include "bodybuffereduwsgi.h"
 
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
 #include <Cutelyst/request.h>
-
-#include <QBuffer>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
@@ -128,23 +127,22 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
 
     QIODevice *body;
-    if (uwsgi.post_buffering || req->post_file) {
+    if (req->post_file) {
+        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
+        QFile *upload = new QFile;
+        if (!upload->open(req->post_file, QIODevice::ReadOnly)) {
+            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
+        }
+        body = upload;
+    } else if (uwsgi.post_buffering) {
+        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
         body = new BodyUWSGI(req);
     } else {
-        // Since we can't seek with uwsgi we read it all
-        // here and pass a QBuffer
-        body = new QBuffer;
-        body->open(QIODevice::ReadWrite);
-        size_t remains = req->post_cl;
-        while(remains > 0) {
-            ssize_t body_len = 0;
-            char *body_data =  uwsgi_request_body_read(req, UMIN(remains, 32768) , &body_len);
-            if (!body_data || body_data == uwsgi.empty) {
-                break;
-            }
-            body->write(body_data, body_len);
-        }
-        body->seek(0);
+        // BodyBufferedUWSGI is an IO device which will
+        // only consume the body when some of it's functions
+        // is called, this is because here we can't seek
+        // the body.
+        body = new BodyBufferedUWSGI(req);
     }
 
     setupRequest(request,

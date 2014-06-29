@@ -1,4 +1,5 @@
 set(uswgi_engine_SRC
+    bodybuffereduwsgi.cpp
     bodyuwsgi.cpp
     engineuwsgi.cpp
     requesthandler.cpp
