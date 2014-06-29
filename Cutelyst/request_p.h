@@ -22,6 +22,8 @@
 
 #include "request.h"
 
+#include "upload.h"
+
 #include <QStringList>
 #include <QHostAddress>
 #include <QUrl>
@@ -33,19 +35,23 @@ class RequestPrivate
 {
 public:
     void parseBody() const;
+    Uploads parseMultiPart(const QByteArray &boundary, QIODevice *dev) const;
+    void parseCookies() const;
 
     QByteArray method;
     QUrl uri;
     QString path;
     QStringList args;
     QByteArray protocol;
-    QList<QNetworkCookie> cookies;
+    mutable bool cookiesParsed;
+    mutable QList<QNetworkCookie> cookies;
     QHash<QByteArray, QByteArray> headers;
     QIODevice *body;
     mutable bool bodyParsed = false;
     mutable QMultiHash<QString, QString> bodyParam;
     QMultiHash<QString, QString> queryParam;
     mutable QMultiHash<QString, QString> param;
+    mutable Uploads uploads;
     QHostAddress address;
     quint16 port;
     QByteArray remoteUser;
