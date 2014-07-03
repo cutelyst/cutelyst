@@ -139,13 +139,10 @@ qint64 Upload::readData(char *data, qint64 maxlen)
 {
     Q_D(Upload);
     qint64 posOrig = d->device->pos();
-    qint64 remains = size() - d->pos;
-    if (maxlen < remains) {
-        remains = maxlen;
-    }
 
     d->device->seek(d->startOffset + d->pos);
-    qint64 len = d->device->read(data, remains);
+    qint64 len = d->device->read(data,
+                                 qMin(size() - d->pos, maxlen));
     d->device->seek(posOrig);
     d->pos += len;
     return len;
@@ -155,13 +152,10 @@ qint64 Upload::readLineData(char *data, qint64 maxlen)
 {
     Q_D(Upload);
     qint64 posOrig = d->device->pos();
-    qint64 remains = size() - d->pos;
-    if (maxlen < remains) {
-        remains = maxlen;
-    }
 
     d->device->seek(d->startOffset + d->pos);
-    qint64 len = d->device->readLine(data, remains);
+    qint64 len = d->device->readLine(data,
+                                     qMin(size() - d->pos, maxlen));
     d->device->seek(posOrig);
     d->pos += len;
     return len;

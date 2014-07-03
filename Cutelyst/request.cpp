@@ -19,6 +19,7 @@
 
 #include "request_p.h"
 #include "engine.h"
+#include "multipartformdatainternal.h"
 
 #include <QStringBuilder>
 #include <QRegularExpression>
@@ -251,25 +252,27 @@ void RequestPrivate::parseBody() const
             bodyParsed = true;
             return;
         }
-        QByteArray boundary = "--";
-        boundary.append(match.captured(1));
+        QByteArray boundary = "--" + match.captured(1).toLocal8Bit();
 
         qDebug() << "Boudary is" << boundary << boundary.length();
 
         qint64 origPos = body->pos();
         body->seek(0);
         Uploads tmpUploads;
-        while (!body->atEnd()) {
-            const QByteArray &line = body->readLine();
-            qDebug() << "line boudary at" << line.size() << line;
-            qDebug() << "line boudary at" << line.left(boundary.length());
 
-            // if the boundary size (+2 = "\r\n") doesn't match we hit
-            // the end boundary
-            if (line.startsWith(boundary) && line.size() == boundary.size() + 2) {
-                tmpUploads.append(parseMultiPart(boundary, body));
-            }
-        }
+        MultiPartFormDataInternal parser(contentType, body);
+        parser.parse();
+//        while (!body->atEnd()) {
+//            const QByteArray &line = body->readLine();
+//            qDebug() << "line boudary at" << line.size() << line;
+//            qDebug() << "line boudary at" << line.left(boundary.length());
+
+//            // if the boundary size (+2 = "\r\n") doesn't match we hit
+//            // the end boundary
+//            if (line.startsWith(boundary) && line.size() == boundary.size() + 2) {
+//                tmpUploads.append(parseMultiPart(boundary, body));
+//            }
+//        }
         body->seek(origPos);
 
         qDebug() << "Uploads" << tmpUploads;
