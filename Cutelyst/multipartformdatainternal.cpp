@@ -25,23 +25,17 @@ Uploads MultiPartFormDataInternal::parse()
 
     Uploads ret;
     m_body->seek(0);
-    execute();
+
+    char *buffer = new char[4096];
+    execute(buffer);
+    delete [] buffer;
+    m_body->seek(0);
+
 
     return ret;
 }
 
-enum ParserState {
-    FindBoundary,
-    EndBoundaryCR,
-    EndBoundaryLF,
-    StartHeaders,
-    FinishHeader,
-    EndHeaders,
-    StartData,
-    EndData
-};
-
-bool MultiPartFormDataInternal::execute()
+bool MultiPartFormDataInternal::execute(char *buffer)
 {
     qDebug() << "execute";
 //    UploadPrivate *priv = 0;
@@ -51,34 +45,25 @@ bool MultiPartFormDataInternal::execute()
 
     while (!m_body->atEnd()) {
         int i = 0;
-        const QByteArray &buffer = m_body->read(4096);
 
-        qint64 len = buffer.size();
+        qint64 len = m_body->read(buffer, 4096);
         qDebug() << "execute" << len;
+
         while (i < len) {
 
             switch (state) {
             case FindBoundary:
-                if (buffer.at(i) == m_boundary[boundaryPos]) {
-                    qDebug() << "execute" << buffer.at(i) << boundaryPos << m_boundaryLength;
-                    if (++boundaryPos == m_boundaryLength) {
-                        qCDebug(CUTELYST_MULTIPART, "FindBoundary: %llu", m_body->pos() - len + i);
-                        boundaryPos = 0;
-                        state = EndBoundaryCR;
-                    }
-                } else {
-                    boundaryPos = 0;
-                }
+                i += findBoundary(buffer + i, len, state, boundaryPos);
                 break;
             case EndBoundaryCR:
                 // TODO the "--" case
-                if (buffer.at(i) != '\r') {
+                if (buffer[i] != '\r') {
                     return false;
                 }
                 state = EndBoundaryLF;
                 break;
             case EndBoundaryLF:
-                if (buffer.at(i) != '\n') {
+                if (buffer[i] != '\n') {
                     return false;
                 }
                 header.clear();
@@ -86,22 +71,19 @@ bool MultiPartFormDataInternal::execute()
                 break;
             case StartHeaders:
                 qCDebug(CUTELYST_MULTIPART) << "StartHeaders" << m_body->pos() - len + i;
-                if (buffer.at(i) == '\r') {
+                if (buffer[i] == '\r') {
                     state = EndHeaders;
-                } else if (buffer.at(i) == '-') {
+                } else if (buffer[i] == '-') {
                     qCDebug(CUTELYST_MULTIPART) << "StartHeaders done";
                     return false;
                 } else {
-                    int cr = buffer.indexOf('\r', i);
-                    qCDebug(CUTELYST_MULTIPART) << "StartHeaders cr" << cr;
-
-                    if (cr == -1) {
-                        header += buffer.mid(i, len - i);
+                    char *pch = strchr(buffer + i, '\r');
+                    if (pch == NULL) {
+                        header += QByteArray::fromRawData(buffer + i, len - i);
                         i = len;
                     } else {
-                        header += buffer.mid(i, cr - i);
-                        qCDebug(CUTELYST_MULTIPART) << "StartHeaders mid" << buffer.mid(i, cr - i);
-                        i = cr;
+                        header += QByteArray::fromRawData(buffer + i, pch - buffer - i);
+                        i = pch - buffer;
                         state = FinishHeader;
                     }
                 }
@@ -109,7 +91,7 @@ bool MultiPartFormDataInternal::execute()
             case FinishHeader:
                 qCDebug(CUTELYST_MULTIPART) << "FinishHeader" << header;
                 header.clear();
-                if (buffer.at(i) == '\n') {
+                if (buffer[i] == '\n') {
                     state = StartHeaders;
                 } else {
                     return false;
@@ -117,7 +99,7 @@ bool MultiPartFormDataInternal::execute()
                 break;
             case EndHeaders:
                 qCDebug(CUTELYST_MULTIPART) << "EndHeaders";
-                if (buffer.at(i) == '\n') {
+                if (buffer[i] == '\n') {
                     state = StartData;
                 } else {
                     return false;
@@ -125,7 +107,7 @@ bool MultiPartFormDataInternal::execute()
                 break;
             case StartData:
                 qCDebug(CUTELYST_MULTIPART) << "StartData" << m_body->pos() - len + i;
-                if (buffer.at(i) == '\r') {
+                if (buffer[i] == '\r') {
                     qCDebug(CUTELYST_MULTIPART) << "StartData NULL FILE?";
                 }
                 state = FindBoundary;
@@ -136,4 +118,23 @@ bool MultiPartFormDataInternal::execute()
         }
     }
     return true;
+}
+
+int MultiPartFormDataInternal::findBoundary(char *buffer, int len, ParserState &state, int &boundaryPos)
+{
+    int i = 0;
+    while (i < len) {
+        if (buffer[i] == m_boundary[boundaryPos]) {
+            if (++boundaryPos == m_boundaryLength) {
+                qCDebug(CUTELYST_MULTIPART, "FindBoundary: %llu", m_body->pos() - len + i);
+                boundaryPos = 0;
+                state = EndBoundaryCR;
+                return i;
+            }
+        } else {
+            boundaryPos = 0;
+        }
+        ++i;
+    }
+    return i;
 }
