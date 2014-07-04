@@ -5,6 +5,17 @@
 
 namespace Cutelyst {
 
+enum ParserState {
+    FindBoundary,
+    EndBoundaryCR,
+    EndBoundaryLF,
+    StartHeaders,
+    FinishHeader,
+    EndHeaders,
+    StartData,
+    EndData
+};
+
 class MultiPartFormDataInternal
 {
 public:
@@ -19,7 +30,8 @@ public:
     Uploads parse();
 
 private:
-    bool execute();
+    bool execute(char *buffer);
+    int findBoundary(char *buffer, int len, ParserState &state, int &boundaryPos);
 
     QByteArray m_boundary;
     int m_boundaryLength = 0;
