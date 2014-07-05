@@ -17,41 +17,34 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef UPLOAD_H
-#define UPLOAD_H
+#ifndef MULTIPARTFORMDATAINTERNAL_H
+#define MULTIPARTFORMDATAINTERNAL_H
 
-#include <QIODevice>
-#include <upload_p.h>
+#include "upload.h"
 
 namespace Cutelyst {
 
-class UploadPrivate;
-class Upload : public QIODevice
+class MultiPartFormDataParserPrivate;
+class MultiPartFormDataParser
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(Upload)
+    Q_DECLARE_PRIVATE(MultiPartFormDataParser)
 public:
-    Upload(UploadPrivate *prv);
+    /**
+    * @brief MultiPartFormDataInternal
+    * @param contentType can be the whole HTTP Content-Type
+    * header or just it's value
+    * @param body
+    */
+    MultiPartFormDataParser(const QByteArray &contentType, QIODevice *body);
+    ~MultiPartFormDataParser();
 
-    QString filename() const;
-    QByteArray contentType() const;
-
-    bool save(const QString &filename);
-
-    virtual qint64 pos() const;
-    virtual qint64 size() const;
-    virtual bool seek(qint64 pos);
+    void setBufferSize(int size);
+    virtual Uploads parse();
 
 protected:
-    virtual qint64 readData(char *data, qint64 maxlen);
-    virtual qint64 readLineData(char *data, qint64 maxlen);
-    virtual qint64 writeData(const char * data, qint64 maxSize);
-
-    UploadPrivate *d_ptr;
+    MultiPartFormDataParserPrivate *d_ptr;
 };
-
-typedef QList<Upload *> Uploads;
 
 }
 
-#endif // UPLOAD_H
+#endif // MULTIPARTFORMDATAINTERNAL_H

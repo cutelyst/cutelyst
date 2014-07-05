@@ -7,7 +7,8 @@ include_directories(
 set(cutelystqt_SRC
     upload.cpp
     upload_p.h
-    multipartformdatainternal.cpp
+    multipartformdataparser.cpp
+    multipartformdataparser_p.h
     request.cpp
     request_p.h
     response.cpp
