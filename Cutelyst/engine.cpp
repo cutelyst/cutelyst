@@ -43,7 +43,7 @@ Engine::Engine(QObject *parent) :
     // Load application configuration
     if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {
         QByteArray config = qgetenv("CUTELYST_CONFIG");
-        qCWarning(CUTELYST_CORE, "Reading config file: %s", config.data());
+        qCWarning(CUTELYST_CORE) << "Reading config file:" << config;
         QSettings settings(config, QSettings::IniFormat);
         Q_FOREACH (const QString &group, settings.childGroups()) {
             settings.beginGroup(group);
@@ -139,12 +139,12 @@ bool Engine::initApplication(Application *app, bool postFork)
     d->app = app;
 
     if (!app->setup(this)) {
-        qCCritical(CUTELYST_ENGINE, "Failed to setup application");
+        qCCritical(CUTELYST_ENGINE) << "Failed to setup application";
         return false;
     }
 
     if (!init()) {
-        qCCritical(CUTELYST_ENGINE, "Failed to setup engine");
+        qCCritical(CUTELYST_ENGINE) << "Failed to setup engine";
         return false;
     }
 
@@ -160,7 +160,7 @@ bool Engine::postForkApplication()
     Q_D(Engine);
 
     if (!d->app) {
-        qCCritical(CUTELYST_ENGINE, "Failed to postForkApplication on a null application");
+        qCCritical(CUTELYST_ENGINE) << "Failed to postForkApplication on a null application";
         return false;
     }
     return d->app->postFork();
@@ -210,7 +210,7 @@ QByteArray Engine::statusCode(quint16 status)
 
 void Engine::reload()
 {
-    qCWarning(CUTELYST_ENGINE, "Default reload implementation called, doing nothing");
+    qCWarning(CUTELYST_ENGINE) << "Default reload implementation called, doing nothing";
 }
 
 QVariantHash Engine::config(const QString &entity) const

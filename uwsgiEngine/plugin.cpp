@@ -47,7 +47,7 @@ extern "C" void uwsgi_cutelyst_on_load()
 
 extern "C" int uwsgi_cutelyst_init()
 {
-    qCDebug(CUTELYST_UWSGI, "Initializing Cutelyst plugin");
+    qCDebug(CUTELYST_UWSGI) << "Initializing Cutelyst plugin";
 
     return 0;
 }
@@ -55,7 +55,7 @@ extern "C" int uwsgi_cutelyst_init()
 extern "C" void uwsgi_cutelyst_post_fork()
 {
     if (!engine->postFork()) {
-        qCCritical(CUTELYST_UWSGI, "Could not setup application on post fork");
+        qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
 
 #ifdef UWSGI_GO_CHEAP_CODE
         // We need to tell the master process that the
@@ -70,13 +70,13 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 {
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
-        qCDebug(CUTELYST_UWSGI, "Invalid request. skip.");
+        qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
         goto clear;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
-        qCDebug(CUTELYST_UWSGI, "Invalid request. skip.");
+        qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
         goto clear;
     }
 
@@ -86,11 +86,13 @@ clear:
     return UWSGI_OK;
 }
 
+#ifdef UWSGI_GO_CHEAP_CODE // Actually we only need uwsgi 2.0.1
 static void fsmon_reload(struct uwsgi_fsmon *fs)
 {
-    qCDebug(CUTELYST_UWSGI, "Reloading application due to file change");
+    qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
     uwsgi_reload(uwsgi.argv);
 }
+#endif // UWSGI_GO_CHEAP_CODE
 
 /**
  * This function is called when the master process is exiting
@@ -114,19 +116,21 @@ extern "C" void uwsgi_cutelyst_atexit()
 
 extern "C" void uwsgi_cutelyst_init_apps()
 {
-    qCDebug(CUTELYST_UWSGI, "Cutelyst Init App");
+    qCDebug(CUTELYST_UWSGI) << "Cutelyst Init App";
 
     QString path(options.app);
     if (path.isEmpty()) {
-        qCCritical(CUTELYST_UWSGI, "Cutelyst Application name or path was not set");
+        qCCritical(CUTELYST_UWSGI) << "Cutelyst Application name or path was not set";
         return;
     }
 
+#ifdef UWSGI_GO_CHEAP_CODE
     if (options.reload) {
         // Register application auto reload
         char *file = qstrdup(path.toUtf8().constData());
         uwsgi_register_fsmon(file, fsmon_reload, NULL);
     }
+#endif // UWSGI_GO_CHEAP_CODE
 
     QString config(options.config);
     if (!config.isNull()) {

@@ -20,9 +20,9 @@ Authentication::User CredentialPassword::authenticate(Context *ctx, Authenticati
         if (checkPassword(user, authinfo)) {
             return user;
         }
-        qCDebug(C_CREDENTIALPASSWORD, "Password didn't match");
+        qCDebug(C_CREDENTIALPASSWORD) << "Password didn't match";
     } else {
-        qCDebug(C_CREDENTIALPASSWORD, "Unable to locate a user matching user info provided in realm");
+        qCDebug(C_CREDENTIALPASSWORD) << "Unable to locate a user matching user info provided in realm";
     }
     return Authentication::User();
 }
@@ -83,7 +83,7 @@ bool CredentialPassword::checkPassword(const Authentication::User &user, const C
     QString storedPassword = user.value(m_passwordField);
 
     if (m_passwordType == None) {
-        qCDebug(C_CREDENTIALPASSWORD, "CredentialPassword is set to ignore password check");
+        qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
         return true;
     } else if (m_passwordType == Clear) {
         return storedPassword == password;

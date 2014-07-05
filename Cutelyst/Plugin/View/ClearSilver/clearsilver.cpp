@@ -82,7 +82,7 @@ bool ClearSilver::render(Context *ctx)
         }
 
         if (templateFile.isEmpty()) {
-            qCritical(CUTELYST_CLEARSILVER, "Cannot render template, template name or template stash key not defined");
+            qCCritical(CUTELYST_CLEARSILVER) << "Cannot render template, template name or template stash key not defined";
             return false;
         }
     }
@@ -118,12 +118,12 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
     QFile file(priv->includePath % QLatin1Char('/') % filename);
 
     if (!file.exists()) {
-        qCWarning(CUTELYST_CLEARSILVER, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
+        qCWarning(CUTELYST_CLEARSILVER) << "Cound not find file:" << file.fileName();
         return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
     }
 
     if (!file.open(QFile::ReadOnly)) {
-        qCWarning(CUTELYST_CLEARSILVER, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
+        qCWarning(CUTELYST_CLEARSILVER) << "Cound not open file:" << file.errorString();
         return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
     }
 

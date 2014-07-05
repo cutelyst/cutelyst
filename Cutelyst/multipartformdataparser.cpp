@@ -174,7 +174,7 @@ int MultiPartFormDataParserPrivate::findBoundary(char *buffer, int len, MultiPar
     while (i < len) {
         if (buffer[i] == boundary[boundaryPos]) {
             if (++boundaryPos == boundaryLength) {
-                qCDebug(CUTELYST_MULTIPART, "FindBoundary: %llu", body->pos() - len + i);
+                qCDebug(CUTELYST_MULTIPART) << "FindBoundary:" << body->pos() - len + i;
                 boundaryPos = 0;
                 state = EndBoundaryCR;
                 return i;

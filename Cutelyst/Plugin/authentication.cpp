@@ -297,7 +297,7 @@ Authentication::User Authentication::Realm::restoreUser(Context *ctx, const QVar
         // Sets the realm the user originated in
         user.setAuthRealm(this);
     } else {
-        qCWarning(C_AUTHENTICATION, "Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?");
+        qCWarning(C_AUTHENTICATION) << "Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?";
     }
 
     return user;

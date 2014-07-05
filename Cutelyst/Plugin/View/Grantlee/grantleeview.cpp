@@ -77,7 +77,7 @@ bool GrantleeView::render(Context *ctx)
         }
 
         if (templateFile.isEmpty()) {
-            qCCritical(CUTELYST_GRANTLEE, "Cannot render template, template name or template stash key not defined");
+            qCCritical(CUTELYST_GRANTLEE) << "Cannot render template, template name or template stash key not defined";
             return false;
         }
     }
