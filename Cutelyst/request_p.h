@@ -35,7 +35,6 @@ class RequestPrivate
 {
 public:
     void parseBody() const;
-    Uploads parseMultiPart(const QByteArray &boundary, QIODevice *dev) const;
     void parseCookies() const;
 
     QByteArray method;
