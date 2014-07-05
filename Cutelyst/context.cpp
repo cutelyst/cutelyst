@@ -333,7 +333,7 @@ int Context::finalize()
     finalizeBody();
 
     if (d->stats) {
-        qCDebug(CUTELYST_CORE, "Request took: %5.3fs", d->stats->elapsed() / 1000.0);
+        qCDebug(CUTELYST_CORE) << "Request took:" << d->stats->elapsed() / 1000.0 << "s";
     }
 
     return d->response->status();

@@ -54,7 +54,7 @@ Application::~Application()
 
 bool Application::postFork()
 {
-    qCDebug(CUTELYST_CORE, "Default postFork called on pid: %lld", QCoreApplication::applicationPid());
+    qCDebug(CUTELYST_CORE) << "Default postFork called on pid:" << QCoreApplication::applicationPid();
     return true;
 }
 
