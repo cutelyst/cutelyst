@@ -20,7 +20,7 @@
 #ifndef MULTIPARTFORMDATAINTERNAL_H
 #define MULTIPARTFORMDATAINTERNAL_H
 
-#include "upload.h"
+#include <Cutelyst/Upload>
 
 namespace Cutelyst {
 

@@ -24,7 +24,7 @@
 #include <QHash>
 #include <QStringList>
 
-#include "action.h"
+#include <Cutelyst/Action>
 
 namespace Cutelyst {
 

@@ -22,9 +22,9 @@
 
 #include <QObject>
 
-#include "context.h"
-#include "request.h"
-#include "response.h"
+#include <Cutelyst/Context>
+#include <Cutelyst/Request>
+#include <Cutelyst/Response>
 
 #define C_NAMESPACE "Namespace"
 

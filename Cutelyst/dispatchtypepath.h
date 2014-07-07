@@ -20,8 +20,8 @@
 #ifndef CUTELYST_DISPATCHTYPEPATH_H
 #define CUTELYST_DISPATCHTYPEPATH_H
 
-#include "dispatchtype.h"
-#include "action.h"
+#include <Cutelyst/DispatchType>
+#include <Cutelyst/Action>
 
 #include <QMap>
 
