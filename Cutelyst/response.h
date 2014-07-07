@@ -69,10 +69,10 @@ public:
     QByteArray &body();
     QByteArray contentEncoding() const;
     void setContentEncoding(const QByteArray &encoding);
-    quint64 contentLength() const;
-    void setContentLength(quint64 length);
+    qint64 contentLength() const;
+    void setContentLength(qint64 length);
     QByteArray contentType() const;
-    void setContentType(const QByteArray &encoding);
+    void setContentType(const QByteArray &type);
     QList<QNetworkCookie> cookies() const;
     void addCookie(const QNetworkCookie &cookie);
     void setCookies(const QList<QNetworkCookie> &cookies);

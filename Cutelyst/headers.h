@@ -20,19 +20,35 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
-#include <QMap>
 #include <QDate>
 
 namespace Cutelyst {
 
-class HeadersPrivate;
-class Headers : public QMap<QByteArray, QByteArray>
+typedef QPair<QByteArray, QByteArray> HeaderValuePair;
+
+class Headers : public QHash<QByteArray, QByteArray>
 {
 public:
-    Headers();
+    /**
+     * The Content-Type header field indicates the media type of the message content.
+     * E.g.: "text/html"
+     */
+    QByteArray contentType() const;
 
+    /**
+     * The Content-Type header field indicates the media type of the message content.
+     * E.g.: "text/html"
+     */
+    void setContentType(const QByteArray &contentType);
+
+    /**
+     * Returns the size in bytes of the message content
+     */
     qint64 contentLength() const;
 
+    /**
+     * Defines the size in bytes of the message content
+     */
     void setContentLength(qint64 value);
 
     /**
@@ -61,6 +77,12 @@ public:
 
     void setHeader(const QString &field, const QStringList &values);
     void setHeader(const QByteArray &field, const QByteArray &value);
+
+    /**
+     * Returns the hearder in the order suggested by HTTP RFC's
+     * "good pratices", this function is mainly used by the Engine class
+     */
+    QList<HeaderValuePair> headersForResponse() const;
 };
 
 }

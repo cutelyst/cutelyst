@@ -131,10 +131,8 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     headers.setHeader("Connection", "keep-alive");
     headers.setContentLength(ctx->res()->contentLength());
 
-    QMap<QByteArray, QByteArray>::ConstIterator it = headers.constBegin();
-    while (it != headers.constEnd()) {
-        header.append(it.key() % QLatin1String(": ") % it.value() % QLatin1String("\r\n"));
-        ++it;
+    Q_FOREACH (const HeaderValuePair &pair, headers.headersForResponse()) {
+        header.append(pair.first % QLatin1String(": ") % pair.second % QLatin1String("\r\n"));
     }
     header.append(QLatin1String("\r\n"));
 

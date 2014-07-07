@@ -37,7 +37,7 @@ QString Upload::filename() const
 QByteArray Upload::contentType() const
 {
     Q_D(const Upload);
-    return d->headers.value("Content-Type");
+    return d->headers.contentType();
 }
 
 Headers Upload::headers() const
