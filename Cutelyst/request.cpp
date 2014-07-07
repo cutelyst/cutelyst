@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -131,7 +131,7 @@ QByteArray Request::contentEncoding() const
 QByteArray Request::contentType() const
 {
     Q_D(const Request);
-    return d->headers.header("Content-Type");
+    return d->headers.contentType();
 }
 
 QNetworkCookie Request::cookie(const QByteArray &name) const
@@ -220,7 +220,7 @@ void Request::setArgs(const QStringList &args)
 
 void RequestPrivate::parseBody() const
 {
-    const QByteArray &contentType = headers.header("Content-Type");
+    const QByteArray &contentType = headers.contentType();
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"

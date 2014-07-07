@@ -28,6 +28,8 @@ using namespace Cutelyst;
 Response::Response() :
     d_ptr(new ResponsePrivate)
 {
+    Q_D(Response);
+    d->headers.setHeader("X-Cutelyst", VERSION);
 }
 
 Response::~Response()
@@ -44,14 +46,13 @@ quint16 Response::status() const
 QByteArray Response::statusCode() const
 {
     Q_D(const Response);
-    return d->statusCode;
+    return Engine::statusCode(d->status);
 }
 
 void Response::setStatus(quint16 status)
 {
     Q_D(Response);
     d->status = status;
-    d->statusCode = Engine::statusCode(status);
 }
 
 bool Response::finalizedHeaders() const
@@ -149,14 +150,4 @@ Headers &Response::headers()
 {
     Q_D(Response);
     return d->headers;
-}
-
-ResponsePrivate::ResponsePrivate() :
-    status(Response::OK),
-    finalizedHeaders(false)
-{
-    headers.setContentLength(0);
-    headers.setHeader("X-Cutelyst", VERSION);
-
-    statusCode = Engine::statusCode(status);
 }
