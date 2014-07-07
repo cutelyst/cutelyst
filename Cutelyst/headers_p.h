@@ -17,42 +17,20 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef UPLOAD_H
-#define UPLOAD_H
+#ifndef HEADERS_P_H
+#define HEADERS_P_H
 
-#include <QIODevice>
-#include <Cutelyst/Headers>
+#include "headers.h"
 
 namespace Cutelyst {
 
-class UploadPrivate;
-class Upload : public QIODevice
+class HeadersPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(Upload)
 public:
-    Upload(UploadPrivate *prv);
-
-    QString filename() const;
-    QByteArray contentType() const;
-    Headers headers() const;
-
-    bool save(const QString &filename);
-
-    virtual qint64 pos() const;
-    virtual qint64 size() const;
-    virtual bool seek(qint64 pos);
-
-protected:
-    virtual qint64 readData(char *data, qint64 maxlen);
-    virtual qint64 readLineData(char *data, qint64 maxlen);
-    virtual qint64 writeData(const char * data, qint64 maxSize);
-
-    UploadPrivate *d_ptr;
+    QHash<QByteArray, QByteArray> headers;
+    QList<QByteArray> order;
 };
-
-typedef QList<Upload *> Uploads;
 
 }
 
-#endif // UPLOAD_H
+#endif // HEADERS_P_H

@@ -120,15 +120,16 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     QByteArray header;
     header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusCode(ctx->response()->status()).data()));
 
-    QMap<QByteArray, QByteArray> headers = ctx->response()->headers();
+    Headers headers = ctx->response()->headers();
 
     QDateTime utc = QDateTime::currentDateTime();
     utc.setTimeSpec(Qt::UTC);
-    QString date = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
-    headers.insert("Date", date.toLocal8Bit());
-    headers.insert("Server", "Cutelyst-HTTP-Engine");
-    headers.insert("Connection", "keep-alive");
-    headers.insert("Content-Length", QString::number(ctx->res()->contentLength()).toLocal8Bit());
+    headers.setDate(utc);
+//    QString date = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+//    headers.insert("Date", date.toLocal8Bit());
+    headers.setServer("Cutelyst-HTTP-Engine");
+    headers.setHeader("Connection", "keep-alive");
+    headers.setContentLength(ctx->res()->contentLength());
 
     QMap<QByteArray, QByteArray>::ConstIterator it = headers.constBegin();
     while (it != headers.constEnd()) {
@@ -173,7 +174,7 @@ void EngineHttp::removeConnection()
     }
 }
 
-void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const QHash<QByteArray, QByteArray> &headers, QIODevice *body)
+void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body)
 {
     Request *request;
     request = newRequest(requestData,
@@ -305,7 +306,7 @@ void EngineHttpRequest::process()
             if (!section.isEmpty()) {
                 m_headers[section.section(QLatin1Char(':'), 0, 0).toUtf8()] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
             } else {
-                m_bodySize = m_headers.value("Content-Length").toULongLong();
+                m_bodySize = m_headers.header("Content-Length").toULongLong();
                 m_finishedHeaders = true;
             }
         }

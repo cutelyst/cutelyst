@@ -44,7 +44,7 @@ public:
     QByteArray protocol;
     mutable bool cookiesParsed;
     mutable QList<QNetworkCookie> cookies;
-    QHash<QByteArray, QByteArray> headers;
+    Headers headers;
     QIODevice *body;
     mutable bool bodyParsed = false;
     mutable QMultiHash<QString, QString> bodyParam;

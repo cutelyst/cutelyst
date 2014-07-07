@@ -96,7 +96,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
     QByteArray protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
 
-    QHash<QByteArray, QByteArray> headers;
+    Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
         if (req->hvec[i].iov_len < 6) {
             continue;
@@ -106,18 +106,18 @@ void EngineUwsgi::processRequest(wsgi_request *req)
                               const_cast<char *>("HTTP_"), 5)) {
             QByteArray key = QByteArray::fromRawData((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
             QByteArray value = QByteArray::fromRawData((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
-            headers.insert(httpCase(key), value);
+            headers.setHeader(httpCase(key), value);
         }
     }
 
     QByteArray contentType = QByteArray::fromRawData(req->content_type, req->content_type_len);
     if (!contentType.isNull()) {
-        headers.insert("Content-Type", contentType);
+        headers.setHeader("Content-Type", contentType);
     }
 
     QByteArray contentEncoding = QByteArray::fromRawData(req->encoding, req->encoding_len);
     if (!contentEncoding.isNull()) {
-        headers.insert("Content-Encoding", contentEncoding);
+        headers.setHeader("Content-Encoding", contentEncoding);
     }
 
     QByteArray remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);

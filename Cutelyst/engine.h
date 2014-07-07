@@ -32,6 +32,7 @@ class Context;
 class Request;
 class Response;
 class EnginePrivate;
+class Headers;
 class Engine : public QObject
 {
     Q_OBJECT
@@ -142,7 +143,7 @@ protected:
     void setupRequest(Request *request,
                       const QByteArray &method,
                       const QByteArray &protocol,
-                      const QHash<QByteArray, QByteArray> &headers,
+                      const Cutelyst::Headers &headers,
                       QIODevice *body,
                       const QByteArray &remoteUser,
                       const QHostAddress &address,

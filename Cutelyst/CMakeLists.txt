@@ -9,6 +9,8 @@ set(cutelystqt_SRC
     upload_p.h
     multipartformdataparser.cpp
     multipartformdataparser_p.h
+    headers.cpp
+    headers_p.h
     request.cpp
     request_p.h
     response.cpp
@@ -42,16 +44,30 @@ set(cutelystqt_SRC
 )
 
 set(cutelystqt_HEADERS
-    request.h
-    response.h
-    context.h
-    Context
-    engine.h
-    controller.h
-    Controller
-    view.h
+    action.h
+    Action
     application.h
     Application
+    context.h
+    Context
+    controller.h
+    Controller
+    dispatcher.h
+    Dispatcher
+    dispatchtype.h
+    DispatchType
+    engine.h
+    Engine
+    headers.h
+    Headers
+    request.h
+    Request
+    response.h
+    Response
+    upload.h
+    Upload
+    view.h
+    View
 )
 
 set(cutelystqt_plugin_HEADERS

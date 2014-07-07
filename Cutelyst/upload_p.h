@@ -12,7 +12,7 @@ class UploadPrivate
 public:
     UploadPrivate(QIODevice *dev);
 
-    QMultiHash<QByteArray, QByteArray> headers;
+    Headers headers;
     QString filename;
     QIODevice *device;
     qint64 startOffset = 0;

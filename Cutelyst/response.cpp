@@ -63,7 +63,7 @@ bool Response::finalizedHeaders() const
 void Response::addHeaderValue(const QByteArray &key, const QByteArray &value)
 {
     Q_D(Response);
-    d->headers.insertMulti(key, value);
+    d->headers.setHeader(key, value);
 }
 
 bool Response::hasBody() const
@@ -81,13 +81,13 @@ QByteArray &Response::body()
 QByteArray Response::contentEncoding() const
 {
     Q_D(const Response);
-    return d->headers.value("Content-Encoding");
+    return d->headers.header("Content-Encoding");
 }
 
 void Cutelyst::Response::setContentEncoding(const QByteArray &encoding)
 {
     Q_D(Response);
-    d->headers["Content-Encoding"] = encoding;
+    d->headers.setHeader("Content-Encoding", encoding);
 }
 
 quint64 Response::contentLength() const
@@ -105,13 +105,13 @@ void Response::setContentLength(quint64 length)
 QByteArray Response::contentType() const
 {
     Q_D(const Response);
-    return d->headers.value("Content-Type");
+    return d->headers.header("Content-Type");
 }
 
 void Response::setContentType(const QByteArray &encoding)
 {
     Q_D(Response);
-    d->headers["Content-Type"] = encoding;
+    d->headers.setHeader("Content-Type", encoding);
 }
 
 QList<QNetworkCookie> Response::cookies() const
@@ -145,7 +145,7 @@ QUrl Response::location() const
     return d->location;
 }
 
-QMap<QByteArray, QByteArray> &Response::headers()
+Headers &Response::headers()
 {
     Q_D(Response);
     return d->headers;
@@ -156,7 +156,7 @@ ResponsePrivate::ResponsePrivate() :
     finalizedHeaders(false),
     contentLength(0)
 {
-    headers.insert("X-Cutelyst", VERSION);
+    headers.setHeader("X-Cutelyst", VERSION);
 
     statusCode = Engine::statusCode(status);
 }
