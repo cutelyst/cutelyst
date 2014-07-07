@@ -36,10 +36,7 @@ public:
     quint16 status;
     QByteArray statusCode;
     quint16 finalizedHeaders;
-    // We use a map since QHash *might*
-    // cause issues in browsers due to
-    // it's random ordering
-    QMap<QByteArray, QByteArray> headers;
+    Headers headers;
     QList<QNetworkCookie> cookies;
     QByteArray body;
     quint64 contentLength;

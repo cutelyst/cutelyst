@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QNetworkCookie>
 
+#include <Cutelyst/Headers>
+
 namespace Cutelyst {
 
 class ResponsePrivate;
@@ -89,7 +91,7 @@ public:
      */
     QUrl location() const;
 
-    QMap<QByteArray, QByteArray> &headers();
+    Headers &headers();
     void write(const QByteArray &data);
 
 protected:

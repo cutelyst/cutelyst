@@ -18,6 +18,7 @@
  */
 
 #include "multipartformdataparser_p.h"
+#include "upload_p.h"
 #include "common.h"
 
 #include <QRegularExpression>
@@ -76,7 +77,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer)
 {
     Uploads ret;
     QByteArray header;
-    QMultiHash<QByteArray, QByteArray> headers;
+    Headers headers;
     qint64 startOffset;
     int boundaryPos = 0;
     ParserState state = FindBoundary;
@@ -128,7 +129,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer)
                 qCDebug(CUTELYST_MULTIPART) << "FinishHeader" << header;
                 if (buffer[i] == '\n') {
                     int dotdot = header.indexOf(':');
-                    headers.insertMulti(header.left(dotdot), header.mid(dotdot + 1).trimmed());
+                    headers.setHeader(header.left(dotdot), header.mid(dotdot + 1).trimmed());
                     header.clear();
                     state = StartHeaders;
                 } else {

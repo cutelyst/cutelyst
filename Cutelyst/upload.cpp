@@ -40,6 +40,12 @@ QByteArray Upload::contentType() const
     return d->headers.value("Content-Type");
 }
 
+Headers Upload::headers() const
+{
+    Q_D(const Upload);
+    return d->headers;
+}
+
 bool Upload::save(const QString &newName)
 {
     Q_D(Upload);

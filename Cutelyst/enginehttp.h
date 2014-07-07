@@ -20,7 +20,7 @@
 #ifndef ENGINE_HTTP_H
 #define ENGINE_HTTP_H
 
-#include "engine.h"
+#include <Cutelyst/Engine>
 
 #include <QStringList>
 
@@ -48,7 +48,7 @@ private Q_SLOTS:
                         const QUrl &url,
                         const QByteArray &method,
                         const QByteArray &protocol,
-                        const QHash<QByteArray, QByteArray> &headers,
+                        const Headers &headers,
                         QIODevice *body);
 
 private:

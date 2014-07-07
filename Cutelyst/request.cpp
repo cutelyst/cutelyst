@@ -125,13 +125,13 @@ QMultiHash<QString, QString> Request::param() const
 QByteArray Request::contentEncoding() const
 {
     Q_D(const Request);
-    return d->headers.value("Content-Encoding");
+    return d->headers.header("Content-Encoding");
 }
 
 QByteArray Request::contentType() const
 {
     Q_D(const Request);
-    return d->headers.value("Content-Type");
+    return d->headers.header("Content-Type");
 }
 
 QNetworkCookie Request::cookie(const QByteArray &name) const
@@ -161,10 +161,10 @@ QList<QNetworkCookie> Request::cookies() const
 QByteArray Request::header(const QByteArray &key) const
 {
     Q_D(const Request);
-    return d->headers.value(key);
+    return d->headers.header(key);
 }
 
-QHash<QByteArray, QByteArray> Request::headers() const
+Headers Request::headers() const
 {
     Q_D(const Request);
     return d->headers;
@@ -185,13 +185,13 @@ QByteArray Request::protocol() const
 QByteArray Request::userAgent() const
 {
     Q_D(const Request);
-    return d->headers.value("User-Agent");
+    return d->headers.header("User-Agent");
 }
 
 QByteArray Request::referer() const
 {
     Q_D(const Request);
-    return d->headers.value("Referer");
+    return d->headers.header("Referer");
 }
 
 QByteArray Request::remoteUser() const
@@ -220,7 +220,7 @@ void Request::setArgs(const QStringList &args)
 
 void RequestPrivate::parseBody() const
 {
-    const QByteArray &contentType = headers.value("Content-Type");
+    const QByteArray &contentType = headers.header("Content-Type");
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
@@ -257,7 +257,7 @@ void RequestPrivate::parseBody() const
 
 void RequestPrivate::parseCookies() const
 {
-    QByteArray cookiesHeader = headers.value("Cookie");
+    QByteArray cookiesHeader = headers.header("Cookie");
     cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n'));
     cookiesParsed = true;
 }

@@ -41,29 +41,25 @@ class Application : public QObject
     Q_DECLARE_PRIVATE(Application)
 public:
     /**
-     * @brief Application
-     * @param parent
-     *
-     * This is the main class of a Cutelyst appplication, here
-     * we configure settings, register controller classes,
-     * plugins and dispatchers.
+     * This is the main class of a Cutelyst appplication, the
+     * constructor is used to setup the class configuration,
+     * subclasses should only use this for objects that do
+     * not require configuration to be ready.
      *
      * A Web Engine will instantiate your application through this
      * class, next it will load the settings file, and in the end
-     * it will call \sa init() which is where your application
-     * should do it's setup.
+     * it will call init() which is where your application
+     * should do it's own setup.
      *
      * \warning DO NOT register your controllers,
      * plugins or anything that might want to
-     * use \sa config(), do that in \sa initApplication()
+     * use config(), do that in init()
      *
      */
     explicit Application(QObject *parent = 0);
     virtual ~Application();
 
     /**
-     * @brief init
-     *
      * Do your application initialization here, if your
      * application should not proceed log some information
      * that might help on debuggin and return false
@@ -74,12 +70,12 @@ public:
      * initialize resouces that cannot be shared among
      * process. \sa postFork
      *
-     * @return true if your application successfuly initted
+     * @return True if your application was successfuly initted
      */
     virtual bool init() = 0;
 
     /**
-     * @brief postFork is called after the engine forks
+     * This method is called after the engine forks
      *
      * After the web engine forks itself it will call
      * this function so that you can initialize resources
@@ -93,7 +89,7 @@ public:
      *
      * Default implementation returns true.
      *
-     * @return false if the engine should not use this process
+     * @return False if the engine should not use this process
      */
     virtual bool postFork();
 
@@ -102,39 +98,35 @@ public:
      * to be created explicity for a single request and returns
      * true on plugin->isApplicationPlugin();
      *
-     * @return true if the plugin could be registered
+     * @return True if the plugin could be registered
      */
     bool registerPlugin(Plugin::AbstractPlugin  *plugin);
 
     /**
-     * @brief registerController
-     *
-     * This method register Controller classes which
-     * are responsible for handlying the Requests,
+     * This method registers a Controller class which
+     * is responsible for handlying Requests,
      * since they are reused between multiple requests
      * beaware of not storing data there, instead you
      * might want to use a session plugin or the stash.
      *
-     * @param controller class
-     * @return true if succeeded
+     * @param controller the Controller class
+     * @return True if succeeded
      */
     bool registerController(Controller *controller);
 
     /**
-     * Register a custom DispatchType, if none is registered
+     * Registers a custom DispatchType, if none is registered
      * all the built-in dispatchers types will be registered
      */
     void registerDispatcher(DispatchType *dispatcher);
 
     /**
-     * @brief applicationName
-     * @return default implementation returns the class name
+     * The default implementation returns the class name
      */
     virtual QByteArray applicationName() const;
 
     /**
-     * @brief applicationVersion
-     * @return default implementation returns QCoreApplication::applicationVersion()
+     * The default implementation returns QCoreApplication::applicationVersion()
      */
     virtual QByteArray applicationVersion() const;
 
@@ -147,8 +139,8 @@ Q_SIGNALS:
 
 protected:
     /**
-     * @brief user configuration for the application
-     * @return the configuration settings
+     * User configuration for the application
+     * @return A variant hash with configuration settings
      */
     QVariantHash config() const;
 

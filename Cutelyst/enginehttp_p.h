@@ -22,6 +22,7 @@
 
 #include "enginehttp.h"
 #include "childprocess.h"
+#include "headers.h"
 
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -48,7 +49,7 @@ Q_SIGNALS:
                       const QUrl &url,
                       const QByteArray &method,
                       const QByteArray &protocol,
-                      const QHash<QByteArray, QByteArray> &headers,
+                      const Headers &headers,
                       QIODevice *body);
 
 private:
@@ -64,7 +65,7 @@ private:
     QString m_path;
     QByteArray m_protocol;
     QTimer m_timeoutTimer;
-    QHash<QByteArray, QByteArray> m_headers;
+    Headers m_headers;
 };
 
 class EngineHttpPrivate

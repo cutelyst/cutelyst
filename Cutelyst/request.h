@@ -24,6 +24,8 @@
 #include <QHostAddress>
 #include <QNetworkCookie>
 
+#include <Cutelyst/Headers>
+
 namespace Cutelyst {
 
 class Engine;
@@ -139,7 +141,7 @@ public:
      */
     QList<QNetworkCookie> cookies() const;
     QByteArray header(const QByteArray &key) const;
-    QHash<QByteArray, QByteArray> headers() const;
+    Headers headers() const;
 
     /**
      * @brief method
