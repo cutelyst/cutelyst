@@ -90,28 +90,28 @@ void Cutelyst::Response::setContentEncoding(const QByteArray &encoding)
     d->headers.setHeader("Content-Encoding", encoding);
 }
 
-quint64 Response::contentLength() const
+qint64 Response::contentLength() const
 {
     Q_D(const Response);
-    return d->contentLength;
+    return d->headers.contentLength();
 }
 
-void Response::setContentLength(quint64 length)
+void Response::setContentLength(qint64 length)
 {
     Q_D(Response);
-    d->contentLength = length;
+    d->headers.setContentLength(length);
 }
 
 QByteArray Response::contentType() const
 {
     Q_D(const Response);
-    return d->headers.header("Content-Type");
+    return d->headers.contentType();
 }
 
-void Response::setContentType(const QByteArray &encoding)
+void Response::setContentType(const QByteArray &type)
 {
     Q_D(Response);
-    d->headers.setHeader("Content-Type", encoding);
+    d->headers.setContentType(type);
 }
 
 QList<QNetworkCookie> Response::cookies() const
@@ -153,9 +153,9 @@ Headers &Response::headers()
 
 ResponsePrivate::ResponsePrivate() :
     status(Response::OK),
-    finalizedHeaders(false),
-    contentLength(0)
+    finalizedHeaders(false)
 {
+    headers.setContentLength(0);
     headers.setHeader("X-Cutelyst", VERSION);
 
     statusCode = Engine::statusCode(status);

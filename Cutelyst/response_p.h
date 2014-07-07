@@ -39,7 +39,6 @@ public:
     Headers headers;
     QList<QNetworkCookie> cookies;
     QByteArray body;
-    quint64 contentLength;
     QUrl location;
     CutelystEngine *engine;
 };

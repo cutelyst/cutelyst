@@ -197,18 +197,15 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
         return;
     }
 
-    QMap<QByteArray, QByteArray> headers = ctx->res()->headers();
-    QMap<QByteArray, QByteArray>::Iterator it = headers.begin();
-    while (it != headers.end()) {
-        QByteArray key = it.key();
+    QList<HeaderValuePair> headers = ctx->res()->headers().headersForResponse();
+    Q_FOREACH (HeaderValuePair pair, headers) {
         if (uwsgi_response_add_header(wsgi_req,
-                                      key.data(),
-                                      key.size(),
-                                      it.value().data(),
-                                      it.value().size())) {
+                                      pair.first.data(),
+                                      pair.first.size(),
+                                      pair.second.data(),
+                                      pair.second.size())) {
             return;
         }
-        ++it;
     }
 }
 

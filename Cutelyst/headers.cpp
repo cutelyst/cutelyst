@@ -17,15 +17,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "headers.h"
+#include "headers_p.h"
 
 #include <QStringBuilder>
 #include <QStringList>
 
+#include <QDebug>
+
 using namespace Cutelyst;
 
-Headers::Headers()
+QByteArray Headers::contentType() const
 {
+    return value("Content-Type");
+}
+
+void Headers::setContentType(const QByteArray &contentType)
+{
+    setHeader("Content-Type", contentType);
 }
 
 qint64 Headers::contentLength() const
@@ -78,4 +86,91 @@ void Headers::setHeader(const QByteArray &field, const QByteArray &value)
     } else {
         insert(field, value);
     }
+}
+
+static QList<QByteArray> headerOrder(
+{
+            // General headers
+            "Cache-Control",
+            "Connection",
+            "Date",
+            "Pragma",
+            "Trailer",
+            "Transfer-Encoding",
+            "Upgrade",
+            "Via",
+            "Warning",
+            // Request headers
+            "Accept",
+            "Accept-Charset",
+            "Accept-Encoding",
+            "Accept-Language",
+            "Authorization",
+            "Expect",
+            "From",
+            "Host",
+            "If-Match",
+            "If-Modified-Since",
+            "If-None-Match",
+            "If-Range",
+            "If-Unmodified-Since",
+            "Max-Forwards",
+            "Proxy-Authorization",
+            "Range",
+            "Referer",
+            "TE",
+            "User-Agent",
+            // Response headers
+            "Accept-Ranges",
+            "Age",
+            "ETag",
+            "Location",
+            "Proxy-Authenticate",
+            "Retry-After",
+            "Server",
+            "Vary",
+            "WWW-Authenticate",
+            // Entity headers
+            "Allow",
+            "Content-Encoding",
+            "Content-Language",
+            "Content-Length",
+            "Content-Location",
+            "Content-MD5",
+            "Content-Range",
+            "Content-Type",
+            "Expires",
+            "Last-Modified"
+        });
+
+bool httpGoodPracticeSort(const HeaderValuePair &pair1, const HeaderValuePair &pair2)
+{
+    int index1 = headerOrder.indexOf(pair1.first);
+    int index2 = headerOrder.indexOf(pair2.first);
+    if (index1 != -1 && index2 != -1) {
+        // Both items are in the headerOrder list
+        return index1 < index2;
+    } else if (index1 == -1 && index2 == -1) {
+        // Noone of them are int the headerOrder list
+        return pair1.first < pair2.first;
+    }
+
+    // if the pair1 is in the header list it should go first
+    return index1 != -1;
+}
+
+QList<HeaderValuePair> Headers::headersForResponse() const
+{
+    QList<HeaderValuePair> ret;
+
+    QHash<QByteArray, QByteArray>::ConstIterator it = QHash::constBegin();
+    while (it != QHash::constEnd()) {
+        ret.append(qMakePair(it.key(), it.value()));
+        ++it;
+    }
+
+    // Sort base on the "good practices" of HTTP RCF
+    qSort(ret.begin(), ret.end(), &httpGoodPracticeSort);
+
+    return ret;
 }
