@@ -31,11 +31,8 @@ class CutelystEngine;
 class ResponsePrivate
 {
 public:
-    ResponsePrivate();
-
-    quint16 status;
-    QByteArray statusCode;
-    quint16 finalizedHeaders;
+    quint16 status = Response::OK;
+    quint16 finalizedHeaders = false;
     Headers headers;
     QList<QNetworkCookie> cookies;
     QByteArray body;
