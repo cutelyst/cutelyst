@@ -59,22 +59,22 @@ View::View(const QString &engine, QObject *parent) :
 
 bool View::process(Context *ctx)
 {
-    if (ctx->res()->contentType().isEmpty()) {
-        ctx->res()->setContentType("text/html; charset=utf-8");
+    Response *res = ctx->res();
+    if (res->contentType().isEmpty()) {
+        res->setContentType("text/html; charset=utf-8");
     }
 
     if (ctx->req()->method() == "HEAD") {
         return true;
     }
 
-    if (!ctx->res()->body().isNull()) {
+    if (!res->body().isNull()) {
         return true;
     }
 
-    if (ctx->res()->status() == 204 ||
-            (ctx->res()->status() >= 300 &&
-             ctx->res()->status() < 400)) {
-            return true;
+    quint16 status = res->status();
+    if (status == 204 || (status >= 300 && status < 400)) {
+        return true;
     }
 
     return render(ctx);
