@@ -101,11 +101,11 @@ public:
 
     QString uriFor(const QString &path, const QStringList &args = QStringList());
 
-    bool dispatch();
+    inline bool dispatch();
     bool detached() const;
     void detach();
     bool forward(const QString &action, const QStringList &arguments = QStringList());
-    Action *getAction(const QString &action, const QString &ns = QString());
+    inline Action *getAction(const QString &action, const QString &ns = QString());
     QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
     bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);
@@ -130,11 +130,11 @@ Q_SIGNALS:
 
 protected:
     void handleRequest();
-    void prepareAction();
+    inline void prepareAction();
     void finalizeHeaders();
-    void finalizeCookies();
-    void finalizeBody();
-    void finalizeError();
+    inline void finalizeCookies();
+    inline void finalizeBody();
+    inline void finalizeError();
     int finalize();
 
     QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
