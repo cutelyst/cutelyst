@@ -163,11 +163,15 @@ void uwsgi_cutelyst_loop()
     if (uwsgi.signal_socket > -1) {
         QSocketNotifier *signal_qsn = new QSocketNotifier(uwsgi.signal_socket, QSocketNotifier::Read);
         QObject::connect(signal_qsn, &QSocketNotifier::activated,
-                         rh, &RequestHandler::handle_signal);
+                         [=](int fd) {
+            uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
+        });
 
         QSocketNotifier *my_signal_qsn = new QSocketNotifier(uwsgi.my_signal_socket, QSocketNotifier::Read);
         QObject::connect(my_signal_qsn, &QSocketNotifier::activated,
-                         rh, &RequestHandler::handle_signal);
+                         [=](int fd) {
+            uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
+        });
     }
 
     // monitor sockets
@@ -175,7 +179,7 @@ void uwsgi_cutelyst_loop()
     while(uwsgi_sock) {
         QSocketNotifier *qsn = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
         QObject::connect(qsn, &QSocketNotifier::activated,
-                         rh, &RequestHandler::handle_signal);
+                         rh, &RequestHandler::handle_request);
         uwsgi_sock = uwsgi_sock->next;
     }
 

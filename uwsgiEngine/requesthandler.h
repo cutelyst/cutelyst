@@ -14,7 +14,6 @@ public:
     RequestHandler(wsgi_request *request);
 
     void handle_request(int);
-    void handle_signal(int);
 
 public:
     struct wsgi_request *wsgi_req;

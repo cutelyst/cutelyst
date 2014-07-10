@@ -16,12 +16,6 @@ RequestHandler::RequestHandler(wsgi_request *request)
 {
 }
 
-// manage signal handlers
-void RequestHandler::handle_signal(int fd) {
-    qDebug() << Q_FUNC_INFO << fd;
-    uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
-}
-
 // manage requests
 void RequestHandler::handle_request(int fd) {
     struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
