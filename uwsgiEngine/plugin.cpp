@@ -40,14 +40,15 @@ extern "C" void uwsgi_cutelyst_on_load()
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
     qInstallMessageHandler(cuteOutput);
-
-    uwsgi_register_loop( (char *) "qt", uwsgi_cutelyst_loop);
-    uwsgi.loop = (char *) "qt";
 }
 
 extern "C" int uwsgi_cutelyst_init()
 {
     qCDebug(CUTELYST_UWSGI) << "Initializing Cutelyst plugin";
+    if (!options.disableQtLoop) {
+        uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
+        uwsgi.loop = (char *) "CutelystQtLoop";
+    }
 
     return 0;
 }
@@ -149,29 +150,32 @@ extern "C" void uwsgi_cutelyst_init_apps()
     uwsgi_add_app(1, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
 }
 
+void uwsgi_cutelyst_watch_signal(int signalFD)
+{
+    QSocketNotifier *socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
+    QObject::connect(socketNotifier, &QSocketNotifier::activated,
+                     [=](int fd) {
+        uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
+    });
+}
+
 void uwsgi_cutelyst_loop()
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug(CUTELYST_UWSGI) << "Using Cutelyst Qt Loop";
+
     // ensure SIGPIPE is ignored
     signal(SIGPIPE, SIG_IGN);
-//    QCoreApplication app(uwsgi.argc, uwsgi.argv);
+
+    // FIX for some reason this is not being set by UWSGI
+    uwsgi.wait_read_hook = uwsgi_simple_wait_read_hook;
 
     // create a QObject (you need one for each virtual core)
     RequestHandler *rh = new RequestHandler(&uwsgi.workers[uwsgi.mywid].cores[0].req);
 
     // monitor signals
     if (uwsgi.signal_socket > -1) {
-        QSocketNotifier *signal_qsn = new QSocketNotifier(uwsgi.signal_socket, QSocketNotifier::Read);
-        QObject::connect(signal_qsn, &QSocketNotifier::activated,
-                         [=](int fd) {
-            uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
-        });
-
-        QSocketNotifier *my_signal_qsn = new QSocketNotifier(uwsgi.my_signal_socket, QSocketNotifier::Read);
-        QObject::connect(my_signal_qsn, &QSocketNotifier::activated,
-                         [=](int fd) {
-            uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
-        });
+        uwsgi_cutelyst_watch_signal(uwsgi.signal_socket);
+        uwsgi_cutelyst_watch_signal(uwsgi.my_signal_socket);
     }
 
     // monitor sockets
