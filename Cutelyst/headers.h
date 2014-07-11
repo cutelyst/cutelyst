@@ -29,11 +29,15 @@ typedef QPair<QByteArray, QByteArray> HeaderValuePair;
 class Headers : public QHash<QByteArray, QByteArray>
 {
 public:
+    QByteArray contentEncoding() const { return value("Content-Encoding"); }
+
+    void setContentEncoding(const QByteArray &encoding);
+
     /**
      * The Content-Type header field indicates the media type of the message content.
      * E.g.: "text/html"
      */
-    QByteArray contentType() const;
+    inline QByteArray contentType() const { return value("Content-Type"); }
 
     /**
      * The Content-Type header field indicates the media type of the message content.
@@ -44,7 +48,7 @@ public:
     /**
      * Returns the size in bytes of the message content
      */
-    qint64 contentLength() const;
+    inline qint64 contentLength() const { return value("Content-Length").toLongLong(); }
 
     /**
      * Defines the size in bytes of the message content
@@ -65,7 +69,7 @@ public:
      * Returns the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    QByteArray server() const;
+    inline QByteArray server() const { return value("Server"); }
 
     /**
      * Defines the server header field contains information about the software
@@ -73,7 +77,15 @@ public:
      */
     void setServer(const QByteArray &value);
 
-    QByteArray header(const QByteArray &field) const;
+    inline QByteArray userAgent() const { return value("User-Agent"); }
+
+    void setUserAgent(const QByteArray &value);
+
+    inline QByteArray referer() const { return value("Referer"); }
+
+    void setReferer(const QByteArray &value) { insert("Referer", value); }
+
+    QByteArray header(const QByteArray &field) const { return value(field); }
 
     void setHeader(const QString &field, const QStringList &values);
     void setHeader(const QByteArray &field, const QByteArray &value);

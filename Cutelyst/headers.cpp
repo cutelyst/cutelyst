@@ -26,9 +26,9 @@
 
 using namespace Cutelyst;
 
-QByteArray Headers::contentType() const
+void Headers::setContentEncoding(const QByteArray &encoding)
 {
-    return value("Content-Type");
+    setHeader("Content-Encoding", encoding);
 }
 
 void Headers::setContentType(const QByteArray &contentType)
@@ -36,16 +36,12 @@ void Headers::setContentType(const QByteArray &contentType)
     setHeader("Content-Type", contentType);
 }
 
-qint64 Headers::contentLength() const
-{
-    return value("Content-Length").toLongLong();
-}
-
 void Headers::setContentLength(qint64 value)
 {
     setHeader("Content-Length", QByteArray::number(value));
 }
 
+// TODO see if fromString is enough and make it inline
 QDateTime Headers::date() const
 {
     return QDateTime::fromString(value("Date"));
@@ -59,19 +55,14 @@ void Headers::setDate(const QDateTime &date)
     setHeader("Date", dateString.toLocal8Bit());
 }
 
-QByteArray Headers::server() const
-{
-    return value("Server");
-}
-
 void Headers::setServer(const QByteArray &value)
 {
     setHeader("Server", value);
 }
 
-QByteArray Headers::header(const QByteArray &field) const
+void Headers::setUserAgent(const QByteArray &value)
 {
-    return value(field);
+    insert("User-Agent", value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
