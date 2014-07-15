@@ -48,6 +48,11 @@ extern "C" int uwsgi_cutelyst_init()
     if (!options.disableQtLoop) {
         uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
         uwsgi.loop = (char *) "CutelystQtLoop";
+
+        if (uwsgi.async < 2) {
+            uwsgi_log("the Cutelyst Qt loop engine requires async mode (--async <n>)\n");
+            exit(1);
+        }
     }
 
     return 0;
@@ -169,8 +174,21 @@ void uwsgi_cutelyst_loop()
     // FIX for some reason this is not being set by UWSGI
     uwsgi.wait_read_hook = uwsgi_simple_wait_read_hook;
 
+    if (!uwsgi.async_waiting_fd_table) {
+        uwsgi.async_waiting_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
+    }
+
+    if (!uwsgi.async_proto_fd_table) {
+        uwsgi.async_proto_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
+    }
+
+    if (uwsgi.async < 2) {
+        uwsgi_log("the asyncio loop engine requires async mode (--async <n>)\n");
+        exit(1);
+    }
+
     // create a QObject (you need one for each virtual core)
-    RequestHandler *rh = new RequestHandler(&uwsgi.workers[uwsgi.mywid].cores[0].req);
+    RequestHandler *rh = new RequestHandler;
 
     // monitor signals
     if (uwsgi.signal_socket > -1) {

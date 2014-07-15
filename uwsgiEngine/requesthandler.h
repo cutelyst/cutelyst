@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,12 +30,9 @@ class RequestHandler : public QObject
 {
     Q_OBJECT
 public:
-    RequestHandler(wsgi_request *request);
+    RequestHandler();
 
     void handle_request(int);
-
-public:
-    struct wsgi_request *wsgi_req;
 };
 
 }

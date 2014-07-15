@@ -218,5 +218,6 @@ bool EngineUwsgi::init()
 
 bool EngineUwsgi::postFork()
 {
+    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread();
     return postForkApplication();
 }

@@ -26,13 +26,15 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI_QTLOOP, "cutelyst.uwsgi.qtloop")
 
-RequestHandler::RequestHandler(wsgi_request *request)
-    : wsgi_req(request)
+#define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
+
+RequestHandler::RequestHandler()
 {
 }
 
 // manage requests
-void RequestHandler::handle_request(int fd) {
+void RequestHandler::handle_request(int fd)
+{
 //    qCDebug(CUTELYST_UWSGI_QTLOOP) << thread() << fd;
     struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
     while(uwsgi_sock) {
@@ -46,6 +48,12 @@ void RequestHandler::handle_request(int fd) {
         return;
     }
 
+    struct wsgi_request *wsgi_req = find_first_available_wsgi_req();
+    if (wsgi_req == NULL) {
+        uwsgi_async_queue_is_full(uwsgi_now());
+        return;
+    }
+
     // fill wsgi_request structure
     wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
 
@@ -55,6 +63,7 @@ void RequestHandler::handle_request(int fd) {
     // accept the connection
     if (wsgi_req_simple_accept(wsgi_req, uwsgi_sock->fd)) {
         uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
+        free_req_queue;
         return;
     }
 
@@ -96,5 +105,6 @@ void RequestHandler::handle_request(int fd) {
 
 end:
     uwsgi_close_request(wsgi_req);
+    free_req_queue;
     return;
 }
