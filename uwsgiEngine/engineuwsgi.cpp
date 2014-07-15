@@ -53,6 +53,8 @@ bool EngineUwsgi::loadApplication(const QString &path)
         QObject *instance = m_loader->instance();
         if (instance) {
             m_app = qobject_cast<Application *>(instance);
+            QObject *app = m_app->metaObject()->newInstance();
+            qCDebug(CUTELYST_UWSGI) << "Applications" << m_app << app;
             if (m_app) {
                 qCDebug(CUTELYST_UWSGI) << "Application"
                                         << m_app->applicationName()

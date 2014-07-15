@@ -34,7 +34,6 @@ struct uwsgi_option uwsgi_cutelyst_options[] = {
 {"cutelyst-app", required_argument, 0, "loads the Cutelyst Application", uwsgi_opt_set_str, &options.app, 0},
 {"cutelyst-config", required_argument, 0, "sets the application config", uwsgi_opt_set_str, &options.config, 0},
 {"cutelyst-reload", no_argument, 0, "auto reloads the application when app file changes", uwsgi_opt_true, &options.reload, 0},
-{"cutelyst-disable-loop", no_argument, 0, "disables Qt event loop", uwsgi_opt_true, &options.disableQtLoop, 0},
 {0, 0, 0, 0, 0, 0, 0},
 
 };

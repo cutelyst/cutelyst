@@ -57,6 +57,9 @@ void RequestHandler::handle_request(int fd)
     // fill wsgi_request structure
     wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
 
+    qCDebug(CUTELYST_UWSGI_QTLOOP) << "wsgi_req->async_id" << wsgi_req->async_id << fd;
+    qCDebug(CUTELYST_UWSGI_QTLOOP) << "in_request" << uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request;
+
     // mark core as used
     uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 1;
 
@@ -74,6 +77,8 @@ void RequestHandler::handle_request(int fd)
     if (uwsgi.harakiri_options.workers > 0) {
         set_harakiri(uwsgi.harakiri_options.workers);
     }
+    qCDebug(CUTELYST_UWSGI_QTLOOP) << "in_request" << uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request;
+
 
     for(;;) {
         int ret = uwsgi_wait_read_req(wsgi_req);
@@ -90,11 +95,7 @@ void RequestHandler::handle_request(int fd)
         }
     }
 
-#ifdef UWSGI_ROUTING
-    if (uwsgi_apply_routes(wsgi_req) == UWSGI_ROUTE_BREAK) {
-        goto end;
-    }
-#endif
+    qCDebug(CUTELYST_UWSGI_QTLOOP) << "async_environ" << wsgi_req->async_environ;
 
     for(;;) {
         if (uwsgi.p[wsgi_req->uh->modifier1]->request(wsgi_req) <= UWSGI_OK) {

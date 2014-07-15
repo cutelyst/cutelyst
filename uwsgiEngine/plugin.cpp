@@ -37,6 +37,8 @@ void uwsgi_cutelyst_loop(void);
  */
 extern "C" void uwsgi_cutelyst_on_load()
 {
+    uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
+
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
     qInstallMessageHandler(cuteOutput);
@@ -45,15 +47,13 @@ extern "C" void uwsgi_cutelyst_on_load()
 extern "C" int uwsgi_cutelyst_init()
 {
     qCDebug(CUTELYST_UWSGI) << "Initializing Cutelyst plugin";
-    if (!options.disableQtLoop) {
-        uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
-        uwsgi.loop = (char *) "CutelystQtLoop";
-
-        if (uwsgi.async < 2) {
-            uwsgi_log("the Cutelyst Qt loop engine requires async mode (--async <n>)\n");
-            exit(1);
-        }
+    qCDebug(CUTELYST_UWSGI) << "-> async" << uwsgi.async << "-> threads" << uwsgi.threads;
+    if (uwsgi.async < uwsgi.threads) {
+        uwsgi_log("--async must be greater or equal to --threads value\n");
+        exit(1);
     }
+
+    uwsgi.loop = (char *) "CutelystQtLoop";
 
     return 0;
 }
@@ -76,19 +76,18 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 {
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
-        qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
-        goto clear;
+        qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
+        return -1;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
         qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
-        goto clear;
+        return -1;
     }
 
     engine->processRequest(wsgi_req);
 
-clear:
     return UWSGI_OK;
 }
 
@@ -180,11 +179,6 @@ void uwsgi_cutelyst_loop()
 
     if (!uwsgi.async_proto_fd_table) {
         uwsgi.async_proto_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
-    }
-
-    if (uwsgi.async < 2) {
-        uwsgi_log("the asyncio loop engine requires async mode (--async <n>)\n");
-        exit(1);
     }
 
     // create a QObject (you need one for each virtual core)

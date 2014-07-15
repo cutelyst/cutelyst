@@ -26,7 +26,6 @@ struct uwsgi_cutelyst {
     char *app;
     char *config;
     int reload;
-    int disableQtLoop;
 } options;
 
 #endif // PLUGIN_H
