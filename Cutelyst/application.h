@@ -28,6 +28,10 @@ namespace Plugin {
 class AbstractPlugin;
 }
 
+#define CUTELYST_APPLICATION(x) \
+    Q_PLUGIN_METADATA(x) \
+    Q_INTERFACES(Cutelyst::Application)
+
 class Context;
 class Controller;
 class DispatchType;
@@ -72,7 +76,7 @@ public:
      *
      * @return True if your application was successfuly initted
      */
-    virtual bool init() = 0;
+    virtual bool init();
 
     /**
      * This method is called after the engine forks
