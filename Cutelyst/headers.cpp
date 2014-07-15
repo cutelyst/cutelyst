@@ -26,26 +26,7 @@
 
 using namespace Cutelyst;
 
-QByteArray Headers::contentType() const
-{
-    return value("Content-Type");
-}
-
-void Headers::setContentType(const QByteArray &contentType)
-{
-    setHeader("Content-Type", contentType);
-}
-
-qint64 Headers::contentLength() const
-{
-    return value("Content-Length").toLongLong();
-}
-
-void Headers::setContentLength(qint64 value)
-{
-    setHeader("Content-Length", QByteArray::number(value));
-}
-
+// TODO see if fromString is enough and make it inline
 QDateTime Headers::date() const
 {
     return QDateTime::fromString(value("Date"));
@@ -56,36 +37,12 @@ void Headers::setDate(const QDateTime &date)
     QString dateString;
     // TODO check if there is some RFC format
     dateString = date.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
-    setHeader("Date", dateString.toLocal8Bit());
-}
-
-QByteArray Headers::server() const
-{
-    return value("Server");
-}
-
-void Headers::setServer(const QByteArray &value)
-{
-    setHeader("Server", value);
-}
-
-QByteArray Headers::header(const QByteArray &field) const
-{
-    return value(field);
+    insert("Date", dateString.toLocal8Bit());
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
 {
-    setHeader(field.toLocal8Bit(), values.join(QLatin1String(", ")).toLocal8Bit());
-}
-
-void Headers::setHeader(const QByteArray &field, const QByteArray &value)
-{
-    if (value.isNull()) {
-        remove(field);
-    } else {
-        insert(field, value);
-    }
+    insert(field.toLocal8Bit(), values.join(QLatin1String(", ")).toLocal8Bit());
 }
 
 static QList<QByteArray> headerOrder(

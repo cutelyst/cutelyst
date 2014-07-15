@@ -18,22 +18,25 @@
  */
 
 #include "engineuwsgi.h"
+#include "requesthandler.h"
 #include "plugin.h"
 
 #include <QCoreApplication>
+#include <QSocketNotifier>
 
 using namespace Cutelyst;
 
 static EngineUwsgi *engine;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
+void uwsgi_cutelyst_loop(void);
 
 /**
  * This function is called as soon as
  * the plugin is loaded
  */
-extern "C" void uwsgi_cutelyst_on_load() {
-    // This allows for some stuff to run event loops
+extern "C" void uwsgi_cutelyst_on_load()
+{
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
     qInstallMessageHandler(cuteOutput);
@@ -42,6 +45,15 @@ extern "C" void uwsgi_cutelyst_on_load() {
 extern "C" int uwsgi_cutelyst_init()
 {
     qCDebug(CUTELYST_UWSGI) << "Initializing Cutelyst plugin";
+    if (!options.disableQtLoop) {
+        uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
+        uwsgi.loop = (char *) "CutelystQtLoop";
+
+        if (uwsgi.async < 2) {
+            uwsgi_log("the Cutelyst Qt loop engine requires async mode (--async <n>)\n");
+            exit(1);
+        }
+    }
 
     return 0;
 }
@@ -141,6 +153,60 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     // register a new app under a specific "mountpoint"
     uwsgi_add_app(1, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
+}
+
+void uwsgi_cutelyst_watch_signal(int signalFD)
+{
+    QSocketNotifier *socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
+    QObject::connect(socketNotifier, &QSocketNotifier::activated,
+                     [=](int fd) {
+        uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
+    });
+}
+
+void uwsgi_cutelyst_loop()
+{
+    qDebug(CUTELYST_UWSGI) << "Using Cutelyst Qt Loop";
+
+    // ensure SIGPIPE is ignored
+    signal(SIGPIPE, SIG_IGN);
+
+    // FIX for some reason this is not being set by UWSGI
+    uwsgi.wait_read_hook = uwsgi_simple_wait_read_hook;
+
+    if (!uwsgi.async_waiting_fd_table) {
+        uwsgi.async_waiting_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
+    }
+
+    if (!uwsgi.async_proto_fd_table) {
+        uwsgi.async_proto_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
+    }
+
+    if (uwsgi.async < 2) {
+        uwsgi_log("the asyncio loop engine requires async mode (--async <n>)\n");
+        exit(1);
+    }
+
+    // create a QObject (you need one for each virtual core)
+    RequestHandler *rh = new RequestHandler;
+
+    // monitor signals
+    if (uwsgi.signal_socket > -1) {
+        uwsgi_cutelyst_watch_signal(uwsgi.signal_socket);
+        uwsgi_cutelyst_watch_signal(uwsgi.my_signal_socket);
+    }
+
+    // monitor sockets
+    struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
+    while(uwsgi_sock) {
+        QSocketNotifier *qsn = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
+        QObject::connect(qsn, &QSocketNotifier::activated,
+                         rh, &RequestHandler::handle_request);
+        uwsgi_sock = uwsgi_sock->next;
+    }
+
+    // start the qt event loop
+    qApp->exec();
 }
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)

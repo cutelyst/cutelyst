@@ -130,12 +130,14 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     if (req->post_file) {
         qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
         QFile *upload = new QFile;
-        if (!upload->open(req->post_file, QIODevice::ReadOnly)) {
-            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
+        if (upload->open(req->post_file, QIODevice::ReadOnly)) {
+            body = upload;
+        } else {
+//            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
+            body = new BodyBufferedUWSGI(req);
         }
-        body = upload;
     } else if (uwsgi.post_buffering) {
-        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
+//        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
         body = new BodyUWSGI(req);
     } else {
         // BodyBufferedUWSGI is an IO device which will
@@ -216,5 +218,6 @@ bool EngineUwsgi::init()
 
 bool EngineUwsgi::postFork()
 {
+    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread();
     return postForkApplication();
 }

@@ -17,16 +17,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
+#ifndef REQUESTHANDLER_H
+#define REQUESTHANDLER_H
 
-#define CUTELYST_MODIFIER1 0
+#include <QObject>
 
-struct uwsgi_cutelyst {
-    char *app;
-    char *config;
-    int reload;
-    int disableQtLoop;
-} options;
+struct wsgi_request;
 
-#endif // PLUGIN_H
+namespace Cutelyst {
+
+class RequestHandler : public QObject
+{
+    Q_OBJECT
+public:
+    RequestHandler();
+
+    void handle_request(int);
+};
+
+}
+
+#endif // REQUESTHANDLER_H

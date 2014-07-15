@@ -122,18 +122,6 @@ QMultiHash<QString, QString> Request::param() const
     return parameters();
 }
 
-QByteArray Request::contentEncoding() const
-{
-    Q_D(const Request);
-    return d->headers.header("Content-Encoding");
-}
-
-QByteArray Request::contentType() const
-{
-    Q_D(const Request);
-    return d->headers.contentType();
-}
-
 QNetworkCookie Request::cookie(const QByteArray &name) const
 {
     Q_D(const Request);
@@ -158,12 +146,6 @@ QList<QNetworkCookie> Request::cookies() const
     return d->cookies;
 }
 
-QByteArray Request::header(const QByteArray &key) const
-{
-    Q_D(const Request);
-    return d->headers.header(key);
-}
-
 Headers Request::headers() const
 {
     Q_D(const Request);
@@ -180,18 +162,6 @@ QByteArray Request::protocol() const
 {
     Q_D(const Request);
     return d->protocol;
-}
-
-QByteArray Request::userAgent() const
-{
-    Q_D(const Request);
-    return d->headers.header("User-Agent");
-}
-
-QByteArray Request::referer() const
-{
-    Q_D(const Request);
-    return d->headers.header("Referer");
 }
 
 QByteArray Request::remoteUser() const

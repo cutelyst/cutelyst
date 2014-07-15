@@ -123,13 +123,13 @@ public:
      * @brief contentEncoding
      * @return the Content-Encoding header
      */
-    QByteArray contentEncoding() const;
+    inline QByteArray contentEncoding() const { return headers().contentEncoding(); }
 
     /**
      * @brief contentType
      * @return the Content-Type header
      */
-    QByteArray contentType() const;
+    inline QByteArray contentType() const { return headers().contentType(); }
 
     /**
      * Returns the cookie with the given name
@@ -140,7 +140,9 @@ public:
      * Returns all the cookie from the request
      */
     QList<QNetworkCookie> cookies() const;
-    QByteArray header(const QByteArray &key) const;
+
+    inline QByteArray header(const QByteArray &key) const { return headers().value(key); }
+
     Headers headers() const;
 
     /**
@@ -159,13 +161,13 @@ public:
      * @brief userAgent
      * @return the user agent (browser) version string.
      */
-    QByteArray userAgent() const;
+    QByteArray userAgent() const { return headers().userAgent(); }
 
     /**
      * @brief referer Shortcut for header("Referer")
      * @return the referring page.
      */
-    QByteArray referer() const;
+    QByteArray referer() const { return headers().referer(); }
 
     /**
      * @brief remoteUser

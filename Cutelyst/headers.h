@@ -29,27 +29,31 @@ typedef QPair<QByteArray, QByteArray> HeaderValuePair;
 class Headers : public QHash<QByteArray, QByteArray>
 {
 public:
-    /**
-     * The Content-Type header field indicates the media type of the message content.
-     * E.g.: "text/html"
-     */
-    QByteArray contentType() const;
+    inline QByteArray contentEncoding() const { return value("Content-Encoding"); }
+
+    inline void setContentEncoding(const QByteArray &encoding) { insert("Content-Encoding", encoding); }
 
     /**
      * The Content-Type header field indicates the media type of the message content.
      * E.g.: "text/html"
      */
-    void setContentType(const QByteArray &contentType);
+    inline QByteArray contentType() const { return value("Content-Type"); }
+
+    /**
+     * The Content-Type header field indicates the media type of the message content.
+     * E.g.: "text/html"
+     */
+    inline void setContentType(const QByteArray &contentType) { insert("Content-Type", contentType); }
 
     /**
      * Returns the size in bytes of the message content
      */
-    qint64 contentLength() const;
+    inline qint64 contentLength() const { return value("Content-Length").toLongLong(); }
 
     /**
      * Defines the size in bytes of the message content
      */
-    void setContentLength(qint64 value);
+    inline void setContentLength(qint64 value) { insert("Content-Length", QByteArray::number(value)); }
 
     /**
      * This header represents the date and time at which the message was originated
@@ -65,18 +69,27 @@ public:
      * Returns the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    QByteArray server() const;
+    inline QByteArray server() const { return value("Server"); }
 
     /**
      * Defines the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    void setServer(const QByteArray &value);
+    inline void setServer(const QByteArray &value) { insert("Server", value); }
 
-    QByteArray header(const QByteArray &field) const;
+    inline QByteArray userAgent() const { return value("User-Agent"); }
+
+    inline void setUserAgent(const QByteArray &value) { insert("User-Agent", value); }
+
+    inline QByteArray referer() const { return value("Referer"); }
+
+    void setReferer(const QByteArray &value) { insert("Referer", value); }
+
+    QByteArray header(const QByteArray &field) const { return value(field); }
 
     void setHeader(const QString &field, const QStringList &values);
-    void setHeader(const QByteArray &field, const QByteArray &value);
+
+    void setHeader(const QByteArray &field, const QByteArray &value) { insert(field, value); }
 
     /**
      * Returns the hearder in the order suggested by HTTP RFC's
