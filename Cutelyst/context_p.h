@@ -33,6 +33,7 @@ public:
     ContextPrivate();
     ~ContextPrivate();
 
+    Application *app;
     Engine *engine;
     Request *request;
     Response *response;

@@ -4,6 +4,8 @@
 #include <QThread>
 #include <Cutelyst/Application>
 
+#include "engineuwsgi.h"
+
 class CoreUWSGI : public QThread
 {
     Q_OBJECT
@@ -13,7 +15,7 @@ public:
     void run();
 
 private:
-    Cutelyst::Application *m_app;
+    EngineUwsgi *m_engine;
     int m_coreId;
 };
 

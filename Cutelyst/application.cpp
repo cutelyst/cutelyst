@@ -54,12 +54,13 @@ Application::~Application()
 
 bool Application::init()
 {
-    return false;
+    qCDebug(CUTELYST_CORE) << "Default Application::init called on pid:" << QCoreApplication::applicationPid();
+    return true;
 }
 
 bool Application::postFork()
 {
-    qCDebug(CUTELYST_CORE) << "Default postFork called on pid:" << QCoreApplication::applicationPid();
+    qCDebug(CUTELYST_CORE) << "Default Application::postFork called on pid:" << QCoreApplication::applicationPid();
     return true;
 }
 
@@ -116,7 +117,10 @@ bool Application::setup(Engine *engine)
 {
     Q_D(Application);
 
-    d->engine = engine;
+    if (d->init) {
+        return true;
+    }
+
     d->config = engine->config(QLatin1String("Application"));
 
     // Call the virtual application init
@@ -135,7 +139,8 @@ void Application::handleRequest(Request *req)
     Q_D(Application);
 
     ContextPrivate *priv = new ContextPrivate;
-    priv->engine = d->engine;
+    priv->app = this;
+    priv->engine = req->engine();
     priv->dispatcher = d->dispatcher;
     priv->request = req;
     Context *ctx = new Context(priv);
@@ -146,7 +151,7 @@ void Application::handleRequest(Request *req)
     }
 
     // Register context plugins
-    registerPlugins(ctx);
+    Q_EMIT registerPlugins(ctx);
 
     ctx->handleRequest();
 

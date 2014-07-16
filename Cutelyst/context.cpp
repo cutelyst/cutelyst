@@ -88,6 +88,12 @@ Engine *Context::engine() const
     return d->engine;
 }
 
+Application *Context::app() const
+{
+    Q_D(const Context);
+    return d->app;
+}
+
 Response *Context::response() const
 {
     Q_D(const Context);

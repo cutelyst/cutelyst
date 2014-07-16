@@ -44,7 +44,7 @@ Session::Session(QObject *parent) :
 bool Session::setup(Context *ctx)
 {
     m_ctx = ctx;
-    m_sessionName = ctx->engine()->app()->applicationName() % QLatin1String("_session");
+    m_sessionName = ctx->app()->applicationName() % QLatin1String("_session");
     connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
     return true;
@@ -174,7 +174,7 @@ QString Session::getSessionId() const
 
 QString Session::filePath(const QString &sessionId) const
 {
-    QString path = QDir::tempPath() % QLatin1Char('/') % m_ctx->engine()->app()->applicationName();
+    QString path = QDir::tempPath() % QLatin1Char('/') % m_ctx->app()->applicationName();
     QDir dir;
     if (!dir.mkpath(path)) {
         qCWarning(C_SESSION) << "Failed to create path for session object" << path;

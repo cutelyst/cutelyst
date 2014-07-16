@@ -38,38 +38,6 @@ EngineUwsgi::EngineUwsgi(QObject *parent) :
 
 EngineUwsgi::~EngineUwsgi()
 {
-    delete m_app;
-}
-
-bool EngineUwsgi::loadApplication(const QString &path)
-{
-    if (m_loader) {
-        delete m_loader->instance();
-        delete m_loader;
-    }
-
-    m_loader = new QPluginLoader(path, this);
-    if (m_loader->load()) {
-        QObject *instance = m_loader->instance();
-        if (instance) {
-            m_app = qobject_cast<Application *>(instance);
-            QObject *app = m_app->metaObject()->newInstance();
-            qCDebug(CUTELYST_UWSGI) << "Applications" << m_app << app;
-            if (m_app) {
-                qCDebug(CUTELYST_UWSGI) << "Application"
-                                        << m_app->applicationName()
-                                        << "loaded.";
-                return initApplication(m_app, false);
-            } else {
-                qCCritical(CUTELYST_UWSGI) << "Could not create an instance of the application:" << instance;
-            }
-        } else {
-            qCCritical(CUTELYST_UWSGI) << "Could not create an instance:" << path;
-        }
-    } else {
-        qCWarning(CUTELYST_UWSGI) << "Failed to open app:" << m_loader->errorString();
-    }
-    return false;
 }
 
 void EngineUwsgi::finalizeBody(Context *ctx)
@@ -78,6 +46,11 @@ void EngineUwsgi::finalizeBody(Context *ctx)
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
 
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
+}
+
+void EngineUwsgi::readRequestUWSGI(wsgi_request *req)
+{
+
 }
 
 void EngineUwsgi::processRequest(wsgi_request *req)

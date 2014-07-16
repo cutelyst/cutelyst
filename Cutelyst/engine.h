@@ -41,6 +41,58 @@ public:
     ~Engine();
 
     /**
+     * @brief app
+     * @return the Application object we are dealing with
+     */
+    Application *app() const;
+
+    /**
+     * @brief reload
+     *
+     * Reloads the engine, in some engines
+     * this means restarting the worker process
+     * others might just ignore.
+     *
+     * Default implementation does nothing.
+     *
+     * \warning Use with care as this might not
+     * properly clean your process.
+     */
+    virtual void reload();
+
+    /**
+     * @brief user configuration for the application
+     * @param entity the entity you are interested in
+     * @return the configuration settings
+     */
+    QVariantHash config(const QString &entity) const;
+
+    static QByteArray statusCode(quint16 status);
+
+    /**
+     * @brief initApplication
+     *
+     * This method inits the application and
+     * calls init on the engine.
+     *
+     * @param app the Application to init
+     * @param postFork when true it will call postFork on the application
+     * @return true if succeded
+     */
+    bool initApplication(Application *app, bool postFork);
+
+    /**
+     * @brief postForkApplication
+     *
+     * Should be called after the engine forks
+     *
+     * @return true if the engine should use this
+     * process
+     */
+    bool postForkApplication();
+
+protected:
+    /**
      * @brief finalizeCookies first called if no error
      * @param ctx
      * Reimplement if you need a custom way
@@ -76,58 +128,6 @@ public:
     virtual void finalizeError(Context *ctx);
 
     /**
-     * @brief app
-     * @return the Application object we are dealing with
-     */
-    Application *app() const;
-
-    /**
-     * @brief initApplication
-     *
-     * This method inits the application and
-     * calls init on the engine.
-     *
-     * @param app the Application to init
-     * @param postFork when true it will call postFork on the application
-     * @return true if succeded
-     */
-    bool initApplication(Application *app, bool postFork);
-
-    /**
-     * @brief postForkApplication
-     *
-     * Should be called after the engine forks
-     *
-     * @return true if the engine should use this
-     * process
-     */
-    bool postForkApplication();
-
-    static QByteArray statusCode(quint16 status);
-
-    /**
-     * @brief reload
-     *
-     * Reloads the engine, in some engines
-     * this means restarting the worker process
-     * others might just ignore.
-     *
-     * Default implementation does nothing.
-     *
-     * \warning Use with care as this might not
-     * properly clean your process.
-     */
-    virtual void reload();
-
-    /**
-     * @brief user configuration for the application
-     * @param entity the entity you are interested in
-     * @return the configuration settings
-     */
-    QVariantHash config(const QString &entity) const;
-
-protected:
-    /**
      * @brief handleRequest
      * @param request
      * @param response
@@ -155,6 +155,7 @@ protected:
 
 private:
     Q_DECLARE_PRIVATE(Engine)
+    friend class Context;
 
     /**
      * @brief init the engine

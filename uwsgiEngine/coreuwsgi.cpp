@@ -15,7 +15,7 @@ QMutex mutex;
 int qt_uwsgi_req_fd = 0;
 
 CoreUWSGI::CoreUWSGI(Cutelyst::Application *app, int coreId) :
-    m_app(app),
+//    m_app(app),
     m_coreId(coreId)
 {
 

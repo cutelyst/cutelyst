@@ -42,8 +42,6 @@ public:
     explicit EngineUwsgi(QObject *parent = 0);
     ~EngineUwsgi();
 
-    bool loadApplication(const QString &path);
-
     virtual bool init();
 
     bool postFork();
@@ -51,15 +49,13 @@ public:
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
 
+    void readRequestUWSGI(wsgi_request *req);
+
     void processRequest(wsgi_request *req);
 
     QByteArray httpCase(const QByteArray &headerKey) const;
 
     virtual void reload();
-
-private:
-    QPluginLoader *m_loader = 0;
-    Application *m_app = 0;
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)

@@ -38,7 +38,6 @@ public:
 
     bool init = false;
     Dispatcher *dispatcher;
-    Engine *engine = 0;
     QList<Plugin::AbstractPlugin*> plugins;
     QList<Controller*> controllers;
     QVariantHash config;

@@ -32,6 +32,7 @@ class AbstractPlugin;
 }
 
 class Action;
+class Application;
 class Engine;
 class Request;
 class Response;
@@ -57,6 +58,9 @@ public:
     QStringList args() const;
     QString uriPrefix() const;
     Engine *engine() const;
+
+    Application *app() const;
+
     Response *response() const;
     Response *res() const;
 

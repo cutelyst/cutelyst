@@ -20,14 +20,18 @@
 #include "engineuwsgi.h"
 #include "plugin.h"
 
+#include <Cutelyst/Application>
+
 #include <QCoreApplication>
 #include <QSocketNotifier>
+#include <QPluginLoader>
 
 #define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
 
 using namespace Cutelyst;
 
-static EngineUwsgi *engine;
+static EngineUwsgi *singleInstance = 0;
+static QList<EngineUwsgi *> coreEngines;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -61,15 +65,17 @@ extern "C" int uwsgi_cutelyst_init()
 
 extern "C" void uwsgi_cutelyst_post_fork()
 {
-    if (!engine->postFork()) {
-        qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
+    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
+        if (!engine->postFork()) {
+            qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
 
 #ifdef UWSGI_GO_CHEAP_CODE
-        // We need to tell the master process that the
-        // application failed to setup and that it shouldn't
-        // try to respawn the worker
-        exit(UWSGI_GO_CHEAP_CODE);
+            // We need to tell the master process that the
+            // application failed to setup and that it shouldn't
+            // try to respawn the worker
+            exit(UWSGI_GO_CHEAP_CODE);
 #endif // UWSGI_GO_CHEAP_CODE
+        }
     }
 }
 
@@ -87,7 +93,11 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
         return -1;
     }
 
-    engine->processRequest(wsgi_req);
+    if (singleInstance) {
+        singleInstance->processRequest(wsgi_req);
+    } else {
+        coreEngines.at(wsgi_req->async_id)->processRequest(wsgi_req);
+    }
 
     return UWSGI_OK;
 }
@@ -116,7 +126,7 @@ extern "C" void uwsgi_cutelyst_master_cleanup()
 extern "C" void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing" << QCoreApplication::applicationPid();
-    delete engine;
+    delete singleInstance;
     qCDebug(CUTELYST_UWSGI) << "Child process finished" << QCoreApplication::applicationPid();
 }
 
@@ -143,16 +153,56 @@ extern "C" void uwsgi_cutelyst_init_apps()
         qputenv("CUTELYST_CONFIG", config.toUtf8());
     }
 
-    engine = new EngineUwsgi(qApp);
+    QPluginLoader *loader = new QPluginLoader(path);
+    if (!loader->load()) {
+        uwsgi_log("Could not load application: %s\n", loader->errorString().data());
+        exit(1);
+    }
 
-    qCDebug(CUTELYST_UWSGI) << "Loading" << path;
-    if (!engine->loadApplication(path)) {
-        qCCritical(CUTELYST_UWSGI) << "Could not load application:" << path;
-        return;
+    QObject *instance = loader->instance();
+    if (!instance) {
+        uwsgi_log("Could not get a QObject instance: %s\n", loader->errorString().data());
+        exit(1);
+    }
+
+    Application *app = qobject_cast<Application *>(instance);
+    if (!app) {
+        uwsgi_log("Could not cast Cutelyst::Application from instance: %s\n", loader->errorString().data());
+        exit(1);
+    }
+
+    for (int i = 0; i < uwsgi.async; ++i) {
+        Application *coreApp = app;
+        if (i > 0 || uwsgi.async == 1) {
+            coreApp = qobject_cast<Application *>(app->metaObject()->newInstance());
+            if (!coreApp) {
+                uwsgi_log("*** WARNING *** Could not create a new instance of your Cutelyst::Application,"
+                          "make sure your constructor has Q_INVOKABLE macro\n");
+                if (i > 0) {
+                    singleInstance = coreEngines.first();
+                } else {
+                    singleInstance = new EngineUwsgi;
+                    if (!singleInstance->initApplication(app, false)) {
+                        uwsgi_log("Failed to init application.\n");
+                        exit(1);
+                    }
+                    coreEngines.append(singleInstance);
+                }
+
+                break;
+            }
+        }
+
+        EngineUwsgi *engine = new EngineUwsgi;
+        if (!engine->initApplication(coreApp, false)) {
+            uwsgi_log("Failed to init application.\n");
+            exit(1);
+        }
+        coreEngines.append(engine);
     }
 
     // register a new app under a specific "mountpoint"
-    uwsgi_add_app(1, CUTELYST_MODIFIER1, NULL, 0, NULL, NULL);
+    uwsgi_add_app(1, CUTELYST_MODIFIER1, (char *) "", 0, NULL, NULL);
 }
 
 void uwsgi_cutelyst_watch_signal(int signalFD)
@@ -203,7 +253,6 @@ void uwsgi_cutelyst_watch_request(struct uwsgi_socket *uwsgi_sock)
 
         for(;;) {
             int ret = uwsgi_wait_read_req(wsgi_req);
-
             if (ret <= 0) {
                 goto end;
             }
