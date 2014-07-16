@@ -18,11 +18,12 @@
  */
 
 #include "engineuwsgi.h"
-#include "requesthandler.h"
 #include "plugin.h"
 
 #include <QCoreApplication>
 #include <QSocketNotifier>
+
+#define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
 
 using namespace Cutelyst;
 
@@ -163,6 +164,68 @@ void uwsgi_cutelyst_watch_signal(int signalFD)
     });
 }
 
+void uwsgi_cutelyst_watch_request(struct uwsgi_socket *uwsgi_sock)
+{
+    QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
+    QObject::connect(socketNotifier, &QSocketNotifier::activated,
+                     [=](int fd) {
+        struct wsgi_request *wsgi_req = find_first_available_wsgi_req();
+        if (wsgi_req == NULL) {
+            uwsgi_async_queue_is_full(uwsgi_now());
+            return;
+        }
+
+        // fill wsgi_request structure
+        wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
+
+        qCDebug(CUTELYST_UWSGI) << "wsgi_req->async_id" << wsgi_req->async_id << fd;
+        qCDebug(CUTELYST_UWSGI) << "in_request" << uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request;
+
+        // mark core as used
+        uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 1;
+
+        // accept the connection
+        if (wsgi_req_simple_accept(wsgi_req, fd)) {
+            uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
+            free_req_queue;
+            return;
+        }
+
+        wsgi_req->start_of_request = uwsgi_micros();
+        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
+
+        // enter harakiri mode
+        if (uwsgi.harakiri_options.workers > 0) {
+            set_harakiri(uwsgi.harakiri_options.workers);
+        }
+        qCDebug(CUTELYST_UWSGI) << "in_request" << uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request;
+
+
+        for(;;) {
+            int ret = uwsgi_wait_read_req(wsgi_req);
+
+            if (ret <= 0) {
+                goto end;
+            }
+
+            int status = wsgi_req->socket->proto(wsgi_req);
+            if (status < 0) {
+                goto end;
+            } else if (status == 0) {
+                break;
+            }
+        }
+
+        qCDebug(CUTELYST_UWSGI) << "async_environ" << wsgi_req->async_environ;
+
+        uwsgi_cutelyst_request(wsgi_req);
+
+end:
+        uwsgi_close_request(wsgi_req);
+        free_req_queue;
+    });
+}
+
 void uwsgi_cutelyst_loop()
 {
     qDebug(CUTELYST_UWSGI) << "Using Cutelyst Qt Loop";
@@ -181,9 +244,6 @@ void uwsgi_cutelyst_loop()
         uwsgi.async_proto_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
     }
 
-    // create a QObject (you need one for each virtual core)
-    RequestHandler *rh = new RequestHandler;
-
     // monitor signals
     if (uwsgi.signal_socket > -1) {
         uwsgi_cutelyst_watch_signal(uwsgi.signal_socket);
@@ -193,9 +253,7 @@ void uwsgi_cutelyst_loop()
     // monitor sockets
     struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
     while(uwsgi_sock) {
-        QSocketNotifier *qsn = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
-        QObject::connect(qsn, &QSocketNotifier::activated,
-                         rh, &RequestHandler::handle_request);
+        uwsgi_cutelyst_watch_request(uwsgi_sock);
         uwsgi_sock = uwsgi_sock->next;
     }
 

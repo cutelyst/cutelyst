@@ -3,7 +3,6 @@ set(uswgi_engine_SRC
     bodyuwsgi.cpp
     coreuwsgi.cpp
     engineuwsgi.cpp
-    requesthandler.cpp
     plugin.cpp
     plugin.c
 )
