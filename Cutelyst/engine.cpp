@@ -138,6 +138,10 @@ bool Engine::initApplication(Application *app, bool postFork)
     Q_D(Engine);
     d->app = app;
 
+    // To make easier for engines to clean up
+    // the app must be a child of it
+    app->setParent(this);
+
     if (!app->setup(this)) {
         qCCritical(CUTELYST_ENGINE) << "Failed to setup application";
         return false;

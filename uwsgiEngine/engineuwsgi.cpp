@@ -31,13 +31,22 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
 
-EngineUwsgi::EngineUwsgi(QObject *parent) :
+EngineUwsgi::EngineUwsgi(Application *parent) :
     Engine(parent)
 {
+    connect(this, &EngineUwsgi::postFork,
+            this, &EngineUwsgi::forked, Qt::QueuedConnection);
+    connect(this, &EngineUwsgi::receiveRequest,
+            this, &EngineUwsgi::readRequestUWSGI, Qt::QueuedConnection);
 }
 
 EngineUwsgi::~EngineUwsgi()
 {
+}
+
+void EngineUwsgi::setThread(QThread *thread)
+{
+    moveToThread(thread);
 }
 
 void EngineUwsgi::finalizeBody(Context *ctx)
@@ -48,9 +57,41 @@ void EngineUwsgi::finalizeBody(Context *ctx)
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
 
-void EngineUwsgi::readRequestUWSGI(wsgi_request *req)
+void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
 {
+    for(;;) {
+        int ret = uwsgi_wait_read_req(wsgi_req);
+        if (ret <= 0) {
+            goto end;
+        }
 
+        int status = wsgi_req->socket->proto(wsgi_req);
+        if (status < 0) {
+            goto end;
+        } else if (status == 0) {
+            break;
+        }
+    }
+
+    // empty request ?
+    if (!wsgi_req->uh->pktsize) {
+        qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
+        goto end;
+    }
+
+    // get uwsgi variables
+    if (uwsgi_parse_vars(wsgi_req)) {
+        qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
+        goto end;
+    }
+
+//    qCDebug(CUTELYST_UWSGI) << "async_environ" << wsgi_req->async_environ;
+    qCDebug(CUTELYST_UWSGI) << "thread -id" << thread()->currentThread();
+    processRequest(wsgi_req);
+
+end:
+    uwsgi_close_request(wsgi_req);
+    Q_EMIT requestFinished(wsgi_req);
 }
 
 void EngineUwsgi::processRequest(wsgi_request *req)
@@ -191,8 +232,15 @@ bool EngineUwsgi::init()
     return true;
 }
 
-bool EngineUwsgi::postFork()
+void EngineUwsgi::forked()
 {
-    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread();
-    return postForkApplication();
+    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread()->currentThread();
+    if (postForkApplication()) {
+#ifdef UWSGI_GO_CHEAP_CODE
+        // We need to tell the master process that the
+        // application failed to setup and that it shouldn't
+        // try to respawn the worker
+        exit(UWSGI_GO_CHEAP_CODE);
+#endif // UWSGI_GO_CHEAP_CODE
+    }
 }

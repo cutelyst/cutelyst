@@ -6,7 +6,7 @@
 
 #include "engineuwsgi.h"
 
-class CoreUWSGI : public QThread
+class CoreUWSGI : public QObject
 {
     Q_OBJECT
 public:

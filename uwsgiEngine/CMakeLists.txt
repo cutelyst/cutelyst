@@ -2,6 +2,7 @@ set(uswgi_engine_SRC
     bodybuffereduwsgi.cpp
     bodyuwsgi.cpp
     coreuwsgi.cpp
+    mainthreaduwsgi.cpp
     engineuwsgi.cpp
     plugin.cpp
     plugin.c

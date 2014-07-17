@@ -26,6 +26,9 @@
 
 #include <QPluginLoader>
 #include <QLoggingCategory>
+#include <QThread>
+
+#define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
 
 extern struct uwsgi_server uwsgi;
 
@@ -39,12 +42,12 @@ class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(QObject *parent = 0);
+    explicit EngineUwsgi(Application *parent = 0);
     ~EngineUwsgi();
 
-    virtual bool init();
+    void setThread(QThread *thread);
 
-    bool postFork();
+    virtual bool init();
 
     virtual void finalizeHeaders(Context *ctx);
     virtual void finalizeBody(Context *ctx);
@@ -56,6 +59,14 @@ public:
     QByteArray httpCase(const QByteArray &headerKey) const;
 
     virtual void reload();
+
+Q_SIGNALS:
+    void receiveRequest(wsgi_request *req);
+    void postFork();
+    void requestFinished(wsgi_request *wsgi_req);
+
+private:
+    void forked();
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)

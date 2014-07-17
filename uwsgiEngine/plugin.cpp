@@ -19,6 +19,7 @@
 
 #include "engineuwsgi.h"
 #include "plugin.h"
+#include "mainthreaduwsgi.h"
 
 #include <Cutelyst/Application>
 
@@ -26,12 +27,10 @@
 #include <QSocketNotifier>
 #include <QPluginLoader>
 
-#define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
-
 using namespace Cutelyst;
 
-static EngineUwsgi *singleInstance = 0;
 static QList<EngineUwsgi *> coreEngines;
+static QList<QThread *> coreThreads;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -65,17 +64,12 @@ extern "C" int uwsgi_cutelyst_init()
 
 extern "C" void uwsgi_cutelyst_post_fork()
 {
-    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
-        if (!engine->postFork()) {
-            qCCritical(CUTELYST_UWSGI) << "Could not setup application on post fork";
+    Q_FOREACH (QThread *thread, coreThreads) {
+        thread->start();
+    }
 
-#ifdef UWSGI_GO_CHEAP_CODE
-            // We need to tell the master process that the
-            // application failed to setup and that it shouldn't
-            // try to respawn the worker
-            exit(UWSGI_GO_CHEAP_CODE);
-#endif // UWSGI_GO_CHEAP_CODE
-        }
+    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
+        Q_EMIT engine->postFork();
     }
 }
 
@@ -93,11 +87,7 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
         return -1;
     }
 
-    if (singleInstance) {
-        singleInstance->processRequest(wsgi_req);
-    } else {
-        coreEngines.at(wsgi_req->async_id)->processRequest(wsgi_req);
-    }
+    coreEngines.at(wsgi_req->async_id)->receiveRequest(wsgi_req);
 
     return UWSGI_OK;
 }
@@ -126,7 +116,6 @@ extern "C" void uwsgi_cutelyst_master_cleanup()
 extern "C" void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing" << QCoreApplication::applicationPid();
-    delete singleInstance;
     qCDebug(CUTELYST_UWSGI) << "Child process finished" << QCoreApplication::applicationPid();
 }
 
@@ -171,25 +160,22 @@ extern "C" void uwsgi_cutelyst_init_apps()
         exit(1);
     }
 
+    MainThreadUWSGI *mainThread = 0;
+    if (uwsgi.threads > 1) {
+        for (int i = 0; i < uwsgi.threads; ++i) {
+            coreThreads.append(new QThread);
+        }
+        mainThread = new MainThreadUWSGI;
+    }
+
     for (int i = 0; i < uwsgi.async; ++i) {
         Application *coreApp = app;
-        if (i > 0 || uwsgi.async == 1) {
+        if (i > 0) {
             coreApp = qobject_cast<Application *>(app->metaObject()->newInstance());
             if (!coreApp) {
-                uwsgi_log("*** WARNING *** Could not create a new instance of your Cutelyst::Application,"
+                uwsgi_log("*** FATAL *** Could not create a new instance of your Cutelyst::Application,"
                           "make sure your constructor has Q_INVOKABLE macro\n");
-                if (i > 0) {
-                    singleInstance = coreEngines.first();
-                } else {
-                    singleInstance = new EngineUwsgi;
-                    if (!singleInstance->initApplication(app, false)) {
-                        uwsgi_log("Failed to init application.\n");
-                        exit(1);
-                    }
-                    coreEngines.append(singleInstance);
-                }
-
-                break;
+                exit(1);
             }
         }
 
@@ -198,6 +184,18 @@ extern "C" void uwsgi_cutelyst_init_apps()
             uwsgi_log("Failed to init application.\n");
             exit(1);
         }
+
+        if (mainThread) {
+            engine->setThread(coreThreads.at(i % coreThreads.size()));
+            QObject::connect(engine, &EngineUwsgi::requestFinished,
+                             mainThread, &MainThreadUWSGI::requestFinished, Qt::QueuedConnection);
+        } else {
+            QObject::connect(engine, &EngineUwsgi::requestFinished,
+                             [=](wsgi_request *wsgi_req) {
+                free_req_queue;
+            });
+        }
+
         coreEngines.append(engine);
     }
 
@@ -250,28 +248,12 @@ void uwsgi_cutelyst_watch_request(struct uwsgi_socket *uwsgi_sock)
         }
         qCDebug(CUTELYST_UWSGI) << "in_request" << uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request;
 
+        Q_EMIT coreEngines.at(wsgi_req->async_id)->receiveRequest(wsgi_req);
+        return;
 
-        for(;;) {
-            int ret = uwsgi_wait_read_req(wsgi_req);
-            if (ret <= 0) {
-                goto end;
-            }
-
-            int status = wsgi_req->socket->proto(wsgi_req);
-            if (status < 0) {
-                goto end;
-            } else if (status == 0) {
-                break;
-            }
-        }
-
-        qCDebug(CUTELYST_UWSGI) << "async_environ" << wsgi_req->async_environ;
-
-        uwsgi_cutelyst_request(wsgi_req);
-
-end:
-        uwsgi_close_request(wsgi_req);
-        free_req_queue;
+//end:
+//        uwsgi_close_request(wsgi_req);
+//        free_req_queue;
     });
 }
 
