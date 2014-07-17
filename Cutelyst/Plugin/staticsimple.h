@@ -2,6 +2,7 @@
 #define CPSTATICSIMPLE_H
 
 #include <QObject>
+#include <QRegularExpression>
 
 #include "plugin.h"
 
@@ -25,9 +26,10 @@ public:
 
 private:
     void beforePrepareAction(bool *skipMethod);
-    bool locateStaticFile(Context *ctx, QString &path);
+    bool locateStaticFile(Context *ctx, const QString &relPath);
 
     QString m_rootDir;
+    QRegularExpression m_re;
 };
 
 }

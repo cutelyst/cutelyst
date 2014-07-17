@@ -124,9 +124,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
 
     QDateTime utc = QDateTime::currentDateTime();
     utc.setTimeSpec(Qt::UTC);
-    headers.setDate(utc);
-//    QString date = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
-//    headers.insert("Date", date.toLocal8Bit());
+    headers.setDateWithDateTime(utc);
     headers.setServer("Cutelyst-HTTP-Engine");
     headers.setHeader("Connection", "keep-alive");
     headers.setContentLength(ctx->res()->contentLength());

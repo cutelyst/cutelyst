@@ -26,18 +26,20 @@
 
 using namespace Cutelyst;
 
-// TODO see if fromString is enough and make it inline
-QDateTime Headers::date() const
+void Headers::setDateWithDateTime(const QDateTime &date)
 {
-    return QDateTime::fromString(value("Date"));
+    // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
+    // and follow RFC 822
+    QString dt = date.toTimeSpec(Qt::UTC).toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    insert("Date", dt.toLocal8Bit());
 }
 
-void Headers::setDate(const QDateTime &date)
+void Headers::setLastModifiedDateTime(const QDateTime &lastModified)
 {
-    QString dateString;
-    // TODO check if there is some RFC format
-    dateString = date.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
-    insert("Date", dateString.toLocal8Bit());
+    // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
+    // and follow RFC 822
+    QString dt = lastModified.toTimeSpec(Qt::UTC).toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    insert("Last-Modified", dt.toLocal8Bit());
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)

@@ -56,14 +56,33 @@ public:
     inline void setContentLength(qint64 value) { insert("Content-Length", QByteArray::number(value)); }
 
     /**
-     * This header represents the date and time at which the message was originated
-     */
-    QDateTime date() const;
-
-    /**
      * Defines the header that represents the date and time at which the message was originated
      */
-    void setDate(const QDateTime &date);
+    void setDateWithDateTime(const QDateTime &date);
+
+    /**
+     * This header fields is used to make a request conditional. If the requested resource has
+     * (or has not) been modified since the time specified in this field,
+     * then the server will return a 304 Not Modified response instead of the document itself.
+     */
+    inline QByteArray ifModifiedSince() const { return value("If-Modified-Since"); }
+
+    /**
+     * This header indicates the date and time at which the resource was last modified.
+     */
+    inline QByteArray lastModified() const { return value("Last-Modified"); }
+
+    /**
+     * Defines the date and time at which the resource was last modified.
+     * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
+     */
+    inline void setLastModified(const QByteArray &value) { insert("Last-Modified", value); }
+
+    /**
+     * Defines the date and time at which the resource was last modified.
+     * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
+     */
+    void setLastModifiedDateTime(const QDateTime &lastModified);
 
     /**
      * Returns the server header field contains information about the software
