@@ -1,6 +1,6 @@
 find_package(Grantlee)
 if (Grantlee_FOUND)
-    message(STATUS "PLUGIN: Grantlee templating found." ${ClearSilver_CS})
+    message(STATUS "PLUGIN: Grantlee templating found.")
     add_subdirectory(Grantlee)
 else (Grantlee_FOUND)
     message(STATUS "PLUGIN: Not building with Grantlee template plugin.")
