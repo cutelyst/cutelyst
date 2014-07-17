@@ -23,15 +23,19 @@
 #include "request.h"
 #include "Plugin/View/ViewInterface.h"
 
+#include "common.h"
+
 #include <QDir>
 #include <QPluginLoader>
 #include <QJsonArray>
+#include <QCoreApplication>
+#include <QLoggingCategory>
+#include <QThread>
 
 using namespace Cutelyst;
 
 View::View(const QString &engine, QObject *parent) :
-    QObject(parent),
-    interface(0)
+    QObject(parent)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
     Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
@@ -40,20 +44,29 @@ View::View(const QString &engine, QObject *parent) :
         if (json["name"].toString() == engine) {
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
-                interface = qobject_cast<ViewInterface *>(plugin);
-                if (!interface) {
-                    qCritical() << "Could not create an instance of the engine:" << engine;
-                } else {
-                    break;
+                m_interface = qobject_cast<ViewInterface *>(plugin);
+                if (!m_interface) {
+                    qCritical(CUTELYST_VIEW) << "Could not create an instance of the view engine:" << engine;
+                } else if (m_interface->thread()->currentThread() != QThread::currentThread() &&
+                           m_interface->thread()->currentThread() != qApp->thread()) {
+                    m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance());
+
+                    if (!m_interface) {
+                        qCritical(CUTELYST_VIEW) << "Could not create a NEW instance of the view engine:" << engine;
+                    }
                 }
+                break;
             }
         }
     }
 
 //    qDebug() << interface;
 
-    if (!interface) {
-        qCritical() << "Engine not loaded:" << engine;
+    if (!m_interface) {
+        qCCritical(CUTELYST_VIEW) << "View Engine not loaded:" << engine;
+    } else {
+        m_interface->moveToThread(QThread::currentThread());
+        m_interface->setParent(this);
     }
 }
 
@@ -82,35 +95,42 @@ bool View::process(Context *ctx)
 
 QString View::includePath() const
 {
-    return interface->includePath();
+    Q_ASSERT(m_interface);
+    return m_interface->includePath();
 }
 
 void View::setIncludePath(const QString &path)
 {
-    interface->setIncludePath(path);
+    Q_ASSERT(m_interface);
+    m_interface->setIncludePath(path);
 }
 
 QString View::templateExtension() const
 {
-    return interface->templateExtension();
+    Q_ASSERT(m_interface);
+    return m_interface->templateExtension();
 }
 
 void View::setTemplateExtension(const QString &extension)
 {
-    interface->setTemplateExtension(extension);
+    Q_ASSERT(m_interface);
+    m_interface->setTemplateExtension(extension);
 }
 
 QString View::wrapper() const
 {
-    return interface->wrapper();
+    Q_ASSERT(m_interface);
+    return m_interface->wrapper();
 }
 
 void View::setWrapper(const QString &name)
 {
-    interface->setWrapper(name);
+    Q_ASSERT(m_interface);
+    m_interface->setWrapper(name);
 }
 
 bool View::render(Context *ctx)
 {
-    return interface->render(ctx);
+    Q_ASSERT(m_interface);
+    return m_interface->render(ctx);
 }

@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QRegularExpression>
 
 namespace Cutelyst {
 
@@ -66,6 +67,7 @@ private:
 
     Context *m_ctx;
     QString m_sessionName;
+    QRegularExpression m_removeRE;
 };
 
 }

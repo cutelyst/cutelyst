@@ -8,14 +8,14 @@
 namespace Cutelyst {
 
 class ClearSilverPrivate;
-class ClearSilver : public QObject, ViewInterface
+class ClearSilver : public ViewInterface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)
     Q_PLUGIN_METADATA(IID "org.cutelyst.ClearSilver" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ViewInterface)
 public:
-    explicit ClearSilver(QObject *parent = 0);
+    Q_INVOKABLE explicit ClearSilver(QObject *parent = 0);
     ~ClearSilver();
 
     Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)

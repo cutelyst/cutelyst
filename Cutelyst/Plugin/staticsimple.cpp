@@ -52,7 +52,8 @@ void StaticSimple::beforePrepareAction(bool *skipMethod)
     }
 
     QString path = ctx->req()->path();
-    QRegularExpressionMatch match = m_re.match(path);
+    QRegularExpression re = m_re; // Thread-safe
+    QRegularExpressionMatch match = re.match(path);
     if (match.hasMatch() && locateStaticFile(ctx, path)) {
         *skipMethod = true;
     }

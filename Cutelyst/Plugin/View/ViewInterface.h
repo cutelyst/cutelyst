@@ -6,8 +6,12 @@
 
 namespace Cutelyst {
 
-class ViewInterface {
+class ViewInterface : public QObject
+{
+    Q_OBJECT
 public:
+    explicit ViewInterface(QObject *parent = 0) : QObject(parent) {}
+
     Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)
     virtual QString includePath() const = 0;
     virtual void setIncludePath(const QString &path) = 0;

@@ -8,14 +8,14 @@
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
-class GrantleeView : public QObject, ViewInterface
+class GrantleeView : public ViewInterface
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
     Q_PLUGIN_METADATA(IID "org.cutelyst.Grantlee" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ViewInterface)
 public:
-    explicit GrantleeView(QObject *parent = 0);
+    Q_INVOKABLE explicit GrantleeView(QObject *parent = 0);
     ~GrantleeView();
 
     Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)

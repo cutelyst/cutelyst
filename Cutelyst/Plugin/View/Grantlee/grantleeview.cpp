@@ -14,7 +14,7 @@ Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
 using namespace Cutelyst;
 
 GrantleeView::GrantleeView(QObject *parent) :
-    QObject(parent),
+    ViewInterface(parent),
     d_ptr(new GrantleeViewPrivate)
 {
     Q_D(GrantleeView);

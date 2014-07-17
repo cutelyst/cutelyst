@@ -52,7 +52,7 @@ public:
     virtual bool render(Context *ctx);
 
 private:
-    ViewInterface *interface;
+    ViewInterface *m_interface = 0;
 };
 
 }

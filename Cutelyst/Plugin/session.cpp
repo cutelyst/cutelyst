@@ -25,7 +25,6 @@
 #include "engine.h"
 
 #include <QStringBuilder>
-#include <QRegularExpression>
 #include <QSettings>
 #include <QUuid>
 #include <QDir>
@@ -37,7 +36,8 @@ using namespace Plugin;
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 Session::Session(QObject *parent) :
-    AbstractPlugin(parent)
+    AbstractPlugin(parent),
+    m_removeRE("-|{|}")
 {
 }
 
@@ -145,7 +145,8 @@ QVariant Session::loadSession()
 
 QString Session::generateSessionId() const
 {
-    return QUuid::createUuid().toString().remove(QRegularExpression("-|{|}"));
+    QRegularExpression re = m_removeRE; // Thread-safe
+    return QUuid::createUuid().toString().remove(re);
 }
 
 QString Session::getSessionId() const
