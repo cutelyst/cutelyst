@@ -22,6 +22,7 @@
 #include "context.h"
 #include "response.h"
 #include "request_p.h"
+#include "application.h"
 
 #include <QCoreApplication>
 #include <QStringList>
@@ -94,10 +95,15 @@ bool EngineHttp::init()
             if (childProcess) {
                 // We are not the parent anymore,
                 // so we don't need the server class
-                connect(child, &CutelystChildProcess::newConnection,
-                        this, &EngineHttp::onNewClientConnection);
-                delete d->server;
-                return true;
+                if (app()->postFork()) {
+                    connect(child, &CutelystChildProcess::newConnection,
+                            this, &EngineHttp::onNewClientConnection);
+                    delete d->server;
+                    return true;
+                } else {
+                    qDebug() << "Failed to post fork";
+                    exit(1);
+                }
             } else if (child->initted()) {
                 d->child << child;
             } else {
@@ -172,6 +178,7 @@ void EngineHttp::removeConnection()
 
 void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body)
 {
+
     Request *request;
     request = newRequest(requestData,
                          url.scheme().toLocal8Bit(),
@@ -180,6 +187,8 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
                          QUrlQuery(url.query()));
 
     setupRequest(request, method, protocol, headers, body, QByteArray(), QHostAddress(), 0);
+
+    handleRequest(request);
 }
 
 void EngineHttp::onNewServerConnection()
@@ -188,10 +197,12 @@ void EngineHttp::onNewServerConnection()
 
     QTcpSocket *socket = d->server->nextPendingConnection();
     if (socket) {
-        if (!d->child.isEmpty()) {
-            if (d->child.first()->sendFD(socket->socketDescriptor())) {
-//                qDebug() << "fd sent";
-            }
+        int workerPos = d->currentChild++ % 4;
+        CutelystChildProcess *worker = d->child.at(workerPos);
+        qDebug() << "worker number" << workerPos << socket->socketDescriptor();
+
+        if (worker->sendFD(socket->socketDescriptor())) {
+            qDebug() << "fd sent" << d->currentChild;
         }
         delete socket;
     }
@@ -200,6 +211,8 @@ void EngineHttp::onNewServerConnection()
 void EngineHttp::onNewClientConnection(int socket)
 {
     Q_D(EngineHttp);
+
+    qDebug() << Q_FUNC_INFO << "[MASTER] onNewClientConnection" << socket;
 
     EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket, this);
     if (tcpSocket->setSocketDescriptor(socket)) {

@@ -30,6 +30,7 @@ namespace Cutelyst {
 class Application;
 class Context;
 class Request;
+class RequestPrivate;
 class Response;
 class EnginePrivate;
 class Headers;
@@ -135,6 +136,7 @@ protected:
      * are ready for to be processed
      */
     void handleRequest(Request *request, bool autoDelete = true);
+    Request *newRequest(RequestPrivate *priv);
     Request *newRequest(void *requestData,
                         const QByteArray &scheme,
                         const QByteArray &hostAndPort,

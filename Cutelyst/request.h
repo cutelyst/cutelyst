@@ -29,11 +29,10 @@
 namespace Cutelyst {
 
 class Engine;
-class RequestPrivate;
 class Upload;
-
 typedef QList<Upload *> Uploads;
 
+class RequestPrivate;
 class Request
 {
     Q_GADGET

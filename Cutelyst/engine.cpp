@@ -234,3 +234,8 @@ void Engine::handleRequest(Request *request, bool autoDelete)
     }
 }
 
+Request *Engine::newRequest(RequestPrivate *priv)
+{
+    return new Request(priv);
+}
+

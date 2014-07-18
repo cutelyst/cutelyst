@@ -75,6 +75,7 @@ public:
     QHostAddress address = QHostAddress::Any;
     QTcpServer *server;
     QList<CutelystChildProcess*> child;
+    qint64 currentChild = 0;
     QHash<int, EngineHttpRequest*> requests;
 };
 

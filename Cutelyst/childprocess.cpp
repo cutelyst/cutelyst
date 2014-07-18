@@ -104,7 +104,6 @@ void CutelystChildProcess::initChild(int socket)
     QSocketNotifier *notifier = new QSocketNotifier(socket, QSocketNotifier::Read, this);
     connect(notifier, &QSocketNotifier::activated,
             this, &CutelystChildProcess::gotFD);
-
 }
 
 void CutelystChildProcess::gotFD(int socket)
@@ -114,6 +113,7 @@ void CutelystChildProcess::gotFD(int socket)
     int fd;
     char buf[16];
     if (d->readFD(socket, buf, sizeof(buf), &fd) == 1) {
+        qDebug() << Q_FUNC_INFO << "[WORKER] new connection" << fd;
         newConnection(fd);
     } else {
         qWarning() << Q_FUNC_INFO << "Failed to read file descriptor";
@@ -162,12 +162,12 @@ ssize_t CutelystChildProcessPrivate::sendFD(int sock, void *buf, ssize_t buflen,
         cmsg->cmsg_level = SOL_SOCKET;
         cmsg->cmsg_type = SCM_RIGHTS;
 
-//        qDebug("passing fd %d\n", fd);
+        qDebug("passing fd %d\n", fd);
         *((int *) CMSG_DATA(cmsg)) = fd;
     } else {
         msg.msg_control = NULL;
         msg.msg_controllen = 0;
-//        qDebug("not passing fd\n");
+        qDebug("not passing fd\n");
     }
 
     size = sendmsg(sock, &msg, 0);

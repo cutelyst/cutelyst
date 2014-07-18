@@ -62,11 +62,13 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
     for(;;) {
         int ret = uwsgi_wait_read_req(wsgi_req);
         if (ret <= 0) {
+            uwsgi_log("Failed wait read\n");
             goto end;
         }
 
         int status = wsgi_req->socket->proto(wsgi_req);
         if (status < 0) {
+            uwsgi_log("Failed socket roto\n");
             goto end;
         } else if (status == 0) {
             break;
@@ -76,11 +78,13 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
         qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
+        uwsgi_log("Failed empty request\n");
         goto end;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
+        uwsgi_log("Failed invalid request\n");
         qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
         goto end;
     }
@@ -235,7 +239,7 @@ bool EngineUwsgi::init()
 void EngineUwsgi::forked()
 {
     qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread()->currentThread();
-    if (postForkApplication()) {
+    if (!postForkApplication()) {
 #ifdef UWSGI_GO_CHEAP_CODE
         // We need to tell the master process that the
         // application failed to setup and that it shouldn't

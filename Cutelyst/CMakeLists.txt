@@ -56,6 +56,7 @@ set(cutelystqt_HEADERS
     Dispatcher
     dispatchtype.h
     DispatchType
+    enginehttp.h
     engine.h
     Engine
     headers.h
