@@ -124,9 +124,9 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
         if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            QByteArray key = QByteArray::fromRawData((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
+            QByteArray key = httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
             QByteArray value = QByteArray::fromRawData((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
-            headers.setHeader(httpCase(key), value);
+            headers.setHeader(key, value);
         }
     }
 
@@ -179,27 +179,23 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     handleRequest(request);
 }
 
-QByteArray EngineUwsgi::httpCase(const QByteArray &headerKey) const
+QByteArray EngineUwsgi::httpCase(char *key, int key_len) const
 {
-    QByteArray ret;
-
     bool lastWasUnderscore = false;
-
-    for (int i = 0 ; i < headerKey.size() ; ++i) {
-        QChar buf = headerKey[i];
-        if(i == 0 || lastWasUnderscore) {
-            ret += buf.toUpper();
+    for (int i = 0 ; i < key_len ; ++i) {
+        QChar buf = key[i];
+        if(!lastWasUnderscore) {
+            key[i] = buf.toLower().toLatin1();
             lastWasUnderscore = false;
         } else  if (buf == '_') {
-            ret += '-';
+            key[i] = '-';
             lastWasUnderscore = true;
         } else {
-            ret += buf.toLower();
             lastWasUnderscore = false;
         }
     }
 
-    return ret;
+    return QByteArray::fromRawData(key, key_len);
 }
 
 void EngineUwsgi::reload()

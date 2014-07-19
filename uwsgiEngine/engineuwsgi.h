@@ -56,7 +56,7 @@ public:
 
     void processRequest(wsgi_request *req);
 
-    QByteArray httpCase(const QByteArray &headerKey) const;
+    inline QByteArray httpCase(char *key, int key_len) const;
 
     virtual void reload();
 
