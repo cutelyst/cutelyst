@@ -22,7 +22,6 @@
 #include "common.h"
 #include "controller.h"
 
-#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QBuffer>
 #include <QDebug>
@@ -58,7 +57,7 @@ void DispatchTypePath::list() const
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            _path.replace(m_multipleSlashes, QLatin1String("/"));
             pathLength = qMax(pathLength, _path.length() + 1);
 
             QString privateName = action->privateName();
@@ -89,7 +88,7 @@ void DispatchTypePath::list() const
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(QRegularExpression("/{1,}"), QLatin1String("/"));
+            _path.replace(m_multipleSlashes, QLatin1String("/"));
 
             QString privateName = action->privateName();
             if (!privateName.startsWith(QLatin1String("/"))) {

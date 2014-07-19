@@ -30,16 +30,22 @@ using namespace Cutelyst;
 
 Action::Action(const QMetaMethod &method, Controller *parent) :
     QObject(parent),
-    d_ptr(new ActionPrivate(method, parent))
+    d_ptr(new ActionPrivate)
 {
     Q_D(Action);
+
+    d->name = parent->ns() + '/' + method.name();
+    d->ns =parent->ns();
+    d->method = method;
+    d->methodName = method.name();
+    d->controller = parent;
 
     QString actionNamespace;
     // Parse the Method attributes declared with Q_CLASSINFO
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
-    QRegularExpression regex(method.name() % QLatin1String("_(\\w+)"));
+    QRegularExpression regex(d->methodName % QLatin1String("_(\\w+)"));
     for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
         QString name = classInfo.name();
@@ -89,16 +95,16 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
             // Make sure the user defines specia
             // parameters types AFTER the ones to be captured
             ignoreParameters = true;
-            QByteArray name = d->name.toLocal8Bit();
+            QByteArray name = d->name;
             if (type == "Global") {
-                if (!d->name.startsWith(QLatin1Char('/'))) {
+                if (!d->name.startsWith('/')) {
                     name.prepend('/');
                 }
                 d->attributes.insertMulti("Path", name);
             } else if (type == "Local") {
                 d->attributes.insertMulti("Path", name);
             } else if (type == "Path") {
-                d->attributes.insertMulti("Path", controller()->ns().toLocal8Bit());
+                d->attributes.insertMulti("Path", controller()->ns());
             } else if (type == "Args" && !d->attributes.contains("Args")) {
                 d->numberOfArgs = parameterCount;
                 d->attributes.insertMulti("Args", QByteArray::number(d->numberOfArgs));
@@ -207,19 +213,19 @@ bool Action::matchCaptures(Context *ctx) const
     return d->numberOfCaptures == -1 || d->numberOfCaptures == ctx->args().size();
 }
 
-QString Action::name() const
+QByteArray Action::name() const
 {
     Q_D(const Action);
-    return d->method.name();
+    return d->methodName;
 }
 
-QString Action::privateName() const
+QByteArray Action::privateName() const
 {
     Q_D(const Action);
     return d->name;
 }
 
-QString Action::ns() const
+QByteArray Action::ns() const
 {
     Q_D(const Action);
     return d->ns;
@@ -241,17 +247,4 @@ bool Action::isValid() const
 {
     Q_D(const Action);
     return d->valid;
-}
-
-
-ActionPrivate::ActionPrivate(const QMetaMethod &method, Controller *parent) :
-    valid(true),
-    name(parent->ns() % QLatin1Char('/') % method.name()),
-    ns(parent->ns()),
-    method(method),
-    controller(parent),
-    numberOfArgs(-1),
-    numberOfCaptures(-1)
-{
-
 }

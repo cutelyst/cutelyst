@@ -35,6 +35,8 @@
 #include <QUrl>
 #include <QBuffer>
 
+#include <QCommandLineParser>
+
 using namespace Cutelyst;
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -64,9 +66,9 @@ EngineHttp::EngineHttp(QObject *parent) :
 
     qInstallMessageHandler(cuteOutput);
 
-    d->server = new QTcpServer(this);
-    connect(d->server, &QTcpServer::newConnection,
-            this, &EngineHttp::onNewServerConnection);
+//    d->server = new QTcpServer(this);
+//    connect(d->server, &QTcpServer::newConnection,
+//            this, &EngineHttp::onNewServerConnection);
 
     QStringList args = QCoreApplication::arguments();
     for (int i = 0; i < args.count(); ++i) {
@@ -75,6 +77,58 @@ EngineHttp::EngineHttp(QObject *parent) :
             d->port = argument.mid(7).toInt();
             qDebug() << Q_FUNC_INFO << "Using custom port:" << d->port;
         }
+    }
+
+    QCommandLineParser parser;
+
+    QCommandLineOption httpSocket("http-socket",
+                                  QCoreApplication::translate("main", "Bind to the specified UNIX/TCP socket using HTTP protocol."),
+                                  "address:port");
+    parser.addOption(httpSocket);
+
+    // An option with a value
+    QCommandLineOption workers(QStringList() << "p" << "processes" << "workers-directory",
+                               QCoreApplication::translate("main", "Copy all source files into <directory>."), "number");
+    parser.addOption(workers);
+
+    // Process the actual command line arguments given by the user
+    parser.process(*qApp);
+
+    if (parser.isSet(workers)) {
+        d->workers = parser.value(workers).toInt();
+    }
+
+    if (parser.isSet(httpSocket)) {
+        Q_FOREACH (const QString &listen, parser.values(httpSocket)) {
+            qDebug() << "http-socket"<< listen;
+            QTcpServer *server = new QTcpServer(this);
+            QStringList parts = listen.split(QChar(':'));
+            if (parts.size() != 2) {
+                qDebug() << "error parsing:" << listen;
+                exit(1);
+            }
+
+            QHostAddress address;
+            if (parts.first().isEmpty()) {
+                address = QHostAddress::Any;
+            } else {
+                address.setAddress(parts.first());
+            }
+
+            if (server->listen(address, parts.last().toInt())) {
+                qDebug() << "Listening on:" << server->serverAddress() << server->serverPort();
+            } else {
+                qWarning() << "Failed to listen on" << d->address.toString() << d->port;
+                exit(1);
+            }
+
+            d->servers.append(server);
+        }
+    }
+
+    if (d->servers.isEmpty()) {
+        qWarning() << "Not listening on anywhere";
+        parser.showHelp(1);
     }
 }
 
@@ -87,34 +141,37 @@ bool EngineHttp::init()
 {
     Q_D(EngineHttp);
 
-    if (d->server->listen(d->address, d->port)) {
-        int childCount = 1;
-        for (int i = 0; i < childCount; ++i) {
-            bool childProcess;
-            CutelystChildProcess *child = new CutelystChildProcess(childProcess, this);
-            if (childProcess) {
-                // We are not the parent anymore,
-                // so we don't need the server class
-                if (app()->postFork()) {
-                    connect(child, &CutelystChildProcess::newConnection,
-                            this, &EngineHttp::onNewClientConnection);
-                    delete d->server;
-                    return true;
-                } else {
-                    qDebug() << "Failed to post fork";
-                    exit(1);
+    for (int i = 0; i < d->workers; ++i) {
+        bool childProcess;
+        CutelystChildProcess *child = new CutelystChildProcess(childProcess, this);
+        if (childProcess) {
+            // We are not the parent anymore,
+            // so we don't need the server class
+            if (app()->postFork()) {
+                //                    connect(child, &CutelystChildProcess::newConnection,
+                //                            this, &EngineHttp::onNewClientConnection);
+                //                    delete d->server;
+                Q_FOREACH (QTcpServer *server, d->servers) {
+                    connect(server, &QTcpServer::newConnection,
+                            this, &EngineHttp::onNewServerConnection);
                 }
-            } else if (child->initted()) {
-                d->child << child;
+                return true;
             } else {
-                delete child;
+                qDebug() << "Failed to post fork";
+                exit(1);
             }
+        } else if (child->initted()) {
+            d->child << child;
+        } else {
+            delete child;
         }
-        qDebug() << "Listening on:" << d->server->serverAddress() << d->server->serverPort();
-        qDebug() << "Number of child process:" << d->child.size();
-    } else {
-        qWarning() << "Failed to listen on" << d->address.toString() << d->port;
     }
+
+    Q_FOREACH (QTcpServer *server, d->servers) {
+        server->pauseAccepting();
+    }
+
+    qDebug() << "Number of child process:" << d->child.size();
 
     return !d->child.isEmpty();
 }
@@ -154,7 +211,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     }
 
     int *id = static_cast<int*>(requestPtr(ctx->req()));
-    d->requests[*id]->write(header);
+    d->requests[*id]->m_socket->write(header);
 }
 
 void EngineHttp::finalizeBody(Context *ctx)
@@ -163,7 +220,7 @@ void EngineHttp::finalizeBody(Context *ctx)
 
     int *id = static_cast<int*>(requestPtr(ctx->req()));
     EngineHttpRequest *req = d->requests.value(*id);
-    req->write(ctx->response()->body());
+    req->m_socket->write(ctx->response()->body());
     req->finish();
 }
 
@@ -173,6 +230,11 @@ void EngineHttp::removeConnection()
     EngineHttpRequest *req = static_cast<EngineHttpRequest*>(sender());
     if (req) {
         d->requests.take(req->connectionId());
+    }
+
+    if (d->requests.size() <= 5 && d->servers.first()->signalsBlocked()) {
+        qDebug() << "unblock signals" << QCoreApplication::applicationPid();
+        d->servers.first()->blockSignals(false);
     }
 }
 
@@ -195,16 +257,30 @@ void EngineHttp::onNewServerConnection()
 {
     Q_D(EngineHttp);
 
-    QTcpSocket *socket = d->server->nextPendingConnection();
+    QTcpServer *server = static_cast<QTcpServer*>(sender());
+    qDebug() << "onNewServerConnection worker number" << QCoreApplication::applicationPid();
+    QTcpSocket *socket = server->nextPendingConnection();
     if (socket) {
-        int workerPos = d->currentChild++ % 4;
-        CutelystChildProcess *worker = d->child.at(workerPos);
-        qDebug() << "worker number" << workerPos << socket->socketDescriptor();
-
-        if (worker->sendFD(socket->socketDescriptor())) {
-            qDebug() << "fd sent" << d->currentChild;
+        if (d->requests.size() > 5) {
+            qDebug() << "block signals" << QCoreApplication::applicationPid();
+            server->blockSignals(true);
         }
-        delete socket;
+
+        EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket);
+        d->requests.insert(socket->socketDescriptor(), tcpSocket);
+        connect(tcpSocket, &EngineHttpRequest::requestReady,
+                this, &EngineHttp::processRequest);
+        connect(tcpSocket, &EngineHttpRequest::destroyed,
+                this, &EngineHttp::removeConnection);
+
+//        int workerPos = d->currentChild++ % 4;
+//        CutelystChildProcess *worker = d->child.at(workerPos);
+//        qDebug() << "worker number" << workerPos << socket->socketDescriptor();
+
+//        if (worker->sendFD(socket->socketDescriptor())) {
+//            qDebug() << "fd sent" << d->currentChild;
+//        }
+//        delete socket;
     }
 }
 
@@ -212,30 +288,31 @@ void EngineHttp::onNewClientConnection(int socket)
 {
     Q_D(EngineHttp);
 
-    qDebug() << Q_FUNC_INFO << "[MASTER] onNewClientConnection" << socket;
+    qDebug() << Q_FUNC_INFO << "[CHILD] onNewClientConnection" << socket << QCoreApplication::applicationPid();
 
-    EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket, this);
-    if (tcpSocket->setSocketDescriptor(socket)) {
-        d->requests.insert(socket, tcpSocket);
-        connect(tcpSocket, &EngineHttpRequest::requestReady,
-                this, &EngineHttp::processRequest);
-        connect(tcpSocket, &EngineHttpRequest::destroyed,
-                this, &EngineHttp::removeConnection);
-    } else {
-        delete tcpSocket;
-    }
+//    EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket, this);
+//    if (tcpSocket->setSocketDescriptor(socket)) {
+//        d->requests.insert(socket, tcpSocket);
+//        connect(tcpSocket, &EngineHttpRequest::requestReady,
+//                this, &EngineHttp::processRequest);
+//        connect(tcpSocket, &EngineHttpRequest::destroyed,
+//                this, &EngineHttp::removeConnection);
+//    } else {
+//        delete tcpSocket;
+//    }
 }
 
-EngineHttpRequest::EngineHttpRequest(int socket, QObject *parent) :
-    QTcpSocket(parent),
+EngineHttpRequest::EngineHttpRequest(QTcpSocket *socket) :
+    QObject(socket),
+    m_socket(socket),
     m_finishedHeaders(false),
     m_processing(false),
-    m_connectionId(socket),
+    m_connectionId(socket->socketDescriptor()),
     m_bufLastIndex(0)
 {
-    connect(this, &EngineHttpRequest::readyRead,
+    connect(socket, &QTcpSocket::readyRead,
             this, &EngineHttpRequest::process);
-    connect(this, &EngineHttpRequest::bytesWritten,
+    connect(socket, &QTcpSocket::bytesWritten,
             this, &EngineHttpRequest::timeout);
     connect(&m_timeoutTimer, &QTimer::timeout,
             this, &EngineHttpRequest::timeout);
@@ -257,7 +334,7 @@ bool EngineHttpRequest::processing()
 void EngineHttpRequest::finish()
 {
     m_processing = false;
-    if (!m_buffer.isNull() && bytesAvailable() == 0) {
+    if (!m_buffer.isNull() && m_socket->bytesAvailable() == 0) {
         QTimer::singleShot(0, this, SLOT(process()));
     } else {
         m_timeoutTimer.start();
@@ -267,7 +344,9 @@ void EngineHttpRequest::finish()
 void EngineHttpRequest::process()
 {
 //    qDebug() << Q_FUNC_INFO << connectionId() << m_processing << m_buffer.size() << sender() << bytesAvailable();
-    m_buffer.append(readAll());
+//    qDebug() << Q_FUNC_INFO << m_socket->state() << m_socket->bytesAvailable();
+//    m_socket->waitForReadyRead(500);
+    m_buffer.append(m_socket->readAll());
 
     if (m_processing) {
         return;
@@ -358,8 +437,8 @@ void EngineHttpRequest::process()
 void EngineHttpRequest::timeout()
 {
     QTimer *timer = qobject_cast<QTimer*>(sender());
-    if (timer && bytesToWrite() == 0 && bytesAvailable() == 0) {
-        close();
+    if (timer && m_socket->bytesToWrite() == 0 && m_socket->bytesAvailable() == 0) {
+        m_socket->close();
         deleteLater();
     } else {
         m_timeoutTimer.start();

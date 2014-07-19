@@ -128,7 +128,6 @@ public:
 
 Q_SIGNALS:
     void beforePrepareAction(bool *skipMethod);
-    void afterPrepareAction();
     void beforeDispatch();
     void afterDispatch();
 

@@ -80,18 +80,18 @@ public:
      * @brief name
      * @return Returns the sub name of this action.
      */
-    QString name() const;
+    QByteArray name() const;
 
     /**
      * @brief name
      * @return Returns the private name of this action.
      */
-    QString privateName() const;
+    QByteArray privateName() const;
 
     /**
      * Returns the private namespace this action lives in.
      */
-    QString ns() const;
+    QByteArray ns() const;
 
     /**
      * @brief numberOfArgs

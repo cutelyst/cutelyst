@@ -103,7 +103,7 @@ public:
      * The default Root controller is an example of setting
      * namespace to '' (the null string).
      */
-    QString ns() const;
+    QByteArray ns() const;
 
     /**
      * Returns the action object for the given private name

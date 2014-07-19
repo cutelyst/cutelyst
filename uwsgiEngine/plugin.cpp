@@ -219,8 +219,6 @@ void uwsgi_cutelyst_watch_request(struct uwsgi_socket *uwsgi_sock)
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
     QObject::connect(socketNotifier, &QSocketNotifier::activated,
                      [=](int fd) {
-        uwsgi_log("[WORKER] socket activated: %d\n", QCoreApplication::applicationPid());
-
         struct wsgi_request *wsgi_req = find_first_available_wsgi_req();
         if (wsgi_req == NULL) {
             uwsgi_async_queue_is_full(uwsgi_now());
@@ -239,7 +237,6 @@ void uwsgi_cutelyst_watch_request(struct uwsgi_socket *uwsgi_sock)
         // accept the connection
         if (wsgi_req_simple_accept(wsgi_req, fd)) {
             uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
-            uwsgi_log("Failed simple accept\n");
             free_req_queue;
             return;
         }

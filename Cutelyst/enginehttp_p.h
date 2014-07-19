@@ -30,15 +30,17 @@
 
 namespace Cutelyst {
 
-class EngineHttpRequest : public QTcpSocket
+class EngineHttpRequest : public QObject
 {
     Q_OBJECT
 public:
-    explicit EngineHttpRequest(int socket, QObject *parent = 0);
+    explicit EngineHttpRequest(QTcpSocket *socket);
 
     int connectionId();
     bool processing();
     void finish();
+
+    QTcpSocket *m_socket;
 
 public Q_SLOTS:
     void process();
@@ -73,7 +75,8 @@ class EngineHttpPrivate
 public:
     quint16 port = 3000;
     QHostAddress address = QHostAddress::Any;
-    QTcpServer *server;
+    QList<QTcpServer *> servers;
+    int workers = 1;
     QList<CutelystChildProcess*> child;
     qint64 currentChild = 0;
     QHash<int, EngineHttpRequest*> requests;

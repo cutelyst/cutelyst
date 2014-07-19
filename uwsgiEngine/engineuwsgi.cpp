@@ -229,6 +229,8 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
             return;
         }
     }
+
+    uwsgi_response_add_header(wsgi_req, (char *)"Connection", 10, (char *)"HTTP/1.1", 8);
 }
 
 bool EngineUwsgi::init()

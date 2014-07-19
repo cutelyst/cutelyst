@@ -31,41 +31,43 @@ using namespace Cutelyst;
 Controller::Controller(QObject *parent) :
     QObject(parent)
 {
-}
-
-Controller::~Controller()
-{
-}
-
-QString Controller::ns() const
-{
-    QString ret;
+    QByteArray controlerNS;
     for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
         if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
-            ret = metaObject()->classInfo(i).value();
+            controlerNS = metaObject()->classInfo(i).value();
             break;
         }
     }
 
-    QString className = metaObject()->className();
-    if (ret.isNull()) {
+    if (controlerNS.isNull()) {
+        QString className = metaObject()->className();
         bool lastWasUpper = true;
+
         for (int i = 0; i < className.length(); ++i) {
             if (className.at(i).toLower() == className.at(i)) {
-                ret.append(className.at(i));
+                controlerNS.append(className.at(i));
                 lastWasUpper = false;
             } else {
                 if (lastWasUpper) {
-                    ret.append(className.at(i).toLower());
+                    controlerNS.append(className.at(i).toLower());
                 } else {
-                    ret.append(QLatin1Char('/') % className.at(i).toLower());
+                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
                 }
                 lastWasUpper = true;
             }
         }
     }
 
-    return ret;
+    setProperty("ns", controlerNS);
+}
+
+Controller::~Controller()
+{
+}
+
+QByteArray Controller::ns() const
+{
+    return property("ns").toByteArray();
 }
 
 Action *Controller::actionFor(Context *ctx, const QString &name)

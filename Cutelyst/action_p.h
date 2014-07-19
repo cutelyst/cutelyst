@@ -27,16 +27,15 @@ namespace Cutelyst {
 class ActionPrivate
 {
 public:
-    ActionPrivate(const QMetaMethod &method, Controller *parent);
-
-    bool valid;
-    QString name;
-    QString ns;
+    bool valid = true;
+    QByteArray name;
+    QByteArray ns;
+    QByteArray methodName;
     QMetaMethod method;
     QMultiHash<QByteArray, QByteArray> attributes;
     Controller *controller;
-    qint8 numberOfArgs;
-    qint8 numberOfCaptures;
+    qint8 numberOfArgs = -1;
+    qint8 numberOfCaptures = -1;
 };
 
 }

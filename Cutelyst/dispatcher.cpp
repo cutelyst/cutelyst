@@ -263,14 +263,14 @@ void Dispatcher::printActions()
     it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         Action *action = it.value();
-        if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
+        if (showInternalActions || !action->name().startsWith('_')) {
             QString path = it.key();
             if (!path.startsWith(QLatin1String("/"))) {
                 path.prepend(QLatin1String("/"));
             }
             out << "|" << path.leftJustified(privateLength).toUtf8().data()
                 << "|" << action->className().leftJustified(classLength).toUtf8().data()
-                << "|" << action->name().leftJustified(actionLength).toUtf8().data()
+                << "|" << QString(action->name()).leftJustified(actionLength).toUtf8().data()
                 << "|" << endl;
         }
         ++it;
@@ -329,12 +329,13 @@ QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
 
 Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
 {
+    Q_D(Dispatcher);
+
     Action *ret = 0;
     QString path = actionRel2Abs(ctx, relativePath);
 
-    QRegularExpression re("^(?:(.*)/)?(\\w+)?$");
     while (!path.isEmpty()) {
-        QRegularExpressionMatch match = re.match(path);
+        QRegularExpressionMatch match = d->pathSplit.match(path);
         if (match.hasMatch()) {
             path = match.captured(1);
             ret = getAction(match.captured(2), path);

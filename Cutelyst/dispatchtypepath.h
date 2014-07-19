@@ -24,6 +24,7 @@
 #include <Cutelyst/Action>
 
 #include <QMap>
+#include <QRegularExpression>
 
 namespace Cutelyst {
 
@@ -45,6 +46,7 @@ private:
     bool registerPath(const QString &path, Action *action);
 
     QHash<QString, ActionList> m_paths;
+    QRegularExpression m_multipleSlashes = QRegularExpression("/{1,}");
 };
 
 }

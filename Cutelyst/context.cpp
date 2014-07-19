@@ -246,14 +246,13 @@ void Context::handleRequest()
     Q_D(Context);
 
     bool skipMethod = false;
-    beforePrepareAction(&skipMethod);
+    Q_EMIT beforePrepareAction(&skipMethod);
     if (!skipMethod) {
         prepareAction();
-        afterPrepareAction();
 
-        beforeDispatch();
+        Q_EMIT beforeDispatch();
         dispatch();
-        afterDispatch();
+        Q_EMIT afterDispatch();
     }
 
     d->status = finalize();
