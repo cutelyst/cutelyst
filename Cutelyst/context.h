@@ -103,7 +103,7 @@ public:
 
     QVariantHash &stash();
 
-    QString uriFor(const QString &path, const QStringList &args = QStringList());
+    QByteArray uriFor(const QByteArray &path, const QStringList &args = QStringList());
 
     inline bool dispatch();
     bool detached() const;

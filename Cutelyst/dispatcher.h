@@ -45,19 +45,19 @@ protected:
     bool dispatch(Context *ctx);
     bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
-    Action* getAction(const QString &name, const QString &ns = QString()) const;
-    ActionList getActions(const QByteArray &name, const QString &ns) const;
+    Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
+    ActionList getActions(const QByteArray &name, const QByteArray &ns) const;
     QHash<QString, Controller*> controllers() const;
-    QString uriForAction(Action *action, const QStringList &captures);
+    QByteArray uriForAction(Action *action, const QStringList &captures);
     void registerDispatchType(DispatchType *dispatchType);
 
 private:
     void printActions();
-    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList());
+    Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QStringList &args);
-    QString actionRel2Abs(Context *ctx, const QString &path);
-    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args);
-    QString cleanNamespace(const QString &ns) const;
+    QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);
+    Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
+    inline QByteArray cleanNamespace(const QByteArray &ns) const;
 
 protected:
     friend class Application;

@@ -142,17 +142,17 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
-QString DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
+QByteArray DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
 {
-    QString path = action->attributes().value("Path");
+    QByteArray path = action->attributes().value("Path");
     if (!path.isNull()) {
         if (path.isEmpty()) {
-            return QLatin1String("/");
+            return QByteArray("/", 1);
         } else {
             return path;
         }
     }
-    return QString();
+    return QByteArray();
 }
 
 bool actionLessThan(Action *a1, Action *a2)

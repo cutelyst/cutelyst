@@ -170,7 +170,7 @@ QVariantHash &Context::stash()
     return d->stash;
 }
 
-QString Context::uriFor(const QString &path, const QStringList &args)
+QByteArray Context::uriFor(const QByteArray &path, const QStringList &args)
 {
     Q_D(Context);
 

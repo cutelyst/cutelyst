@@ -162,19 +162,19 @@ void Dispatcher::prepareAction(Context *ctx)
     }
 }
 
-Action *Dispatcher::getAction(const QString &name, const QString &ns) const
+Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) const
 {
     Q_D(const Dispatcher);
     if (name.isEmpty()) {
         return 0;
     }
 
-    QString _ns = cleanNamespace(ns);
+    QByteArray _ns = cleanNamespace(ns);
 
-    return d->actionHash.value(_ns % QLatin1Char('/') % name);
+    return d->actionHash.value(_ns + '/' + name);
 }
 
-ActionList Dispatcher::getActions(const QByteArray &name, const QString &ns) const
+ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) const
 {
     Q_D(const Dispatcher);
 
@@ -201,16 +201,16 @@ QHash<QString, Controller *> Dispatcher::controllers() const
     return d->constrollerHash;
 }
 
-QString Dispatcher::uriForAction(Action *action, const QStringList &captures)
+QByteArray Dispatcher::uriForAction(Action *action, const QStringList &captures)
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-        QString uri = dispatch->uriForAction(action, captures);
+        QByteArray uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
-            return uri.isEmpty() ? QLatin1String("/") : uri;
+            return uri.isEmpty() ? QByteArray("/", 1) : uri;
         }
     }
-    return QString();
+    return QByteArray();
 }
 
 void Dispatcher::registerDispatchType(DispatchType *dispatchType)
@@ -234,12 +234,12 @@ void Dispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QMap<QString, Action*>::ConstIterator it = d->actionHash.constBegin();
+    QMap<QByteArray, Action*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         Action *action = it.value();
-        QString path = it.key();
-        if (!path.startsWith(QLatin1String("/"))) {
-            path.prepend(QLatin1String("/"));
+        QByteArray path = it.key();
+        if (!path.startsWith('/')) {
+            path.prepend('/');
         }
         privateLength = qMax(privateLength, path.length());
         classLength = qMax(classLength, action->className().length());
@@ -288,7 +288,7 @@ void Dispatcher::printActions()
     }
 }
 
-Action *Dispatcher::command2Action(Context *ctx, const QString &command, const QStringList &extraParams)
+Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command;
@@ -310,35 +310,36 @@ QStringList Dispatcher::unexcapedArgs(const QStringList &args)
     return ret;
 }
 
-QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
+QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
 {
-    QString ret = path;
-    if (!ret.startsWith(QLatin1Char('/'))) {
+    QByteArray ret = path;
+    if (!ret.startsWith('/')) {
         // TODO at Catalyst it uses
         // c->stack->last()->namespace
-        QString ns = ctx->action()->ns();
-        ret = ns % QLatin1Char('/') % path;
+        QByteArray ns = ctx->action()->ns();
+        ret = ns + '/' + path;
     }
 
-    if (ret.startsWith(QLatin1Char('/'))) {
+    if (ret.startsWith('/')) {
         ret.remove(0, 1);
     }
 
     return ret;
 }
 
-Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
+Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
 {
     Q_D(Dispatcher);
 
     Action *ret = 0;
-    QString path = actionRel2Abs(ctx, relativePath);
+    QByteArray path = actionRel2Abs(ctx, relativePath);
 
     while (!path.isEmpty()) {
         QRegularExpressionMatch match = d->pathSplit.match(path);
         if (match.hasMatch()) {
-            path = match.captured(1);
-            ret = getAction(match.captured(2), path);
+            path = match.captured(1).toLatin1();
+            ret = getAction(match.captured(2).toLatin1(),
+                            path);
             if (ret) {
                 break;
             }
@@ -350,15 +351,26 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, cons
     return ret;
 }
 
-QString Dispatcher::cleanNamespace(const QString &ns) const
+QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
 {
-    QStringList ret;
-    Q_FOREACH (const QString &part, ns.split(QLatin1Char('/'))) {
-        if (!part.isEmpty()) {
-            ret << part;
+    QByteArray ret = ns;
+    bool lastWasSlash = true; // remove initial slash
+    int nsSize = ns.size();
+    const char * data = ret.constData();
+    for (int i = 0; i < nsSize; ++i) {
+        if (data[i] == '/') {
+            if (lastWasSlash) {
+                ret.remove(i, 1);
+                data = ret.constData();
+                --nsSize;
+            } else {
+                lastWasSlash = true;
+            }
+        } else {
+            lastWasSlash = false;
         }
     }
-    return ret.join(QLatin1Char('/'));
+    return ret;
 }
 
 

@@ -30,7 +30,7 @@ class DispatcherPrivate
 {
 public:
     ActionList getContainers(const QString &ns) const;
-    QMap<QString, Action*> actionHash;
+    QMap<QByteArray, Action*> actionHash;
     QMap<QString, ActionList> containerHash;
     QHash<QString, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;

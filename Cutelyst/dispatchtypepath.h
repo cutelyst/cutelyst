@@ -40,7 +40,7 @@ public:
 
     virtual bool registerAction(Action *action);
 
-    virtual QString uriForAction(Action *action, const QStringList &captures) const;
+    virtual QByteArray uriForAction(Action *action, const QStringList &captures) const;
 
 private:
     bool registerPath(const QString &path, Action *action);
