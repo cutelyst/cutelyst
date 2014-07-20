@@ -29,31 +29,31 @@ typedef QPair<QByteArray, QByteArray> HeaderValuePair;
 class Headers : public QHash<QByteArray, QByteArray>
 {
 public:
-    inline QByteArray contentEncoding() const { return value("Content-Encoding"); }
+    inline QByteArray contentEncoding() const { return value(QByteArray("Content-Encoding", 16)); }
 
-    inline void setContentEncoding(const QByteArray &encoding) { insert("Content-Encoding", encoding); }
-
-    /**
-     * The Content-Type header field indicates the media type of the message content.
-     * E.g.: "text/html"
-     */
-    inline QByteArray contentType() const { return value("Content-Type"); }
+    inline void setContentEncoding(const QByteArray &encoding) { insert(QByteArray("Content-Encoding", 16), encoding); }
 
     /**
      * The Content-Type header field indicates the media type of the message content.
      * E.g.: "text/html"
      */
-    inline void setContentType(const QByteArray &contentType) { insert("Content-Type", contentType); }
+    inline QByteArray contentType() const { return value(QByteArray("Content-Type", 12)); }
+
+    /**
+     * The Content-Type header field indicates the media type of the message content.
+     * E.g.: "text/html"
+     */
+    inline void setContentType(const QByteArray &contentType) { insert(QByteArray("Content-Type", 12), contentType); }
 
     /**
      * Returns the size in bytes of the message content
      */
-    inline qint64 contentLength() const { return value("Content-Length").toLongLong(); }
+    inline qint64 contentLength() const { return value(QByteArray("Content-Length", 14)).toLongLong(); }
 
     /**
      * Defines the size in bytes of the message content
      */
-    inline void setContentLength(qint64 value) { insert("Content-Length", QByteArray::number(value)); }
+    inline void setContentLength(qint64 value) { insert(QByteArray("Content-Length", 14), QByteArray::number(value)); }
 
     /**
      * Defines the header that represents the date and time at which the message was originated
@@ -65,18 +65,18 @@ public:
      * (or has not) been modified since the time specified in this field,
      * then the server will return a 304 Not Modified response instead of the document itself.
      */
-    inline QByteArray ifModifiedSince() const { return value("If-Modified-Since"); }
+    inline QByteArray ifModifiedSince() const { return value(QByteArray("If-Modified-Since", 17)); }
 
     /**
      * This header indicates the date and time at which the resource was last modified.
      */
-    inline QByteArray lastModified() const { return value("Last-Modified"); }
+    inline QByteArray lastModified() const { return value(QByteArray("Last-Modified", 13)); }
 
     /**
      * Defines the date and time at which the resource was last modified.
      * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
      */
-    inline void setLastModified(const QByteArray &value) { insert("Last-Modified", value); }
+    inline void setLastModified(const QByteArray &value) { insert(QByteArray("Last-Modified", 13), value); }
 
     /**
      * Defines the date and time at which the resource was last modified.
@@ -88,21 +88,21 @@ public:
      * Returns the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    inline QByteArray server() const { return value("Server"); }
+    inline QByteArray server() const { return value(QByteArray("Server", 6)); }
 
     /**
      * Defines the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    inline void setServer(const QByteArray &value) { insert("Server", value); }
+    inline void setServer(const QByteArray &value) { insert(QByteArray("Server", 6), value); }
 
-    inline QByteArray userAgent() const { return value("User-Agent"); }
+    inline QByteArray userAgent() const { return value(QByteArray("User-Agent", 10)); }
 
-    inline void setUserAgent(const QByteArray &value) { insert("User-Agent", value); }
+    inline void setUserAgent(const QByteArray &value) { insert(QByteArray("User-Agent", 10), value); }
 
-    inline QByteArray referer() const { return value("Referer"); }
+    inline QByteArray referer() const { return value(QByteArray("Referer", 7)); }
 
-    void setReferer(const QByteArray &value) { insert("Referer", value); }
+    void setReferer(const QByteArray &value) { insert(QByteArray("Referer", 7), value); }
 
     QByteArray header(const QByteArray &field) const { return value(field); }
 

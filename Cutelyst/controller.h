@@ -108,7 +108,7 @@ public:
     /**
      * Returns the action object for the given private name
      */
-    Action *actionFor(Context *ctx, const QString &name);
+    Action *actionFor(Context *ctx, const QByteArray &name);
 
     bool operator==(const char *className);
 
@@ -116,6 +116,9 @@ protected:
     virtual void Begin(Context *ctx);
     virtual bool Auto(Context *ctx);
     virtual void End(Context *ctx);
+
+    // Called when registering
+    void init();
 
 private:
     friend class Action;

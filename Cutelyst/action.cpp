@@ -34,6 +34,9 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
 {
     Q_D(Action);
 
+    // Setup the ns()
+    parent->init();
+
     d->name = parent->ns() + '/' + method.name();
     d->ns =parent->ns();
     d->method = method;

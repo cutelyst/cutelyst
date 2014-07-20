@@ -31,6 +31,44 @@ using namespace Cutelyst;
 Controller::Controller(QObject *parent) :
     QObject(parent)
 {
+}
+
+Controller::~Controller()
+{
+}
+
+QByteArray Controller::ns() const
+{
+    return property("ns").toByteArray();
+}
+
+Action *Controller::actionFor(Context *ctx, const QByteArray &name)
+{
+    return ctx->dispatcher()->getAction(name, ns());
+}
+
+bool Controller::operator==(const char *className)
+{
+    return !qstrcmp(metaObject()->className(), className);
+}
+
+void Controller::Begin(Context *ctx)
+{
+
+}
+
+bool Controller::Auto(Context *ctx)
+{
+    return true;
+}
+
+void Controller::End(Context *ctx)
+{
+
+}
+
+void Controller::init()
+{
     QByteArray controlerNS;
     for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
         if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
@@ -57,42 +95,7 @@ Controller::Controller(QObject *parent) :
             }
         }
     }
-
     setProperty("ns", controlerNS);
-}
-
-Controller::~Controller()
-{
-}
-
-QByteArray Controller::ns() const
-{
-    return property("ns").toByteArray();
-}
-
-Action *Controller::actionFor(Context *ctx, const QString &name)
-{
-    return ctx->dispatcher()->getAction(name, ns());
-}
-
-bool Controller::operator==(const char *className)
-{
-    return !qstrcmp(metaObject()->className(), className);
-}
-
-void Controller::Begin(Context *ctx)
-{
-
-}
-
-bool Controller::Auto(Context *ctx)
-{
-    return true;
-}
-
-void Controller::End(Context *ctx)
-{
-
 }
 
 static QList<QByteArray> dispatchSteps(
@@ -110,14 +113,14 @@ void Controller::_DISPATCH(Context *ctx)
         }
     }
 
-    ctx->forward("_END");
+    ctx->forward(QByteArray("_END", 4));
 }
 
 bool Controller::_BEGIN(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList beginList;
-    beginList = ctx->getActions("Begin", ctx->ns());
+    beginList = ctx->getActions(QByteArray("Begin", 5), ctx->ns());
     if (!beginList.isEmpty()) {
         Action *begin = beginList.last();
         begin->dispatch(ctx);
@@ -129,7 +132,7 @@ bool Controller::_BEGIN(Context *ctx)
 bool Controller::_AUTO(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
-    ActionList autoList = ctx->getActions("Auto", ctx->ns());
+    ActionList autoList = ctx->getActions(QByteArray("Auto", 4), ctx->ns());
     Q_FOREACH (Action *autoAction, autoList) {
         if (!autoAction->dispatch(ctx)) {
             return false;
@@ -151,7 +154,7 @@ bool Controller::_END(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList endList;
-    endList = ctx->getActions("End", ctx->ns());
+    endList = ctx->getActions(QByteArray("End", 3), ctx->ns());
     if (!endList.isEmpty()) {
         Action *end = endList.last();
         end->dispatch(ctx);
