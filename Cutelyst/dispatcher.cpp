@@ -102,7 +102,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 bool Dispatcher::dispatch(Context *ctx)
 {
     if (ctx->action()) {
-        return ctx->forward(QLatin1Char('/') % ctx->action()->ns() % QLatin1String("/_DISPATCH"));
+        return forward(ctx, '/' + ctx->action()->ns() + "/_DISPATCH");
     } else {
         QString error;
         const QString &path = ctx->req()->path();
@@ -117,7 +117,7 @@ bool Dispatcher::dispatch(Context *ctx)
     return false;
 }
 
-bool Dispatcher::forward(Context *ctx, const QString &opname, const QStringList &arguments)
+bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringList &arguments)
 {
     Action *action = command2Action(ctx, opname);
     if (action) {
@@ -174,7 +174,7 @@ Action *Dispatcher::getAction(const QString &name, const QString &ns) const
     return d->actionHash.value(_ns % QLatin1Char('/') % name);
 }
 
-ActionList Dispatcher::getActions(const QString &name, const QString &ns) const
+ActionList Dispatcher::getActions(const QByteArray &name, const QString &ns) const
 {
     Q_D(const Dispatcher);
 

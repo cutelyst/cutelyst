@@ -95,27 +95,29 @@ void Controller::End(Context *ctx)
 
 }
 
+static QList<QByteArray> dispatchSteps(
+{
+            "_BEGIN",
+            "_AUTO",
+            "_ACTION"
+        });
+
 void Controller::_DISPATCH(Context *ctx)
 {
-//    qDebug() << Q_FUNC_INFO;
-    QStringList dispatchSteps;
-    dispatchSteps << QLatin1String("_BEGIN");
-    dispatchSteps << QLatin1String("_AUTO");
-    dispatchSteps << QLatin1String("_ACTION");
-    Q_FOREACH (const QString &disp, dispatchSteps) {
+    Q_FOREACH (const QByteArray &disp, dispatchSteps) {
         if (!ctx->forward(disp)) {
             break;
         }
     }
 
-    ctx->forward(QLatin1String("_END"));
+    ctx->forward("_END");
 }
 
 bool Controller::_BEGIN(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList beginList;
-    beginList = ctx->getActions(QLatin1String("Begin"), ctx->ns());
+    beginList = ctx->getActions("Begin", ctx->ns());
     if (!beginList.isEmpty()) {
         Action *begin = beginList.last();
         begin->dispatch(ctx);
@@ -127,7 +129,7 @@ bool Controller::_BEGIN(Context *ctx)
 bool Controller::_AUTO(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
-    ActionList autoList = ctx->getActions(QLatin1String("Auto"), ctx->ns());
+    ActionList autoList = ctx->getActions("Auto", ctx->ns());
     Q_FOREACH (Action *autoAction, autoList) {
         if (!autoAction->dispatch(ctx)) {
             return false;
@@ -149,7 +151,7 @@ bool Controller::_END(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList endList;
-    endList = ctx->getActions(QLatin1String("End"), ctx->ns());
+    endList = ctx->getActions("End", ctx->ns());
     if (!endList.isEmpty()) {
         Action *end = endList.last();
         end->dispatch(ctx);

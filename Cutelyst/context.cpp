@@ -112,13 +112,13 @@ Action *Context::action() const
     return d->action;
 }
 
-QString Context::actionName() const
+QByteArray Context::actionName() const
 {
     Q_D(const Context);
     return d->action->name();
 }
 
-QString Context::ns() const
+QByteArray Context::ns() const
 {
     Q_D(const Context);
     return d->action->ns();
@@ -200,19 +200,19 @@ void Context::detach()
     d->detached = true;
 }
 
-bool Context::forward(const QString &action, const QStringList &arguments)
+bool Context::forward(const QByteArray &action, const QStringList &arguments)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action, arguments);
 }
 
-Action *Context::getAction(const QString &action, const QString &ns)
+Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
 {
     Q_D(Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QList<Action *> Context::getActions(const QString &action, const QString &ns)
+QList<Action *> Context::getActions(const QByteArray &action, const QByteArray &ns)
 {
     Q_D(Context);
     return d->dispatcher->getActions(action, ns);

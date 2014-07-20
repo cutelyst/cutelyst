@@ -71,7 +71,7 @@ public:
     Action *action() const;
 
     Q_PROPERTY(QString actionName READ actionName)
-    QString actionName() const;
+    QByteArray actionName() const;
 
     /**
      * Returns the namespace of the current action.
@@ -81,7 +81,7 @@ public:
      * c->ns(); // returns 'foo/bar'
      */
     Q_PROPERTY(QString ns READ ns)
-    QString ns() const;
+    QByteArray ns() const;
 
     /**
      * Returns the current Request object containing
@@ -108,9 +108,10 @@ public:
     inline bool dispatch();
     bool detached() const;
     void detach();
-    bool forward(const QString &action, const QStringList &arguments = QStringList());
-    inline Action *getAction(const QString &action, const QString &ns = QString());
-    QList<Action*> getActions(const QString &action, const QString &ns = QString());
+
+    bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
+    Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
+    QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
 
     bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);
     QList<Plugin::AbstractPlugin *> plugins();

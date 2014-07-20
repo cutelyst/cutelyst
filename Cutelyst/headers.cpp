@@ -47,71 +47,70 @@ void Headers::setHeader(const QString &field, const QStringList &values)
     insert(field.toLocal8Bit(), values.join(QLatin1String(", ")).toLocal8Bit());
 }
 
-static QList<QByteArray> headerOrder(
-{
-            // General headers
-            "Cache-Control",
-            "Connection",
-            "Date",
-            "Pragma",
-            "Trailer",
-            "Transfer-Encoding",
-            "Upgrade",
-            "Via",
-            "Warning",
-            // Request headers
-            "Accept",
-            "Accept-Charset",
-            "Accept-Encoding",
-            "Accept-Language",
-            "Authorization",
-            "Expect",
-            "From",
-            "Host",
-            "If-Match",
-            "If-Modified-Since",
-            "If-None-Match",
-            "If-Range",
-            "If-Unmodified-Since",
-            "Max-Forwards",
-            "Proxy-Authorization",
-            "Range",
-            "Referer",
-            "TE",
-            "User-Agent",
-            // Response headers
-            "Accept-Ranges",
-            "Age",
-            "ETag",
-            "Location",
-            "Proxy-Authenticate",
-            "Retry-After",
-            "Server",
-            "Vary",
-            "WWW-Authenticate",
-            // Entity headers
-            "Allow",
-            "Content-Encoding",
-            "Content-Language",
-            "Content-Length",
-            "Content-Location",
-            "Content-MD5",
-            "Content-Range",
-            "Content-Type",
-            "Expires",
-            "Last-Modified"
-        });
+static QByteArray cutelyst_header_order(
+        // General headers
+        "Cache-Control\n"
+        "Connection\n"
+        "Date\n"
+        "Pragma\n"
+        "Trailer\n"
+        "Transfer-Encoding\n"
+        "Upgrade\n"
+        "Via\n"
+        "Warning\n"
+        // Request headers
+        "Accept\n"
+        "Accept-Charset\n"
+        "Accept-Encoding\n"
+        "Accept-Language\n"
+        "Authorization\n"
+        "Expect\n"
+        "From\n"
+        "Host\n"
+        "If-Match\n"
+        "If-Modified-Since\n"
+        "If-None-Match\n"
+        "If-Range\n"
+        "If-Unmodified-Since\n"
+        "Max-Forwards\n"
+        "Proxy-Authorization\n"
+        "Range\n"
+        "Referer\n"
+        "TE\n"
+        "User-Agent\n"
+        // Response headers
+        "Accept-Ranges\n"
+        "Age\n"
+        "ETag\n"
+        "Location\n"
+        "Proxy-Authenticate\n"
+        "Retry-After\n"
+        "Server\n"
+        "Vary\n"
+        "WWW-Authenticate\n"
+        // Entity headers
+        "Allow\n"
+        "Content-Encoding\n"
+        "Content-Language\n"
+        "Content-Length\n"
+        "Content-Location\n"
+        "Content-MD5\n"
+        "Content-Range\n"
+        "Content-Type\n"
+        "Expires\n"
+        "Last-Modified"
+        );
 
-bool httpGoodPracticeSort(const HeaderValuePair &pair1, const HeaderValuePair &pair2)
+bool httpGoodPracticeByteArraySort(const QByteArray &pair1, const QByteArray &pair2)
 {
-    int index1 = headerOrder.indexOf(pair1.first);
-    int index2 = headerOrder.indexOf(pair2.first);
+    int index1 = cutelyst_header_order.indexOf(pair1);
+    int index2 = cutelyst_header_order.indexOf(pair2);
     if (index1 != -1 && index2 != -1) {
         // Both items are in the headerOrder list
         return index1 < index2;
     } else if (index1 == -1 && index2 == -1) {
         // Noone of them are int the headerOrder list
-        return pair1.first < pair2.first;
+        return pair1 < pair2;
     }
 
     // if the pair1 is in the header list it should go first
@@ -122,14 +121,14 @@ QList<HeaderValuePair> Headers::headersForResponse() const
 {
     QList<HeaderValuePair> ret;
 
-    QHash<QByteArray, QByteArray>::ConstIterator it = QHash::constBegin();
-    while (it != QHash::constEnd()) {
-        ret.append(qMakePair(it.key(), it.value()));
-        ++it;
-    }
+    QList<QByteArray> fields = keys();
 
     // Sort base on the "good practices" of HTTP RCF
-    qSort(ret.begin(), ret.end(), &httpGoodPracticeSort);
+    qSort(fields.begin(), fields.end(), &httpGoodPracticeByteArraySort);
+
+    Q_FOREACH (const QByteArray &field, fields) {
+        ret.append(qMakePair(field, value(field)));
+    }
 
     return ret;
 }

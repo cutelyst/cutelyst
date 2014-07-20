@@ -43,10 +43,10 @@ protected:
     void setupActions(const QList<Controller *> &controllers);
 
     bool dispatch(Context *ctx);
-    bool forward(Context *ctx, const QString &opname, const QStringList &arguments);
+    bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
     Action* getAction(const QString &name, const QString &ns = QString()) const;
-    ActionList getActions(const QString &name, const QString &ns) const;
+    ActionList getActions(const QByteArray &name, const QString &ns) const;
     QHash<QString, Controller*> controllers() const;
     QString uriForAction(Action *action, const QStringList &captures);
     void registerDispatchType(DispatchType *dispatchType);
