@@ -102,7 +102,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 {
     Request *request;
     QByteArray host = QByteArray::fromRawData(req->host, req->host_len);
-    QByteArray path = QByteArray::fromRawData(req->path_info, req->path_info_len);
+    QByteArray path = QByteArray::fromRawData(req->uri, req->uri_len);
     QUrlQuery queryString(QByteArray::fromRawData(req->query_string, req->query_string_len));
     request = newRequest(req,
                          req->https_len ? "http" : "https",

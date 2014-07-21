@@ -102,7 +102,11 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 bool Dispatcher::dispatch(Context *ctx)
 {
     if (ctx->action()) {
-        return forward(ctx, '/' + ctx->action()->ns() + "/_DISPATCH");
+        QByteArray action = ctx->ns();
+        action.reserve(action.size() + 12);
+        action.prepend('/');
+        action.append("/_DISPATCH", 10);
+        return forward(ctx, action);
     } else {
         QString error;
         const QString &path = ctx->req()->path();
@@ -144,7 +148,7 @@ void Dispatcher::prepareAction(Context *ctx)
         path.remove(d->initialSlash);
 
         Q_FOREACH (DispatchType *type, d->dispatchers) {
-            if (type->match(ctx, path)) {
+            if (type->match(ctx, path.toLocal8Bit())) {
                 if (!path.isEmpty()) {
                     qCDebug(CUTELYST_DISPATCHER) << "Path is" << path;
                 }
@@ -169,9 +173,12 @@ Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) cons
         return 0;
     }
 
-    QByteArray _ns = cleanNamespace(ns);
+    QByteArray action = cleanNamespace(ns);
+    action.reserve(action.size() + name.size() + 1);
+    action.append('/');
+    action.append(name);
 
-    return d->actionHash.value(_ns + '/' + name);
+    return d->actionHash.value(action);
 }
 
 ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) const
@@ -183,7 +190,7 @@ ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) 
         return ret;
     }
 
-    QString _ns = cleanNamespace(ns);
+    QByteArray _ns = cleanNamespace(ns);
 
     ActionList containers = d->getContainers(_ns);
     Q_FOREACH (Action *action, containers) {
@@ -234,7 +241,7 @@ void Dispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QMap<QByteArray, Action*>::ConstIterator it = d->actionHash.constBegin();
+    QHash<QByteArray, Action*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         Action *action = it.value();
         QByteArray path = it.key();
@@ -316,8 +323,8 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
     if (!ret.startsWith('/')) {
         // TODO at Catalyst it uses
         // c->stack->last()->namespace
-        QByteArray ns = ctx->action()->ns();
-        ret = ns + '/' + path;
+        ret.prepend('/');
+        ret.prepend(ctx->action()->ns());
     }
 
     if (ret.startsWith('/')) {
@@ -332,14 +339,14 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, c
     Q_D(Dispatcher);
 
     Action *ret = 0;
-    QByteArray path = actionRel2Abs(ctx, relativePath);
+    QString path = QString::fromLatin1(actionRel2Abs(ctx, relativePath));
 
     while (!path.isEmpty()) {
         QRegularExpressionMatch match = d->pathSplit.match(path);
         if (match.hasMatch()) {
             path = match.captured(1).toLatin1();
             ret = getAction(match.captured(2).toLatin1(),
-                            path);
+                            path.toLatin1());
             if (ret) {
                 break;
             }
@@ -374,20 +381,20 @@ QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
 }
 
 
-ActionList DispatcherPrivate::getContainers(const QString &ns) const
+ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
 {
     ActionList ret;
 
-    QString _ns = ns;
-    if (_ns == QLatin1String("/")) {
-        _ns = QLatin1String("");
-    }
-
-    while (!_ns.isEmpty()) {
-        ret << containerHash.value(_ns);
-        _ns = _ns.section(QLatin1Char('/'), 0, -2);
-    }
-    ret << containerHash.value(_ns);
+    if (ns != "/") {
+        int pos = ns.size();
+//        qDebug() << pos << _ns.mid(0, pos);
+        while (pos > 0) {
+//            qDebug() << pos << _ns.mid(0, pos);
+            ret.append(containerHash.value(ns.mid(0, pos)));
+            pos = ns.lastIndexOf('/', pos - 1);
+        }
+    }   
+    ret.append(containerHash.value(""));
 
     return ret;
 }

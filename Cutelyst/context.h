@@ -25,16 +25,17 @@
 #include <QVariant>
 #include <QStringList>
 
+#include <Cutelyst/Action>
+#include <Cutelyst/Request>
+
 namespace Cutelyst {
 
 namespace Plugin {
 class AbstractPlugin;
 }
 
-class Action;
 class Application;
 class Engine;
-class Request;
 class Response;
 class Dispatcher;
 class Controller;
@@ -55,7 +56,9 @@ public:
      */
     bool state() const;
     void setState(bool state);
-    QStringList args() const;
+    inline QStringList args() const
+    { return request()->args(); }
+
     QString uriPrefix() const;
     Engine *engine() const;
 
@@ -81,7 +84,8 @@ public:
      * c->ns(); // returns 'foo/bar'
      */
     Q_PROPERTY(QString ns READ ns)
-    QByteArray ns() const;
+    inline QByteArray ns() const
+    { return action()->ns(); }
 
     /**
      * Returns the current Request object containing

@@ -66,6 +66,7 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
     RequestPrivate *requestPriv = new RequestPrivate;
     requestPriv->requestPtr = requestData;
     requestPriv->engine = this;
+    requestPriv->path = QString::fromLocal8Bit(path);
 
     QUrl uri;
     if (hostAndPort.isEmpty()) {
@@ -76,7 +77,6 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
     }
     uri.setQuery(queryString);
 
-    requestPriv->path = path;
     requestPriv->uri = uri;
     Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
         requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);

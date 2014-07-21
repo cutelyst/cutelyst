@@ -151,9 +151,7 @@ bool Action::dispatch(Context *ctx)
 
     QStringList args = ctx->args();
     // Fill the missing arguments
-    for (int i = args.count(); i < 8; ++i) {
-        args << QString();
-    }
+    args += d->emptyArgs;
 
     if (d->method.returnType() == QMetaType::Bool) {
         bool methodRet;

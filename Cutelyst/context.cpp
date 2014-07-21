@@ -76,12 +76,6 @@ void Context::setState(bool state)
     d->state = state;
 }
 
-QStringList Context::args() const
-{
-    Q_D(const Context);
-    return d->request->args();
-}
-
 Engine *Context::engine() const
 {
     Q_D(const Context);
@@ -116,12 +110,6 @@ QByteArray Context::actionName() const
 {
     Q_D(const Context);
     return d->action->name();
-}
-
-QByteArray Context::ns() const
-{
-    Q_D(const Context);
-    return d->action->ns();
 }
 
 Request *Context::request() const

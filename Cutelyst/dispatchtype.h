@@ -41,7 +41,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Context *ctx, const QString &path) const = 0;
+    virtual bool match(Context *ctx, const QByteArray &path) const = 0;
 
     /**
      * Returns an uri for an action //TODO
@@ -63,7 +63,7 @@ public:
     virtual bool isLowPrecedence() const;
 
 protected:
-    void setupMatchedAction(Context *ctx, Action *action, const QString &match) const;
+    void setupMatchedAction(Context *ctx, Action *action, const QByteArray &match) const;
 };
 
 }

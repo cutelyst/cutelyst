@@ -29,9 +29,9 @@ namespace Cutelyst {
 class DispatcherPrivate
 {
 public:
-    ActionList getContainers(const QString &ns) const;
-    QMap<QByteArray, Action*> actionHash;
-    QMap<QString, ActionList> containerHash;
+    ActionList getContainers(const QByteArray &ns) const;
+    QHash<QByteArray, Action*> actionHash;
+    QHash<QByteArray, ActionList> containerHash;
     QHash<QString, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;
     QRegularExpression initialSlash = QRegularExpression("^/+");

@@ -41,7 +41,7 @@ public:
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
     bool detached;
-    QString match;
+    QByteArray match;
     QStringList error;
     QVariantHash stash;
     int status;

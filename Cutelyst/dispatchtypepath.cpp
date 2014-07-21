@@ -44,9 +44,9 @@ void DispatchTypePath::list() const
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
 
-    QStringList keys = m_paths.keys();
-    keys.sort();
-    Q_FOREACH (const QString &path, keys) {
+    QList<QByteArray> keys = m_paths.keys();
+//    keys.sort();
+    Q_FOREACH (const QByteArray &path, keys) {
         Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             QString args = action->attributes().value("Args");
@@ -78,7 +78,7 @@ void DispatchTypePath::list() const
         << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
         << "." << endl;
 
-    Q_FOREACH (const QString &path, keys) {
+    Q_FOREACH (const QByteArray &path, keys) {
         Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             if (!action->attributes().contains("Args")) {
@@ -108,11 +108,11 @@ void DispatchTypePath::list() const
     qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
 }
 
-bool DispatchTypePath::match(Context *ctx, const QString &path) const
+bool DispatchTypePath::match(Context *ctx, const QByteArray &path) const
 {
-    QString _path = path;
+    QByteArray _path = path;
     if (_path.isEmpty()) {
-        _path = QLatin1Char('/');
+        _path = QByteArray("/", 1);
     }
 
     const ActionList &actions = m_paths.value(_path);
@@ -160,23 +160,24 @@ bool actionLessThan(Action *a1, Action *a2)
     return a1->numberOfArgs() < a2->numberOfArgs();
 }
 
-bool DispatchTypePath::registerPath(const QString &path, Action *action)
+bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
 {
-    QString _path = path;
-    if (_path.startsWith(QLatin1Char('/'))) {
+    QByteArray _path = path;
+    if (_path.startsWith('/')) {
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {
         // TODO when we try to match a path
         // it comes without a leading / so
         // when would this be used?
-        _path = QLatin1Char('/');
+        _path = QByteArray("/", 1);
     }
 
     if (m_paths.contains(_path)) {
         ActionList actions = m_paths.value(_path);
+        int actionNumberOfArgs = action->numberOfArgs();
         Q_FOREACH (const Action *regAction, actions) {
-            if (regAction->numberOfArgs() == action->numberOfArgs()) {
+            if (regAction->numberOfArgs() == actionNumberOfArgs) {
                 qCWarning(CUTELYST_DISPATCHER) << "Not registering Action"
                                                << action->name()
                                                << "of controller"
@@ -187,7 +188,7 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
             }
         }
 
-        actions << action;
+        actions.append(action);
         qSort(actions.begin(), actions.end(), actionLessThan);
         m_paths[_path] = actions;
     } else {

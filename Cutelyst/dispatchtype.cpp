@@ -44,7 +44,7 @@ bool DispatchType::isLowPrecedence() const
     return false;
 }
 
-void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match) const
+void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QByteArray &match) const
 {
     ctx->d_ptr->action = action;
     ctx->d_ptr->match = match;

@@ -36,16 +36,16 @@ public:
 
     virtual void list() const;
 
-    virtual bool match(Context *ctx, const QString &path) const;
+    virtual bool match(Context *ctx, const QByteArray &path) const;
 
     virtual bool registerAction(Action *action);
 
     virtual QByteArray uriForAction(Action *action, const QStringList &captures) const;
 
 private:
-    bool registerPath(const QString &path, Action *action);
+    bool registerPath(const QByteArray &path, Action *action);
 
-    QHash<QString, ActionList> m_paths;
+    QHash<QByteArray, ActionList> m_paths;
     QRegularExpression m_multipleSlashes = QRegularExpression("/{1,}");
 };
 
