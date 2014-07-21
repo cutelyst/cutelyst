@@ -27,7 +27,7 @@
 
 namespace Cutelyst {
 
-class CutelystEngine;
+class Engine;
 class ResponsePrivate
 {
 public:
@@ -37,7 +37,7 @@ public:
     QList<QNetworkCookie> cookies;
     QByteArray body;
     QUrl location;
-    CutelystEngine *engine;
+    Engine *engine;
 };
 
 }

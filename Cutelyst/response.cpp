@@ -43,12 +43,6 @@ quint16 Response::status() const
     return d->status;
 }
 
-QByteArray Response::statusCode() const
-{
-    Q_D(const Response);
-    return Engine::statusCode(d->status);
-}
-
 void Response::setStatus(quint16 status)
 {
     Q_D(Response);

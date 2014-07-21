@@ -53,7 +53,7 @@ public:
         TemporaryRedirect            = 307, // Since HTTP/1.1
         PermanentRedirect            = 308, // Since HTTP/1.1
         BadRequest                   = 400,
-        AuthorizationRequired        = 401,
+        Unauthorized                 = 401,
         PaymentRequired              = 402,
         Forbidden                    = 403,
         NotFound                     = 404,
@@ -82,13 +82,8 @@ public:
     ~Response();
 
     quint16 status() const;
-
-    /**
-     * @brief statusCode
-     * @return An HTTP status code ie "200 OK"
-     */
-    QByteArray statusCode() const;
     void setStatus(quint16 status);
+
     bool finalizedHeaders() const;
 
     void addHeaderValue(const QByteArray &key, const QByteArray &value);

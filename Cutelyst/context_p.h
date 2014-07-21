@@ -37,15 +37,15 @@ public:
     Engine *engine;
     Request *request;
     Response *response;
-    Action *action;
+    Action *action = 0;
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
-    bool detached;
+    bool detached = false;
     QByteArray match;
     QStringList error;
     QVariantHash stash;
     int status;
-    bool state;
+    bool state = false;
     QTime *stats;
 };
 

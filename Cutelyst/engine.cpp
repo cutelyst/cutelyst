@@ -170,15 +170,17 @@ bool Engine::postForkApplication()
     return d->app->postFork();
 }
 
-QByteArray Engine::statusCode(quint16 status)
+QByteArray Engine::statusCode(quint16 status) const
 {
+    Q_D(const Engine);
+
     switch (status) {
     case Response::OK:
-        return QByteArray("200 OK", 6);
+        return d->statusOk;
     case Response::Found:
-        return "302 Found";
+        return d->statusFound;
     case Response::NotFound:
-        return "404 Not Found";
+        return d->statusNotFound;
     case Response::InternalServerError:
         return "500 Internal Server Error";
     case Response::MovedPermanently:
@@ -191,7 +193,7 @@ QByteArray Engine::statusCode(quint16 status)
         return "403 Forbidden";
     case Response::TemporaryRedirect:
         return "307 Temporary Redirect";
-    case Response::AuthorizationRequired:
+    case Response::Unauthorized:
         return "401 Unauthorized";
     case Response::BadRequest:
         return "400 Bad Request";

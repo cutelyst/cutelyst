@@ -345,11 +345,7 @@ void Context::setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &k
 }
 
 ContextPrivate::ContextPrivate() :
-    response(new Response),
-    action(0),
-    detached(false),
-    state(false),
-    stats(0)
+    response(new Response)
 {
     stats = new QTime;
     stats->start();

@@ -68,7 +68,7 @@ public:
      */
     QVariantHash config(const QString &entity) const;
 
-    static QByteArray statusCode(quint16 status);
+    QByteArray statusCode(quint16 status) const;
 
     /**
      * @brief initApplication

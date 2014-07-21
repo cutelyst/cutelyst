@@ -344,7 +344,7 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, c
     while (!path.isEmpty()) {
         QRegularExpressionMatch match = d->pathSplit.match(path);
         if (match.hasMatch()) {
-            path = match.captured(1).toLatin1();
+            path = match.captured(1);
             ret = getAction(match.captured(2).toLatin1(),
                             path.toLatin1());
             if (ret) {
