@@ -209,24 +209,27 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
     Response *res = ctx->res();
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
 
+    QByteArray status = statusCode(res->status());
     if (uwsgi_response_prepare_headers(wsgi_req,
-                                       res->statusCode().data(),
-                                       res->statusCode().size())) {
+                                       status.data(),
+                                       status.size())) {
         return;
     }
 
-    QList<HeaderValuePair> headers = ctx->res()->headers().headersForResponse();
+    res->addHeaderValue(QByteArray("Connection", 10), QByteArray("HTTP/1.1", 8));
+
+    QList<HeaderValuePair> headers = res->headers().headersForResponse();
     Q_FOREACH (HeaderValuePair pair, headers) {
+        QByteArray &key = pair.first;
+        QByteArray &value = pair.second;
         if (uwsgi_response_add_header(wsgi_req,
-                                      pair.first.data(),
-                                      pair.first.size(),
-                                      pair.second.data(),
-                                      pair.second.size())) {
+                                      key.data(),
+                                      key.size(),
+                                      value.data(),
+                                      value.size())) {
             return;
         }
     }
-
-    uwsgi_response_add_header(wsgi_req, (char *)"Connection", 10, (char *)"HTTP/1.1", 8);
 }
 
 bool EngineUwsgi::init()

@@ -172,44 +172,92 @@ bool Engine::postForkApplication()
 
 QByteArray Engine::statusCode(quint16 status)
 {
-    QByteArray ret = QByteArray::number(status);
     switch (status) {
     case Response::OK:
-        ret += " OK";
-        break;
-    case Response::MovedPermanently:
-        ret += " Moved Permanently";
-        break;
+        return QByteArray("200 OK", 6);
     case Response::Found:
-        ret += " Found";
-        break;
-    case Response::NotModified:
-        ret += " Not Modified";
-        break;
-    case Response::TemporaryRedirect:
-        ret += " Temporary Redirect";
-        break;
-    case Response::BadRequest:
-        ret += " Bad Request";
-        break;
-    case Response::AuthorizationRequired:
-        ret += " Authorization Required";
-        break;
-    case Response::Forbidden:
-        ret += " Forbidden";
-        break;
+        return "302 Found";
     case Response::NotFound:
-        ret += " Not Found";
-        break;
-    case Response::MethodNotAllowed:
-        ret += " Method Not Allowed";
-        break;
+        return "404 Not Found";
     case Response::InternalServerError:
-        ret += " Internal Server Error";
-        break;
+        return "500 Internal Server Error";
+    case Response::MovedPermanently:
+        return "301 Moved Permanently";
+    case Response::NotModified:
+        return "304 Not Modified";
+    case Response::SeeOther:
+        return "303 See Other";
+    case Response::Forbidden:
+        return "403 Forbidden";
+    case Response::TemporaryRedirect:
+        return "307 Temporary Redirect";
+    case Response::AuthorizationRequired:
+        return "401 Unauthorized";
+    case Response::BadRequest:
+        return "400 Bad Request";
+    case Response::MethodNotAllowed:
+        return "405 Method Not Allowed";
+    case Response::RequestTimeout:
+        return "408 Request Timeout";
+    case Response::Continue:
+        return "100 Continue";
+    case Response::SwitchingProtocols:
+        return "101 Switching Protocols";
+    case Response::Created:
+        return "201 Created";
+    case Response::Accepted:
+        return "202 Accepted";
+    case Response::NonAuthoritativeInformation:
+        return "203 Non-Authoritative Information";
+    case Response::NoContent:
+        return "204 No Content";
+    case Response::ResetContent:
+        return "205 Reset Content";
+    case Response::PartialContent:
+        return "206 Partial Content";
+    case Response::MultipleChoices:
+        return "300 Multiple Choices";
+    case Response::UseProxy:
+        return "305 Use Proxy";
+    case Response::PaymentRequired:
+        return "402 Payment Required";
+    case Response::NotAcceptable:
+        return "406 Not Acceptable";
+    case Response::ProxyAuthenticationRequired:
+        return "407 Proxy Authentication Required";
+    case Response::Conflict:
+        return "409 Conflict";
+    case Response::Gone:
+        return "410 Gone";
+    case Response::LengthRequired:
+        return "411 Length Required";
+    case Response::PreconditionFailed:
+        return "412 Precondition Failed";
+    case Response::RequestEntityTooLarge:
+        return "413 Request Entity Too Large";
+    case Response::RequestURITooLong:
+        return "414 Request-URI Too Long";
+    case Response::UnsupportedMediaType:
+        return "415 Unsupported Media Type";
+    case Response::RequestedRangeNotSatisfiable:
+        return "416 Requested Range Not Satisfiable";
+    case Response::ExpectationFailed:
+        return "417 Expectation Failed";
+    case Response::NotImplemented:
+        return "501 Not Implemented";
+    case Response::BadGateway:
+        return "502 Bad Gateway";
+    case Response::ServiceUnavailable:
+        return "503 Service Unavailable";
+    case Response::GatewayTimeout:
+        return "504 Gateway Timeout";
+    case Response::HTTPVersionNotSupported:
+        return "505 HTTP Version Not Supported";
+    case Response::BandwidthLimitExceeded:
+        return "509 Bandwidth Limit Exceeded";
+    default:
+        return QByteArray::number(status);
     }
-
-    return ret;
 }
 
 void Engine::reload()
