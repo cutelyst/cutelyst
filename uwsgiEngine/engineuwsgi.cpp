@@ -22,6 +22,8 @@
 #include "bodyuwsgi.h"
 #include "bodybuffereduwsgi.h"
 
+#include <QSocketNotifier>
+
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
@@ -31,13 +33,11 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
 
-EngineUwsgi::EngineUwsgi(Application *parent) :
-    Engine(parent)
+EngineUwsgi::EngineUwsgi(Application *app) :
+    m_app(app)
 {
     connect(this, &EngineUwsgi::postFork,
             this, &EngineUwsgi::forked, Qt::QueuedConnection);
-    connect(this, &EngineUwsgi::receiveRequest,
-            this, &EngineUwsgi::readRequestUWSGI, Qt::QueuedConnection);
 }
 
 EngineUwsgi::~EngineUwsgi()
@@ -90,12 +90,11 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
     }
 
 //    qCDebug(CUTELYST_UWSGI) << "async_environ" << wsgi_req->async_environ;
-    qCDebug(CUTELYST_UWSGI) << "thread -id" << thread()->currentThread();
     processRequest(wsgi_req);
 
 end:
     uwsgi_close_request(wsgi_req);
-    Q_EMIT requestFinished(wsgi_req);
+    m_unusedReq.append(wsgi_req);
 }
 
 void EngineUwsgi::processRequest(wsgi_request *req)
@@ -204,6 +203,47 @@ void EngineUwsgi::reload()
     uwsgi_reload(uwsgi.argv);
 }
 
+void EngineUwsgi::addUnusedRequest(wsgi_request *req)
+{
+    m_unusedReq.append(req);
+}
+
+void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
+{
+    QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read);
+    QObject::connect(socketNotifier, &QSocketNotifier::activated,
+                     [=](int fd) {
+        struct wsgi_request *wsgi_req = m_unusedReq.takeFirst();
+        if (wsgi_req == NULL) {
+            uwsgi_async_queue_is_full(uwsgi_now());
+            return;
+        }
+
+        // fill wsgi_request structure
+        wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
+
+        // mark core as used
+        uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 1;
+
+        // accept the connection
+        if (wsgi_req_simple_accept(wsgi_req, fd)) {
+            uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
+            m_unusedReq.append(wsgi_req);
+            return;
+        }
+
+        wsgi_req->start_of_request = uwsgi_micros();
+        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
+
+        // enter harakiri mode
+        if (uwsgi.harakiri_options.workers > 0) {
+            set_harakiri(uwsgi.harakiri_options.workers);
+        }
+
+        readRequestUWSGI(wsgi_req);
+    });
+}
+
 void EngineUwsgi::finalizeHeaders(Context *ctx)
 {
     Response *res = ctx->res();
@@ -239,8 +279,25 @@ bool EngineUwsgi::init()
 
 void EngineUwsgi::forked()
 {
-    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << thread()->currentThread();
-    if (!postForkApplication()) {
+    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << QThread::currentThread() << qApp->thread() << thread();
+
+    if (QThread::currentThread() != qApp->thread()) {
+        qCDebug(CUTELYST_UWSGI) << "Post-Fork different thread";
+        m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
+        if (!m_app) {
+            uwsgi_log("*** FATAL *** Could not create a new instance of your Cutelyst::Application,"
+                      "make sure your constructor has Q_INVOKABLE macro\n");
+            exit(1);
+        }
+        m_app->moveToThread(thread());
+        m_app->setParent(this);
+
+        // init and postfork
+        if (!initApplication(m_app, true)) {
+            uwsgi_log("Failed to init application.\n");
+            exit(1);
+        }
+    } else if (!postForkApplication()) {
 #ifdef UWSGI_GO_CHEAP_CODE
         // We need to tell the master process that the
         // application failed to setup and that it shouldn't

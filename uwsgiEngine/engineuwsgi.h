@@ -28,8 +28,6 @@
 #include <QLoggingCategory>
 #include <QThread>
 
-#define free_req_queue uwsgi.async_queue_unused_ptr++; uwsgi.async_queue_unused[uwsgi.async_queue_unused_ptr] = wsgi_req
-
 extern struct uwsgi_server uwsgi;
 
 namespace Cutelyst {
@@ -42,7 +40,7 @@ class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(Application *parent = 0);
+    explicit EngineUwsgi(Application *app = 0);
     ~EngineUwsgi();
 
     void setThread(QThread *thread);
@@ -60,13 +58,17 @@ public:
 
     virtual void reload();
 
+    void addUnusedRequest(wsgi_request *req);
+    void watchSocket(struct uwsgi_socket *uwsgi_sock);
+
 Q_SIGNALS:
-    void receiveRequest(wsgi_request *req);
     void postFork();
-    void requestFinished(wsgi_request *wsgi_req);
 
 private:
     void forked();
+
+    Cutelyst::Application *m_app;
+    QList<struct wsgi_request *> m_unusedReq;
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)
