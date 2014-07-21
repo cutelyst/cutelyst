@@ -47,8 +47,7 @@ View::View(const QString &engine, QObject *parent) :
                 m_interface = qobject_cast<ViewInterface *>(plugin);
                 if (!m_interface) {
                     qCritical(CUTELYST_VIEW) << "Could not create an instance of the view engine:" << engine;
-                } else if (m_interface->thread()->currentThread() != QThread::currentThread() &&
-                           m_interface->thread()->currentThread() != qApp->thread()) {
+                } else if (m_interface->thread() != QThread::currentThread()) {
                     m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance());
 
                     if (!m_interface) {
@@ -65,7 +64,6 @@ View::View(const QString &engine, QObject *parent) :
     if (!m_interface) {
         qCCritical(CUTELYST_VIEW) << "View Engine not loaded:" << engine;
     } else {
-        m_interface->moveToThread(QThread::currentThread());
         m_interface->setParent(this);
     }
 }
