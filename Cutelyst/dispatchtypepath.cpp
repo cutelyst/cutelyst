@@ -45,7 +45,7 @@ void DispatchTypePath::list() const
     int privateLength = privateTitle.length();
 
     QList<QByteArray> keys = m_paths.keys();
-//    keys.sort();
+    qSort(keys.begin(), keys.end());
     Q_FOREACH (const QByteArray &path, keys) {
         Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;

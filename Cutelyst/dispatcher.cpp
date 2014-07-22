@@ -208,7 +208,7 @@ ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) 
     return ret;
 }
 
-QHash<QString, Controller *> Dispatcher::controllers() const
+QHash<QByteArray, Controller *> Dispatcher::controllers() const
 {
     Q_D(const Dispatcher);
     return d->constrollerHash;
@@ -273,20 +273,20 @@ void Dispatcher::printActions()
         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
         << "." << endl;
 
-    it = d->actionHash.constBegin();
-    while (it != d->actionHash.constEnd()) {
-        Action *action = it.value();
+    QList<QByteArray> keys = d->actionHash.keys();
+    qSort(keys.begin(), keys.end());
+    Q_FOREACH (const QByteArray &key, keys) {
+        Action *action = d->actionHash.value(key);
         if (showInternalActions || !action->name().startsWith('_')) {
-            QString path = it.key();
+            QString path = key;
             if (!path.startsWith(QLatin1String("/"))) {
                 path.prepend(QLatin1String("/"));
             }
             out << "|" << path.leftJustified(privateLength).toUtf8().data()
-                << "|" << action->className().leftJustified(classLength).toUtf8().data()
+                << "|" << QString(action->className()).leftJustified(classLength).toUtf8().data()
                 << "|" << QString(action->name()).leftJustified(actionLength).toUtf8().data()
                 << "|" << endl;
         }
-        ++it;
     }
 
     out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()

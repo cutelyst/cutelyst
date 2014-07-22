@@ -130,7 +130,7 @@ QMultiHash<QByteArray, QByteArray> Action::attributes() const
     return d->attributes;
 }
 
-QString Action::className() const
+QByteArray Action::className() const
 {
     return parent()->metaObject()->className();
 }

@@ -47,7 +47,7 @@ protected:
     void prepareAction(Context *ctx);
     Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
     ActionList getActions(const QByteArray &name, const QByteArray &ns) const;
-    QHash<QString, Controller*> controllers() const;
+    QHash<QByteArray, Controller *> controllers() const;
     QByteArray uriForAction(Action *action, const QStringList &captures);
     void registerDispatchType(DispatchType *dispatchType);
 

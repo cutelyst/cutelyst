@@ -130,13 +130,13 @@ Dispatcher *Context::dispatcher() const
     return d->dispatcher;
 }
 
-QString Cutelyst::Context::controllerName() const
+QByteArray Cutelyst::Context::controllerName() const
 {
     Q_D(const Context);
     return d->action->controller()->metaObject()->className();
 }
 
-Controller *Context::controller(const QString &name) const
+Controller *Context::controller(const QByteArray &name) const
 {
     Q_D(const Context);
     if (name.isEmpty()) {

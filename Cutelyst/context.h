@@ -100,9 +100,9 @@ public:
     Dispatcher *dispatcher() const;
 
     Q_PROPERTY(QString controllerName READ controllerName)
-    QString controllerName() const;
+    QByteArray controllerName() const;
 
-    Controller *controller(const QString &name = QString()) const;
+    Controller *controller(const QByteArray &name = QByteArray()) const;
     QString match() const;
 
     QVariantHash &stash();

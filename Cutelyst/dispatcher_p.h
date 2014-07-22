@@ -22,8 +22,6 @@
 
 #include "dispatcher.h"
 
-#include <QRegularExpression>
-
 namespace Cutelyst {
 
 class DispatcherPrivate
@@ -32,9 +30,8 @@ public:
     ActionList getContainers(const QByteArray &ns) const;
     QHash<QByteArray, Action*> actionHash;
     QHash<QByteArray, ActionList> containerHash;
-    QHash<QString, Controller *> constrollerHash;
+    QHash<QByteArray, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;
-    QRegularExpression pathSplit = QRegularExpression("^(?:(.*)/)?(\\w+)?$");
 };
 
 }

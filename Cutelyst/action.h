@@ -46,7 +46,7 @@ public:
     /**
      * @return Returns the name of the component where this action is defined
      */
-    QString className() const;
+    QByteArray className() const;
 
     /**
      * @return Returns the controller where this action is defined
