@@ -135,23 +135,8 @@ protected:
      * Engines must call this when the Request/Response objects
      * are ready for to be processed
      */
-    void handleRequest(Request *request, bool autoDelete = true);
-    Request *newRequest(RequestPrivate *priv);
-    Request *newRequest(void *requestData,
-                        const QByteArray &scheme,
-                        const QByteArray &hostAndPort,
-                        const QByteArray &path,
-                        const QUrlQuery &queryString);
-    void setupRequest(Request *request,
-                      const QByteArray &method,
-                      const QByteArray &protocol,
-                      const Cutelyst::Headers &headers,
-                      QIODevice *body,
-                      const QByteArray &remoteUser,
-                      const QHostAddress &address,
-                      quint16 peerPort);
+    void handleRequest(Request *request, bool autoDelete);
 
-protected:
     EnginePrivate *d_ptr;
 
 private:

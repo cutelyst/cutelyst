@@ -108,16 +108,17 @@ void DispatchTypePath::list() const
     qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
 }
 
-bool DispatchTypePath::match(Context *ctx, const QByteArray &path) const
+bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const
 {
     QByteArray _path = path;
     if (_path.isEmpty()) {
         _path = QByteArray("/", 1);
     }
 
+    int numberOfArgs = args.size();
     const ActionList &actions = m_paths.value(_path);
     Q_FOREACH (Action *action, actions) {
-        if (action->match(ctx)) {
+        if (action->match(numberOfArgs)) {
             setupMatchedAction(ctx, action, _path);
             return true;
         }

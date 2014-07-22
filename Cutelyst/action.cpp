@@ -198,24 +198,24 @@ bool Action::dispatch(Context *ctx)
     }
 }
 
-bool Action::match(Context *ctx) const
+bool Action::match(int numberOfArgs) const
 {
     Q_D(const Action);
     // If the number of args is -1 (not defined)
     // it will slurp all args so we don't care
     // about how many args was passed, otherwise
     // count them
-    return d->numberOfArgs == -1 || d->numberOfArgs == ctx->args().size();
+    return d->numberOfArgs == -1 || d->numberOfArgs == numberOfArgs;
 }
 
-bool Action::matchCaptures(Context *ctx) const
+bool Action::matchCaptures(int numberOfCaptures) const
 {
     Q_D(const Action);
     // If the number of capture args is -1 (not defined)
     // it will slurp all args so we don't care
     // about how many args was passed, otherwise
     // count them
-    return d->numberOfCaptures == -1 || d->numberOfCaptures == ctx->args().size();
+    return d->numberOfCaptures == -1 || d->numberOfCaptures == numberOfCaptures;
 }
 
 QByteArray Action::name() const

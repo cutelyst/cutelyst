@@ -254,4 +254,12 @@ void RequestPrivate::setPathURIAndQueryParams(bool https, const QString &hostAnd
     Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
         queryParam.insertMulti(queryItem.first, queryItem.second);
     }
+
+    args.clear();
+    cookiesParsed = false;
+    cookies.clear();
+    bodyParsed = false;
+    bodyParam.clear();
+    param.clear();
+    uploads.clear();
 }

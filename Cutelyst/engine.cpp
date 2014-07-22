@@ -61,41 +61,6 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const QByteArray &hostAndPort, const QByteArray &path, const QUrlQuery &queryString)
-{
-    RequestPrivate *requestPriv = new RequestPrivate;
-    requestPriv->requestPtr = requestData;
-    requestPriv->engine = this;
-    requestPriv->path = QString::fromLocal8Bit(path);
-
-    QUrl uri;
-    if (hostAndPort.isEmpty()) {
-        // This is a hack just in case remote is not set
-        uri = scheme + "://" + QHostInfo::localHostName() + path;
-    } else {
-        uri = scheme + "://" + hostAndPort + path;
-    }
-    uri.setQuery(queryString);
-
-    requestPriv->uri = uri;
-    Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
-        requestPriv->queryParam.insertMulti(queryItem.first, queryItem.second);
-    }
-
-    return new Request(requestPriv);
-}
-
-void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body, const QByteArray &remoteUser, const QHostAddress &address, quint16 peerPort)
-{
-//    request->d_ptr->method = method;
-//    request->d_ptr->protocol = protocol;
-//    request->d_ptr->body = body;
-//    request->d_ptr->headers = headers;
-//    request->d_ptr->remoteUser = remoteUser;
-//    request->d_ptr->address = address;
-//    request->d_ptr->port = peerPort;
-}
-
 void Engine::finalizeCookies(Context *ctx)
 {
     Q_FOREACH (const QNetworkCookie &cookie, ctx->response()->cookies()) {
@@ -278,9 +243,3 @@ void Engine::handleRequest(Request *request, bool autoDelete)
         delete request;
     }
 }
-
-Request *Engine::newRequest(RequestPrivate *priv)
-{
-    return new Request(priv);
-}
-

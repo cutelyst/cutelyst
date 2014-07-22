@@ -34,7 +34,6 @@ public:
     QHash<QByteArray, ActionList> containerHash;
     QHash<QString, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;
-    QRegularExpression initialSlash = QRegularExpression("^/+");
     QRegularExpression pathSplit = QRegularExpression("^(?:(.*)/)?(\\w+)?$");
 };
 

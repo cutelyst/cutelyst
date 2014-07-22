@@ -44,13 +44,13 @@ public:
     QByteArray method;
     QByteArray protocol;
     Headers headers;
-    QIODevice *body;
+    QIODevice *body = 0;
     QHostAddress address;
     quint16 port;
     QByteArray remoteUser;
     Engine *engine;
     // Pointer to Engine data
-    void *requestPtr;
+    void *requestPtr = 0;
 
     // Instead of setting this you might use setPathURIAndQueryParams
     QUrl uri;

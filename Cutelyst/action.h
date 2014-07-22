@@ -62,7 +62,7 @@ public:
      * @brief Check Args attribute, and makes sure number of
      * args matches the setting. Always returns true if Args is omitted.
      */
-    bool match(Context *ctx) const;
+    bool match(int numberOfArgs) const;
 
     /**
      * @brief Can be implemented by action class
@@ -74,7 +74,7 @@ public:
      * match to continue, returning makes the chain not match
      * (and alternate, less preferred chains will be attempted).
      */
-    bool matchCaptures(Context *ctx) const;
+    bool matchCaptures(int numberOfCaptures) const;
 
     /**
      * @brief name
