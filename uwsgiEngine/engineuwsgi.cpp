@@ -27,11 +27,19 @@
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
-#include <Cutelyst/request.h>
+#include <Cutelyst/request_p.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
+
+typedef struct {
+    QFile *bodyFile;
+    BodyUWSGI *bodyUWSGI;
+    BodyBufferedUWSGI *bodyBufferedUWSGI;
+    RequestPrivate *priv;
+    Request *request;
+} CachedRequest;
 
 EngineUwsgi::EngineUwsgi(Application *app) :
     m_app(app)
@@ -54,7 +62,7 @@ void EngineUwsgi::setThread(QThread *thread)
 void EngineUwsgi::finalizeBody(Context *ctx)
 {
     Response *res = ctx->res();
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->engineData());
 
     uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
 }
@@ -100,21 +108,22 @@ end:
 
 void EngineUwsgi::processRequest(wsgi_request *req)
 {
-    Request *request;
-    QByteArray host = QByteArray::fromRawData(req->host, req->host_len);
-    QByteArray path = QByteArray::fromRawData(req->uri, req->uri_len);
-    QUrlQuery queryString(QByteArray::fromRawData(req->query_string, req->query_string_len));
-    request = newRequest(req,
-                         req->https_len ? "http" : "https",
-                         host,
-                         path,
-                         queryString);
+    CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
 
-    QHostAddress remoteAddress(QByteArray::fromRawData(req->remote_addr, req->remote_addr_len).data());
+    RequestPrivate *priv = cache->priv;
+    priv->setPathURIAndQueryParams(req->https_len,
+                                   QString::fromLatin1(req->host, req->host_len),
+                                   QString::fromLatin1(req->uri, req->uri_len),
+                                   QUrlQuery(QString::fromLatin1(req->query_string, req->query_string_len)));
 
-    QByteArray method = QByteArray::fromRawData(req->method, req->method_len);
+    priv->method = QByteArray::fromRawData(req->method, req->method_len);
+    priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
+    priv->address = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
+    priv->remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
 
-    QByteArray protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
+    uint16_t remote_port_len;
+    char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
+    priv->port = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
 
     Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
@@ -139,44 +148,31 @@ void EngineUwsgi::processRequest(wsgi_request *req)
         headers.setHeader(m_headerContentEncoding,
                           QByteArray::fromRawData(req->encoding, req->encoding_len));
     }
-
-    QByteArray remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
-
-    uint16_t remote_port_len;
-    char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    QByteArray remotePort = QByteArray::fromRawData(remote_port, remote_port_len);
+    priv->headers = headers;
 
     QIODevice *body;
     if (req->post_file) {
         qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
-        QFile *upload = new QFile;
+        QFile *upload = cache->bodyFile;
         if (upload->open(req->post_file, QIODevice::ReadOnly)) {
             body = upload;
         } else {
 //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
-            body = new BodyBufferedUWSGI(req);
+            body = cache->bodyBufferedUWSGI;
         }
     } else if (uwsgi.post_buffering) {
 //        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
-        body = new BodyUWSGI(req);
+        body = cache->bodyUWSGI;
     } else {
         // BodyBufferedUWSGI is an IO device which will
         // only consume the body when some of it's functions
         // is called, this is because here we can't seek
         // the body.
-        body = new BodyBufferedUWSGI(req);
+        body = cache->bodyBufferedUWSGI;
     }
+    priv->body = body;
 
-    setupRequest(request,
-                 method,
-                 protocol,
-                 headers,
-                 body,
-                 remoteUser,
-                 remoteAddress,
-                 remotePort.toUInt());
-
-    handleRequest(request);
+    handleRequest(cache->request, false);
 }
 
 QByteArray EngineUwsgi::httpCase(char *key, int key_len) const
@@ -202,6 +198,26 @@ void EngineUwsgi::reload()
 {
     qCDebug(CUTELYST_UWSGI) << "Reloading application due application request";
     uwsgi_reload(uwsgi.argv);
+}
+
+void EngineUwsgi::addUnusedRequest(wsgi_request *wsgi_req)
+{
+    CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
+    if (cache) {
+        // TODO move to a class
+        delete cache;
+    }
+    cache = new CachedRequest;
+    cache->bodyFile = new QFile(this);
+    cache->bodyUWSGI = new BodyUWSGI(wsgi_req, this);
+    cache->bodyBufferedUWSGI = new BodyBufferedUWSGI(wsgi_req, this);
+    cache->priv = new RequestPrivate;
+    cache->priv->engine = this;
+    cache->priv->requestPtr = wsgi_req;
+    cache->request = new Request(cache->priv);
+    wsgi_req->async_environ = cache;
+
+    m_unusedReq.append(wsgi_req);
 }
 
 void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
@@ -238,7 +254,9 @@ void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
             set_harakiri(uwsgi.harakiri_options.workers);
         }
 
+        CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
         readRequestUWSGI(wsgi_req);
+        wsgi_req->async_environ = cache;
 
         m_unusedReq.append(wsgi_req);
     });
@@ -268,7 +286,7 @@ QList<wsgi_request *> EngineUwsgi::unusedRequestQueue() const
 void EngineUwsgi::finalizeHeaders(Context *ctx)
 {
     Response *res = ctx->res();
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(requestPtr(ctx->req()));
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->engineData());
 
     QByteArray status = statusCode(res->status());
     if (uwsgi_response_prepare_headers(wsgi_req,

@@ -210,7 +210,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
         }
     }
 
-    int *id = static_cast<int*>(requestPtr(ctx->req()));
+    int *id = static_cast<int*>(ctx->req()->engineData());
     d->requests[*id]->m_socket->write(header);
 }
 
@@ -218,7 +218,7 @@ void EngineHttp::finalizeBody(Context *ctx)
 {
     Q_D(EngineHttp);
 
-    int *id = static_cast<int*>(requestPtr(ctx->req()));
+    int *id = static_cast<int*>(ctx->req()->engineData());
     EngineHttpRequest *req = d->requests.value(*id);
     req->m_socket->write(ctx->response()->body());
     req->finish();

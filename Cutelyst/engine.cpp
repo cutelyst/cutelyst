@@ -87,18 +87,13 @@ Request *Engine::newRequest(void *requestData, const QByteArray &scheme, const Q
 
 void Engine::setupRequest(Request *request, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body, const QByteArray &remoteUser, const QHostAddress &address, quint16 peerPort)
 {
-    request->d_ptr->method = method;
-    request->d_ptr->protocol = protocol;
-    request->d_ptr->body = body;
-    request->d_ptr->headers = headers;
-    request->d_ptr->remoteUser = remoteUser;
-    request->d_ptr->address = address;
-    request->d_ptr->port = peerPort;
-}
-
-void *Engine::requestPtr(Request *request) const
-{
-    return request->d_ptr->requestPtr;
+//    request->d_ptr->method = method;
+//    request->d_ptr->protocol = protocol;
+//    request->d_ptr->body = body;
+//    request->d_ptr->headers = headers;
+//    request->d_ptr->remoteUser = remoteUser;
+//    request->d_ptr->address = address;
+//    request->d_ptr->port = peerPort;
 }
 
 void Engine::finalizeCookies(Context *ctx)

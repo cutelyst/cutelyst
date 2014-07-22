@@ -178,15 +178,17 @@ public:
 
     Engine *engine() const;
 
-protected:
+    void *engineData();
+
     Request(RequestPrivate *prv);
+
+protected:
     void setArgs(const QStringList &args);
 
     RequestPrivate *d_ptr;
 
 private:
     friend class Dispatcher;
-    friend class Engine;
     Q_DECLARE_PRIVATE(Request)
 };
 

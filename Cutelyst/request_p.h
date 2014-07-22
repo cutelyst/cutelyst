@@ -26,9 +26,12 @@
 
 #include <QStringList>
 #include <QHostAddress>
+#include <QUrlQuery>
 #include <QUrl>
 
 namespace Cutelyst {
+
+typedef QPair<QString, QString> StringPair;
 
 class Engine;
 class RequestPrivate
@@ -37,25 +40,32 @@ public:
     void parseBody() const;
     void parseCookies() const;
 
+    // Manually filled by the Engine
     QByteArray method;
-    QUrl uri;
-    QString path;
-    QStringList args;
     QByteArray protocol;
-    mutable bool cookiesParsed;
-    mutable QList<QNetworkCookie> cookies;
     Headers headers;
     QIODevice *body;
-    mutable bool bodyParsed = false;
-    mutable QMultiHash<QString, QString> bodyParam;
-    QMultiHash<QString, QString> queryParam;
-    mutable QMultiHash<QString, QString> param;
-    mutable Uploads uploads;
     QHostAddress address;
     quint16 port;
     QByteArray remoteUser;
     Engine *engine;
+    // Pointer to Engine data
     void *requestPtr;
+
+    // Instead of setting this you might use setPathURIAndQueryParams
+    QUrl uri;
+    QString path;
+    QMultiHash<QString, QString> queryParam;
+    void setPathURIAndQueryParams(bool https, const QString &hostAndPort, const QString &requestPath, const QUrlQuery &queryString);
+
+    // Engines don't need to touch this
+    QStringList args;
+    mutable bool cookiesParsed = false;
+    mutable QList<QNetworkCookie> cookies;
+    mutable bool bodyParsed = false;
+    mutable QMultiHash<QString, QString> bodyParam;
+    mutable QMultiHash<QString, QString> param;
+    mutable Uploads uploads;
 };
 
 }

@@ -148,7 +148,7 @@ void Dispatcher::prepareAction(Context *ctx)
         path.remove(d->initialSlash);
 
         Q_FOREACH (DispatchType *type, d->dispatchers) {
-            if (type->match(ctx, path.toLocal8Bit())) {
+            if (type->match(ctx, path.toLatin1())) {
                 if (!path.isEmpty()) {
                     qCDebug(CUTELYST_DISPATCHER) << "Path is" << path;
                 }
@@ -312,7 +312,7 @@ QStringList Dispatcher::unexcapedArgs(const QStringList &args)
 {
     QStringList ret;
     Q_FOREACH (const QString &arg, args) {
-        ret << QUrl::fromPercentEncoding(arg.toLocal8Bit());
+        ret << QUrl::fromPercentEncoding(arg.toLatin1());
     }
     return ret;
 }

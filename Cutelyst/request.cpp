@@ -23,7 +23,7 @@
 
 #include <QStringBuilder>
 #include <QRegularExpression>
-#include <QTime>
+#include <QHostInfo>
 
 using namespace Cutelyst;
 
@@ -62,7 +62,7 @@ QByteArray Request::base() const
     return d->uri.toString(QUrl::RemoveUserInfo |
                            QUrl::RemovePath |
                            QUrl::RemoveQuery |
-                           QUrl::RemoveFragment).toLocal8Bit();
+                           QUrl::RemoveFragment).toLatin1();
 }
 
 QString Request::path() const
@@ -182,6 +182,12 @@ Engine *Request::engine() const
     return d->engine;
 }
 
+void *Request::engineData()
+{
+    Q_D(Request);
+    return d->requestPtr;
+}
+
 void Request::setArgs(const QStringList &args)
 {
     Q_D(Request);
@@ -230,4 +236,22 @@ void RequestPrivate::parseCookies() const
     QByteArray cookiesHeader = headers.header("Cookie");
     cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n'));
     cookiesParsed = true;
+}
+
+void RequestPrivate::setPathURIAndQueryParams(bool https, const QString &hostAndPort, const QString &requestPath, const QUrlQuery &queryString)
+{
+    path = requestPath;
+    if (hostAndPort.isNull()) {
+        // This is a hack just in case remote is not set
+        uri.setHost(QHostInfo::localHostName());
+    } else {
+        uri.setAuthority(hostAndPort);
+    }
+    uri.setScheme(https ? QStringLiteral("https") : QStringLiteral("http"));
+    uri.setPath(path);
+    uri.setQuery(queryString);
+
+    Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
+        queryParam.insertMulti(queryItem.first, queryItem.second);
+    }
 }

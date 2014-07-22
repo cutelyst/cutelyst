@@ -58,9 +58,7 @@ public:
 
     virtual void reload();
 
-    inline void addUnusedRequest(wsgi_request *wsgi_req) {
-        m_unusedReq.append(wsgi_req);
-    }
+    void addUnusedRequest(wsgi_request *wsgi_req);
 
     void watchSocket(struct uwsgi_socket *uwsgi_sock);
 

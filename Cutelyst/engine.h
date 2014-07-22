@@ -150,7 +150,6 @@ protected:
                       const QByteArray &remoteUser,
                       const QHostAddress &address,
                       quint16 peerPort);
-    void *requestPtr(Request *request) const;
 
 protected:
     EnginePrivate *d_ptr;
