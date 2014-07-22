@@ -70,6 +70,10 @@ private:
     int m_coreId;
     Cutelyst::Application *m_app;
     QList<struct wsgi_request *> m_unusedReq;
+    QByteArray m_headerContentType = QByteArray("Content-Type", 12);
+    QByteArray m_headerContentEncoding = QByteArray("Content-Encoding", 16);
+    QByteArray m_headerConnectionKey = QByteArray("Connection", 10);
+    QByteArray m_headerConnectionValue = QByteArray("HTTP/1.1", 8);
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)

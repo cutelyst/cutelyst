@@ -19,8 +19,7 @@ Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple")
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :
     AbstractPlugin(parent),
-    m_rootDir(path),
-    m_re("\\.[^/]+$")
+    m_rootDir(path)
 {
     if (m_rootDir.isNull()) {
         m_rootDir = QDir::currentPath();

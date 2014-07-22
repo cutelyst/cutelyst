@@ -44,7 +44,7 @@ Session::Session(QObject *parent) :
 bool Session::setup(Context *ctx)
 {
     m_ctx = ctx;
-    m_sessionName = ctx->app()->applicationName() % QLatin1String("_session");
+    m_sessionName = ctx->app()->applicationName() % QStringLiteral("_session");
     connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
     return true;
@@ -65,8 +65,8 @@ void Session::setValue(const QString &key, const QVariant &value)
 {
     QVariantHash session = loadSession().value<QVariantHash>();
     session.insert(key, value);
-    setPluginProperty(m_ctx, "sessionvalues", session);
-    setPluginProperty(m_ctx, "sessionsave", true);
+    setPluginProperty(m_ctx, QStringLiteral("sessionvalues"), session);
+    setPluginProperty(m_ctx, QStringLiteral("sessionsave"), true);
 }
 
 void Session::deleteValue(const QString &key)

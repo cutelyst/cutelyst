@@ -29,7 +29,7 @@ private:
     bool locateStaticFile(Context *ctx, const QString &relPath);
 
     QString m_rootDir;
-    QRegularExpression m_re;
+    QRegularExpression m_re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
 };
 
 }

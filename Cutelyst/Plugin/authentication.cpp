@@ -50,7 +50,7 @@ bool Authentication::setup(Context *ctx)
 
 void Authentication::addRealm(Authentication::Realm *realm)
 {
-    addRealm(QLatin1String("default"), realm);
+    addRealm(QStringLiteral("default"), realm);
 }
 
 void Authentication::addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm)
@@ -66,8 +66,8 @@ void Authentication::addRealm(const QString &name, Authentication::Realm *realm,
 Authentication::User Authentication::authenticate(const QString &username, const QString &password, const QString &realm)
 {
     CStringHash userinfo;
-    userinfo.insert(QLatin1String("username"), username);
-    userinfo.insert(QLatin1String("password"), password);
+    userinfo.insert(QStringLiteral("username"), username);
+    userinfo.insert(QStringLiteral("password"), password);
     return authenticate(userinfo, realm);
 }
 
@@ -105,7 +105,7 @@ Authentication::User Authentication::findUser(const CStringHash &userinfo, const
 Authentication::User Authentication::user()
 {
     Q_D(Authentication);
-    QVariant user = pluginProperty(d->ctx, "user");
+    QVariant user = pluginProperty(d->ctx, QStringLiteral("user"));
     if (user.isNull()) {        
         return restoreUser(QVariant(), QString());
     }
@@ -116,9 +116,9 @@ void Authentication::setUser(const Authentication::User &user)
 {
     Q_D(Authentication);
     if (user.isNull()) {
-        setPluginProperty(d->ctx, "user", QVariant());
+        setPluginProperty(d->ctx, QStringLiteral("user"), QVariant());
     } else {
-        setPluginProperty(d->ctx, "user", qVariantFromValue(user));
+        setPluginProperty(d->ctx, QStringLiteral("user"), qVariantFromValue(user));
     }
 }
 
@@ -130,7 +130,7 @@ bool Authentication::userExists()
 bool Authentication::userInRealm(const QString &realm)
 {
     Q_D(Authentication);
-    QVariant user = pluginProperty(d->ctx, "user");
+    QVariant user = pluginProperty(d->ctx, QStringLiteral("user"));
     if (user.isNull()) {
         return !restoreUser(QVariant(), realm).isNull();
     }
@@ -307,7 +307,7 @@ QVariant Authentication::Realm::userIsRestorable(Context *ctx)
 {
     Session *session = ctx->plugin<Session*>();
     if (session && session->isValid()) {
-        return session->value("Authentication::user");
+        return session->value(QLatin1String("Authentication::user"));
     }
     return QVariant();
 }

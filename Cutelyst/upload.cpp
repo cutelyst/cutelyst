@@ -50,7 +50,7 @@ bool Upload::save(const QString &newName)
 {
     Q_D(Upload);
     bool error = false;
-    QString fileTemplate = QLatin1String("%1/qt_temp.XXXXXX");
+    QString fileTemplate = QStringLiteral("%1/qt_temp.XXXXXX");
 #ifdef QT_NO_TEMPORARYFILE
     QFile out(fileTemplate.arg(QFileInfo(newName).path()));
     if (!out.open(QIODevice::ReadWrite)) {
@@ -82,7 +82,7 @@ bool Upload::save(const QString &newName)
                 break;
             totalRead += in;
             if (in != out.write(block, in)) {
-                setErrorString(QLatin1String("Failure to write block"));
+                setErrorString(QStringLiteral("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;
@@ -95,7 +95,7 @@ bool Upload::save(const QString &newName)
 
         if (!error && !out.rename(newName)) {
             error = true;
-            setErrorString(QString("Cannot create %1 for output").arg(newName));
+            setErrorString(QStringLiteral("Cannot create %1 for output").arg(newName));
             qCWarning(CUTELYST_UPLOAD) << errorString();
         }
 #ifdef QT_NO_TEMPORARYFILE

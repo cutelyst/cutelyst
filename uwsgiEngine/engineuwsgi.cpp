@@ -71,7 +71,7 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
 
         int status = wsgi_req->socket->proto(wsgi_req);
         if (status < 0) {
-            uwsgi_log("Failed socket roto\n");
+            uwsgi_log("Failed broken socket\n");
             goto end;
         } else if (status == 0) {
             break;
@@ -87,7 +87,7 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
-        uwsgi_log("Failed invalid request\n");
+        uwsgi_log("Invalid request. skip.\n");
         qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
         goto end;
     }
@@ -132,14 +132,14 @@ void EngineUwsgi::processRequest(wsgi_request *req)
         }
     }
 
-    QByteArray contentType = QByteArray::fromRawData(req->content_type, req->content_type_len);
-    if (!contentType.isNull()) {
-        headers.setHeader("Content-Type", contentType);
+    if (req->content_type_len > 0) {
+        headers.setHeader(m_headerContentType,
+                          QByteArray::fromRawData(req->content_type, req->content_type_len));
     }
 
-    QByteArray contentEncoding = QByteArray::fromRawData(req->encoding, req->encoding_len);
-    if (!contentEncoding.isNull()) {
-        headers.setHeader("Content-Encoding", contentEncoding);
+    if (req->encoding_len > 0) {
+        headers.setHeader(m_headerContentEncoding,
+                          QByteArray::fromRawData(req->encoding, req->encoding_len));
     }
 
     QByteArray remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
@@ -259,7 +259,7 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
         return;
     }
 
-    res->addHeaderValue(QByteArray("Connection", 10), QByteArray("HTTP/1.1", 8));
+    res->addHeaderValue(m_headerConnectionKey, m_headerConnectionValue);
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
     Q_FOREACH (HeaderValuePair pair, headers) {

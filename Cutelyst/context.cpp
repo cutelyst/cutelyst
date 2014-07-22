@@ -262,7 +262,7 @@ void Context::finalizeHeaders()
     }
 
     if (response->location().isValid()) {
-        response->addHeaderValue("Location", response->location().toEncoded());
+        response->addHeaderValue(QByteArray("Location", 8), response->location().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;
