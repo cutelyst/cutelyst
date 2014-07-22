@@ -33,7 +33,8 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
 
-EngineUwsgi::EngineUwsgi(Application *app) :
+EngineUwsgi::EngineUwsgi(int coreId, Application *app) :
+    m_coreId(coreId),
     m_app(app)
 {
     connect(this, &EngineUwsgi::postFork,
@@ -304,5 +305,12 @@ void EngineUwsgi::forked()
         // try to respawn the worker
         exit(UWSGI_GO_CHEAP_CODE);
 #endif // UWSGI_GO_CHEAP_CODE
+    }
+
+    // Start Monitoring Sockets
+    struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
+    while(uwsgi_sock) {
+        watchSocket(uwsgi_sock);
+        uwsgi_sock = uwsgi_sock->next;
     }
 }

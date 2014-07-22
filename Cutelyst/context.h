@@ -159,4 +159,6 @@ private:
 
 }
 
+Q_DECLARE_METATYPE(Cutelyst::Context *)
+
 #endif // CUTELYST_CONTEXT_H

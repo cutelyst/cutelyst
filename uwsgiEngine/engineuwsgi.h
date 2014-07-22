@@ -40,7 +40,7 @@ class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(Application *app = 0);
+    explicit EngineUwsgi(int coreId, Application *app = 0);
     ~EngineUwsgi();
 
     void setThread(QThread *thread);
@@ -67,6 +67,7 @@ Q_SIGNALS:
 private:
     void forked();
 
+    int m_coreId;
     Cutelyst::Application *m_app;
     QList<struct wsgi_request *> m_unusedReq;
 };

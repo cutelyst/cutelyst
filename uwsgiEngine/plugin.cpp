@@ -159,7 +159,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         exit(1);
     }
 
-    EngineUwsgi *engine = new EngineUwsgi(app);
+    EngineUwsgi *engine = new EngineUwsgi(0, app);
     if (!engine->initApplication(app, false)) {
         uwsgi_log("Failed to init application.\n");
         exit(1);
@@ -167,20 +167,10 @@ extern "C" void uwsgi_cutelyst_init_apps()
     coreEngines.append(engine);
 
     for (int i = 0; i < uwsgi.cores; ++i) {
-//        if (uwsgi.threads > 1 && i > 0) {
-//            coreApp = qobject_cast<Application *>(app->metaObject()->newInstance());
-//            if (!coreApp) {
-//                uwsgi_log("*** FATAL *** Could not create a new instance of your Cutelyst::Application,"
-//                          "make sure your constructor has Q_INVOKABLE macro\n");
-//                exit(1);
-//            }
-//        }
-
-
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1 && i > 0) {
-            engine = new EngineUwsgi(app);
+            engine = new EngineUwsgi(i, app);
 
             QThread *thread = new QThread;
             coreThreads.append(thread);
@@ -221,27 +211,10 @@ void uwsgi_cutelyst_loop()
     // FIX for some reason this is not being set by UWSGI
     uwsgi.wait_read_hook = uwsgi_simple_wait_read_hook;
 
-    if (!uwsgi.async_waiting_fd_table) {
-        uwsgi.async_waiting_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
-    }
-
-    if (!uwsgi.async_proto_fd_table) {
-        uwsgi.async_proto_fd_table = static_cast<wsgi_request **>(uwsgi_calloc(sizeof(struct wsgi_request *) * uwsgi.max_fd));
-    }
-
     // monitor signals
     if (uwsgi.signal_socket > -1) {
         uwsgi_cutelyst_watch_signal(uwsgi.signal_socket);
         uwsgi_cutelyst_watch_signal(uwsgi.my_signal_socket);
-    }
-
-    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
-        // Monitor Sockets
-        struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
-        while(uwsgi_sock) {
-            engine->watchSocket(uwsgi_sock);
-            uwsgi_sock = uwsgi_sock->next;
-        }
     }
 
     // start the qt event loop

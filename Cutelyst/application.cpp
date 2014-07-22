@@ -24,6 +24,7 @@
 #include "request.h"
 #include "controller.h"
 #include "response.h"
+#include "dispatchtype.h"
 
 #include <iostream>
 
@@ -70,6 +71,7 @@ bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
     Q_D(Application);
 
     if (plugin->isApplicationPlugin()) {
+        plugin->setParent(this);
         d->plugins << plugin;
         return true;
     }
@@ -95,6 +97,7 @@ bool Application::registerController(Controller *controller)
 void Application::registerDispatcher(DispatchType *dispatcher)
 {
     Q_D(const Application);
+    dispatcher->setParent(this);
     d->dispatcher->registerDispatchType(dispatcher);
 }
 

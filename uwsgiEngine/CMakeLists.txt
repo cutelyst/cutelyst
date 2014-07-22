@@ -6,7 +6,6 @@ find_library(LIBCAP NAMES sys/capability.h REQUIRED)
 set(uswgi_engine_SRC
     bodybuffereduwsgi.cpp
     bodyuwsgi.cpp
-    coreuwsgi.cpp
     engineuwsgi.cpp
     plugin.cpp
     plugin.c

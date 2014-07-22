@@ -37,8 +37,9 @@ public:
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;
     QStringList emptyArgs = {
-        QString(), QString(), QString(), QString(),
-        QString(), QString(), QString(), QString() };
+        QString(), QString(), QString(),
+        QString(), QString(), QString(),
+        QString(), QString(), QString() };
 };
 
 }

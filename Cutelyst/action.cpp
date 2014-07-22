@@ -157,8 +157,9 @@ bool Action::dispatch(Context *ctx)
         bool methodRet;
         bool ret;
         ret = d->method.invoke(d->controller,
+                               Qt::DirectConnection,
                                Q_RETURN_ARG(bool, methodRet),
-                               Q_ARG(Context*, ctx),
+                               Q_ARG(Cutelyst::Context*, ctx),
                                Q_ARG(QString, args.at(0)),
                                Q_ARG(QString, args.at(1)),
                                Q_ARG(QString, args.at(2)),
@@ -166,7 +167,8 @@ bool Action::dispatch(Context *ctx)
                                Q_ARG(QString, args.at(4)),
                                Q_ARG(QString, args.at(5)),
                                Q_ARG(QString, args.at(6)),
-                               Q_ARG(QString, args.at(7)));
+                               Q_ARG(QString, args.at(7)),
+                               Q_ARG(QString, args.at(8)));
 
         if (ret) {
             ctx->setState(methodRet);
@@ -180,7 +182,8 @@ bool Action::dispatch(Context *ctx)
         return false;
     } else {
         bool ret = d->method.invoke(d->controller,
-                                    Q_ARG(Context*, ctx),
+                                    Qt::DirectConnection,
+                                    Q_ARG(Cutelyst::Context*, ctx),
                                     Q_ARG(QString, args.at(0)),
                                     Q_ARG(QString, args.at(1)),
                                     Q_ARG(QString, args.at(2)),
@@ -188,7 +191,8 @@ bool Action::dispatch(Context *ctx)
                                     Q_ARG(QString, args.at(4)),
                                     Q_ARG(QString, args.at(5)),
                                     Q_ARG(QString, args.at(6)),
-                                    Q_ARG(QString, args.at(7)));
+                                    Q_ARG(QString, args.at(7)),
+                                    Q_ARG(QString, args.at(8)));
         ctx->setState(ret);
         return ret;
     }
