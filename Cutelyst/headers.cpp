@@ -101,40 +101,21 @@ static QByteArray cutelyst_header_order(
         "Last-Modified"
         );
 
-bool httpGoodPracticeByteArraySort(const QByteArray &pair1, const QByteArray &pair2)
-{
-    int index1 = cutelyst_header_order.indexOf(pair1);
-    int index2 = cutelyst_header_order.indexOf(pair2);
-    if (index1 != -1 && index2 != -1) {
-        // Both items are in the headerOrder list
-        return index1 < index2;
-    } else if (index1 == -1 && index2 == -1) {
-        // Noone of them are int the headerOrder list
-        return pair1 < pair2;
-    }
-
-    // if the pair1 is in the header list it should go first
-    return index1 != -1;
-}
-
 bool httpGoodPracticeWeightSort(const HeaderValuePair &pair1, const HeaderValuePair &pair2)
 {
     int index1 = pair1.weight;
     int index2 = pair2.weight;
 
-    if (index1 != -1) {
-        if (index2 != -1) {
-            // Both items are in the headerOrder list
-            return index1 < index2;
-        }
-    } else if (index1 == -1) {
-        if (index2 != -1) {
-            return true;
-        }
-        // Noone of them are in the headerOrder list
+    if (index1 != -1 && index2 != -1) {
+        // Both items are in the headerOrder list
+        return index1 < index2;
+    } else if (index1 == -1 && index2 == -1) {
+        // Noone of them are int the headerOrder list
+        return false;
     }
 
-    return false;
+    // if the pair1 is in the header list it should go first
+    return index1 != -1;
 }
 
 QList<HeaderValuePair> Headers::headersForResponse() const
