@@ -38,7 +38,7 @@ EngineUwsgi::EngineUwsgi(int coreId, Application *app) :
     m_app(app)
 {
     connect(this, &EngineUwsgi::postFork,
-            this, &EngineUwsgi::forked, Qt::QueuedConnection);
+            this, &EngineUwsgi::forked);
 }
 
 EngineUwsgi::~EngineUwsgi()
@@ -48,6 +48,8 @@ EngineUwsgi::~EngineUwsgi()
 void EngineUwsgi::setThread(QThread *thread)
 {
     moveToThread(thread);
+    connect(thread, &QThread::started,
+            this, &EngineUwsgi::forked, Qt::DirectConnection);
 }
 
 void EngineUwsgi::finalizeBody(Context *ctx)

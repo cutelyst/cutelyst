@@ -63,12 +63,12 @@ extern "C" int uwsgi_cutelyst_init()
 
 extern "C" void uwsgi_cutelyst_post_fork()
 {
-    Q_FOREACH (QThread *thread, coreThreads) {
-        thread->start();
-    }
-
     Q_FOREACH (EngineUwsgi *engine, coreEngines) {
-        Q_EMIT engine->postFork();
+        if (engine->thread() != qApp->thread()) {
+            engine->thread()->start();
+        } else {
+            Q_EMIT engine->postFork();
+        }
     }
 }
 
