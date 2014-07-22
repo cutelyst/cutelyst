@@ -284,24 +284,6 @@ void EngineHttp::onNewServerConnection()
     }
 }
 
-void EngineHttp::onNewClientConnection(int socket)
-{
-    Q_D(EngineHttp);
-
-    qDebug() << Q_FUNC_INFO << "[CHILD] onNewClientConnection" << socket << QCoreApplication::applicationPid();
-
-//    EngineHttpRequest *tcpSocket = new EngineHttpRequest(socket, this);
-//    if (tcpSocket->setSocketDescriptor(socket)) {
-//        d->requests.insert(socket, tcpSocket);
-//        connect(tcpSocket, &EngineHttpRequest::requestReady,
-//                this, &EngineHttp::processRequest);
-//        connect(tcpSocket, &EngineHttpRequest::destroyed,
-//                this, &EngineHttp::removeConnection);
-//    } else {
-//        delete tcpSocket;
-//    }
-}
-
 EngineHttpRequest::EngineHttpRequest(QTcpSocket *socket) :
     QObject(socket),
     m_socket(socket),

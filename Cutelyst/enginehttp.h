@@ -55,7 +55,6 @@ private:
     Q_DECLARE_PRIVATE(EngineHttp)
 
     void onNewServerConnection();
-    void onNewClientConnection(int socket);
 };
 
 }
