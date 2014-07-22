@@ -24,7 +24,11 @@
 
 namespace Cutelyst {
 
-typedef QPair<QByteArray, QByteArray> HeaderValuePair;
+typedef struct {
+    int weight;
+    QByteArray key;
+    QByteArray value;
+} HeaderValuePair;
 
 class Headers : public QHash<QByteArray, QByteArray>
 {

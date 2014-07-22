@@ -29,7 +29,6 @@
 using namespace Cutelyst;
 
 static QList<EngineUwsgi *> coreEngines;
-static QList<QThread *> coreThreads;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -49,12 +48,7 @@ extern "C" void uwsgi_cutelyst_on_load()
 
 extern "C" int uwsgi_cutelyst_init()
 {
-    qCDebug(CUTELYST_UWSGI) << "Initializing Cutelyst plugin";
-    qCDebug(CUTELYST_UWSGI) << "-> async" << uwsgi.async << "-> threads" << uwsgi.threads;
-//    if (uwsgi.async < uwsgi.threads) {
-//        uwsgi_log("--async must be greater or equal to --threads value\n");
-//        exit(1);
-//    }
+    uwsgi_log("Initializing Cutelyst plugin\n");
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
@@ -114,19 +108,22 @@ extern "C" void uwsgi_cutelyst_master_cleanup()
  */
 extern "C" void uwsgi_cutelyst_atexit()
 {
-    qCDebug(CUTELYST_UWSGI) << "Child process finishing" << QCoreApplication::applicationPid();
-    qCDebug(CUTELYST_UWSGI) << "Child process finished" << QCoreApplication::applicationPid();
+    uwsgi_log("Child process finishing: %d\n", QCoreApplication::applicationPid());
+    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
+        engine->stop();
+    }
+    uwsgi_log("Child process finished: %d\n", QCoreApplication::applicationPid());
 }
 
 extern "C" void uwsgi_cutelyst_init_apps()
 {
-    qCDebug(CUTELYST_UWSGI) << "Cutelyst Init App";
-
     QString path(options.app);
     if (path.isEmpty()) {
-        qCCritical(CUTELYST_UWSGI) << "Cutelyst Application name or path was not set";
-        return;
+        uwsgi_log("Cutelyst application name or path was not set\n");
+        exit(1);
     }
+
+    uwsgi_log("Cutelyst loading application: \"%s\"\n", options.app);
 
 #ifdef UWSGI_GO_CHEAP_CODE
     if (options.reload) {
@@ -159,34 +156,34 @@ extern "C" void uwsgi_cutelyst_init_apps()
         exit(1);
     }
 
-    EngineUwsgi *engine = new EngineUwsgi(0, app);
-    if (!engine->initApplication(app, false)) {
+    EngineUwsgi *mainEngine = new EngineUwsgi(app);
+    if (!mainEngine->initApplication(app, false)) {
         uwsgi_log("Failed to init application.\n");
         exit(1);
     }
-    coreEngines.append(engine);
+    coreEngines.append(mainEngine);
 
+    EngineUwsgi *engine = mainEngine;
     for (int i = 0; i < uwsgi.cores; ++i) {
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1 && i > 0) {
-            engine = new EngineUwsgi(i, app);
+            engine = new EngineUwsgi(app);
+            engine->setThread(new QThread);
 
-            QThread *thread = new QThread;
-            coreThreads.append(thread);
-            engine->setThread(thread);
+            // Post fork might fail when on threaded mode
+            QObject::connect(engine, &EngineUwsgi::engineDisabled,
+                             mainEngine, &EngineUwsgi::reuseEngineRequests);
 
             coreEngines.append(engine);
         }
 
         // Add core request
-        struct wsgi_request *req = new wsgi_request;
-        memset(req, 0, sizeof(struct wsgi_request));
-        req->async_id = i;
-        engine->addUnusedRequest(req);
+        struct wsgi_request *wsgi_req = new wsgi_request;
+        memset(wsgi_req, 0, sizeof(struct wsgi_request));
+        wsgi_req->async_id = i;
+        engine->addUnusedRequest(wsgi_req);
     }
-
-    qDebug() << "uwsgi.cores" << uwsgi.cores;
 
     // register a new app under a specific "mountpoint"
     uwsgi_add_app(1, CUTELYST_MODIFIER1, (char *) "", 0, NULL, NULL);
@@ -197,7 +194,9 @@ void uwsgi_cutelyst_watch_signal(int signalFD)
     QSocketNotifier *socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
     QObject::connect(socketNotifier, &QSocketNotifier::activated,
                      [=](int fd) {
+        socketNotifier->setEnabled(false);
         uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
+        socketNotifier->setEnabled(true);
     });
 }
 

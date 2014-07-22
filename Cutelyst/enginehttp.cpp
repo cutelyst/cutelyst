@@ -193,7 +193,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     headers.setContentLength(ctx->res()->contentLength());
 
     Q_FOREACH (const HeaderValuePair &pair, headers.headersForResponse()) {
-        header.append(pair.first % QLatin1String(": ") % pair.second % QLatin1String("\r\n"));
+        header.append(pair.key % QLatin1String(": ") % pair.value % QLatin1String("\r\n"));
     }
     header.append(QLatin1String("\r\n"));
 

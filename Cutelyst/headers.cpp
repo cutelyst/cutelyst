@@ -117,18 +117,42 @@ bool httpGoodPracticeByteArraySort(const QByteArray &pair1, const QByteArray &pa
     return index1 != -1;
 }
 
+bool httpGoodPracticeWeightSort(const HeaderValuePair &pair1, const HeaderValuePair &pair2)
+{
+    int index1 = pair1.weight;
+    int index2 = pair2.weight;
+
+    if (index1 != -1) {
+        if (index2 != -1) {
+            // Both items are in the headerOrder list
+            return index1 < index2;
+        }
+    } else if (index1 == -1) {
+        if (index2 != -1) {
+            return true;
+        }
+        // Noone of them are in the headerOrder list
+    }
+
+    return false;
+}
+
 QList<HeaderValuePair> Headers::headersForResponse() const
 {
     QList<HeaderValuePair> ret;
 
-    QList<QByteArray> fields = keys();
+    QHash<QByteArray, QByteArray>::const_iterator it = constBegin();
+    while (it != constEnd()) {
+        HeaderValuePair pair;
+        pair.key = it.key();
+        pair.value = it.value();
+        pair.weight = cutelyst_header_order.indexOf(pair.key);
+        ret.append(pair);
+        ++it;
+    }
 
     // Sort base on the "good practices" of HTTP RCF
-    qSort(fields.begin(), fields.end(), &httpGoodPracticeByteArraySort);
-
-    Q_FOREACH (const QByteArray &field, fields) {
-        ret.append(qMakePair(field, value(field)));
-    }
+    qSort(ret.begin(), ret.end(), &httpGoodPracticeWeightSort);
 
     return ret;
 }

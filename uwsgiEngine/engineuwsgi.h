@@ -40,7 +40,7 @@ class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(int coreId, Application *app = 0);
+    explicit EngineUwsgi(Application *app = 0);
     ~EngineUwsgi();
 
     void setThread(QThread *thread);
@@ -58,16 +58,35 @@ public:
 
     virtual void reload();
 
-    void addUnusedRequest(wsgi_request *req);
+    inline void addUnusedRequest(wsgi_request *wsgi_req) {
+        m_unusedReq.append(wsgi_req);
+    }
+
     void watchSocket(struct uwsgi_socket *uwsgi_sock);
+
+    /**
+     * This method is called when an engine
+     * fails to start on a thread so that we (main thread)
+     * can reuse it's core requests
+     */
+    void reuseEngineRequests(EngineUwsgi *engine);
+
+    void stop();
+
+    QList<struct wsgi_request *> unusedRequestQueue() const;
 
 Q_SIGNALS:
     void postFork();
+    void enableSockets(bool enable);
+
+    /**
+     * emitted when forked() fails
+     */
+    void engineDisabled(EngineUwsgi *engine);
 
 private:
     void forked();
 
-    int m_coreId;
     Cutelyst::Application *m_app;
     QList<struct wsgi_request *> m_unusedReq;
     QByteArray m_headerContentType = QByteArray("Content-Type", 12);
