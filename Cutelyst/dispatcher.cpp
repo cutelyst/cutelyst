@@ -100,7 +100,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         controller->setupActions(this);
     }
 
-    printActions();
+    qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
 }
 
 bool Dispatcher::dispatch(Context *ctx)
@@ -234,18 +234,18 @@ void Dispatcher::registerDispatchType(DispatchType *dispatchType)
     d->dispatchers.append(dispatchType);
 }
 
-void Dispatcher::printActions()
+QByteArray Dispatcher::printActions()
 {
     Q_D(Dispatcher);
 
-    QString buffer;
+    QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
     bool showInternalActions = false;
 
     out << "Loaded Private actions:" << endl;
-    QString privateTitle("Private");
-    QString classTitle("Class");
-    QString methodTitle("Method");
+    QByteArray privateTitle("Private");
+    QByteArray classTitle("Class");
+    QByteArray methodTitle("Method");
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
@@ -266,13 +266,13 @@ void Dispatcher::printActions()
         << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
         << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
         << "." << endl;
-    out << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
-        << "|" << classTitle.leftJustified(classLength).toUtf8().data()
-        << "|" << methodTitle.leftJustified(actionLength).toUtf8().data()
+    out << "|" << privateTitle.leftJustified(privateLength).data()
+        << "|" << classTitle.leftJustified(classLength).data()
+        << "|" << methodTitle.leftJustified(actionLength).data()
         << "|" << endl;
-    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+    out << "." << QByteArray().fill('-', privateLength).data()
+        << "+" << QByteArray().fill('-', classLength).data()
+        << "+" << QByteArray().fill('-', actionLength).data()
         << "." << endl;
 
     QList<QByteArray> keys = d->actionHash.keys();
@@ -280,27 +280,28 @@ void Dispatcher::printActions()
     Q_FOREACH (const QByteArray &key, keys) {
         Action *action = d->actionHash.value(key);
         if (showInternalActions || !action->name().startsWith('_')) {
-            QString path = key;
-            if (!path.startsWith(QLatin1String("/"))) {
-                path.prepend(QLatin1String("/"));
+            QByteArray path = key;
+            if (!path.startsWith('/')) {
+                path.prepend('/');
             }
-            out << "|" << path.leftJustified(privateLength).toUtf8().data()
-                << "|" << QString(action->className()).leftJustified(classLength).toUtf8().data()
-                << "|" << QString(action->name()).leftJustified(actionLength).toUtf8().data()
+            out << "|" << path.leftJustified(privateLength).data()
+                << "|" << action->className().leftJustified(classLength).data()
+                << "|" << action->name().leftJustified(actionLength).data()
                 << "|" << endl;
         }
     }
 
-    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
-        << ".";
-    qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
+    out << "." << QByteArray().fill('-', privateLength).data()
+        << "+" << QByteArray().fill('-', classLength).data()
+        << "+" << QByteArray().fill('-', actionLength).data()
+        << "." << endl;
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-        dispatch->list();
+        out << endl << dispatch->list();
     }
+
+    return buffer;
 }
 
 Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)

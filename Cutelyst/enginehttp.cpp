@@ -199,15 +199,15 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     }
     header.append(QLatin1String("\r\n"));
 
-    if (!headers.contains("Content-Type") &&
-            !ctx->res()->body().isEmpty()) {
+    if (!headers.contains(QByteArrayLiteral("Content-Type")) &&
+            ctx->res()->hasBody()) {
         QMimeDatabase db;
-        QMimeType mimeType = db.mimeTypeForData(ctx->res()->body());
+        QMimeType mimeType = db.mimeTypeForData(ctx->res()->bodyDevice());
         if (mimeType.isValid()) {
             if (mimeType.name() == QLatin1String("text/html")) {
-                headers.insert("Content-Type", "text/html; charset=utf-8");
+                headers.setContentType("text/html; charset=utf-8");
             } else {
-                headers.insert("Content-Type", mimeType.name().toLocal8Bit());
+                headers.setContentType(mimeType.name().toLocal8Bit());
             }
         }
     }

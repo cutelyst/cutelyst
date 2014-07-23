@@ -36,7 +36,7 @@ public:
      * @brief list the registered actions
      * To be implemented by subclasses
      */
-    virtual void list() const = 0;
+    virtual QByteArray list() const = 0;
 
     /**
      * Return true if the dispatchType matches the given path

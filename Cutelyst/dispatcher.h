@@ -52,7 +52,7 @@ protected:
     void registerDispatchType(DispatchType *dispatchType);
 
 private:
-    void printActions();
+    QByteArray printActions();
     Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
     QStringList unexcapedArgs(const QList<QByteArray> &args);
     QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);

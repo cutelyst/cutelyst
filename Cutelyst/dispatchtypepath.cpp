@@ -33,14 +33,14 @@ DispatchTypePath::DispatchTypePath(QObject *parent) :
 {
 }
 
-void DispatchTypePath::list() const
+QByteArray DispatchTypePath::list() const
 {
-    QString buffer;
+    QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
 
     out << "Loaded Path actions:" << endl;
-    QString pathTitle("Path");
-    QString privateTitle("Private");
+    QByteArray pathTitle("Path");
+    QByteArray privateTitle("Private");
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
 
@@ -49,7 +49,7 @@ void DispatchTypePath::list() const
     Q_FOREACH (const QByteArray &path, keys) {
         Q_FOREACH (Action *action, m_paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
-            QString args = action->attributes().value("Args");
+            QByteArray args = action->attributes().value("Args");
             if (args.isEmpty()) {
                 _path.append(QLatin1String("/..."));
             } else {
@@ -60,22 +60,22 @@ void DispatchTypePath::list() const
             _path.replace(m_multipleSlashes, QLatin1String("/"));
             pathLength = qMax(pathLength, _path.length() + 1);
 
-            QString privateName = action->privateName();
-            if (!privateName.startsWith(QLatin1String("/"))) {
-                privateName.prepend(QLatin1String("/"));
+            QByteArray privateName = action->privateName();
+            if (!privateName.startsWith('/')) {
+                privateName.prepend('/');
             }
             privateLength = qMax(privateLength, privateName.length());
         }
     }
 
-    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+    out << "." << QByteArray().fill('-', pathLength).data()
+        << "+" << QByteArray().fill('-', privateLength).data()
         << "." << endl;
-    out << "|" << pathTitle.leftJustified(pathLength).toUtf8().data()
-        << "|" << privateTitle.leftJustified(privateLength).toUtf8().data()
+    out << "|" << pathTitle.leftJustified(pathLength).data()
+        << "|" << privateTitle.leftJustified(privateLength).data()
         << "|" << endl;
-    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
+    out << "." << QByteArray().fill('-', pathLength).data()
+        << "+" << QByteArray().fill('-', privateLength).data()
         << "." << endl;
 
     Q_FOREACH (const QByteArray &path, keys) {
@@ -90,22 +90,22 @@ void DispatchTypePath::list() const
             }
             _path.replace(m_multipleSlashes, QLatin1String("/"));
 
-            QString privateName = action->privateName();
-            if (!privateName.startsWith(QLatin1String("/"))) {
-                privateName.prepend(QLatin1String("/"));
+            QByteArray privateName = action->privateName();
+            if (!privateName.startsWith('/')) {
+                privateName.prepend('/');
             }
 
             out << "|" << _path.leftJustified(pathLength).toUtf8().data()
-                << "|" << privateName.leftJustified(privateLength).toUtf8().data()
+                << "|" << privateName.leftJustified(privateLength).data()
                 << "|" << endl;
         }
     }
 
-    out << "." << QString().fill(QLatin1Char('-'), pathLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-        << ".";
+    out << "." << QByteArray().fill('-', pathLength).data()
+        << "+" << QByteArray().fill('-', privateLength).data()
+        << "." << endl;
 
-    qCDebug(CUTELYST_DISPATCHER) << buffer.toUtf8().data();
+    return buffer;
 }
 
 bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const

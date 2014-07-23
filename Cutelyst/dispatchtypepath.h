@@ -34,7 +34,7 @@ class DispatchTypePath : public DispatchType
 public:
     explicit DispatchTypePath(QObject *parent = 0);
 
-    virtual void list() const;
+    virtual QByteArray list() const;
 
     virtual bool match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const;
 

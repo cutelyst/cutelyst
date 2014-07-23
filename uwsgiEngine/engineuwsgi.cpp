@@ -309,6 +309,7 @@ void EngineUwsgi::finalizeHeaders(Context *ctx)
         return;
     }
 
+    // TODO this breads weighttp as it expects keep-alive string
     res->addHeaderValue(m_headerConnectionKey, m_headerConnectionValue);
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
@@ -332,10 +333,7 @@ bool EngineUwsgi::init()
 
 void EngineUwsgi::forked()
 {
-    qCDebug(CUTELYST_UWSGI) << "Post-Fork thread id" << QThread::currentThread() << qApp->thread() << thread();
-
     if (QThread::currentThread() != qApp->thread()) {
-        qCDebug(CUTELYST_UWSGI) << "Post-Fork different thread";
         m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
         if (!m_app) {
             uwsgi_log("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "

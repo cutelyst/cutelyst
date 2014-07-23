@@ -29,10 +29,6 @@ class EnginePrivate
 public:
     Application *app = 0;
     QHash<QString, QVariantHash> config;
-
-    QByteArray statusOk = QByteArray("200 OK", 6);
-    QByteArray statusFound = QByteArray("302 Found", 9);
-    QByteArray statusNotFound = QByteArray("404 Not Found", 13);
 };
 
 }

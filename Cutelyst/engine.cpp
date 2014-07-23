@@ -136,87 +136,87 @@ QByteArray Engine::statusCode(quint16 status) const
 
     switch (status) {
     case Response::OK:
-        return d->statusOk;
+        return QByteArrayLiteral("200 OK");
     case Response::Found:
-        return d->statusFound;
+        return QByteArrayLiteral("302 Found");
     case Response::NotFound:
-        return d->statusNotFound;
+        return QByteArrayLiteral("404 Not Found");
     case Response::InternalServerError:
-        return "500 Internal Server Error";
+        return QByteArrayLiteral("500 Internal Server Error");
     case Response::MovedPermanently:
-        return "301 Moved Permanently";
+        return QByteArrayLiteral("301 Moved Permanently");
     case Response::NotModified:
-        return "304 Not Modified";
+        return QByteArrayLiteral("304 Not Modified");
     case Response::SeeOther:
-        return "303 See Other";
+        return QByteArrayLiteral("303 See Other");
     case Response::Forbidden:
-        return "403 Forbidden";
+        return QByteArrayLiteral("403 Forbidden");
     case Response::TemporaryRedirect:
-        return "307 Temporary Redirect";
+        return QByteArrayLiteral("307 Temporary Redirect");
     case Response::Unauthorized:
-        return "401 Unauthorized";
+        return QByteArrayLiteral("401 Unauthorized");
     case Response::BadRequest:
-        return "400 Bad Request";
+        return QByteArrayLiteral("400 Bad Request");
     case Response::MethodNotAllowed:
-        return "405 Method Not Allowed";
+        return QByteArrayLiteral("405 Method Not Allowed");
     case Response::RequestTimeout:
-        return "408 Request Timeout";
+        return QByteArrayLiteral("408 Request Timeout");
     case Response::Continue:
-        return "100 Continue";
+        return QByteArrayLiteral("100 Continue");
     case Response::SwitchingProtocols:
-        return "101 Switching Protocols";
+        return QByteArrayLiteral("101 Switching Protocols");
     case Response::Created:
-        return "201 Created";
+        return QByteArrayLiteral("201 Created");
     case Response::Accepted:
-        return "202 Accepted";
+        return QByteArrayLiteral("202 Accepted");
     case Response::NonAuthoritativeInformation:
-        return "203 Non-Authoritative Information";
+        return QByteArrayLiteral("203 Non-Authoritative Information");
     case Response::NoContent:
-        return "204 No Content";
+        return QByteArrayLiteral("204 No Content");
     case Response::ResetContent:
-        return "205 Reset Content";
+        return QByteArrayLiteral("205 Reset Content");
     case Response::PartialContent:
-        return "206 Partial Content";
+        return QByteArrayLiteral("206 Partial Content");
     case Response::MultipleChoices:
-        return "300 Multiple Choices";
+        return QByteArrayLiteral("300 Multiple Choices");
     case Response::UseProxy:
-        return "305 Use Proxy";
+        return QByteArrayLiteral("305 Use Proxy");
     case Response::PaymentRequired:
-        return "402 Payment Required";
+        return QByteArrayLiteral("402 Payment Required");
     case Response::NotAcceptable:
-        return "406 Not Acceptable";
+        return QByteArrayLiteral("406 Not Acceptable");
     case Response::ProxyAuthenticationRequired:
-        return "407 Proxy Authentication Required";
+        return QByteArrayLiteral("407 Proxy Authentication Required");
     case Response::Conflict:
-        return "409 Conflict";
+        return QByteArrayLiteral("409 Conflict");
     case Response::Gone:
-        return "410 Gone";
+        return QByteArrayLiteral("410 Gone");
     case Response::LengthRequired:
-        return "411 Length Required";
+        return QByteArrayLiteral("411 Length Required");
     case Response::PreconditionFailed:
-        return "412 Precondition Failed";
+        return QByteArrayLiteral("412 Precondition Failed");
     case Response::RequestEntityTooLarge:
-        return "413 Request Entity Too Large";
+        return QByteArrayLiteral("413 Request Entity Too Large");
     case Response::RequestURITooLong:
-        return "414 Request-URI Too Long";
+        return QByteArrayLiteral("414 Request-URI Too Long");
     case Response::UnsupportedMediaType:
-        return "415 Unsupported Media Type";
+        return QByteArrayLiteral("415 Unsupported Media Type");
     case Response::RequestedRangeNotSatisfiable:
-        return "416 Requested Range Not Satisfiable";
+        return QByteArrayLiteral("416 Requested Range Not Satisfiable");
     case Response::ExpectationFailed:
-        return "417 Expectation Failed";
+        return QByteArrayLiteral("417 Expectation Failed");
     case Response::NotImplemented:
-        return "501 Not Implemented";
+        return QByteArrayLiteral("501 Not Implemented");
     case Response::BadGateway:
-        return "502 Bad Gateway";
+        return QByteArrayLiteral("502 Bad Gateway");
     case Response::ServiceUnavailable:
-        return "503 Service Unavailable";
+        return QByteArrayLiteral("503 Service Unavailable");
     case Response::GatewayTimeout:
-        return "504 Gateway Timeout";
+        return QByteArrayLiteral("504 Gateway Timeout");
     case Response::HTTPVersionNotSupported:
-        return "505 HTTP Version Not Supported";
+        return QByteArrayLiteral("505 HTTP Version Not Supported");
     case Response::BandwidthLimitExceeded:
-        return "509 Bandwidth Limit Exceeded";
+        return QByteArrayLiteral("509 Bandwidth Limit Exceeded");
     default:
         return QByteArray::number(status);
     }

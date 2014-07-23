@@ -202,8 +202,6 @@ void uwsgi_cutelyst_watch_signal(int signalFD)
 
 void uwsgi_cutelyst_loop()
 {
-    uwsgi_log("Using Cutelyst Qt Loop\n");
-
     // ensure SIGPIPE is ignored
     signal(SIGPIPE, SIG_IGN);
 
