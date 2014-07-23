@@ -189,17 +189,16 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
 QByteArray EngineUwsgi::httpCase(char *key, int key_len) const
 {
-    bool lastWasUnderscore = false;
+    bool lastWasUnderscore = true;
     for (int i = 0 ; i < key_len ; ++i) {
         QChar buf = key[i];
-        if(!lastWasUnderscore) {
-            key[i] = buf.toLower().toLatin1();
-            lastWasUnderscore = false;
-        } else  if (buf == '_') {
+        if (buf == '_') {
             key[i] = '-';
             lastWasUnderscore = true;
-        } else {
+        } else if(lastWasUnderscore) {
             lastWasUnderscore = false;
+        } else {
+            key[i] = buf.toLower().toLatin1();
         }
     }
 
