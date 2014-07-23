@@ -31,6 +31,7 @@ public:
     Action *begin = 0;
     ActionList autoList;
     Action *end = 0;
+    ActionList actionSteps;
     Dispatcher *dispatcher;
 };
 

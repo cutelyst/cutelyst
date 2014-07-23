@@ -111,9 +111,11 @@ void Controller::setupActions(Dispatcher *dispatcher)
     beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->ns);
     if (!beginList.isEmpty()) {
         d->begin = beginList.last();
+        d->actionSteps.append(d->begin);
     }
 
     d->autoList = dispatcher->getActions(QByteArrayLiteral("Auto"), d->ns);
+    d->actionSteps.append(d->autoList);
 
     ActionList endList;
     endList = dispatcher->getActions(QByteArrayLiteral("End"), d->ns);
@@ -122,22 +124,21 @@ void Controller::setupActions(Dispatcher *dispatcher)
     }
 }
 
-static QList<QByteArray> dispatchSteps(
-{
-            "_BEGIN",
-            "_AUTO",
-            "_ACTION"
-        });
-
 void Controller::_DISPATCH(Context *ctx)
 {
-    Q_FOREACH (const QByteArray &disp, dispatchSteps) {
-        if (!ctx->forward(disp)) {
+    Q_D(Controller);
+
+    // Dispatch to _BEGIN, _AUTO and _ACTION
+    ActionList steps = d->actionSteps;
+    steps.append(ctx->action());
+
+    Q_FOREACH (Action *action, steps) {
+        if (!action->dispatch(ctx)) {
             break;
         }
     }
 
-    ctx->forward(QByteArray("_END", 4));
+    d->end->dispatch(ctx);
 }
 
 bool Controller::_BEGIN(Context *ctx)
