@@ -22,7 +22,6 @@
 
 #include "response.h"
 
-#include <QMap>
 #include <QUrl>
 
 namespace Cutelyst {
@@ -35,7 +34,7 @@ public:
     quint16 finalizedHeaders = false;
     Headers headers;
     QList<QNetworkCookie> cookies;
-    QByteArray body;
+    QIODevice *body = 0;
     QUrl location;
     Engine *engine;
 };

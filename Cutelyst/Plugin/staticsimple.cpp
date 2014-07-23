@@ -64,27 +64,28 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
     QString path = m_rootDir % relPath;
     QFileInfo fileInfo(path);
     if (fileInfo.exists()) {
+        Response *res = ctx->res();
         QDateTime utc = fileInfo.lastModified().toTimeSpec(Qt::UTC);
         QString lastModified = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
         if (lastModified == ctx->req()->headers().ifModifiedSince()) {
-            ctx->res()->setStatus(Response::NotModified);
+            res->setStatus(Response::NotModified);
             return true;
         }
 
-        QFile file(path);
-        if (file.open(QFile::ReadOnly)) {
+        QFile *file = new QFile(path);
+        if (file->open(QFile::ReadOnly)) {
             qCDebug(C_STATICSIMPLE) << "Serving" << path;
-            Headers &headers = ctx->res()->headers();
+            Headers &headers = res->headers();
 
-            // TODO get rid of this!
-            ctx->response()->body() = file.readAll();
+            // set our open file
+            res->setBody(file);
 
             QMimeDatabase db;
             // use the extension to match to be faster
             QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
             if (mimeType.isValid()) {
                 QString contentType = mimeType.name() % QLatin1String("; charset=utf-8");
-                headers.setContentType(contentType.toLocal8Bit());
+                headers.setContentType(contentType.toLatin1());
             }
 
             headers.setLastModified(lastModified.toLocal8Bit());
@@ -93,7 +94,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
             return true;
         }
 
-        qCWarning(C_STATICSIMPLE) << "Could not serve" << path << file.errorString();
+        qCWarning(C_STATICSIMPLE) << "Could not serve" << path << file->errorString();
         return false;
     }
 

@@ -61,10 +61,22 @@ void EngineUwsgi::setThread(QThread *thread)
 
 void EngineUwsgi::finalizeBody(Context *ctx)
 {
-    Response *res = ctx->res();
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->engineData());
 
-    uwsgi_response_write_body_do(wsgi_req, res->body().data(), res->body().size());
+    QIODevice *body = ctx->res()->bodyDevice();
+    body->seek(0);
+
+    char block[4096];
+    while (!body->atEnd()) {
+        qint64 in = body->read(block, sizeof(block));
+        if (in <= 0)
+            break;
+
+        if (uwsgi_response_write_body_do(wsgi_req, block, in) != UWSGI_OK) {
+            qCWarning(CUTELYST_UWSGI) << "Failed to write body";
+            break;
+        }
+    }
 }
 
 void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)

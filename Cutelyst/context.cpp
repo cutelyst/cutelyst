@@ -283,7 +283,7 @@ void Context::finalizeHeaders()
     }
 
     if (response->hasBody()) {
-        response->setContentLength(response->body().size());
+        response->setContentLength(response->bodyDevice()->size());
     }
 
     finalizeCookies();

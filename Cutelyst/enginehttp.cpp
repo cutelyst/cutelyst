@@ -23,6 +23,7 @@
 #include "response.h"
 #include "request_p.h"
 #include "application.h"
+#include "common.h"
 
 #include <QCoreApplication>
 #include <QStringList>
@@ -34,6 +35,7 @@
 #include <QMimeDatabase>
 #include <QUrl>
 #include <QBuffer>
+#include <QLoggingCategory>
 
 #include <QCommandLineParser>
 
@@ -75,7 +77,7 @@ EngineHttp::EngineHttp(QObject *parent) :
         QString argument = args.at(i);
         if (argument.startsWith(QLatin1String("--port=")) && argument.length() > 7) {
             d->port = argument.mid(7).toInt();
-            qDebug() << Q_FUNC_INFO << "Using custom port:" << d->port;
+            qCDebug(CUTELYST_ENGINE_HTTP) << "Using custom port:" << d->port;
         }
     }
 
@@ -100,11 +102,11 @@ EngineHttp::EngineHttp(QObject *parent) :
 
     if (parser.isSet(httpSocket)) {
         Q_FOREACH (const QString &listen, parser.values(httpSocket)) {
-            qDebug() << "http-socket"<< listen;
+            qCDebug(CUTELYST_ENGINE_HTTP) << "http-socket"<< listen;
             QTcpServer *server = new QTcpServer(this);
             QStringList parts = listen.split(QChar(':'));
             if (parts.size() != 2) {
-                qDebug() << "error parsing:" << listen;
+                qCDebug(CUTELYST_ENGINE_HTTP) << "error parsing:" << listen;
                 exit(1);
             }
 
@@ -116,9 +118,9 @@ EngineHttp::EngineHttp(QObject *parent) :
             }
 
             if (server->listen(address, parts.last().toInt())) {
-                qDebug() << "Listening on:" << server->serverAddress() << server->serverPort();
+                qCDebug(CUTELYST_ENGINE_HTTP) << "Listening on:" << server->serverAddress() << server->serverPort();
             } else {
-                qWarning() << "Failed to listen on" << d->address.toString() << d->port;
+                qCWarning(CUTELYST_ENGINE_HTTP) << "Failed to listen on" << d->address.toString() << d->port;
                 exit(1);
             }
 
@@ -127,7 +129,7 @@ EngineHttp::EngineHttp(QObject *parent) :
     }
 
     if (d->servers.isEmpty()) {
-        qWarning() << "Not listening on anywhere";
+        qCWarning(CUTELYST_ENGINE_HTTP) << "Not listening on anywhere";
         parser.showHelp(1);
     }
 }
@@ -157,7 +159,7 @@ bool EngineHttp::init()
                 }
                 return true;
             } else {
-                qDebug() << "Failed to post fork";
+                qCDebug(CUTELYST_ENGINE_HTTP) << "Failed to post fork";
                 exit(1);
             }
         } else if (child->initted()) {
@@ -171,7 +173,7 @@ bool EngineHttp::init()
         server->pauseAccepting();
     }
 
-    qDebug() << "Number of child process:" << d->child.size();
+    qDebug(CUTELYST_ENGINE_HTTP) << "Number of child process:" << d->child.size();
 
     return !d->child.isEmpty();
 }
@@ -220,7 +222,23 @@ void EngineHttp::finalizeBody(Context *ctx)
 
     int *id = static_cast<int*>(ctx->req()->engineData());
     EngineHttpRequest *req = d->requests.value(*id);
-    req->m_socket->write(ctx->response()->body());
+    QTcpSocket *socket = req->m_socket;
+
+    QIODevice *body = ctx->res()->bodyDevice();
+    body->seek(0);
+
+    char block[4096];
+    while (!body->atEnd()) {
+        qint64 in = body->read(block, sizeof(block));
+        if (in <= 0)
+            break;
+
+        if (in != socket->write(block, in)) {
+            qCWarning(CUTELYST_ENGINE_HTTP) << "Failed to write body";
+            break;
+        }
+    }
+
     req->finish();
 }
 
@@ -233,7 +251,7 @@ void EngineHttp::removeConnection()
     }
 
     if (d->requests.size() <= 5 && d->servers.first()->signalsBlocked()) {
-        qDebug() << "unblock signals" << QCoreApplication::applicationPid();
+        qCDebug(CUTELYST_ENGINE_HTTP) << "unblock signals" << QCoreApplication::applicationPid();
         d->servers.first()->blockSignals(false);
     }
 }
@@ -260,11 +278,11 @@ void EngineHttp::onNewServerConnection()
     Q_D(EngineHttp);
 
     QTcpServer *server = static_cast<QTcpServer*>(sender());
-    qDebug() << "onNewServerConnection worker number" << QCoreApplication::applicationPid();
+    qCDebug(CUTELYST_ENGINE_HTTP) << "onNewServerConnection worker number" << QCoreApplication::applicationPid();
     QTcpSocket *socket = server->nextPendingConnection();
     if (socket) {
         if (d->requests.size() > 5) {
-            qDebug() << "block signals" << QCoreApplication::applicationPid();
+            qCDebug(CUTELYST_ENGINE_HTTP) << "block signals" << QCoreApplication::applicationPid();
             server->blockSignals(true);
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QNetworkCookie>
+#include <QIODevice>
 
 #include <Cutelyst/Headers>
 
@@ -87,14 +88,42 @@ public:
     bool finalizedHeaders() const;
 
     void addHeaderValue(const QByteArray &key, const QByteArray &value);
+
+    /**
+     * Returns true if a body device has been defined.
+     */
     bool hasBody() const;
+
+    /**
+     * This function returns a reference to a
+     * QByteArray which implicity sets the body
+     * device to a QBuffer, even if one was already
+     * set.
+     */
     QByteArray &body();
+
+    /**
+     * Returns the body IO device (if any) of this response.
+     */
+    QIODevice *bodyDevice();
+
+    /**
+     * Sets an IO device as the response body,
+     * the open mode must be at least QIODevice::ReadOnly.
+     * This function takes ownership of your device
+     * deleting after the request has completed
+     */
+    void setBody(QIODevice *body);
+
     QByteArray contentEncoding() const;
     void setContentEncoding(const QByteArray &encoding);
+
     qint64 contentLength() const;
     void setContentLength(qint64 length);
+
     QByteArray contentType() const;
     void setContentType(const QByteArray &type);
+
     QList<QNetworkCookie> cookies() const;
     void addCookie(const QNetworkCookie &cookie);
     void setCookies(const QList<QNetworkCookie> &cookies);

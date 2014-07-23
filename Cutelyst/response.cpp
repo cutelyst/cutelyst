@@ -20,8 +20,9 @@
 #include "response_p.h"
 #include "engine.h"
 #include "config.h"
+#include "common.h"
 
-#include <QDebug>
+#include <QBuffer>
 
 using namespace Cutelyst;
 
@@ -34,6 +35,7 @@ Response::Response() :
 
 Response::~Response()
 {
+    delete d_ptr->body;
     delete d_ptr;
 }
 
@@ -64,13 +66,39 @@ void Response::addHeaderValue(const QByteArray &key, const QByteArray &value)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->body.isEmpty();
+    return d->body;
 }
 
 QByteArray &Response::body()
 {
     Q_D(Response);
+
+    QBuffer *buf = qobject_cast<QBuffer*>(d->body);
+    if (!buf) {
+        buf = new QBuffer;
+        if (!buf->open(QIODevice::ReadWrite)) {
+            qCCritical(CUTELYST_RESPONSE) << "Could not open QBuffer!";
+        }
+        d->body = buf;
+    }
+    return buf->buffer();
+}
+
+QIODevice *Response::bodyDevice()
+{
+    Q_D(Response);
     return d->body;
+}
+
+void Response::setBody(QIODevice *body)
+{
+    Q_D(Response);
+    Q_ASSERT(body && body->isOpen() && body->isReadable());
+
+    if (d->body && d->body != d->body) {
+        delete d->body;
+    }
+    d->body = body;
 }
 
 QByteArray Response::contentEncoding() const

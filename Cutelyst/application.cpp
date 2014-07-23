@@ -36,6 +36,8 @@ Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
 Q_LOGGING_CATEGORY(CUTELYST_UPLOAD, "cutelyst.upload")
 Q_LOGGING_CATEGORY(CUTELYST_MULTIPART, "cutelyst.multipart")
 Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view")
+Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE_HTTP, "cutelyst.engine.http")
 
 using namespace std;
 using namespace Cutelyst;
