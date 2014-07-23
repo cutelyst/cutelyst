@@ -28,12 +28,13 @@ namespace Cutelyst {
 
 class Context;
 class Controller;
+class Dispatcher;
 class ActionPrivate;
 class Action : public QObject
 {
     Q_OBJECT
 public:
-    explicit Action(const QMetaMethod &method, Controller *parent = 0);
+    explicit Action(const QMetaMethod &method, Controller *controller);
     virtual ~Action();
 
     /**

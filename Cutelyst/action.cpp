@@ -28,20 +28,20 @@
 
 using namespace Cutelyst;
 
-Action::Action(const QMetaMethod &method, Controller *parent) :
-    QObject(parent),
+Action::Action(const QMetaMethod &method, Controller *controller) :
+    QObject(controller),
     d_ptr(new ActionPrivate)
 {
     Q_D(Action);
 
     // Setup the ns()
-    parent->init();
+    controller->init();
 
-    d->name = parent->ns() + '/' + method.name();
-    d->ns =parent->ns();
+    d->name = controller->ns() + '/' + method.name();
+    d->ns = controller->ns();
     d->method = method;
     d->methodName = method.name();
-    d->controller = parent;
+    d->controller = controller;
 
     QString actionNamespace;
     // Parse the Method attributes declared with Q_CLASSINFO
@@ -49,8 +49,8 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
     // optionally followed by the number of arguments it takes
     // and finally the attribute name.
     QRegularExpression regex(d->methodName % QLatin1String("_(\\w+)"));
-    for (int i = 0; i < parent->metaObject()->classInfoCount(); ++i) {
-        QMetaClassInfo classInfo = parent->metaObject()->classInfo(i);
+    for (int i = 0; i < controller->metaObject()->classInfoCount(); ++i) {
+        QMetaClassInfo classInfo = controller->metaObject()->classInfo(i);
         QString name = classInfo.name();
         if (name == QLatin1String("Namespace")) {
             actionNamespace = classInfo.value();
@@ -63,11 +63,11 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
             QString value = classInfo.value();
             if (type == QLatin1String("Path")) {
                 if (value.isEmpty()) {
-                    value = controller()->ns() % QLatin1String("/") % d->name;
+                    value = controller->ns() % QLatin1String("/") % d->name;
                 } else if (value.startsWith(QLatin1String("/"))) {
-                    value = controller()->ns() % QLatin1String("/") % d->name % QLatin1String("/") % value;
+                    value = controller->ns() % QLatin1String("/") % d->name % QLatin1String("/") % value;
                 } else {
-                    value = controller()->ns() % QLatin1String("/") % value;
+                    value = controller->ns() % QLatin1String("/") % value;
                 }
             }
             d->attributes.insertMulti(type.toLocal8Bit(),
@@ -107,7 +107,7 @@ Action::Action(const QMetaMethod &method, Controller *parent) :
             } else if (type == "Local") {
                 d->attributes.insertMulti("Path", name);
             } else if (type == "Path") {
-                d->attributes.insertMulti("Path", controller()->ns());
+                d->attributes.insertMulti("Path", controller->ns());
             } else if (type == "Args" && !d->attributes.contains("Args")) {
                 d->numberOfArgs = parameterCount;
                 d->attributes.insertMulti("Args", QByteArray::number(d->numberOfArgs));

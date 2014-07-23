@@ -120,7 +120,7 @@ bool Controller::_BEGIN(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList beginList;
-    beginList = ctx->getActions(QByteArray("Begin", 5), ctx->ns());
+    beginList = ctx->getActions(QByteArray("Begin", 5), ns());
     if (!beginList.isEmpty()) {
         Action *begin = beginList.last();
         begin->dispatch(ctx);
@@ -154,7 +154,7 @@ bool Controller::_END(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
     ActionList endList;
-    endList = ctx->getActions(QByteArray("End", 3), ctx->ns());
+    endList = ctx->getActions(QByteArray("End", 3), ns());
     if (!endList.isEmpty()) {
         Action *end = endList.last();
         end->dispatch(ctx);

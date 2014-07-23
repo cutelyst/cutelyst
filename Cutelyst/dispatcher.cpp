@@ -63,7 +63,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
             if (method.methodType() == QMetaMethod::Method ||
                     method.methodType() == QMetaMethod::Slot) {
                 bool registered = false;
-                Action *action = new Action(method, controller);
+                Action *action = new Action(method, controller, this);
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                     if (!action->attributes().contains("Private")) {
                         // Register the action with each dispatcher
@@ -131,8 +131,6 @@ bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringLi
     qCCritical(CUTELYST_DISPATCHER) << "Action not found" << action;
     return false;
 }
-
-//QByteArray
 
 void Dispatcher::prepareAction(Context *ctx)
 {
