@@ -261,10 +261,12 @@ void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
         wsgi_req->start_of_request = uwsgi_micros();
         wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
 
+#ifdef UWSGI_GO_CHEAP_CODE
         // enter harakiri mode
         if (uwsgi.harakiri_options.workers > 0) {
             set_harakiri(uwsgi.harakiri_options.workers);
         }
+#endif // UWSGI_GO_CHEAP_CODE
 
         CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
         readRequestUWSGI(wsgi_req);

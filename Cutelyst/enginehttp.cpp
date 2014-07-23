@@ -173,7 +173,7 @@ bool EngineHttp::init()
         server->pauseAccepting();
     }
 
-    qDebug(CUTELYST_ENGINE_HTTP) << "Number of child process:" << d->child.size();
+    qCDebug(CUTELYST_ENGINE_HTTP) << "Number of child process:" << d->child.size();
 
     return !d->child.isEmpty();
 }
