@@ -30,6 +30,7 @@
 
 namespace  Cutelyst {
 
+class ControllerPrivate;
 class Controller : public QObject
 {
     Q_OBJECT
@@ -108,7 +109,7 @@ public:
     /**
      * Returns the action object for the given private name
      */
-    Action *actionFor(Context *ctx, const QByteArray &name);
+    Action *actionFor(const QByteArray &name) const;
 
     bool operator==(const char *className);
 
@@ -119,9 +120,15 @@ protected:
 
     // Called when registering
     void init();
+    // Called after all controllers got registered
+    void setupActions(Dispatcher *dispatcher);
+
+    ControllerPrivate *d_ptr;
 
 private:
+    Q_DECLARE_PRIVATE(Controller)
     friend class Action;
+    friend class Dispatcher;
 
     Q_INVOKABLE void _DISPATCH(Context *ctx);
     Q_INVOKABLE bool _BEGIN(Context *ctx);

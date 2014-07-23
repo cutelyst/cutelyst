@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "controller.h"
+#include "controller_p.h"
 
 #include "dispatcher.h"
 #include "action.h"
@@ -29,7 +29,8 @@
 using namespace Cutelyst;
 
 Controller::Controller(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    d_ptr(new ControllerPrivate)
 {
 }
 
@@ -39,12 +40,14 @@ Controller::~Controller()
 
 QByteArray Controller::ns() const
 {
-    return property("ns").toByteArray();
+    Q_D(const Controller);
+    return d->ns;
 }
 
-Action *Controller::actionFor(Context *ctx, const QByteArray &name)
+Action *Controller::actionFor(const QByteArray &name) const
 {
-    return ctx->dispatcher()->getAction(name, ns());
+    Q_D(const Controller);
+    return d->dispatcher->getAction(name, d->ns);
 }
 
 bool Controller::operator==(const char *className)
@@ -69,6 +72,8 @@ void Controller::End(Context *ctx)
 
 void Controller::init()
 {
+    Q_D(Controller);
+
     QByteArray controlerNS;
     for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
         if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
@@ -95,7 +100,26 @@ void Controller::init()
             }
         }
     }
-    setProperty("ns", controlerNS);
+    d->ns = controlerNS;
+}
+
+void Controller::setupActions(Dispatcher *dispatcher)
+{
+    Q_D(Controller);
+
+    ActionList beginList;
+    beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->ns);
+    if (!beginList.isEmpty()) {
+        d->begin = beginList.last();
+    }
+
+    d->autoList = dispatcher->getActions(QByteArrayLiteral("Auto"), d->ns);
+
+    ActionList endList;
+    endList = dispatcher->getActions(QByteArrayLiteral("End"), d->ns);
+    if (!endList.isEmpty()) {
+        d->end = endList.last();
+    }
 }
 
 static QList<QByteArray> dispatchSteps(
@@ -119,11 +143,9 @@ void Controller::_DISPATCH(Context *ctx)
 bool Controller::_BEGIN(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
-    ActionList beginList;
-    beginList = ctx->getActions(QByteArray("Begin", 5), ns());
-    if (!beginList.isEmpty()) {
-        Action *begin = beginList.last();
-        begin->dispatch(ctx);
+    Q_D(Controller);
+    if (d->begin) {
+        d->begin->dispatch(ctx);
         return !ctx->error();
     }
     return true;
@@ -132,8 +154,8 @@ bool Controller::_BEGIN(Context *ctx)
 bool Controller::_AUTO(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
-    ActionList autoList = ctx->getActions(QByteArray("Auto", 4), ctx->ns());
-    Q_FOREACH (Action *autoAction, autoList) {
+    Q_D(Controller);
+    Q_FOREACH (Action *autoAction, d->autoList) {
         if (!autoAction->dispatch(ctx)) {
             return false;
         }
@@ -153,11 +175,9 @@ bool Controller::_ACTION(Context *ctx)
 bool Controller::_END(Context *ctx)
 {
 //    qDebug() << Q_FUNC_INFO;
-    ActionList endList;
-    endList = ctx->getActions(QByteArray("End", 3), ns());
-    if (!endList.isEmpty()) {
-        Action *end = endList.last();
-        end->dispatch(ctx);
+    Q_D(Controller);
+    if (d->end) {
+        d->end->dispatch(ctx);
         return !ctx->error();
     }
     return true;

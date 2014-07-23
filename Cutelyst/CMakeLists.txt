@@ -24,6 +24,7 @@ set(cutelystqt_SRC
     enginehttp.cpp
     enginehttp_p.h
     controller.cpp
+    controller_p.h
     dispatchtype.cpp
     dispatchtypepath.cpp
     dispatcher.cpp

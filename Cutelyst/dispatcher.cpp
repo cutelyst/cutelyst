@@ -96,6 +96,10 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         }
     }
 
+    Q_FOREACH (Controller *controller, controllers) {
+        controller->setupActions(this);
+    }
+
     printActions();
 }
 
@@ -340,8 +344,6 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
 
 Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
 {
-    Q_D(Dispatcher);
-
     Action *ret;
     QByteArray path = actionRel2Abs(ctx, relativePath);
 
