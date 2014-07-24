@@ -132,8 +132,6 @@ bool Engine::postForkApplication()
 
 QByteArray Engine::statusCode(quint16 status) const
 {
-    Q_D(const Engine);
-
     switch (status) {
     case Response::OK:
         return QByteArrayLiteral("200 OK");
