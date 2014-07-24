@@ -36,7 +36,7 @@ public:
 
     virtual QByteArray list() const;
 
-    virtual bool match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const;
+    virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const;
 
     virtual bool registerAction(Action *action);
 

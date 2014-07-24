@@ -142,7 +142,7 @@ void Dispatcher::prepareAction(Context *ctx)
 
     QByteArray path = ctx->req()->path().toLatin1();
     QList<QByteArray> pathParts = path.split('/');
-    QList<QByteArray> args;
+    QStringList args;
 
     // Root action
     pathParts.prepend(QByteArrayLiteral(""));
@@ -153,7 +153,7 @@ void Dispatcher::prepareAction(Context *ctx)
             QByteArray actionPath = path.mid(1, pos);
             if (type->match(ctx, actionPath, args)) {
 
-                ctx->req()->d_ptr->args = unexcapedArgs(args);
+                ctx->req()->d_ptr->args = args;
 
                 if (!path.isEmpty()) {
                     qCDebug(CUTELYST_DISPATCHER) << "Path is" << actionPath;
@@ -169,7 +169,7 @@ void Dispatcher::prepareAction(Context *ctx)
 
         pos = path.lastIndexOf('/', pos - 1);
 
-        args.prepend(pathParts.takeLast());
+        args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));
     }
 }
 
@@ -314,15 +314,6 @@ Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, cons
         ret = invokeAsPath(ctx, command, ctx->args());
     }
 
-    return ret;
-}
-
-QStringList Dispatcher::unexcapedArgs(const QList<QByteArray> &args)
-{
-    QStringList ret;
-    Q_FOREACH (const QByteArray &arg, args) {
-        ret.append(QUrl::fromPercentEncoding(arg));
-    }
     return ret;
 }
 

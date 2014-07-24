@@ -41,7 +41,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const = 0;
+    virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action //TODO

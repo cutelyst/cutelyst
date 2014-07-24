@@ -37,6 +37,10 @@ class Engine;
 class RequestPrivate
 {
 public:
+    // call reset before reusing it
+    void reset();
+
+    void parseUrlQuery() const;
     void parseBody() const;
     void parseCookies() const;
 
@@ -45,21 +49,34 @@ public:
     QByteArray protocol;
     Headers headers;
     QIODevice *body = 0;
-    QHostAddress address;
-    quint16 port;
+    QHostAddress remoteAddress;
+    quint16 remotePort;
     QByteArray remoteUser;
     Engine *engine;
     // Pointer to Engine data
     void *requestPtr = 0;
 
     // Instead of setting this you might use setPathURIAndQueryParams
-    QUrl uri;
+    bool https = false;
     QString path;
-    QMultiHash<QString, QString> queryParam;
-    void setPathURIAndQueryParams(bool https, const QString &hostAndPort, const QString &requestPath, const QUrlQuery &queryString);
+    QString serverAddress;
+    quint16 serverPort;
+    QString queryString;
+
+protected:
+    friend class Request;
+    friend class Dispatcher;
 
     // Engines don't need to touch this
     QStringList args;
+
+    mutable bool uriParsed = false;
+    mutable QUrl uri;
+
+    mutable bool queryParamParsed = false;
+    mutable QUrlQuery queryParamUrl;
+    mutable QMultiHash<QString, QString> queryParam;
+
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
     mutable bool bodyParsed = false;

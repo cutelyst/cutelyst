@@ -54,7 +54,6 @@ protected:
 private:
     QByteArray printActions();
     Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
-    QStringList unexcapedArgs(const QList<QByteArray> &args);
     QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);
     Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
     inline QByteArray cleanNamespace(const QByteArray &ns) const;

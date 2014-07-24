@@ -108,7 +108,7 @@ QByteArray DispatchTypePath::list() const
     return buffer;
 }
 
-bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QList<QByteArray> &args) const
+bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QStringList &args) const
 {
     QByteArray _path = path;
     if (_path.isEmpty()) {

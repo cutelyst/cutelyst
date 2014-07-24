@@ -258,17 +258,17 @@ void EngineHttp::removeConnection()
 
 void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body)
 {
-    RequestPrivate *priv;
+    RequestPrivate *priv = new RequestPrivate;
     priv->method = method;
     priv->protocol = protocol;
     priv->headers = headers;
     priv->body = body;
     priv->requestPtr = requestData;
-
-    priv->setPathURIAndQueryParams(url.scheme() == QLatin1String("https"),
-                                   url.authority(),
-                                   url.path(),
-                                   QUrlQuery(url.query()));
+    priv->https = url.scheme() == QLatin1String("https");
+    priv->path = url.path();
+    priv->serverAddress = url.host();
+    priv->serverPort = url.port();
+    priv->queryString = url.query();
 
     handleRequest(new Request(priv), true);
 }

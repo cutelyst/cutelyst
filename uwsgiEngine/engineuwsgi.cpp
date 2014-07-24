@@ -123,19 +123,29 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
 
     RequestPrivate *priv = cache->priv;
-    priv->setPathURIAndQueryParams(req->https_len,
-                                   QString::fromLatin1(req->host, req->host_len),
-                                   QString::fromLatin1(req->uri, req->uri_len),
-                                   QUrlQuery(QString::fromLatin1(req->query_string, req->query_string_len)));
+    priv->reset();
+
+    priv->https = req->https_len;
+    priv->path = QString::fromLatin1(req->uri, req->uri_len);
+
+    char *pch = strchr(req->host, ':');
+    if (pch) {
+        priv->serverAddress = QString::fromLatin1(req->host, pch - req->host);
+        priv->serverPort = QByteArray::fromRawData(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
+    } else {
+        priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
+        priv->serverPort = 80;// fallback
+    }
+    priv->queryString = QString::fromLatin1(req->query_string, req->query_string_len);
 
     priv->method = QByteArray::fromRawData(req->method, req->method_len);
     priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
-    priv->address = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
+    priv->remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
     priv->remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
 
     uint16_t remote_port_len;
     char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    priv->port = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
+    priv->remotePort = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
 
     Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
@@ -164,7 +174,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
     QIODevice *body;
     if (req->post_file) {
-        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
+//        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
         QFile *upload = cache->bodyFile;
         if (upload->open(req->post_file, QIODevice::ReadOnly)) {
             body = upload;

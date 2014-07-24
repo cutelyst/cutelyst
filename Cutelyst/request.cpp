@@ -41,28 +41,47 @@ Request::~Request()
 QHostAddress Request::address() const
 {
     Q_D(const Request);
-    return d->address;
+    return d->remoteAddress;
 }
 
 quint16 Request::port() const
 {
     Q_D(const Request);
-    return d->port;
+    return d->remotePort;
 }
 
 QUrl Request::uri() const
 {
     Q_D(const Request);
+    if (!d->uriParsed) {
+        QUrl uri;
+        if (d->serverAddress.isNull()) {
+            // This is a hack just in case remote is not set
+            uri.setHost(QHostInfo::localHostName());
+        } else {
+            uri.setHost(d->serverAddress);
+            uri.setPort(d->serverPort);
+        }
+        uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
+        uri.setPath(d->path);
+
+        if (!d->queryParamParsed) {
+            d->parseUrlQuery();
+        }
+        uri.setQuery(d->queryParamUrl);
+
+        d->uri = uri;
+        d->uriParsed = true;
+    }
     return d->uri;
 }
 
 QByteArray Request::base() const
 {
-    Q_D(const Request);
-    return d->uri.toString(QUrl::RemoveUserInfo |
-                           QUrl::RemovePath |
-                           QUrl::RemoveQuery |
-                           QUrl::RemoveFragment).toLatin1();
+    return uri().toString(QUrl::RemoveUserInfo |
+                          QUrl::RemovePath |
+                          QUrl::RemoveQuery |
+                          QUrl::RemoveFragment).toLatin1();
 }
 
 QString Request::path() const
@@ -100,6 +119,9 @@ QMultiHash<QString, QString> Request::bodyParam() const
 QMultiHash<QString, QString> Request::queryParameters() const
 {
     Q_D(const Request);
+    if (!d->queryParamParsed) {
+        d->parseUrlQuery();
+    }
     return d->queryParam;
 }
 
@@ -194,8 +216,21 @@ void Request::setArgs(const QStringList &args)
     d->args = args;
 }
 
+void RequestPrivate::parseUrlQuery() const
+{
+    queryParamUrl.setQuery(queryString);
+    Q_FOREACH (const StringPair &queryItem, queryParamUrl.queryItems()) {
+        queryParam.insertMulti(queryItem.first, queryItem.second);
+    }
+    queryParamParsed = true;
+}
+
 void RequestPrivate::parseBody() const
 {
+    if (!queryParamParsed) {
+        parseUrlQuery();
+    }
+
     const QByteArray &contentType = headers.contentType();
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
@@ -238,28 +273,15 @@ void RequestPrivate::parseCookies() const
     cookiesParsed = true;
 }
 
-void RequestPrivate::setPathURIAndQueryParams(bool https, const QString &hostAndPort, const QString &requestPath, const QUrlQuery &queryString)
+void RequestPrivate::reset()
 {
-    path = requestPath;
-    if (hostAndPort.isNull()) {
-        // This is a hack just in case remote is not set
-        uri.setHost(QHostInfo::localHostName());
-    } else {
-        uri.setAuthority(hostAndPort);
-    }
-    uri.setScheme(https ? QStringLiteral("https") : QStringLiteral("http"));
-    uri.setPath(path);
-    uri.setQuery(queryString);
-
-    Q_FOREACH (const StringPair &queryItem, queryString.queryItems()) {
-        queryParam.insertMulti(queryItem.first, queryItem.second);
-    }
-
-    args.clear();
+    queryParamParsed = false;
+    uriParsed = false;
+    args = QStringList();
     cookiesParsed = false;
-    cookies.clear();
+    cookies = QList<QNetworkCookie>();
     bodyParsed = false;
-    bodyParam.clear();
-    param.clear();
-    uploads.clear();
+    bodyParam = QMultiHash<QString, QString>();
+    param = QMultiHash<QString, QString>();
+    qDeleteAll(uploads);
 }
