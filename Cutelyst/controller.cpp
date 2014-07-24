@@ -128,16 +128,22 @@ void Controller::_DISPATCH(Context *ctx)
 {
     Q_D(Controller);
 
-    // Dispatch to _BEGIN, _AUTO and _ACTION
-    ActionList steps = d->actionSteps;
-    steps.append(ctx->action());
+    bool failedState = false;
 
-    Q_FOREACH (Action *action, steps) {
+    // Dispatch to _BEGIN and _AUTO
+    Q_FOREACH (Action *action, d->actionSteps) {
         if (!action->dispatch(ctx)) {
+            failedState = true;
             break;
         }
     }
 
+    // Dispatch to _ACTION
+    if (!failedState) {
+        ctx->action()->dispatch(ctx);
+    }
+
+    // Dispatch to _END
     d->end->dispatch(ctx);
 }
 
