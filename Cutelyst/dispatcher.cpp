@@ -140,7 +140,8 @@ void Dispatcher::prepareAction(Context *ctx)
 {
     Q_D(Dispatcher);
 
-    QByteArray path = ctx->req()->path().toLatin1();
+    Request *request = ctx->request();
+    QByteArray path = request->path().toLatin1();
     QList<QByteArray> pathParts = path.split('/');
     QStringList args;
 
@@ -149,18 +150,17 @@ void Dispatcher::prepareAction(Context *ctx)
 
     int pos = path.size();
     while (pos != -1) {
+        QByteArray actionPath = path.mid(1, pos - 1);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
-            QByteArray actionPath = path.mid(1, pos);
             if (type->match(ctx, actionPath, args)) {
-
-                ctx->req()->d_ptr->args = args;
+                request->d_ptr->args = args;
 
                 if (!path.isEmpty()) {
                     qCDebug(CUTELYST_DISPATCHER) << "Path is" << actionPath;
                 }
 
-                if (!ctx->args().isEmpty()) {
-                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << ctx->args().join(QLatin1Char('/'));
+                if (!args.isEmpty()) {
+                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
                 }
 
                 return;

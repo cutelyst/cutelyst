@@ -116,7 +116,7 @@ protected:
      * Engines must reimplement this to write the
      * response body back to the caller
      */
-    virtual void finalizeBody(Context *ctx) = 0;
+    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData) = 0;
 
     /**
      * @brief finalizeError called on error

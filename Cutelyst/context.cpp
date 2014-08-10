@@ -286,27 +286,9 @@ void Context::finalizeHeaders()
         response->setContentLength(response->bodyDevice()->size());
     }
 
-    finalizeCookies();
+    d->engine->finalizeCookies(this);
 
     d->engine->finalizeHeaders(this);
-}
-
-void Context::finalizeCookies()
-{
-    Q_D(Context);
-    d->engine->finalizeCookies(this);
-}
-
-void Context::finalizeBody()
-{
-    Q_D(Context);
-    d->engine->finalizeBody(this);
-}
-
-void Context::finalizeError()
-{
-    Q_D(Context);
-    d->engine->finalizeError(this);
 }
 
 int Context::finalize()
@@ -314,16 +296,15 @@ int Context::finalize()
     Q_D(Context);
 
     if (error()) {
-        finalizeError();
+        d->engine->finalizeError(this);
     }
 
     finalizeHeaders();
 
-    if (d->request->method() == "HEAD") {
-        d->response->body().clear();
+    QIODevice *body = d->response->bodyDevice();
+    if (body) {
+        d->engine->finalizeBody(this, body, d->request->engineData());
     }
-
-    finalizeBody();
 
     if (d->stats) {
         qCDebug(CUTELYST_CORE) << "Request took:" << d->stats->elapsed() / 1000.0 << "s";

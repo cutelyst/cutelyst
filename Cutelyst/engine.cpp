@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -63,14 +63,17 @@ Engine::~Engine()
 
 void Engine::finalizeCookies(Context *ctx)
 {
-    Q_FOREACH (const QNetworkCookie &cookie, ctx->response()->cookies()) {
-        ctx->response()->addHeaderValue("Set-Cookie", cookie.toRawForm());
+    Response *res = ctx->response();
+    Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
+        res->addHeaderValue("Set-Cookie", cookie.toRawForm());
     }
 }
 
 void Engine::finalizeError(Context *ctx)
 {
-    ctx->res()->setContentType("text/html; charset=utf-8");
+    Response *res = ctx->response();
+
+    res->setContentType("text/html; charset=utf-8");
 
     QByteArray body;
 
@@ -80,10 +83,10 @@ void Engine::finalizeError(Context *ctx)
 
     body.append(ctx->errors().join(QLatin1Char('\n')));
 
-    ctx->res()->body() = body;
+    res->body() = body;
 
     // Return 500
-    ctx->res()->setStatus(Response::InternalServerError);
+    res->setStatus(Response::InternalServerError);
 }
 
 Application *Engine::app() const

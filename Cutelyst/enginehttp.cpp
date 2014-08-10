@@ -216,15 +216,15 @@ void EngineHttp::finalizeHeaders(Context *ctx)
     d->requests[*id]->m_socket->write(header);
 }
 
-void EngineHttp::finalizeBody(Context *ctx)
+void EngineHttp::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
 {
     Q_D(EngineHttp);
+    Q_UNUSED(ctx)
 
-    int *id = static_cast<int*>(ctx->req()->engineData());
+    int *id = static_cast<int*>(engineData);
     EngineHttpRequest *req = d->requests.value(*id);
     QTcpSocket *socket = req->m_socket;
 
-    QIODevice *body = ctx->res()->bodyDevice();
     body->seek(0);
 
     char block[4096];

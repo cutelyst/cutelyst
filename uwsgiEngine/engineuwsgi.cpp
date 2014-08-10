@@ -59,13 +59,12 @@ void EngineUwsgi::setThread(QThread *thread)
             this, &EngineUwsgi::forked, Qt::DirectConnection);
 }
 
-void EngineUwsgi::finalizeBody(Context *ctx)
+void EngineUwsgi::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
 {
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->engineData());
+    Q_UNUSED(ctx)
 
-    QIODevice *body = ctx->res()->bodyDevice();
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
     body->seek(0);
-
     char block[4096];
     while (!body->atEnd()) {
         qint64 in = body->read(block, sizeof(block));

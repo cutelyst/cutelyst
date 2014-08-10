@@ -140,9 +140,6 @@ protected:
     void handleRequest();
     inline void prepareAction();
     void finalizeHeaders();
-    inline void finalizeCookies();
-    inline void finalizeBody();
-    inline void finalizeError();
     int finalize();
 
     QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
