@@ -47,7 +47,8 @@ public:
 
     virtual bool init();
 
-    virtual void finalizeHeaders(Context *ctx);
+    virtual void finalizeHeaders(Context *ctx, void *engineData);
+
     virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData);
 
     void readRequestUWSGI(wsgi_request *req);

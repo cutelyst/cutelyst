@@ -31,7 +31,6 @@ class ResponsePrivate
 {
 public:
     quint16 status = Response::OK;
-    quint16 finalizedHeaders = false;
     Headers headers;
     QList<QNetworkCookie> cookies;
     QIODevice *body = 0;

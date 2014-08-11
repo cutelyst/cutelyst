@@ -100,7 +100,7 @@ protected:
      * to Set-Cookie, the default implementation
      * writes them to ctx->res()->headers()
      */
-    virtual void finalizeCookies(Context *ctx);
+    virtual void finalizeCookies(Context *ctx, void *engineData);
 
     /**
      * @brief finalizeHeaders called after finalizeCookies
@@ -108,7 +108,7 @@ protected:
      * Engines must reimplement this to write response
      * headers back to the caller
      */
-    virtual void finalizeHeaders(Context *ctx) = 0;
+    virtual void finalizeHeaders(Context *ctx, void *engineData) = 0;
 
     /**
      * @brief finalizeBody called after finalizeHeaders

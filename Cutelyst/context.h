@@ -138,8 +138,6 @@ Q_SIGNALS:
 
 protected:
     void handleRequest();
-    inline void prepareAction();
-    void finalizeHeaders();
     int finalize();
 
     QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;

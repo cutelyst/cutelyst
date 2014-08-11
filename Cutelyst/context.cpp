@@ -236,7 +236,7 @@ void Context::handleRequest()
     bool skipMethod = false;
     Q_EMIT beforePrepareAction(&skipMethod);
     if (!skipMethod) {
-        prepareAction();
+        d->dispatcher->prepareAction(this);
 
         Q_EMIT beforeDispatch();
         dispatch();
@@ -246,23 +246,18 @@ void Context::handleRequest()
     d->status = finalize();
 }
 
-void Context::prepareAction()
-{
-    Q_D(Context);
-    d->dispatcher->prepareAction(this);
-}
-
-void Context::finalizeHeaders()
+int Context::finalize()
 {
     Q_D(Context);
 
-    Response *response = d->response;
-    if (response->finalizedHeaders()) {
-        return;
+    if (error()) {
+        d->engine->finalizeError(this);
     }
 
+    Response *response = d->response;
+
     if (response->location().isValid()) {
-        response->addHeaderValue(QByteArray("Location", 8), response->location().toEncoded());
+        response->addHeaderValue(QByteArrayLiteral("Location"), response->location().toEncoded());
 
         if (!response->hasBody()) {
             QByteArray data;
@@ -282,26 +277,15 @@ void Context::finalizeHeaders()
         }
     }
 
-    if (response->hasBody()) {
-        response->setContentLength(response->bodyDevice()->size());
+    d->engine->finalizeCookies(this, d->request->engineData());
+
+    QIODevice *body = response->bodyDevice();
+    if (body) {
+        response->setContentLength(body->size());
     }
 
-    d->engine->finalizeCookies(this);
+    d->engine->finalizeHeaders(this, d->request->engineData());
 
-    d->engine->finalizeHeaders(this);
-}
-
-int Context::finalize()
-{
-    Q_D(Context);
-
-    if (error()) {
-        d->engine->finalizeError(this);
-    }
-
-    finalizeHeaders();
-
-    QIODevice *body = d->response->bodyDevice();
     if (body) {
         d->engine->finalizeBody(this, body, d->request->engineData());
     }
@@ -310,7 +294,7 @@ int Context::finalize()
         qCDebug(CUTELYST_CORE) << "Request took:" << d->stats->elapsed() / 1000.0 << "s";
     }
 
-    return d->response->status();
+    return response->status();
 }
 
 QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const

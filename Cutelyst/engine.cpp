@@ -61,7 +61,7 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::finalizeCookies(Context *ctx)
+void Engine::finalizeCookies(Context *ctx, void *engineData)
 {
     Response *res = ctx->response();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {

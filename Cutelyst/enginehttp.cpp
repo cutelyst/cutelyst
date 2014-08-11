@@ -178,7 +178,7 @@ bool EngineHttp::init()
     return !d->child.isEmpty();
 }
 
-void EngineHttp::finalizeHeaders(Context *ctx)
+void EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
 {
     Q_D(EngineHttp);
 
@@ -212,7 +212,7 @@ void EngineHttp::finalizeHeaders(Context *ctx)
         }
     }
 
-    int *id = static_cast<int*>(ctx->req()->engineData());
+    int *id = static_cast<int*>(engineData);
     d->requests[*id]->m_socket->write(header);
 }
 

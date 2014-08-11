@@ -85,8 +85,6 @@ public:
     quint16 status() const;
     void setStatus(quint16 status);
 
-    bool finalizedHeaders() const;
-
     void addHeaderValue(const QByteArray &key, const QByteArray &value);
 
     /**

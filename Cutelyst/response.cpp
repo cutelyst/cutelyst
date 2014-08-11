@@ -51,12 +51,6 @@ void Response::setStatus(quint16 status)
     d->status = status;
 }
 
-bool Response::finalizedHeaders() const
-{
-    Q_D(const Response);
-    return d->finalizedHeaders;
-}
-
 void Response::addHeaderValue(const QByteArray &key, const QByteArray &value)
 {
     Q_D(Response);

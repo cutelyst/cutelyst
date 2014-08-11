@@ -305,10 +305,10 @@ QList<wsgi_request *> EngineUwsgi::unusedRequestQueue() const
     return m_unusedReq;
 }
 
-void EngineUwsgi::finalizeHeaders(Context *ctx)
+void EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
 {
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
     Response *res = ctx->res();
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->req()->engineData());
 
     QByteArray status = statusCode(res->status());
     if (uwsgi_response_prepare_headers(wsgi_req,
