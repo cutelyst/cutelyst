@@ -36,6 +36,7 @@ Controller::Controller(QObject *parent) :
 
 Controller::~Controller()
 {
+    delete d_ptr;
 }
 
 QByteArray Controller::ns() const

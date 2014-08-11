@@ -109,9 +109,12 @@ extern "C" void uwsgi_cutelyst_master_cleanup()
 extern "C" void uwsgi_cutelyst_atexit()
 {
     uwsgi_log("Child process finishing: %d\n", QCoreApplication::applicationPid());
+
     Q_FOREACH (EngineUwsgi *engine, coreEngines) {
         engine->stop();
     }
+    qDeleteAll(coreEngines);
+
     uwsgi_log("Child process finished: %d\n", QCoreApplication::applicationPid());
 }
 
@@ -187,6 +190,8 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     // register a new app under a specific "mountpoint"
     uwsgi_add_app(1, CUTELYST_MODIFIER1, (char *) "", 0, NULL, NULL);
+
+    delete loader;
 }
 
 void uwsgi_cutelyst_watch_signal(int signalFD)

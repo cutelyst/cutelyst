@@ -46,7 +46,7 @@ public:
     QVariantHash stash;
     int status;
     bool state = false;
-    QTime *stats;
+    QTime stats;
 };
 
 }
