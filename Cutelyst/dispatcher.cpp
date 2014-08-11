@@ -150,7 +150,9 @@ void Dispatcher::prepareAction(Context *ctx)
 
     int pos = path.size();
     while (pos != -1) {
-        QByteArray actionPath = path.mid(1, pos - 1);
+        QByteArray actionPath = path.mid(1, pos);
+        qCDebug(CUTELYST_DISPATCHER) << "debug actionPath" << pos << actionPath << args << pathParts;
+
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, actionPath, args)) {
                 request->d_ptr->args = args;
@@ -167,7 +169,11 @@ void Dispatcher::prepareAction(Context *ctx)
             }
         }
 
-        pos = path.lastIndexOf('/', pos - 1);
+        pos = path.lastIndexOf('/', pos);
+        if (pos > 0) {
+            // Remove trailing '/'
+            --pos;
+        }
 
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));
     }
