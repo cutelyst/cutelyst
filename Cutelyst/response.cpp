@@ -30,7 +30,7 @@ Response::Response() :
     d_ptr(new ResponsePrivate)
 {
     Q_D(Response);
-    d->headers.setHeader("X-Cutelyst", VERSION);
+    d->headers.setHeader(QByteArrayLiteral("X-Cutelyst"), QByteArrayLiteral(VERSION));
 }
 
 Response::~Response()

@@ -291,10 +291,6 @@ int Context::finalize()
         engine->finalizeBody(this, body, engineData);
     }
 
-    if (!d->stats.isNull()) {
-        qCDebug(CUTELYST_CORE) << "Request took:" << d->stats.elapsed() / 1000.0 << "s";
-    }
-
     return response->status();
 }
 
@@ -308,12 +304,6 @@ void Context::setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &k
 {
     Q_D(Context);
     d->plugins[plugin].insert(key, value);
-}
-
-ContextPrivate::ContextPrivate() :
-    response(new Response)
-{
-    stats.start();
 }
 
 ContextPrivate::~ContextPrivate()

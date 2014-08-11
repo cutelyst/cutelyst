@@ -38,6 +38,7 @@ Q_LOGGING_CATEGORY(CUTELYST_MULTIPART, "cutelyst.multipart")
 Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view")
 Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
 Q_LOGGING_CATEGORY(CUTELYST_ENGINE_HTTP, "cutelyst.engine.http")
+Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
 
 using namespace std;
 using namespace Cutelyst;
@@ -149,6 +150,7 @@ void Application::handleRequest(Request *req)
     priv->engine = req->engine();
     priv->dispatcher = d->dispatcher;
     priv->request = req;
+    priv->response = new Response;
     Context *ctx = new Context(priv);
 
     // Register application plugins

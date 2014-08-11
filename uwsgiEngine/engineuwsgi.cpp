@@ -24,9 +24,10 @@
 
 #include <QSocketNotifier>
 
-#include <Cutelyst/application.h>
-#include <Cutelyst/context.h>
-#include <Cutelyst/response.h>
+#include <Cutelyst/common.h>
+#include <Cutelyst/Application>
+#include <Cutelyst/Context>
+#include <Cutelyst/Response>
 #include <Cutelyst/request_p.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
@@ -110,8 +111,10 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
         goto end;
     }
 
-//    qCDebug(CUTELYST_UWSGI) << "async_environ" << wsgi_req->async_environ;
     processRequest(wsgi_req);
+
+    wsgi_req->end_of_request = uwsgi_micros();
+    qCDebug(CUTELYST_STATS) << "Request took:" << ((wsgi_req->end_of_request-wsgi_req->start_of_request)/1000000.0) << "s";
 
 end:
     uwsgi_close_request(wsgi_req);

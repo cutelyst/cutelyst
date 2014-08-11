@@ -30,13 +30,12 @@ namespace Cutelyst {
 class ContextPrivate
 {
 public:
-    ContextPrivate();
     ~ContextPrivate();
 
     Application *app;
     Engine *engine;
     Request *request;
-    Response *response;
+    Response *response = 0;
     Action *action = 0;
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
@@ -46,7 +45,6 @@ public:
     QVariantHash stash;
     int status;
     bool state = false;
-    QTime stats;
 };
 
 }
