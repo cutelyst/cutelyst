@@ -250,12 +250,12 @@ int Context::finalize()
 {
     Q_D(Context);
 
+    Engine *engine = d->engine;
     if (error()) {
-        d->engine->finalizeError(this);
+        engine->finalizeError(this);
     }
 
     Response *response = d->response;
-
     if (response->location().isValid()) {
         response->addHeaderValue(QByteArrayLiteral("Location"), response->location().toEncoded());
 
@@ -277,17 +277,18 @@ int Context::finalize()
         }
     }
 
-    d->engine->finalizeCookies(this, d->request->engineData());
+    void *engineData = d->request->engineData();
+    engine->finalizeCookies(this, engineData);
 
     QIODevice *body = response->bodyDevice();
     if (body) {
         response->setContentLength(body->size());
     }
 
-    d->engine->finalizeHeaders(this, d->request->engineData());
+    engine->finalizeHeaders(this, engineData);
 
     if (body) {
-        d->engine->finalizeBody(this, body, d->request->engineData());
+        engine->finalizeBody(this, body, engineData);
     }
 
     if (d->stats) {
