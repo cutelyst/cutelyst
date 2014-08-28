@@ -49,7 +49,7 @@ bool BodyBufferedUWSGI::seek(qint64 off)
     return m_buffer->seek(off);
 }
 
-void BodyBufferedUWSGI::closeBuffer()
+void BodyBufferedUWSGI::close()
 {
     m_buffer->close();
 }
