@@ -49,6 +49,11 @@ bool BodyBufferedUWSGI::seek(qint64 off)
     return m_buffer->seek(off);
 }
 
+void BodyBufferedUWSGI::closeBuffer()
+{
+    m_buffer->close();
+}
+
 qint64 BodyBufferedUWSGI::readData(char *data, qint64 maxlen)
 {
     if (!m_buffer->isOpen()) {
