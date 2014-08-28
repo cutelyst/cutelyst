@@ -35,7 +35,7 @@ public:
     virtual qint64 size() const;
     virtual bool seek(qint64 off);
 
-    virtual void close();
+    void closeBuffer();
 
 protected:
     virtual qint64 readData(char *data, qint64 maxlen);

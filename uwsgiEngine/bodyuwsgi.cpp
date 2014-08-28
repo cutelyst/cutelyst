@@ -47,11 +47,6 @@ bool BodyUWSGI::seek(qint64 off)
     return true;
 }
 
-void BodyUWSGI::close()
-{
-    // We just prevent QIODevice::close() from being called
-}
-
 qint64 BodyUWSGI::readData(char *data, qint64 maxlen)
 {
     ssize_t body_len = 0;

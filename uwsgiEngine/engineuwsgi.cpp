@@ -198,7 +198,8 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
     handleRequest(cache->request, false);
 
-    body->close();
+    // reset buffered buffer
+    cache->bodyBufferedUWSGI->closeBuffer();
 }
 
 QByteArray EngineUwsgi::httpCase(char *key, int key_len) const
