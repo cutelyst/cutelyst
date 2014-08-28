@@ -161,7 +161,19 @@ void Application::handleRequest(Request *req)
     // Register context plugins
     Q_EMIT registerPlugins(ctx);
 
-    ctx->handleRequest();
+    // Process request
+    bool skipMethod = false;
+    Q_EMIT ctx->beforePrepareAction(&skipMethod);
+    if (!skipMethod) {
+        d->dispatcher->prepareAction(ctx);
+
+        Q_EMIT ctx->beforeDispatch();
+
+        d->dispatcher->dispatch(ctx);
+
+        Q_EMIT ctx->afterDispatch();
+    }
+    ctx->finalize();
 
     delete ctx;
 }

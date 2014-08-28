@@ -109,8 +109,8 @@ public:
 
     QByteArray uriFor(const QByteArray &path, const QStringList &args = QStringList());
 
-    inline bool dispatch();
     bool detached() const;
+
     void detach();
 
     bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
@@ -137,8 +137,7 @@ Q_SIGNALS:
     void afterDispatch();
 
 protected:
-    void handleRequest();
-    int finalize();
+    void finalize();
 
     QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);

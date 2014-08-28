@@ -170,12 +170,6 @@ QByteArray Context::uriFor(const QByteArray &path, const QStringList &args)
     }
 }
 
-bool Context::dispatch()
-{
-    Q_D(Context);
-    return d->dispatcher->dispatch(this);
-}
-
 bool Context::detached() const
 {
     Q_D(const Context);
@@ -229,24 +223,7 @@ QList<Plugin::AbstractPlugin *> Context::plugins()
     return d->plugins.keys();
 }
 
-void Context::handleRequest()
-{
-    Q_D(Context);
-
-    bool skipMethod = false;
-    Q_EMIT beforePrepareAction(&skipMethod);
-    if (!skipMethod) {
-        d->dispatcher->prepareAction(this);
-
-        Q_EMIT beforeDispatch();
-        dispatch();
-        Q_EMIT afterDispatch();
-    }
-
-    d->status = finalize();
-}
-
-int Context::finalize()
+void Context::finalize()
 {
     Q_D(Context);
 
@@ -290,8 +267,6 @@ int Context::finalize()
     if (body) {
         engine->finalizeBody(this, body, engineData);
     }
-
-    return response->status();
 }
 
 QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const

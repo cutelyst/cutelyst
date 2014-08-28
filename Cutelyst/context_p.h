@@ -43,7 +43,6 @@ public:
     QByteArray match;
     QStringList error;
     QVariantHash stash;
-    int status;
     bool state = false;
 };
 
