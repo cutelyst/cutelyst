@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,17 +20,11 @@
 #include "context_p.h"
 
 #include "common.h"
-#include "engine.h"
 #include "request.h"
 #include "response.h"
 #include "action.h"
 #include "dispatcher.h"
 #include "controller.h"
-
-#include <QUrl>
-#include <QStringBuilder>
-#include <QStringList>
-#include <QTime>
 
 using namespace Cutelyst;
 
@@ -221,52 +215,6 @@ QList<Plugin::AbstractPlugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins.keys();
-}
-
-void Context::finalize()
-{
-    Q_D(Context);
-
-    Engine *engine = d->engine;
-    if (error()) {
-        engine->finalizeError(this);
-    }
-
-    Response *response = d->response;
-    if (response->location().isValid()) {
-        response->addHeaderValue(QByteArrayLiteral("Location"), response->location().toEncoded());
-
-        if (!response->hasBody()) {
-            QByteArray data;
-            data = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-                   "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                   "  <head>\n"
-                   "    <title>Moved</title>\n"
-                   "  </head>\n"
-                   "  <body>\n"
-                   "     <p>This item has moved <a href=";
-            data.append(response->location().toEncoded());
-            data.append(">here</a>.</p>\n"
-                   "  </body>\n"
-                   "</html>\n");
-            response->body() = data;
-            response->setContentType("text/html; charset=utf-8");
-        }
-    }
-
-    void *engineData = d->request->engineData();
-    engine->finalizeCookies(this, engineData);
-
-    QIODevice *body = response->bodyDevice();
-    if (body) {
-        response->setContentLength(body->size());
-    }
-
-    engine->finalizeHeaders(this, engineData);
-
-    if (body) {
-        engine->finalizeBody(this, body, engineData);
-    }
 }
 
 QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const

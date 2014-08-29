@@ -173,7 +173,7 @@ void Application::handleRequest(Request *req)
 
         Q_EMIT ctx->afterDispatch();
     }
-    ctx->finalize();
+    priv->engine->finalize(ctx);
 
     delete ctx;
 }

@@ -137,8 +137,6 @@ Q_SIGNALS:
     void afterDispatch();
 
 protected:
-    void finalize();
-
     QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);
 

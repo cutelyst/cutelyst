@@ -244,3 +244,47 @@ void Engine::handleRequest(Request *request, bool autoDelete)
         delete request;
     }
 }
+
+void Engine::finalize(Context *ctx)
+{
+    if (ctx->error()) {
+        finalizeError(ctx);
+    }
+
+    Response *response = ctx->response();
+    if (response->location().isValid()) {
+        response->addHeaderValue(QByteArrayLiteral("Location"), response->location().toEncoded());
+
+        if (!response->hasBody()) {
+            QByteArray data;
+            data = QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
+                                     "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+                                     "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                                     "  <head>\n"
+                                     "    <title>Moved</title>\n"
+                                     "  </head>\n"
+                                     "  <body>\n"
+                                     "     <p>This item has moved <a href=");
+            data.append(response->location().toEncoded());
+            data.append(QByteArrayLiteral(">here</a>.</p>\n"
+                                          "  </body>\n"
+                                          "</html>\n"));
+            response->body() = data;
+            response->setContentType(QByteArrayLiteral("text/html; charset=utf-8"));
+        }
+    }
+
+    void *engineData = ctx->request()->engineData();
+    finalizeCookies(ctx, engineData);
+
+    QIODevice *body = response->bodyDevice();
+    if (body) {
+        response->setContentLength(body->size());
+    }
+
+    finalizeHeaders(ctx, engineData);
+
+    if (body) {
+        finalizeBody(ctx, body, engineData);
+    }
+}

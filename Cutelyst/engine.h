@@ -137,11 +137,13 @@ protected:
      */
     void handleRequest(Request *request, bool autoDelete);
 
+    void finalize(Context *ctx);
+
     EnginePrivate *d_ptr;
 
 private:
     Q_DECLARE_PRIVATE(Engine)
-    friend class Context;
+    friend class Application;
 
     /**
      * @brief init the engine
