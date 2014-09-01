@@ -103,7 +103,7 @@ public:
     QByteArray controllerName() const;
 
     Controller *controller(const QByteArray &name = QByteArray()) const;
-    QString match() const;
+    QByteArray match() const;
 
     QVariantHash &stash();
 

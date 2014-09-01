@@ -140,7 +140,7 @@ Controller *Context::controller(const QByteArray &name) const
     }
 }
 
-QString Context::match() const
+QByteArray Context::match() const
 {
     Q_D(const Context);
     return d->match;
