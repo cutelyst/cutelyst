@@ -275,6 +275,7 @@ void RequestPrivate::parseCookies() const
 
 void RequestPrivate::reset()
 {
+    queryParam = QMultiHash<QString, QString>();
     queryParamParsed = false;
     uriParsed = false;
     args = QStringList();
