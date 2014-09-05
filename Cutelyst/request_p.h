@@ -59,9 +59,10 @@ public:
     // Instead of setting this you might use setPathURIAndQueryParams
     bool https = false;
     QString path;
+    QString uri;
+    QString query;
     QString serverAddress;
     quint16 serverPort;
-    QString queryString;
 
 protected:
     friend class Request;
@@ -70,18 +71,21 @@ protected:
     // Engines don't need to touch this
     QStringList args;
 
-    mutable bool uriParsed = false;
-    mutable QUrl uri;
+    mutable bool urlParsed = false;
+    mutable QUrl url;
 
     mutable bool queryParamParsed = false;
-    mutable QUrlQuery queryParamUrl;
     mutable QMultiHash<QString, QString> queryParam;
 
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
+
     mutable bool bodyParsed = false;
     mutable QMultiHash<QString, QString> bodyParam;
+
+    mutable bool paramParsed = false;
     mutable QMultiHash<QString, QString> param;
+
     mutable Uploads uploads;
 };
 

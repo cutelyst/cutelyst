@@ -53,27 +53,26 @@ quint16 Request::port() const
 QUrl Request::uri() const
 {
     Q_D(const Request);
-    if (!d->uriParsed) {
+    if (!d->urlParsed) {
         QUrl uri;
         if (d->serverAddress.isNull()) {
             // This is a hack just in case remote is not set
             uri.setHost(QHostInfo::localHostName());
         } else {
             uri.setHost(d->serverAddress);
-            uri.setPort(d->serverPort);
+            // Append the server port if different from default one
+            if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
+                uri.setPort(d->serverPort);
+            }
         }
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
         uri.setPath(d->path);
+        uri.setQuery(d->query);
 
-        if (!d->queryParamParsed) {
-            d->parseUrlQuery();
-        }
-        uri.setQuery(d->queryParamUrl);
-
-        d->uri = uri;
-        d->uriParsed = true;
+        d->url = uri;
+        d->urlParsed = true;
     }
-    return d->uri;
+    return d->url;
 }
 
 QByteArray Request::base() const
@@ -111,11 +110,6 @@ QMultiHash<QString, QString> Request::bodyParameters() const
     return d->bodyParam;
 }
 
-QMultiHash<QString, QString> Request::bodyParam() const
-{
-    return bodyParameters();
-}
-
 QMultiHash<QString, QString> Request::queryParameters() const
 {
     Q_D(const Request);
@@ -125,23 +119,14 @@ QMultiHash<QString, QString> Request::queryParameters() const
     return d->queryParam;
 }
 
-QMultiHash<QString, QString> Request::queryParam() const
-{
-    return queryParameters();
-}
-
 QMultiHash<QString, QString> Request::parameters() const
 {
     Q_D(const Request);
-    if (!d->bodyParsed) {
-        d->parseBody();
+    if (!d->paramParsed) {
+        d->param = queryParameters() + bodyParameters();
+        d->paramParsed = true;
     }
     return d->param;
-}
-
-QMultiHash<QString, QString> Request::param() const
-{
-    return parameters();
 }
 
 QNetworkCookie Request::cookie(const QByteArray &name) const
@@ -218,19 +203,18 @@ void Request::setArgs(const QStringList &args)
 
 void RequestPrivate::parseUrlQuery() const
 {
-    queryParamUrl.setQuery(queryString);
-    Q_FOREACH (const StringPair &queryItem, queryParamUrl.queryItems()) {
-        queryParam.insertMulti(queryItem.first, queryItem.second);
+    QUrlQuery urlQuery(query);
+    QMultiHash<QString, QString> params;
+    Q_FOREACH (const StringPair &queryItem, urlQuery.queryItems()) {
+        params.insertMulti(queryItem.first, queryItem.second);
     }
+    queryParam = params;
     queryParamParsed = true;
 }
 
 void RequestPrivate::parseBody() const
 {
-    if (!queryParamParsed) {
-        parseUrlQuery();
-    }
-
+    QMultiHash<QString, QString> params;
     const QByteArray &contentType = headers.contentType();
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
@@ -247,20 +231,18 @@ void RequestPrivate::parseBody() const
             if (parts.size() == 2) {
                 QByteArray value = parts.at(1);
                 value.replace('+', ' ');
-                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                      QUrl::fromPercentEncoding(value));
+                params.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+                                   QUrl::fromPercentEncoding(value));
             } else {
-                bodyParam.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-                                      QString());
+                params.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+                                   QString());
             }
         }
         body->seek(posOrig);
-        param = queryParam + bodyParam;
+        bodyParam = params;
     } else if (contentType.startsWith("multipart/form-data")) {
         MultiPartFormDataParser parser(contentType, body);
         uploads = parser.parse();
-    } else {
-        param = queryParam;
     }
 
     bodyParsed = true;
@@ -275,14 +257,11 @@ void RequestPrivate::parseCookies() const
 
 void RequestPrivate::reset()
 {
-    queryParam = QMultiHash<QString, QString>();
-    queryParamParsed = false;
-    uriParsed = false;
     args = QStringList();
+    urlParsed = false;
     cookiesParsed = false;
-    cookies = QList<QNetworkCookie>();
+    queryParamParsed = false;
     bodyParsed = false;
-    bodyParam = QMultiHash<QString, QString>();
-    param = QMultiHash<QString, QString>();
+    paramParsed = false;
     qDeleteAll(uploads);
 }

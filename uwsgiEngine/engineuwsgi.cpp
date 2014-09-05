@@ -132,6 +132,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
     priv->path = QString::fromLatin1(req->path_info, req->path_info_len);
+    priv->uri = QString::fromLatin1(req->uri, req->uri_len);
 
     char *pch = strchr(req->host, ':');
     if (pch) {
@@ -139,9 +140,9 @@ void EngineUwsgi::processRequest(wsgi_request *req)
         priv->serverPort = QByteArray::fromRawData(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
     } else {
         priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
-        priv->serverPort = 80;// fallback
+        priv->serverPort = priv->https ? 443 : 80;// fallback
     }
-    priv->queryString = QString::fromLatin1(req->query_string, req->query_string_len);
+    priv->query = QString::fromLatin1(req->query_string, req->query_string_len);
 
     priv->method = QByteArray::fromRawData(req->method, req->method_len);
     priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);

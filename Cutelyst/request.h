@@ -95,7 +95,7 @@ public:
     /**
      * Short for \sa bodyParameters()
      */
-    QMultiHash<QString, QString> bodyParam() const;
+    inline QMultiHash<QString, QString> bodyParam() const { return bodyParameters(); }
 
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
@@ -105,7 +105,7 @@ public:
     /**
      * Short for \sa queryParameters()
      */
-    QMultiHash<QString, QString> queryParam() const;
+    inline QMultiHash<QString, QString> queryParam() const { return queryParameters(); }
 
     /**
      * Returns a QMultiHash containing both the query parameters (GET)
@@ -116,7 +116,7 @@ public:
     /**
      * Short for \sa parameters()
      */
-    QMultiHash<QString, QString> param() const;
+    inline QMultiHash<QString, QString> param() const { return parameters(); }
 
     /**
      * @brief contentEncoding
