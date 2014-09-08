@@ -139,10 +139,10 @@ public:
     bool setup(Context *ctx);
 
     void addRealm(Authentication::Realm *realm);
-    void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = true);
+    void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = false);
 
     User authenticate(const QString &username, const QString &password, const QString &realm = QString());
-    User authenticate(const CStringHash &userinfo, const QString &realm = QString());
+    User authenticate(const CStringHash &userinfo = CStringHash(), const QString &realm = QString());
     User findUser(const CStringHash &userinfo, const QString &realm = QString());
     User user();
     void setUser(const User &user);

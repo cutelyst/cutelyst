@@ -22,13 +22,22 @@
 
 #include <Cutelyst/Plugin/authentication.h>
 
+#include <QCryptographicHash>
+
 namespace Cutelyst {
 namespace Plugin {
 
 class CredentialHttp : public Authentication::Credential
 {
 public:
-    enum Type {
+    enum PasswordType {
+        None,
+        Clear,
+        Hashed,
+        SelfCheck
+    };
+
+    enum AuthType {
         Any,
         Digest,
         Basic
@@ -41,7 +50,7 @@ public:
      * This controls authorization_required_response and
      * authenticate, but not the "manual" methods.
      */
-    void setType(CredentialHttp::Type type);
+    void setType(CredentialHttp::AuthType type);
 
     /**
      * Set this to a string to override the default body content
@@ -52,6 +61,18 @@ public:
 
     QString passwordField() const;
     void setPasswordField(const QString &fieldName);
+
+    PasswordType passwordType() const;
+    void setPasswordType(PasswordType type);
+
+    QCryptographicHash::Algorithm hashType() const;
+    void setHashType(QCryptographicHash::Algorithm type);
+
+    QString passwordPreSalt() const;
+    void setPasswordPreSalt(const QString &passwordPreSalt);
+
+    QString passwordPostSalt() const;
+    void setPasswordPostSalt(const QString &passwordPostSalt);
 
     QString usernameField() const;
     void setUsernameField(const QString &fieldName);
@@ -70,12 +91,21 @@ private:
     Authentication::User authenticateBasic(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
     Authentication::User authenticationFailed(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
 
+    bool checkPassword(const Authentication::User &user, const CStringHash &authinfo);
     bool isAuthTypeDigest() const;
     bool isAuthTypeBasic() const;
 
-    Type m_type = Type::Any;
-    QString m_passwordField;
+    QStringList buildAuthHeaderCommon() const;
+    QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
+    void createBasicAuthResponse(Context *ctx);
+
+    AuthType m_type = AuthType::Any;
     QString m_usernameField = QStringLiteral("username");
+    QString m_passwordField = QStringLiteral("password");
+    PasswordType m_passwordType = PasswordType::None;
+    QCryptographicHash::Algorithm m_hashType = QCryptographicHash::Md5;
+    QString m_passwordPreSalt;
+    QString m_passwordPostSalt;
     QString m_authorizationRequiredMessage;
     bool m_requireSsl = false;
 };

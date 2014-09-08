@@ -50,7 +50,7 @@ bool Authentication::setup(Context *ctx)
 
 void Authentication::addRealm(Authentication::Realm *realm)
 {
-    addRealm(QStringLiteral("default"), realm);
+    addRealm(QStringLiteral("default"), realm, true);
 }
 
 void Authentication::addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm)

@@ -35,8 +35,6 @@ public:
         Hashed,
         SelfCheck
     };
-    CredentialPassword();
-
     Authentication::User authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
 
     QString passwordField() const;
@@ -57,9 +55,9 @@ public:
 private:
     bool checkPassword(const Authentication::User &user, const CStringHash &authinfo);
 
-    QString m_passwordField;
-    Type m_passwordType;
-    QCryptographicHash::Algorithm m_hashType;
+    QString m_passwordField = QStringLiteral("password");
+    Type m_passwordType = None;
+    QCryptographicHash::Algorithm m_hashType = QCryptographicHash::Md5;
     QString m_passwordPreSalt;
     QString m_passwordPostSalt;
 };

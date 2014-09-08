@@ -147,6 +147,13 @@ public:
     void setAuthorizationBasic(const QByteArray &username, const QByteArray &password);
 
     /**
+     * This method is used to get all the fields that
+     * build a "Digest Authentication Scheme".
+     * It will return a Hash containing keys and values.
+     */
+    QHash<QByteArray, QByteArray> authorizationDigest() const;
+
+    /**
      * A user agent that wishes to authenticate itself with a server or a proxy, may do so by including these headers.
      */
     inline QByteArray proxyAuthorization() const { return value(QByteArray("Proxy-Authorization", 19)); }

@@ -25,13 +25,6 @@ using namespace Cutelyst::Plugin;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALPASSWORD, "cutelyst.plugin.credentialpassword")
 
-CredentialPassword::CredentialPassword() :
-    m_passwordField(QLatin1String("password")),
-    m_passwordType(None),
-    m_hashType(QCryptographicHash::Md5)
-{
-}
-
 Authentication::User CredentialPassword::authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
 {
     Authentication::User user = realm->findUser(ctx, authinfo);
