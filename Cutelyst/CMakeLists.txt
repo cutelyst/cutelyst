@@ -42,6 +42,7 @@ set(cutelystqt_SRC
     Plugin/authentication_p.h
     Plugin/Authentication/minimal.cpp
     Plugin/Authentication/credentialpassword.cpp
+    Plugin/Authentication/credentialhttp.cpp
 )
 
 set(cutelystqt_HEADERS
@@ -84,6 +85,7 @@ set(cutelystqt_plugin_HEADERS
 set(cutelystqt_plugin_authentication_HEADERS
     Plugin/Authentication/minimal.h
     Plugin/Authentication/credentialpassword.h
+    Plugin/Authentication/credentialhttp.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE
