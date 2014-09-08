@@ -19,6 +19,8 @@
 
 #include "headers_p.h"
 
+#include "common.h"
+
 #include <QStringBuilder>
 #include <QStringList>
 
@@ -40,6 +42,35 @@ void Headers::setLastModifiedDateTime(const QDateTime &lastModified)
     // and follow RFC 822
     QString dt = lastModified.toTimeSpec(Qt::UTC).toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
     insert("Last-Modified", dt.toLocal8Bit());
+}
+
+QByteArray Headers::authorizationBasic() const
+{
+    return HeadersPrivate::decodeBasicAuth(value(QByteArrayLiteral("Authorization")));
+}
+
+QPair<QByteArray, QByteArray> Headers::authorizationBasicPair() const
+{
+    return HeadersPrivate::decodeBasicAuthPair(value(QByteArrayLiteral("Authorization")));
+}
+
+void Headers::setAuthorizationBasic(const QByteArray &username, const QByteArray &password)
+{
+    if (username.contains(':')) {
+        qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
+    }
+    QByteArray result = username + ':' + password;
+    insert(QByteArrayLiteral("Authorization"), QByteArrayLiteral("Basic ") + result.toBase64());
+}
+
+QByteArray Headers::proxyAuthorizationBasic() const
+{
+    return HeadersPrivate::decodeBasicAuth(value(QByteArrayLiteral("Proxy-Authorization")));
+}
+
+QPair<QByteArray, QByteArray> Headers::proxyAuthorizationBasicPair() const
+{
+    return HeadersPrivate::decodeBasicAuthPair(value(QByteArrayLiteral("Proxy-Authorization")));
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
@@ -135,5 +166,33 @@ QList<HeaderValuePair> Headers::headersForResponse() const
     // Sort base on the "good practices" of HTTP RCF
     qSort(ret.begin(), ret.end(), &httpGoodPracticeWeightSort);
 
+    return ret;
+}
+
+
+QByteArray HeadersPrivate::decodeBasicAuth(const QByteArray &auth)
+{
+    if (!auth.isEmpty() && auth.startsWith("Basic ")) {
+        int pos = auth.lastIndexOf(' ');
+        if (pos != -1) {
+            return QByteArray::fromBase64(auth.mid(pos));
+        }
+    }
+    return QByteArray();
+}
+
+QPair<QByteArray, QByteArray> HeadersPrivate::decodeBasicAuthPair(const QByteArray &auth)
+{
+    QPair<QByteArray, QByteArray> ret;
+    const QByteArray &authorization = decodeBasicAuth(auth);
+    if (!authorization.isEmpty()) {
+        int pos = authorization.indexOf(':');
+        if (pos == -1) {
+            ret.first = authorization;
+        } else {
+            ret.first = authorization.left(pos);
+            ret.second = authorization.mid(pos + 1);
+        }
+    }
     return ret;
 }

@@ -108,6 +108,63 @@ public:
 
     void setReferer(const QByteArray &value) { insert(QByteArray("Referer", 7), value); }
 
+    /**
+     * This header must be included as part of a 401 Unauthorized response.
+     * The field value consist of a challenge that indicates the authentication scheme
+     * and parameters applicable to the requested URI.
+     */
+    void setWwwAuthenticate(const QByteArray &value) { insert(QByteArray("WWW-Authenticate", 16), value); }
+
+    /**
+     * This header must be included in a 407 Proxy Authentication Required response.
+     */
+    void setProxyAuthenticate(const QByteArray &value) { insert(QByteArray("Proxy-Authenticate", 18), value); }
+
+    /**
+     * This method is used to get an authorization header without any decoding.
+     */
+    inline QByteArray authorization() const { return value(QByteArray("Authorization", 13)); }
+
+    /**
+     * This method is used to get an authorization header that use the
+     * "Basic Authentication Scheme".
+     * It will return "username:password" as a single string value.
+     */
+    QByteArray authorizationBasic() const;
+
+    /**
+     * This method is used to get an authorization header that use the
+     * "Basic Authentication Scheme".
+     * It will return a pair of username and password respectively.
+     */
+    QPair<QByteArray, QByteArray> authorizationBasicPair() const;
+
+    /**
+     * This method is used to set an authorization header that use the
+     * "Basic Authentication Scheme".
+     * It won't set the values if username contains a colon ':'.
+     */
+    void setAuthorizationBasic(const QByteArray &username, const QByteArray &password);
+
+    /**
+     * A user agent that wishes to authenticate itself with a server or a proxy, may do so by including these headers.
+     */
+    inline QByteArray proxyAuthorization() const { return value(QByteArray("Proxy-Authorization", 19)); }
+
+    /**
+     * This method is used to get an authorization header that use the
+     * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
+     * It will return "username:password" as a single string value.
+     */
+    QByteArray proxyAuthorizationBasic() const;
+
+    /**
+     * This method is used to get an authorization header that use the
+     * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
+     * It will return a pair of username and password respectively.
+     */
+    QPair<QByteArray, QByteArray> proxyAuthorizationBasicPair() const;
+
     QByteArray header(const QByteArray &field) const { return value(field); }
 
     void setHeader(const QString &field, const QStringList &values);
