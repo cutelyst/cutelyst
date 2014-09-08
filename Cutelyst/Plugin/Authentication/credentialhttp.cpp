@@ -183,7 +183,7 @@ Authentication::User CredentialHttp::authenticationFailed(Cutelyst::Context *ctx
     }
 
     // Create Basic response
-    if (isAuthTypeDigest()) {
+    if (isAuthTypeBasic()) {
         createBasicAuthResponse(ctx);
     }
 
