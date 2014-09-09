@@ -84,18 +84,18 @@ Action::Action(const QMetaMethod &method, Controller *controller) :
     int parameterCount = 0;
     bool ignoreParameters = false;
     QList<QByteArray> parameterTypes = method.parameterTypes();
-    for (int i = 0; i < parameterTypes.size(); ++i) {
-        const QByteArray &type = parameterTypes.at(i);
-
+    for (int i = 0; i < method.parameterCount(); ++i) {
+        int typeId = method.parameterType(i);
         if (i == 0) {
-            if (!type.endsWith("Context*")) {
+            if (!typeId == qMetaTypeId<Cutelyst::Context *>()) {
                 d->valid = false;
                 return;
             }
-        } else if (type == "QString" && !ignoreParameters) {
+        } else if (typeId == QMetaType::QString && !ignoreParameters) {
             ++parameterCount;
         } else {
-            // Make sure the user defines specia
+            const QByteArray &type = parameterTypes.at(i);
+            // Make sure the user defines special
             // parameters types AFTER the ones to be captured
             ignoreParameters = true;
             QByteArray name = d->name;

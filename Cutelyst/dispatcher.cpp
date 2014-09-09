@@ -61,7 +61,8 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         for (int i = 0; i < meta->methodCount(); ++i) {
             QMetaMethod method = meta->method(i);
             if (method.methodType() == QMetaMethod::Method ||
-                    method.methodType() == QMetaMethod::Slot) {
+                    method.methodType() == QMetaMethod::Slot ||
+                    method.parameterCount()) {
                 bool registered = false;
                 Action *action = new Action(method, controller);
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {
