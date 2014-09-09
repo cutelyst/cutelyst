@@ -95,6 +95,12 @@ QStringList Request::args() const
     return d->args;
 }
 
+bool Request::secure() const
+{
+    Q_D(const Request);
+    return d->https;
+}
+
 QIODevice *Request::body() const
 {
     Q_D(const Request);

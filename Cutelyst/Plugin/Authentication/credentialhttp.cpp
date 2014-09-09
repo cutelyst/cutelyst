@@ -112,7 +112,7 @@ void CredentialHttp::setRequireSsl(bool require)
 Authentication::User CredentialHttp::authenticate(Cutelyst::Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
 {
     Authentication::User ret;
-    if (m_requireSsl && ctx->request()->uri().scheme() != QLatin1String("https")) {
+    if (m_requireSsl && !ctx->request()->secure()) {
         return authenticationFailed(ctx, realm, authinfo);
     }
 

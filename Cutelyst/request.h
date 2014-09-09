@@ -80,6 +80,15 @@ public:
     QStringList args() const;
 
     /**
+     * Returns true or false to indicate that a connection is secure (https),
+     * The reliability of it may depend on your server configuration, Cutelyst
+     * relies on the Engine to set this information which is used to build up
+     * uri().scheme(). The Engine itself might not be aware of a front HTTP
+     * server with https enabled.
+     */
+    bool secure() const;
+
+    /**
      * @brief body
      * @return the message body of the request as
      * passed by the Engine, this can even be a file
