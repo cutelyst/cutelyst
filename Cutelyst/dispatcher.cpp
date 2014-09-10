@@ -60,9 +60,13 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         bool instanceUsed = false;
         for (int i = 0; i < meta->methodCount(); ++i) {
             QMetaMethod method = meta->method(i);
-            if (method.methodType() == QMetaMethod::Method ||
-                    method.methodType() == QMetaMethod::Slot ||
-                    method.parameterCount()) {
+            // We register actions that are either a Q_SLOT
+            // or a Q_INVOKABLE function which has the first
+            // parameter type equal to Context*
+            if (method.isValid() &&
+                    (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
+                    (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
+
                 bool registered = false;
                 Action *action = new Action(method, controller);
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {

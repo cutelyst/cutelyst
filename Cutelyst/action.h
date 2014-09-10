@@ -57,7 +57,7 @@ public:
     /**
      * @brief dispatch Dispatch this action against a context
      */
-    bool dispatch(Context *ctx);
+    virtual bool dispatch(Context *ctx);
 
     /**
      * @brief Check Args attribute, and makes sure number of
