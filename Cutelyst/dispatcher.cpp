@@ -52,11 +52,11 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         registerDispatchType(new DispatchTypePath(this));
     }
 
+    ActionList registeredActions;
     Q_FOREACH (Controller *controller, controllers) {
-        // App controller
-//        qDebug() << "Found a controller:" << controller << meta->className();
         const QMetaObject *meta = controller->metaObject();
         controller->setObjectName(meta->className());
+
         bool instanceUsed = false;
         for (int i = 0; i < meta->methodCount(); ++i) {
             QMetaMethod method = meta->method(i);
@@ -67,8 +67,10 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                     (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
                     (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
 
+                Action *action = d->actionForMethod(method);
+                action->setupAction(method, controller);
+
                 bool registered = false;
-                Action *action = new Action(method, controller);
                 if (action->isValid() && !d->actionHash.contains(action->privateName())) {
                     if (!action->attributes().contains("Private")) {
                         // Register the action with each dispatcher
@@ -86,9 +88,10 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 // The Begin, Auto, End actions are not
                 // registered by Dispatchers but we need them
                 // as private actions anyway
-                if (registered || action->isValid()) {
+                if (registered) {
                     d->actionHash.insert(action->privateName(), action);
                     d->containerHash[action->ns()] << action;
+                    registeredActions.append(action);
                     instanceUsed = true;
                 } else {
                     delete action;
@@ -103,6 +106,10 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 
     Q_FOREACH (Controller *controller, controllers) {
         controller->setupActions(this);
+    }
+
+    Q_FOREACH (Action *action, registeredActions) {
+        action->dispatcherReady(this);
     }
 
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
@@ -130,9 +137,19 @@ bool Dispatcher::dispatch(Context *ctx)
     return false;
 }
 
+bool Dispatcher::forward(Context *ctx, const Action *action, const QStringList &arguments)
+{
+    if (action) {
+        return action->dispatch(ctx);
+    }
+
+    qCCritical(CUTELYST_DISPATCHER) << "NULL Action received!";
+    return false;
+}
+
 bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringList &arguments)
 {
-    Action *action = command2Action(ctx, opname);
+    const Action *action = command2Action(ctx, opname);
     if (action) {
         return action->dispatch(ctx);
     }
@@ -182,7 +199,7 @@ void Dispatcher::prepareAction(Context *ctx)
     }
 }
 
-Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) const
+const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) const
 {
     Q_D(const Dispatcher);
 
@@ -225,7 +242,7 @@ QHash<QByteArray, Controller *> Dispatcher::controllers() const
     return d->constrollerHash;
 }
 
-QByteArray Dispatcher::uriForAction(Action *action, const QStringList &captures)
+QByteArray Dispatcher::uriForAction(const Action *action, const QStringList &captures)
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -313,12 +330,12 @@ QByteArray Dispatcher::printActions()
     return buffer;
 }
 
-Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
+const Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command;
 
-    Action *ret = d->actionHash.value(command);
+    const Action *ret = d->actionHash.value(command);
     if (!ret) {
         ret = invokeAsPath(ctx, command, ctx->args());
     }
@@ -343,9 +360,9 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
     return ret;
 }
 
-Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
+const Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
 {
-    Action *ret;
+    const Action *ret;
     QByteArray path = actionRel2Abs(ctx, relativePath);
 
     int pos = path.lastIndexOf('/');
@@ -395,6 +412,33 @@ QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
 }
 
 
+Action *DispatcherPrivate::actionForMethod(const QMetaMethod &method)
+{
+    Action *ret = 0;
+
+    for (int i = 1; i < method.parameterCount(); ++i) {
+        int id = method.parameterType(i);
+        if (id >= QMetaType::User) {
+            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
+            if (metaObj) {
+                QObject *object = metaObj->newInstance();
+                if (object && superIsAction(metaObj->superClass())) {
+                    ret = qobject_cast<Action*>(object);
+                    break;
+                } else {
+                    delete object;
+                }
+            }
+        }
+    }
+
+    if (!ret) {
+        ret = new Action;
+    }
+
+    return ret;
+}
+
 ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
 {
     ActionList ret;
@@ -411,4 +455,15 @@ ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
     ret.append(containerHash.value(""));
 
     return ret;
+}
+
+bool DispatcherPrivate::superIsAction(const QMetaObject *super)
+{
+    if (super) {
+        if (qstrcmp(super->className(), "Cutelyst::Action") == 0) {
+            return true;
+        }
+        return superIsAction(super->superClass());
+    }
+    return false;
 }

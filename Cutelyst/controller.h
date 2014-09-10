@@ -109,7 +109,7 @@ public:
     /**
      * Returns the action object for the given private name
      */
-    Action *actionFor(const QByteArray &name) const;
+    const Action *actionFor(const QByteArray &name) const;
 
     bool operator==(const char *className);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,26 +17,37 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_DISPATCHER_P_H
-#define CUTELYST_DISPATCHER_P_H
-
+#include "actionrest.h"
+#include "context.h"
+#include "controller.h"
 #include "dispatcher.h"
 
-namespace Cutelyst {
+#include <QDebug>
 
-class DispatcherPrivate
+using namespace Cutelyst;
+
+ActionREST::ActionREST()
 {
-public:
-    Action* actionForMethod(const QMetaMethod &method);
-    ActionList getContainers(const QByteArray &ns) const;
-    bool superIsAction(const QMetaObject *super);
-
-    QHash<QByteArray, Action*> actionHash;
-    QHash<QByteArray, ActionList> containerHash;
-    QHash<QByteArray, Controller *> constrollerHash;
-    QList<DispatchType*> dispatchers;
-};
-
+    qDebug() << Q_FUNC_INFO;
 }
 
-#endif // CUTELYST_DISPATCHER_P_H
+bool ActionREST::dispatch(Context *ctx) const
+{
+    bool ret = Action::dispatch(ctx);
+    if (!ret) {
+        return false;
+    }
+
+    QByteArray restMethod = name() + '_' + ctx->req()->method();
+    const Action *action = controller()->actionFor(restMethod);
+    if (action) {
+        return action->dispatch(ctx);
+    }
+
+    return false;
+}
+
+void ActionREST::dispatcherReady(const Dispatcher *dispatch)
+{
+//    qDebug() << name() << dispatch;
+}

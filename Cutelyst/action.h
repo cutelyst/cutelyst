@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +20,6 @@
 #ifndef CUTELYST_ACTION_H
 #define CUTELYST_ACTION_H
 
-#include <QObject>
 #include <QStringList>
 #include <QMetaMethod>
 
@@ -34,7 +33,7 @@ class Action : public QObject
 {
     Q_OBJECT
 public:
-    explicit Action(const QMetaMethod &method, Controller *controller);
+    Action();
     virtual ~Action();
 
     /**
@@ -55,9 +54,9 @@ public:
     Controller* controller() const;
 
     /**
-     * @brief dispatch Dispatch this action against a context
+     * Dispatch this action against a context
      */
-    virtual bool dispatch(Context *ctx);
+    virtual bool dispatch(Context *ctx) const;
 
     /**
      * @brief Check Args attribute, and makes sure number of
@@ -119,6 +118,20 @@ public:
 
 protected:
     ActionPrivate *d_ptr;
+    friend class Dispatcher;
+
+    /**
+     * Called by dispatcher to setup the Action
+     */
+    void setupAction(const QMetaMethod &method, Controller *controller);
+
+    /**
+     * Called by dispatcher once it's done preparing actions
+     *
+     * Subclasses might want to implement this to cache special
+     * actions, such as special methods for REST actions
+     */
+    virtual void dispatcherReady(const Dispatcher *dispatch);
 
 private:
     Q_DECLARE_PRIVATE(Action)

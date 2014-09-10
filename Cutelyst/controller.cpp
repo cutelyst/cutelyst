@@ -45,7 +45,7 @@ QByteArray Controller::ns() const
     return d->ns;
 }
 
-Action *Controller::actionFor(const QByteArray &name) const
+const Action *Controller::actionFor(const QByteArray &name) const
 {
     Q_D(const Controller);
     return d->dispatcher->getAction(name, d->ns);

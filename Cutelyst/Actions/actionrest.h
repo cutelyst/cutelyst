@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,26 +17,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_DISPATCHER_P_H
-#define CUTELYST_DISPATCHER_P_H
+#ifndef ACTIONREST_H
+#define ACTIONREST_H
 
-#include "dispatcher.h"
+#include <Cutelyst/Action>
 
 namespace Cutelyst {
 
-class DispatcherPrivate
+class ActionREST : public Action
 {
+    Q_OBJECT
 public:
-    Action* actionForMethod(const QMetaMethod &method);
-    ActionList getContainers(const QByteArray &ns) const;
-    bool superIsAction(const QMetaObject *super);
+    Q_INVOKABLE ActionREST();
 
-    QHash<QByteArray, Action*> actionHash;
-    QHash<QByteArray, ActionList> containerHash;
-    QHash<QByteArray, Controller *> constrollerHash;
-    QList<DispatchType*> dispatchers;
+protected:
+    bool dispatch(Context *ctx) const;
+    void dispatcherReady(const Dispatcher *dispatch);
 };
 
 }
 
-#endif // CUTELYST_DISPATCHER_P_H
+#endif // ACTIONREST_H

@@ -143,7 +143,7 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
-QByteArray DispatchTypePath::uriForAction(Action *action, const QStringList &captures) const
+QByteArray DispatchTypePath::uriForAction(const Action *action, const QStringList &captures) const
 {
     QByteArray path = action->attributes().value("Path");
     if (!path.isNull()) {

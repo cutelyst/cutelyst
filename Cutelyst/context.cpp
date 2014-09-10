@@ -156,7 +156,7 @@ QByteArray Context::uriFor(const QByteArray &path, const QStringList &args)
 {
     Q_D(Context);
 
-    Action *action = d->dispatcher->getAction(path);
+    const Action *action = d->dispatcher->getAction(path);
     if (action) {
         return d->dispatcher->uriForAction(action, args);
     } else {
@@ -176,13 +176,19 @@ void Context::detach()
     d->detached = true;
 }
 
+bool Context::forward(const Action *action, const QStringList &arguments)
+{
+    Q_D(Context);
+    return d->dispatcher->forward(this, action, arguments);
+}
+
 bool Context::forward(const QByteArray &action, const QStringList &arguments)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action, arguments);
 }
 
-Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
+const Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
 {
     Q_D(Context);
     return d->dispatcher->getAction(action, ns);

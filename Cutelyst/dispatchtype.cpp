@@ -28,7 +28,7 @@ DispatchType::DispatchType(QObject *parent) :
 {
 }
 
-QByteArray DispatchType::uriForAction(Action *action, const QStringList &captures) const
+QByteArray DispatchType::uriForAction(const Action *action, const QStringList &captures) const
 {
     return QByteArray();
 }

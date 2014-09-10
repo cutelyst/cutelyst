@@ -113,8 +113,9 @@ public:
 
     void detach();
 
+    bool forward(const Action *action, const QStringList &arguments = QStringList());
     bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
-    Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
+    const Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
     QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
 
     bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);

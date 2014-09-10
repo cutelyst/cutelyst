@@ -43,19 +43,20 @@ protected:
     void setupActions(const QList<Controller *> &controllers);
 
     bool dispatch(Context *ctx);
+    bool forward(Context *ctx, const Action *action, const QStringList &arguments = QStringList());
     bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
-    Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
+    const Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
     ActionList getActions(const QByteArray &name, const QByteArray &ns) const;
     QHash<QByteArray, Controller *> controllers() const;
-    QByteArray uriForAction(Action *action, const QStringList &captures);
+    QByteArray uriForAction(const Action *action, const QStringList &captures);
     void registerDispatchType(DispatchType *dispatchType);
 
 private:
     QByteArray printActions();
-    Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
+    const Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
     QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);
-    Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
+    const Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
     inline QByteArray cleanNamespace(const QByteArray &ns) const;
 
 protected:

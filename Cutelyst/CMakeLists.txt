@@ -19,6 +19,7 @@ set(cutelystqt_SRC
     context_p.h
     action.cpp
     action_p.h
+    Actions/actionrest.cpp
     engine.cpp
     engine_p.h
     enginehttp.cpp
@@ -73,6 +74,10 @@ set(cutelystqt_HEADERS
     View
 )
 
+set(cutelystqt_actions_HEADERS
+    Actions/actionrest.h
+)
+
 set(cutelystqt_plugin_HEADERS
     Plugin/plugin.h
     Plugin/session.h
@@ -112,6 +117,9 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
 )
 install(FILES ${cutelystqt_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst
+)
+install(FILES ${cutelystqt_actions_HEADERS}
+        DESTINATION include/cutelyst-qt5/Cutelyst/Actions
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugin

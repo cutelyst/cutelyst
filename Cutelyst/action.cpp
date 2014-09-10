@@ -28,9 +28,17 @@
 
 using namespace Cutelyst;
 
-Action::Action(const QMetaMethod &method, Controller *controller) :
-    QObject(controller),
+Action::Action() :
     d_ptr(new ActionPrivate)
+{
+}
+
+Action::~Action()
+{
+    delete d_ptr;
+}
+
+void Action::setupAction(const QMetaMethod &method, Controller *controller)
 {
     Q_D(Action);
 
@@ -114,9 +122,10 @@ Action::Action(const QMetaMethod &method, Controller *controller) :
     }
 }
 
-Action::~Action()
+void Action::dispatcherReady(const Dispatcher *dispatch)
 {
-    delete d_ptr;
+    Q_UNUSED(dispatch)
+    // Default implementations does nothing
 }
 
 QMultiHash<QByteArray, QByteArray> Action::attributes() const
@@ -127,7 +136,8 @@ QMultiHash<QByteArray, QByteArray> Action::attributes() const
 
 QByteArray Action::className() const
 {
-    return parent()->metaObject()->className();
+    Q_D(const Action);
+    return d->controller->metaObject()->className();
 }
 
 Controller *Action::controller() const
@@ -136,9 +146,9 @@ Controller *Action::controller() const
     return d->controller;
 }
 
-bool Action::dispatch(Context *ctx)
+bool Action::dispatch(Context *ctx) const
 {
-    Q_D(Action);
+    Q_D(const Action);
 
     if (ctx->detached()) {
         return false;
