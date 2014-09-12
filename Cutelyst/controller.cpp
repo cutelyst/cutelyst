@@ -51,6 +51,12 @@ const Action *Controller::actionFor(const QByteArray &name) const
     return d->dispatcher->getAction(name, d->ns);
 }
 
+ActionList Controller::actions() const
+{
+    Q_D(const Controller);
+    return d->actions;
+}
+
 bool Controller::operator==(const char *className)
 {
     return !qstrcmp(metaObject()->className(), className);
@@ -75,16 +81,19 @@ void Controller::init()
 {
     Q_D(Controller);
 
+    const QMetaObject *meta = metaObject();
+    const QString &className = QString::fromLatin1(meta->className());
+    setObjectName(className);
+
     QByteArray controlerNS;
-    for (int i = 0; i < metaObject()->classInfoCount(); ++i) {
+    for (int i = 0; i < meta->classInfoCount(); ++i) {
         if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
-            controlerNS = metaObject()->classInfo(i).value();
+            controlerNS = meta->classInfo(i).value();
             break;
         }
     }
 
     if (controlerNS.isNull()) {
-        QString className = metaObject()->className();
         bool lastWasUpper = true;
 
         for (int i = 0; i < className.length(); ++i) {
@@ -102,6 +111,23 @@ void Controller::init()
         }
     }
     d->ns = controlerNS;
+
+    // Setup actions
+    for (int i = 0; i < meta->methodCount(); ++i) {
+        const QMetaMethod &method = meta->method(i);
+        // We register actions that are either a Q_SLOT
+        // or a Q_INVOKABLE function which has the first
+        // parameter type equal to Context*
+        if (method.isValid() &&
+                (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
+                (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
+
+            Action *action = d->actionForMethod(method);
+            action->setupAction(method, this);
+
+            d->actions.append(action);
+        }
+    }
 }
 
 void Controller::setupActions(Dispatcher *dispatcher)
@@ -189,4 +215,43 @@ bool Controller::_END(Context *ctx)
         return !ctx->error();
     }
     return true;
+}
+
+
+Action *ControllerPrivate::actionForMethod(const QMetaMethod &method)
+{
+    Action *ret = 0;
+
+    for (int i = 1; i < method.parameterCount(); ++i) {
+        int id = method.parameterType(i);
+        if (id >= QMetaType::User) {
+            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
+            if (metaObj) {
+                QObject *object = metaObj->newInstance();
+                if (object && superIsAction(metaObj->superClass())) {
+                    ret = qobject_cast<Action*>(object);
+                    break;
+                } else {
+                    delete object;
+                }
+            }
+        }
+    }
+
+    if (!ret) {
+        ret = new Action;
+    }
+
+    return ret;
+}
+
+bool ControllerPrivate::superIsAction(const QMetaObject *super)
+{
+    if (super) {
+        if (qstrcmp(super->className(), "Cutelyst::Action") == 0) {
+            return true;
+        }
+        return superIsAction(super->superClass());
+    }
+    return false;
 }

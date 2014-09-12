@@ -111,6 +111,8 @@ public:
      */
     const Action *actionFor(const QByteArray &name) const;
 
+    ActionList actions() const;
+
     bool operator==(const char *className);
 
 protected:

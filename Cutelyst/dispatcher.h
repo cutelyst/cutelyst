@@ -47,7 +47,18 @@ protected:
     bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
     const Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
+
+    /**
+     * Returns a list of actions that match \pa name on
+     * the desired namespace \pa ns
+     */
     ActionList getActions(const QByteArray &name, const QByteArray &ns) const;
+
+    /**
+     * Returns a list of actions on the desired namespace \pa ns
+     */
+//    ActionList getActionsNs(const QByteArray &ns) const;
+
     QHash<QByteArray, Controller *> controllers() const;
     QByteArray uriForAction(const Action *action, const QStringList &captures);
     void registerDispatchType(DispatchType *dispatchType);

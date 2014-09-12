@@ -54,53 +54,38 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 
     ActionList registeredActions;
     Q_FOREACH (Controller *controller, controllers) {
-        const QMetaObject *meta = controller->metaObject();
-        controller->setObjectName(meta->className());
-
         bool instanceUsed = false;
-        for (int i = 0; i < meta->methodCount(); ++i) {
-            QMetaMethod method = meta->method(i);
-            // We register actions that are either a Q_SLOT
-            // or a Q_INVOKABLE function which has the first
-            // parameter type equal to Context*
-            if (method.isValid() &&
-                    (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
-                    (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
-
-                Action *action = d->actionForMethod(method);
-                action->setupAction(method, controller);
-
-                bool registered = false;
-                if (action->isValid() && !d->actionHash.contains(action->privateName())) {
-                    if (!action->attributes().contains("Private")) {
-                        // Register the action with each dispatcher
-                        Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-                            if (dispatch->registerAction(action)) {
-                                registered = true;
-                            }
+        Q_FOREACH (Action *action, controller->actions()) {
+            bool registered = false;
+            if (action->isValid() && !d->actionHash.contains(action->privateName())) {
+                if (!action->attributes().contains("Private")) {
+                    // Register the action with each dispatcher
+                    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
+                        if (dispatch->registerAction(action)) {
+                            registered = true;
                         }
-                    } else {
-                        // We register private actions
-                        registered = true;
                     }
-                }
-
-                // The Begin, Auto, End actions are not
-                // registered by Dispatchers but we need them
-                // as private actions anyway
-                if (registered) {
-                    d->actionHash.insert(action->privateName(), action);
-                    d->containerHash[action->ns()] << action;
-                    registeredActions.append(action);
-                    instanceUsed = true;
                 } else {
-                    delete action;
+                    // We register private actions
+                    registered = true;
                 }
+            }
+
+            // The Begin, Auto, End actions are not
+            // registered by Dispatchers but we need them
+            // as private actions anyway
+            if (registered) {
+                d->actionHash.insert(action->privateName(), action);
+                d->containerHash[action->ns()] << action;
+                registeredActions.append(action);
+                instanceUsed = true;
+            } else {
+                delete action;
             }
         }
 
         if (instanceUsed) {
-            d->constrollerHash.insert(meta->className(), controller);
+            d->constrollerHash.insert(controller->objectName().toLatin1(), controller);
         }
     }
 
@@ -411,34 +396,6 @@ QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
     return ret;
 }
 
-
-Action *DispatcherPrivate::actionForMethod(const QMetaMethod &method)
-{
-    Action *ret = 0;
-
-    for (int i = 1; i < method.parameterCount(); ++i) {
-        int id = method.parameterType(i);
-        if (id >= QMetaType::User) {
-            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
-            if (metaObj) {
-                QObject *object = metaObj->newInstance();
-                if (object && superIsAction(metaObj->superClass())) {
-                    ret = qobject_cast<Action*>(object);
-                    break;
-                } else {
-                    delete object;
-                }
-            }
-        }
-    }
-
-    if (!ret) {
-        ret = new Action;
-    }
-
-    return ret;
-}
-
 ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
 {
     ActionList ret;
@@ -451,19 +408,8 @@ ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
             ret.append(containerHash.value(ns.mid(0, pos)));
             pos = ns.lastIndexOf('/', pos - 1);
         }
-    }   
+    }
     ret.append(containerHash.value(""));
 
     return ret;
-}
-
-bool DispatcherPrivate::superIsAction(const QMetaObject *super)
-{
-    if (super) {
-        if (qstrcmp(super->className(), "Cutelyst::Action") == 0) {
-            return true;
-        }
-        return superIsAction(super->superClass());
-    }
-    return false;
 }

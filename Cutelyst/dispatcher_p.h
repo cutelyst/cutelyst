@@ -27,9 +27,7 @@ namespace Cutelyst {
 class DispatcherPrivate
 {
 public:
-    Action* actionForMethod(const QMetaMethod &method);
     ActionList getContainers(const QByteArray &ns) const;
-    bool superIsAction(const QMetaObject *super);
 
     QHash<QByteArray, Action*> actionHash;
     QHash<QByteArray, ActionList> containerHash;

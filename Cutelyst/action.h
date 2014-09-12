@@ -119,6 +119,7 @@ public:
 protected:
     ActionPrivate *d_ptr;
     friend class Dispatcher;
+    friend class Controller;
 
     /**
      * Called by dispatcher to setup the Action
