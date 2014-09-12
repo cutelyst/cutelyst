@@ -30,7 +30,6 @@ ActionREST::ActionREST() :
     d_ptr(new ActionRESTPrivate)
 {
     d_ptr->q_ptr = this;
-    qDebug() << Q_FUNC_INFO;
 }
 
 ActionREST::~ActionREST()
@@ -80,7 +79,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpM
 
     bool ret = false;
     if (httpMethod == "OPTIONS") {
-        ret = returnOptions(ctx, restMethod);
+        ret = returnOptions(ctx, q->name());
     } else if (httpMethod == "HEAD") {
         // redispatch to GET
         ret = dispatchRestMethod(ctx, QByteArrayLiteral("GET"));
@@ -101,7 +100,7 @@ bool ActionRESTPrivate::returnOptions(Context *ctx, const QByteArray &methodName
     response->setContentType(QByteArrayLiteral("text/plain"));
     response->setStatus(Response::OK); // 200
     response->headers().insert(QByteArrayLiteral("Allow"),
-                               getAllowedMethods(ctx->controller(), ctx, methodName));
+                               getAllowedMethods(ctx->controller(), methodName));
     response->body().clear();
     return true;
 }
@@ -112,12 +111,30 @@ bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QByteArray &met
     response->setContentType(QByteArrayLiteral("text/plain"));
     response->setStatus(Response::MethodNotAllowed); // 405
     response->headers().insert(QByteArrayLiteral("Allow"),
-                               getAllowedMethods(ctx->controller(), ctx, methodName));
+                               getAllowedMethods(ctx->controller(), methodName));
     response->body() = "Method " + ctx->req()->method() + " not implemented for " + ctx->uriFor(methodName);
     return true;
 }
 
-QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, Context *ctx, const QByteArray &methodName) const
+QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, const QByteArray &methodName) const
 {
-    return QByteArray();
+    QStringList methods;
+    QByteArray name = methodName + '_';
+    ActionList actions = controller->actions();
+    Q_FOREACH (Action *action, actions) {
+        const QString &method = action->name();
+        if (method.startsWith(name)) {
+            methods.append(method.mid(name.size()));
+        }
+    }
+
+    if (methods.contains(QStringLiteral("GET"))) {
+        methods.append(QStringLiteral("HEAD"));
+    }
+
+    methods.removeAll(QStringLiteral("not_implemented"));
+    methods.sort();
+    methods.removeDuplicates();
+
+    return methods.join(QStringLiteral(", ")).toLatin1();
 }

@@ -31,7 +31,7 @@ public:
     bool dispatchRestMethod(Context *ctx, const QByteArray &restMethod) const;
     bool returnOptions(Context *ctx, const QByteArray &methodName) const;
     bool returnNotImplemented(Context *ctx, const QByteArray &methodName) const;
-    QByteArray getAllowedMethods(Controller *controller, Context *ctx, const QByteArray &methodName) const;
+    QByteArray getAllowedMethods(Controller *controller, const QByteArray &methodName) const;
 
     ActionREST *q_ptr;
 };
