@@ -35,6 +35,7 @@ ActionREST::ActionREST() :
 
 ActionREST::~ActionREST()
 {
+    delete d_ptr;
 }
 
 bool ActionREST::dispatch(Context *ctx) const

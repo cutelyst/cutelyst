@@ -28,6 +28,10 @@ DispatchType::DispatchType(QObject *parent) :
 {
 }
 
+DispatchType::~DispatchType()
+{
+}
+
 QByteArray DispatchType::uriForAction(const Action *action, const QStringList &captures) const
 {
     return QByteArray();

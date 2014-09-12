@@ -32,6 +32,7 @@ class Upload : public QIODevice
     Q_DECLARE_PRIVATE(Upload)
 public:
     Upload(UploadPrivate *prv);
+    virtual ~Upload();
 
     QString filename() const;
     QByteArray contentType() const;

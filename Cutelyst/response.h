@@ -80,7 +80,7 @@ public:
         BandwidthLimitExceeded       = 509
     };
     Response();
-    ~Response();
+    virtual ~Response();
 
     quint16 status() const;
     void setStatus(quint16 status);

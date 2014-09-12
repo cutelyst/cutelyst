@@ -79,8 +79,16 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 d->containerHash[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
-            } else {
-                delete action;
+            } else if (action->name() != "_DISPATCH" &&
+                       action->name() != "_BEGIN" &&
+                       action->name() != "_AUTO" &&
+                       action->name() != "_ACTION" &&
+                       action->name() != "_END") {
+                qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
+                                             << action->controller()->objectName()
+                                             << "controller was not registered in any dispatcher."
+                                                " If you still want to access it internally (via actionFor())"
+                                                " you may make it's method private.";
             }
         }
 
@@ -273,17 +281,17 @@ QByteArray Dispatcher::printActions()
         ++it;
     }
 
-    out << "." << QString().fill(QLatin1Char('-'), privateLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), classLength).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), actionLength).toUtf8().data()
+    out << "." << QString().fill(QLatin1Char('-'), privateLength + 2).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), classLength + 2).toUtf8().data()
+        << "+" << QString().fill(QLatin1Char('-'), actionLength + 2).toUtf8().data()
         << "." << endl;
-    out << "|" << privateTitle.leftJustified(privateLength).data()
-        << "|" << classTitle.leftJustified(classLength).data()
-        << "|" << methodTitle.leftJustified(actionLength).data()
-        << "|" << endl;
-    out << "." << QByteArray().fill('-', privateLength).data()
-        << "+" << QByteArray().fill('-', classLength).data()
-        << "+" << QByteArray().fill('-', actionLength).data()
+    out << "| " << privateTitle.leftJustified(privateLength).data()
+        << " | " << classTitle.leftJustified(classLength).data()
+        << " | " << methodTitle.leftJustified(actionLength).data()
+        << " |" << endl;
+    out << "." << QByteArray().fill('-', privateLength + 2).data()
+        << "+" << QByteArray().fill('-', classLength + 2).data()
+        << "+" << QByteArray().fill('-', actionLength + 2).data()
         << "." << endl;
 
     QList<QByteArray> keys = d->actionHash.keys();
@@ -295,16 +303,16 @@ QByteArray Dispatcher::printActions()
             if (!path.startsWith('/')) {
                 path.prepend('/');
             }
-            out << "|" << path.leftJustified(privateLength).data()
-                << "|" << action->className().leftJustified(classLength).data()
-                << "|" << action->name().leftJustified(actionLength).data()
-                << "|" << endl;
+            out << "| " << path.leftJustified(privateLength).data()
+                << " | " << action->className().leftJustified(classLength).data()
+                << " | " << action->name().leftJustified(actionLength).data()
+                << " |" << endl;
         }
     }
 
-    out << "." << QByteArray().fill('-', privateLength).data()
-        << "+" << QByteArray().fill('-', classLength).data()
-        << "+" << QByteArray().fill('-', actionLength).data()
+    out << "." << QByteArray().fill('-', privateLength + 2).data()
+        << "+" << QByteArray().fill('-', classLength + 2).data()
+        << "+" << QByteArray().fill('-', actionLength + 2).data()
         << "." << endl;
 
     // List all public actions
@@ -402,13 +410,14 @@ ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
 
     if (ns != "/") {
         int pos = ns.size();
-//        qDebug() << pos << _ns.mid(0, pos);
+//        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {
-//            qDebug() << pos << _ns.mid(0, pos);
+//            qDebug() << pos << ns.mid(0, pos);
             ret.append(containerHash.value(ns.mid(0, pos)));
             pos = ns.lastIndexOf('/', pos - 1);
         }
     }
+//    qDebug() << containerHash.size() << containerHash.value("");
     ret.append(containerHash.value(""));
 
     return ret;

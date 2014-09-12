@@ -45,7 +45,7 @@ class Context : public QObject
     Q_OBJECT
 public:
     Context(ContextPrivate *priv);
-    ~Context();
+    virtual ~Context();
 
     bool error() const;
     void error(const QString &error);

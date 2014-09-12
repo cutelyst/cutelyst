@@ -58,7 +58,7 @@ QByteArray DispatchTypePath::list() const
                 }
             }
             _path.replace(m_multipleSlashes, QLatin1String("/"));
-            pathLength = qMax(pathLength, _path.length() + 1);
+            pathLength = qMax(pathLength, _path.length());
 
             QByteArray privateName = action->privateName();
             if (!privateName.startsWith('/')) {
@@ -68,14 +68,14 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    out << "." << QByteArray().fill('-', pathLength).data()
-        << "+" << QByteArray().fill('-', privateLength).data()
+    out << "." << QByteArray().fill('-', pathLength + 2).data()
+        << "+" << QByteArray().fill('-', privateLength + 2).data()
         << "." << endl;
-    out << "|" << pathTitle.leftJustified(pathLength).data()
-        << "|" << privateTitle.leftJustified(privateLength).data()
-        << "|" << endl;
-    out << "." << QByteArray().fill('-', pathLength).data()
-        << "+" << QByteArray().fill('-', privateLength).data()
+    out << "| " << pathTitle.leftJustified(pathLength).data()
+        << " | " << privateTitle.leftJustified(privateLength).data()
+        << " |" << endl;
+    out << "." << QByteArray().fill('-', pathLength + 2).data()
+        << "+" << QByteArray().fill('-', privateLength + 2).data()
         << "." << endl;
 
     Q_FOREACH (const QByteArray &path, keys) {
@@ -95,14 +95,14 @@ QByteArray DispatchTypePath::list() const
                 privateName.prepend('/');
             }
 
-            out << "|" << _path.leftJustified(pathLength).toUtf8().data()
-                << "|" << privateName.leftJustified(privateLength).data()
-                << "|" << endl;
+            out << "| " << _path.leftJustified(pathLength).toUtf8().data()
+                << " | " << privateName.leftJustified(privateLength).data()
+                << " | " << endl;
         }
     }
 
-    out << "." << QByteArray().fill('-', pathLength).data()
-        << "+" << QByteArray().fill('-', privateLength).data()
+    out << "." << QByteArray().fill('-', pathLength + 2).data()
+        << "+" << QByteArray().fill('-', privateLength + 2).data()
         << "." << endl;
 
     return buffer;

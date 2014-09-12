@@ -31,6 +31,7 @@ class View : public QObject
     Q_OBJECT
 public:
     explicit View(const QString &engine, QObject *parent = 0);
+    virtual ~View();
 
     bool process(Context *ctx);
 

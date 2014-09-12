@@ -68,6 +68,10 @@ View::View(const QString &engine, QObject *parent) :
     }
 }
 
+View::~View()
+{
+}
+
 bool View::process(Context *ctx)
 {
     Response *res = ctx->res();

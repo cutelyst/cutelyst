@@ -31,6 +31,7 @@ class DispatchType : public QObject
     Q_OBJECT
 public:
     explicit DispatchType(QObject *parent = 0);
+    virtual ~DispatchType();
 
     /**
      * @brief list the registered actions

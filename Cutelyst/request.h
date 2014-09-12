@@ -37,7 +37,7 @@ class Request
 {
     Q_GADGET
 public:
-    ~Request();
+    virtual ~Request();
 
     /**
      * @brief peerAddress

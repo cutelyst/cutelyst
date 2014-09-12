@@ -141,6 +141,11 @@ Upload::Upload(UploadPrivate *prv) :
     open(prv->device->openMode());
 }
 
+Upload::~Upload()
+{
+    delete d_ptr;
+}
+
 qint64 Upload::readData(char *data, qint64 maxlen)
 {
     Q_D(Upload);

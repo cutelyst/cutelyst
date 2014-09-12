@@ -171,7 +171,9 @@ void Controller::_DISPATCH(Context *ctx)
     }
 
     // Dispatch to _END
-    d->end->dispatch(ctx);
+    if (d->end) {
+        d->end->dispatch(ctx);
+    }
 }
 
 bool Controller::_BEGIN(Context *ctx)

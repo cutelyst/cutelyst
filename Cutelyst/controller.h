@@ -127,17 +127,18 @@ protected:
 
     ControllerPrivate *d_ptr;
 
+private Q_SLOTS:
+    void _DISPATCH(Context *ctx);
+    bool _BEGIN(Context *ctx);
+    bool _AUTO(Context *ctx);
+    bool _ACTION(Context *ctx);
+    bool _END(Context *ctx);
+
 private:
     Q_DECLARE_PRIVATE(Controller)
     friend class Action;
     friend class Application;
     friend class Dispatcher;
-
-    Q_INVOKABLE void _DISPATCH(Context *ctx);
-    Q_INVOKABLE bool _BEGIN(Context *ctx);
-    Q_INVOKABLE bool _AUTO(Context *ctx);
-    Q_INVOKABLE bool _ACTION(Context *ctx);
-    Q_INVOKABLE bool _END(Context *ctx);
 };
 
 }
