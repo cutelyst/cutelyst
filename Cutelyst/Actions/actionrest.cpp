@@ -33,6 +33,10 @@ ActionREST::ActionREST() :
     qDebug() << Q_FUNC_INFO;
 }
 
+ActionREST::~ActionREST()
+{
+}
+
 bool ActionREST::dispatch(Context *ctx) const
 {
     Q_D(const ActionREST);

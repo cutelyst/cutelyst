@@ -31,6 +31,7 @@ class ActionREST : public Action
     Q_DECLARE_PRIVATE(ActionREST)
 public:
     Q_INVOKABLE ActionREST();
+    virtual ~ActionREST();
 
 protected:
     ActionRESTPrivate *d_ptr;

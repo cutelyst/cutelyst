@@ -92,8 +92,8 @@ public:
      */
     typedef int Args;
 
-    Q_INVOKABLE explicit Controller(QObject *parent = 0);
-    ~Controller();
+    explicit Controller(QObject *parent = 0);
+    virtual ~Controller();
 
     /**
      * This specifies the internal namespace the controller should
@@ -130,6 +130,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Controller)
     friend class Action;
+    friend class Application;
     friend class Dispatcher;
 
     Q_INVOKABLE void _DISPATCH(Context *ctx);

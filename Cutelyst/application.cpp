@@ -93,6 +93,7 @@ bool Application::registerController(Controller *controller)
     }
 
     controller->setParent(this);
+    controller->init();
     d->controllers << controller;
     return true;
 }

@@ -42,9 +42,6 @@ void Action::setupAction(const QMetaMethod &method, Controller *controller)
 {
     Q_D(Action);
 
-    // Setup the ns()
-    controller->init();
-
     d->name = controller->ns() + '/' + method.name();
     d->ns = controller->ns();
     d->method = method;
