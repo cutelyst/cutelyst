@@ -27,12 +27,17 @@ namespace Cutelyst {
 class ControllerPrivate
 {
 public:
+    Action* actionForMethod(const QMetaMethod &method);
+    bool superIsAction(const QMetaObject *super);
+
     QByteArray ns;
     Action *begin = 0;
     ActionList autoList;
     Action *end = 0;
     ActionList actionSteps;
     Dispatcher *dispatcher;
+    bool parsedActions = false;
+    ActionList actions;
 };
 
 }
