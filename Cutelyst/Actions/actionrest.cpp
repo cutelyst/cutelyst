@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "actionrest.h"
+#include "actionrest_p.h"
 #include "context.h"
 #include "controller.h"
 #include "dispatcher.h"
@@ -26,28 +26,81 @@
 
 using namespace Cutelyst;
 
-ActionREST::ActionREST()
+ActionREST::ActionREST() :
+    d_ptr(new ActionRESTPrivate)
 {
+    d_ptr->q_ptr = this;
     qDebug() << Q_FUNC_INFO;
 }
 
 bool ActionREST::dispatch(Context *ctx) const
 {
+    Q_D(const ActionREST);
+
     bool ret = Action::dispatch(ctx);
     if (!ret) {
         return false;
     }
 
-    QByteArray restMethod = name() + '_' + ctx->req()->method();
-    const Action *action = controller()->actionFor(restMethod);
-    if (action) {
-        return action->dispatch(ctx);
-    }
-
-    return false;
+    return d->dispatchRestMethod(ctx, ctx->request()->method());
 }
 
 void ActionREST::dispatcherReady(const Dispatcher *dispatch)
 {
 //    qDebug() << name() << dispatch;
+}
+
+
+bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpMethod) const
+{
+    Q_Q(const ActionREST);
+    const QByteArray &restMethod = q->name() + '_' + httpMethod;
+
+    const Action *action = ctx->controller()->actionFor(restMethod);
+    if (action) {
+        return action->dispatch(ctx);
+    }
+
+    bool ret = false;
+    if (httpMethod == "OPTIONS") {
+        ret = returnOptions(ctx, restMethod);
+    } else if (httpMethod == "HEAD") {
+        // redispatch to GET
+        ret = dispatchRestMethod(ctx, QByteArrayLiteral("GET"));
+    } else if (httpMethod != "not_implemented") {
+        // try dispatching to foo_not_implemented
+        ret = dispatchRestMethod(ctx, QByteArrayLiteral("not_implemented"));
+    } else {
+        // not_implemented
+        ret = returnNotImplemented(ctx, restMethod);
+    }
+
+    return ret;
+}
+
+bool ActionRESTPrivate::returnOptions(Context *ctx, const QByteArray &methodName) const
+{
+    Response *response = ctx->response();
+    response->setContentType(QByteArrayLiteral("text/plain"));
+    response->setStatus(Response::OK); // 200
+    response->headers().insert(QByteArrayLiteral("Allow"),
+                               getAllowedMethods(ctx->controller(), ctx, methodName));
+    response->body().clear();
+    return true;
+}
+
+bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QByteArray &methodName) const
+{
+    Response *response = ctx->response();
+    response->setContentType(QByteArrayLiteral("text/plain"));
+    response->setStatus(Response::MethodNotAllowed); // 405
+    response->headers().insert(QByteArrayLiteral("Allow"),
+                               getAllowedMethods(ctx->controller(), ctx, methodName));
+    response->body() = "Method " + ctx->req()->method() + " not implemented for " + ctx->uriFor(methodName);
+    return true;
+}
+
+QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, Context *ctx, const QByteArray &methodName) const
+{
+    return QByteArray();
 }

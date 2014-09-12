@@ -20,6 +20,7 @@ set(cutelystqt_SRC
     action.cpp
     action_p.h
     Actions/actionrest.cpp
+    Actions/actionrest_p.h
     engine.cpp
     engine_p.h
     enginehttp.cpp

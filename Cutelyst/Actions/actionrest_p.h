@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,28 +17,25 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIONREST_H
-#define ACTIONREST_H
+#ifndef ACTIONREST_P_H
+#define ACTIONREST_P_H
 
-#include <Cutelyst/Action>
+#include "actionrest.h"
 
 namespace Cutelyst {
 
-class ActionRESTPrivate;
-class ActionREST : public Action
+class ActionRESTPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ActionREST)
+    Q_DECLARE_PUBLIC(ActionREST)
 public:
-    Q_INVOKABLE ActionREST();
+    bool dispatchRestMethod(Context *ctx, const QByteArray &restMethod) const;
+    bool returnOptions(Context *ctx, const QByteArray &methodName) const;
+    bool returnNotImplemented(Context *ctx, const QByteArray &methodName) const;
+    QByteArray getAllowedMethods(Controller *controller, Context *ctx, const QByteArray &methodName) const;
 
-protected:
-    ActionRESTPrivate *d_ptr;
-
-    bool dispatch(Context *ctx) const;
-    void dispatcherReady(const Dispatcher *dispatch);
+    ActionREST *q_ptr;
 };
 
 }
 
-#endif // ACTIONREST_H
+#endif // ACTIONREST_P_H
