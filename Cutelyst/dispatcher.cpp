@@ -89,6 +89,12 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                                              << "controller was not registered in any dispatcher."
                                                 " If you still want to access it internally (via actionFor())"
                                                 " you may make it's method private.";
+            } else if (d->showInternalActions) {
+                qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
+                                             << action->controller()->objectName()
+                                             << "controller was alread registered by the"
+                                             << d->actionHash.value(action->privateName())->controller()->objectName()
+                                             << "controller.";
             }
         }
 
@@ -259,7 +265,6 @@ QByteArray Dispatcher::printActions()
 
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
-    bool showInternalActions = false;
 
     out << "Loaded Private actions:" << endl;
     QByteArray privateTitle("Private");
@@ -298,7 +303,7 @@ QByteArray Dispatcher::printActions()
     qSort(keys.begin(), keys.end());
     Q_FOREACH (const QByteArray &key, keys) {
         Action *action = d->actionHash.value(key);
-        if (showInternalActions || !action->name().startsWith('_')) {
+        if (d->showInternalActions || !action->name().startsWith('_')) {
             QByteArray path = key;
             if (!path.startsWith('/')) {
                 path.prepend('/');

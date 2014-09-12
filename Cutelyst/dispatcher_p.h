@@ -29,6 +29,7 @@ class DispatcherPrivate
 public:
     ActionList getContainers(const QByteArray &ns) const;
 
+    bool showInternalActions = false;
     QHash<QByteArray, Action*> actionHash;
     QHash<QByteArray, ActionList> containerHash;
     QHash<QByteArray, Controller *> constrollerHash;
