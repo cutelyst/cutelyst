@@ -83,7 +83,7 @@ bool View::process(Context *ctx)
         return true;
     }
 
-    if (!res->body().isNull()) {
+    if (res->hasBody()) {
         return true;
     }
 
