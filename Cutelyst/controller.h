@@ -107,7 +107,8 @@ public:
     QByteArray ns() const;
 
     /**
-     * Returns the action object for the given private name
+     * Returns the Cutelyst::Action object (if any) for a given method name in
+     * this class namespace.
      */
     const Action *actionFor(const QByteArray &name) const;
 

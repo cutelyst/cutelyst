@@ -61,7 +61,19 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpM
     Q_Q(const ActionREST);
     const QByteArray &restMethod = q->name() + '_' + httpMethod;
 
-    const Action *action = ctx->controller()->actionFor(restMethod);
+    Controller *controller = ctx->controller();
+    const Action *action = controller->actionFor(restMethod);
+    if (!action) {
+        // Look for non registered actions in this controller
+        ActionList actions = controller->actions();
+        Q_FOREACH (Action *controllerAction, actions) {
+            if (controllerAction->name() == restMethod) {
+                action = controllerAction;
+                break;
+            }
+        }
+    }
+
     if (action) {
         return action->dispatch(ctx);
     }
@@ -77,7 +89,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpM
         ret = dispatchRestMethod(ctx, QByteArrayLiteral("not_implemented"));
     } else {
         // not_implemented
-        ret = returnNotImplemented(ctx, restMethod);
+        ret = returnNotImplemented(ctx, q->name());
     }
 
     return ret;

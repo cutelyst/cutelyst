@@ -134,6 +134,8 @@ void Controller::setupActions(Dispatcher *dispatcher)
 {
     Q_D(Controller);
 
+    d->dispatcher = dispatcher;
+
     ActionList beginList;
     beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->ns);
     if (!beginList.isEmpty()) {

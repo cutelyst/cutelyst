@@ -138,12 +138,8 @@ bool Dispatcher::dispatch(Context *ctx)
 
 bool Dispatcher::forward(Context *ctx, const Action *action, const QStringList &arguments)
 {
-    if (action) {
-        return action->dispatch(ctx);
-    }
-
-    qCCritical(CUTELYST_DISPATCHER) << "NULL Action received!";
-    return false;
+    Q_ASSERT(action);
+    return action->dispatch(ctx);
 }
 
 bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringList &arguments)
@@ -276,13 +272,15 @@ QByteArray Dispatcher::printActions()
     QHash<QByteArray, Action*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         Action *action = it.value();
-        QByteArray path = it.key();
-        if (!path.startsWith('/')) {
-            path.prepend('/');
+        if (d->showInternalActions || !action->name().startsWith('_')) {
+            QByteArray path = it.key();
+            if (!path.startsWith('/')) {
+                path.prepend('/');
+            }
+            privateLength = qMax(privateLength, path.length());
+            classLength = qMax(classLength, action->className().length());
+            actionLength = qMax(actionLength, action->name().length());
         }
-        privateLength = qMax(privateLength, path.length());
-        classLength = qMax(classLength, action->className().length());
-        actionLength = qMax(actionLength, action->name().length());
         ++it;
     }
 
