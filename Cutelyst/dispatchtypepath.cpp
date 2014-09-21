@@ -30,8 +30,14 @@
 using namespace Cutelyst;
 
 DispatchTypePath::DispatchTypePath(QObject *parent) :
-    DispatchType(parent)
+    DispatchType(parent),
+    d_ptr(new DispatchTypePathPrivate)
 {
+}
+
+DispatchTypePath::~DispatchTypePath()
+{
+    delete d_ptr;
 }
 
 QByteArray DispatchTypePath::list() const

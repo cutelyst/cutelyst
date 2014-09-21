@@ -34,6 +34,7 @@ class DispatchTypePath : public DispatchType
     Q_DECLARE_PRIVATE(DispatchTypePath)
 public:
     explicit DispatchTypePath(QObject *parent = 0);
+    virtual ~DispatchTypePath();
 
     virtual QByteArray list() const;
 
