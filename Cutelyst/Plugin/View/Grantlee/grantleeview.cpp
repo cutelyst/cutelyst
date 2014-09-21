@@ -37,9 +37,12 @@ GrantleeView::GrantleeView(QObject *parent) :
     d_ptr(new GrantleeViewPrivate)
 {
     Q_D(GrantleeView);
+
     d->loader = Grantlee::FileSystemTemplateLoader::Ptr(new Grantlee::FileSystemTemplateLoader);
+    d->cache = Grantlee::CachingLoaderDecorator::Ptr(new Grantlee::CachingLoaderDecorator(d->loader));
+
     d->engine = new Grantlee::Engine(this);
-    d->engine->addTemplateLoader(d->loader);
+    d->engine->addTemplateLoader(d->cache);
 }
 
 GrantleeView::~GrantleeView()
@@ -101,7 +104,6 @@ bool GrantleeView::render(Context *ctx)
         }
     }
 
-    Grantlee::Template tmpl;
     Grantlee::Context gCtx;
     gCtx.insert(QStringLiteral("ctx"), ctx);
 
@@ -111,6 +113,7 @@ bool GrantleeView::render(Context *ctx)
         ++it;
     }
 
+    Grantlee::Template tmpl;
     if (d->wrapper.isEmpty()) {
         tmpl = d->engine->loadByName(templateFile);
     } else {

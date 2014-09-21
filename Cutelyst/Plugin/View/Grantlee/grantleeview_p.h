@@ -24,6 +24,7 @@
 
 #include <grantlee/engine.h>
 #include <grantlee/templateloader.h>
+#include <grantlee/cachingloaderdecorator.h>
 
 namespace Cutelyst {
 
@@ -35,6 +36,7 @@ public:
     QString wrapper;
     Grantlee::Engine *engine;
     Grantlee::FileSystemTemplateLoader::Ptr loader;
+    Grantlee::CachingLoaderDecorator::Ptr cache;
 };
 
 }
