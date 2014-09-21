@@ -174,7 +174,15 @@ void Dispatcher::prepareAction(Context *ctx)
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, actionPath, args)) {
                 request->d_ptr->args = args;
-                break;
+
+                if (!request->match().isEmpty()) {
+                    qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
+                }
+
+                if (!args.isEmpty()) {
+                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
+                }
+                return;
             }
         }
 
@@ -191,14 +199,6 @@ void Dispatcher::prepareAction(Context *ctx)
 
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));
     } while (pos != -2);
-
-    if (!request->match().isEmpty()) {
-        qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
-    }
-
-    if (!args.isEmpty()) {
-        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
-    }
 }
 
 const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) const
