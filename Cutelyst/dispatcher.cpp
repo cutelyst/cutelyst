@@ -103,6 +103,9 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         }
     }
 
+    // Cache root actions, BEFORE the controllers set them
+    d->rootActions = d->containerHash.value("");
+
     Q_FOREACH (Controller *controller, controllers) {
         controller->setupActions(this);
     }
@@ -110,9 +113,6 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
     Q_FOREACH (Action *action, registeredActions) {
         action->dispatcherReady(this);
     }
-
-    // Cache root actions
-    d->rootActions = d->containerHash.value("");
 
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
 }
