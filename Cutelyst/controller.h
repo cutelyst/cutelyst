@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,7 @@
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
 
-#define C_NAMESPACE "Namespace"
+#define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
 
 namespace  Cutelyst {
 

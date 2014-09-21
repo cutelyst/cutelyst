@@ -74,9 +74,17 @@ public:
      * @brief path
      * @return the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
-     * path will contain 'path/foo'
+     * path will contain '/path/foo'
      */
-    QString path() const;
+    QByteArray path() const;
+
+    /**
+     * This contains the matching part of a Regex action.
+     * Otherwise it returns the same as 'action' (not a pointer but it's private name),
+     * except for default actions, which return an empty string.
+     */
+    QByteArray match() const;
+
     QStringList args() const;
 
     /**
@@ -198,6 +206,7 @@ protected:
 
 private:
     friend class Dispatcher;
+    friend class DispatchType;
     Q_DECLARE_PRIVATE(Request)
 };
 

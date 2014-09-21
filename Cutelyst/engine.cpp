@@ -81,7 +81,7 @@ void Engine::finalizeError(Context *ctx)
     // of ours if we'd give it less than 512 bytes.
     body.reserve(512);
 
-    body.append(ctx->errors().join(QLatin1Char('\n')));
+    body.append(ctx->errors().join(QLatin1Char('\n')).toUtf8());
 
     res->body() = body;
 

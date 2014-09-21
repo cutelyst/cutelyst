@@ -140,12 +140,6 @@ Controller *Context::controller(const QByteArray &name) const
     }
 }
 
-QByteArray Context::match() const
-{
-    Q_D(const Context);
-    return d->match;
-}
-
 QVariantHash &Context::stash()
 {
     Q_D(Context);

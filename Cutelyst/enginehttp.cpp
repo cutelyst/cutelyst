@@ -265,8 +265,7 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
     priv->body = body;
     priv->requestPtr = requestData;
     priv->https = url.scheme() == QLatin1String("https");
-    priv->path = url.path();
-    priv->uri = url.url(QUrl::RemoveScheme | QUrl::RemoveAuthority | QUrl::RemoveFragment);
+    priv->path = url.path().toLatin1();
     priv->serverAddress = url.host();
     priv->serverPort = url.port();
     priv->query = url.query();

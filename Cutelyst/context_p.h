@@ -40,7 +40,6 @@ public:
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
     bool detached = false;
-    QByteArray match;
     QStringList error;
     QVariantHash stash;
     bool state = false;

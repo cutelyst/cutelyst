@@ -32,6 +32,7 @@ public:
     bool showInternalActions = false;
     QHash<QByteArray, Action*> actionHash;
     QHash<QByteArray, ActionList> containerHash;
+    ActionList rootActions;
     QHash<QByteArray, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;
 };

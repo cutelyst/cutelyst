@@ -111,6 +111,9 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         action->dispatcherReady(this);
     }
 
+    // Cache root actions
+    d->rootActions = d->containerHash.value("");
+
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
 }
 
@@ -123,15 +126,12 @@ bool Dispatcher::dispatch(Context *ctx)
         action.append("/_DISPATCH", 10);
         return forward(ctx, action);
     } else {
-        QString error;
         const QString &path = ctx->req()->path();
         if (path.isEmpty()) {
-            error = QLatin1String("No default action defined");
+            ctx->error(tr("No default action defined"));
         } else {
-            error = QLatin1String("Unknown resource \"") % path % QLatin1Char('"');
-        }
-        qCDebug(CUTELYST_DISPATCHER) << error;
-        ctx->error(error);
+            ctx->error(tr("Unknown resource \"%1\".").arg(path));
+        };
     }
     return false;
 }
@@ -158,39 +158,46 @@ void Dispatcher::prepareAction(Context *ctx)
     Q_D(Dispatcher);
 
     Request *request = ctx->request();
-    QByteArray path = request->path().toLatin1();
+    QByteArray path = request->path();
     QList<QByteArray> pathParts = path.split('/');
     QStringList args;
 
-    // Root action
-    pathParts.prepend(QByteArrayLiteral(""));
-
     int pos = path.size();
-    while (pos != -1) {
-        QByteArray actionPath = path.mid(1, pos);
+    QByteArray actionPath;
+
+    //  "/foo/bar"
+    //  "/foo/" skip
+    //  "/foo"
+    //  "/"
+    do {
+        actionPath = path.mid(1, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, actionPath, args)) {
                 request->d_ptr->args = args;
-
-                if (!path.isEmpty()) {
-                    qCDebug(CUTELYST_DISPATCHER) << "Path is" << actionPath;
-                }
-
-                if (!args.isEmpty()) {
-                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
-                }
-
-                return;
+                break;
             }
         }
 
+        // leave the loop if we are at the root "/"
+        if (pos <= 1) {
+            break;
+        }
+
         pos = path.lastIndexOf('/', pos);
-        if (pos > 0) {
+        if (pos != 0) {
             // Remove trailing '/'
             --pos;
         }
 
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));
+    } while (pos != -2);
+
+    if (!request->match().isEmpty()) {
+        qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
+    }
+
+    if (!args.isEmpty()) {
+        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
     }
 }
 
@@ -420,8 +427,8 @@ ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
             pos = ns.lastIndexOf('/', pos - 1);
         }
     }
-//    qDebug() << containerHash.size() << containerHash.value("");
-    ret.append(containerHash.value(""));
+//    qDebug() << containerHash.size() << rootActions;
+    ret.append(rootActions);
 
     return ret;
 }

@@ -83,10 +83,16 @@ QByteArray Request::base() const
                           QUrl::RemoveFragment).toLatin1();
 }
 
-QString Request::path() const
+QByteArray Request::path() const
 {
     Q_D(const Request);
     return d->path;
+}
+
+QByteArray Request::match() const
+{
+    Q_D(const Request);
+    return d->match;
 }
 
 QStringList Request::args() const

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 #include "dispatchtype.h"
 
 #include "context_p.h"
+#include "request_p.h"
 
 using namespace Cutelyst;
 
@@ -51,5 +52,5 @@ bool DispatchType::isLowPrecedence() const
 void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QByteArray &match) const
 {
     ctx->d_ptr->action = action;
-    ctx->d_ptr->match = match;
+    ctx->d_ptr->request->d_ptr->match = match;
 }
