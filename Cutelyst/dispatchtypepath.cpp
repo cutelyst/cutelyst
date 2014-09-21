@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,13 +17,14 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dispatchtypepath.h"
+#include "dispatchtypepath_p.h"
 
 #include "common.h"
 #include "controller.h"
 
 #include <QStringBuilder>
 #include <QBuffer>
+#include <QRegularExpression>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -35,8 +36,11 @@ DispatchTypePath::DispatchTypePath(QObject *parent) :
 
 QByteArray DispatchTypePath::list() const
 {
+    Q_D(const DispatchTypePath);
+
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
+    QRegularExpression multipleSlashes("/{1,}");
 
     out << "Loaded Path actions:" << endl;
     QByteArray pathTitle("Path");
@@ -44,10 +48,10 @@ QByteArray DispatchTypePath::list() const
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
 
-    QList<QByteArray> keys = m_paths.keys();
+    QList<QByteArray> keys = d->paths.keys();
     qSort(keys.begin(), keys.end());
     Q_FOREACH (const QByteArray &path, keys) {
-        Q_FOREACH (Action *action, m_paths.value(path)) {
+        Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             QByteArray args = action->attributes().value("Args");
             if (args.isEmpty()) {
@@ -57,7 +61,7 @@ QByteArray DispatchTypePath::list() const
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(m_multipleSlashes, QLatin1String("/"));
+            _path.replace(multipleSlashes, QLatin1String("/"));
             pathLength = qMax(pathLength, _path.length());
 
             QByteArray privateName = action->privateName();
@@ -79,7 +83,7 @@ QByteArray DispatchTypePath::list() const
         << "." << endl;
 
     Q_FOREACH (const QByteArray &path, keys) {
-        Q_FOREACH (Action *action, m_paths.value(path)) {
+        Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             if (!action->attributes().contains("Args")) {
                 _path.append(QLatin1String("/..."));
@@ -88,7 +92,7 @@ QByteArray DispatchTypePath::list() const
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(m_multipleSlashes, QLatin1String("/"));
+            _path.replace(multipleSlashes, QLatin1String("/"));
 
             QByteArray privateName = action->privateName();
             if (!privateName.startsWith('/')) {
@@ -110,13 +114,15 @@ QByteArray DispatchTypePath::list() const
 
 bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QStringList &args) const
 {
+    Q_D(const DispatchTypePath);
+
     QByteArray _path = path;
     if (_path.isEmpty()) {
         _path = QByteArray("/", 1);
     }
 
     int numberOfArgs = args.size();
-    const ActionList &actions = m_paths.value(_path);
+    const ActionList &actions = d->paths.value(_path);
     Q_FOREACH (Action *action, actions) {
         if (action->match(numberOfArgs)) {
             setupMatchedAction(ctx, action, _path);
@@ -163,6 +169,8 @@ bool actionLessThan(Action *a1, Action *a2)
 
 bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
 {
+    Q_D(DispatchTypePath);
+
     QByteArray _path = path;
     if (_path.startsWith('/')) {
         _path.remove(0, 1);
@@ -174,8 +182,8 @@ bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
         _path = QByteArray("/", 1);
     }
 
-    if (m_paths.contains(_path)) {
-        ActionList actions = m_paths.value(_path);
+    if (d->paths.contains(_path)) {
+        ActionList actions = d->paths.value(_path);
         int actionNumberOfArgs = action->numberOfArgs();
         Q_FOREACH (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
@@ -191,9 +199,9 @@ bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
 
         actions.append(action);
         qSort(actions.begin(), actions.end(), actionLessThan);
-        m_paths[_path] = actions;
+        d->paths[_path] = actions;
     } else {
-        m_paths.insert(_path, ActionList() << action);
+        d->paths.insert(_path, ActionList() << action);
     }
     return true;
 }

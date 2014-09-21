@@ -29,6 +29,7 @@ set(cutelystqt_SRC
     controller_p.h
     dispatchtype.cpp
     dispatchtypepath.cpp
+    dispatchtypepath_p.h
     dispatcher.cpp
     dispatcher_p.h
     view.cpp

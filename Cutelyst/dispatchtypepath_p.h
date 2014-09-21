@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,38 +17,19 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_DISPATCHTYPEPATH_H
-#define CUTELYST_DISPATCHTYPEPATH_H
+#ifndef DISPATCHTYPEPATH_P_H
+#define DISPATCHTYPEPATH_P_H
 
-#include <Cutelyst/DispatchType>
-#include <Cutelyst/Action>
-
-#include <QMap>
+#include "dispatchtypepath.h"
 
 namespace Cutelyst {
 
-class DispatchTypePathPrivate;
-class DispatchTypePath : public DispatchType
+class DispatchTypePathPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(DispatchTypePath)
 public:
-    explicit DispatchTypePath(QObject *parent = 0);
-
-    virtual QByteArray list() const;
-
-    virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const;
-
-    virtual bool registerAction(Action *action);
-
-    virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const;
-
-private:
-    bool registerPath(const QByteArray &path, Action *action);
-
-    DispatchTypePathPrivate *d_ptr;
+    QHash<QByteArray, ActionList> paths;
 };
 
 }
 
-#endif // DispatchTypePath_H
+#endif // DISPATCHTYPEPATH_P_H
