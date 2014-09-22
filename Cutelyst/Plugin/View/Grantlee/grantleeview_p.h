@@ -35,8 +35,8 @@ public:
     QString extension;
     QString wrapper;
     Grantlee::Engine *engine;
-    Grantlee::FileSystemTemplateLoader::Ptr loader;
-    Grantlee::CachingLoaderDecorator::Ptr cache;
+    QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
+    QSharedPointer<Grantlee::CachingLoaderDecorator> cache;
 };
 
 }

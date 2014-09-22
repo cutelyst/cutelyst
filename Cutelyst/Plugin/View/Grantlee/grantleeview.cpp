@@ -38,8 +38,8 @@ GrantleeView::GrantleeView(QObject *parent) :
 {
     Q_D(GrantleeView);
 
-    d->loader = Grantlee::FileSystemTemplateLoader::Ptr(new Grantlee::FileSystemTemplateLoader);
-    d->cache = Grantlee::CachingLoaderDecorator::Ptr(new Grantlee::CachingLoaderDecorator(d->loader));
+    d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
+    d->cache = QSharedPointer<Grantlee::CachingLoaderDecorator>(new Grantlee::CachingLoaderDecorator(d->loader));
 
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->cache);
