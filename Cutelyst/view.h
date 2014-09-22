@@ -46,6 +46,10 @@ public:
     QString wrapper() const;
     void setWrapper(const QString &name);
 
+    Q_PROPERTY(bool cache READ isCaching WRITE setCache)
+    bool isCaching() const;
+    void setCache(bool enable);
+
     /**
      * All subclasses must reimplement this to
      * do it's rendering.

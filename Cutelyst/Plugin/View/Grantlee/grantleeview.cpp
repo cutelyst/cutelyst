@@ -39,10 +39,9 @@ GrantleeView::GrantleeView(QObject *parent) :
     Q_D(GrantleeView);
 
     d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
-    d->cache = QSharedPointer<Grantlee::CachingLoaderDecorator>(new Grantlee::CachingLoaderDecorator(d->loader));
 
     d->engine = new Grantlee::Engine(this);
-    d->engine->addTemplateLoader(d->cache);
+    d->engine->addTemplateLoader(d->loader);
 }
 
 GrantleeView::~GrantleeView()
@@ -85,6 +84,36 @@ void GrantleeView::setWrapper(const QString &name)
 {
     Q_D(GrantleeView);
     d->wrapper = name;
+}
+
+void GrantleeView::setCache(bool enable)
+{
+    Q_D(GrantleeView);
+
+    if (enable != d->cache.isNull()) {
+        return; // already enabled
+    }
+
+    delete d->engine;
+    d->engine = new Grantlee::Engine(this);
+
+    if (enable) {
+        d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
+        d->cache = QSharedPointer<Grantlee::CachingLoaderDecorator>(new Grantlee::CachingLoaderDecorator(d->loader));
+
+        d->engine->addTemplateLoader(d->cache);
+    } else {
+        d->cache.clear();
+        d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
+
+        d->engine->addTemplateLoader(d->loader);
+    }
+}
+
+bool GrantleeView::isCaching() const
+{
+    Q_D(const GrantleeView);
+    return !d->cache.isNull();
 }
 
 bool GrantleeView::render(Context *ctx)

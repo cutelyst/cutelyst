@@ -24,6 +24,10 @@ public:
     virtual QString wrapper() const = 0;
     virtual void setWrapper(const QString &name) = 0;
 
+    Q_PROPERTY(bool cache READ isCaching WRITE setCache)
+    virtual bool isCaching() const = 0;
+    virtual void setCache(bool enable) = 0;
+
     virtual bool render(Cutelyst::Context *ctx) = 0;
 };
 

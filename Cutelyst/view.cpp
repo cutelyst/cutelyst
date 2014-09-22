@@ -131,6 +131,18 @@ void View::setWrapper(const QString &name)
     m_interface->setWrapper(name);
 }
 
+bool View::isCaching() const
+{
+    Q_ASSERT(m_interface);
+    return m_interface->isCaching();
+}
+
+void View::setCache(bool enable)
+{
+    Q_ASSERT(m_interface);
+    m_interface->setCache(enable);
+}
+
 bool View::render(Context *ctx)
 {
     Q_ASSERT(m_interface);
