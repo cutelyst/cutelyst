@@ -42,6 +42,10 @@ public:
 
     virtual bool registerAction(Action *action);
 
+    /**
+     * Get a URI part for an action
+     * Always returns NULL if captures is not empty since Path actions don't have captures
+     */
     virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const;
 
 private:

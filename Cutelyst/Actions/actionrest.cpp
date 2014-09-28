@@ -22,6 +22,7 @@
 #include "controller.h"
 #include "dispatcher.h"
 
+#include <QUrl>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -112,7 +113,8 @@ bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QByteArray &met
     response->setStatus(Response::MethodNotAllowed); // 405
     response->headers().insert(QByteArrayLiteral("Allow"),
                                getAllowedMethods(ctx->controller(), methodName));
-    response->body() = "Method " + ctx->req()->method() + " not implemented for " + ctx->uriFor(methodName);
+    response->body() = "Method " + ctx->req()->method() + " not implemented for "
+            + ctx->uriFor(methodName).toString().toLatin1();
     return true;
 }
 

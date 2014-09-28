@@ -42,17 +42,31 @@ public:
 protected:
     void setupActions(const QList<Controller *> &controllers);
 
+    /**
+     * Delegate the dispatch to the action that matched the url, or return a
+     * message about unknown resource
+     */
     bool dispatch(Context *ctx);
+
     bool forward(Context *ctx, const Action *action, const QStringList &arguments = QStringList());
     bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
-    const Action* getAction(const QByteArray &name, const QByteArray &ns = QByteArray()) const;
+
+    /**
+     * Returns a named action from a given namespace.
+     */
+    const Action* getAction(const QByteArray &name, const QByteArray &nameSpace = QByteArray()) const;
+
+    /**
+     * Returns the named action by its full private path.
+     */
+    const Action* getActionByPath(const QByteArray &path) const;
 
     /**
      * Returns a list of actions that match \pa name on
-     * the desired namespace \pa ns
+     * the desired namespace \pa nameSpace
      */
-    ActionList getActions(const QByteArray &name, const QByteArray &ns) const;
+    ActionList getActions(const QByteArray &name, const QByteArray &nameSpace) const;
 
     /**
      * Returns a list of actions on the desired namespace \pa ns
@@ -60,7 +74,17 @@ protected:
 //    ActionList getActionsNs(const QByteArray &ns) const;
 
     QHash<QByteArray, Controller *> controllers() const;
-    QByteArray uriForAction(const Action *action, const QStringList &captures);
+
+    /**
+     * Takes a Catalyst::Action object and action parameters and returns a URI
+     * part such that if $c->req->path were this URI part, this action would be
+     * dispatched to with $c->req->captures set to the supplied arrayref.
+     *
+     * If the action object is not available for external dispatch or the dispatcher
+     * cannot determine an appropriate URI, this method will return a null byte array.
+     */
+    QByteArray uriForAction(const Action *action, const QStringList &captures) const;
+
     void registerDispatchType(DispatchType *dispatchType);
 
 private:

@@ -26,6 +26,9 @@
 #include "dispatcher.h"
 #include "controller.h"
 
+#include <QUrl>
+#include <QUrlQuery>
+
 using namespace Cutelyst;
 
 Context::Context(ContextPrivate *priv) :
@@ -146,16 +149,48 @@ QVariantHash &Context::stash()
     return d->stash;
 }
 
-QByteArray Context::uriFor(const QByteArray &path, const QStringList &args)
+QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
-    Q_D(Context);
+    Q_D(const Context);
 
     const Action *action = d->dispatcher->getAction(path);
+    return uriFor(action, args, queryValues);
+}
+
+QUrl Context::uriFor(const QByteArray &path, const QMultiHash<QString, QString> &queryValues) const
+{
+    return uriFor(path, QStringList(), queryValues);
+}
+
+QUrl Context::uriFor(const Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+{
+    Q_D(const Context);
+
+    QUrl ret = d->request->base();
+    QByteArray path;
+
     if (action) {
-        return d->dispatcher->uriForAction(action, args);
+        path = d->dispatcher->uriForAction(action, args);
     } else {
-        return path;
+        // use the current action if none is provided
+        path = d->dispatcher->uriForAction(d->action, args);
     }
+    ret.setPath(path);
+
+    QUrlQuery query;
+    QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
+    while (i != queryValues.constEnd()) {
+        query.addQueryItem(i.key(), i.value());
+        ++i;
+    }
+    ret.setQuery(query);
+
+    return ret;
+}
+
+QUrl Context::uriFor(const Action *action, const QMultiHash<QString, QString> &queryValues) const
+{
+    return uriFor(action, QStringList(), queryValues);
 }
 
 bool Context::detached() const

@@ -68,7 +68,7 @@ public:
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000/.
      */
-    QByteArray base() const;
+    QUrl base() const;
 
     /**
      * @brief path

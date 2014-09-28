@@ -201,7 +201,7 @@ void Dispatcher::prepareAction(Context *ctx)
     } while (pos != -2);
 }
 
-const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns) const
+const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -209,7 +209,7 @@ const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns
         return 0;
     }
 
-    QByteArray action = cleanNamespace(ns);
+    QByteArray action = cleanNamespace(nameSpace);
     action.reserve(action.size() + name.size() + 1);
     action.append('/');
     action.append(name);
@@ -217,7 +217,18 @@ const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &ns
     return d->actionHash.value(action);
 }
 
-ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) const
+const Action *Dispatcher::getActionByPath(const QByteArray &path) const
+{
+    Q_D(const Dispatcher);
+
+    QByteArray _path = path;
+    if (!_path.startsWith('/')) {
+        _path.prepend('/');
+    }
+    return d->actionHash.value(_path);
+}
+
+ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -226,7 +237,7 @@ ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &ns) 
         return ret;
     }
 
-    QByteArray _ns = cleanNamespace(ns);
+    QByteArray _ns = cleanNamespace(nameSpace);
 
     ActionList containers = d->getContainers(_ns);
     Q_FOREACH (Action *action, containers) {
@@ -244,7 +255,7 @@ QHash<QByteArray, Controller *> Dispatcher::controllers() const
     return d->constrollerHash;
 }
 
-QByteArray Dispatcher::uriForAction(const Action *action, const QStringList &captures)
+QByteArray Dispatcher::uriForAction(const Action *action, const QStringList &captures) const
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {

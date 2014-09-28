@@ -157,11 +157,19 @@ bool DispatchTypePath::registerAction(Action *action)
 
 QByteArray DispatchTypePath::uriForAction(const Action *action, const QStringList &captures) const
 {
-    QByteArray path = action->attributes().value("Path");
-    if (!path.isNull()) {
-        if (path.isEmpty()) {
-            return QByteArray("/", 1);
-        } else {
+    if (captures.isEmpty()) {
+        QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
+        QMultiHash<QByteArray, QByteArray>::ConstIterator i = attributes.constFind(QByteArrayLiteral("Path"));
+        while (i != attributes.constEnd() && i.key() == "Path") {
+            QByteArray path = i.value();
+            if (path.isEmpty()) {
+                path = QByteArray("/", 1);
+            }
+
+            if (!path.startsWith('/')) {
+                path.prepend('/');
+            }
+
             return path;
         }
     }

@@ -45,9 +45,9 @@ public:
     virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const = 0;
 
     /**
-     * Returns an uri for an action //TODO
+     * Returns an uri for an action
      */
-    virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const;
+    virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const = 0;
 
     /**
      * @brief registerAction

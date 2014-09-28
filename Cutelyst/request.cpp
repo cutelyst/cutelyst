@@ -75,12 +75,12 @@ QUrl Request::uri() const
     return d->url;
 }
 
-QByteArray Request::base() const
+QUrl Request::base() const
 {
-    return uri().toString(QUrl::RemoveUserInfo |
+    return uri().adjusted(QUrl::RemoveUserInfo |
                           QUrl::RemovePath |
                           QUrl::RemoveQuery |
-                          QUrl::RemoveFragment).toLatin1();
+                          QUrl::RemoveFragment);
 }
 
 QByteArray Request::path() const

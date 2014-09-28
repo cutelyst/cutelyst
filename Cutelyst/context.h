@@ -106,7 +106,54 @@ public:
 
     QVariantHash &stash();
 
-    QByteArray uriFor(const QByteArray &path, const QStringList &args = QStringList());
+    /**
+     * Constructs an absolute QUrl object based on the application root, the
+     * provided path, and the additional arguments and query parameters provided.
+     * When used as a string, provides a textual URI.
+     *
+     * The first argument is taken as a public URI path relative
+     * ctx->ns (if it doesn't begin with a forward slash) or
+     * relative to the application root (if it does). It is then merged with
+     * ctx->request()->base() any \p args are appended as additional path
+     * components; and any queryValues> are appended as "?foo=bar" parameters.
+     */
+    QUrl uriFor(const QByteArray &path,
+                const QStringList &args = QStringList(),
+                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+
+    /**
+     * Constructs an absolute QUrl object based on the application root, the
+     * provided path, and the additional arguments and query parameters provided.
+     * When used as a string, provides a textual URI.
+     *
+     * The first argument is taken as a public URI path relative
+     * ctx->ns (if it doesn't begin with a forward slash) or
+     * relative to the application root (if it does). It is then merged with
+     * ctx->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
+     */
+    QUrl uriFor(const QByteArray &path,
+                const QMultiHash<QString, QString> &queryValues) const;
+
+    /**
+     * Constructs an absolute QUrl object based on the application root, the
+     * provided path, and the additional arguments and query parameters provided.
+     * When used as a string, provides a textual URI.
+     *
+     * If no arguments are provided, the URI for the current action is returned.
+     * To return the current action and also provide \p args, use
+     * ctx->uriFor(ctx->action(), args).
+     */
+    QUrl uriFor(const Action *action = 0,
+                const QStringList &args = QStringList(),
+                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+
+    /**
+     * Constructs an absolute QUrl object based on the application root, the
+     * provided path, and the additional arguments and query parameters provided.
+     * When used as a string, provides a textual URI.
+     */
+    QUrl uriFor(const Action *action,
+                const QMultiHash<QString, QString> &queryValues) const;
 
     bool detached() const;
 
