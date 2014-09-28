@@ -197,11 +197,6 @@ QUrl Context::uriForAction(const QByteArray &path, const QStringList &args, cons
     return uriFor(action, args, queryValues);
 }
 
-QUrl Context::uriForAction(const QByteArray &path, const QMultiHash<QString, QString> &queryValues) const
-{
-    return uriFor(path, QStringList(), queryValues);
-}
-
 bool Context::detached() const
 {
     Q_D(const Context);

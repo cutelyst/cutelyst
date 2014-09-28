@@ -187,8 +187,9 @@ public:
     /**
      * A convenience method for the \sa uriForAction
      */
-    QUrl uriForAction(const QByteArray &path,
-                      const QMultiHash<QString, QString> &queryValues) const;
+    inline QUrl uriForActionNoArgs(const QByteArray &path,
+                                   const QMultiHash<QString, QString> &queryValues) const
+    { return uriForAction(path, QStringList(), queryValues); }
 
     bool detached() const;
 
