@@ -153,29 +153,15 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
 {
     Q_D(const Context);
 
-    const Action *action = d->dispatcher->getAction(path);
-    return uriFor(action, args, queryValues);
-}
-
-QUrl Context::uriFor(const QByteArray &path, const QMultiHash<QString, QString> &queryValues) const
-{
-    return uriFor(path, QStringList(), queryValues);
-}
-
-QUrl Context::uriFor(const Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
-{
-    Q_D(const Context);
-
     QUrl ret = d->request->base();
-    QByteArray path;
 
-    if (action) {
-        path = d->dispatcher->uriForAction(action, args);
-    } else {
-        // use the current action if none is provided
-        path = d->dispatcher->uriForAction(d->action, args);
+    QStringList encodedArgs;
+    encodedArgs.append(path);
+
+    Q_FOREACH (const QString &arg, args) {
+        encodedArgs.append(QUrl::toPercentEncoding(arg));
     }
-    ret.setPath(path);
+    ret.setPath(encodedArgs.join(QLatin1Char('/')));
 
     QUrlQuery query;
     QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
@@ -188,9 +174,42 @@ QUrl Context::uriFor(const Action *action, const QStringList &args, const QMulti
     return ret;
 }
 
+QUrl Context::uriFor(const QByteArray &path, const QMultiHash<QString, QString> &queryValues) const
+{
+    return uriFor(path, QStringList(), queryValues);
+}
+
+QUrl Context::uriFor(const Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+{
+    Q_D(const Context);
+
+    QByteArray path;
+    if (action) {
+        path = d->dispatcher->uriForAction(action, args);
+    } else {
+        // use the current action if none is provided
+        path = d->dispatcher->uriForAction(d->action, args);
+    }
+
+    return uriFor(path, args, queryValues);
+}
+
 QUrl Context::uriFor(const Action *action, const QMultiHash<QString, QString> &queryValues) const
 {
     return uriFor(action, QStringList(), queryValues);
+}
+
+QUrl Context::uriForAction(const QByteArray &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+{
+    Q_D(const Context);
+
+    const Action *action = d->dispatcher->getActionByPath(path);
+    return uriFor(action, args, queryValues);
+}
+
+QUrl Context::uriForAction(const QByteArray &path, const QMultiHash<QString, QString> &queryValues) const
+{
+    return uriFor(path, QStringList(), queryValues);
 }
 
 bool Context::detached() const

@@ -155,6 +155,38 @@ public:
     QUrl uriFor(const Action *action,
                 const QMultiHash<QString, QString> &queryValues) const;
 
+    /**
+     * A private path to the Cutelyst action you want to create a URI for.
+     *
+     * This is a shortcut for calling ctx->dispatcher()->getActionByPath(path)
+     * and passing the resulting action and the remaining arguments to ctx->uri_for.
+     *
+     * Note that although the path looks like a URI that dispatches to the wanted action,
+     * it is not a URI, but an internal path to that action.
+     *
+     * For example, if the action looks like:
+     *
+     * class Users: public Cutelyst::Controller {
+     * ...
+     * Q_CLASSINFO("lst_Path", "the-list")
+     * void lst() { ... }
+     *
+     * };
+     *
+     * You can use:
+     * ctx->uriForAction('/users/lst');
+     * and it will create the URI /users/the-list.
+     */
+    QUrl uriForAction(const QByteArray &path,
+                      const QStringList &args = QStringList(),
+                      const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+
+    /**
+     * A convenience method for the \sa uriForAction
+     */
+    QUrl uriForAction(const QByteArray &path,
+                      const QMultiHash<QString, QString> &queryValues) const;
+
     bool detached() const;
 
     void detach();
