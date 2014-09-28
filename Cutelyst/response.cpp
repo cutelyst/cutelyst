@@ -149,7 +149,14 @@ void Response::setCookies(const QList<QNetworkCookie> &cookies)
     d->cookies = cookies;
 }
 
-void Response::redirect(const QString &url, quint16 status)
+void Response::redirect(const QUrl &url, quint16 status)
+{
+    Q_D(Response);
+    d->location = url;
+    setStatus(status);
+}
+
+void Response::redirect(const QByteArray &url, quint16 status)
 {
     Q_D(Response);
     d->location = url;
@@ -166,4 +173,14 @@ Headers &Response::headers()
 {
     Q_D(Response);
     return d->headers;
+}
+
+void Response::write(const QByteArray &data)
+{
+    Q_D(Response);
+    if (d->body) {
+        d->body->write(data);
+    } else {
+        body().append(data);
+    }
 }

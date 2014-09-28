@@ -132,15 +132,41 @@ public:
      * destination, and then sets the response status. You will want to return false or
      * c->detach() to interrupt the normal processing flow if you want the redirect to
      * occur straight away.
+     *
+     * \note do not give a relative URL as $url, i.e: one that is not fully
+     * qualified ("http://...", etc.) or that starts with a slash "/path/here".
+     * While it may work, it is not guaranteed to do the right thing and is not a
+     * standard behaviour. You may opt to use uriFor() or uriForAction() instead.
      */
-    void redirect(const QString &url, quint16 status = Found);
+    void redirect(const QUrl &url, quint16 status = Found);
+
+    /**
+     * Causes the response to redirect to the specified URL. The default status is 302.
+     * This is a convenience method that sets the Location header to the redirect
+     * destination, and then sets the response status. You will want to return false or
+     * c->detach() to interrupt the normal processing flow if you want the redirect to
+     * occur straight away.
+     *
+     * \note do not give a relative URL as $url, i.e: one that is not fully
+     * qualified ("http://...", etc.) or that starts with a slash "/path/here".
+     * While it may work, it is not guaranteed to do the right thing and is not a
+     * standard behaviour. You may opt to use uriFor() or uriForAction() instead.
+     */
+    void redirect(const QByteArray &url, quint16 status = Found);
 
     /**
      * Returns the HTTP location set by the redirect
      */
     QUrl location() const;
 
+    /**
+     * Returns a reference to the response headers class
+     */
     Headers &headers();
+
+    /**
+     * Writes data to the body
+     */
     void write(const QByteArray &data);
 
 protected:
