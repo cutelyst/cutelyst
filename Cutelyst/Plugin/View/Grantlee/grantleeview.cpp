@@ -98,14 +98,10 @@ void GrantleeView::setCache(bool enable)
     d->engine = new Grantlee::Engine(this);
 
     if (enable) {
-        d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
         d->cache = QSharedPointer<Grantlee::CachingLoaderDecorator>(new Grantlee::CachingLoaderDecorator(d->loader));
-
         d->engine->addTemplateLoader(d->cache);
     } else {
         d->cache.clear();
-        d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
-
         d->engine->addTemplateLoader(d->loader);
     }
 }
