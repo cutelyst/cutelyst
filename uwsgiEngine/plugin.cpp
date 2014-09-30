@@ -43,7 +43,9 @@ extern "C" void uwsgi_cutelyst_on_load()
 
     (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
 
-    qInstallMessageHandler(cuteOutput);
+    if (qEnvironmentVariableIsEmpty("CUTELYST_NO_UWSGI_LOG")) {
+        qInstallMessageHandler(cuteOutput);
+    }
 }
 
 extern "C" int uwsgi_cutelyst_init()
