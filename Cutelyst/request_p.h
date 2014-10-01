@@ -50,6 +50,7 @@ public:
     Headers headers;
     QIODevice *body = 0;
     QHostAddress remoteAddress;
+    mutable QString remoteHostname;
     quint16 remotePort;
     QByteArray remoteUser;
     Engine *engine;

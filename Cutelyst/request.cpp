@@ -19,6 +19,7 @@
 
 #include "request_p.h"
 #include "engine.h"
+#include "common.h"
 #include "multipartformdataparser.h"
 
 #include <QStringBuilder>
@@ -42,6 +43,31 @@ QHostAddress Request::address() const
 {
     Q_D(const Request);
     return d->remoteAddress;
+}
+
+QString Request::hostname() const
+{
+    Q_D(const Request);
+
+    // We have the client hostname
+    if (!d->remoteHostname.isEmpty()) {
+        return d->remoteHostname;
+    } else {
+        // We tried to get the client hostname but failed
+        if (!d->remoteHostname.isNull()) {
+            return QString();
+        }
+    }
+
+    QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
+    if (ptr.error() != QHostInfo::NoError) {
+        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
+        d->remoteHostname = "";
+        return QString();
+    }
+
+    d->remoteHostname = ptr.hostName();
+    return d->remoteHostname;
 }
 
 quint16 Request::port() const

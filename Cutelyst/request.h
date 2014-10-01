@@ -46,6 +46,15 @@ public:
     QHostAddress address() const;
 
     /**
+     * Returns the hostname of the client,
+     * or null if not found or an error has happened.
+     *
+     * This functions makes blocking call to do a reverse
+     * DNS lookup if the engine didn't set the hostname.
+     */
+    QString hostname() const;
+
+    /**
      * @brief peerPort
      * @return the originating port of the client
      */
