@@ -162,18 +162,18 @@ void EngineUwsgi::processRequest(wsgi_request *req)
                               const_cast<char *>("HTTP_"), 5)) {
             QByteArray key = httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
             QByteArray value = QByteArray::fromRawData((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
-            headers.setHeader(key, value);
+            headers.insertMulti(key, value);
         }
     }
 
     if (req->content_type_len > 0) {
-        headers.setHeader(m_headerContentType,
-                          QByteArray::fromRawData(req->content_type, req->content_type_len));
+        headers.insertMulti(m_headerContentType,
+                            QByteArray::fromRawData(req->content_type, req->content_type_len));
     }
 
     if (req->encoding_len > 0) {
-        headers.setHeader(m_headerContentEncoding,
-                          QByteArray::fromRawData(req->encoding, req->encoding_len));
+        headers.insertMulti(m_headerContentEncoding,
+                            QByteArray::fromRawData(req->encoding, req->encoding_len));
     }
     priv->headers = headers;
 
