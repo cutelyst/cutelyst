@@ -25,6 +25,7 @@
 #include <QCoreApplication>
 #include <QSocketNotifier>
 #include <QPluginLoader>
+#include <QFileInfo>
 
 using namespace Cutelyst;
 
@@ -91,6 +92,16 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 static void fsmon_reload(struct uwsgi_fsmon *fs)
 {
     qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
+    QFileInfo fileInfo(fs->path);
+    int count = 0;
+    // Ugly hack to wait for 2 seconds for the file to be filled
+    while (fileInfo.size() == 0 && count < 10) {
+        ++count;
+        qCDebug(CUTELYST_UWSGI) << "Sleeping as the application file is empty" << count;
+        usleep(200 * 1000);
+        fileInfo.refresh();
+    }
+
     uwsgi_reload(uwsgi.argv);
 }
 #endif // UWSGI_GO_CHEAP_CODE
