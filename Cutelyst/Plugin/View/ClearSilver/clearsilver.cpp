@@ -233,20 +233,20 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
 //    qDebug() << key;
 
     switch (value.type()) {
-    case QVariant::String:
+    case QMetaType::QString:
         hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
         break;
-    case QVariant::Int:
+    case QMetaType::Int:
         hdf_set_int_value(hdf, key.toLocal8Bit().data(), value.toInt());
         break;
-    case QVariant::Hash:
+    case QMetaType::QVariantHash:
         serializeHash(hdf, value.toHash(), key);
         break;
-    case QVariant::Map:
+    case QMetaType::QVariantMap:
         serializeMap(hdf, value.toMap(), key);
         break;
     default:
-        if (value.canConvert(QVariant::String)) {
+        if (value.canConvert(QMetaType::QString)) {
             hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
         }
         break;

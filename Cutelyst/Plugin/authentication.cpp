@@ -118,7 +118,7 @@ void Authentication::setUser(const Authentication::User &user)
     if (user.isNull()) {
         setPluginProperty(d->ctx, QStringLiteral("user"), QVariant());
     } else {
-        setPluginProperty(d->ctx, QStringLiteral("user"), qVariantFromValue(user));
+        setPluginProperty(d->ctx, QStringLiteral("user"), QVariant::fromValue(user));
     }
 }
 
@@ -407,7 +407,7 @@ QDataStream &operator>>(QDataStream &in, Authentication::User &user)
 QVariant Authentication::Store::forSession(Context *ctx, const Plugin::Authentication::User &user)
 {
     Q_UNUSED(ctx)
-    return qVariantFromValue(user);
+    return QVariant::fromValue(user);
 }
 
 Authentication::User Authentication::Store::fromSession(Context *ctx, const QVariant &frozenUser)
