@@ -60,7 +60,7 @@ public:
     // Instead of setting this you might use setPathURIAndQueryParams
     bool https = false;
     QByteArray path;
-    QString query;
+    QByteArray query;
     QString serverAddress;
     quint16 serverPort;
 
@@ -68,6 +68,8 @@ protected:
     friend class Request;
     friend class Dispatcher;
     friend class DispatchType;
+
+    static ParamsMultiMap parseUrlEncoded(const QByteArray &line);
 
     // Engines don't need to touch this
     QStringList args;

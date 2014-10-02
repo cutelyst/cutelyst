@@ -141,7 +141,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
         priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
         priv->serverPort = priv->https ? 443 : 80;// fallback
     }
-    priv->query = QString::fromLatin1(req->query_string, req->query_string_len);
+    priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);
 
     priv->method = QByteArray::fromRawData(req->method, req->method_len);
     priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);

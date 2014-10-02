@@ -268,7 +268,7 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
     priv->path = url.path().toLatin1();
     priv->serverAddress = url.host();
     priv->serverPort = url.port();
-    priv->query = url.query();
+    priv->query = url.query().toLatin1();
 
     handleRequest(new Request(priv), true);
 }

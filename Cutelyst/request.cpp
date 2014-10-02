@@ -241,12 +241,7 @@ void Request::setArgs(const QStringList &args)
 
 void RequestPrivate::parseUrlQuery() const
 {
-    QUrlQuery urlQuery(query);
-    ParamsMultiMap params;
-    Q_FOREACH (const StringPair &queryItem, urlQuery.queryItems()) {
-        params.insertMulti(queryItem.first, queryItem.second);
-    }
-    queryParam = params;
+    queryParam = parseUrlEncoded(query);
     queryParamParsed = true;
 }
 
@@ -259,22 +254,9 @@ void RequestPrivate::parseBody() const
         // parameters ie "?foo=bar&bar=baz"
         qint64 posOrig = body->pos();
         body->seek(0);
-        QByteArray bodyArray = body->readLine();
-        Q_FOREACH (const QByteArray &parameter, bodyArray.split('&')) {
-            if (parameter.isEmpty()) {
-                continue;
-            }
 
-            QList<QByteArray> parts = parameter.split('=');
-            if (parts.size() == 2) {
-                QByteArray value = parts.at(1);
-                params.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                   QUrl::fromPercentEncoding(value.replace('+', ' ')));
-            } else {
-                params.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-                                   QString());
-            }
-        }
+        params = parseUrlEncoded(body->readLine());
+
         body->seek(posOrig);
     } else if (contentType.startsWith("multipart/form-data")) {
         MultiPartFormDataParser parser(contentType, body);
@@ -292,6 +274,29 @@ void RequestPrivate::parseCookies() const
     QByteArray cookiesHeader = headers.header("Cookie");
     cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n'));
     cookiesParsed = true;
+}
+
+ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
+{
+    ParamsMultiMap ret;
+    QList<QByteArray> items = line.split('&');
+    for (int i = items.size() - 1; i != 0; --i) {
+        const QByteArray &parameter = items.at(i);
+        if (parameter.isEmpty()) {
+            continue;
+        }
+
+        const QList<QByteArray> &parts = parameter.split('=');
+        if (parts.size() == 2) {
+            QByteArray value = parts.at(1);
+            ret.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+                            QUrl::fromPercentEncoding(value.replace('+', ' ')));
+        } else {
+            ret.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+                            QString());
+        }
+    }
+    return ret;
 }
 
 void RequestPrivate::reset()
