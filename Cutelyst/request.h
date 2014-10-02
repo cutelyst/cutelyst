@@ -24,7 +24,7 @@
 #include <QHostAddress>
 #include <QNetworkCookie>
 
-#include <Cutelyst/CQueryMultiMap>
+#include <Cutelyst/ParamsMultiMap>
 #include <Cutelyst/Headers>
 
 namespace Cutelyst {
@@ -118,33 +118,33 @@ public:
     /**
      * Returns a QMultiHash of body (POST) parameters
      */
-    CQueryMultiMap bodyParameters() const;
+    ParamsMultiMap bodyParameters() const;
 
     /**
      * Short for \sa bodyParameters()
      */
-    inline CQueryMultiMap bodyParam() const { return bodyParameters(); }
+    inline ParamsMultiMap bodyParam() const { return bodyParameters(); }
 
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
      */
-    CQueryMultiMap queryParameters() const;
+    ParamsMultiMap queryParameters() const;
 
     /**
      * Short for \sa queryParameters()
      */
-    inline CQueryMultiMap queryParam() const { return queryParameters(); }
+    inline ParamsMultiMap queryParam() const { return queryParameters(); }
 
     /**
      * Returns a QMultiHash containing both the query parameters (GET)
      * and the body parameters (POST)
      */
-    CQueryMultiMap parameters() const;
+    ParamsMultiMap parameters() const;
 
     /**
      * Short for \sa parameters()
      */
-    inline CQueryMultiMap param() const { return parameters(); }
+    inline ParamsMultiMap param() const { return parameters(); }
 
     /**
      * @brief contentEncoding

@@ -139,7 +139,7 @@ QIODevice *Request::body() const
     return d->body;
 }
 
-CQueryMultiMap Request::bodyParameters() const
+ParamsMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
     if (!d->bodyParsed) {
@@ -148,7 +148,7 @@ CQueryMultiMap Request::bodyParameters() const
     return d->bodyParam;
 }
 
-CQueryMultiMap Request::queryParameters() const
+ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
     if (!d->queryParamParsed) {
@@ -157,7 +157,7 @@ CQueryMultiMap Request::queryParameters() const
     return d->queryParam;
 }
 
-CQueryMultiMap Request::parameters() const
+ParamsMultiMap Request::parameters() const
 {
     Q_D(const Request);
     if (!d->paramParsed) {
@@ -242,7 +242,7 @@ void Request::setArgs(const QStringList &args)
 void RequestPrivate::parseUrlQuery() const
 {
     QUrlQuery urlQuery(query);
-    CQueryMultiMap params;
+    ParamsMultiMap params;
     Q_FOREACH (const StringPair &queryItem, urlQuery.queryItems()) {
         params.insertMulti(queryItem.first, queryItem.second);
     }
@@ -252,7 +252,7 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    CQueryMultiMap params;
+    ParamsMultiMap params;
     const QByteArray &contentType = headers.contentType();
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"

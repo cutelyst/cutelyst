@@ -80,13 +80,13 @@ protected:
     mutable QList<QNetworkCookie> cookies;
 
     mutable bool queryParamParsed = false;
-    mutable CQueryMultiMap queryParam;
+    mutable ParamsMultiMap queryParam;
 
     mutable bool bodyParsed = false;
-    mutable CQueryMultiMap bodyParam;
+    mutable ParamsMultiMap bodyParam;
 
     mutable bool paramParsed = false;
-    mutable CQueryMultiMap param;
+    mutable ParamsMultiMap param;
 
     mutable Uploads uploads;
 };
