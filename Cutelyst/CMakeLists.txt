@@ -115,7 +115,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst-qt5.pc.in
   @ONLY
 )
 
-install(TARGETS cutelyst-qt5 DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS cutelyst-qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )

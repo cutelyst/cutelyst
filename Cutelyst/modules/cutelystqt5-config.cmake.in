@@ -9,3 +9,5 @@ SET(exec_prefix "@CMAKE_INSTALL_PREFIX@")
 SET(CutelystQt5_LIBRARY "@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@/libcutelyst-qt5.so" CACHE FILEPATH "Libraries for Cutelyst")
 SET(CutelystQt5_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/cutelyst-qt5/" CACHE PATH "Include path for Cutelyst")
 SET(CutelystQt5_FOUND "TRUE")
+
+include("${CMAKE_CURRENT_LIST_DIR}/CutelystQt5Targets.cmake")

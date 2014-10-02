@@ -45,6 +45,7 @@ endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 # Configure files
 #
 set (PREFIXDIR "${CMAKE_INSTALL_PREFIX}")
+set (CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${LIBNAME}/")
 set (DATADIR "${CMAKE_INSTALL_PREFIX}/share")
 set (PKGDATADIR "${DATA_INSTALL_DIR}")
 set (LIBDIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
@@ -84,4 +85,3 @@ add_subdirectory(uwsgiEngine)
 
 # TODO rename to examples
 #add_subdirectory(server)
-
