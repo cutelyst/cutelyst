@@ -76,17 +76,17 @@ protected:
     mutable bool urlParsed = false;
     mutable QUrl url;
 
-    mutable bool queryParamParsed = false;
-    mutable QMultiHash<QString, QString> queryParam;
-
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
 
+    mutable bool queryParamParsed = false;
+    mutable CQueryMultiMap queryParam;
+
     mutable bool bodyParsed = false;
-    mutable QMultiHash<QString, QString> bodyParam;
+    mutable CQueryMultiMap bodyParam;
 
     mutable bool paramParsed = false;
-    mutable QMultiHash<QString, QString> param;
+    mutable CQueryMultiMap param;
 
     mutable Uploads uploads;
 };

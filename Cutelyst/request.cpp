@@ -139,7 +139,7 @@ QIODevice *Request::body() const
     return d->body;
 }
 
-QMultiHash<QString, QString> Request::bodyParameters() const
+CQueryMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
     if (!d->bodyParsed) {
@@ -148,7 +148,7 @@ QMultiHash<QString, QString> Request::bodyParameters() const
     return d->bodyParam;
 }
 
-QMultiHash<QString, QString> Request::queryParameters() const
+CQueryMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
     if (!d->queryParamParsed) {
@@ -157,11 +157,11 @@ QMultiHash<QString, QString> Request::queryParameters() const
     return d->queryParam;
 }
 
-QMultiHash<QString, QString> Request::parameters() const
+CQueryMultiMap Request::parameters() const
 {
     Q_D(const Request);
     if (!d->paramParsed) {
-        d->param = queryParameters() + bodyParameters();
+        d->param = queryParameters().unite(bodyParameters());
         d->paramParsed = true;
     }
     return d->param;
@@ -242,7 +242,7 @@ void Request::setArgs(const QStringList &args)
 void RequestPrivate::parseUrlQuery() const
 {
     QUrlQuery urlQuery(query);
-    QMultiHash<QString, QString> params;
+    CQueryMultiMap params;
     Q_FOREACH (const StringPair &queryItem, urlQuery.queryItems()) {
         params.insertMulti(queryItem.first, queryItem.second);
     }
@@ -252,7 +252,7 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    QMultiHash<QString, QString> params;
+    CQueryMultiMap params;
     const QByteArray &contentType = headers.contentType();
     if (contentType == "application/x-www-form-urlencoded") {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
@@ -268,20 +268,21 @@ void RequestPrivate::parseBody() const
             QList<QByteArray> parts = parameter.split('=');
             if (parts.size() == 2) {
                 QByteArray value = parts.at(1);
-                value.replace('+', ' ');
                 params.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                   QUrl::fromPercentEncoding(value));
+                                   QUrl::fromPercentEncoding(value.replace('+', ' ')));
             } else {
                 params.insertMulti(QUrl::fromPercentEncoding(parts.first()),
                                    QString());
             }
         }
         body->seek(posOrig);
-        bodyParam = params;
     } else if (contentType.startsWith("multipart/form-data")) {
         MultiPartFormDataParser parser(contentType, body);
         uploads = parser.parse();
     }
+
+    // Asign it here so that we clean it in case no if matched
+    bodyParam = params;
 
     bodyParsed = true;
 }

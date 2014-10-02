@@ -24,12 +24,14 @@
 #include <QHostAddress>
 #include <QNetworkCookie>
 
+#include <Cutelyst/CQueryMultiMap>
 #include <Cutelyst/Headers>
 
 namespace Cutelyst {
 
 class Engine;
 class Upload;
+
 typedef QList<Upload *> Uploads;
 
 class RequestPrivate;
@@ -116,33 +118,33 @@ public:
     /**
      * Returns a QMultiHash of body (POST) parameters
      */
-    QMultiHash<QString, QString> bodyParameters() const;
+    CQueryMultiMap bodyParameters() const;
 
     /**
      * Short for \sa bodyParameters()
      */
-    inline QMultiHash<QString, QString> bodyParam() const { return bodyParameters(); }
+    inline CQueryMultiMap bodyParam() const { return bodyParameters(); }
 
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
      */
-    QMultiHash<QString, QString> queryParameters() const;
+    CQueryMultiMap queryParameters() const;
 
     /**
      * Short for \sa queryParameters()
      */
-    inline QMultiHash<QString, QString> queryParam() const { return queryParameters(); }
+    inline CQueryMultiMap queryParam() const { return queryParameters(); }
 
     /**
      * Returns a QMultiHash containing both the query parameters (GET)
      * and the body parameters (POST)
      */
-    QMultiHash<QString, QString> parameters() const;
+    CQueryMultiMap parameters() const;
 
     /**
      * Short for \sa parameters()
      */
-    inline QMultiHash<QString, QString> param() const { return parameters(); }
+    inline CQueryMultiMap param() const { return parameters(); }
 
     /**
      * @brief contentEncoding

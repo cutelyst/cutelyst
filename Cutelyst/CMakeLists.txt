@@ -5,6 +5,7 @@ include_directories(
 )
 
 set(cutelystqt_SRC
+    cquerymultimap.cpp
     upload.cpp
     upload_p.h
     multipartformdataparser.cpp
@@ -49,6 +50,8 @@ set(cutelystqt_SRC
 )
 
 set(cutelystqt_HEADERS
+    cquerymultimap.h
+    CQueryMultiMap
     action.h
     Action
     application.h
