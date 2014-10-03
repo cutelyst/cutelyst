@@ -26,6 +26,8 @@
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
 
+#define STR(X) #X
+#define C_PATH(X, Y) Q_CLASSINFO(STR(X ## _Path), STR(Y))
 #define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
 
 namespace  Cutelyst {
