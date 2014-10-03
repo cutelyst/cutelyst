@@ -289,12 +289,15 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
         const QList<QByteArray> &parts = parameter.split('=');
         if (parts.size() == 2) {
             QByteArray value = parts.at(1);
-            ret.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                            QUrl::fromPercentEncoding(value.replace('+', ' ')));
-        } else {
-            ret.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-                            QString());
+            if (value.length()) {
+                ret.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
+                                QUrl::fromPercentEncoding(value.replace('+', ' ')));
+                continue;
+            }
         }
+        ret.insertMulti(QUrl::fromPercentEncoding(parts.first()),
+                        QString());
+
     }
     return ret;
 }
