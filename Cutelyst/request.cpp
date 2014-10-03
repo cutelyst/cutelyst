@@ -280,7 +280,7 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
     QList<QByteArray> items = line.split('&');
-    for (int i = items.size() - 1; i != 0; --i) {
+    for (int i = items.size() - 1; i >= 0; --i) {
         const QByteArray &parameter = items.at(i);
         if (parameter.isEmpty()) {
             continue;
