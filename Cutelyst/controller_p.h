@@ -37,7 +37,7 @@ public:
     ActionList actionSteps;
     Dispatcher *dispatcher;
     bool parsedActions = false;
-    ActionList actions;
+    QHash<QByteArray, Action *> actions;
 };
 
 }

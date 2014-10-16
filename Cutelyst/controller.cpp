@@ -48,13 +48,20 @@ QByteArray Controller::ns() const
 const Action *Controller::actionFor(const QByteArray &name) const
 {
     Q_D(const Controller);
+    // TODO default value could be const Action *
+    // but we have this inconsistency between const
+    // and non const Actions
+    Action *ret = d->actions.value(name);
+    if (ret) {
+        return ret;
+    }
     return d->dispatcher->getAction(name, d->ns);
 }
 
 ActionList Controller::actions() const
 {
     Q_D(const Controller);
-    return d->actions;
+    return d->actions.values();
 }
 
 bool Controller::operator==(const char *className)
@@ -125,7 +132,7 @@ void Controller::init()
             Action *action = d->actionForMethod(method);
             action->setupAction(method, this);
 
-            d->actions.append(action);
+            d->actions.insertMulti(action->privateName(), action);
         }
     }
 }
