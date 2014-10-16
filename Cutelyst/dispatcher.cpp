@@ -222,8 +222,8 @@ const Action *Dispatcher::getActionByPath(const QByteArray &path) const
     Q_D(const Dispatcher);
 
     QByteArray _path = path;
-    if (!_path.startsWith('/')) {
-        _path.prepend('/');
+    if (_path.startsWith('/')) {
+        _path.remove(0, 1);
     }
     return d->actionHash.value(_path);
 }
