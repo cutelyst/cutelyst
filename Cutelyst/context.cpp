@@ -176,14 +176,16 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
 
 QUrl Context::uriFor(const Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
+    Q_UNUSED(args)
     Q_D(const Context);
 
     QByteArray path;
     if (action) {
-        path = d->dispatcher->uriForAction(action, args);
+        // TODO check action for captures
+        path = d->dispatcher->uriForAction(action, QStringList());
     } else {
         // use the current action if none is provided
-        path = d->dispatcher->uriForAction(d->action, args);
+        path = d->dispatcher->uriForAction(d->action, QStringList());
     }
 
     return uriFor(path, args, queryValues);
