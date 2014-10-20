@@ -90,7 +90,7 @@ protected:
     mutable bool paramParsed = false;
     mutable ParamsMultiMap param;
 
-    mutable Uploads uploads;
+    mutable QMap<QByteArray, Upload *> uploads;
 };
 
 }

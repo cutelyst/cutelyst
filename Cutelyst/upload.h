@@ -37,17 +37,22 @@ public:
     virtual ~Upload();
 
     /**
-     * Returns the file name informed by the user agent (client)
+     * Returns the name of the form field
+     */
+    QByteArray name() const;
+
+    /**
+     * Returns the file name provided by the user agent
      */
     QString filename() const;
 
     /**
-     * Returns the content type informed by the user agent (client)
+     * Returns the content type provided by the user agent
      */
     QByteArray contentType() const;
 
     /**
-     * Returns the headers informed by the user agent (client)
+     * Returns the headers provided by the user agent
      */
     Headers headers() const;
 

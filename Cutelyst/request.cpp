@@ -215,7 +215,7 @@ QByteArray Request::remoteUser() const
     return d->remoteUser;
 }
 
-Uploads Request::uploads() const
+QMap<QByteArray, Cutelyst::Upload *> Request::uploads() const
 {
     Q_D(const Request);
     if (!d->bodyParsed) {
@@ -263,7 +263,11 @@ void RequestPrivate::parseBody() const
         body->seek(posOrig);
     } else if (contentType.startsWith("multipart/form-data")) {
         MultiPartFormDataParser parser(contentType, body);
-        uploads = parser.parse();
+        Uploads uploadList = parser.parse();
+        for (int i = uploadList.size() - 1; i >= 0; --i) {
+            Upload *upload = uploadList.at(i);
+            uploads.insertMulti(upload->name(), upload);
+        }
     }
 
     // Asign it here so that we clean it in case no if matched
@@ -314,4 +318,5 @@ void RequestPrivate::reset()
     bodyParsed = false;
     paramParsed = false;
     qDeleteAll(uploads);
+    uploads.clear();
 }

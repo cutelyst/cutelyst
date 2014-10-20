@@ -202,7 +202,13 @@ public:
      */
     QByteArray remoteUser() const;
 
-    Uploads uploads() const;
+    QMap<QByteArray, Upload *> uploads() const;
+
+    inline Uploads uploads(const QByteArray &name) const
+    { return uploads().values(name); }
+
+    inline Upload *upload(const QByteArray &name) const
+    { return uploads().value(name); }
 
     Engine *engine() const;
 

@@ -116,11 +116,43 @@ bool Upload::save(const QString &newName)
 QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
 {
 #ifndef QT_NO_TEMPORARYFILE
-    QTemporaryFile *ret = new QTemporaryFile(templateName, this);
+    Q_D(Upload);
+    QTemporaryFile *ret;
+    if (templateName.isNull()) {
+        ret = new QTemporaryFile(this);
+    } else {
+        ret = new QTemporaryFile(templateName, this);
+    }
+
     if (ret->open()) {
-        if (save(ret->fileName())) {
-            return ret;
+        bool error = false;
+        qint64 posOrig = d->pos;
+        seek(0);
+
+        char block[4096];
+        qint64 totalRead = 0;
+        while (!atEnd()) {
+            qint64 in = read(block, sizeof(block));
+            if (in <= 0)
+                break;
+            totalRead += in;
+            if (in != ret->write(block, in)) {
+                setErrorString(QStringLiteral("Failure to write block"));
+                qCWarning(CUTELYST_UPLOAD) << errorString();
+                error = true;
+                break;
+            }
         }
+
+        if (error) {
+            ret->remove();
+        }
+        ret->seek(0);
+        seek(posOrig);
+
+        return ret;
+    } else {
+        qCWarning(CUTELYST_UPLOAD) << "Failed to open temporary file.";
     }
     delete ret;
 #else
@@ -146,6 +178,7 @@ bool Upload::seek(qint64 pos)
 {
     Q_D(Upload);
     if (pos <= size()) {
+        QIODevice::seek(pos);
         d->pos = pos;
         return true;
     }
@@ -155,12 +188,37 @@ bool Upload::seek(qint64 pos)
 Upload::Upload(UploadPrivate *prv) :
     d_ptr(prv)
 {
+    Q_D(Upload);
     open(prv->device->openMode());
+    QByteArray disposition = prv->headers.value(QByteArrayLiteral("Content-Disposition"));
+    int start = disposition.indexOf("name=\"");
+    if (start != -1) {
+        start += 6;
+        int end = disposition.indexOf("\"", start);
+        if (end != -1) {
+            d->name = disposition.mid(start, end - start);
+        }
+    }
+
+    start = disposition.indexOf("filename=\"");
+    if (start != -1) {
+        start += 10;
+        int end = disposition.indexOf("\"", start);
+        if (end != -1) {
+            d->filename = disposition.mid(start, end - start);
+        }
+    }
 }
 
 Upload::~Upload()
 {
     delete d_ptr;
+}
+
+QByteArray Upload::name() const
+{
+    Q_D(const Upload);
+    return d->name;
 }
 
 qint64 Upload::readData(char *data, qint64 maxlen)

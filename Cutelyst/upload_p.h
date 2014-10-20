@@ -13,6 +13,7 @@ public:
     UploadPrivate(QIODevice *dev);
 
     Headers headers;
+    QByteArray name;
     QString filename;
     QIODevice *device;
     qint64 startOffset = 0;
