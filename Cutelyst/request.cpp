@@ -218,6 +218,9 @@ QByteArray Request::remoteUser() const
 Uploads Request::uploads() const
 {
     Q_D(const Request);
+    if (!d->bodyParsed) {
+        d->parseBody();
+    }
     return d->uploads;
 }
 
