@@ -113,6 +113,23 @@ bool Upload::save(const QString &newName)
     return !error;
 }
 
+QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
+{
+#ifndef QT_NO_TEMPORARYFILE
+    QTemporaryFile *ret = new QTemporaryFile(templateName, this);
+    if (ret->open()) {
+        if (save(ret->fileName())) {
+            return ret;
+        }
+    }
+    delete ret;
+#else
+    Q_UNUSED(templateName)
+#endif
+
+    return 0;
+}
+
 qint64 Upload::pos() const
 {
     Q_D(const Upload);

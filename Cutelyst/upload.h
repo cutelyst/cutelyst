@@ -21,6 +21,8 @@
 #define UPLOAD_H
 
 #include <QIODevice>
+#include <QTemporaryFile>
+
 #include <Cutelyst/Headers>
 
 namespace Cutelyst {
@@ -34,11 +36,32 @@ public:
     Upload(UploadPrivate *prv);
     virtual ~Upload();
 
+    /**
+     * Returns the file name informed by the user agent (client)
+     */
     QString filename() const;
+
+    /**
+     * Returns the content type informed by the user agent (client)
+     */
     QByteArray contentType() const;
+
+    /**
+     * Returns the headers informed by the user agent (client)
+     */
     Headers headers() const;
 
+    /**
+     * Saves this upload to the following location.
+     */
     bool save(const QString &filename);
+
+    /**
+     * This function creates a temporary file and fill it with
+     * the content of this upload.
+     * Returns zero if an error occours.
+     */
+    QTemporaryFile *createTemporaryFile(const QString &templateName = QString());
 
     virtual qint64 pos() const;
     virtual qint64 size() const;
