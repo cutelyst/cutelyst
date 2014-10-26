@@ -21,8 +21,10 @@
 
 #include "dispatcher.h"
 #include "action.h"
+#include "common.h"
 
 #include <QMetaClassInfo>
+#include <QRegularExpression>
 #include <QStringBuilder>
 #include <QDebug>
 
@@ -119,22 +121,7 @@ void Controller::init()
     }
     d->ns = controlerNS;
 
-    // Setup actions
-    for (int i = 0; i < meta->methodCount(); ++i) {
-        const QMetaMethod &method = meta->method(i);
-        // We register actions that are either a Q_SLOT
-        // or a Q_INVOKABLE function which has the first
-        // parameter type equal to Context*
-        if (method.isValid() &&
-                (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
-                (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
-
-            Action *action = d->actionForMethod(method);
-            action->setupAction(method, this);
-
-            d->actions.insertMulti(action->privateName(), action);
-        }
-    }
+    d->registerActionMethods(meta, this);
 }
 
 void Controller::setupActions(Dispatcher *dispatcher)
@@ -229,28 +216,173 @@ bool Controller::_END(Context *ctx)
 }
 
 
-Action *ControllerPrivate::actionForMethod(const QMetaMethod &method)
+Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    Action *ret = 0;
+    QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    QString actionClass = attributes.value("ActionClass");
 
-    for (int i = 1; i < method.parameterCount(); ++i) {
-        int id = method.parameterType(i);
-        if (id >= QMetaType::User) {
+    if (!actionClass.isEmpty()) {
+        actionClass.remove(QRegularExpression("\\W"));
+        if (!actionClass.endsWith(QChar('*'))) {
+            actionClass.append("*");
+        }
+
+        int id = QMetaType::type(actionClass.toLocal8Bit().data());
+        if (!id) {
+            QString actionClassCutelyst = QLatin1String("Cutelyst::") % actionClass;
+            id = QMetaType::type(actionClassCutelyst.toLocal8Bit().data());
+        }
+
+        if (id) {
             const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
             if (metaObj) {
                 QObject *object = metaObj->newInstance();
                 if (object && superIsAction(metaObj->superClass())) {
-                    ret = qobject_cast<Action*>(object);
-                    break;
+                    return qobject_cast<Action*>(object);
                 } else {
+                    qCWarning(CUTELYST_CORE) << "ActionClass"
+                                             << actionClass
+                                             << "is not an ActionClass";
                     delete object;
                 }
             }
         }
+
+        if (!id) {
+            qCWarning(CUTELYST_CORE) << "ActionClass"
+                                     << actionClass
+                                     << "is not registerd, you can register it with qRegisterMetaType<"
+                                     << actionClass.toLocal8Bit().data()
+                                     << "*>();";
+        }
     }
 
-    if (!ret) {
-        ret = new Action;
+    return new Action;
+}
+
+Action *ControllerPrivate::createAction(const QVariantHash &args)
+{
+    Action *action = actionClass(args);
+
+    QByteArray name = args.value("name").toByteArray();
+    QRegularExpression regex("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$");
+    QRegularExpressionMatch match = regex.match(name);
+    if (!match.hasMatch()) {
+        QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+        QList<QByteArray> roles = attributes.values("Does");
+        if (!roles.isEmpty()) {
+
+        }
+    }
+
+    return action;
+}
+
+void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controller *controller)
+{
+    // Setup actions
+    for (int i = 0; i < meta->methodCount(); ++i) {
+        const QMetaMethod &method = meta->method(i);
+        const QByteArray &methodName = method.name();
+
+        // We register actions that are either a Q_SLOT
+        // or a Q_INVOKABLE function which has the first
+        // parameter type equal to Context*
+        if (method.isValid() &&
+                (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
+                (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
+
+            // Build up the list of attributes for the class info
+            QByteArray attributeArray;
+            for (int i = 0; i < meta->classInfoCount(); ++i) {
+                QMetaClassInfo classInfo = meta->classInfo(i);
+                if (methodName == classInfo.name()) {
+                    attributeArray.append(classInfo.value());
+                }
+            }
+            QMap<QByteArray, QByteArray> attrs = parseAttributes(attributeArray);
+
+            QByteArray reverse = !controller->ns().isEmpty() ? controller->ns() + '/' + methodName : methodName;
+
+            Action *action = createAction({
+                                              {"name"      , QVariant::fromValue(methodName)},
+                                              {"reverse"   , QVariant::fromValue(reverse)},
+                                              {"ns"        , QVariant::fromValue(controller->ns())},
+                                              {"attributes", QVariant::fromValue(attrs)}
+                                          });
+            action->setupAction(method, controller);
+
+            actions.insertMulti(action->privateName(), action);
+        }
+    }
+}
+
+QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QByteArray &str)
+{
+    QList<QPair<QByteArray, QByteArray> > attributes;
+    // This is probably not the best parser ever
+    // but it handles cases like:
+    // :Args:Local('fo"')o'):ActionClass('foo')
+    // into
+    // (QPair("Args",""), QPair("Local","'fo"')o'"), QPair("ActionClass","'foo'"))
+
+    QByteArray key;
+    QByteArray value;
+    int size = str.size();
+    int pos = 0;
+    while (pos < size) {
+        // find the start of a key
+        if (str.at(pos) == ':') {
+            int keyStart = ++pos;
+            while (pos < size) {
+                if (str.at(pos) == '(') {
+                    // attribute has value
+                    key = str.mid(keyStart, pos - keyStart);
+                    int valueStart = ++pos;
+                    while (pos < size) {
+                        if (str.at(pos) == ')') {
+                            // found the possible end of the value
+                            int valueEnd = pos;
+                            if (++pos < size && str.at(pos) == ':') {
+                                // found the start of a key so this is
+                                // really the end of a value
+                                value = str.mid(valueStart, valueEnd - valueStart);
+                                break;
+                            } else if (pos >= size) {
+                                // found the end of the string
+                                // save the remainig as the value
+                                value = str.mid(valueStart, valueEnd - valueStart);
+                                break;
+                            }
+                            // string was not '):' or ')$'
+                            continue;
+                        }
+                        ++pos;
+                    }
+
+                    break;
+                } else if (str.at(pos) == ':') {
+                    // Attribute has no value
+                    key = str.mid(keyStart, pos - keyStart);
+                    value = QByteArray();
+                    break;
+                }
+                ++pos;
+            }
+
+            // store the key/value pair found
+            attributes.append(qMakePair(key, value));
+            continue;
+        }
+        ++pos;
+    }
+
+    QMap<QByteArray, QByteArray> ret;
+    // Add the attributes to the hash in the reverse order so
+    // that values() return them in the right order
+    for (int i = attributes.size() - 1; i >= 0; --i) {
+        const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
+        ret.insertMulti(pair.first, pair.second);
     }
 
     return ret;

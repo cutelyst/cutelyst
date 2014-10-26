@@ -27,7 +27,10 @@ namespace Cutelyst {
 class ControllerPrivate
 {
 public:
-    Action* actionForMethod(const QMetaMethod &method);
+    Action* actionClass(const QVariantHash &args);
+    Action* createAction(const QVariantHash &args);
+    void registerActionMethods(const QMetaObject *meta, Controller *controller);
+    QMap<QByteArray, QByteArray> parseAttributes(const QByteArray &str);
     bool superIsAction(const QMetaObject *super);
 
     QByteArray ns;

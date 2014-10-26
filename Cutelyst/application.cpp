@@ -26,6 +26,8 @@
 #include "response.h"
 #include "dispatchtype.h"
 
+#include "Actions/actionrest.h"
+
 #include <iostream>
 
 #include <QStringList>
@@ -49,6 +51,8 @@ Application::Application(QObject *parent) :
     d_ptr(new ApplicationPrivate)
 {
     Q_D(Application);
+
+    qRegisterMetaType<ActionREST *>();
 
     d->dispatcher = new Dispatcher(this);
 }
