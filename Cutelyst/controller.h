@@ -29,6 +29,7 @@
 #define STR(X) #X
 #define C_PATH(X, Y) Q_CLASSINFO(STR(X ## _Path), STR(Y))
 #define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
+#define C_ATTR(X, Y) Q_CLASSINFO(STR(X), STR(Y)) Q_INVOKABLE
 
 namespace  Cutelyst {
 

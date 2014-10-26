@@ -141,8 +141,8 @@ bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QString
 bool DispatchTypePath::registerAction(Action *action)
 {
     bool ret = false;
-    QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
-    QMultiHash<QByteArray, QByteArray>::iterator i = attributes.find("Path");
+    QMap<QByteArray, QByteArray> attributes = action->attributes();
+    QMap<QByteArray, QByteArray>::iterator i = attributes.find("Path");
     while (i != attributes.end() && i.key() == "Path") {
         if (registerPath(i.value(), action)) {
             ret = true;
@@ -158,8 +158,8 @@ bool DispatchTypePath::registerAction(Action *action)
 QByteArray DispatchTypePath::uriForAction(const Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
-        QMultiHash<QByteArray, QByteArray> attributes = action->attributes();
-        QMultiHash<QByteArray, QByteArray>::ConstIterator i = attributes.constFind(QByteArrayLiteral("Path"));
+        QMap<QByteArray, QByteArray> attributes = action->attributes();
+        QMap<QByteArray, QByteArray>::ConstIterator i = attributes.constFind(QByteArrayLiteral("Path"));
         while (i != attributes.constEnd() && i.key() == "Path") {
             QByteArray path = i.value();
             if (path.isEmpty()) {

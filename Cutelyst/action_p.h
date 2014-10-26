@@ -27,12 +27,15 @@ namespace Cutelyst {
 class ActionPrivate
 {
 public:
+    QList<QPair<QByteArray, QByteArray> > parseAttributes(const QByteArray &str);
+
     bool valid = true;
     QByteArray name;
     QByteArray ns;
     QByteArray methodName;
     QMetaMethod method;
-    QMultiHash<QByteArray, QByteArray> attributes;
+    QMap<QByteArray, QByteArray> attributes;
+    QList<QPair<QByteArray, QByteArray> > attributesList;
     Controller *controller;
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;

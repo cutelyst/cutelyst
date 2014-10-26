@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 #include "action_p.h"
 #include "controller.h"
 #include "context.h"
+#include "common.h"
 
 #include <QMetaClassInfo>
 #include <QStringBuilder>
@@ -38,6 +39,12 @@ Action::~Action()
     delete d_ptr;
 }
 
+QList<QPair<QByteArray, QByteArray> > Action::attributeList() const
+{
+    Q_D(const Action);
+    return d->attributesList;
+}
+
 void Action::setupAction(const QMetaMethod &method, Controller *controller)
 {
     Q_D(Action);
@@ -49,6 +56,8 @@ void Action::setupAction(const QMetaMethod &method, Controller *controller)
     d->controller = controller;
 
     QString actionNamespace;
+    QList<QPair<QByteArray, QByteArray> > attributes;
+
     // Parse the Method attributes declared with Q_CLASSINFO
     // They start with the method_name then
     // optionally followed by the number of arguments it takes
@@ -56,8 +65,8 @@ void Action::setupAction(const QMetaMethod &method, Controller *controller)
     QRegularExpression regex(d->methodName % QLatin1String("_(\\w+)"));
     for (int i = 0; i < controller->metaObject()->classInfoCount(); ++i) {
         QMetaClassInfo classInfo = controller->metaObject()->classInfo(i);
-        QString name = classInfo.name();
-        if (name == QLatin1String("Namespace")) {
+        QByteArray name = classInfo.name();
+        if (name == "Namespace") {
             actionNamespace = classInfo.value();
             continue;
         }
@@ -75,13 +84,9 @@ void Action::setupAction(const QMetaMethod &method, Controller *controller)
                     value = controller->ns() % QLatin1String("/") % value;
                 }
             }
-            d->attributes.insertMulti(type.toLocal8Bit(),
-                                      value.toLocal8Bit());
-        }
-    }
+            attributes.append(qMakePair(type.toLocal8Bit(), value.toLocal8Bit()));
 
-    if (method.access() == QMetaMethod::Private) {
-        d->attributes.insertMulti("Private", QByteArray());
+        }
     }
 
     // if the method has the CaptureArgs as an argument
@@ -103,20 +108,54 @@ void Action::setupAction(const QMetaMethod &method, Controller *controller)
                 if (!d->name.startsWith('/')) {
                     name.prepend('/');
                 }
-                d->attributes.insertMulti("Path", name);
+                attributes.append(qMakePair(QByteArrayLiteral("Path"),
+                                            name));
             } else if (type == "Local") {
-                d->attributes.insertMulti("Path", name);
+                attributes.append(qMakePair(QByteArrayLiteral("Path"),
+                                            name));
             } else if (type == "Path") {
-                d->attributes.insertMulti("Path", controller->ns());
+                attributes.append(qMakePair(QByteArrayLiteral("Path"),
+                                            controller->ns()));
             } else if (type == "Args" && !d->attributes.contains("Args")) {
                 d->numberOfArgs = parameterCount;
-                d->attributes.insertMulti("Args", QByteArray::number(d->numberOfArgs));
+                attributes.append(qMakePair(QByteArrayLiteral("Args"),
+                                            QByteArray::number(d->numberOfArgs)));
             } else if (type == "CaptureArgs" && !d->attributes.contains("CaptureArgs")) {
                 d->numberOfCaptures = parameterCount;
-                d->attributes.insertMulti("CaptureArgs", QByteArray::number(d->numberOfCaptures));
+                attributes.append(qMakePair(QByteArrayLiteral("CaptureArgs"),
+                                            QByteArray::number(d->numberOfCaptures)));
             }
         }
     }
+
+    // Print out deprecated declarations
+    for (int i = 0; i < attributes.size(); ++i) {
+        const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
+        qCWarning(CUTELYST_CORE) << "Action attributes declaration DEPRECATED"
+                                 << controller->objectName()
+                                 << pair.first << pair.second;
+    }
+
+    // If the method is private add a Private attribute
+    if (method.access() == QMetaMethod::Private) {
+        attributes.append(qMakePair(QByteArrayLiteral("Private"), QByteArray()));
+    }
+
+    // Build up the list of attributes for the class info
+    for (int i = 0; i < controller->metaObject()->classInfoCount(); ++i) {
+        QMetaClassInfo classInfo = controller->metaObject()->classInfo(i);
+        if (d->methodName == classInfo.name()) {
+            attributes.append(d->parseAttributes(classInfo.value()));
+        }
+    }
+
+    // Add the attributes to the hash in the reverse order so
+    // that values() return them in the right order
+    for (int i = attributes.size() - 1; i >= 0; --i) {
+        const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
+        d->attributes.insertMulti(pair.first, pair.second);
+    }
+    d->attributesList = attributes;
 }
 
 void Action::dispatcherReady(const Dispatcher *dispatch)
@@ -125,7 +164,7 @@ void Action::dispatcherReady(const Dispatcher *dispatch)
     // Default implementations does nothing
 }
 
-QMultiHash<QByteArray, QByteArray> Action::attributes() const
+QMap<QByteArray, QByteArray> Action::attributes() const
 {
     Q_D(const Action);
     return d->attributes;
@@ -254,4 +293,69 @@ bool Action::isValid() const
 {
     Q_D(const Action);
     return d->valid;
+}
+
+
+QList<QPair<QByteArray, QByteArray> > ActionPrivate::parseAttributes(const QByteArray &str)
+{
+    QList<QPair<QByteArray, QByteArray> > ret;
+
+    // This is probably not the best parser ever
+    // but it handles cases like:
+    // :Args:Local('fo"')o'):ActionClass('foo')
+    // into
+    // (QPair("Args",""), QPair("Local","'fo"')o'"), QPair("ActionClass","'foo'"))
+
+    QByteArray key;
+    QByteArray value;
+    int size = str.size();
+    int pos = 0;
+    while (pos < size) {
+        // find the start of a key
+        if (str.at(pos) == ':') {
+            int keyStart = ++pos;
+            while (pos < size) {
+                if (str.at(pos) == '(') {
+                    // attribute has value
+                    key = str.mid(keyStart, pos - keyStart);
+                    int valueStart = ++pos;
+                    while (pos < size) {
+                        if (str.at(pos) == ')') {
+                            // found the possible end of the value
+                            int valueEnd = pos;
+                            if (++pos < size && str.at(pos) == ':') {
+                                // found the start of a key so this is
+                                // really the end of a value
+                                value = str.mid(valueStart, valueEnd - valueStart);
+                                break;
+                            } else if (pos >= size) {
+                                // found the end of the string
+                                // save the remainig as the value
+                                value = str.mid(valueStart, valueEnd - valueStart);
+                                break;
+                            }
+                            // string was not '):' or ')$'
+                            continue;
+                        }
+                        ++pos;
+                    }
+
+                    break;
+                } else if (str.at(pos) == ':') {
+                    // Attribute has no value
+                    key = str.mid(keyStart, pos - keyStart);
+                    value = QByteArray();
+                    break;
+                }
+                ++pos;
+            }
+
+            // store the key/value pair found
+            ret.append(qMakePair(key, value));
+            continue;
+        }
+        ++pos;
+    }
+
+    return ret;
 }

@@ -37,11 +37,19 @@ public:
     virtual ~Action();
 
     /**
-     * @return The sub attributes that are set for this action,
+     * Returns the list of attributes that are set for this action,
+     * like Local, Path, Private and so on, in the same order they
+     * appeared in the declaration. This determines
+     * how the action is dispatched to.
+     */
+    QList<QPair<QByteArray, QByteArray> > attributeList() const;
+
+    /**
+     * Returns the attributes that are set for this action,
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    QMultiHash<QByteArray, QByteArray> attributes() const;
+    QMap<QByteArray, QByteArray> attributes() const;
 
     /**
      * @return Returns the name of the component where this action is defined
