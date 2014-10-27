@@ -211,9 +211,10 @@ bool Context::detached() const
     return d->detached;
 }
 
-void Context::detach()
+void Context::detach(Action *action)
 {
     Q_D(Context);
+    d->dispatcher->forward(this, action);
     d->detached = true;
 }
 

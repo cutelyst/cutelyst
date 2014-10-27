@@ -21,6 +21,8 @@ set(cutelystqt_SRC
     action_p.h
     Actions/actionrest.cpp
     Actions/actionrest_p.h
+    Actions/roleacl.cpp
+    Actions/roleacl_p.h
     engine.cpp
     engine_p.h
     enginehttp.cpp
@@ -80,6 +82,7 @@ set(cutelystqt_HEADERS
 
 set(cutelystqt_actions_HEADERS
     Actions/actionrest.h
+    Actions/roleacl.h
 )
 
 set(cutelystqt_plugin_HEADERS

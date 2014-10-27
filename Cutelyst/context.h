@@ -199,7 +199,12 @@ public:
 
     bool detached() const;
 
-    void detach();
+    /**
+     * The same as forward(action), but doesn't return to the previous
+     * action when processing is finished.
+     * When called with no arguments it escapes the processing chain entirely.
+     */
+    void detach(Action *action = 0);
 
     bool forward(Action *action, const QStringList &arguments = QStringList());
     bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
