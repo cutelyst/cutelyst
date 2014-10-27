@@ -302,18 +302,18 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             }
             QMap<QByteArray, QByteArray> attrs = parseAttributes(method, attributeArray, name);
 
-            QByteArray reverse = !controller->ns().isEmpty() ? controller->ns() + '/' + name : name;
+            QByteArray reverse = controller->ns() + '/' + name;
 
             Action *action = createAction({
                                               {"name"      , QVariant::fromValue(name)},
                                               {"reverse"   , QVariant::fromValue(reverse)},
-                                              {"ns"        , QVariant::fromValue(controller->ns())},
+                                              {"namespace" , QVariant::fromValue(controller->ns())},
                                               {"attributes", QVariant::fromValue(attrs)}
                                           });
             action->setupAction(method, {
                                     {"name"      , QVariant::fromValue(name)},
                                     {"reverse"   , QVariant::fromValue(reverse)},
-                                    {"ns"        , QVariant::fromValue(controller->ns())},
+                                    {"namespace" , QVariant::fromValue(controller->ns())},
                                     {"attributes", QVariant::fromValue(attrs)}
                                 },
                                 controller);

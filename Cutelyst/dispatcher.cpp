@@ -119,12 +119,13 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 
 bool Dispatcher::dispatch(Context *ctx)
 {
-    if (ctx->action()) {
-        QByteArray action = ctx->ns();
-        action.reserve(action.size() + 12);
-        action.prepend('/');
-        action.append("/_DISPATCH", 10);
-        return forward(ctx, action);
+    Action *action = ctx->action();
+    if (action) {
+        QByteArray command = action->ns();
+        command.prepend('/');
+        command.reserve(command.size() + 12);
+        command.append("/_DISPATCH", 10);
+        return forward(ctx, command);
     } else {
         const QString &path = ctx->req()->path();
         if (path.isEmpty()) {
@@ -347,7 +348,7 @@ QByteArray Dispatcher::printActions()
 const Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
-//    qDebug() << Q_FUNC_INFO << "Command" << command;
+//    qDebug() << Q_FUNC_INFO << "Command" << command << d->actionHash.keys();
 
     const Action *ret = d->actionHash.value(command);
     if (!ret) {
