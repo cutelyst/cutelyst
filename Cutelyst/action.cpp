@@ -46,7 +46,6 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
     d->name = args.value("name").toByteArray();
     d->ns = args.value("namespace").toByteArray();
     d->reverse = args.value("reverse").toByteArray();
-    qDebug() << "reverse" << d->reverse << "ns" << d->ns;
     d->method = method;
     d->controller = controller;
 
