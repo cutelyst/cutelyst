@@ -22,11 +22,6 @@
 #include "context.h"
 #include "common.h"
 
-#include <QMetaClassInfo>
-#include <QStringBuilder>
-#include <QRegularExpression>
-#include <QDebug>
-
 using namespace Cutelyst;
 
 Action::Action() :
@@ -85,10 +80,14 @@ Controller *Action::controller() const
     return d->controller;
 }
 
-bool Action::dispatch(Context *ctx) const
+bool Action::dispatch(Context *ctx)
+{
+    return ctx->execute(this);
+}
+
+bool Action::execute(Context *ctx) const
 {
     Q_D(const Action);
-
     if (ctx->detached()) {
         return false;
     }

@@ -36,7 +36,7 @@ public:
 protected:
     ActionRESTPrivate *d_ptr;
 
-    bool dispatch(Context *ctx) const;
+    bool dispatch(Context *ctx);
     void dispatcherReady(const Dispatcher *dispatch);
 };
 

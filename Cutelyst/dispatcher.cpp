@@ -137,7 +137,7 @@ bool Dispatcher::dispatch(Context *ctx)
     return false;
 }
 
-bool Dispatcher::forward(Context *ctx, const Action *action, const QStringList &arguments)
+bool Dispatcher::forward(Context *ctx, Action *action, const QStringList &arguments)
 {
     Q_ASSERT(action);
     return action->dispatch(ctx);
@@ -145,7 +145,7 @@ bool Dispatcher::forward(Context *ctx, const Action *action, const QStringList &
 
 bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringList &arguments)
 {
-    const Action *action = command2Action(ctx, opname);
+    Action *action = command2Action(ctx, opname);
     if (action) {
         return action->dispatch(ctx);
     }
@@ -202,7 +202,7 @@ void Dispatcher::prepareAction(Context *ctx)
     } while (pos != -2);
 }
 
-const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpace) const
+Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -218,7 +218,7 @@ const Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &na
     return d->actionHash.value(action);
 }
 
-const Action *Dispatcher::getActionByPath(const QByteArray &path) const
+Action *Dispatcher::getActionByPath(const QByteArray &path) const
 {
     Q_D(const Dispatcher);
 
@@ -256,7 +256,7 @@ QHash<QByteArray, Controller *> Dispatcher::controllers() const
     return d->constrollerHash;
 }
 
-QByteArray Dispatcher::uriForAction(const Action *action, const QStringList &captures) const
+QByteArray Dispatcher::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -345,12 +345,12 @@ QByteArray Dispatcher::printActions()
     return buffer;
 }
 
-const Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
+Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command << d->actionHash.keys();
 
-    const Action *ret = d->actionHash.value(command);
+    Action *ret = d->actionHash.value(command);
     if (!ret) {
         ret = invokeAsPath(ctx, command, ctx->args());
     }
@@ -362,10 +362,8 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
 {
     QByteArray ret = path;
     if (!ret.startsWith('/')) {
-        // TODO at Catalyst it uses
-        // c->stack->last()->namespace
         ret.prepend('/');
-        ret.prepend(ctx->action()->ns());
+        ret.prepend(ctx->stack().last()->ns());
     }
 
     if (ret.startsWith('/')) {
@@ -375,9 +373,9 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
     return ret;
 }
 
-const Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
+Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
 {
-    const Action *ret;
+    Action *ret;
     QByteArray path = actionRel2Abs(ctx, relativePath);
 
     int pos = path.lastIndexOf('/');

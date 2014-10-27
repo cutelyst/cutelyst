@@ -56,7 +56,12 @@ public:
     /**
      * Dispatch this action against a context
      */
-    virtual bool dispatch(Context *ctx) const;
+    virtual bool dispatch(Context *ctx);
+
+    /**
+     * Execute this action against
+     */
+    virtual bool execute(Context *ctx) const;
 
     /**
      * @brief Check Args attribute, and makes sure number of

@@ -48,19 +48,19 @@ protected:
      */
     bool dispatch(Context *ctx);
 
-    bool forward(Context *ctx, const Action *action, const QStringList &arguments = QStringList());
+    bool forward(Context *ctx, Action *action, const QStringList &arguments = QStringList());
     bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
 
     /**
      * Returns a named action from a given namespace.
      */
-    const Action* getAction(const QByteArray &name, const QByteArray &nameSpace = QByteArray()) const;
+    Action *getAction(const QByteArray &name, const QByteArray &nameSpace = QByteArray()) const;
 
     /**
      * Returns the named action by its full private path.
      */
-    const Action* getActionByPath(const QByteArray &path) const;
+    Action* getActionByPath(const QByteArray &path) const;
 
     /**
      * Returns a list of actions that match \pa name on
@@ -83,15 +83,15 @@ protected:
      * If the action object is not available for external dispatch or the dispatcher
      * cannot determine an appropriate URI, this method will return a null byte array.
      */
-    QByteArray uriForAction(const Action *action, const QStringList &captures) const;
+    QByteArray uriForAction(Action *action, const QStringList &captures) const;
 
     void registerDispatchType(DispatchType *dispatchType);
 
 private:
     QByteArray printActions();
-    const Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
+    Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
     QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);
-    const Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
+    Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
     inline QByteArray cleanNamespace(const QByteArray &ns) const;
 
 protected:

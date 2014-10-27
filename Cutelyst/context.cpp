@@ -149,6 +149,12 @@ QVariantHash &Context::stash()
     return d->stash;
 }
 
+QStack<Action *> Context::stack() const
+{
+    Q_D(const Context);
+    return d->stack;
+}
+
 QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
     Q_D(const Context);
@@ -174,7 +180,7 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
     return ret;
 }
 
-QUrl Context::uriFor(const Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriFor(Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
     Q_UNUSED(args)
     Q_D(const Context);
@@ -195,7 +201,7 @@ QUrl Context::uriForAction(const QByteArray &path, const QStringList &args, cons
 {
     Q_D(const Context);
 
-    const Action *action = d->dispatcher->getActionByPath(path);
+    Action *action = d->dispatcher->getActionByPath(path);
     return uriFor(action, args, queryValues);
 }
 
@@ -211,7 +217,7 @@ void Context::detach()
     d->detached = true;
 }
 
-bool Context::forward(const Action *action, const QStringList &arguments)
+bool Context::forward(Action *action, const QStringList &arguments)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action, arguments);
@@ -223,7 +229,7 @@ bool Context::forward(const QByteArray &action, const QStringList &arguments)
     return d->dispatcher->forward(this, action, arguments);
 }
 
-const Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
+Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
 {
     Q_D(Context);
     return d->dispatcher->getAction(action, ns);
@@ -256,6 +262,19 @@ QList<Plugin::AbstractPlugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins.keys();
+}
+
+bool Context::execute(Action *action)
+{
+    Q_D(Context);
+
+    d->stack.push(action);
+
+    bool ret = action->execute(this);
+
+    d->stack.pop();
+
+    return ret;
 }
 
 QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const

@@ -25,6 +25,7 @@
 #include <QVariant>
 #include <QUrl>
 #include <QStringList>
+#include <QStack>
 
 #include <Cutelyst/Action>
 #include <Cutelyst/Request>
@@ -108,6 +109,11 @@ public:
     QVariantHash &stash();
 
     /**
+     * Returns the internal execution stack (actions that are currently executing).
+     */
+    QStack<Action *> stack() const;
+
+    /**
      * Constructs an absolute QUrl object based on the application root, the
      * provided path, and the additional arguments and query parameters provided.
      * When used as a string, provides a textual URI.
@@ -145,7 +151,7 @@ public:
      * To return the current action and also provide \p args, use
      * ctx->uriFor(ctx->action(), args).
      */
-    QUrl uriFor(const Action *action,
+    QUrl uriFor(Action *action,
                 const QStringList &args = QStringList(),
                 const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
 
@@ -154,7 +160,7 @@ public:
      * provided path, and the additional arguments and query parameters provided.
      * When used as a string, provides a textual URI.
      */
-    inline QUrl uriForNoArgs(const Action *action,
+    inline QUrl uriForNoArgs(Action *action,
                              const QMultiHash<QString, QString> &queryValues) const
     { return uriFor(action, QStringList(), queryValues); }
 
@@ -195,9 +201,9 @@ public:
 
     void detach();
 
-    bool forward(const Action *action, const QStringList &arguments = QStringList());
+    bool forward(Action *action, const QStringList &arguments = QStringList());
     bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
-    const Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
+    Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
     QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
 
     bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);
@@ -214,6 +220,11 @@ public:
         return 0;
     }
 
+    /**
+     * Execute an action. Errors are available via error().
+     */
+    bool execute(Action *action);
+
 Q_SIGNALS:
     void beforePrepareAction(bool *skipMethod);
     void beforeDispatch();
@@ -224,6 +235,7 @@ protected:
     void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);
 
     friend class Application;
+    friend class Action;
     friend class DispatchType;
     friend class Plugin::AbstractPlugin;
     ContextPrivate *d_ptr;

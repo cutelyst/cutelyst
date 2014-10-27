@@ -47,12 +47,9 @@ QByteArray Controller::ns() const
     return d->pathPrefix;
 }
 
-const Action *Controller::actionFor(const QByteArray &name) const
+Action *Controller::actionFor(const QByteArray &name) const
 {
     Q_D(const Controller);
-    // TODO default value could be const Action *
-    // but we have this inconsistency between const
-    // and non const Actions
     Action *ret = d->actions.value(name);
     if (ret) {
         return ret;

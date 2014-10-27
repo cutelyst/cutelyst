@@ -38,7 +38,7 @@ ActionREST::~ActionREST()
     delete d_ptr;
 }
 
-bool ActionREST::dispatch(Context *ctx) const
+bool ActionREST::dispatch(Context *ctx)
 {
     Q_D(const ActionREST);
 
@@ -62,7 +62,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpM
     const QByteArray &restMethod = q->name() + '_' + httpMethod;
 
     Controller *controller = ctx->controller();
-    const Action *action = controller->actionFor(restMethod);
+    Action *action = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
         ActionList actions = controller->actions();
@@ -75,7 +75,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpM
     }
 
     if (action) {
-        return action->dispatch(ctx);
+        return ctx->execute(action);
     }
 
     bool ret = false;

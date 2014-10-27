@@ -33,7 +33,7 @@ DispatchType::~DispatchType()
 {
 }
 
-QByteArray DispatchType::uriForAction(const Action *action, const QStringList &captures) const
+QByteArray DispatchType::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_UNUSED(action)
     Q_UNUSED(captures)

@@ -46,7 +46,7 @@ public:
      * Get a URI part for an action
      * Always returns NULL if captures is not empty since Path actions don't have captures
      */
-    virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const;
+    virtual QByteArray uriForAction(Action *action, const QStringList &captures) const;
 
 private:
     bool registerPath(const QByteArray &path, Action *action);

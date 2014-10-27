@@ -155,7 +155,7 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
-QByteArray DispatchTypePath::uriForAction(const Action *action, const QStringList &captures) const
+QByteArray DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
         QMap<QByteArray, QByteArray> attributes = action->attributes();

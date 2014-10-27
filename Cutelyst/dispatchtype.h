@@ -47,7 +47,7 @@ public:
     /**
      * Returns an uri for an action
      */
-    virtual QByteArray uriForAction(const Action *action, const QStringList &captures) const = 0;
+    virtual QByteArray uriForAction(Action *action, const QStringList &captures) const = 0;
 
     /**
      * @brief registerAction

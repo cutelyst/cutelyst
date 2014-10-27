@@ -113,7 +113,7 @@ public:
      * Returns the Cutelyst::Action object (if any) for a given method name in
      * this class namespace.
      */
-    const Action *actionFor(const QByteArray &name) const;
+    Action *actionFor(const QByteArray &name) const;
 
     ActionList actions() const;
 
