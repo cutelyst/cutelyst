@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,15 +27,12 @@ namespace Cutelyst {
 class ActionPrivate
 {
 public:
-    QList<QPair<QByteArray, QByteArray> > parseAttributes(const QByteArray &str);
-
     bool valid = true;
     QByteArray name;
     QByteArray ns;
-    QByteArray methodName;
+    QByteArray reverse;
     QMetaMethod method;
     QMap<QByteArray, QByteArray> attributes;
-    QList<QPair<QByteArray, QByteArray> > attributesList;
     Controller *controller;
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;

@@ -37,14 +37,6 @@ public:
     virtual ~Action();
 
     /**
-     * Returns the list of attributes that are set for this action,
-     * like Local, Path, Private and so on, in the same order they
-     * appeared in the declaration. This determines
-     * how the action is dispatched to.
-     */
-    QList<QPair<QByteArray, QByteArray> > attributeList() const;
-
-    /**
      * Returns the attributes that are set for this action,
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
@@ -94,7 +86,7 @@ public:
      * @brief name
      * @return Returns the private name of this action.
      */
-    QByteArray privateName() const;
+    QByteArray reverse() const;
 
     /**
      * Returns the private namespace this action lives in.
@@ -132,7 +124,7 @@ protected:
     /**
      * Called by dispatcher to setup the Action
      */
-    void setupAction(const QMetaMethod &method, Controller *controller);
+    void setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller);
 
     /**
      * Called by dispatcher once it's done preparing actions

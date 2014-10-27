@@ -30,10 +30,11 @@ public:
     Action* actionClass(const QVariantHash &args);
     Action* createAction(const QVariantHash &args);
     void registerActionMethods(const QMetaObject *meta, Controller *controller);
-    QMap<QByteArray, QByteArray> parseAttributes(const QByteArray &str);
+    QMap<QByteArray, QByteArray> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
+    QByteArray parsePathAttr(const QByteArray &_value);
     bool superIsAction(const QMetaObject *super);
 
-    QByteArray ns;
+    QByteArray pathPrefix;
     Action *begin = 0;
     ActionList autoList;
     Action *end = 0;

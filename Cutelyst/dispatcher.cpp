@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -57,7 +57,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         bool instanceUsed = false;
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
-            if (action->isValid() && !d->actionHash.contains(action->privateName())) {
+            if (action->isValid() && !d->actionHash.contains(action->reverse())) {
                 if (!action->attributes().contains("Private")) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -75,7 +75,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                d->actionHash.insert(action->privateName(), action);
+                d->actionHash.insert(action->reverse(), action);
                 d->containerHash[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
@@ -93,7 +93,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
                                              << action->controller()->objectName()
                                              << "controller was alread registered by the"
-                                             << d->actionHash.value(action->privateName())->controller()->objectName()
+                                             << d->actionHash.value(action->reverse())->controller()->objectName()
                                              << "controller.";
             }
         }

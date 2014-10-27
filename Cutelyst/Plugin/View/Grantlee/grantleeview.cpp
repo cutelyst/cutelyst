@@ -119,8 +119,8 @@ bool GrantleeView::render(Context *ctx)
     const QVariantHash &stash = ctx->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
-        if (ctx->action() && !ctx->action()->privateName().isEmpty()) {
-            templateFile = ctx->action()->privateName() % d->extension;
+        if (ctx->action() && !ctx->action()->reverse().isEmpty()) {
+            templateFile = ctx->action()->reverse() % d->extension;
         }
 
         if (templateFile.isEmpty()) {

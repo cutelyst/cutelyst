@@ -44,7 +44,7 @@ Controller::~Controller()
 QByteArray Controller::ns() const
 {
     Q_D(const Controller);
-    return d->ns;
+    return d->pathPrefix;
 }
 
 const Action *Controller::actionFor(const QByteArray &name) const
@@ -57,7 +57,7 @@ const Action *Controller::actionFor(const QByteArray &name) const
     if (ret) {
         return ret;
     }
-    return d->dispatcher->getAction(name, d->ns);
+    return d->dispatcher->getAction(name, d->pathPrefix);
 }
 
 ActionList Controller::actions() const
@@ -119,7 +119,7 @@ void Controller::init()
             }
         }
     }
-    d->ns = controlerNS;
+    d->pathPrefix = controlerNS;
 
     d->registerActionMethods(meta, this);
 }
@@ -131,17 +131,17 @@ void Controller::setupActions(Dispatcher *dispatcher)
     d->dispatcher = dispatcher;
 
     ActionList beginList;
-    beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->ns);
+    beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->pathPrefix);
     if (!beginList.isEmpty()) {
         d->begin = beginList.last();
         d->actionSteps.append(d->begin);
     }
 
-    d->autoList = dispatcher->getActions(QByteArrayLiteral("Auto"), d->ns);
+    d->autoList = dispatcher->getActions(QByteArrayLiteral("Auto"), d->pathPrefix);
     d->actionSteps.append(d->autoList);
 
     ActionList endList;
-    endList = dispatcher->getActions(QByteArrayLiteral("End"), d->ns);
+    endList = dispatcher->getActions(QByteArrayLiteral("End"), d->pathPrefix);
     if (!endList.isEmpty()) {
         d->end = endList.last();
     }
@@ -283,7 +283,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
     // Setup actions
     for (int i = 0; i < meta->methodCount(); ++i) {
         const QMetaMethod &method = meta->method(i);
-        const QByteArray &methodName = method.name();
+        const QByteArray &name = method.name();
 
         // We register actions that are either a Q_SLOT
         // or a Q_INVOKABLE function which has the first
@@ -296,28 +296,34 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             QByteArray attributeArray;
             for (int i = 0; i < meta->classInfoCount(); ++i) {
                 QMetaClassInfo classInfo = meta->classInfo(i);
-                if (methodName == classInfo.name()) {
+                if (name == classInfo.name()) {
                     attributeArray.append(classInfo.value());
                 }
             }
-            QMap<QByteArray, QByteArray> attrs = parseAttributes(attributeArray);
+            QMap<QByteArray, QByteArray> attrs = parseAttributes(method, attributeArray, name);
 
-            QByteArray reverse = !controller->ns().isEmpty() ? controller->ns() + '/' + methodName : methodName;
+            QByteArray reverse = !controller->ns().isEmpty() ? controller->ns() + '/' + name : name;
 
             Action *action = createAction({
-                                              {"name"      , QVariant::fromValue(methodName)},
+                                              {"name"      , QVariant::fromValue(name)},
                                               {"reverse"   , QVariant::fromValue(reverse)},
                                               {"ns"        , QVariant::fromValue(controller->ns())},
                                               {"attributes", QVariant::fromValue(attrs)}
                                           });
-            action->setupAction(method, controller);
+            action->setupAction(method, {
+                                    {"name"      , QVariant::fromValue(name)},
+                                    {"reverse"   , QVariant::fromValue(reverse)},
+                                    {"ns"        , QVariant::fromValue(controller->ns())},
+                                    {"attributes", QVariant::fromValue(attrs)}
+                                },
+                                controller);
 
-            actions.insertMulti(action->privateName(), action);
+            actions.insertMulti(action->reverse(), action);
         }
     }
 }
 
-QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QByteArray &str)
+QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
     QList<QPair<QByteArray, QByteArray> > attributes;
     // This is probably not the best parser ever
@@ -334,10 +340,10 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QByteArray
         // find the start of a key
         if (str.at(pos) == ':') {
             int keyStart = ++pos;
+            int keyLength = 0;
             while (pos < size) {
                 if (str.at(pos) == '(') {
                     // attribute has value
-                    key = str.mid(keyStart, pos - keyStart);
                     int valueStart = ++pos;
                     while (pos < size) {
                         if (str.at(pos) == ')') {
@@ -363,12 +369,15 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QByteArray
                     break;
                 } else if (str.at(pos) == ':') {
                     // Attribute has no value
-                    key = str.mid(keyStart, pos - keyStart);
                     value = QByteArray();
                     break;
                 }
+                ++keyLength;
                 ++pos;
             }
+
+            // stopre the key
+            key = str.mid(keyStart, keyLength);
 
             // store the key/value pair found
             attributes.append(qMakePair(key, value));
@@ -377,15 +386,86 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QByteArray
         ++pos;
     }
 
+    // if the method has the CaptureArgs as an argument
+    // set it on the attributes
+    int parameterCount = 0;
+    bool ignoreParameters = false;
+    QList<QByteArray> parameterTypes = method.parameterTypes();
+    for (int i = 1; i < method.parameterCount(); ++i) {
+        int typeId = method.parameterType(i);
+        if (typeId == QMetaType::QString && !ignoreParameters) {
+            ++parameterCount;
+        } else {
+            // store the key/value pair found
+            attributes.append(qMakePair(parameterTypes.at(i),
+                                        QByteArray()));
+
+            // Print out deprecated declarations
+            qCWarning(CUTELYST_CORE) << "Action attributes declaration DEPRECATED"
+                                     << name
+                                     << parameterTypes.at(i);
+        }
+    }
+
     QMap<QByteArray, QByteArray> ret;
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
     for (int i = attributes.size() - 1; i >= 0; --i) {
         const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
-        ret.insertMulti(pair.first, pair.second);
+        QByteArray key = pair.first;
+        QByteArray value = pair.second;
+        if (key == "Global") {
+            key = QByteArrayLiteral("Path");
+            value = name;
+            if (!value.startsWith('/')) {
+                value.prepend('/');
+            }
+            value = parsePathAttr(value);
+        } else if (key == "Local") {
+            key = QByteArrayLiteral("Path");
+            value = parsePathAttr(name);
+        } else if (key == "Path") {
+            value = parsePathAttr(value);
+        } else if (key == "Args") {
+            QString args = value;
+            if (args.isEmpty()) {
+                value = QByteArray::number(parameterCount);
+            } else {
+                value = args.remove(QRegularExpression("\\D")).toLocal8Bit();
+            }
+        } else if (key == "CaptureArgs") {
+            QString captureArgs = value;
+            value = captureArgs.remove(QRegularExpression("\\D")).toLocal8Bit();
+        }
+
+        ret.insertMulti(key, value);
+    }
+
+    if (parameterCount && !ret.contains("Args")) {
+        ret.insert("Args", QByteArray::number(parameterCount));
+    }
+
+    // If the method is private add a Private attribute
+    if (!ret.contains("Private") && method.access() == QMetaMethod::Private) {
+        ret.insert("Private", QByteArray());
     }
 
     return ret;
+}
+
+QByteArray ControllerPrivate::parsePathAttr(const QByteArray &_value)
+{
+    QByteArray value = _value;
+    if (value.isNull()) {
+        value = "";
+    }
+
+    if (value.startsWith('/')) {
+        return value;
+    } else if (value.length()) {
+        return pathPrefix + '/' + value;
+    }
+    return pathPrefix;
 }
 
 bool ControllerPrivate::superIsAction(const QMetaObject *super)

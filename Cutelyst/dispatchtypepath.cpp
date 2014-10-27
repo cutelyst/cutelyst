@@ -70,7 +70,7 @@ QByteArray DispatchTypePath::list() const
             _path.replace(multipleSlashes, QLatin1String("/"));
             pathLength = qMax(pathLength, _path.length());
 
-            QByteArray privateName = action->privateName();
+            QByteArray privateName = action->reverse();
             if (!privateName.startsWith('/')) {
                 privateName.prepend('/');
             }
@@ -100,7 +100,7 @@ QByteArray DispatchTypePath::list() const
             }
             _path.replace(multipleSlashes, QLatin1String("/"));
 
-            QByteArray privateName = action->privateName();
+            QByteArray privateName = action->reverse();
             if (!privateName.startsWith('/')) {
                 privateName.prepend('/');
             }
