@@ -60,6 +60,9 @@ bool Does::execute(Context *ctx)
                 return false;
             }
         }
+
+        // Do not call doExecute twice
+        return true;
     }
 
     return doExecute(ctx);
