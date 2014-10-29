@@ -110,10 +110,6 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         controller->setupActions(this);
     }
 
-    Q_FOREACH (Action *action, registeredActions) {
-        action->dispatcherReady(this);
-    }
-
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
 }
 

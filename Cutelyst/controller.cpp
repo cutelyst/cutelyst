@@ -142,6 +142,10 @@ void Controller::setupActions(Dispatcher *dispatcher)
     if (!endList.isEmpty()) {
         d->end = endList.last();
     }
+
+    Q_FOREACH (Action *action, d->actions.values()) {
+        action->dispatcherReady(dispatcher, this);
+    }
 }
 
 void Controller::_DISPATCH(Context *ctx)
@@ -215,62 +219,45 @@ bool Controller::_END(Context *ctx)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
-    QString actionClass = attributes.value("ActionClass");
+    QMap<QByteArray, QByteArray> attributes;
+    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    QByteArray actionClass = attributes.value("ActionClass");
 
-    if (!actionClass.isEmpty()) {
-        actionClass.remove(QRegularExpression("\\W"));
-        if (!actionClass.endsWith(QChar('*'))) {
-            actionClass.append("*");
+    QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
+    if (object) {
+        Action *action = qobject_cast<Action*>(object);
+        if (action) {
+            return qobject_cast<Action*>(object);
         }
-
-        int id = QMetaType::type(actionClass.toLocal8Bit().data());
-        if (!id) {
-            QString actionClassCutelyst = QLatin1String("Cutelyst::") % actionClass;
-            id = QMetaType::type(actionClassCutelyst.toLocal8Bit().data());
-        }
-
-        if (id) {
-            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
-            if (metaObj) {
-                QObject *object = metaObj->newInstance();
-                if (object && superIsAction(metaObj->superClass())) {
-                    return qobject_cast<Action*>(object);
-                } else {
-                    qCWarning(CUTELYST_CORE) << "ActionClass"
-                                             << actionClass
-                                             << "is not an ActionClass";
-                    delete object;
-                }
-            }
-        }
-
-        if (!id) {
-            qCWarning(CUTELYST_CORE) << "ActionClass"
-                                     << actionClass
-                                     << "is not registerd, you can register it with qRegisterMetaType<"
-                                     << actionClass.toLocal8Bit().data()
-                                     << "*>();";
-        }
+        qCWarning(CUTELYST_CONTROLLER) << "ActionClass"
+                                       << actionClass
+                                       << "is not an ActionClass";
+        delete object;
     }
 
     return new Action;
 }
 
-Action *ControllerPrivate::createAction(const QVariantHash &args)
+Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller)
 {
     Action *action = actionClass(args);
+    if (!action) {
+        return 0;
+    }
 
     QByteArray name = args.value("name").toByteArray();
     QRegularExpression regex("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$");
     QRegularExpressionMatch match = regex.match(name);
     if (!match.hasMatch()) {
-        QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
-        QList<QByteArray> roles = attributes.values("Does");
-        if (!roles.isEmpty()) {
-
+        QStack<Does *> roles = gatherActionRoles(args);
+        for (int i = 0; i < roles.size(); ++i) {
+            Does *does = roles.at(i);
+            does->init(args);
         }
+        action->applyRoles(roles);
     }
+
+    action->setupAction(method, args, controller);
 
     return action;
 }
@@ -306,14 +293,9 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                               {"reverse"   , QVariant::fromValue(reverse)},
                                               {"namespace" , QVariant::fromValue(controller->ns())},
                                               {"attributes", QVariant::fromValue(attrs)}
-                                          });
-            action->setupAction(method, {
-                                    {"name"      , QVariant::fromValue(name)},
-                                    {"reverse"   , QVariant::fromValue(reverse)},
-                                    {"namespace" , QVariant::fromValue(controller->ns())},
-                                    {"attributes", QVariant::fromValue(attrs)}
-                                },
-                                controller);
+                                          },
+                                          method,
+                                          controller);
 
             actions.insertMulti(action->reverse(), action);
         }
@@ -398,9 +380,9 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QMetaMetho
                                         QByteArray()));
 
             // Print out deprecated declarations
-            qCWarning(CUTELYST_CORE) << "Action attributes declaration DEPRECATED"
-                                     << name
-                                     << parameterTypes.at(i);
+            qCWarning(CUTELYST_CONTROLLER) << "Action attributes declaration DEPRECATED"
+                                           << name
+                                           << parameterTypes.at(i);
         }
     }
 
@@ -450,6 +432,20 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QMetaMetho
     return ret;
 }
 
+QStack<Does *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
+{
+    QStack<Does *> roles;
+    QMap<QByteArray, QByteArray> attributes;
+    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
+        QObject *object = instantiateClass(role, "Cutelyst::Does");
+        if (object) {
+            roles.push(qobject_cast<Does *>(object));
+        }
+    }
+    return roles;
+}
+
 QByteArray ControllerPrivate::parsePathAttr(const QByteArray &_value)
 {
     QByteArray value = _value;
@@ -465,13 +461,68 @@ QByteArray ControllerPrivate::parsePathAttr(const QByteArray &_value)
     return pathPrefix;
 }
 
-bool ControllerPrivate::superIsAction(const QMetaObject *super)
+QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByteArray &super)
+{
+    QString instanceName = name;
+    if (!instanceName.isEmpty()) {
+        instanceName.remove(QRegularExpression("\\W"));
+
+        int id = QMetaType::type(instanceName.toLocal8Bit().data());
+        if (!id) {
+            if (!instanceName.endsWith(QChar('*'))) {
+                instanceName.append("*");
+            }
+
+            id = QMetaType::type(instanceName.toLocal8Bit().data());
+            if (!id && !instanceName.startsWith(QLatin1String("Cutelyst::"))) {
+                instanceName = QLatin1String("Cutelyst::") % instanceName;
+                id = QMetaType::type(instanceName.toLocal8Bit().data());
+            }
+        }
+
+        if (id) {
+            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
+            if (metaObj) {
+                if (!superIsClassName(metaObj->superClass(), super)) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Class name"
+                            << instanceName
+                            << "is not a derived class of"
+                            << super;
+                }
+
+                QObject *object = metaObj->newInstance();
+                if (!object) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Could create a new instance of"
+                            << instanceName
+                            << "make sure it's default constructor is "
+                               "marked with the Q_INVOKABLE macro";
+                }
+
+                return object;
+            }
+        }
+
+        if (!id) {
+            qCWarning(CUTELYST_CONTROLLER)
+                    << "Class name"
+                    << instanceName
+                    << "is not registerd, you can register it with qRegisterMetaType<"
+                    << instanceName.toLocal8Bit().data()
+                    << ">();";
+        }
+    }
+    return 0;
+}
+
+bool ControllerPrivate::superIsClassName(const QMetaObject *super, const QByteArray &className)
 {
     if (super) {
-        if (qstrcmp(super->className(), "Cutelyst::Action") == 0) {
+        if (super->className() == className) {
             return true;
         }
-        return superIsAction(super->superClass());
+        return superIsClassName(super->superClass(), className);
     }
     return false;
 }

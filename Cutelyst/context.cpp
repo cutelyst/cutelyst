@@ -109,6 +109,12 @@ QByteArray Context::actionName() const
     return d->action->name();
 }
 
+QByteArray Context::ns() const
+{
+    Q_D(const Context);
+    return d->action->ns();
+}
+
 Request *Context::request() const
 {
     Q_D(const Context);

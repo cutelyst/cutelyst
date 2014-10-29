@@ -34,6 +34,8 @@ set(cutelystqt_SRC
     dispatchtypepath_p.h
     dispatcher.cpp
     dispatcher_p.h
+    does.cpp
+    does_p.h
     view.cpp
     childprocess.cpp
     childprocess_p.h
@@ -61,6 +63,7 @@ set(cutelystqt_HEADERS
     Context
     controller.h
     Controller
+    does.h
     dispatcher.h
     Dispatcher
     dispatchtype.h

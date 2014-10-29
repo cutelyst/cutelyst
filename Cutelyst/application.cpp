@@ -27,14 +27,16 @@
 #include "dispatchtype.h"
 
 #include "Actions/actionrest.h"
+#include "Actions/roleacl.h"
 
 #include <iostream>
 
 #include <QStringList>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
-Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
+Q_LOGGING_CATEGORY(CUTELYST_CONTROLLER, "cutelyst.controller")
 Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
 Q_LOGGING_CATEGORY(CUTELYST_UPLOAD, "cutelyst.upload")
 Q_LOGGING_CATEGORY(CUTELYST_MULTIPART, "cutelyst.multipart")
 Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view")
@@ -53,6 +55,7 @@ Application::Application(QObject *parent) :
     Q_D(Application);
 
     qRegisterMetaType<ActionREST *>();
+    qRegisterMetaType<RoleACL *>();
 
     d->dispatcher = new Dispatcher(this);
 }

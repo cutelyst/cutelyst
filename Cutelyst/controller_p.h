@@ -21,6 +21,7 @@
 #define CONTROLLER_P_H
 
 #include "controller.h"
+#include "does.h"
 
 namespace Cutelyst {
 
@@ -28,11 +29,13 @@ class ControllerPrivate
 {
 public:
     Action* actionClass(const QVariantHash &args);
-    Action* createAction(const QVariantHash &args);
+    Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller);
     void registerActionMethods(const QMetaObject *meta, Controller *controller);
     QMap<QByteArray, QByteArray> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
+    QStack<Does *> gatherActionRoles(const QVariantHash &args);
     QByteArray parsePathAttr(const QByteArray &_value);
-    bool superIsAction(const QMetaObject *super);
+    QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
+    bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
     QByteArray pathPrefix;
     Action *begin = 0;

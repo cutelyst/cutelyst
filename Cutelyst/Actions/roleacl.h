@@ -20,27 +20,33 @@
 #ifndef ROLEACL_H
 #define ROLEACL_H
 
-#include <QObject>
 #include <QVariantHash>
 
+#include <Cutelyst/does.h>
 #include <Cutelyst/Context>
 
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class RoleACL : public QObject
+class RoleACL : public Does
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
 public:
-    Q_INVOKABLE RoleACL(const QVariantHash &args);
+    Q_INVOKABLE RoleACL();
     virtual ~RoleACL();
 
-    bool aroundExecute(Context *ctx, Action *orig);
+    virtual Modifiers modifiers() const;
 
-    bool canVisit(Context *ctx);
+    virtual bool init(const QVariantHash &args);
+
+    virtual bool aroundExecute(Context *ctx, DoesCode code) const;
+
+    bool canVisit(Context *ctx) const;
 
 protected:
+    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller);
+
     RoleACLPrivate *d_ptr;
 };
 

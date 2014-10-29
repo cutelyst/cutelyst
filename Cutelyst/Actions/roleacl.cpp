@@ -23,23 +23,41 @@
 
 #include <Cutelyst/Plugin/authentication.h>
 #include <Cutelyst/Controller>
+#include <Cutelyst/Dispatcher>
+
 #include <QMap>
 
 using namespace Cutelyst;
 using namespace Plugin;
 
-RoleACL::RoleACL(const QVariantHash &args) :
+RoleACL::RoleACL() :
     d_ptr(new RoleACLPrivate)
+{
+}
+
+RoleACL::~RoleACL()
+{
+    delete d_ptr;
+}
+
+Does::Modifiers RoleACL::modifiers() const
+{
+    return AroundExecute;
+}
+
+bool RoleACL::init(const QVariantHash &args)
 {
     Q_D(RoleACL);
 
     QMap<QByteArray, QByteArray> attributes;
     attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    d->actionReverse = args.value("reverse").toByteArray();
 
-    if (!attributes.contains("RequiresRole") || !attributes.contains("AllowedRole")) {
+    if (!attributes.contains("RequiresRole") && !attributes.contains("AllowedRole")) {
         qCritical() << "Action"
-                    << args.value("reverse")
+                    << d->actionReverse
                     << "requires at least one RequiresRole or AllowedRole attribute";
+        return false;
     } else {
         QList<QByteArray> required = attributes.values("RequiresRole");
         Q_FOREACH (const QByteArray &role, required) {
@@ -54,34 +72,31 @@ RoleACL::RoleACL(const QVariantHash &args) :
 
     if (!attributes.contains("ACLDetachTo") && !attributes.value("ACLDetachTo").isEmpty()) {
         qCritical() << "Action"
-                    << args.value("reverse")
+                    << d->actionReverse
                     << "requires the ACLDetachTo(<action>) attribute";
-    } else {
-        d->detachTo = args.value("ACLDetachTo").toByteArray();
+        return false;
     }
+    d->aclDetachTo = attributes.value("ACLDetachTo");
+
+    return true;
 }
 
-RoleACL::~RoleACL()
+bool RoleACL::aroundExecute(Context *ctx, Does::DoesCode code) const
 {
-    delete d_ptr;
-}
-
-bool RoleACL::aroundExecute(Context *ctx, Action *orig)
-{
-    Q_D(RoleACL);
+    Q_D(const RoleACL);
 
     if (canVisit(ctx)) {
-        return orig->execute(ctx);
+        return aroundExecute(ctx, code);
     }
 
-    ctx->detach(ctx->controller()->actionFor(d->detachTo));
+    ctx->detach(d->detachTo);
 
     return false;
 }
 
-bool RoleACL::canVisit(Context *ctx)
+bool RoleACL::canVisit(Context *ctx) const
 {
-    Q_D(RoleACL);
+    Q_D(const RoleACL);
 
     Plugin::Authentication *auth = ctx->plugin<Plugin::Authentication*>();
     if (auth) {
@@ -120,4 +135,22 @@ bool RoleACL::canVisit(Context *ctx)
     }
 
     return false;
+}
+
+bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller *controller)
+{
+    Q_D(RoleACL);
+    Q_UNUSED(controller)
+
+    d->detachTo = dispatcher->getAction(d->aclDetachTo);
+    if (!d->detachTo) {
+        qCritical() << "Action"
+                    << d->actionReverse
+                    << "requires a valid action set on the ACLDetachTo("
+                    << d->aclDetachTo.data()
+                    << ") attribute";
+        return false;
+    }
+
+    return true;
 }

@@ -22,6 +22,7 @@
 
 #include <QObject>
 
+#include <Cutelyst/Action>
 #include <Cutelyst/Context>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>

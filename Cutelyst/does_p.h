@@ -17,26 +17,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ROLEACL_P_H
-#define ROLEACL_P_H
+#ifndef DOES_P_H
+#define DOES_P_H
 
-#include "roleacl.h"
-
-#include <QSet>
-#include <QByteArray>
+#include "does.h"
 
 namespace Cutelyst {
 
-class RoleACLPrivate
+class DoesPrivate
 {
 public:
-    QStringList requiresRole;
-    QStringList allowedRole;
-    QByteArray aclDetachTo;
-    QByteArray actionReverse;
-    Action *detachTo;
+    bool proccessRoles = false;
+    QStack<Does *> beforeRoles;
+    QStack<Does *> aroundRoles;
+    QStack<Does *> afterRoles;
+    QStack<Does *> roles;
 };
 
 }
 
-#endif // ROLEACL_P_H
+#endif // DOES_P_H

@@ -23,18 +23,22 @@
 #include <QStringList>
 #include <QMetaMethod>
 
+#include <Cutelyst/does.h>
+
 namespace Cutelyst {
 
 class Context;
 class Controller;
 class Dispatcher;
 class ActionPrivate;
-class Action : public QObject
+class Action : public Does
 {
     Q_OBJECT
 public:
     Action();
     virtual ~Action();
+
+    virtual Modifiers modifiers() const;
 
     /**
      * Returns the attributes that are set for this action,
@@ -57,11 +61,6 @@ public:
      * Dispatch this action against a context
      */
     virtual bool dispatch(Context *ctx);
-
-    /**
-     * Execute this action against
-     */
-    virtual bool execute(Context *ctx) const;
 
     /**
      * @brief Check Args attribute, and makes sure number of
@@ -127,17 +126,14 @@ protected:
     friend class ControllerPrivate;
 
     /**
+     * Execute this action against
+     */
+    virtual bool doExecute(Context *ctx) const;
+
+    /**
      * Called by dispatcher to setup the Action
      */
     void setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller);
-
-    /**
-     * Called by dispatcher once it's done preparing actions
-     *
-     * Subclasses might want to implement this to cache special
-     * actions, such as special methods for REST actions
-     */
-    virtual void dispatcherReady(const Dispatcher *dispatch);
 
 private:
     Q_DECLARE_PRIVATE(Action)

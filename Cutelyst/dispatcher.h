@@ -39,19 +39,6 @@ public:
     explicit Dispatcher(QObject *parent = 0);
     ~Dispatcher();
 
-protected:
-    void setupActions(const QList<Controller *> &controllers);
-
-    /**
-     * Delegate the dispatch to the action that matched the url, or return a
-     * message about unknown resource
-     */
-    bool dispatch(Context *ctx);
-
-    bool forward(Context *ctx, Action *action, const QStringList &arguments = QStringList());
-    bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
-    void prepareAction(Context *ctx);
-
     /**
      * Returns a named action from a given namespace.
      */
@@ -69,10 +56,8 @@ protected:
     ActionList getActions(const QByteArray &name, const QByteArray &nameSpace) const;
 
     /**
-     * Returns a list of actions on the desired namespace \pa ns
+     * Returns a hash of registered controllers
      */
-//    ActionList getActionsNs(const QByteArray &ns) const;
-
     QHash<QByteArray, Controller *> controllers() const;
 
     /**
@@ -84,6 +69,24 @@ protected:
      * cannot determine an appropriate URI, this method will return a null byte array.
      */
     QByteArray uriForAction(Action *action, const QStringList &captures) const;
+
+protected:
+    void setupActions(const QList<Controller *> &controllers);
+
+    /**
+     * Delegate the dispatch to the action that matched the url, or return a
+     * message about unknown resource
+     */
+    bool dispatch(Context *ctx);
+
+    bool forward(Context *ctx, Action *action, const QStringList &arguments = QStringList());
+    bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
+    void prepareAction(Context *ctx);
+
+    /**
+     * Returns a list of actions on the desired namespace \pa ns
+     */
+//    ActionList getActionsNs(const QByteArray &ns) const;
 
     void registerDispatchType(DispatchType *dispatchType);
 

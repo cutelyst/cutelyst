@@ -34,9 +34,16 @@ Action::~Action()
     delete d_ptr;
 }
 
+Does::Modifiers Action::modifiers() const
+{
+    return Does::OnlyExecute;
+}
+
 void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller)
 {
     Q_D(Action);
+
+    Does::init(args);
 
     d->name = args.value("name").toByteArray();
     d->ns = args.value("namespace").toByteArray();
@@ -54,12 +61,6 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
     if (attributes.contains("CaptureArgs")) {
         d->numberOfCaptures = attributes.value("CaptureArgs").toInt();
     }
-}
-
-void Action::dispatcherReady(const Dispatcher *dispatch)
-{
-    Q_UNUSED(dispatch)
-    // Default implementations does nothing
 }
 
 QMap<QByteArray, QByteArray> Action::attributes() const
@@ -83,62 +84,6 @@ Controller *Action::controller() const
 bool Action::dispatch(Context *ctx)
 {
     return ctx->execute(this);
-}
-
-bool Action::execute(Context *ctx) const
-{
-    Q_D(const Action);
-    if (ctx->detached()) {
-        return false;
-    }
-
-    QStringList args = ctx->args();
-    // Fill the missing arguments
-    args += d->emptyArgs;
-
-    if (d->method.returnType() == QMetaType::Bool) {
-        bool methodRet;
-        bool ret;
-        ret = d->method.invoke(d->controller,
-                               Qt::DirectConnection,
-                               Q_RETURN_ARG(bool, methodRet),
-                               Q_ARG(Cutelyst::Context*, ctx),
-                               Q_ARG(QString, args.at(0)),
-                               Q_ARG(QString, args.at(1)),
-                               Q_ARG(QString, args.at(2)),
-                               Q_ARG(QString, args.at(3)),
-                               Q_ARG(QString, args.at(4)),
-                               Q_ARG(QString, args.at(5)),
-                               Q_ARG(QString, args.at(6)),
-                               Q_ARG(QString, args.at(7)),
-                               Q_ARG(QString, args.at(8)));
-
-        if (ret) {
-            ctx->setState(methodRet);
-            return methodRet;
-        }
-
-        // The method failed to be called which means we should detach
-        ctx->detach();
-        ctx->setState(false);
-
-        return false;
-    } else {
-        bool ret = d->method.invoke(d->controller,
-                                    Qt::DirectConnection,
-                                    Q_ARG(Cutelyst::Context*, ctx),
-                                    Q_ARG(QString, args.at(0)),
-                                    Q_ARG(QString, args.at(1)),
-                                    Q_ARG(QString, args.at(2)),
-                                    Q_ARG(QString, args.at(3)),
-                                    Q_ARG(QString, args.at(4)),
-                                    Q_ARG(QString, args.at(5)),
-                                    Q_ARG(QString, args.at(6)),
-                                    Q_ARG(QString, args.at(7)),
-                                    Q_ARG(QString, args.at(8)));
-        ctx->setState(ret);
-        return ret;
-    }
 }
 
 bool Action::match(int numberOfArgs) const
@@ -195,4 +140,60 @@ bool Action::isValid() const
 {
     Q_D(const Action);
     return d->valid;
+}
+
+bool Action::doExecute(Context *ctx) const
+{
+    Q_D(const Action);
+    if (ctx->detached()) {
+        return false;
+    }
+
+    QStringList args = ctx->args();
+    // Fill the missing arguments
+    args += d->emptyArgs;
+
+    if (d->method.returnType() == QMetaType::Bool) {
+        bool methodRet;
+        bool ret;
+        ret = d->method.invoke(d->controller,
+                               Qt::DirectConnection,
+                               Q_RETURN_ARG(bool, methodRet),
+                               Q_ARG(Cutelyst::Context*, ctx),
+                               Q_ARG(QString, args.at(0)),
+                               Q_ARG(QString, args.at(1)),
+                               Q_ARG(QString, args.at(2)),
+                               Q_ARG(QString, args.at(3)),
+                               Q_ARG(QString, args.at(4)),
+                               Q_ARG(QString, args.at(5)),
+                               Q_ARG(QString, args.at(6)),
+                               Q_ARG(QString, args.at(7)),
+                               Q_ARG(QString, args.at(8)));
+
+        if (ret) {
+            ctx->setState(methodRet);
+            return methodRet;
+        }
+
+        // The method failed to be called which means we should detach
+        ctx->detach();
+        ctx->setState(false);
+
+        return false;
+    } else {
+        bool ret = d->method.invoke(d->controller,
+                                    Qt::DirectConnection,
+                                    Q_ARG(Cutelyst::Context*, ctx),
+                                    Q_ARG(QString, args.at(0)),
+                                    Q_ARG(QString, args.at(1)),
+                                    Q_ARG(QString, args.at(2)),
+                                    Q_ARG(QString, args.at(3)),
+                                    Q_ARG(QString, args.at(4)),
+                                    Q_ARG(QString, args.at(5)),
+                                    Q_ARG(QString, args.at(6)),
+                                    Q_ARG(QString, args.at(7)),
+                                    Q_ARG(QString, args.at(8)));
+        ctx->setState(ret);
+        return ret;
+    }
 }

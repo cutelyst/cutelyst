@@ -50,12 +50,6 @@ bool ActionREST::dispatch(Context *ctx)
     return d->dispatchRestMethod(ctx, ctx->request()->method());
 }
 
-void ActionREST::dispatcherReady(const Dispatcher *dispatch)
-{
-//    qDebug() << name() << dispatch;
-}
-
-
 bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpMethod) const
 {
     Q_Q(const ActionREST);

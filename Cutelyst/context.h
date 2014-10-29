@@ -27,7 +27,6 @@
 #include <QStringList>
 #include <QStack>
 
-#include <Cutelyst/Action>
 #include <Cutelyst/Request>
 
 namespace Cutelyst {
@@ -36,6 +35,7 @@ namespace Plugin {
 class AbstractPlugin;
 }
 
+class Action;
 class Application;
 class Engine;
 class Response;
@@ -86,8 +86,7 @@ public:
      * c->ns(); // returns 'foo/bar'
      */
     Q_PROPERTY(QString ns READ ns)
-    inline QByteArray ns() const
-    { return action()->ns(); }
+    QByteArray ns() const;
 
     /**
      * Returns the current Request object containing
