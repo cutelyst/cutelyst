@@ -86,7 +86,7 @@ bool RoleACL::aroundExecute(Context *ctx, Does::DoesCode code) const
     Q_D(const RoleACL);
 
     if (canVisit(ctx)) {
-        return aroundExecute(ctx, code);
+        return Does::aroundExecute(ctx, code);
     }
 
     ctx->detach(d->detachTo);
