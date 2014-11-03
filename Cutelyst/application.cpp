@@ -54,6 +54,7 @@ Application::Application(QObject *parent) :
 {
     Q_D(Application);
 
+    qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaType<ActionREST *>();
     qRegisterMetaType<RoleACL *>();
 

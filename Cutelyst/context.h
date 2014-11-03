@@ -56,7 +56,9 @@ public:
     /**
      * Contains the return value of the last executed action.
      */
+    Q_PROPERTY(bool state READ state)
     bool state() const;
+
     void setState(bool state);
     inline QStringList args() const
     { return request()->args(); }
@@ -75,7 +77,7 @@ public:
     Q_PROPERTY(Action* action READ action)
     Action *action() const;
 
-    Q_PROPERTY(QString actionName READ actionName)
+    Q_PROPERTY(QByteArray actionName READ actionName)
     QByteArray actionName() const;
 
     /**
@@ -85,22 +87,25 @@ public:
      * // a class named FooBar which inherits Controller
      * c->ns(); // returns 'foo/bar'
      */
-    Q_PROPERTY(QString ns READ ns)
+    Q_PROPERTY(QByteArray ns READ ns)
     QByteArray ns() const;
 
     /**
      * Returns the current Request object containing
      * information about the client request \sa Request
      */
+    Q_PROPERTY(Request *request READ request)
     Request *request() const;
 
     /**
      * Short for the method above
      */
+    Q_PROPERTY(Request *req READ request)
     Request *req() const;
+
     Dispatcher *dispatcher() const;
 
-    Q_PROPERTY(QString controllerName READ controllerName)
+    Q_PROPERTY(QByteArray controllerName READ controllerName)
     QByteArray controllerName() const;
 
     Controller *controller(const QByteArray &name = QByteArray()) const;

@@ -26,6 +26,7 @@
 
 #include <Cutelyst/ParamsMultiMap>
 #include <Cutelyst/Headers>
+typedef QMap<QString, QString> Params;
 
 namespace Cutelyst {
 
@@ -35,9 +36,9 @@ class Upload;
 typedef QList<Upload *> Uploads;
 
 class RequestPrivate;
-class Request
+class Request : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
 public:
     virtual ~Request();
 
@@ -54,12 +55,14 @@ public:
      * This functions makes blocking call to do a reverse
      * DNS lookup if the engine didn't set the hostname.
      */
+    Q_PROPERTY(QString hostname READ hostname)
     QString hostname() const;
 
     /**
      * @brief peerPort
      * @return the originating port of the client
      */
+    Q_PROPERTY(quint16 port READ port)
     quint16 port() const;
 
     /**
@@ -67,6 +70,7 @@ public:
      * @return the uri as close as possible to what
      * the user has in his browser url.
      */
+    Q_PROPERTY(QUrl uri READ uri)
     QUrl uri() const;
 
     /**
@@ -79,6 +83,7 @@ public:
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000/.
      */
+    Q_PROPERTY(QUrl base READ base)
     QUrl base() const;
 
     /**
@@ -87,6 +92,7 @@ public:
      * for  http://localhost/path/foo
      * path will contain '/path/foo'
      */
+    Q_PROPERTY(QByteArray path READ path)
     QByteArray path() const;
 
     /**
@@ -94,8 +100,10 @@ public:
      * Otherwise it returns the same as 'action' (not a pointer but it's private name),
      * except for default actions, which return an empty string.
      */
+    Q_PROPERTY(QByteArray match READ match)
     QByteArray match() const;
 
+    Q_PROPERTY(QStringList args READ args)
     QStringList args() const;
 
     /**
@@ -105,6 +113,7 @@ public:
      * uri().scheme(). The Engine itself might not be aware of a front HTTP
      * server with https enabled.
      */
+    Q_PROPERTY(bool secure READ secure)
     bool secure() const;
 
     /**
@@ -123,6 +132,7 @@ public:
     /**
      * Short for \sa bodyParameters()
      */
+    Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
     inline ParamsMultiMap bodyParam() const { return bodyParameters(); }
 
     /**
@@ -133,6 +143,7 @@ public:
     /**
      * Short for \sa queryParameters()
      */
+    Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
     inline ParamsMultiMap queryParam() const { return queryParameters(); }
 
     /**
@@ -144,6 +155,7 @@ public:
     /**
      * Short for \sa parameters()
      */
+    Q_PROPERTY(Cutelyst::ParamsMultiMap param READ parameters)
     inline ParamsMultiMap param() const { return parameters(); }
 
     /**
