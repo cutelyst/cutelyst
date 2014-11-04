@@ -45,6 +45,13 @@ class ContextPrivate;
 class Context : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(Action* action READ action)
+    Q_PROPERTY(QByteArray actionName READ actionName)
+    Q_PROPERTY(QByteArray ns READ ns)
+    Q_PROPERTY(Request *req READ request)
+    Q_PROPERTY(Request *request READ request)
+    Q_PROPERTY(QByteArray controllerName READ controllerName)
+    Q_PROPERTY(bool state READ state)
 public:
     Context(ContextPrivate *priv);
     virtual ~Context();
@@ -56,7 +63,6 @@ public:
     /**
      * Contains the return value of the last executed action.
      */
-    Q_PROPERTY(bool state READ state)
     bool state() const;
 
     void setState(bool state);
@@ -74,10 +80,11 @@ public:
     /**
      * Returns a pointer to the current action
      */
-    Q_PROPERTY(Action* action READ action)
     Action *action() const;
 
-    Q_PROPERTY(QByteArray actionName READ actionName)
+    /**
+     * Returns the private name of the current action
+     */
     QByteArray actionName() const;
 
     /**
@@ -85,27 +92,26 @@ public:
      * i.e. the URI prefix corresponding to the controller
      * of the current action. For example:
      * // a class named FooBar which inherits Controller
-     * c->ns(); // returns 'foo/bar'
+     * ctx->ns(); // returns 'foo/bar'
      */
-    Q_PROPERTY(QByteArray ns READ ns)
     QByteArray ns() const;
 
     /**
      * Returns the current Request object containing
-     * information about the client request \sa Request
+     * information about the client request Request
      */
-    Q_PROPERTY(Request *request READ request)
     Request *request() const;
 
     /**
-     * Short for the method above
+     * Short for request()
      */
-    Q_PROPERTY(Request *req READ request)
     Request *req() const;
 
     Dispatcher *dispatcher() const;
 
-    Q_PROPERTY(QByteArray controllerName READ controllerName)
+    /**
+     * The current controller name
+     */
     QByteArray controllerName() const;
 
     Controller *controller(const QByteArray &name = QByteArray()) const;
@@ -178,13 +184,14 @@ public:
      * it is not a URI, but an internal path to that action.
      *
      * For example, if the action looks like:
-     *
-     * class Users: public Cutelyst::Controller {
-     * ...
-     * Q_CLASSINFO("lst_Path", "the-list")
-     * void lst() { ... }
-     *
+     * \code{.h}
+     * class Users : public Cutelyst::Controller
+     * {
+     * public:
+     *   C_ATTR(lst, :Path(the-list)
+     *   void lst(Context *ctx);
      * };
+     * \endcode
      *
      * You can use:
      * ctx->uriForAction('/users/lst');
@@ -195,7 +202,7 @@ public:
                       const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
 
     /**
-     * A convenience method for the \sa uriForAction
+     * A convenience method for the uriForAction() without the arguments parameter
      */
     inline QUrl uriForActionNoArgs(const QByteArray &path,
                                    const QMultiHash<QString, QString> &queryValues) const

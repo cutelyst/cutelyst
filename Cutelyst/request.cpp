@@ -121,6 +121,12 @@ QByteArray Request::match() const
     return d->match;
 }
 
+QStringList Request::arguments() const
+{
+    Q_D(const Request);
+    return d->args;
+}
+
 QStringList Request::args() const
 {
     Q_D(const Request);

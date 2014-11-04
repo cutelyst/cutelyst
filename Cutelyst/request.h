@@ -39,11 +39,29 @@ class RequestPrivate;
 class Request : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString hostname READ hostname)
+    Q_PROPERTY(quint16 port READ port)
+    Q_PROPERTY(QUrl uri READ uri)
+    Q_PROPERTY(QUrl base READ base)
+    Q_PROPERTY(QByteArray path READ path)
+    Q_PROPERTY(QByteArray match READ match)
+    Q_PROPERTY(QStringList arguments READ arguments)
+    Q_PROPERTY(QStringList args READ args)
+    Q_PROPERTY(bool secure READ secure)
+    Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
+    Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
+    Q_PROPERTY(Cutelyst::ParamsMultiMap param READ parameters)
+    Q_PROPERTY(QByteArray contentEncoding READ contentEncoding)
+    Q_PROPERTY(QByteArray contentType READ contentType)
+    Q_PROPERTY(QByteArray method READ method)
+    Q_PROPERTY(QByteArray protocol READ protocol)
+    Q_PROPERTY(QByteArray userAgent READ userAgent)
+    Q_PROPERTY(QByteArray referer READ referer)
+    Q_PROPERTY(QByteArray remoteUser READ remoteUser)
 public:
     virtual ~Request();
 
     /**
-     * @brief peerAddress
      * @return the address of the client
      */
     QHostAddress address() const;
@@ -55,44 +73,35 @@ public:
      * This functions makes blocking call to do a reverse
      * DNS lookup if the engine didn't set the hostname.
      */
-    Q_PROPERTY(QString hostname READ hostname)
     QString hostname() const;
 
     /**
-     * @brief peerPort
      * @return the originating port of the client
      */
-    Q_PROPERTY(quint16 port READ port)
     quint16 port() const;
 
     /**
-     * @brief uri
      * @return the uri as close as possible to what
      * the user has in his browser url.
      */
-    Q_PROPERTY(QUrl uri READ uri)
     QUrl uri() const;
 
     /**
-     * @brief base
      * @return Contains the URI base. This will always have a trailing slash.
      * Note that the URI scheme (e.g., http vs. https) must be determined through
      * heuristics; depending on your server configuration, it may be incorrect.
-     * See \sa secure() for more info.
+     * See secure() for more info.
      *
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000/.
      */
-    Q_PROPERTY(QUrl base READ base)
     QUrl base() const;
 
     /**
-     * @brief path
      * @return the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
      * path will contain '/path/foo'
      */
-    Q_PROPERTY(QByteArray path READ path)
     QByteArray path() const;
 
     /**
@@ -100,10 +109,29 @@ public:
      * Otherwise it returns the same as 'action' (not a pointer but it's private name),
      * except for default actions, which return an empty string.
      */
-    Q_PROPERTY(QByteArray match READ match)
     QByteArray match() const;
 
-    Q_PROPERTY(QStringList args READ args)
+    /**
+     * Returns a list of string containing the arguments.
+     * For example, if your action was
+     * \code{.h}
+     * class foo : public Cutelyst::Controller
+     * {
+     * public:
+     *   C_ATTR(bar, :Local)
+     *   void bar(Context *ctx);
+     * };
+     * \endcode
+     * and the URI for the request was http://.../foo/bar/bah, the string
+     * bah would be the first and only argument.
+     *
+     * Arguments get automatically URI-unescaped for you.
+     */
+    QStringList arguments() const;
+
+    /**
+     * Shortcut for arguments()
+     */
     QStringList args() const;
 
     /**
@@ -113,11 +141,9 @@ public:
      * uri().scheme(). The Engine itself might not be aware of a front HTTP
      * server with https enabled.
      */
-    Q_PROPERTY(bool secure READ secure)
     bool secure() const;
 
     /**
-     * @brief body
      * @return the message body of the request as
      * passed by the Engine, this can even be a file
      * if the Engine wants to.
@@ -130,9 +156,8 @@ public:
     ParamsMultiMap bodyParameters() const;
 
     /**
-     * Short for \sa bodyParameters()
+     * Short for bodyParameters()
      */
-    Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
     inline ParamsMultiMap bodyParam() const { return bodyParameters(); }
 
     /**
@@ -141,9 +166,8 @@ public:
     ParamsMultiMap queryParameters() const;
 
     /**
-     * Short for \sa queryParameters()
+     * Short for queryParameters()
      */
-    Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
     inline ParamsMultiMap queryParam() const { return queryParameters(); }
 
     /**
@@ -153,19 +177,16 @@ public:
     ParamsMultiMap parameters() const;
 
     /**
-     * Short for \sa parameters()
+     * Short for parameters()
      */
-    Q_PROPERTY(Cutelyst::ParamsMultiMap param READ parameters)
     inline ParamsMultiMap param() const { return parameters(); }
 
     /**
-     * @brief contentEncoding
      * @return the Content-Encoding header
      */
     inline QByteArray contentEncoding() const { return headers().contentEncoding(); }
 
     /**
-     * @brief contentType
      * @return the Content-Type header
      */
     inline QByteArray contentType() const { return headers().contentType(); }
@@ -185,31 +206,26 @@ public:
     Headers headers() const;
 
     /**
-     * @brief method
      * @return the request method (GET, POST, HEAD, etc).
      */
     QByteArray method() const;
 
     /**
-     * @brief protocol
      * @return the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
     QByteArray protocol() const;
 
     /**
-     * @brief userAgent
      * @return the user agent (browser) version string.
      */
     QByteArray userAgent() const { return headers().userAgent(); }
 
     /**
-     * @brief referer Shortcut for header("Referer")
-     * @return the referring page.
+     * referer Shortcut for header("Referer")
      */
     QByteArray referer() const { return headers().referer(); }
 
     /**
-     * @brief remoteUser
      * @return the value of the REMOTE_USER environment variable.
      */
     QByteArray remoteUser() const;
