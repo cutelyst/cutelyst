@@ -43,7 +43,7 @@ Engine::Engine(QObject *parent) :
     // Load application configuration
     if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {
         QByteArray config = qgetenv("CUTELYST_CONFIG");
-        qCWarning(CUTELYST_CORE) << "Reading config file:" << config;
+        qCDebug(CUTELYST_CORE) << "Reading config file:" << config;
         QSettings settings(config, QSettings::IniFormat);
         Q_FOREACH (const QString &group, settings.childGroups()) {
             settings.beginGroup(group);
@@ -53,6 +53,7 @@ Engine::Engine(QObject *parent) :
             }
             settings.endGroup();
         }
+        qCDebug(CUTELYST_CORE) << "Configuration:" << d->config;
     }
 }
 
