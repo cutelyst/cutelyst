@@ -25,7 +25,6 @@
 
 #include <QString>
 #include <QStringBuilder>
-#include <QFile>
 #include <QtCore/QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
