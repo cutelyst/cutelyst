@@ -38,6 +38,8 @@ Controller::Controller(QObject *parent) :
 
 Controller::~Controller()
 {
+    Q_D(Controller);
+    qDeleteAll(d->actions);
     delete d_ptr;
 }
 
@@ -253,6 +255,7 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         for (int i = 0; i < roles.size(); ++i) {
             Does *does = roles.at(i);
             does->init(args);
+            does->setParent(action);
         }
         action->applyRoles(roles);
     }
