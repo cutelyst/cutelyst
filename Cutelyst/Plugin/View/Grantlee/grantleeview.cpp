@@ -116,7 +116,7 @@ bool GrantleeView::render(Context *ctx)
 {
     Q_D(GrantleeView);
 
-    const QVariantHash &stash = ctx->stash();
+    QVariantHash &stash = ctx->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
         if (ctx->action() && !ctx->action()->reverse().isEmpty()) {
@@ -129,14 +129,8 @@ bool GrantleeView::render(Context *ctx)
         }
     }
 
-    Grantlee::Context gCtx;
-    gCtx.insert(QStringLiteral("ctx"), ctx);
-
-    QVariantHash::ConstIterator it = stash.constBegin();
-    while (it != stash.constEnd()) {
-        gCtx.insert(it.key(), it.value());
-        ++it;
-    }
+    stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
+    Grantlee::Context gCtx(stash);
 
     Grantlee::Template tmpl;
     if (d->wrapper.isEmpty()) {
