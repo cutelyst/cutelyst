@@ -318,7 +318,6 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 void RequestPrivate::reset()
 {
     args = QStringList();
-    serverPort = 0;
     urlParsed = false;
     cookiesParsed = false;
     queryParamParsed = false;

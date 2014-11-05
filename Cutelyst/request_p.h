@@ -62,7 +62,7 @@ public:
     QByteArray path;
     QByteArray query;
     QString serverAddress;
-    quint16 serverPort = 0;
+    quint16 serverPort;
 
 protected:
     friend class Request;

@@ -133,21 +133,16 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     // Request->uri() from it, but we need to run a performance test
     priv->path = QByteArray::fromRawData(req->path_info, req->path_info_len);
 
-    QString host = QString::fromLatin1(req->host, req->host_len);
-    int index = host.indexOf(QChar(':'));
-    if (index != -1) {
-        priv->serverAddress = host.left(index);
-        bool uintOk;
-        priv->serverPort = host.mid(index + 1).toUInt(&uintOk);
-        if (!uintOk) {
-            priv->serverPort = priv->https ? 443 : 80;// fallback
-        }
+    char *pch = strchr(req->host, ':');
+    if (pch) {
+        priv->serverAddress = QString::fromLatin1(req->host, pch - req->host);
+        priv->serverPort = QByteArray::fromRawData(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
     } else {
-        priv->serverAddress = host;
+        priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
         priv->serverPort = priv->https ? 443 : 80;// fallback
     }
-
     priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);
+
     priv->method = QByteArray::fromRawData(req->method, req->method_len);
     priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
     priv->remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
