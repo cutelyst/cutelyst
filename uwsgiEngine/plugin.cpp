@@ -149,9 +149,16 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
 #endif // UWSGI_GO_CHEAP_CODE
 
+    // Set the configuration env
+    QStringList args = QCoreApplication::arguments();
     QString config(options.config);
     if (!config.isNull()) {
         qputenv("CUTELYST_CONFIG", config.toUtf8());
+    } else if (args.contains("--ini")) {
+        int index = args.indexOf("--ini");
+        if (index != -1 && index < args.size()) {
+            qputenv("CUTELYST_CONFIG", args.at(index + 1).toUtf8());
+        }
     }
 
     QPluginLoader *loader = new QPluginLoader(path);
