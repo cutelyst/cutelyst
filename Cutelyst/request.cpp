@@ -93,7 +93,9 @@ QUrl Request::uri() const
         }
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
         uri.setPath(d->path);
-        uri.setQuery(d->query);
+        if (!d->query.isEmpty()) {
+            uri.setQuery(d->query);
+        }
 
         d->url = uri;
         d->urlParsed = true;
