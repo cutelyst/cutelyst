@@ -175,13 +175,16 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
     }
     ret.setPath(encodedArgs.join(QLatin1Char('/')));
 
-    QUrlQuery query;
-    QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
-    while (i != queryValues.constEnd()) {
-        query.addQueryItem(i.key(), i.value());
-        ++i;
+    // Avoid a trailing '?'
+    if (queryValues.size()) {
+        QUrlQuery query;
+        QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
+        while (i != queryValues.constEnd()) {
+            query.addQueryItem(i.key(), i.value());
+            ++i;
+        }
+        ret.setQuery(query);
     }
-    ret.setQuery(query);
 
     return ret;
 }

@@ -78,6 +78,9 @@ protected:
     mutable bool urlParsed = false;
     mutable QUrl url;
 
+    mutable bool baseParsed = false;
+    mutable QUrl base;
+
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
 

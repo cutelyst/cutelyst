@@ -80,18 +80,7 @@ QUrl Request::uri() const
 {
     Q_D(const Request);
     if (!d->urlParsed) {
-        QUrl uri;
-        if (d->serverAddress.isNull()) {
-            // This is a hack just in case remote is not set
-            uri.setHost(QHostInfo::localHostName());
-        } else {
-            uri.setHost(d->serverAddress);
-            // Append the server port if different from default one
-            if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
-                uri.setPort(d->serverPort);
-            }
-        }
-        uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
+        QUrl uri = base();
         uri.setPath(d->path);
         if (!d->query.isEmpty()) {
             uri.setQuery(d->query);
@@ -105,10 +94,25 @@ QUrl Request::uri() const
 
 QUrl Request::base() const
 {
-    return uri().adjusted(QUrl::RemoveUserInfo |
-                          QUrl::RemovePath |
-                          QUrl::RemoveQuery |
-                          QUrl::RemoveFragment);
+    Q_D(const Request);
+    if (!d->baseParsed) {
+        QUrl base;
+        if (d->serverAddress.isNull()) {
+            // This is a hack just in case remote is not set
+            base.setHost(QHostInfo::localHostName());
+        } else {
+            base.setHost(d->serverAddress);
+            // Append the server port if different from default one
+            if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
+                base.setPort(d->serverPort);
+            }
+        }
+        base.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
+
+        d->base = base;
+        d->baseParsed = true;
+    }
+    return d->base;
 }
 
 QByteArray Request::path() const
@@ -321,6 +325,7 @@ void RequestPrivate::reset()
 {
     args = QStringList();
     urlParsed = false;
+    baseParsed = false;
     cookiesParsed = false;
     queryParamParsed = false;
     bodyParsed = false;
