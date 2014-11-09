@@ -116,6 +116,8 @@ public:
 
     Controller *controller(const QByteArray &name = QByteArray()) const;
 
+    void stash(const QVariantHash &unite);
+
     QVariantHash &stash();
 
     /**

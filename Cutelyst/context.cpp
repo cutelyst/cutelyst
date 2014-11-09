@@ -149,6 +149,12 @@ Controller *Context::controller(const QByteArray &name) const
     }
 }
 
+void Context::stash(const QVariantHash &unite)
+{
+    Q_D(Context);
+    d->stash.unite(unite);
+}
+
 QVariantHash &Context::stash()
 {
     Q_D(Context);
