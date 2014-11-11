@@ -201,13 +201,13 @@ bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
         int actionNumberOfArgs = action->numberOfArgs();
         Q_FOREACH (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
-                qCWarning(CUTELYST_DISPATCHER) << "Not registering Action"
-                                               << action->name()
-                                               << "of controller"
-                                               << action->controller()->objectName()
-                                               << "because it conflicts with "
-                                               << regAction->name();
-                return false;
+                qCCritical(CUTELYST_DISPATCHER) << "Not registering Action"
+                                                << action->name()
+                                                << "of controller"
+                                                << action->controller()->objectName()
+                                                << "because it conflicts with "
+                                                << regAction->name();
+                exit(1);
             }
         }
 
