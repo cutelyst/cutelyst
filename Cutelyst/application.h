@@ -34,6 +34,7 @@ class AbstractPlugin;
 
 class Context;
 class Controller;
+class View;
 class DispatchType;
 class Request;
 class Response;
@@ -117,6 +118,10 @@ public:
      * @return True if succeeded
      */
     bool registerController(Controller *controller);
+
+    bool registerView(View *view, const QByteArray &name = QByteArray());
+
+    View *view(const QByteArray &name = QByteArray()) const;
 
     /**
      * Registers a custom DispatchType, if none is registered

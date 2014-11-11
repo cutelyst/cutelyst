@@ -41,6 +41,7 @@ class Engine;
 class Response;
 class Dispatcher;
 class Controller;
+class View;
 class ContextPrivate;
 class Context : public QObject
 {
@@ -115,6 +116,8 @@ public:
     QByteArray controllerName() const;
 
     Controller *controller(const QByteArray &name = QByteArray()) const;
+
+    View *view(const QByteArray &name = QByteArray()) const;
 
     void stash(const QVariantHash &unite);
 

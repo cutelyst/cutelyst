@@ -38,6 +38,7 @@ public:
     Request *request;
     Response *response = 0;
     Action *action = 0;
+    View *view = 0;
     QStack<Action*> stack;
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;

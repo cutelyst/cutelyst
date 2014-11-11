@@ -19,6 +19,13 @@
 
 #include "renderview.h"
 
+#include "response.h"
+#include "view.h"
+
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview")
+
 using namespace Cutelyst;
 
 RenderView::RenderView()
@@ -31,5 +38,33 @@ RenderView::~RenderView()
 
 bool RenderView::doExecute(Cutelyst::Context *ctx) const
 {
-    return false;
+    if (!Action::doExecute(ctx)) {
+        return false;
+    }
+
+    Response *res = ctx->res();
+    if (res->contentType().isEmpty()) {
+        res->setContentType("text/html; charset=utf-8");
+    }
+
+    if (ctx->req()->method() == "HEAD") {
+        return true;
+    }
+
+    if (res->hasBody()) {
+        return true;
+    }
+
+    quint16 status = res->status();
+    if (status == 204 || (status >= 300 && status < 400)) {
+        return true;
+    }
+
+    View *view = ctx->view();
+    if (!view) {
+        qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";
+        res->setStatus(500);
+        return false;
+    }
+    return view->render(ctx);
 }

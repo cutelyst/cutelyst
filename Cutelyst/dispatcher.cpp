@@ -90,11 +90,12 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                                                 " If you still want to access it internally (via actionFor())"
                                                 " you may make it's method private.";
             } else if (d->showInternalActions) {
-                qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
-                                             << action->controller()->objectName()
-                                             << "controller was alread registered by the"
-                                             << d->actionHash.value(action->reverse())->controller()->objectName()
-                                             << "controller.";
+                qCCritical(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
+                                                << action->controller()->objectName()
+                                                << "controller was alread registered by the"
+                                                << d->actionHash.value(action->reverse())->controller()->objectName()
+                                                << "controller.";
+                exit(1);
             }
         }
 

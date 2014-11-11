@@ -28,6 +28,7 @@
 
 #include "Actions/actionrest.h"
 #include "Actions/roleacl.h"
+#include "Actions/renderview.h"
 
 #include <iostream>
 
@@ -57,6 +58,7 @@ Application::Application(QObject *parent) :
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaType<ActionREST *>();
     qRegisterMetaType<RoleACL *>();
+    qRegisterMetaType<RenderView *>();
 
     d->dispatcher = new Dispatcher(this);
 }
@@ -105,6 +107,22 @@ bool Application::registerController(Controller *controller)
     controller->init();
     d->controllers << controller;
     return true;
+}
+
+bool Application::registerView(View *view, const QByteArray &name)
+{
+    Q_D(Application);
+    if (d->views.contains(name)) {
+        return false;
+    }
+    d->views.insert(name, view);
+    return true;
+}
+
+View *Application::view(const QByteArray &name) const
+{
+    Q_D(const Application);
+    return d->views.value(name);
 }
 
 void Application::registerDispatcher(DispatchType *dispatcher)

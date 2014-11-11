@@ -40,6 +40,7 @@ public:
     Dispatcher *dispatcher;
     QList<Plugin::AbstractPlugin*> plugins;
     QList<Controller*> controllers;
+    QHash<QByteArray, View*> views;
     QVariantHash config;
 };
 

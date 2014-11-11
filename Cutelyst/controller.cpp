@@ -508,12 +508,13 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
         }
 
         if (!id) {
-            qCWarning(CUTELYST_CONTROLLER)
+            qCCritical(CUTELYST_CONTROLLER)
                     << "Class name"
                     << instanceName
                     << "is not registerd, you can register it with qRegisterMetaType<"
                     << instanceName.toLocal8Bit().data()
                     << ">();";
+            exit(1);
         }
     }
     return 0;

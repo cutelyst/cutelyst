@@ -25,6 +25,7 @@
 #include "action.h"
 #include "dispatcher.h"
 #include "controller.h"
+#include "application.h"
 
 #include <QUrl>
 #include <QUrlQuery>
@@ -147,6 +148,15 @@ Controller *Context::controller(const QByteArray &name) const
     } else {
         return d->dispatcher->controllers().value(name);
     }
+}
+
+View *Context::view(const QByteArray &name) const
+{
+    Q_D(const Context);
+    if (name.isNull() && d->view) {
+        return d->view;
+    }
+    return d->app->view(name);
 }
 
 void Context::stash(const QVariantHash &unite)

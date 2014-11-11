@@ -72,29 +72,6 @@ View::~View()
 {
 }
 
-bool View::process(Context *ctx)
-{
-    Response *res = ctx->res();
-    if (res->contentType().isEmpty()) {
-        res->setContentType("text/html; charset=utf-8");
-    }
-
-    if (ctx->req()->method() == "HEAD") {
-        return true;
-    }
-
-    if (res->hasBody()) {
-        return true;
-    }
-
-    quint16 status = res->status();
-    if (status == 204 || (status >= 300 && status < 400)) {
-        return true;
-    }
-
-    return render(ctx);
-}
-
 QString View::includePath() const
 {
     Q_ASSERT(m_interface);

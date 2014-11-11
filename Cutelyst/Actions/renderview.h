@@ -31,7 +31,8 @@ public:
     Q_INVOKABLE RenderView();
     virtual ~RenderView();
 
-    bool doExecute(Cutelyst::Context *ctx) const;
+protected:
+    virtual bool doExecute(Cutelyst::Context *ctx) const;
 };
 
 }

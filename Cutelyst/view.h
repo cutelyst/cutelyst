@@ -33,8 +33,6 @@ public:
     explicit View(const QString &engine, QObject *parent = 0);
     virtual ~View();
 
-    bool process(Context *ctx);
-
     QString includePath() const;
     void setIncludePath(const QString &path);
 
