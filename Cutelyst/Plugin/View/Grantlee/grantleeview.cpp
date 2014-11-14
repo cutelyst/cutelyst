@@ -113,7 +113,7 @@ bool GrantleeView::isCaching() const
 
 bool GrantleeView::render(Context *ctx)
 {
-    Q_D(GrantleeView);
+    Q_D(const GrantleeView);
 
     QVariantHash &stash = ctx->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();

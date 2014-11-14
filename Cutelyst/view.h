@@ -52,7 +52,7 @@ public:
      * All subclasses must reimplement this to
      * do it's rendering.
      */
-    virtual bool render(Context *ctx);
+    virtual bool render(Context *ctx) const;
 
 private:
     ViewInterface *m_interface = 0;

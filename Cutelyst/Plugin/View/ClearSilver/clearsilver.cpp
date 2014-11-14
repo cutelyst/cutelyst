@@ -196,13 +196,13 @@ bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVa
     return true;
 }
 
-void ClearSilverPrivate::renderError(Context *ctx, const QString &error)
+void ClearSilverPrivate::renderError(Context *ctx, const QString &error) const
 {
     qCCritical(CUTELYST_CLEARSILVER) << error;
     ctx->res()->body() = error.toUtf8();
 }
 
-HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash)
+HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash) const
 {
     HDF *hdf = 0;
     hdf_init(&hdf);
@@ -219,7 +219,7 @@ HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash)
     return hdf;
 }
 
-void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix)
+void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix) const
 {
     QString _prefix;
     if (!prefix.isNull()) {
@@ -233,7 +233,7 @@ void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const
     }
 }
 
-void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix)
+void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix) const
 {
     QString _prefix;
     if (!prefix.isNull()) {
@@ -247,7 +247,7 @@ void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QS
     }
 }
 
-void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const QString &key)
+void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const QString &key) const
 {
 //    qDebug() << key;
 

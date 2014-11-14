@@ -36,7 +36,7 @@ public:
     virtual bool init(Application *application, const QVariantHash &args);
 
 protected:
-    virtual bool doExecute(Cutelyst::Context *ctx) const;
+    virtual bool doExecute(Cutelyst::Context *ctx);
 
     RenderViewPrivate *d_ptr;
 };

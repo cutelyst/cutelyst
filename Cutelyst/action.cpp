@@ -43,7 +43,7 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
 {
     Q_D(Action);
 
-    Does::init(app, args);
+    init(app, args);
 
     d->name = args.value("name").toByteArray();
     d->ns = args.value("namespace").toByteArray();
@@ -142,7 +142,7 @@ bool Action::isValid() const
     return d->valid;
 }
 
-bool Action::doExecute(Context *ctx) const
+bool Action::doExecute(Context *ctx)
 {
     Q_D(const Action);
     if (ctx->detached()) {

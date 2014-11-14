@@ -128,7 +128,7 @@ protected:
     /**
      * Execute this action against
      */
-    virtual bool doExecute(Context *ctx) const;
+    virtual bool doExecute(Context *ctx);
 
     /**
      * Called by dispatcher to setup the Action

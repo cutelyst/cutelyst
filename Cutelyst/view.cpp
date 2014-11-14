@@ -120,7 +120,7 @@ void View::setCache(bool enable)
     m_interface->setCache(enable);
 }
 
-bool View::render(Context *ctx)
+bool View::render(Context *ctx) const
 {
     Q_ASSERT(m_interface);
     return m_interface->render(ctx);

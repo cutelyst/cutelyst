@@ -40,7 +40,7 @@ public:
 
     virtual bool init(Application *application, const QVariantHash &args);
 
-    virtual bool aroundExecute(Context *ctx, DoesCode code) const;
+    virtual bool aroundExecute(Context *ctx, DoesCode code);
 
     bool canVisit(Context *ctx) const;
 

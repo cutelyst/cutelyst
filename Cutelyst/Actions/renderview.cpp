@@ -48,7 +48,7 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
     d->view = application->view(attributes.value("View"));
 }
 
-bool RenderView::doExecute(Cutelyst::Context *ctx) const
+bool RenderView::doExecute(Cutelyst::Context *ctx)
 {
     Q_D(const RenderView);
 

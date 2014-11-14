@@ -103,7 +103,6 @@ bool Application::registerController(Controller *controller)
         return false;
     }
 
-    controller->init(this);
     d->controllers << controller;
     return true;
 }
@@ -160,6 +159,10 @@ bool Application::setup(Engine *engine)
     // Call the virtual application init
     // to setup Controllers plugins stuff
     if (init()) {
+        Q_FOREACH(Controller *controller, d->controllers) {
+            controller->init(this);
+        }
+
         d->dispatcher->setupActions(d->controllers);
         d->init = true;
         return true;

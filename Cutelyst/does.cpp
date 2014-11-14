@@ -69,13 +69,13 @@ bool Does::execute(Context *ctx)
     return doExecute(ctx);
 }
 
-bool Does::beforeExecute(Context *ctx) const
+bool Does::beforeExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-bool Does::aroundExecute(Context *ctx, Cutelyst::Does::DoesCode code) const
+bool Does::aroundExecute(Context *ctx, Cutelyst::Does::DoesCode code)
 {
     Q_UNUSED(ctx)
 
@@ -87,13 +87,13 @@ bool Does::aroundExecute(Context *ctx, Cutelyst::Does::DoesCode code) const
     return code.execute->doExecute(ctx);
 }
 
-bool Does::afterExecute(Context *ctx) const
+bool Does::afterExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-bool Does::doExecute(Context *ctx) const
+bool Does::doExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;

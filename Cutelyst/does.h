@@ -66,13 +66,13 @@ public:
     bool execute(Context *ctx);
 
 protected:
-    virtual bool beforeExecute(Context *ctx) const;
+    virtual bool beforeExecute(Context *ctx);
 
-    virtual bool aroundExecute(Context *ctx, DoesCode code) const;
+    virtual bool aroundExecute(Context *ctx, DoesCode code);
 
-    virtual bool afterExecute(Context *ctx) const;
+    virtual bool afterExecute(Context *ctx);
 
-    virtual bool doExecute(Context *ctx) const;
+    virtual bool doExecute(Context *ctx);
 
     void applyRoles(const QStack<Does *> &roles);
 

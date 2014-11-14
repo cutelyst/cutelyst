@@ -82,7 +82,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     return true;
 }
 
-bool RoleACL::aroundExecute(Context *ctx, Does::DoesCode code) const
+bool RoleACL::aroundExecute(Context *ctx, Does::DoesCode code)
 {
     Q_D(const RoleACL);
 
