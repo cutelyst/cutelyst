@@ -46,6 +46,8 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
     QMap<QByteArray, QByteArray> attributes;
     attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
     d->view = application->view(attributes.value("View"));
+
+    return Action::init(application, args);
 }
 
 bool RenderView::doExecute(Cutelyst::Context *ctx)
