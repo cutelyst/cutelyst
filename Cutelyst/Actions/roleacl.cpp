@@ -45,9 +45,10 @@ Does::Modifiers RoleACL::modifiers() const
     return AroundExecute;
 }
 
-bool RoleACL::init(const QVariantHash &args)
+bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_D(RoleACL);
+    Q_UNUSED(application)
 
     QMap<QByteArray, QByteArray> attributes;
     attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();

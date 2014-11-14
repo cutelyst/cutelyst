@@ -38,7 +38,7 @@ public:
 
     virtual Modifiers modifiers() const;
 
-    virtual bool init(const QVariantHash &args);
+    virtual bool init(Application *application, const QVariantHash &args);
 
     virtual bool aroundExecute(Context *ctx, DoesCode code) const;
 

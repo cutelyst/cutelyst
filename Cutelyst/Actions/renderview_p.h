@@ -8,7 +8,7 @@ namespace Cutelyst {
 class RenderViewPrivate
 {
 public:
-    QByteArray view;
+    View *view;
 };
 
 }

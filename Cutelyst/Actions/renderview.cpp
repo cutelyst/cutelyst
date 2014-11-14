@@ -39,13 +39,13 @@ RenderView::~RenderView()
     delete d_ptr;
 }
 
-bool RenderView::init(const QVariantHash &args)
+bool RenderView::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_D(RenderView);
 
     QMap<QByteArray, QByteArray> attributes;
     attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
-    d->view = attributes.value("View");
+    d->view = application->view(attributes.value("View"));
 }
 
 bool RenderView::doExecute(Cutelyst::Context *ctx) const
@@ -77,11 +77,8 @@ bool RenderView::doExecute(Cutelyst::Context *ctx) const
     View *view = ctx->view();
     if (view) {
         return view->render(ctx);
-    }
-
-    view = ctx->app()->view(d->view);
-    if (view) {
-        return view->render(ctx);
+    } else if (d->view) {
+        return d->view->render(ctx);
     }
 
     qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";

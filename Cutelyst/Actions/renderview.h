@@ -33,7 +33,7 @@ public:
     Q_INVOKABLE RenderView();
     virtual ~RenderView();
 
-    virtual bool init(const QVariantHash &args);
+    virtual bool init(Application *application, const QVariantHash &args);
 
 protected:
     virtual bool doExecute(Cutelyst::Context *ctx) const;
