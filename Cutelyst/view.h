@@ -22,16 +22,20 @@
 
 #include <QObject>
 
+#include <Cutelyst/Code>
+
 namespace Cutelyst {
 
 class Context;
 class ViewInterface;
-class View : public QObject
+class View : public Code
 {
     Q_OBJECT
 public:
     explicit View(const QString &engine, QObject *parent = 0);
     virtual ~View();
+
+    virtual Modifiers modifiers() const;
 
     QString includePath() const;
     void setIncludePath(const QString &path);
@@ -56,6 +60,8 @@ public:
 
 private:
     ViewInterface *m_interface = 0;
+
+    virtual bool doExecute(Context *ctx);
 };
 
 }

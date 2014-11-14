@@ -43,7 +43,7 @@ public:
     };
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
-    Code();
+    explicit Code(QObject *parent = 0);
     virtual ~Code();
 
     virtual Modifiers modifiers() const = 0;

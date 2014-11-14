@@ -22,7 +22,8 @@
 
 using namespace Cutelyst;
 
-Code::Code() :
+Code::Code(QObject *parent) :
+    QObject(parent),
     d_ptr(new CodePrivate)
 {
 }
