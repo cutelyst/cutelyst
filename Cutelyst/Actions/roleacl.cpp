@@ -40,7 +40,7 @@ RoleACL::~RoleACL()
     delete d_ptr;
 }
 
-Does::Modifiers RoleACL::modifiers() const
+Code::Modifiers RoleACL::modifiers() const
 {
     return AroundExecute;
 }
@@ -82,12 +82,12 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     return true;
 }
 
-bool RoleACL::aroundExecute(Context *ctx, Does::DoesCode code)
+bool RoleACL::aroundExecute(Context *ctx, QStack<Code *> stack)
 {
     Q_D(const RoleACL);
 
     if (canVisit(ctx)) {
-        return Does::aroundExecute(ctx, code);
+        return Code::aroundExecute(ctx, stack);
     }
 
     ctx->detach(d->detachTo);

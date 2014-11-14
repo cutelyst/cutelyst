@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DOES_H
-#define DOES_H
+#ifndef CUTELYST_CODE_H
+#define CUTELYST_CODE_H
 
 #include <QObject>
 
@@ -27,21 +27,14 @@
 namespace Cutelyst {
 
 class Context;
-class DoesPrivate;
-class Does : public QObject
+class CodePrivate;
+class Code : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(Does)
+    Q_DECLARE_PRIVATE(Code)
     Q_ENUMS(Modifier)
     Q_FLAGS(Modifiers)
 public:
-    class DoesCode {
-        friend class Does;
-    protected:
-        Does *execute;
-        QStack<Does *> stack;
-    };
-
     enum Modifier {
         OnlyExecute   = 0 << 1,
         BeforeExecute = 1 << 1,
@@ -50,8 +43,8 @@ public:
     };
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
-    Does();
-    virtual ~Does();
+    Code();
+    virtual ~Code();
 
     virtual Modifiers modifiers() const = 0;
 
@@ -68,13 +61,13 @@ public:
 protected:
     virtual bool beforeExecute(Context *ctx);
 
-    virtual bool aroundExecute(Context *ctx, DoesCode code);
+    virtual bool aroundExecute(Context *ctx, QStack<Code *> stack);
 
     virtual bool afterExecute(Context *ctx);
 
     virtual bool doExecute(Context *ctx);
 
-    void applyRoles(const QStack<Does *> &roles);
+    void applyRoles(const QStack<Code *> &roles);
 
     /**
      * Called by dispatcher once it's done preparing actions
@@ -86,9 +79,9 @@ protected:
 
 protected:
     friend class Controller;
-    DoesPrivate *d_ptr;
+    CodePrivate *d_ptr;
 };
 
 }
 
-#endif // DOES_H
+#endif // CUTELYST_CODE_H

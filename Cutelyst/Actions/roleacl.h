@@ -22,13 +22,13 @@
 
 #include <QVariantHash>
 
-#include <Cutelyst/does.h>
+#include <Cutelyst/Code>
 #include <Cutelyst/Context>
 
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class RoleACL : public Does
+class RoleACL : public Code
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
@@ -40,7 +40,7 @@ public:
 
     virtual bool init(Application *application, const QVariantHash &args);
 
-    virtual bool aroundExecute(Context *ctx, DoesCode code);
+    virtual bool aroundExecute(Context *ctx, QStack<Code *> stack);
 
     bool canVisit(Context *ctx) const;
 

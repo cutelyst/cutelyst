@@ -45,6 +45,7 @@ Q_LOGGING_CATEGORY(CUTELYST_REQUEST, "cutelyst.request")
 Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
 Q_LOGGING_CATEGORY(CUTELYST_ENGINE_HTTP, "cutelyst.engine.http")
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
+Q_LOGGING_CATEGORY(CUTELYST_CODE, "cutelyst.code")
 
 using namespace std;
 using namespace Cutelyst;

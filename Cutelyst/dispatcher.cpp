@@ -360,7 +360,7 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
     QByteArray ret = path;
     if (!ret.startsWith('/')) {
         ret.prepend('/');
-        ret.prepend(ctx->stack().last()->ns());
+        ret.prepend(qobject_cast<Action *>(ctx->stack().last())->ns());
     }
 
     if (ret.startsWith('/')) {

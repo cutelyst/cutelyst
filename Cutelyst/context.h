@@ -37,6 +37,7 @@ class AbstractPlugin;
 
 class Action;
 class Application;
+class Code;
 class Engine;
 class Response;
 class Dispatcher;
@@ -190,7 +191,7 @@ public:
     /**
      * Returns the internal execution stack (actions that are currently executing).
      */
-    QStack<Action *> stack() const;
+    QStack<Code *> stack() const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -320,7 +321,7 @@ public:
     /**
      * Execute an action. Errors are available via error().
      */
-    bool execute(Action *action);
+    bool execute(Code *code);
 
 Q_SIGNALS:
     void beforePrepareAction(bool *skipMethod);

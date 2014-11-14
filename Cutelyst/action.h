@@ -23,7 +23,7 @@
 #include <QStringList>
 #include <QMetaMethod>
 
-#include <Cutelyst/does.h>
+#include <Cutelyst/Code>
 
 namespace Cutelyst {
 
@@ -31,7 +31,7 @@ class Context;
 class Controller;
 class Dispatcher;
 class ActionPrivate;
-class Action : public Does
+class Action : public Code
 {
     Q_OBJECT
 public:

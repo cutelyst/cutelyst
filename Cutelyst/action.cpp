@@ -34,9 +34,9 @@ Action::~Action()
     delete d_ptr;
 }
 
-Does::Modifiers Action::modifiers() const
+Code::Modifiers Action::modifiers() const
 {
-    return Does::OnlyExecute;
+    return Code::OnlyExecute;
 }
 
 void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller, Application *app)

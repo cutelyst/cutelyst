@@ -39,7 +39,7 @@ public:
     Response *response = 0;
     Action *action = 0;
     View *view = 0;
-    QStack<Action*> stack;
+    QStack<Code *> stack;
     Dispatcher *dispatcher;
     QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
     bool detached = false;

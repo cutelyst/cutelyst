@@ -174,7 +174,7 @@ QVariantHash &Context::stash()
     return d->stash;
 }
 
-QStack<Action *> Context::stack() const
+QStack<Code *> Context::stack() const
 {
     Q_D(const Context);
     return d->stack;
@@ -293,13 +293,13 @@ QList<Plugin::AbstractPlugin *> Context::plugins()
     return d->plugins.keys();
 }
 
-bool Context::execute(Action *action)
+bool Context::execute(Code *code)
 {
     Q_D(Context);
 
-    d->stack.push(action);
+    d->stack.push(code);
 
-    bool ret = action->execute(this);
+    bool ret = code->execute(this);
 
     d->stack.pop();
 

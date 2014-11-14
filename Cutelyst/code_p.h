@@ -17,23 +17,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DOES_P_H
-#define DOES_P_H
+#ifndef CUTELYST_CODE_P_H
+#define CUTELYST_CODE_P_H
 
-#include "does.h"
+#include "code.h"
 
 namespace Cutelyst {
 
-class DoesPrivate
+class CodePrivate
 {
 public:
     bool proccessRoles = false;
-    QStack<Does *> beforeRoles;
-    QStack<Does *> aroundRoles;
-    QStack<Does *> afterRoles;
-    QStack<Does *> roles;
+    QStack<Code *> beforeRoles;
+    QStack<Code *> aroundRoles;
+    QStack<Code *> afterRoles;
+    QStack<Code *> roles;
 };
 
 }
 
-#endif // DOES_P_H
+#endif // CUTELYST_CODE_P_H
