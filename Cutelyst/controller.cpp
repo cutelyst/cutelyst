@@ -19,6 +19,7 @@
 
 #include "controller_p.h"
 
+#include "application.h"
 #include "dispatcher.h"
 #include "action.h"
 #include "common.h"
@@ -85,9 +86,12 @@ void Controller::End(Context *ctx)
 
 }
 
-void Controller::init()
+void Controller::init(Application *app)
 {
     Q_D(Controller);
+
+    // Application must always be our parent
+    setParent(app);
 
     const QMetaObject *meta = metaObject();
     const QString &className = QString::fromLatin1(meta->className());
@@ -120,7 +124,7 @@ void Controller::init()
     }
     d->pathPrefix = controlerNS;
 
-    d->registerActionMethods(meta, this);
+    d->registerActionMethods(meta, this, app);
 }
 
 void Controller::setupActions(Dispatcher *dispatcher)
@@ -240,7 +244,7 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
     return new Action;
 }
 
-Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller)
+Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app)
 {
     Action *action = actionClass(args);
     if (!action) {
@@ -254,18 +258,18 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         QStack<Does *> roles = gatherActionRoles(args);
         for (int i = 0; i < roles.size(); ++i) {
             Does *does = roles.at(i);
-            does->init(args);
+            does->init(app, args);
             does->setParent(action);
         }
         action->applyRoles(roles);
     }
 
-    action->setupAction(method, args, controller);
+    action->setupAction(method, args, controller, app);
 
     return action;
 }
 
-void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controller *controller)
+void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app)
 {
     // Setup actions
     for (int i = 0; i < meta->methodCount(); ++i) {
@@ -298,7 +302,8 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                               {"attributes", QVariant::fromValue(attrs)}
                                           },
                                           method,
-                                          controller);
+                                          controller,
+                                          app);
 
             actions.insertMulti(action->reverse(), action);
         }

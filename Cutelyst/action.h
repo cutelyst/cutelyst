@@ -133,7 +133,7 @@ protected:
     /**
      * Called by dispatcher to setup the Action
      */
-    void setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller);
+    void setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller, Application *app);
 
 private:
     Q_DECLARE_PRIVATE(Action)

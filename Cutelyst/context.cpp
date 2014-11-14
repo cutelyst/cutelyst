@@ -150,13 +150,16 @@ Controller *Context::controller(const QByteArray &name) const
     }
 }
 
-View *Context::view(const QByteArray &name) const
+View *Context::view() const
 {
     Q_D(const Context);
-    if (name.isNull() && d->view) {
-        return d->view;
-    }
-    return d->app->view(name);
+    return d->view;
+}
+
+void Context::setView(const QByteArray &name)
+{
+    Q_D(Context);
+    d->view = d->app->view(name);
 }
 
 void Context::stash(const QVariantHash &unite)

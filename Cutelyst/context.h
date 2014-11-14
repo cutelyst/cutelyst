@@ -51,6 +51,7 @@ class Context : public QObject
     Q_PROPERTY(QByteArray ns READ ns)
     Q_PROPERTY(Request *req READ request)
     Q_PROPERTY(Request *request READ request)
+    Q_PROPERTY(Controller *controller READ controller)
     Q_PROPERTY(QByteArray controllerName READ controllerName)
     Q_PROPERTY(bool state READ state)
 public:
@@ -67,15 +68,25 @@ public:
     bool state() const;
 
     void setState(bool state);
-    inline QStringList args() const
-    { return request()->args(); }
 
-    QString uriPrefix() const;
+    /**
+     * Returns the engine instance. See Cutelyst::Engine
+     */
     Engine *engine() const;
 
+    /**
+     * Returns the application instance. See Cutelyst::Application
+     */
     Application *app() const;
 
+    /**
+     * Returns the current Cutelyst::Response object, see there for details.
+     */
     Response *response() const;
+
+    /**
+     * Returns the current Cutelyst::Response object, see there for details.
+     */
     Response *res() const;
 
     /**
@@ -108,6 +119,9 @@ public:
      */
     Request *req() const;
 
+    /**
+     * Returns the dispatcher instance. See Cutelyst::Dispatcher
+     */
     Dispatcher *dispatcher() const;
 
     /**
@@ -115,12 +129,62 @@ public:
      */
     QByteArray controllerName() const;
 
+    /**
+     * Returns the current controller or
+     * if name is not null the controller
+     * named by name
+     */
     Controller *controller(const QByteArray &name = QByteArray()) const;
 
-    View *view(const QByteArray &name = QByteArray()) const;
+    /**
+     * Returns the current view to be used
+     * for rendering this request, if one
+     * is set by setView()
+     */
+    View *view() const;
 
+    /**
+     * Defines the view to be used to render
+     * the request, it must be previously
+     * be registered by Cutelyst::Application.
+     *
+     * Action classes like RenderView will use
+     * this value to overwrite their settings.
+     */
+    void setView(const QByteArray &name);
+
+    /**
+     * You can set hash keys by passing arguments,
+     * that will be united with the stash,
+     * which may be used to store data and pass it between
+     * components during a request.
+     *
+     * The stash is automatically sent to the view.
+     * The stash is cleared at the end of a request;
+     * it cannot be used for persistent storage
+     * (for this you must use a session; see Cutelyst::Plugin::Session
+     * for a complete system integrated with Cutelyst).
+     *
+     * \code{.cpp}
+     * ctx->stash({
+     *              {"foo", 10},
+     *              {"bar", QStringLiteral("my stash value")}
+     *            });
+     * \endcode
+     */
     void stash(const QVariantHash &unite);
 
+    /**
+     * Returns a QVariantHash reference to the stash,
+     * which may be used to store data and pass it between
+     * components during a request.
+     *
+     * The stash is automatically sent to the view.
+     * The stash is cleared at the end of a request;
+     * it cannot be used for persistent storage
+     * (for this you must use a session; see Cutelyst::Plugin::Session
+     * for a complete system integrated with Cutelyst).
+     */
     QVariantHash &stash();
 
     /**
@@ -213,6 +277,10 @@ public:
                                    const QMultiHash<QString, QString> &queryValues) const
     { return uriForAction(path, QStringList(), queryValues); }
 
+    /**
+     * Returns true if the last executed Action requested
+     * that the processing be escaped.
+     */
     bool detached() const;
 
     /**
@@ -224,7 +292,15 @@ public:
 
     bool forward(Action *action, const QStringList &arguments = QStringList());
     bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
+
+    /**
+     * Gets an action in a given namespace.
+     */
     Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
+
+    /**
+     * Gets all actions of a given name in a namespace and all parent namespaces.
+     */
     QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
 
     bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);

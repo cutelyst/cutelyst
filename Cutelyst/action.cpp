@@ -39,11 +39,11 @@ Does::Modifiers Action::modifiers() const
     return Does::OnlyExecute;
 }
 
-void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller)
+void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller, Application *app)
 {
     Q_D(Action);
 
-    Does::init(args);
+    Does::init(app, args);
 
     d->name = args.value("name").toByteArray();
     d->ns = args.value("namespace").toByteArray();
@@ -149,7 +149,7 @@ bool Action::doExecute(Context *ctx) const
         return false;
     }
 
-    QStringList args = ctx->args();
+    QStringList args = ctx->request()->args();
     // Fill the missing arguments
     args += d->emptyArgs;
 

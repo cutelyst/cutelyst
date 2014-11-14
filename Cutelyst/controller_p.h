@@ -29,8 +29,8 @@ class ControllerPrivate
 {
 public:
     Action* actionClass(const QVariantHash &args);
-    Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller);
-    void registerActionMethods(const QMetaObject *meta, Controller *controller);
+    Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
+    void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
     QMap<QByteArray, QByteArray> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Does *> gatherActionRoles(const QVariantHash &args);
     QByteArray parsePathAttr(const QByteArray &_value);

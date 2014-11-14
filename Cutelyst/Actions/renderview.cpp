@@ -17,10 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "renderview.h"
+#include "renderview_p.h"
 
 #include "response.h"
 #include "view.h"
+#include "application.h"
 
 #include <QLoggingCategory>
 
@@ -28,16 +29,29 @@ Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview")
 
 using namespace Cutelyst;
 
-RenderView::RenderView()
+RenderView::RenderView() :
+    d_ptr(new RenderViewPrivate)
 {
 }
 
 RenderView::~RenderView()
 {
+    delete d_ptr;
+}
+
+bool RenderView::init(const QVariantHash &args)
+{
+    Q_D(RenderView);
+
+    QMap<QByteArray, QByteArray> attributes;
+    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    d->view = attributes.value("View");
 }
 
 bool RenderView::doExecute(Cutelyst::Context *ctx) const
 {
+    Q_D(const RenderView);
+
     if (!Action::doExecute(ctx)) {
         return false;
     }
@@ -61,10 +75,16 @@ bool RenderView::doExecute(Cutelyst::Context *ctx) const
     }
 
     View *view = ctx->view();
-    if (!view) {
-        qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";
-        res->setStatus(500);
-        return false;
+    if (view) {
+        return view->render(ctx);
     }
-    return view->render(ctx);
+
+    view = ctx->app()->view(d->view);
+    if (view) {
+        return view->render(ctx);
+    }
+
+    qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";
+    res->setStatus(500);
+    return false;
 }

@@ -24,15 +24,21 @@
 
 namespace Cutelyst {
 
+class RenderViewPrivate;
 class RenderView : public Action
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(RenderView)
 public:
     Q_INVOKABLE RenderView();
     virtual ~RenderView();
 
+    virtual bool init(const QVariantHash &args);
+
 protected:
     virtual bool doExecute(Cutelyst::Context *ctx) const;
+
+    RenderViewPrivate *d_ptr;
 };
 
 }

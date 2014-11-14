@@ -31,8 +31,9 @@ Does::~Does()
     delete d_ptr;
 }
 
-bool Does::init(const QVariantHash &args)
+bool Does::init(Cutelyst::Application *application, const QVariantHash &args)
 {
+    Q_UNUSED(application)
     Q_UNUSED(args)
     return true;
 }

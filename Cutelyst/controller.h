@@ -126,7 +126,7 @@ protected:
     virtual void End(Context *ctx);
 
     // Called when registering
-    void init();
+    void init(Application *app);
     // Called after all controllers got registered
     void setupActions(Dispatcher *dispatcher);
 

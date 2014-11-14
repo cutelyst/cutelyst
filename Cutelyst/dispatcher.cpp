@@ -349,7 +349,7 @@ Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, cons
 
     Action *ret = d->actionHash.value(command);
     if (!ret) {
-        ret = invokeAsPath(ctx, command, ctx->args());
+        ret = invokeAsPath(ctx, command, ctx->request()->args());
     }
 
     return ret;

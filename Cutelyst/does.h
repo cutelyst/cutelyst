@@ -61,7 +61,7 @@ public:
      * will fail to start. Often useful if the user
      * misconfigured the settings
      */
-    virtual bool init(const QVariantHash &args);
+    virtual bool init(Application *application, const QVariantHash &args);
 
     bool execute(Context *ctx);
 

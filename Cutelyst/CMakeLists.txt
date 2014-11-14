@@ -22,6 +22,7 @@ set(cutelystqt_SRC
     Actions/actionrest.cpp
     Actions/actionrest_p.h
     Actions/renderview.cpp
+    Actions/renderview_p.h
     Actions/roleacl.cpp
     Actions/roleacl_p.h
     engine.cpp
