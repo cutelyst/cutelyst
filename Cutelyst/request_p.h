@@ -31,8 +31,6 @@
 
 namespace Cutelyst {
 
-typedef QPair<QString, QString> StringPair;
-
 class Engine;
 class RequestPrivate
 {

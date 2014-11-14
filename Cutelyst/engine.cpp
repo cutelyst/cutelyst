@@ -32,8 +32,6 @@
 
 using namespace Cutelyst;
 
-typedef QPair<QString, QString> StringPair;
-
 Engine::Engine(QObject *parent) :
     QObject(parent),
     d_ptr(new EnginePrivate)
