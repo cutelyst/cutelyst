@@ -7,7 +7,6 @@ find_package(Qt5 5.2.0 COMPONENTS
     Core
     Network
 )
-set(CMAKE_BUILD_TYPE "Debug")
 
 set(CUTELYST_VERSION_MAJOR  "0")
 set(CUTELYST_VERSION_MINOR  "5")
