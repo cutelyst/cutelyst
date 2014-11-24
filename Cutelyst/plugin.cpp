@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,35 +17,34 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef AUTHENTICATION_STORE_MINIMAL_H
-#define AUTHENTICATION_STORE_MINIMAL_H
+#include "plugin.h"
 
-#include <Cutelyst/Plugin/plugin.h>
-#include <Cutelyst/Plugin/authentication.h>
+#include "context.h"
 
-namespace Cutelyst {
+using namespace Cutelyst;
 
-namespace Plugin {
-
-class StoreMinimal : public Authentication::Store
+Plugin::Plugin(QObject *parent) :
+    QObject(parent)
 {
-public:
-    StoreMinimal();
-
-    void addUser(const Authentication::User &user);
-
-    Authentication::User findUser(Context *ctx, const CStringHash &userInfo);
-
-    virtual QVariant forSession(Context *ctx, const Authentication::User &user);
-
-    virtual Authentication::User fromSession(Context *ctx, const QVariant &frozenUser);
-
-private:
-    QList<Authentication::User> m_users;
-};
-
-} // namespace CutelystPlugin
-
 }
 
-#endif // AUTHENTICATION_STORE_MINIMAL_H
+bool Plugin::setup(Context *ctx)
+{
+    Q_UNUSED(ctx)
+    return true;
+}
+
+bool Plugin::isApplicationPlugin() const
+{
+    return false;
+}
+
+QVariant Plugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
+{
+    return ctx->pluginProperty(const_cast<Plugin *>(this), key, defaultValue);
+}
+
+void Plugin::setPluginProperty(Context *ctx, const QString &key, const QVariant &value)
+{
+    ctx->setPluginProperty(this, key, value);
+}

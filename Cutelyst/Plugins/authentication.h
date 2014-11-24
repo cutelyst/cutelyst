@@ -20,16 +20,14 @@
 #ifndef AUTHENTICATION_H
 #define AUTHENTICATION_H
 
-#include <Cutelyst/Plugin/plugin.h>
+#include <Cutelyst/plugin.h>
 
 #include <QObject>
 
 namespace Cutelyst {
 
-namespace Plugin {
-
 class AuthenticationPrivate;
-class Authentication : public AbstractPlugin
+class Authentication : public Plugin
 {
     Q_OBJECT
 public:
@@ -165,10 +163,8 @@ private:
 
 }
 
-}
-
-Q_DECLARE_METATYPE(Cutelyst::Plugin::Authentication::User)
-QDataStream &operator<<(QDataStream &out, const Cutelyst::Plugin::Authentication::User &myObj);
-QDataStream &operator>>(QDataStream &in, Cutelyst::Plugin::Authentication::User &myObj);
+Q_DECLARE_METATYPE(Cutelyst::Authentication::User)
+QDataStream &operator<<(QDataStream &out, const Cutelyst::Authentication::User &myObj);
+QDataStream &operator>>(QDataStream &in, Cutelyst::Authentication::User &myObj);
 
 #endif // AUTHENTICATION_H

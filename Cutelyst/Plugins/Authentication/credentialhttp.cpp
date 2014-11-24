@@ -26,7 +26,7 @@
 #include <QStringBuilder>
 #include <QLoggingCategory>
 
-using namespace Cutelyst::Plugin;
+using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp")
 

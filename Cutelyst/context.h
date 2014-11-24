@@ -31,10 +31,6 @@
 
 namespace Cutelyst {
 
-namespace Plugin {
-class AbstractPlugin;
-}
-
 class Action;
 class Application;
 class Code;
@@ -43,6 +39,7 @@ class Response;
 class Dispatcher;
 class Controller;
 class View;
+class Plugin;
 class ContextPrivate;
 class Context : public QObject
 {
@@ -304,13 +301,13 @@ public:
      */
     QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
 
-    bool registerPlugin(Cutelyst::Plugin::AbstractPlugin *plugin, bool takeOwnership = true);
-    QList<Plugin::AbstractPlugin *> plugins();
+    bool registerPlugin(Plugin *plugin, bool takeOwnership = true);
+    QList<Plugin *> plugins();
 
     template <typename T>
     T plugin()
     {
-        Q_FOREACH (Plugin::AbstractPlugin *plugin, plugins()) {
+        Q_FOREACH (Plugin *plugin, plugins()) {
             if (qobject_cast<T>(plugin)) {
                 return qobject_cast<T>(plugin);
             }
@@ -329,13 +326,13 @@ Q_SIGNALS:
     void afterDispatch();
 
 protected:
-    QVariant pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
-    void setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &name, const QVariant &value);
+    QVariant pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
+    void setPluginProperty(Plugin *plugin, const QString &name, const QVariant &value);
 
     friend class Application;
     friend class Action;
     friend class DispatchType;
-    friend class Plugin::AbstractPlugin;
+    friend class Plugin;
     ContextPrivate *d_ptr;
 
 private:

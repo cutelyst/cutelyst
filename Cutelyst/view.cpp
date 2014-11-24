@@ -21,7 +21,7 @@
 #include "context.h"
 #include "response.h"
 #include "request.h"
-#include "Plugin/View/ViewInterface.h"
+#include "Plugins/View/ViewInterface.h"
 
 #include "common.h"
 

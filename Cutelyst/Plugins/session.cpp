@@ -31,12 +31,11 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
-using namespace Plugin;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 Session::Session(QObject *parent) :
-    AbstractPlugin(parent),
+    Plugin(parent),
     m_removeRE("-|{|}")
 {
 }

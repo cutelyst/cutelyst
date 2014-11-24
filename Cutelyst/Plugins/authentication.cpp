@@ -24,12 +24,12 @@
 
 #include <QLoggingCategory>
 
-using namespace Cutelyst::Plugin;
+using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 
 Authentication::Authentication(QObject *parent) :
-    AbstractPlugin(parent),
+    Plugin(parent),
     d_ptr(new AuthenticationPrivate)
 {
     qRegisterMetaType<User>();
@@ -404,7 +404,7 @@ QDataStream &operator>>(QDataStream &in, Authentication::User &user)
     return in;
 }
 
-QVariant Authentication::Store::forSession(Context *ctx, const Plugin::Authentication::User &user)
+QVariant Authentication::Store::forSession(Context *ctx, const Authentication::User &user)
 {
     Q_UNUSED(ctx)
     return QVariant::fromValue(user);

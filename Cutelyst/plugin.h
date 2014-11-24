@@ -26,18 +26,14 @@
 
 namespace Cutelyst {
 
-class Context;
-class Application;
-
-namespace Plugin {
-
 typedef QHash<QString, QString> CStringHash;
 
-class AbstractPlugin : public QObject
+class Context;
+class Plugin : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractPlugin(QObject *parent = 0);
+    explicit Plugin(QObject *parent = 0);
 
     /**
      * Reimplement this if you need to connect to
@@ -60,8 +56,6 @@ protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Context *ctx, const QString &key, const QVariant &value);
 };
-
-}
 
 }
 

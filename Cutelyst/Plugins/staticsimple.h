@@ -4,15 +4,13 @@
 #include <QObject>
 #include <QRegularExpression>
 
-#include "plugin.h"
+#include <Cutelyst/plugin.h>
 
 namespace Cutelyst {
 
 class Context;
 
-namespace Plugin {
-
-class StaticSimple : public AbstractPlugin
+class StaticSimple : public Plugin
 {
     Q_OBJECT
 public:
@@ -31,8 +29,6 @@ private:
     QString m_rootDir;
     QRegularExpression m_re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
 };
-
-}
 
 }
 

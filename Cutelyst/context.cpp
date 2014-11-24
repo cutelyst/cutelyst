@@ -272,7 +272,7 @@ QList<Action *> Context::getActions(const QByteArray &action, const QByteArray &
     return d->dispatcher->getActions(action, ns);
 }
 
-bool Context::registerPlugin(Plugin::AbstractPlugin *plugin, bool takeOwnership)
+bool Context::registerPlugin(Plugin *plugin, bool takeOwnership)
 {
     Q_D(Context);
     if (plugin->setup(this)) {
@@ -289,7 +289,7 @@ bool Context::registerPlugin(Plugin::AbstractPlugin *plugin, bool takeOwnership)
     return false;
 }
 
-QList<Plugin::AbstractPlugin *> Context::plugins()
+QList<Cutelyst::Plugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins.keys();
@@ -308,13 +308,13 @@ bool Context::execute(Code *code)
     return ret;
 }
 
-QVariant Context::pluginProperty(Plugin::AbstractPlugin * const plugin, const QString &key, const QVariant &defaultValue) const
+QVariant Context::pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Context);
     return d->plugins.value(plugin).value(key, defaultValue);
 }
 
-void Context::setPluginProperty(Plugin::AbstractPlugin *plugin, const QString &key, const QVariant &value)
+void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, const QVariant &value)
 {
     Q_D(Context);
     d->plugins[plugin].insert(key, value);

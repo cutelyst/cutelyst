@@ -21,7 +21,7 @@
 #define CUTELYST_P_H
 
 #include "context.h"
-#include "Plugin/plugin.h"
+#include "plugin.h"
 
 #include <QVariantHash>
 #include <QStack>
@@ -41,7 +41,7 @@ public:
     View *view = 0;
     QStack<Code *> stack;
     Dispatcher *dispatcher;
-    QHash<Plugin::AbstractPlugin *, QVariantHash> plugins;
+    QHash<Plugin *, QVariantHash> plugins;
     bool detached = false;
     QStringList error;
     QVariantHash stash;

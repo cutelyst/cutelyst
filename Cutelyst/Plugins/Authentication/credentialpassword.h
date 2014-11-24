@@ -20,11 +20,10 @@
 #ifndef CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 #define CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 #include <QCryptographicHash>
 
 namespace Cutelyst {
-namespace Plugin {
 
 class CredentialPassword : public Authentication::Credential
 {
@@ -63,6 +62,5 @@ private:
 };
 
 } // namespace Plugin
-}
 
 #endif // CUTELYSTPLUGIN_CREDENTIALPASSWORD_H

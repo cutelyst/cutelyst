@@ -19,7 +19,7 @@
 
 #include "minimal.h"
 
-using namespace Cutelyst::Plugin;
+using namespace Cutelyst;
 
 StoreMinimal::StoreMinimal()
 {
@@ -34,9 +34,10 @@ void StoreMinimal::addUser(const Authentication::User &user)
 
 Authentication::User StoreMinimal::findUser(Context *ctx, const CStringHash &userInfo)
 {
-    QString id = userInfo[QLatin1String("id")];
+    Q_UNUSED(ctx)
+    QString id = userInfo[QStringLiteral("id")];
     if (id.isEmpty()) {
-        id = userInfo[QLatin1String("username")];
+        id = userInfo[QStringLiteral("username")];
     }
 
     Q_FOREACH (const Authentication::User &user, m_users) {
@@ -56,6 +57,6 @@ QVariant StoreMinimal::forSession(Context *c, const Authentication::User &user)
 Authentication::User StoreMinimal::fromSession(Context *c, const QVariant &frozenUser)
 {
     CStringHash userInfo;
-    userInfo[QLatin1String("id")] = frozenUser.toString();
+    userInfo[QStringLiteral("id")] = frozenUser.toString();
     return findUser(c, userInfo);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,30 +17,31 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef AUTHENTICATION_P_H
-#define AUTHENTICATION_P_H
+#ifndef AUTHENTICATION_STORE_MINIMAL_H
+#define AUTHENTICATION_STORE_MINIMAL_H
 
-#include "authentication.h"
-
-#include <QStringList>
+#include <Cutelyst/plugin.h>
+#include <Cutelyst/Plugins/authentication.h>
 
 namespace Cutelyst {
 
-namespace Plugin {
-
-class AuthenticationPrivate
+class StoreMinimal : public Authentication::Store
 {
 public:
-    Authentication::Realm* realm(const QString &realmName) const;
+    StoreMinimal();
 
-    Context *ctx;
-    QString defaultRealm;
-    QHash<QString, Authentication::Realm*> realms;
-    QStringList realmsOrder;
+    void addUser(const Authentication::User &user);
+
+    Authentication::User findUser(Context *ctx, const CStringHash &userInfo);
+
+    virtual QVariant forSession(Context *ctx, const Authentication::User &user);
+
+    virtual Authentication::User fromSession(Context *ctx, const QVariant &frozenUser);
+
+private:
+    QList<Authentication::User> m_users;
 };
 
-}
+} // namespace CutelystPlugin
 
-}
-
-#endif // AUTHENTICATION_P_H
+#endif // AUTHENTICATION_STORE_MINIMAL_H

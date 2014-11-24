@@ -20,12 +20,11 @@
 #ifndef CREDENTIALHTTP_H
 #define CREDENTIALHTTP_H
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 
 #include <QCryptographicHash>
 
 namespace Cutelyst {
-namespace Plugin {
 
 class CredentialHttp : public Authentication::Credential
 {
@@ -110,7 +109,6 @@ private:
     bool m_requireSsl = false;
 };
 
-}
 }
 
 #endif // CREDENTIALHTTP_H

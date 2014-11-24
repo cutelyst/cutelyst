@@ -20,7 +20,7 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
-#include "plugin.h"
+#include <Cutelyst/plugin.h>
 
 #include <QObject>
 #include <QVariant>
@@ -29,9 +29,7 @@
 namespace Cutelyst {
 
 class Context;
-namespace Plugin {
-
-class Session : public AbstractPlugin
+class Session : public Plugin
 {
     Q_OBJECT
 public:
@@ -69,8 +67,6 @@ private:
     QString m_sessionName;
     QRegularExpression m_removeRE;
 };
-
-}
 
 }
 

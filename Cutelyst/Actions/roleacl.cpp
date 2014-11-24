@@ -21,14 +21,13 @@
 
 #include "common.h"
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Controller>
 #include <Cutelyst/Dispatcher>
 
 #include <QMap>
 
 using namespace Cutelyst;
-using namespace Plugin;
 
 RoleACL::RoleACL() :
     d_ptr(new RoleACLPrivate)
@@ -99,7 +98,7 @@ bool RoleACL::canVisit(Context *ctx) const
 {
     Q_D(const RoleACL);
 
-    Plugin::Authentication *auth = ctx->plugin<Plugin::Authentication*>();
+    Authentication *auth = ctx->plugin<Authentication*>();
     if (auth) {
         QStringList user_has = auth->user().values(QStringLiteral("roles"));
 

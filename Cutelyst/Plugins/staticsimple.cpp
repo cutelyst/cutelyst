@@ -13,12 +13,11 @@
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
-using namespace Plugin;
 
 Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple")
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :
-    AbstractPlugin(parent),
+    Plugin(parent),
     m_rootDir(path)
 {
     if (m_rootDir.isNull()) {

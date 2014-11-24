@@ -81,7 +81,7 @@ bool Application::postFork()
     return true;
 }
 
-bool Application::registerPlugin(Plugin::AbstractPlugin *plugin)
+bool Application::registerPlugin(Cutelyst::Plugin *plugin)
 {
     Q_D(Application);
 
@@ -185,7 +185,7 @@ void Application::handleRequest(Request *req)
     Context *ctx = new Context(priv);
 
     // Register application plugins
-    Q_FOREACH (Plugin::AbstractPlugin *plugin, d->plugins) {
+    Q_FOREACH (Plugin *plugin, d->plugins) {
         ctx->registerPlugin(plugin, false);
     }
 

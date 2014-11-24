@@ -23,7 +23,7 @@
 #include "application.h"
 #include "dispatcher.h"
 #include "engine.h"
-#include "Plugin/plugin.h"
+#include "plugin.h"
 
 namespace Cutelyst {
 
@@ -38,9 +38,9 @@ public:
 
     bool init = false;
     Dispatcher *dispatcher;
-    QList<Plugin::AbstractPlugin*> plugins;
-    QList<Controller*> controllers;
-    QHash<QByteArray, View*> views;
+    QList<Plugin *> plugins;
+    QList<Controller *> controllers;
+    QHash<QByteArray, View *> views;
     QVariantHash config;
 };
 

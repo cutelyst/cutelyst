@@ -24,10 +24,6 @@
 
 namespace Cutelyst {
 
-namespace Plugin {
-class AbstractPlugin;
-}
-
 #define CUTELYST_APPLICATION(x) \
     Q_PLUGIN_METADATA(x) \
     Q_INTERFACES(Cutelyst::Application)
@@ -39,6 +35,7 @@ class DispatchType;
 class Request;
 class Response;
 class Engine;
+class Plugin;
 class ApplicationPrivate;
 class Application : public QObject
 {
@@ -105,7 +102,7 @@ public:
      *
      * @return True if the plugin could be registered
      */
-    bool registerPlugin(Plugin::AbstractPlugin  *plugin);
+    bool registerPlugin(Plugin *plugin);
 
     /**
      * This method registers a Controller class which

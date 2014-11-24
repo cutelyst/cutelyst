@@ -43,15 +43,15 @@ set(cutelystqt_SRC
     childprocess_p.h
     application.cpp
     application_p.h
-    Plugin/View/ViewInterface.h
-    Plugin/plugin.cpp
-    Plugin/session.cpp
-    Plugin/staticsimple.cpp
-    Plugin/authentication.cpp
-    Plugin/authentication_p.h
-    Plugin/Authentication/minimal.cpp
-    Plugin/Authentication/credentialpassword.cpp
-    Plugin/Authentication/credentialhttp.cpp
+    plugin.cpp
+    Plugins/View/ViewInterface.h
+    Plugins/session.cpp
+    Plugins/staticsimple.cpp
+    Plugins/authentication.cpp
+    Plugins/authentication_p.h
+    Plugins/Authentication/minimal.cpp
+    Plugins/Authentication/credentialpassword.cpp
+    Plugins/Authentication/credentialhttp.cpp
 )
 
 set(cutelystqt_HEADERS
@@ -84,6 +84,8 @@ set(cutelystqt_HEADERS
     Upload
     view.h
     View
+    plugin.h
+    Plugin
 )
 
 set(cutelystqt_actions_HEADERS
@@ -93,18 +95,17 @@ set(cutelystqt_actions_HEADERS
 )
 
 set(cutelystqt_plugin_HEADERS
-    Plugin/plugin.h
-    Plugin/session.h
-    Plugin/Session
-    Plugin/staticsimple.h
-    Plugin/StaticSimple
-    Plugin/authentication.h
+    Plugins/session.h
+    Plugins/Session
+    Plugins/staticsimple.h
+    Plugins/StaticSimple
+    Plugins/authentication.h
 )
 
 set(cutelystqt_plugin_authentication_HEADERS
-    Plugin/Authentication/minimal.h
-    Plugin/Authentication/credentialpassword.h
-    Plugin/Authentication/credentialhttp.h
+    Plugins/Authentication/minimal.h
+    Plugins/Authentication/credentialpassword.h
+    Plugins/Authentication/credentialhttp.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE
@@ -138,11 +139,11 @@ install(FILES ${cutelystqt_actions_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Actions
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugin
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
 )
 install(FILES ${cutelystqt_plugin_authentication_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugin/Authentication
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Authentication
 )
 
 add_subdirectory(modules)
-add_subdirectory(Plugin)
+add_subdirectory(Plugins)
