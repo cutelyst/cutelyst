@@ -167,12 +167,12 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     }
 
     if (req->content_type_len > 0) {
-        headers.insertMulti(m_headerContentType,
+        headers.insertMulti(QByteArrayLiteral("Content-Type"),
                             QByteArray::fromRawData(req->content_type, req->content_type_len));
     }
 
     if (req->encoding_len > 0) {
-        headers.insertMulti(m_headerContentEncoding,
+        headers.insertMulti(QByteArrayLiteral("Content-Encoding"),
                             QByteArray::fromRawData(req->encoding, req->encoding_len));
     }
     priv->headers = headers;
@@ -324,9 +324,6 @@ void EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
                                        status.size())) {
         return;
     }
-
-    // TODO this breads weighttp as it expects keep-alive string
-    res->addHeaderValue(m_headerConnectionKey, m_headerConnectionValue);
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
     Q_FOREACH (HeaderValuePair pair, headers) {
