@@ -22,8 +22,6 @@
 
 #include <Cutelyst/plugin.h>
 
-#include <QObject>
-
 namespace Cutelyst {
 
 class AuthenticationPrivate;

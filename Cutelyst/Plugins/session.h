@@ -22,18 +22,17 @@
 
 #include <Cutelyst/plugin.h>
 
-#include <QObject>
-#include <QVariant>
-#include <QRegularExpression>
-
 namespace Cutelyst {
 
 class Context;
+class SessionPrivate;
 class Session : public Plugin
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(Session)
 public:
     explicit Session(QObject *parent = 0);
+    virtual ~Session();
 
     bool setup(Context *ctx);
 
@@ -56,16 +55,15 @@ protected:
      */
     virtual void persistSession(const QString &sessionId, const QVariant &data) const;
 
+protected:
+    SessionPrivate *d_ptr;
+
 private:
     void saveSession();
     QVariant loadSession();
     QString generateSessionId() const;
     QString getSessionId() const;
     QString filePath(const QString &sessionId) const;
-
-    Context *m_ctx;
-    QString m_sessionName;
-    QRegularExpression m_removeRE;
 };
 
 }

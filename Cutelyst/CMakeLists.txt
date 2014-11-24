@@ -46,7 +46,9 @@ set(cutelystqt_SRC
     plugin.cpp
     Plugins/View/ViewInterface.h
     Plugins/session.cpp
+    Plugins/session_p.h
     Plugins/staticsimple.cpp
+    Plugins/staticsimple_p.h
     Plugins/authentication.cpp
     Plugins/authentication_p.h
     Plugins/Authentication/minimal.cpp

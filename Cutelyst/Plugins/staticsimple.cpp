@@ -1,4 +1,4 @@
-#include "staticsimple.h"
+#include "staticsimple_p.h"
 
 #include "application.h"
 #include "request.h"
@@ -18,16 +18,25 @@ Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple")
 
 StaticSimple::StaticSimple(const QString &path, QObject *parent) :
     Plugin(parent),
-    m_rootDir(path)
+    d_ptr(new StaticSimplePrivate)
 {
-    if (m_rootDir.isNull()) {
-        m_rootDir = QDir::currentPath();
+    Q_D(StaticSimple);
+    if (path.isNull()) {
+        d->rootDir = QDir::currentPath();
+    } else {
+        d->rootDir = path;
     }
+}
+
+StaticSimple::~StaticSimple()
+{
+    delete d_ptr;
 }
 
 void StaticSimple::setRootDir(const QString &path)
 {
-    m_rootDir = path;
+    Q_D(StaticSimple);
+    d->rootDir = path;
 }
 
 bool StaticSimple::setup(Context *ctx)
@@ -44,13 +53,15 @@ bool StaticSimple::isApplicationPlugin() const
 
 void StaticSimple::beforePrepareAction(bool *skipMethod)
 {
+    Q_D(StaticSimple);
+
     Context *ctx = static_cast<Context *>(sender());
     if (*skipMethod || !ctx) {
         return;
     }
 
     QString path = ctx->req()->path();
-    QRegularExpression re = m_re; // Thread-safe
+    QRegularExpression re = d->re; // Thread-safe
     QRegularExpressionMatch match = re.match(path);
     if (match.hasMatch() && locateStaticFile(ctx, path)) {
         *skipMethod = true;
@@ -60,7 +71,9 @@ void StaticSimple::beforePrepareAction(bool *skipMethod)
 
 bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
 {
-    QString path = m_rootDir % relPath;
+    Q_D(StaticSimple);
+
+    QString path = d->rootDir % relPath;
     QFileInfo fileInfo(path);
     if (fileInfo.exists()) {
         Response *res = ctx->res();

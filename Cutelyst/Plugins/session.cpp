@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "session.h"
+#include "session_p.h"
 #include "application.h"
 #include "request.h"
 #include "response.h"
@@ -36,14 +36,20 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 Session::Session(QObject *parent) :
     Plugin(parent),
-    m_removeRE("-|{|}")
+    d_ptr(new SessionPrivate)
 {
+}
+
+Cutelyst::Session::~Session()
+{
+    delete d_ptr;
 }
 
 bool Session::setup(Context *ctx)
 {
-    m_ctx = ctx;
-    m_sessionName = ctx->app()->applicationName() % QStringLiteral("_session");
+    Q_D(Session);
+    d->ctx = ctx;
+    d->sessionName = ctx->app()->applicationName() % QStringLiteral("_session");
     connect(ctx, &Context::afterDispatch,
             this, &Session::saveSession);
     return true;
@@ -62,10 +68,11 @@ QVariant Session::value(const QString &key, const QVariant &defaultValue)
 
 void Session::setValue(const QString &key, const QVariant &value)
 {
+    Q_D(Session);
     QVariantHash session = loadSession().value<QVariantHash>();
     session.insert(key, value);
-    setPluginProperty(m_ctx, QStringLiteral("sessionvalues"), session);
-    setPluginProperty(m_ctx, QStringLiteral("sessionsave"), true);
+    setPluginProperty(d->ctx, QStringLiteral("sessionvalues"), session);
+    setPluginProperty(d->ctx, QStringLiteral("sessionsave"), true);
 }
 
 void Session::deleteValue(const QString &key)
@@ -114,21 +121,23 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
 
 void Session::saveSession()
 {
-    if (!pluginProperty(m_ctx, "sessionsave").toBool()) {
+    Q_D(Session);
+    if (!pluginProperty(d->ctx, "sessionsave").toBool()) {
         return;
     }
 
     QString sessionId = getSessionId();
-    QNetworkCookie sessionCookie(m_sessionName.toLocal8Bit(),
+    QNetworkCookie sessionCookie(d->sessionName.toLocal8Bit(),
                                  sessionId.toLocal8Bit());
-    m_ctx->res()->addCookie(sessionCookie);
+    d->ctx->res()->addCookie(sessionCookie);
     persistSession(sessionId,
                    loadSession());
 }
 
 QVariant Session::loadSession()
 {
-    QVariant property = pluginProperty(m_ctx, "sessionvalues");
+    Q_D(Session);
+    QVariant property = pluginProperty(d->ctx, "sessionvalues");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
@@ -136,7 +145,7 @@ QVariant Session::loadSession()
     QString sessionid = getSessionId();
     if (!sessionid.isEmpty()) {
         QVariantHash session = retrieveSession(sessionid);
-        setPluginProperty(m_ctx, "sessionvalues", session);
+        setPluginProperty(d->ctx, "sessionvalues", session);
         return session;
     }
     return QVariant();
@@ -144,20 +153,22 @@ QVariant Session::loadSession()
 
 QString Session::generateSessionId() const
 {
-    QRegularExpression re = m_removeRE; // Thread-safe
+    Q_D(const Session);
+    QRegularExpression re = d->removeRE; // Thread-safe
     return QUuid::createUuid().toString().remove(re);
 }
 
 QString Session::getSessionId() const
 {
-    QVariant property = m_ctx->property("Session/_sessionid");
+    Q_D(const Session);
+    QVariant property = d->ctx->property("Session/_sessionid");
     if (!property.isNull()) {
         return property.value<QString>();
     }
 
     QString sessionId;
-    Q_FOREACH (const QNetworkCookie &cookie, m_ctx->req()->cookies()) {
-        if (cookie.name() == m_sessionName) {
+    Q_FOREACH (const QNetworkCookie &cookie, d->ctx->req()->cookies()) {
+        if (cookie.name() == d->sessionName) {
             sessionId = cookie.value();
             qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
         }
@@ -167,14 +178,15 @@ QString Session::getSessionId() const
         sessionId = generateSessionId();
         qCDebug(C_SESSION) << "Created session" << sessionId;
     }
-    m_ctx->setProperty("Session/_sessionid", sessionId);
+    d->ctx->setProperty("Session/_sessionid", sessionId);
 
     return sessionId;
 }
 
 QString Session::filePath(const QString &sessionId) const
 {
-    QString path = QDir::tempPath() % QLatin1Char('/') % m_ctx->app()->applicationName();
+    Q_D(const Session);
+    QString path = QDir::tempPath() % QLatin1Char('/') % d->ctx->app()->applicationName();
     QDir dir;
     if (!dir.mkpath(path)) {
         qCWarning(C_SESSION) << "Failed to create path for session object" << path;
