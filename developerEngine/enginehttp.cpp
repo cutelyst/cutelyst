@@ -19,11 +19,11 @@
 
 #include "enginehttp_p.h"
 
-#include "context.h"
-#include "response.h"
-#include "request_p.h"
-#include "application.h"
-#include "common.h"
+#include <Cutelyst/context.h>
+#include <Cutelyst/response.h>
+#include <Cutelyst/request_p.h>
+#include <Cutelyst/application.h>
+#include <Cutelyst/common.h>
 
 #include <QCoreApplication>
 #include <QStringList>
@@ -40,6 +40,8 @@
 #include <QCommandLineParser>
 
 using namespace Cutelyst;
+
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE_HTTP, "cutelyst.engine.http")
 
 void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

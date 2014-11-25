@@ -21,7 +21,7 @@
 #define CUTELYSTCHILDPROCESS_P_H
 
 #include "childprocess.h"
-#include "dispatcher.h"
+#include <Cutelyst/dispatcher.h>
 
 #include <QSocketNotifier>
 

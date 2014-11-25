@@ -20,7 +20,7 @@
 #include "engineuwsgi.h"
 #include "plugin.h"
 
-#include <Cutelyst/Application>
+#include <Cutelyst/application.h>
 
 #include <QCoreApplication>
 #include <QSocketNotifier>

@@ -20,7 +20,7 @@
 #ifndef ENGINE_UWSGI_H
 #define ENGINE_UWSGI_H
 
-#include "../Cutelyst/engine.h"
+#include <Cutelyst/engine.h>
 
 #include <uwsgi.h>
 

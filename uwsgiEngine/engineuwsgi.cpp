@@ -25,9 +25,9 @@
 #include <QSocketNotifier>
 
 #include <Cutelyst/common.h>
-#include <Cutelyst/Application>
-#include <Cutelyst/Context>
-#include <Cutelyst/Response>
+#include <Cutelyst/application.h>
+#include <Cutelyst/context.h>
+#include <Cutelyst/response.h>
 #include <Cutelyst/request_p.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")

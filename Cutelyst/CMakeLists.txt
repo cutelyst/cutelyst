@@ -27,8 +27,6 @@ set(cutelystqt_SRC
     Actions/roleacl_p.h
     engine.cpp
     engine_p.h
-    enginehttp.cpp
-    enginehttp_p.h
     controller.cpp
     controller_p.h
     dispatchtype.cpp
@@ -39,8 +37,6 @@ set(cutelystqt_SRC
     code.cpp
     code_p.h
     view.cpp
-    childprocess.cpp
-    childprocess_p.h
     application.cpp
     application_p.h
     plugin.cpp
@@ -73,7 +69,6 @@ set(cutelystqt_HEADERS
     Dispatcher
     dispatchtype.h
     DispatchType
-    enginehttp.h
     engine.h
     Engine
     headers.h

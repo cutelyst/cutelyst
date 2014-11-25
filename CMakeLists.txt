@@ -81,6 +81,7 @@ include_directories(
 
 add_subdirectory(Cutelyst)
 add_subdirectory(uwsgiEngine)
+add_subdirectory(developerEngine)
 
 # TODO rename to examples
 #add_subdirectory(server)
