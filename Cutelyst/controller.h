@@ -35,67 +35,48 @@
 namespace  Cutelyst {
 
 class ControllerPrivate;
+/**
+ * \class Controller
+ *
+ * Use Q_CLASSINFO to give hints about methods
+ * build like methodName_option
+ * Where option is one of the following:
+ *
+ * \b Path - An ending path relative to the class info Namespace
+ * for example:
+ * \n :Path("") - /namespace/controlername (used for the index)
+ * \n :Path("foo") - /namespace/controlername/foo
+ * \n :Path("/bar") - /namespace/bar
+ *
+ * \b Chained - Sets the name of this part of the chain. If it
+ * is specified without arguments, it takes the name of
+ * the action as default.
+ *
+ * \b PathPart - The part of the chained path
+ *
+ * \b Args - In the case of more than 9 parameters, to build
+ * the path set the needed number here, where an empty string
+ * means unlimited arguments.
+ *
+ * \b CaptureArgs - In the case of more than 9 parameters, to
+ * be captured the path set the needed number here, where -1
+ * means unlimited arguments.
+ *
+ * \b Global - Alias to Path="/methodname" which sets the
+ * method relative to your root.
+ *
+ * \b Local - Alias to Path="methodname".
+ *
+ * \b Args - When used with "Path" it indicates the number of
+ * arguments in the path.
+ * \n The number is computed by counting the arguments the method expects.
+ * \n However if no Args value is set, assumed to 'slurp' all
+ *    remaining path parts under this namespace.
+ */
 class Controller : public QObject
 {
     Q_OBJECT
-    /**
-      * Use Q_CLASSINFO to give hints about methods
-      * build like methodName_option
-      * Where option is one of the following:
-      *
-      * Path - An ending path relative to the class info Namespace
-      * for example:
-      * "" - /namespace/controlername (used for the index)
-      * "foo" - /namespace/controlername/foo
-      * "/bar" - /namespace/bar
-      *
-      * Chained - Sets the name of this part of the chain. If it
-      * is specified without arguments, it takes the name of
-      * the action as default.
-      *
-      * PathPart - The part of the chained path
-      *
-      * Args - In the case of more than 9 parameters, to build
-      * the path set the needed number here, where an empty string
-      * means unlimited arguments.
-      *
-      * CaptureArgs - In the case of more than 9 parameters, to
-      * be captured the path set the needed number here, where -1
-      * means unlimited arguments.
-      */
 public:
-    /**
-     * @brief Global - Alias to Path="/methodname" which sets the
-     * method relative to your root
-     * Always add it to the end of the argument list of the methods
-     */
-    typedef int Global;
-
-    /**
-     * @brief Local - Alias to Path="methodname"
-     * Always add it to the end of the argument list of the methods
-     */
-    typedef int Local;
-
-    /**
-     * @brief Path - Alias to Path=""
-     * When this argument is preset on the method it will
-     * create a path with the class name.
-     * Always add it to the end of the argument list of the methods
-     */
-    typedef int Path;
-
-    /**
-     * @brief Args - When used with "Path" it indicates the number of
-     * arguments in the path.
-     * The number is computed by counting the arguments the method expects.
-     * However if no Args value is set, assumed to 'slurp' all
-     * remaining path parts under this namespace.
-     * This is ignored if Q_CLASSINFO has defined it before
-     * Always add it to the end of the argument list of the methods.
-     */
-    typedef int Args;
-
     explicit Controller(QObject *parent = 0);
     virtual ~Controller();
 
