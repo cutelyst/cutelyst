@@ -25,6 +25,7 @@
 
 #include <QString>
 #include <QStringBuilder>
+#include <QDirIterator>
 #include <QtCore/QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
@@ -103,6 +104,21 @@ void GrantleeView::setCache(bool enable)
         d->cache.clear();
         d->engine->addTemplateLoader(d->loader);
     }
+
+    QDirIterator it(d->includePath,
+                    QDir::Files | QDir::NoDotAndDotDot,
+                    QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        QString path = it.next();
+        path.remove(d->includePath);
+        if (path.startsWith(QLatin1Char('/'))) {
+            path.remove(0, 1);
+        }
+
+        if (d->cache->canLoadTemplate(path)) {
+            d->cache->loadByName(path, d->engine);
+        }
+    }
 }
 
 bool GrantleeView::isCaching() const
@@ -120,6 +136,9 @@ bool GrantleeView::render(Context *ctx)
     if (templateFile.isEmpty()) {
         if (ctx->action() && !ctx->action()->reverse().isEmpty()) {
             templateFile = ctx->action()->reverse() % d->extension;
+            if (templateFile.startsWith(QLatin1Char('/'))) {
+                templateFile.remove(0, 1);
+            }
         }
 
         if (templateFile.isEmpty()) {
