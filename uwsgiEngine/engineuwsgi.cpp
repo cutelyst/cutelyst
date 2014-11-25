@@ -326,9 +326,9 @@ bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
     }
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
-    Q_FOREACH (HeaderValuePair pair, headers) {
-        QByteArray &key = pair.key;
-        QByteArray &value = pair.value;
+    Q_FOREACH (const HeaderValuePair &pair, headers) {
+        QByteArray key = pair.key;
+        QByteArray value = pair.value;
         if (uwsgi_response_add_header(wsgi_req,
                                       key.data(),
                                       key.size(),
