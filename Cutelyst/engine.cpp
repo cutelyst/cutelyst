@@ -259,9 +259,9 @@ void Engine::finalize(Context *ctx)
         response->setContentLength(body->size());
     }
 
-    finalizeHeaders(ctx, engineData);
-
-    if (body) {
-        finalizeBody(ctx, body, engineData);
+    if (finalizeHeaders(ctx, engineData)) {
+        if (body) {
+            finalizeBody(ctx, body, engineData);
+        }
     }
 }

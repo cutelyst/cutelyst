@@ -178,7 +178,7 @@ bool EngineHttp::init()
     return !d->child.isEmpty();
 }
 
-void EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
+bool EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
 {
     Q_D(EngineHttp);
 
@@ -214,6 +214,8 @@ void EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
 
     int *id = static_cast<int*>(engineData);
     d->requests[*id]->m_socket->write(header);
+
+    return true;
 }
 
 void EngineHttp::finalizeBody(Context *ctx, QIODevice *body, void *engineData)

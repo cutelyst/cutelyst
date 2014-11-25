@@ -47,7 +47,7 @@ public:
 
     virtual bool init();
 
-    virtual void finalizeHeaders(Context *ctx, void *engineData);
+    virtual bool finalizeHeaders(Context *ctx, void *engineData);
 
     virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData);
 

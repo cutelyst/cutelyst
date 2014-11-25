@@ -313,7 +313,7 @@ QList<wsgi_request *> EngineUwsgi::unusedRequestQueue() const
     return m_unusedReq;
 }
 
-void EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
+bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
 {
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
     Response *res = ctx->res();
@@ -322,7 +322,7 @@ void EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
     if (uwsgi_response_prepare_headers(wsgi_req,
                                        status.data(),
                                        status.size())) {
-        return;
+        return false;
     }
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
@@ -334,9 +334,11 @@ void EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
                                       key.size(),
                                       value.data(),
                                       value.size())) {
-            return;
+            return false;
         }
     }
+
+    return true;
 }
 
 bool EngineUwsgi::init()
