@@ -60,7 +60,7 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
 
     Response *res = ctx->res();
     if (res->contentType().isEmpty()) {
-        res->setContentType("text/html; charset=utf-8");
+        res->setContentType(QByteArrayLiteral("text/html; charset=utf-8"));
     }
 
     if (ctx->req()->method() == "HEAD") {

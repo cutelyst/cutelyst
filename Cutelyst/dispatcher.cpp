@@ -259,7 +259,7 @@ QByteArray Dispatcher::uriForAction(Action *action, const QStringList &captures)
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
         QByteArray uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
-            return uri.isEmpty() ? QByteArray("/", 1) : uri;
+            return uri.isEmpty() ? QByteArrayLiteral("/") : uri;
         }
     }
     return QByteArray();

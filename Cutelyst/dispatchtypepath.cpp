@@ -163,7 +163,7 @@ QByteArray DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStrin
         while (i != attributes.constEnd() && i.key() == "Path") {
             QByteArray path = i.value();
             if (path.isEmpty()) {
-                path = QByteArray("/", 1);
+                path = QByteArrayLiteral("/");
             }
 
             if (!path.startsWith('/')) {
@@ -193,7 +193,7 @@ bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
         // TODO when we try to match a path
         // it comes without a leading / so
         // when would this be used?
-        _path = QByteArray("/", 1);
+        _path = QByteArrayLiteral("/");
     }
 
     if (d->paths.contains(_path)) {

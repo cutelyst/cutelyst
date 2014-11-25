@@ -78,7 +78,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
     if (fileInfo.exists()) {
         Response *res = ctx->res();
         QDateTime utc = fileInfo.lastModified().toTimeSpec(Qt::UTC);
-        QString lastModified = utc.toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+        QString lastModified = utc.toString(QStringLiteral("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
         if (lastModified == ctx->req()->headers().ifModifiedSince()) {
             res->setStatus(Response::NotModified);
             return true;
@@ -101,7 +101,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
             }
 
             headers.setLastModified(lastModified.toLocal8Bit());
-            headers.setHeader("Cache-Control", "public");
+            headers.setHeader(QByteArrayLiteral("Cache-Control"), QByteArrayLiteral("public"));
 
             return true;
         }

@@ -154,13 +154,35 @@ void Response::redirect(const QUrl &url, quint16 status)
     Q_D(Response);
     d->location = url;
     setStatus(status);
+    if (url.isValid() && !d->body) {
+        d->headers.insert(QByteArrayLiteral("Location"), url.toEncoded());
+
+        QBuffer *buf = new QBuffer;
+        if (!buf->open(QIODevice::ReadWrite)) {
+            qCCritical(CUTELYST_RESPONSE) << "Could not open QBuffer to write redirect!" << url << status;
+            delete buf;
+            return;
+        }
+        buf->write(QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
+                                     "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+                                     "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                                     "  <head>\n"
+                                     "    <title>Moved</title>\n"
+                                     "  </head>\n"
+                                     "  <body>\n"
+                                     "     <p>This item has moved <a href="));
+        buf->write(url.toEncoded());
+        buf->write(QByteArrayLiteral(">here</a>.</p>\n"
+                                     "  </body>\n"
+                                     "</html>\n"));
+        d->body = buf;
+        d->headers.setContentType(QByteArrayLiteral("text/html; charset=utf-8"));
+    }
 }
 
 void Response::redirect(const QByteArray &url, quint16 status)
 {
-    Q_D(Response);
-    d->location = url;
-    setStatus(status);
+    redirect(url, status);
 }
 
 QUrl Response::location() const
