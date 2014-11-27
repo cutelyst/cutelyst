@@ -182,7 +182,7 @@ void Response::redirect(const QUrl &url, quint16 status)
 
 void Response::redirect(const QByteArray &url, quint16 status)
 {
-    redirect(url, status);
+    redirect(QUrl(QString(url)), status);
 }
 
 QUrl Response::location() const
