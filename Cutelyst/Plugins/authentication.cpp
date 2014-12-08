@@ -29,6 +29,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 
+char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
+
 Authentication::Authentication(QObject *parent) :
     Plugin(parent),
     d_ptr(new AuthenticationPrivate)
@@ -49,17 +51,9 @@ bool Authentication::setup(Context *ctx)
     return true;
 }
 
-void Authentication::addRealm(Authentication::Realm *realm)
-{
-    addRealm(QStringLiteral("default"), realm, true);
-}
-
-void Authentication::addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm)
+void Authentication::addRealm(Authentication::Realm *realm, const QString &name)
 {
     Q_D(Authentication);
-    if (defaultRealm) {
-        d->defaultRealm = name;
-    }
     d->realms.insert(name, realm);
     d->realmsOrder.append(name);
 }
@@ -243,6 +237,16 @@ Authentication::Realm::Realm(AuthenticationStore *store, Authentication::Credent
     m_credential(credential)
 {
 
+}
+
+AuthenticationStore *Authentication::Realm::store() const
+{
+    return m_store;
+}
+
+Authentication::Credential *Authentication::Realm::credential() const
+{
+    return m_credential;
 }
 
 Authentication::User Authentication::Realm::findUser(Context *ctx, const CStringHash &userinfo)

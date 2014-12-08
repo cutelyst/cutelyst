@@ -64,6 +64,10 @@ public:
     {
     public:
         Realm(AuthenticationStore *store, Credential *credential);
+
+        AuthenticationStore *store() const;
+        Credential *credential() const;
+
         virtual User findUser(Context *ctx, const CStringHash &userinfo);
         virtual User authenticate(Context *ctx, const CStringHash &authinfo);
 
@@ -80,22 +84,24 @@ public:
         Credential *m_credential;
     };
 
+    static char *defaultRealm;
+
     explicit Authentication(QObject *parent = 0);
     ~Authentication();
 
     bool setup(Context *ctx);
 
-    void addRealm(Authentication::Realm *realm);
-    void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = false);
-    Authentication::Realm *realm(const QString &name = QString()) const;
+    void addRealm(Authentication::Realm *realm, const QString &name = QLatin1String(defaultRealm));
 
-    User authenticate(const QString &username, const QString &password, const QString &realm = QString());
-    User authenticate(const CStringHash &userinfo = CStringHash(), const QString &realm = QString());
-    User findUser(const CStringHash &userinfo, const QString &realm = QString());
+    Authentication::Realm *realm(const QString &name = QLatin1String(defaultRealm)) const;
+
+    User authenticate(const QString &username, const QString &password, const QString &realm = QLatin1String(defaultRealm));
+    User authenticate(const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
+    User findUser(const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     User user();
     void setUser(const User &user);
     bool userExists();
-    bool userInRealm(const QString &realm);
+    bool userInRealm(const QString &realm = QLatin1String(defaultRealm));
     void logout();
 
 protected:

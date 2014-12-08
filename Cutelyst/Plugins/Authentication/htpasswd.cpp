@@ -21,6 +21,7 @@
 
 #include <QFile>
 #include <QTemporaryFile>
+#include <QLoggingCategory>
 
 using namespace Cutelyst;
 
@@ -43,15 +44,28 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     if (file.open(QFile::ReadWrite | QFile::Text)) {
         QTemporaryFile tmp;
         if (tmp.open()) {
+            bool wrote = false;
             while (!file.atEnd()) {
                 QByteArray line = file.readLine();
                 QList<QByteArray> parts = line.split(':');
-                if (parts.size() >= 2 && parts.first() == username) {
+                if (!wrote && parts.size() >= 2 && parts.first() == username) {
                     line = username.toLatin1() + ":" + user.value("password").toLatin1();
+                    wrote = true;
                 }
+                qDebug() << line;
                 tmp.write(line);
             }
-            tmp.rename(fileName);
+            file.close();
+
+            if (!wrote) {
+                QByteArray line = username.toLatin1() + ":" + user.value("password").toLatin1();
+                qDebug() << line;
+                tmp.write(line);
+            }
+            qDebug() << tmp.size();
+            qDebug() << tmp.fileName();
+            qDebug() << fileName;
+            tmp.copy(fileName);
         }
     }
 }

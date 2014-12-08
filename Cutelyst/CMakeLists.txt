@@ -104,6 +104,7 @@ set(cutelystqt_plugin_HEADERS
 
 set(cutelystqt_plugin_authentication_HEADERS
     Plugins/Authentication/minimal.h
+    Plugins/Authentication/htpasswd.h
     Plugins/Authentication/credentialpassword.h
     Plugins/Authentication/credentialhttp.h
 )
