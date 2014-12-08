@@ -64,6 +64,12 @@ void Authentication::addRealm(const QString &name, Authentication::Realm *realm,
     d->realmsOrder.append(name);
 }
 
+Authentication::Realm *Authentication::realm(const QString &name) const
+{
+    Q_D(const Authentication);
+    return d->realms.value(name);
+}
+
 Authentication::User Authentication::authenticate(const QString &username, const QString &password, const QString &realm)
 {
     CStringHash userinfo;

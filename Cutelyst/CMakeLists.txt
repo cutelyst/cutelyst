@@ -99,6 +99,7 @@ set(cutelystqt_plugin_HEADERS
     Plugins/staticsimple.h
     Plugins/StaticSimple
     Plugins/authentication.h
+    Plugins/authenticationstore.h
 )
 
 set(cutelystqt_plugin_authentication_HEADERS

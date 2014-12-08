@@ -87,6 +87,7 @@ public:
 
     void addRealm(Authentication::Realm *realm);
     void addRealm(const QString &name, Authentication::Realm *realm, bool defaultRealm = false);
+    Authentication::Realm *realm(const QString &name = QString()) const;
 
     User authenticate(const QString &username, const QString &password, const QString &realm = QString());
     User authenticate(const CStringHash &userinfo = CStringHash(), const QString &realm = QString());
