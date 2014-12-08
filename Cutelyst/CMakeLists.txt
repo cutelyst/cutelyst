@@ -47,7 +47,9 @@ set(cutelystqt_SRC
     Plugins/staticsimple_p.h
     Plugins/authentication.cpp
     Plugins/authentication_p.h
+    Plugins/authenticationstore.cpp
     Plugins/Authentication/minimal.cpp
+    Plugins/Authentication/htpasswd.cpp
     Plugins/Authentication/credentialpassword.cpp
     Plugins/Authentication/credentialhttp.cpp
 )

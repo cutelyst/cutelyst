@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 
 namespace Cutelyst {
 
+class AuthenticationStore;
 class AuthenticationPrivate;
 class Authentication : public Plugin
 {
@@ -59,60 +60,10 @@ public:
         virtual User authenticate(Context *ctx, Realm *realm, const CStringHash &authinfo) = 0;
     };
 
-    class Store {
-    public:
-        /**
-         * Reimplement this if your store supports
-         * automatic user creation
-         */
-        virtual bool canAutoCreateUser() const;
-
-        /**
-         * Reimplement this if your store supports
-         * automatic user creation
-         */
-        virtual User autoCreateUser(Context *ctx, const CStringHash &userinfo) const;
-
-        /**
-         * Reimplement this if your store supports
-         * automatic user update
-         */
-        virtual bool canAutoUpdateUser() const;
-
-        /**
-         * Reimplement this if your store supports
-         * automatic user update
-         */
-        virtual User autoUpdateUser(Context *ctx, const CStringHash &userinfo) const;
-
-        /**
-         * Retrieve the user that matches the user info
-         */
-        virtual User findUser(Context *ctx, const CStringHash &userinfo) = 0;
-
-        /**
-         * Reimplement this so that you return a
-         * serializable value that can be used to
-         * identify the user.
-         * The default implementation just returns
-         * the user.
-         */
-        virtual QVariant forSession(Context *ctx, const Authentication::User &user);
-
-        /**
-         * Reimplement this so that you return a
-         * User that was stored in the session.
-         *
-         * The default implementation just returns
-         * the user.
-         */
-        virtual User fromSession(Context *ctx, const QVariant &frozenUser);
-    };
-
     class Realm
     {
     public:
-        Realm(Store *store, Credential *credential);
+        Realm(AuthenticationStore *store, Credential *credential);
         virtual User findUser(Context *ctx, const CStringHash &userinfo);
         virtual User authenticate(Context *ctx, const CStringHash &authinfo);
 
@@ -125,7 +76,7 @@ public:
     private:
         friend class Authentication;
 
-        Store *m_store;
+        AuthenticationStore *m_store;
         Credential *m_credential;
     };
 

@@ -19,6 +19,7 @@
 
 #include "authentication_p.h"
 
+#include "authenticationstore.h"
 #include "context.h"
 #include "session.h"
 
@@ -231,7 +232,7 @@ Authentication::Realm *Authentication::findRealmForPersistedUser()
     return 0;
 }
 
-Authentication::Realm::Realm(Authentication::Store *store, Authentication::Credential *credential) :
+Authentication::Realm::Realm(AuthenticationStore *store, Authentication::Credential *credential) :
     m_store(store),
     m_credential(credential)
 {
@@ -321,27 +322,6 @@ Authentication::Realm *AuthenticationPrivate::realm(const QString &realmName) co
     return realms.value(name);
 }
 
-
-bool Authentication::Store::canAutoCreateUser() const
-{
-    return false;
-}
-
-Authentication::User Authentication::Store::autoCreateUser(Context *ctx, const CStringHash &userinfo) const
-{
-    return User();
-}
-
-bool Authentication::Store::canAutoUpdateUser() const
-{
-    return false;
-}
-
-Authentication::User Authentication::Store::autoUpdateUser(Context *ctx, const CStringHash &userinfo) const
-{
-    return User();
-}
-
 Authentication::User::User()
 {
 
@@ -402,16 +382,4 @@ QDataStream &operator>>(QDataStream &in, Authentication::User &user)
     user.setId(id);
     user.swap(hash);
     return in;
-}
-
-QVariant Authentication::Store::forSession(Context *ctx, const Authentication::User &user)
-{
-    Q_UNUSED(ctx)
-    return QVariant::fromValue(user);
-}
-
-Authentication::User Authentication::Store::fromSession(Context *ctx, const QVariant &frozenUser)
-{
-    Q_UNUSED(ctx)
-    return frozenUser.value<User>();
 }
