@@ -25,6 +25,8 @@
 
 #include <QLoggingCategory>
 
+Q_LOGGING_CATEGORY(CUTELYST_UTILS_AUTH, "cutelyst.utils.auth")
+
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")

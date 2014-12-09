@@ -22,6 +22,9 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QLoggingCategory>
+#include <QStringBuilder>
+
+#include "common.h"
 
 using namespace Cutelyst;
 
@@ -40,33 +43,40 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     QString username = user.value("username");
 
     QString fileName = property("_file").toString();
-    QFile file(fileName);
-    if (file.open(QFile::ReadWrite | QFile::Text)) {
-        QTemporaryFile tmp;
-        if (tmp.open()) {
-            bool wrote = false;
-            while (!file.atEnd()) {
-                QByteArray line = file.readLine();
-                QList<QByteArray> parts = line.split(':');
-                if (!wrote && parts.size() >= 2 && parts.first() == username) {
-                    line = username.toLatin1() + ":" + user.value("password").toLatin1();
-                    wrote = true;
-                }
-                qDebug() << line;
-                tmp.write(line);
-            }
-            file.close();
+    QTemporaryFile tmp(fileName % QLatin1String("-XXXXXXX"));
+    tmp.setAutoRemove(false); // sort of a backup
+    if (!tmp.open()) {
+        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to open temporary file for writting";
+        return;
+    }
 
-            if (!wrote) {
-                QByteArray line = username.toLatin1() + ":" + user.value("password").toLatin1();
-                qDebug() << line;
-                tmp.write(line);
+    bool wrote = false;
+    QFile file(fileName);
+    if (file.exists() && file.open(QFile::ReadWrite | QFile::Text)) {
+        while (!file.atEnd()) {
+            QByteArray line = file.readLine();
+            QList<QByteArray> parts = line.split(':');
+            if (!wrote && parts.size() >= 2 && parts.first() == username) {
+                line = username.toLatin1() + ':' + user.value("password").toLatin1() + '\n';
+                wrote = true;
             }
-            qDebug() << tmp.size();
-            qDebug() << tmp.fileName();
-            qDebug() << fileName;
-            tmp.copy(fileName);
+            tmp.write(line);
         }
+        file.close();
+    }
+
+    if (!wrote) {
+        QByteArray line = username.toLatin1() + ':' + user.value("password").toLatin1() + '\n';
+        tmp.write(line);
+    }
+
+    if (file.exists() && !file.remove()) {
+        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to remove auth file for replacement";
+        return;
+    }
+
+    if (!tmp.rename(fileName)) {
+        qCWarning(CUTELYST_UTILS_AUTH) << "Failed to rename temporary file";
     }
 }
 
