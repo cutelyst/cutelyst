@@ -89,7 +89,7 @@ Authentication::User StoreHtpasswd::findUser(Context *ctx, const CStringHash &us
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
-            QList<QByteArray> parts = line.split(':');
+            QList<QByteArray> parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username) {
                 Authentication::User ret;
                 ret.insert("username", username);

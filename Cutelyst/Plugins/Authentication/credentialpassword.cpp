@@ -106,8 +106,7 @@ bool CredentialPassword::checkPassword(const Authentication::User &user, const C
         hash.addData(m_passwordPostSalt.toUtf8());
         QByteArray result =  hash.result();
 
-        return storedPassword == result ||
-                storedPassword == result.toHex() ||
+        return storedPassword == result.toHex() ||
                 storedPassword == result.toBase64();
     } else if (m_passwordType == SelfCheck) {
         return user.checkPassword(password);
