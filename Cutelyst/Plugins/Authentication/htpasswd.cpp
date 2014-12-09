@@ -111,6 +111,6 @@ QVariant StoreHtpasswd::forSession(Context *ctx, const Authentication::User &use
 Authentication::User StoreHtpasswd::fromSession(Context *ctx, const QVariant &frozenUser)
 {
     CStringHash userInfo;
-    userInfo[QStringLiteral("id")] = frozenUser.toString();
+    userInfo[QStringLiteral("username")] = frozenUser.toString();
     return findUser(ctx, userInfo);
 }
