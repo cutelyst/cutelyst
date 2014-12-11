@@ -133,6 +133,7 @@ extern "C" void uwsgi_cutelyst_atexit()
 
 extern "C" void uwsgi_cutelyst_init_apps()
 {
+    const QString &applicationName = QCoreApplication::applicationName();
     QString path(options.app);
     if (path.isEmpty()) {
         uwsgi_log("Cutelyst application name or path was not set\n");
@@ -177,6 +178,11 @@ extern "C" void uwsgi_cutelyst_init_apps()
     if (!app) {
         uwsgi_log("Could not cast Cutelyst::Application from instance: %s\n", loader->errorString().data());
         exit(1);
+    }
+
+    // Sets the application name with the name from our library
+    if (QCoreApplication::applicationName() == applicationName && applicationName != app->applicationName()) {
+        QCoreApplication::setApplicationName(app->applicationName());
     }
 
     EngineUwsgi *mainEngine = new EngineUwsgi(app);
