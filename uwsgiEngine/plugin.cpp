@@ -181,8 +181,8 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
 
     // Sets the application name with the name from our library
-    if (QCoreApplication::applicationName() == applicationName && applicationName != app->applicationName()) {
-        QCoreApplication::setApplicationName(app->applicationName());
+    if (QCoreApplication::applicationName() == applicationName) {
+        QCoreApplication::setApplicationName(app->metaObject()->className());
     }
 
     EngineUwsgi *mainEngine = new EngineUwsgi(app);

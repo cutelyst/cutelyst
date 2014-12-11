@@ -130,16 +130,6 @@ void Application::registerDispatcher(DispatchType *dispatcher)
     d->dispatcher->registerDispatchType(dispatcher);
 }
 
-QByteArray Application::applicationName() const
-{
-    return metaObject()->className();
-}
-
-QByteArray Application::applicationVersion() const
-{
-    return QCoreApplication::applicationVersion().toLocal8Bit();
-}
-
 QVariantHash Application::config() const
 {
     Q_D(const Application);

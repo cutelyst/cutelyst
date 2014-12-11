@@ -126,16 +126,6 @@ public:
      */
     void registerDispatcher(DispatchType *dispatcher);
 
-    /**
-     * The default implementation returns the class name
-     */
-    virtual QByteArray applicationName() const;
-
-    /**
-     * The default implementation returns QCoreApplication::applicationVersion()
-     */
-    virtual QByteArray applicationVersion() const;
-
 Q_SIGNALS:
     /**
      * Emited so that you register all plugins that are specifically
