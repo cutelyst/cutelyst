@@ -47,7 +47,7 @@ View::View(const QString &engine, QObject *parent) :
                 m_interface = qobject_cast<ViewInterface *>(plugin);
                 if (!m_interface) {
                     qCCritical(CUTELYST_VIEW) << "Could not create an instance of the view engine:" << engine;
-                } else if (m_interface->thread() != QThread::currentThread()) {
+                } else {
                     m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance());
 
                     if (!m_interface) {
