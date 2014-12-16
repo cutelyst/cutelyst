@@ -111,6 +111,7 @@ bool Application::registerView(View *view, const QByteArray &name)
 {
     Q_D(Application);
     if (d->views.contains(name)) {
+        qCWarning(CUTELYST_CORE) << "Not registering View. There is already a view with this name:" << name;
         return false;
     }
     d->views.insert(name, view);
