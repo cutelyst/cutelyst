@@ -255,7 +255,7 @@ public:
      * class Users : public Cutelyst::Controller
      * {
      * public:
-     *   C_ATTR(lst, :Path(the-list)
+     *   C_ATTR(lst, :Path(the-list))
      *   void lst(Context *ctx);
      * };
      * \endcode
