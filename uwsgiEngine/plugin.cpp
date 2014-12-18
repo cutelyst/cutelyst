@@ -151,15 +151,25 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
 #endif // UWSGI_GO_CHEAP_CODE
 
+    QDir cwd(uwsgi.cwd);
+
     // Set the configuration env
     QStringList args = QCoreApplication::arguments();
     QString config(options.config);
     if (!config.isNull()) {
+        QFileInfo fileInfo(config);
+        if (fileInfo.isRelative()) {
+            config = cwd.absoluteFilePath(config);
+        }
         qputenv("CUTELYST_CONFIG", config.toUtf8());
     } else if (args.contains("--ini")) {
         int index = args.indexOf("--ini");
         if (index != -1 && index < args.size()) {
-            qputenv("CUTELYST_CONFIG", args.at(index + 1).toUtf8());
+            QFileInfo fileInfo(args.at(index + 1));
+            if (fileInfo.isRelative()) {
+                config = cwd.absoluteFilePath(args.at(index + 1));
+            }
+            qputenv("CUTELYST_CONFIG", config.toUtf8());
         }
     }
 
@@ -167,7 +177,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
     // relative to the current working directory
     QFileInfo fileInfo(path);
     if (fileInfo.isRelative()) {
-        QDir cwd(uwsgi.cwd);
         path = cwd.absoluteFilePath(path);
     }
 

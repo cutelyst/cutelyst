@@ -45,9 +45,8 @@ Engine::Engine(QObject *parent) :
         QSettings settings(config, QSettings::IniFormat);
         Q_FOREACH (const QString &group, settings.childGroups()) {
             settings.beginGroup(group);
-            QString groupLowered = group.toLower();
             Q_FOREACH (const QString &key, settings.childKeys()) {
-                d->config[groupLowered].insert(key, settings.value(key));
+                d->config[group].insert(key, settings.value(key));
             }
             settings.endGroup();
         }
