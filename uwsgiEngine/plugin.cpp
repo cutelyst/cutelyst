@@ -26,6 +26,7 @@
 #include <QSocketNotifier>
 #include <QPluginLoader>
 #include <QFileInfo>
+#include <QDir>
 
 using namespace Cutelyst;
 
@@ -160,6 +161,14 @@ extern "C" void uwsgi_cutelyst_init_apps()
         if (index != -1 && index < args.size()) {
             qputenv("CUTELYST_CONFIG", args.at(index + 1).toUtf8());
         }
+    }
+
+    // if the path is relative build a path
+    // relative to the current working directory
+    QFileInfo fileInfo(path);
+    if (fileInfo.isRelative()) {
+        QDir cwd(uwsgi.cwd);
+        path = cwd.absoluteFilePath(path);
     }
 
     QPluginLoader *loader = new QPluginLoader(path);
