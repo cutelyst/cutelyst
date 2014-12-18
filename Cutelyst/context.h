@@ -47,10 +47,12 @@ class Context : public QObject
     Q_PROPERTY(Action* action READ action)
     Q_PROPERTY(QByteArray actionName READ actionName)
     Q_PROPERTY(QByteArray ns READ ns)
+    Q_PROPERTY(QByteArray namespace READ ns)
     Q_PROPERTY(Request *req READ request)
     Q_PROPERTY(Request *request READ request)
     Q_PROPERTY(Controller *controller READ controller)
     Q_PROPERTY(QByteArray controllerName READ controllerName)
+    Q_PROPERTY(QVariantHash config READ config)
     Q_PROPERTY(bool state READ state)
 public:
     Context(ContextPrivate *priv);
@@ -319,6 +321,10 @@ public:
      * Execute an action. Errors are available via error().
      */
     bool execute(Code *code);
+
+    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+    QVariantHash config() const;
 
 Q_SIGNALS:
     void beforePrepareAction(bool *skipMethod);

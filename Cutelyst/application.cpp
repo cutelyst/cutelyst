@@ -131,6 +131,16 @@ void Application::registerDispatcher(DispatchType *dispatcher)
     d->dispatcher->registerDispatchType(dispatcher);
 }
 
+QVariant Application::config(const QString &key, const QVariant &defaultValue) const
+{
+    Q_D(const Application);
+    QVariantHash::const_iterator it = d->config.constFind(key);
+    if (it != d->config.constEnd()) {
+        return it.value();
+    }
+    return defaultValue;
+}
+
 QVariantHash Application::config() const
 {
     Q_D(const Application);

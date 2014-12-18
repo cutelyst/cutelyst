@@ -21,6 +21,7 @@
 #define CUTELYST_APPLICATION_H
 
 #include <QCoreApplication>
+#include <QVariant>
 
 namespace Cutelyst {
 
@@ -126,6 +127,14 @@ public:
      */
     void registerDispatcher(DispatchType *dispatcher);
 
+    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+    /**
+     * User configuration for the application
+     * @return A variant hash with configuration settings
+     */
+    QVariantHash config() const;
+
 Q_SIGNALS:
     /**
      * Emited so that you register all plugins that are specifically
@@ -134,12 +143,6 @@ Q_SIGNALS:
     void registerPlugins(Context *ctx);
 
 protected:
-    /**
-     * User configuration for the application
-     * @return A variant hash with configuration settings
-     */
-    QVariantHash config() const;
-
     friend class Engine;
     bool setup(Engine *engine);
     void handleRequest(Request *req);
