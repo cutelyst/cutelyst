@@ -157,18 +157,12 @@ extern "C" void uwsgi_cutelyst_init_apps()
     QStringList args = QCoreApplication::arguments();
     QString config(options.config);
     if (!config.isNull()) {
-        QFileInfo fileInfo(config);
-        if (fileInfo.isRelative()) {
-            config = cwd.absoluteFilePath(config);
-        }
+        config = cwd.absoluteFilePath(config);
         qputenv("CUTELYST_CONFIG", config.toUtf8());
     } else if (args.contains("--ini")) {
         int index = args.indexOf("--ini");
         if (index != -1 && index < args.size()) {
-            QFileInfo fileInfo(args.at(index + 1));
-            if (fileInfo.isRelative()) {
-                config = cwd.absoluteFilePath(args.at(index + 1));
-            }
+            config = cwd.absoluteFilePath(args.at(index + 1));
             qputenv("CUTELYST_CONFIG", config.toUtf8());
         }
     }
