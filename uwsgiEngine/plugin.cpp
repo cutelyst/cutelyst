@@ -122,14 +122,14 @@ extern "C" void uwsgi_cutelyst_master_cleanup()
  */
 extern "C" void uwsgi_cutelyst_atexit()
 {
-    uwsgi_log("Child process finishing: %d\n", QCoreApplication::applicationPid());
+    qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
     Q_FOREACH (EngineUwsgi *engine, coreEngines) {
         engine->stop();
     }
     qDeleteAll(coreEngines);
 
-    uwsgi_log("Child process finished: %d\n", QCoreApplication::applicationPid());
+    qCDebug(CUTELYST_UWSGI) << "Child process finished:" << QCoreApplication::applicationPid();
 }
 
 extern "C" void uwsgi_cutelyst_init_apps()
@@ -137,11 +137,11 @@ extern "C" void uwsgi_cutelyst_init_apps()
     const QString &applicationName = QCoreApplication::applicationName();
     QString path(options.app);
     if (path.isEmpty()) {
-        uwsgi_log("Cutelyst application name or path was not set\n");
+        qCCritical(CUTELYST_UWSGI) << "Cutelyst application name or path was not set";
         exit(1);
     }
 
-    uwsgi_log("Cutelyst loading application: \"%s\"\n", options.app);
+    qCDebug(CUTELYST_UWSGI) << "Cutelyst loading application:" << options.app;
 
 #ifdef UWSGI_GO_CHEAP_CODE
     if (options.reload) {
@@ -182,19 +182,19 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
-        uwsgi_log("Could not load application: %s\n", loader->errorString().data());
+        qCCritical(CUTELYST_UWSGI) << "Could not load application:" << loader->errorString();
         exit(1);
     }
 
     QObject *instance = loader->instance();
     if (!instance) {
-        uwsgi_log("Could not get a QObject instance: %s\n", loader->errorString().data());
+        qCCritical(CUTELYST_UWSGI) << "Could not get a QObject instance: %s\n" << loader->errorString();
         exit(1);
     }
 
     Application *app = qobject_cast<Application *>(instance);
     if (!app) {
-        uwsgi_log("Could not cast Cutelyst::Application from instance: %s\n", loader->errorString().data());
+        qCCritical(CUTELYST_UWSGI) << "Could not cast Cutelyst::Application from instance: %s\n" << loader->errorString();
         exit(1);
     }
 
@@ -202,11 +202,11 @@ extern "C" void uwsgi_cutelyst_init_apps()
     if (QCoreApplication::applicationName() == applicationName) {
         QCoreApplication::setApplicationName(app->metaObject()->className());
     }
-    uwsgi_log("Loaded application:: %s\n", QCoreApplication::applicationName().data());
+    qCDebug(CUTELYST_UWSGI) << "Loaded application:" << QCoreApplication::applicationName();
 
     EngineUwsgi *mainEngine = new EngineUwsgi(app);
     if (!mainEngine->initApplication(app, false)) {
-        uwsgi_log("Failed to init application.\n");
+        qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }
     coreEngines.append(mainEngine);
