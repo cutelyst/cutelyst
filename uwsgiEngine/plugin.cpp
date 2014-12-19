@@ -169,10 +169,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     // if the path is relative build a path
     // relative to the current working directory
-    QFileInfo fileInfo(path);
-    if (fileInfo.isRelative()) {
-        path = cwd.absoluteFilePath(path);
-    }
+    path = cwd.absoluteFilePath(path);
 
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
