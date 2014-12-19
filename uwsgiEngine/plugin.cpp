@@ -202,6 +202,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
     if (QCoreApplication::applicationName() == applicationName) {
         QCoreApplication::setApplicationName(app->metaObject()->className());
     }
+    uwsgi_log("Loaded application:: %s\n", QCoreApplication::applicationName().data());
 
     EngineUwsgi *mainEngine = new EngineUwsgi(app);
     if (!mainEngine->initApplication(app, false)) {

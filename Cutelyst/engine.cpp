@@ -229,7 +229,7 @@ void Engine::reload()
 QVariantHash Engine::config(const QString &entity) const
 {
     Q_D(const Engine);
-    return d->config.value(entity.toLower());
+    return d->config.value(entity);
 }
 
 void Engine::handleRequest(Request *request, bool autoDelete)

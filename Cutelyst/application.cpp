@@ -147,6 +147,12 @@ QVariantHash Application::config() const
     return d->config;
 }
 
+void Application::setConfig(const QString &key, const QVariant &value)
+{
+    Q_D(Application);
+    d->config.insert(key, value);
+}
+
 bool Application::setup(Engine *engine)
 {
     Q_D(Application);
@@ -155,7 +161,7 @@ bool Application::setup(Engine *engine)
         return true;
     }
 
-    d->config = engine->config(QLatin1String("Application"));
+    d->config = engine->config(QCoreApplication::applicationName());
 
     // Call the virtual application init
     // to setup Controllers plugins stuff

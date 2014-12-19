@@ -143,6 +143,14 @@ Q_SIGNALS:
     void registerPlugins(Context *ctx);
 
 protected:
+    /**
+     * Change the value of the configuration key
+     * You should never call this from random parts of the
+     * code as a way to store shareable data, it should
+     * only be called by a subclass
+     */
+    void setConfig(const QString &key, const QVariant &value);
+
     friend class Engine;
     bool setup(Engine *engine);
     void handleRequest(Request *req);
