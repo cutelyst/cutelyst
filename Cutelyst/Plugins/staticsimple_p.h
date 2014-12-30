@@ -23,13 +23,15 @@
 #include "staticsimple.h"
 
 #include <QRegularExpression>
+#include <QDir>
 
 namespace Cutelyst {
 
 class StaticSimplePrivate
 {
 public:
-    QString rootDir;
+    QList<QDir> includePaths;
+    QStringList dirs;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
 };
 

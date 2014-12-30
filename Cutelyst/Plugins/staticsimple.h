@@ -11,10 +11,12 @@ class StaticSimple : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticSimple)
 public:
-    explicit StaticSimple(const QString &path = QString(), QObject *parent = 0);
+    explicit StaticSimple(QObject *parent = 0);
     virtual ~StaticSimple();
 
-    void setRootDir(const QString &path);
+    void setIncludePaths(const QStringList &paths);
+
+    void setDirs(const QStringList &dirs);
 
     bool setup(Context *ctx);
 
