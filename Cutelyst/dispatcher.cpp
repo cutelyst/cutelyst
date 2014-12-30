@@ -156,19 +156,22 @@ void Dispatcher::prepareAction(Context *ctx)
     Q_D(Dispatcher);
 
     Request *request = ctx->request();
-    QByteArray path = request->path();
+    const QByteArray &path = request->path();
     QList<QByteArray> pathParts = path.split('/');
     QStringList args;
+
+    // Root action
+    pathParts.prepend(QByteArrayLiteral(""));
 
     int pos = path.size();
     QByteArray actionPath;
 
-    //  "/foo/bar"
-    //  "/foo/" skip
-    //  "/foo"
-    //  "/"
+    //  "foo/bar"
+    //  "foo/" skip
+    //  "foo"
+    //  ""
     do {
-        actionPath = path.mid(1, pos);
+        actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, actionPath, args)) {
                 request->d_ptr->args = args;
@@ -185,14 +188,13 @@ void Dispatcher::prepareAction(Context *ctx)
         }
 
         // leave the loop if we are at the root "/"
-        if (pos <= 1) {
+        if (pos <= 0) {
             break;
         }
 
-        pos = path.lastIndexOf('/', pos);
-        if (pos != 0) {
-            // Remove trailing '/'
-            --pos;
+        pos = path.lastIndexOf('/', --pos);
+        if (pos == -1) {
+            pos = 0;
         }
 
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));

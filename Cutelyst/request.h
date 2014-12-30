@@ -100,7 +100,7 @@ public:
     /**
      * @return the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
-     * path will contain '/path/foo'
+     * path will contain 'path/foo'
      */
     QByteArray path() const;
 

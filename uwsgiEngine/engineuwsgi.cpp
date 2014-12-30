@@ -131,7 +131,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    priv->path = QByteArray::fromRawData(req->path_info, req->path_info_len);
+    priv->path = QByteArray::fromRawData(req->path_info + 1, req->path_info_len - 1);
 
     char *pch = strchr(req->host, ':');
     if (pch) {

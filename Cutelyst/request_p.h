@@ -55,8 +55,8 @@ public:
     // Pointer to Engine data
     void *requestPtr = 0;
 
-    // Instead of setting this you might use setPathURIAndQueryParams
     bool https = false;
+    // Path must not have a leading slash
     QByteArray path;
     QByteArray query;
     QString serverAddress;
