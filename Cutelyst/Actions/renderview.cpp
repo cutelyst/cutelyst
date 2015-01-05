@@ -76,11 +76,17 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
         return true;
     }
 
+    // First use the action View attribute
+    if (d->view) {
+        return d->view->render(ctx);
+    }
+
+    // If the above is not set try the
+    // view choosen by the user or the
+    // application default
     View *view = ctx->view();
     if (view) {
         return view->render(ctx);
-    } else if (d->view) {
-        return d->view->render(ctx);
     }
 
     qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";

@@ -153,7 +153,10 @@ Controller *Context::controller(const QByteArray &name) const
 View *Context::view() const
 {
     Q_D(const Context);
-    return d->view;
+    if (d->view) {
+        return d->view;
+    }
+    return d->app->view();
 }
 
 void Context::setView(const QByteArray &name)

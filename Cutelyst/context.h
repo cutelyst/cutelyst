@@ -139,7 +139,8 @@ public:
     /**
      * Returns the current view to be used
      * for rendering this request, if one
-     * is set by setView()
+     * is set by setView() or the default
+     * application view
      */
     View *view() const;
 
