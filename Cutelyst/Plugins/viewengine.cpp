@@ -35,7 +35,7 @@
 using namespace Cutelyst;
 
 ViewEngine::ViewEngine(const QString &engine, QObject *parent) :
-    Code(parent)
+    View(parent)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
     Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
@@ -70,11 +70,6 @@ ViewEngine::ViewEngine(const QString &engine, QObject *parent) :
 
 ViewEngine::~ViewEngine()
 {
-}
-
-Code::Modifiers ViewEngine::modifiers() const
-{
-    return Code::OnlyExecute;
 }
 
 QString ViewEngine::includePath() const
@@ -126,12 +121,6 @@ void ViewEngine::setCache(bool enable)
 }
 
 bool ViewEngine::render(Context *ctx) const
-{
-    Q_ASSERT(m_interface);
-    return m_interface->render(ctx);
-}
-
-bool ViewEngine::doExecute(Context *ctx)
 {
     Q_ASSERT(m_interface);
     return m_interface->render(ctx);

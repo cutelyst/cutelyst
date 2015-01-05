@@ -22,20 +22,18 @@
 
 #include <QObject>
 
-#include <Cutelyst/Code>
+#include <Cutelyst/View>
 
 namespace Cutelyst {
 
 class Context;
 class ViewInterface;
-class ViewEngine : public Code
+class ViewEngine : public View
 {
     Q_OBJECT
 public:
     explicit ViewEngine(const QString &engine, QObject *parent = 0);
     virtual ~ViewEngine();
-
-    virtual Modifiers modifiers() const;
 
     QString includePath() const;
     void setIncludePath(const QString &path);
@@ -53,15 +51,12 @@ public:
     void setCache(bool enable);
 
     /**
-     * All subclasses must reimplement this to
-     * do it's rendering.
+     * Render the view using the choosen engine
      */
     virtual bool render(Context *ctx) const;
 
 private:
     ViewInterface *m_interface = 0;
-
-    virtual bool doExecute(Context *ctx);
 };
 
 }
