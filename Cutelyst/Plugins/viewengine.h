@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef VIEW_H
-#define VIEW_H
+#ifndef VIEWENGINE_H
+#define VIEWENGINE_H
 
 #include <QObject>
 
@@ -27,33 +27,43 @@
 namespace Cutelyst {
 
 class Context;
-class View : public Code
+class ViewInterface;
+class ViewEngine : public Code
 {
     Q_OBJECT
 public:
-    explicit View(QObject *parent = 0);
-    virtual ~View();
+    explicit ViewEngine(const QString &engine, QObject *parent = 0);
+    virtual ~ViewEngine();
 
-    /**
-     * The default implementation returns Code::OnlyExecute
-     */
     virtual Modifiers modifiers() const;
+
+    QString includePath() const;
+    void setIncludePath(const QString &path);
+
+    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    QString templateExtension() const;
+    void setTemplateExtension(const QString &extension);
+
+    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+    QString wrapper() const;
+    void setWrapper(const QString &name);
+
+    Q_PROPERTY(bool cache READ isCaching WRITE setCache)
+    bool isCaching() const;
+    void setCache(bool enable);
 
     /**
      * All subclasses must reimplement this to
      * do it's rendering.
-     * Default implementation does nothing and returns false.
      */
     virtual bool render(Context *ctx) const;
 
 private:
-    /**
-     * This is used by Code execute() when
-     * using an ActionView
-     */
-    bool doExecute(Context *ctx) { return render(ctx); }
+    ViewInterface *m_interface = 0;
+
+    virtual bool doExecute(Context *ctx);
 };
 
 }
 
-#endif // VIEW_H
+#endif // VIEWENGINE_H

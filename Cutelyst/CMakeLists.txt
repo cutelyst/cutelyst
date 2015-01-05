@@ -45,6 +45,7 @@ set(cutelystqt_SRC
     Plugins/session_p.h
     Plugins/staticsimple.cpp
     Plugins/staticsimple_p.h
+    Plugins/viewengine.cpp
     Plugins/authentication.cpp
     Plugins/authentication_p.h
     Plugins/authenticationstore.cpp
@@ -98,6 +99,7 @@ set(cutelystqt_plugin_HEADERS
     Plugins/Session
     Plugins/staticsimple.h
     Plugins/StaticSimple
+    Plugins/viewengine.h
     Plugins/authentication.h
     Plugins/authenticationstore.h
 )

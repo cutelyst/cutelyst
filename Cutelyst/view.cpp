@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,54 +18,12 @@
  */
 
 #include "view.h"
-#include "context.h"
-#include "response.h"
-#include "request.h"
-#include "Plugins/View/ViewInterface.h"
-
-#include "common.h"
-
-#include <QDir>
-#include <QPluginLoader>
-#include <QJsonArray>
-#include <QCoreApplication>
-#include <QLoggingCategory>
-#include <QThread>
 
 using namespace Cutelyst;
 
-View::View(const QString &engine, QObject *parent) :
+View::View(QObject *parent) :
     Code(parent)
 {
-    QDir pluginsDir("/usr/lib/cutelyst-plugins");
-    Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
-        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
-        QJsonObject json = pluginLoader.metaData()["MetaData"].toObject();
-        if (json["name"].toString() == engine) {
-            QObject *plugin = pluginLoader.instance();
-            if (plugin) {
-                m_interface = qobject_cast<ViewInterface *>(plugin);
-                if (!m_interface) {
-                    qCCritical(CUTELYST_VIEW) << "Could not create an instance of the view engine:" << engine;
-                } else {
-                    m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance());
-
-                    if (!m_interface) {
-                        qCCritical(CUTELYST_VIEW) << "Could not create a NEW instance of the view engine:" << engine;
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-//    qDebug() << interface;
-
-    if (!m_interface) {
-        qCCritical(CUTELYST_VIEW) << "View Engine not loaded:" << engine;
-    } else {
-        m_interface->setParent(this);
-    }
 }
 
 View::~View()
@@ -77,62 +35,8 @@ Code::Modifiers View::modifiers() const
     return Code::OnlyExecute;
 }
 
-QString View::includePath() const
-{
-    Q_ASSERT(m_interface);
-    return m_interface->includePath();
-}
-
-void View::setIncludePath(const QString &path)
-{
-    Q_ASSERT(m_interface);
-    m_interface->setIncludePath(path);
-}
-
-QString View::templateExtension() const
-{
-    Q_ASSERT(m_interface);
-    return m_interface->templateExtension();
-}
-
-void View::setTemplateExtension(const QString &extension)
-{
-    Q_ASSERT(m_interface);
-    m_interface->setTemplateExtension(extension);
-}
-
-QString View::wrapper() const
-{
-    Q_ASSERT(m_interface);
-    return m_interface->wrapper();
-}
-
-void View::setWrapper(const QString &name)
-{
-    Q_ASSERT(m_interface);
-    m_interface->setWrapper(name);
-}
-
-bool View::isCaching() const
-{
-    Q_ASSERT(m_interface);
-    return m_interface->isCaching();
-}
-
-void View::setCache(bool enable)
-{
-    Q_ASSERT(m_interface);
-    m_interface->setCache(enable);
-}
-
 bool View::render(Context *ctx) const
 {
-    Q_ASSERT(m_interface);
-    return m_interface->render(ctx);
-}
-
-bool View::doExecute(Context *ctx)
-{
-    Q_ASSERT(m_interface);
-    return m_interface->render(ctx);
+    Q_UNUSED(ctx)
+    return false;
 }
