@@ -29,9 +29,9 @@
 namespace Cutelyst {
 
 class ResponsePrivate;
-class Response
+class Response : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
     Q_DECLARE_PRIVATE(Response)
     Q_ENUMS(HttpStatus)
 public:
@@ -79,7 +79,7 @@ public:
         HTTPVersionNotSupported      = 505,
         BandwidthLimitExceeded       = 509
     };
-    Response();
+    explicit Response(QObject *parent = 0);
     virtual ~Response();
 
     quint16 status() const;
@@ -167,7 +167,7 @@ public:
     /**
      * Writes data to the body
      */
-    void write(const QByteArray &data);
+    Q_INVOKABLE void write(const QByteArray &data);
 
 protected:
     ResponsePrivate *d_ptr;

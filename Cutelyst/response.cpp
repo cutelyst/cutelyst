@@ -26,7 +26,8 @@
 
 using namespace Cutelyst;
 
-Response::Response() :
+Response::Response(QObject *parent) :
+    QObject(parent),
     d_ptr(new ResponsePrivate)
 {
     Q_D(Response);
