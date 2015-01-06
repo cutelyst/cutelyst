@@ -187,7 +187,7 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
 {
     Q_D(const Context);
 
-    QUrl ret = d->request->base();
+    QUrl ret = QString::fromLatin1(d->request->base());
 
     QStringList encodedArgs;
     encodedArgs.append(path);

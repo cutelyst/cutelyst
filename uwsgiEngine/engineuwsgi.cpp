@@ -135,10 +135,10 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
     char *pch = strchr(req->host, ':');
     if (pch) {
-        priv->serverAddress = QString::fromLatin1(req->host, pch - req->host);
+        priv->serverAddress = QByteArray::fromRawData(req->host, pch - req->host);
         priv->serverPort = QByteArray::fromRawData(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
     } else {
-        priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
+        priv->serverAddress = QByteArray::fromRawData(req->host, req->host_len);
         priv->serverPort = priv->https ? 443 : 80;// fallback
     }
     priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);

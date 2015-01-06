@@ -42,7 +42,7 @@ class Request : public QObject
     Q_PROPERTY(QString hostname READ hostname)
     Q_PROPERTY(quint16 port READ port)
     Q_PROPERTY(QUrl uri READ uri)
-    Q_PROPERTY(QUrl base READ base)
+    Q_PROPERTY(QByteArray base READ base)
     Q_PROPERTY(QByteArray path READ path)
     Q_PROPERTY(QByteArray match READ match)
     Q_PROPERTY(QStringList arguments READ arguments)
@@ -95,7 +95,7 @@ public:
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000/.
      */
-    QUrl base() const;
+    QByteArray base() const;
 
     /**
      * @return the path, i.e. the part of the URI after base(), for the current request.

@@ -270,7 +270,7 @@ void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteA
     priv->requestPtr = requestData;
     priv->https = url.scheme() == QLatin1String("https");
     priv->path = url.path().toLatin1();
-    priv->serverAddress = url.host();
+    priv->serverAddress = url.host().toLatin1();
     priv->serverPort = url.port();
     priv->query = url.query().toLatin1();
 

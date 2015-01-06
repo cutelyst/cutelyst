@@ -59,7 +59,7 @@ public:
     // Path must not have a leading slash
     QByteArray path;
     QByteArray query;
-    QString serverAddress;
+    QByteArray serverAddress;
     quint16 serverPort;
 
 protected:
@@ -77,7 +77,7 @@ protected:
     mutable QUrl url;
 
     mutable bool baseParsed = false;
-    mutable QUrl base;
+    mutable QByteArray base;
 
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
