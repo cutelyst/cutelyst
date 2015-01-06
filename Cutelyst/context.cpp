@@ -187,7 +187,7 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
 {
     Q_D(const Context);
 
-    QUrl ret = QString::fromLatin1(d->request->base());
+    QUrl ret = d->request->uri();
 
     QStringList encodedArgs;
     encodedArgs.append(path);
@@ -198,15 +198,15 @@ QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMul
     ret.setPath(encodedArgs.join(QLatin1Char('/')));
 
     // Avoid a trailing '?'
+    QUrlQuery query;
     if (queryValues.size()) {
-        QUrlQuery query;
         QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
         while (i != queryValues.constEnd()) {
             query.addQueryItem(i.key(), i.value());
             ++i;
         }
-        ret.setQuery(query);
     }
+    ret.setQuery(query);
 
     return ret;
 }
