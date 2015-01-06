@@ -80,7 +80,21 @@ QUrl Request::uri() const
 {
     Q_D(const Request);
     if (!d->urlParsed) {
-        QUrl uri = QString::fromLatin1(base());
+        QUrl uri;
+
+        // This is a hack just in case remote is not set
+        if (d->serverAddress.isNull()) {
+            uri.setHost(QHostInfo::localHostName());
+        } else {
+            uri.setHost(QString::fromLatin1(d->serverAddress));
+        }
+        uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
+
+        // Append the server port if different from default one
+        if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
+            uri.setPort(d->serverPort);
+        }
+
         uri.setPath(d->path);
         if (!d->query.isEmpty()) {
             uri.setQuery(d->query);
@@ -98,8 +112,8 @@ QByteArray Request::base() const
     if (!d->baseParsed) {
         QByteArray base = d->https ? QByteArrayLiteral("https://") : QByteArrayLiteral("http://");
 
+        // This is a hack just in case remote is not set
         if (d->serverAddress.isNull()) {
-            // This is a hack just in case remote is not set
             base.append(QHostInfo::localHostName().toLatin1());
         } else {
             base.append(d->serverAddress);
