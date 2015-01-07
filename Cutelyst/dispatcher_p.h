@@ -27,13 +27,13 @@ namespace Cutelyst {
 class DispatcherPrivate
 {
 public:
-    ActionList getContainers(const QByteArray &ns) const;
+    ActionList getContainers(const QString &ns) const;
 
     bool showInternalActions = false;
-    QHash<QByteArray, Action*> actionHash;
-    QHash<QByteArray, ActionList> containerHash;
+    QHash<QString, Action*> actionHash;
+    QHash<QString, ActionList> containerHash;
     ActionList rootActions;
-    QHash<QByteArray, Controller *> constrollerHash;
+    QHash<QString, Controller *> constrollerHash;
     QList<DispatchType*> dispatchers;
 };
 

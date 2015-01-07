@@ -117,9 +117,9 @@ public:
      */
     bool registerController(Controller *controller);
 
-    bool registerView(View *view, const QByteArray &name = QByteArray());
+    bool registerView(View *view, const QString &name = QString());
 
-    View *view(const QByteArray &name = QByteArray()) const;
+    View *view(const QString &name = QString()) const;
 
     /**
      * Registers a custom DispatchType, if none is registered

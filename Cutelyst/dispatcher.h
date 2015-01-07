@@ -42,23 +42,23 @@ public:
     /**
      * Returns a named action from a given namespace.
      */
-    Action *getAction(const QByteArray &name, const QByteArray &nameSpace = QByteArray()) const;
+    Action *getAction(const QString &name, const QString &nameSpace = QByteArray()) const;
 
     /**
      * Returns the named action by its full private path.
      */
-    Action* getActionByPath(const QByteArray &path) const;
+    Action* getActionByPath(const QString &path) const;
 
     /**
      * Returns a list of actions that match \pa name on
      * the desired namespace \pa nameSpace
      */
-    ActionList getActions(const QByteArray &name, const QByteArray &nameSpace) const;
+    ActionList getActions(const QString &name, const QString &nameSpace) const;
 
     /**
      * Returns a hash of registered controllers
      */
-    QHash<QByteArray, Controller *> controllers() const;
+    QHash<QString, Controller *> controllers() const;
 
     /**
      * Takes a Catalyst::Action object and action parameters and returns a URI
@@ -68,7 +68,7 @@ public:
      * If the action object is not available for external dispatch or the dispatcher
      * cannot determine an appropriate URI, this method will return a null byte array.
      */
-    QByteArray uriForAction(Action *action, const QStringList &captures) const;
+    QString uriForAction(Action *action, const QStringList &captures) const;
 
 protected:
     void setupActions(const QList<Controller *> &controllers);
@@ -80,7 +80,7 @@ protected:
     bool dispatch(Context *ctx);
 
     bool forward(Context *ctx, Action *action, const QStringList &arguments = QStringList());
-    bool forward(Context *ctx, const QByteArray &opname, const QStringList &arguments = QStringList());
+    bool forward(Context *ctx, const QString &opname, const QStringList &arguments = QStringList());
     void prepareAction(Context *ctx);
 
     /**
@@ -92,10 +92,10 @@ protected:
 
 private:
     QByteArray printActions();
-    Action *command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams = QStringList());
-    QByteArray actionRel2Abs(Context *ctx, const QByteArray &path);
-    Action *invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args);
-    inline QByteArray cleanNamespace(const QByteArray &ns) const;
+    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList());
+    QString actionRel2Abs(Context *ctx, const QString &path);
+    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args);
+    inline QString cleanNamespace(const QString &ns) const;
 
 protected:
     friend class Application;

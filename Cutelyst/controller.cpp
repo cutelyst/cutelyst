@@ -44,13 +44,13 @@ Controller::~Controller()
     delete d_ptr;
 }
 
-QByteArray Controller::ns() const
+QString Controller::ns() const
 {
     Q_D(const Controller);
     return d->pathPrefix;
 }
 
-Action *Controller::actionFor(const QByteArray &name) const
+Action *Controller::actionFor(const QString &name) const
 {
     Q_D(const Controller);
     Action *ret = d->actions.value(name);
@@ -134,17 +134,17 @@ void Controller::setupActions(Dispatcher *dispatcher)
     d->dispatcher = dispatcher;
 
     ActionList beginList;
-    beginList = dispatcher->getActions(QByteArrayLiteral("Begin"), d->pathPrefix);
+    beginList = dispatcher->getActions(QStringLiteral("Begin"), d->pathPrefix);
     if (!beginList.isEmpty()) {
         d->begin = beginList.last();
         d->actionSteps.append(d->begin);
     }
 
-    d->autoList = dispatcher->getActions(QByteArrayLiteral("Auto"), d->pathPrefix);
+    d->autoList = dispatcher->getActions(QStringLiteral("Auto"), d->pathPrefix);
     d->actionSteps.append(d->autoList);
 
     ActionList endList;
-    endList = dispatcher->getActions(QByteArrayLiteral("End"), d->pathPrefix);
+    endList = dispatcher->getActions(QStringLiteral("End"), d->pathPrefix);
     if (!endList.isEmpty()) {
         d->end = endList.last();
     }
@@ -291,9 +291,9 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                     attributeArray.append(classInfo.value());
                 }
             }
-            QMap<QByteArray, QByteArray> attrs = parseAttributes(method, attributeArray, name);
+            QMap<QString, QString> attrs = parseAttributes(method, attributeArray, name);
 
-            QByteArray reverse = controller->ns() + '/' + name;
+            QString reverse = controller->ns() + '/' + name;
 
             Action *action = createAction({
                                               {"name"      , QVariant::fromValue(name)},
@@ -310,7 +310,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
     }
 }
 
-QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
+QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
     QList<QPair<QByteArray, QByteArray> > attributes;
     // This is probably not the best parser ever
@@ -394,13 +394,13 @@ QMap<QByteArray, QByteArray> ControllerPrivate::parseAttributes(const QMetaMetho
         }
     }
 
-    QMap<QByteArray, QByteArray> ret;
+    QMap<QString, QString> ret;
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
     for (int i = attributes.size() - 1; i >= 0; --i) {
         const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
         QByteArray key = pair.first;
-        QByteArray value = pair.second;
+        QString value = pair.second;
         if (key == "Global") {
             key = QByteArrayLiteral("Path");
             value = name;
@@ -454,14 +454,14 @@ QStack<Code *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
     return roles;
 }
 
-QByteArray ControllerPrivate::parsePathAttr(const QByteArray &_value)
+QString ControllerPrivate::parsePathAttr(const QString &_value)
 {
-    QByteArray value = _value;
+    QString value = _value;
     if (value.isNull()) {
         value = "";
     }
 
-    if (value.startsWith('/')) {
+    if (value.startsWith(QChar('/'))) {
         return value;
     } else if (value.length()) {
         return pathPrefix + '/' + value;

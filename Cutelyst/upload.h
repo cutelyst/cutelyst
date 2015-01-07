@@ -39,7 +39,7 @@ public:
     /**
      * Returns the name of the form field
      */
-    QByteArray name() const;
+    QString name() const;
 
     /**
      * Returns the file name provided by the user agent
@@ -49,7 +49,7 @@ public:
     /**
      * Returns the content type provided by the user agent
      */
-    QByteArray contentType() const;
+    QString contentType() const;
 
     /**
      * Returns the headers provided by the user agent

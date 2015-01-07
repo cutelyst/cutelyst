@@ -140,7 +140,7 @@ bool Dispatcher::forward(Context *ctx, Action *action, const QStringList &argume
     return action->dispatch(ctx);
 }
 
-bool Dispatcher::forward(Context *ctx, const QByteArray &opname, const QStringList &arguments)
+bool Dispatcher::forward(Context *ctx, const QString &opname, const QStringList &arguments)
 {
     Action *action = command2Action(ctx, opname);
     if (action) {
@@ -156,15 +156,15 @@ void Dispatcher::prepareAction(Context *ctx)
     Q_D(Dispatcher);
 
     Request *request = ctx->request();
-    const QByteArray &path = request->path();
-    QList<QByteArray> pathParts = path.split('/');
+    const QString &path = request->path();
+    QStringList pathParts = path.split(QChar('/'));
     QStringList args;
 
     // Root action
-    pathParts.prepend(QByteArrayLiteral(""));
+    pathParts.prepend(QStringLiteral(""));
 
     int pos = path.size();
-    QByteArray actionPath;
+    QString actionPath;
 
     //  "foo/bar"
     //  "foo/" skip
@@ -197,11 +197,11 @@ void Dispatcher::prepareAction(Context *ctx)
             pos = 0;
         }
 
-        args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast()));
+        args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
     } while (pos != -2);
 }
 
-Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpace) const
+Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -209,7 +209,7 @@ Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpac
         return 0;
     }
 
-    QByteArray action = cleanNamespace(nameSpace);
+    QString action = cleanNamespace(nameSpace);
     action.reserve(action.size() + name.size() + 1);
     action.append('/');
     action.append(name);
@@ -217,18 +217,18 @@ Action *Dispatcher::getAction(const QByteArray &name, const QByteArray &nameSpac
     return d->actionHash.value(action);
 }
 
-Action *Dispatcher::getActionByPath(const QByteArray &path) const
+Action *Dispatcher::getActionByPath(const QString &path) const
 {
     Q_D(const Dispatcher);
 
-    QByteArray _path = path;
+    QString _path = path;
     if (_path.startsWith('/')) {
         _path.remove(0, 1);
     }
     return d->actionHash.value(_path);
 }
 
-ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &nameSpace) const
+ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -237,7 +237,7 @@ ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &name
         return ret;
     }
 
-    QByteArray _ns = cleanNamespace(nameSpace);
+    QString _ns = cleanNamespace(nameSpace);
 
     ActionList containers = d->getContainers(_ns);
     Q_FOREACH (Action *action, containers) {
@@ -249,22 +249,22 @@ ActionList Dispatcher::getActions(const QByteArray &name, const QByteArray &name
     return ret;
 }
 
-QHash<QByteArray, Controller *> Dispatcher::controllers() const
+QHash<QString, Controller *> Dispatcher::controllers() const
 {
     Q_D(const Dispatcher);
     return d->constrollerHash;
 }
 
-QByteArray Dispatcher::uriForAction(Action *action, const QStringList &captures) const
+QString Dispatcher::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-        QByteArray uri = dispatch->uriForAction(action, captures);
+        QString uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
-            return uri.isEmpty() ? QByteArrayLiteral("/") : uri;
+            return uri.isEmpty() ? QStringLiteral("/") : uri;
         }
     }
-    return QByteArray();
+    return QString();
 }
 
 void Dispatcher::registerDispatchType(DispatchType *dispatchType)
@@ -287,11 +287,11 @@ QByteArray Dispatcher::printActions()
     int privateLength = privateTitle.length();
     int classLength = classTitle.length();
     int actionLength = methodTitle.length();
-    QHash<QByteArray, Action*>::ConstIterator it = d->actionHash.constBegin();
+    QHash<QString, Action*>::ConstIterator it = d->actionHash.constBegin();
     while (it != d->actionHash.constEnd()) {
         Action *action = it.value();
         if (d->showInternalActions || !action->name().startsWith('_')) {
-            QByteArray path = it.key();
+            QString path = it.key();
             if (!path.startsWith('/')) {
                 path.prepend('/');
             }
@@ -315,12 +315,12 @@ QByteArray Dispatcher::printActions()
         << "+" << QByteArray().fill('-', actionLength + 2).data()
         << "." << endl;
 
-    QList<QByteArray> keys = d->actionHash.keys();
+    QList<QString> keys = d->actionHash.keys();
     qSort(keys.begin(), keys.end());
-    Q_FOREACH (const QByteArray &key, keys) {
+    Q_FOREACH (const QString &key, keys) {
         Action *action = d->actionHash.value(key);
         if (d->showInternalActions || !action->name().startsWith('_')) {
-            QByteArray path = key;
+            QString path = key;
             if (!path.startsWith('/')) {
                 path.prepend('/');
             }
@@ -344,7 +344,7 @@ QByteArray Dispatcher::printActions()
     return buffer;
 }
 
-Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, const QStringList &extraParams)
+Action *Dispatcher::command2Action(Context *ctx, const QString &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
 //    qDebug() << Q_FUNC_INFO << "Command" << command << d->actionHash.keys();
@@ -357,9 +357,9 @@ Action *Dispatcher::command2Action(Context *ctx, const QByteArray &command, cons
     return ret;
 }
 
-QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
+QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
 {
-    QByteArray ret = path;
+    QString ret = path;
     if (!ret.startsWith('/')) {
         ret.prepend('/');
         ret.prepend(qobject_cast<Action *>(ctx->stack().last())->ns());
@@ -372,21 +372,21 @@ QByteArray Dispatcher::actionRel2Abs(Context *ctx, const QByteArray &path)
     return ret;
 }
 
-Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, const QStringList &args)
+Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
 {
     Action *ret;
-    QByteArray path = actionRel2Abs(ctx, relativePath);
+    QString path = actionRel2Abs(ctx, relativePath);
 
     int pos = path.lastIndexOf('/');
     int lastPos = path.size();
     do {
         if (pos == -1) {
-            ret = getAction(path, QByteArray());
+            ret = getAction(path, QString());
             if (ret) {
                 return ret;
             }
         } else {
-            QByteArray name = path.mid(pos + 1, lastPos);
+            QString name = path.mid(pos + 1, lastPos);
             path = path.mid(0, pos);
             ret = getAction(name, path);
             if (ret) {
@@ -401,17 +401,17 @@ Action *Dispatcher::invokeAsPath(Context *ctx, const QByteArray &relativePath, c
     return 0;
 }
 
-QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
+QString Dispatcher::cleanNamespace(const QString &ns) const
 {
-    QByteArray ret = ns;
+    QString ret = ns;
     bool lastWasSlash = true; // remove initial slash
     int nsSize = ns.size();
-    const char * data = ret.constData();
+//    const char * data = ret.();
     for (int i = 0; i < nsSize; ++i) {
-        if (data[i] == '/') {
+        if (ret.at(i) == '/') {
             if (lastWasSlash) {
                 ret.remove(i, 1);
-                data = ret.constData();
+//                data = ret.constData();
                 --nsSize;
             } else {
                 lastWasSlash = true;
@@ -423,11 +423,11 @@ QByteArray Dispatcher::cleanNamespace(const QByteArray &ns) const
     return ret;
 }
 
-ActionList DispatcherPrivate::getContainers(const QByteArray &ns) const
+ActionList DispatcherPrivate::getContainers(const QString &ns) const
 {
     ActionList ret;
 
-    if (ns != "/") {
+    if (ns != QLatin1String("/")) {
         int pos = ns.size();
 //        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {

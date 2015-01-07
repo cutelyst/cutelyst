@@ -54,9 +54,9 @@ QByteArray DispatchTypePath::list() const
     int pathLength = pathTitle.length();
     int privateLength = privateTitle.length();
 
-    QList<QByteArray> keys = d->paths.keys();
+    QStringList keys = d->paths.keys();
     qSort(keys.begin(), keys.end());
-    Q_FOREACH (const QByteArray &path, keys) {
+    Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             QByteArray args = action->attributes().value("Args");
@@ -88,7 +88,7 @@ QByteArray DispatchTypePath::list() const
         << "+" << QByteArray().fill('-', privateLength + 2).data()
         << "." << endl;
 
-    Q_FOREACH (const QByteArray &path, keys) {
+    Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
             if (!action->attributes().contains("Args")) {
@@ -118,11 +118,11 @@ QByteArray DispatchTypePath::list() const
     return buffer;
 }
 
-bool DispatchTypePath::match(Context *ctx, const QByteArray &path, const QStringList &args) const
+bool DispatchTypePath::match(Context *ctx, const QString &path, const QStringList &args) const
 {
     Q_D(const DispatchTypePath);
 
-    QByteArray _path = path;
+    QString _path = path;
     if (_path.isEmpty()) {
         _path = QByteArray("/", 1);
     }
@@ -155,7 +155,7 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
-QByteArray DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
+QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
         QMap<QByteArray, QByteArray> attributes = action->attributes();
@@ -181,11 +181,11 @@ bool actionLessThan(Action *a1, Action *a2)
     return a1->numberOfArgs() < a2->numberOfArgs();
 }
 
-bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
+bool DispatchTypePath::registerPath(const QString &path, Action *action)
 {
     Q_D(DispatchTypePath);
 
-    QByteArray _path = path;
+    QString _path = path;
     if (_path.startsWith('/')) {
         _path.remove(0, 1);
     }
@@ -193,7 +193,7 @@ bool DispatchTypePath::registerPath(const QByteArray &path, Action *action)
         // TODO when we try to match a path
         // it comes without a leading / so
         // when would this be used?
-        _path = QByteArrayLiteral("/");
+        _path = QStringLiteral("/");
     }
 
     if (d->paths.contains(_path)) {

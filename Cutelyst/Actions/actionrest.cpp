@@ -50,10 +50,10 @@ bool ActionREST::dispatch(Context *ctx)
     return d->dispatchRestMethod(ctx, ctx->request()->method());
 }
 
-bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QByteArray &httpMethod) const
+bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QString &httpMethod) const
 {
     Q_Q(const ActionREST);
-    const QByteArray &restMethod = q->name() + '_' + httpMethod;
+    const QByteArray &restMethod = q->name() + '_' + httpMethod.toLatin1();
 
     Controller *controller = ctx->controller();
     Action *action = controller->actionFor(restMethod);
@@ -107,7 +107,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QByteArray &met
     response->setStatus(Response::MethodNotAllowed); // 405
     response->headers().insert(QByteArrayLiteral("Allow"),
                                getAllowedMethods(ctx->controller(), methodName));
-    response->body() = "Method " + ctx->req()->method() + " not implemented for "
+    response->body() = "Method " + ctx->req()->method().toLatin1() + " not implemented for "
             + ctx->uriFor(methodName).toString().toLatin1();
     return true;
 }

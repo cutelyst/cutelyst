@@ -31,7 +31,7 @@ Response::Response(QObject *parent) :
     d_ptr(new ResponsePrivate)
 {
     Q_D(Response);
-    d->headers.setHeader(QByteArrayLiteral("X-Cutelyst"), QByteArrayLiteral(VERSION));
+    d->headers.insert(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
 }
 
 Response::~Response()
@@ -52,10 +52,10 @@ void Response::setStatus(quint16 status)
     d->status = status;
 }
 
-void Response::addHeaderValue(const QByteArray &key, const QByteArray &value)
+void Response::addHeaderValue(const QString &key, const QString &value)
 {
     Q_D(Response);
-    d->headers.setHeader(key, value);
+    d->headers.insert(key, value);
 }
 
 bool Response::hasBody() const
@@ -96,16 +96,16 @@ void Response::setBody(QIODevice *body)
     d->body = body;
 }
 
-QByteArray Response::contentEncoding() const
+QString Response::contentEncoding() const
 {
     Q_D(const Response);
-    return d->headers.header("Content-Encoding");
+    return d->headers.header(QStringLiteral("Content-Encoding"));
 }
 
-void Cutelyst::Response::setContentEncoding(const QByteArray &encoding)
+void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
-    d->headers.setHeader("Content-Encoding", encoding);
+    d->headers.insert(QStringLiteral("Content-Encoding"), encoding);
 }
 
 qint64 Response::contentLength() const
@@ -120,13 +120,13 @@ void Response::setContentLength(qint64 length)
     d->headers.setContentLength(length);
 }
 
-QByteArray Response::contentType() const
+QString Response::contentType() const
 {
     Q_D(const Response);
     return d->headers.contentType();
 }
 
-void Response::setContentType(const QByteArray &type)
+void Response::setContentType(const QString &type)
 {
     Q_D(Response);
     d->headers.setContentType(type);

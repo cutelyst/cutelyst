@@ -28,12 +28,57 @@
 
 using namespace Cutelyst;
 
+QString Headers::contentEncoding() const
+{
+    return value(QStringLiteral("Content-Encoding"));
+}
+
+void Headers::setContentEncoding(const QString &encoding)
+{
+    insert(QStringLiteral("Content-Encoding"), encoding);
+}
+
+QString Headers::contentType() const
+{
+    return value(QStringLiteral("Content-Type"));
+}
+
+void Headers::setContentType(const QString &contentType)
+{
+    insert(QStringLiteral("Content-Type"), contentType);
+}
+
+qint64 Headers::contentLength() const
+{
+    return value(QStringLiteral("Content-Length")).toLongLong();
+}
+
+void Headers::setContentLength(qint64 value)
+{
+    insert(QStringLiteral("Content-Length"), QString::number(value));
+}
+
 void Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     QString dt = date.toTimeSpec(Qt::UTC).toString(QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
     insert("Date", dt.toLocal8Bit());
+}
+
+QString Headers::ifModifiedSince() const
+{
+    return value(QStringLiteral("If-Modified-Since"));
+}
+
+QString Headers::lastModified() const
+{
+    return value(QStringLiteral("Last-Modified"));
+}
+
+void Headers::setLastModified(const QString &value)
+{
+    insert(QStringLiteral("Last-Modified"), value);
 }
 
 void Headers::setLastModifiedDateTime(const QDateTime &lastModified)
@@ -44,33 +89,88 @@ void Headers::setLastModifiedDateTime(const QDateTime &lastModified)
     insert("Last-Modified", dt.toLocal8Bit());
 }
 
-QByteArray Headers::authorizationBasic() const
+QString Headers::server() const
 {
-    return HeadersPrivate::decodeBasicAuth(value(QByteArrayLiteral("Authorization")));
+    return value(QStringLiteral("Server"));
 }
 
-QPair<QByteArray, QByteArray> Headers::authorizationBasicPair() const
+void Headers::setServer(const QString &value)
 {
-    return HeadersPrivate::decodeBasicAuthPair(value(QByteArrayLiteral("Authorization")));
+    insert(QStringLiteral("Server"), value);
 }
 
-void Headers::setAuthorizationBasic(const QByteArray &username, const QByteArray &password)
+QString Headers::userAgent() const
+{
+    return value(QStringLiteral("User-Agent"));
+}
+
+void Headers::setUserAgent(const QString &value)
+{
+    insert(QStringLiteral("User-Agent"), value);
+}
+
+QString Headers::referer() const
+{
+    return value(QStringLiteral("Referer"));
+}
+
+void Headers::setReferer(const QString &value)
+{
+    insert(QStringLiteral("Referer"), value);
+}
+
+void Headers::setWwwAuthenticate(const QString &value)
+{
+    insert(QStringLiteral("WWW-Authenticate"), value);
+}
+
+void Headers::setProxyAuthenticate(const QString &value)
+{
+    insert(QStringLiteral("Proxy-Authenticate"), value);
+}
+
+QString Headers::authorization() const
+{
+    return value(QStringLiteral("Authorization"));
+}
+
+QString Headers::authorizationBasic() const
+{
+    return HeadersPrivate::decodeBasicAuth(value(QStringLiteral("Authorization")).toLatin1());
+}
+
+QPair<QString, QString> Headers::authorizationBasicPair() const
+{
+    return HeadersPrivate::decodeBasicAuthPair(value(QStringLiteral("Authorization")).toLatin1());
+}
+
+void Headers::setAuthorizationBasic(const QString &username, const QString &password)
 {
     if (username.contains(':')) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
     }
-    QByteArray result = username + ':' + password;
-    insert(QByteArrayLiteral("Authorization"), QByteArrayLiteral("Basic ") + result.toBase64());
+    QString result = username + ':' + password;
+    insert(QStringLiteral("Authorization"), QStringLiteral("Basic ") + result.toLatin1().toBase64());
 }
 
-QByteArray Headers::proxyAuthorizationBasic() const
+QString Headers::proxyAuthorization() const
 {
-    return HeadersPrivate::decodeBasicAuth(value(QByteArrayLiteral("Proxy-Authorization")));
+    return value(QStringLiteral("Proxy-Authorization"));
 }
 
-QPair<QByteArray, QByteArray> Headers::proxyAuthorizationBasicPair() const
+QString Headers::proxyAuthorizationBasic() const
 {
-    return HeadersPrivate::decodeBasicAuthPair(value(QByteArrayLiteral("Proxy-Authorization")));
+    return HeadersPrivate::decodeBasicAuth(value(QStringLiteral("Proxy-Authorization")).toLatin1());
+}
+
+QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
+{
+    return HeadersPrivate::decodeBasicAuthPair(value(QStringLiteral("Proxy-Authorization")).toLatin1());
+}
+
+QString Headers::header(const QString &field) const
+{
+    return value(field);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
@@ -78,7 +178,7 @@ void Headers::setHeader(const QString &field, const QStringList &values)
     insert(field.toLocal8Bit(), values.join(QLatin1String(", ")).toLocal8Bit());
 }
 
-static QByteArray cutelyst_header_order(
+static QString cutelyst_header_order(
         // General headers
         "Cache-Control\n"
         "Connection\n"
@@ -153,7 +253,7 @@ QList<HeaderValuePair> Headers::headersForResponse() const
 {
     QList<HeaderValuePair> ret;
 
-    QHash<QByteArray, QByteArray>::const_iterator it = constBegin();
+    QHash<QString, QString>::const_iterator it = constBegin();
     while (it != constEnd()) {
         HeaderValuePair pair;
         pair.key = it.key();
@@ -181,17 +281,17 @@ QByteArray HeadersPrivate::decodeBasicAuth(const QByteArray &auth)
     return QByteArray();
 }
 
-QPair<QByteArray, QByteArray> HeadersPrivate::decodeBasicAuthPair(const QByteArray &auth)
+QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QByteArray &auth)
 {
-    QPair<QByteArray, QByteArray> ret;
+    QPair<QString, QString> ret;
     const QByteArray &authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {
-            ret.first = authorization;
+            ret.first = QString::fromLatin1(authorization);
         } else {
-            ret.first = authorization.left(pos);
-            ret.second = authorization.mid(pos + 1);
+            ret.first = QString::fromLatin1(authorization.left(pos));
+            ret.second = QString::fromLatin1(authorization.mid(pos + 1));
         }
     }
     return ret;

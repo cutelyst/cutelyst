@@ -104,13 +104,13 @@ Action *Context::action() const
     return d->action;
 }
 
-QByteArray Context::actionName() const
+QString Context::actionName() const
 {
     Q_D(const Context);
     return d->action->name();
 }
 
-QByteArray Context::ns() const
+QString Context::ns() const
 {
     Q_D(const Context);
     return d->action->ns();
@@ -134,13 +134,13 @@ Dispatcher *Context::dispatcher() const
     return d->dispatcher;
 }
 
-QByteArray Cutelyst::Context::controllerName() const
+QString Cutelyst::Context::controllerName() const
 {
     Q_D(const Context);
     return d->action->controller()->metaObject()->className();
 }
 
-Controller *Context::controller(const QByteArray &name) const
+Controller *Context::controller(const QString &name) const
 {
     Q_D(const Context);
     if (name.isEmpty()) {
@@ -159,7 +159,7 @@ View *Context::view() const
     return d->app->view();
 }
 
-void Context::setView(const QByteArray &name)
+void Context::setView(const QString &name)
 {
     Q_D(Context);
     d->view = d->app->view(name);
@@ -183,7 +183,7 @@ QStack<Code *> Context::stack() const
     return d->stack;
 }
 
-QUrl Context::uriFor(const QByteArray &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
     Q_D(const Context);
 
@@ -216,7 +216,7 @@ QUrl Context::uriFor(Action *action, const QStringList &args, const QMultiHash<Q
     Q_UNUSED(args)
     Q_D(const Context);
 
-    QByteArray path;
+    QString path;
     if (action) {
         // TODO check action for captures
         path = d->dispatcher->uriForAction(action, QStringList());
@@ -228,7 +228,7 @@ QUrl Context::uriFor(Action *action, const QStringList &args, const QMultiHash<Q
     return uriFor(path, args, queryValues);
 }
 
-QUrl Context::uriForAction(const QByteArray &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriForAction(const QString &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
     Q_D(const Context);
 
@@ -257,19 +257,19 @@ bool Context::forward(Action *action, const QStringList &arguments)
     return d->dispatcher->forward(this, action, arguments);
 }
 
-bool Context::forward(const QByteArray &action, const QStringList &arguments)
+bool Context::forward(const QString &action, const QStringList &arguments)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action, arguments);
 }
 
-Action *Context::getAction(const QByteArray &action, const QByteArray &ns)
+Action *Context::getAction(const QString &action, const QString &ns)
 {
     Q_D(Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QList<Action *> Context::getActions(const QByteArray &action, const QByteArray &ns)
+QList<Action *> Context::getActions(const QString &action, const QString &ns)
 {
     Q_D(Context);
     return d->dispatcher->getActions(action, ns);

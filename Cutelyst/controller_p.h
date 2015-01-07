@@ -31,20 +31,20 @@ public:
     Action* actionClass(const QVariantHash &args);
     Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
-    QMap<QByteArray, QByteArray> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
+    QMap<QString, QString> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Code *> gatherActionRoles(const QVariantHash &args);
-    QByteArray parsePathAttr(const QByteArray &_value);
+    QString parsePathAttr(const QString &_value);
     QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
-    QByteArray pathPrefix;
+    QString pathPrefix;
     Action *begin = 0;
     ActionList autoList;
     Action *end = 0;
     ActionList actionSteps;
     Dispatcher *dispatcher;
     bool parsedActions = false;
-    QHash<QByteArray, Action *> actions;
+    QHash<QString, Action *> actions;
 };
 
 }

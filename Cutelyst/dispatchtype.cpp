@@ -33,11 +33,11 @@ DispatchType::~DispatchType()
 {
 }
 
-QByteArray DispatchType::uriForAction(Action *action, const QStringList &captures) const
+QString DispatchType::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_UNUSED(action)
     Q_UNUSED(captures)
-    return QByteArray();
+    return QString();
 }
 
 bool DispatchType::registerAction(Action *action)
@@ -51,7 +51,7 @@ bool DispatchType::isLowPrecedence() const
     return false;
 }
 
-void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QByteArray &match) const
+void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match) const
 {
     ctx->d_ptr->action = action;
     ctx->d_ptr->request->d_ptr->match = match;

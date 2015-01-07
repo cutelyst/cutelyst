@@ -107,7 +107,7 @@ bool Application::registerController(Controller *controller)
     return true;
 }
 
-bool Application::registerView(View *view, const QByteArray &name)
+bool Application::registerView(View *view, const QString &name)
 {
     Q_D(Application);
     if (d->views.contains(name)) {
@@ -118,7 +118,7 @@ bool Application::registerView(View *view, const QByteArray &name)
     return true;
 }
 
-View *Application::view(const QByteArray &name) const
+View *Application::view(const QString &name) const
 {
     Q_D(const Application);
     return d->views.value(name);

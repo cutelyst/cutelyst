@@ -107,7 +107,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
                 }
 
                 headers.setLastModified(lastModified.toLocal8Bit());
-                headers.setHeader(QByteArrayLiteral("Cache-Control"), QByteArrayLiteral("public"));
+                headers.insert(QStringLiteral("Cache-Control"), QStringLiteral("public"));
 
                 return true;
             }

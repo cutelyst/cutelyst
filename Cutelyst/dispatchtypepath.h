@@ -38,7 +38,7 @@ public:
 
     virtual QByteArray list() const;
 
-    virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const;
+    virtual bool match(Context *ctx, const QString &path, const QStringList &args) const;
 
     virtual bool registerAction(Action *action);
 
@@ -46,10 +46,10 @@ public:
      * Get a URI part for an action
      * Always returns NULL if captures is not empty since Path actions don't have captures
      */
-    virtual QByteArray uriForAction(Action *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const;
 
 private:
-    bool registerPath(const QByteArray &path, Action *action);
+    bool registerPath(const QString &path, Action *action);
 
     DispatchTypePathPrivate *d_ptr;
 };

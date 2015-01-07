@@ -27,7 +27,7 @@ namespace Cutelyst {
 class DispatchTypePathPrivate
 {
 public:
-    QHash<QByteArray, ActionList> paths;
+    QHash<QString, ActionList> paths;
 };
 
 }

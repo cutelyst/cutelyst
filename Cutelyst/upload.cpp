@@ -34,7 +34,7 @@ QString Upload::filename() const
     return d->filename;
 }
 
-QByteArray Upload::contentType() const
+QString Upload::contentType() const
 {
     Q_D(const Upload);
     return d->headers.contentType();
@@ -190,7 +190,7 @@ Upload::Upload(UploadPrivate *prv) :
 {
     Q_D(Upload);
     open(prv->device->openMode());
-    QByteArray disposition = prv->headers.value(QByteArrayLiteral("Content-Disposition"));
+    QString disposition = prv->headers.value(QStringLiteral("Content-Disposition"));
     int start = disposition.indexOf("name=\"");
     if (start != -1) {
         start += 6;
@@ -215,7 +215,7 @@ Upload::~Upload()
     delete d_ptr;
 }
 
-QByteArray Upload::name() const
+QString Upload::name() const
 {
     Q_D(const Upload);
     return d->name;

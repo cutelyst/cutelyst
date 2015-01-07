@@ -86,7 +86,7 @@ QUrl Request::uri() const
         if (d->serverAddress.isNull()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
-            uri.setHost(QString::fromLatin1(d->serverAddress));
+            uri.setHost(d->serverAddress);
         }
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
 
@@ -106,11 +106,11 @@ QUrl Request::uri() const
     return d->url;
 }
 
-QByteArray Request::base() const
+QString Request::base() const
 {
     Q_D(const Request);
     if (!d->baseParsed) {
-        QByteArray base = d->https ? QByteArrayLiteral("https://") : QByteArrayLiteral("http://");
+        QString base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
         if (d->serverAddress.isNull()) {
@@ -122,7 +122,7 @@ QByteArray Request::base() const
         // Append the server port if different from default one
         if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
             base.append(':');
-            base.append(QByteArray::number(d->serverPort));
+            base.append(QString::number(d->serverPort));
         }
 
         // base always have a trailing slash
@@ -134,13 +134,13 @@ QByteArray Request::base() const
     return d->base;
 }
 
-QByteArray Request::path() const
+QString Request::path() const
 {
     Q_D(const Request);
     return d->path;
 }
 
-QByteArray Request::match() const
+QString Request::match() const
 {
     Q_D(const Request);
     return d->match;
@@ -198,7 +198,7 @@ ParamsMultiMap Request::parameters() const
     return d->param;
 }
 
-QNetworkCookie Request::cookie(const QByteArray &name) const
+QNetworkCookie Request::cookie(const QString &name) const
 {
     Q_D(const Request);
     if (!d->cookiesParsed) {
@@ -228,25 +228,25 @@ Headers Request::headers() const
     return d->headers;
 }
 
-QByteArray Request::method() const
+QString Request::method() const
 {
     Q_D(const Request);
     return d->method;
 }
 
-QByteArray Request::protocol() const
+QString Request::protocol() const
 {
     Q_D(const Request);
     return d->protocol;
 }
 
-QByteArray Request::remoteUser() const
+QString Request::remoteUser() const
 {
     Q_D(const Request);
     return d->remoteUser;
 }
 
-QMap<QByteArray, Cutelyst::Upload *> Request::uploads() const
+QMap<QString, Cutelyst::Upload *> Request::uploads() const
 {
     Q_D(const Request);
     if (!d->bodyParsed) {
@@ -282,8 +282,8 @@ void RequestPrivate::parseUrlQuery() const
 void RequestPrivate::parseBody() const
 {
     ParamsMultiMap params;
-    const QByteArray &contentType = headers.contentType();
-    if (contentType == "application/x-www-form-urlencoded") {
+    const QString &contentType = headers.contentType();
+    if (contentType == QStringLiteral("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         qint64 posOrig = body->pos();
@@ -292,7 +292,7 @@ void RequestPrivate::parseBody() const
         params = parseUrlEncoded(body->readLine());
 
         body->seek(posOrig);
-    } else if (contentType.startsWith("multipart/form-data")) {
+    } else if (contentType.startsWith(QLatin1String("multipart/form-data"))) {
         MultiPartFormDataParser parser(contentType, body);
         Uploads uploadList = parser.parse();
         for (int i = uploadList.size() - 1; i >= 0; --i) {
@@ -309,15 +309,15 @@ void RequestPrivate::parseBody() const
 
 void RequestPrivate::parseCookies() const
 {
-    QByteArray cookiesHeader = headers.header("Cookie");
-    cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n'));
+    QString cookiesHeader = headers.header(QStringLiteral("Cookie"));
+    cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n').toLatin1());
     cookiesParsed = true;
 }
 
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
-    QList<QByteArray> items = line.split('&');
+    const QList<QByteArray> &items = line.split('&');
     for (int i = items.size() - 1; i >= 0; --i) {
         const QByteArray &parameter = items.at(i);
         if (parameter.isEmpty()) {

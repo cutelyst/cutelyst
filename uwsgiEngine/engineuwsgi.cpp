@@ -131,22 +131,22 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    priv->path = QByteArray::fromRawData(req->path_info + 1, req->path_info_len - 1);
+    priv->path = QString::fromLatin1(req->path_info + 1, req->path_info_len - 1);
 
     char *pch = strchr(req->host, ':');
     if (pch) {
-        priv->serverAddress = QByteArray::fromRawData(req->host, pch - req->host);
-        priv->serverPort = QByteArray::fromRawData(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
+        priv->serverAddress = QString::fromLatin1(req->host, pch - req->host);
+        priv->serverPort = QString::fromLatin1(req->host + (pch - req->host + 1), req->host_len - (pch - req->host + 1)).toUInt();
     } else {
-        priv->serverAddress = QByteArray::fromRawData(req->host, req->host_len);
+        priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
         priv->serverPort = priv->https ? 443 : 80;// fallback
     }
     priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);
 
-    priv->method = QByteArray::fromRawData(req->method, req->method_len);
-    priv->protocol = QByteArray::fromRawData(req->protocol, req->protocol_len);
+    priv->method = QString::fromLatin1(req->method, req->method_len);
+    priv->protocol = QString::fromLatin1(req->protocol, req->protocol_len);
     priv->remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
-    priv->remoteUser = QByteArray::fromRawData(req->remote_user, req->remote_user_len);
+    priv->remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
 
     uint16_t remote_port_len;
     char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
@@ -160,20 +160,20 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
         if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            QByteArray key = httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5);
-            QByteArray value = QByteArray::fromRawData((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
+            QString key = QString::fromLatin1(httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5));
+            QString value = QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
             headers.insertMulti(key, value);
         }
     }
 
     if (req->content_type_len > 0) {
-        headers.insertMulti(QByteArrayLiteral("Content-Type"),
-                            QByteArray::fromRawData(req->content_type, req->content_type_len));
+        headers.insertMulti(QStringLiteral("Content-Type"),
+                            QString::fromLatin1(req->content_type, req->content_type_len));
     }
 
     if (req->encoding_len > 0) {
-        headers.insertMulti(QByteArrayLiteral("Content-Encoding"),
-                            QByteArray::fromRawData(req->encoding, req->encoding_len));
+        headers.insertMulti(QStringLiteral("Content-Encoding"),
+                            QString::fromLatin1(req->encoding, req->encoding_len));
     }
     priv->headers = headers;
 
@@ -327,8 +327,8 @@ bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
 
     QList<HeaderValuePair> headers = res->headers().headersForResponse();
     Q_FOREACH (const HeaderValuePair &pair, headers) {
-        QByteArray key = pair.key;
-        QByteArray value = pair.value;
+        QByteArray key = pair.key.toLatin1();
+        QByteArray value = pair.value.toLatin1();
         if (uwsgi_response_add_header(wsgi_req,
                                       key.data(),
                                       key.size(),

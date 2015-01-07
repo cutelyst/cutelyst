@@ -145,7 +145,7 @@ Authentication::User CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, A
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
-    QPair<QByteArray, QByteArray> userPass = ctx->req()->headers().authorizationBasicPair();
+    QPair<QString, QString> userPass = ctx->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
         return Authentication::User();
     }

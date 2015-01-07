@@ -28,7 +28,7 @@ class ActionRESTPrivate
 {
     Q_DECLARE_PUBLIC(ActionREST)
 public:
-    bool dispatchRestMethod(Context *ctx, const QByteArray &restMethod) const;
+    bool dispatchRestMethod(Context *ctx, const QString &restMethod) const;
     bool returnOptions(Context *ctx, const QByteArray &methodName) const;
     bool returnNotImplemented(Context *ctx, const QByteArray &methodName) const;
     QByteArray getAllowedMethods(Controller *controller, const QByteArray &methodName) const;

@@ -43,23 +43,23 @@ public:
     void parseCookies() const;
 
     // Manually filled by the Engine
-    QByteArray method;
-    QByteArray protocol;
+    QString method;
+    QString protocol;
     Headers headers;
     QIODevice *body = 0;
     QHostAddress remoteAddress;
     mutable QString remoteHostname;
     quint16 remotePort;
-    QByteArray remoteUser;
+    QString remoteUser;
     Engine *engine;
     // Pointer to Engine data
     void *requestPtr = 0;
 
     bool https = false;
     // Path must not have a leading slash
-    QByteArray path;
+    QString path;
     QByteArray query;
-    QByteArray serverAddress;
+    QString serverAddress;
     quint16 serverPort;
 
 protected:
@@ -71,13 +71,13 @@ protected:
 
     // Engines don't need to touch this
     QStringList args;
-    QByteArray match;
+    QString match;
 
     mutable bool urlParsed = false;
     mutable QUrl url;
 
     mutable bool baseParsed = false;
-    mutable QByteArray base;
+    mutable QString base;
 
     mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
@@ -91,7 +91,7 @@ protected:
     mutable bool paramParsed = false;
     mutable ParamsMultiMap param;
 
-    mutable QMap<QByteArray, Upload *> uploads;
+    mutable QMap<QString, Upload *> uploads;
 };
 
 }

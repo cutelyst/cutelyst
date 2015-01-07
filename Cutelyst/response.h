@@ -85,7 +85,7 @@ public:
     quint16 status() const;
     void setStatus(quint16 status);
 
-    void addHeaderValue(const QByteArray &key, const QByteArray &value);
+    void addHeaderValue(const QString &key, const QString &value);
 
     /**
      * Returns true if a body device has been defined.
@@ -113,14 +113,14 @@ public:
      */
     void setBody(QIODevice *body);
 
-    QByteArray contentEncoding() const;
-    void setContentEncoding(const QByteArray &encoding);
+    QString contentEncoding() const;
+    void setContentEncoding(const QString &encoding);
 
     qint64 contentLength() const;
     void setContentLength(qint64 length);
 
-    QByteArray contentType() const;
-    void setContentType(const QByteArray &type);
+    QString contentType() const;
+    void setContentType(const QString &type);
 
     QList<QNetworkCookie> cookies() const;
     void addCookie(const QNetworkCookie &cookie);

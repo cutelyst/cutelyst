@@ -42,12 +42,12 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Context *ctx, const QByteArray &path, const QStringList &args) const = 0;
+    virtual bool match(Context *ctx, const QString &path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action
      */
-    virtual QByteArray uriForAction(Action *action, const QStringList &captures) const = 0;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const = 0;
 
     /**
      * @brief registerAction
@@ -64,7 +64,7 @@ public:
     virtual bool isLowPrecedence() const;
 
 protected:
-    void setupMatchedAction(Context *ctx, Action *action, const QByteArray &match) const;
+    void setupMatchedAction(Context *ctx, Action *action, const QString &match) const;
 };
 
 }

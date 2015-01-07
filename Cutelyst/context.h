@@ -45,13 +45,13 @@ class Context : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Action* action READ action)
-    Q_PROPERTY(QByteArray actionName READ actionName)
-    Q_PROPERTY(QByteArray ns READ ns)
-    Q_PROPERTY(QByteArray namespace READ ns)
+    Q_PROPERTY(QString actionName READ actionName)
+    Q_PROPERTY(QString ns READ ns)
+    Q_PROPERTY(QString namespace READ ns)
     Q_PROPERTY(Request *req READ request)
     Q_PROPERTY(Request *request READ request)
     Q_PROPERTY(Controller *controller READ controller)
-    Q_PROPERTY(QByteArray controllerName READ controllerName)
+    Q_PROPERTY(QString controllerName READ controllerName)
     Q_PROPERTY(QVariantHash config READ config)
     Q_PROPERTY(bool state READ state)
 public:
@@ -97,7 +97,7 @@ public:
     /**
      * Returns the private name of the current action
      */
-    QByteArray actionName() const;
+    QString actionName() const;
 
     /**
      * Returns the namespace of the current action.
@@ -106,7 +106,7 @@ public:
      * // a class named FooBar which inherits Controller
      * ctx->ns(); // returns 'foo/bar'
      */
-    QByteArray ns() const;
+    QString ns() const;
 
     /**
      * Returns the current Request object containing
@@ -127,14 +127,14 @@ public:
     /**
      * The current controller name
      */
-    QByteArray controllerName() const;
+    QString controllerName() const;
 
     /**
      * Returns the current controller or
      * if name is not null the controller
      * named by name
      */
-    Controller *controller(const QByteArray &name = QByteArray()) const;
+    Controller *controller(const QString &name = QString()) const;
 
     /**
      * Returns the current view to be used
@@ -152,7 +152,7 @@ public:
      * Action classes like RenderView will use
      * this value to overwrite their settings.
      */
-    void setView(const QByteArray &name);
+    void setView(const QString &name);
 
     /**
      * You can set hash keys by passing arguments,
@@ -204,7 +204,7 @@ public:
      * ctx->request()->base() any \p args are appended as additional path
      * components; and any queryValues> are appended as "?foo=bar" parameters.
      */
-    QUrl uriFor(const QByteArray &path = QByteArray(),
+    QUrl uriFor(const QString &path = QString(),
                 const QStringList &args = QStringList(),
                 const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
 
@@ -218,7 +218,7 @@ public:
      * relative to the application root (if it does). It is then merged with
      * ctx->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
-    inline QUrl uriForNoArgs(const QByteArray &path,
+    inline QUrl uriForNoArgs(const QString &path,
                              const QMultiHash<QString, QString> &queryValues) const
     { return uriFor(path, QStringList(), queryValues); }
 
@@ -267,16 +267,15 @@ public:
      * ctx->uriForAction('/users/lst');
      * and it will create the URI /users/the-list.
      */
-    QUrl uriForAction(const QByteArray &path,
+    QUrl uriForAction(const QString &path,
                       const QStringList &args = QStringList(),
                       const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
 
     /**
      * A convenience method for the uriForAction() without the arguments parameter
      */
-    inline QUrl uriForActionNoArgs(const QByteArray &path,
-                                   const QMultiHash<QString, QString> &queryValues) const
-    { return uriForAction(path, QStringList(), queryValues); }
+    inline QUrl uriForActionNoArgs(const QString &path,
+                                   const QMultiHash<QString, QString> &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -292,17 +291,17 @@ public:
     void detach(Action *action = 0);
 
     bool forward(Action *action, const QStringList &arguments = QStringList());
-    bool forward(const QByteArray &action, const QStringList &arguments = QStringList());
+    bool forward(const QString &action, const QStringList &arguments = QStringList());
 
     /**
      * Gets an action in a given namespace.
      */
-    Action *getAction(const QByteArray &action, const QByteArray &ns = QByteArray());
+    Action *getAction(const QString &action, const QString &ns = QString());
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QList<Action*> getActions(const QByteArray &action, const QByteArray &ns = QByteArray());
+    QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
     bool registerPlugin(Plugin *plugin, bool takeOwnership = true);
     QList<Plugin *> plugins();
@@ -345,6 +344,9 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Context)
 };
+
+QUrl Context::uriForActionNoArgs(const QString &path, const QMultiHash<QString, QString> &queryValues) const
+{ return uriForAction(path, QStringList(), queryValues); }
 
 }
 

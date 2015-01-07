@@ -89,13 +89,13 @@ public:
      * The default Root controller is an example of setting
      * namespace to '' (the null string).
      */
-    QByteArray ns() const;
+    QString ns() const;
 
     /**
      * Returns the Cutelyst::Action object (if any) for a given method name in
      * this class namespace.
      */
-    Action *actionFor(const QByteArray &name) const;
+    Action *actionFor(const QString &name) const;
 
     ActionList actions() const;
 

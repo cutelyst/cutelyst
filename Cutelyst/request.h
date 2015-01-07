@@ -42,22 +42,22 @@ class Request : public QObject
     Q_PROPERTY(QString hostname READ hostname)
     Q_PROPERTY(quint16 port READ port)
     Q_PROPERTY(QUrl uri READ uri)
-    Q_PROPERTY(QByteArray base READ base)
-    Q_PROPERTY(QByteArray path READ path)
-    Q_PROPERTY(QByteArray match READ match)
+    Q_PROPERTY(QString base READ base)
+    Q_PROPERTY(QString path READ path)
+    Q_PROPERTY(QString match READ match)
     Q_PROPERTY(QStringList arguments READ arguments)
     Q_PROPERTY(QStringList args READ args)
     Q_PROPERTY(bool secure READ secure)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap param READ parameters)
-    Q_PROPERTY(QByteArray contentEncoding READ contentEncoding)
-    Q_PROPERTY(QByteArray contentType READ contentType)
-    Q_PROPERTY(QByteArray method READ method)
-    Q_PROPERTY(QByteArray protocol READ protocol)
-    Q_PROPERTY(QByteArray userAgent READ userAgent)
-    Q_PROPERTY(QByteArray referer READ referer)
-    Q_PROPERTY(QByteArray remoteUser READ remoteUser)
+    Q_PROPERTY(QString contentEncoding READ contentEncoding)
+    Q_PROPERTY(QString contentType READ contentType)
+    Q_PROPERTY(QString method READ method)
+    Q_PROPERTY(QString protocol READ protocol)
+    Q_PROPERTY(QString userAgent READ userAgent)
+    Q_PROPERTY(QString referer READ referer)
+    Q_PROPERTY(QString remoteUser READ remoteUser)
 public:
     virtual ~Request();
 
@@ -95,21 +95,21 @@ public:
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000/.
      */
-    QByteArray base() const;
+    QString base() const;
 
     /**
      * @return the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
      * path will contain 'path/foo'
      */
-    QByteArray path() const;
+    QString path() const;
 
     /**
      * This contains the matching part of a Regex action.
      * Otherwise it returns the same as 'action' (not a pointer but it's private name),
      * except for default actions, which return an empty string.
      */
-    QByteArray match() const;
+    QString match() const;
 
     /**
      * Returns a list of string containing the arguments.
@@ -184,58 +184,58 @@ public:
     /**
      * @return the Content-Encoding header
      */
-    inline QByteArray contentEncoding() const { return headers().contentEncoding(); }
+    inline QString contentEncoding() const { return headers().contentEncoding(); }
 
     /**
      * @return the Content-Type header
      */
-    inline QByteArray contentType() const { return headers().contentType(); }
+    inline QString contentType() const { return headers().contentType(); }
 
     /**
      * Returns the cookie with the given name
      */
-    QNetworkCookie cookie(const QByteArray &name) const;
+    QNetworkCookie cookie(const QString &name) const;
 
     /**
      * Returns all the cookie from the request
      */
     QList<QNetworkCookie> cookies() const;
 
-    inline QByteArray header(const QByteArray &key) const { return headers().value(key); }
+    inline QString header(const QString &key) const { return headers().value(key); }
 
     Headers headers() const;
 
     /**
      * @return the request method (GET, POST, HEAD, etc).
      */
-    QByteArray method() const;
+    QString method() const;
 
     /**
      * @return the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
-    QByteArray protocol() const;
+    QString protocol() const;
 
     /**
      * @return the user agent (browser) version string.
      */
-    QByteArray userAgent() const { return headers().userAgent(); }
+    QString userAgent() const { return headers().userAgent(); }
 
     /**
      * referer Shortcut for header("Referer")
      */
-    QByteArray referer() const { return headers().referer(); }
+    QString referer() const { return headers().referer(); }
 
     /**
      * @return the value of the REMOTE_USER environment variable.
      */
-    QByteArray remoteUser() const;
+    QString remoteUser() const;
 
-    QMap<QByteArray, Upload *> uploads() const;
+    QMap<QString, Upload *> uploads() const;
 
-    inline Uploads uploads(const QByteArray &name) const
+    inline Uploads uploads(const QString &name) const
     { return uploads().values(name); }
 
-    inline Upload *upload(const QByteArray &name) const
+    inline Upload *upload(const QString &name) const
     { return uploads().value(name); }
 
     Engine *engine() const;

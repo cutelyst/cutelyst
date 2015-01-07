@@ -35,8 +35,8 @@ public:
     * header or just it's value
     * @param body
     */
-    MultiPartFormDataParser(const QByteArray &contentType, QIODevice *body);
-    ~MultiPartFormDataParser();
+    MultiPartFormDataParser(const QString &contentType, QIODevice *body);
+    virtual ~MultiPartFormDataParser();
 
     void setBufferSize(int size);
     virtual Uploads parse();
