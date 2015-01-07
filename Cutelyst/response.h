@@ -152,7 +152,7 @@ public:
      * While it may work, it is not guaranteed to do the right thing and is not a
      * standard behaviour. You may opt to use uriFor() or uriForAction() instead.
      */
-    void redirect(const QByteArray &url, quint16 status = Found);
+    void redirect(const QString &url, quint16 status = Found);
 
     /**
      * Returns the HTTP location set by the redirect

@@ -49,8 +49,8 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_D(RoleACL);
     Q_UNUSED(application)
 
-    QMap<QByteArray, QByteArray> attributes;
-    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    QMap<QString, QString> attributes;
+    attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->actionReverse = args.value("reverse").toByteArray();
 
     if (!attributes.contains("RequiresRole") && !attributes.contains("AllowedRole")) {
@@ -59,13 +59,13 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
                     << "requires at least one RequiresRole or AllowedRole attribute";
         return false;
     } else {
-        QList<QByteArray> required = attributes.values("RequiresRole");
-        Q_FOREACH (const QByteArray &role, required) {
+        QStringList required = attributes.values("RequiresRole");
+        Q_FOREACH (const QString &role, required) {
             d->requiresRole.append(role);
         }
 
-        QList<QByteArray> allowed = attributes.values("AllowedRole");
-        Q_FOREACH (const QByteArray &role, allowed) {
+        QStringList allowed = attributes.values("AllowedRole");
+        Q_FOREACH (const QString &role, allowed) {
             d->allowedRole.append(role);
         }
     }

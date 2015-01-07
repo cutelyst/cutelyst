@@ -22,9 +22,6 @@
 
 #include "roleacl.h"
 
-#include <QSet>
-#include <QByteArray>
-
 namespace Cutelyst {
 
 class RoleACLPrivate
@@ -32,8 +29,8 @@ class RoleACLPrivate
 public:
     QStringList requiresRole;
     QStringList allowedRole;
-    QByteArray aclDetachTo;
-    QByteArray actionReverse;
+    QString aclDetachTo;
+    QString actionReverse;
     Action *detachTo;
 };
 

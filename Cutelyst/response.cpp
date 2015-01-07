@@ -156,7 +156,7 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->location = url;
     setStatus(status);
     if (url.isValid() && !d->body) {
-        d->headers.insert(QByteArrayLiteral("Location"), url.toEncoded());
+        d->headers.insert(QStringLiteral("Location"), url.toEncoded());
 
         QBuffer *buf = new QBuffer;
         if (!buf->open(QIODevice::ReadWrite)) {
@@ -177,13 +177,13 @@ void Response::redirect(const QUrl &url, quint16 status)
                                      "  </body>\n"
                                      "</html>\n"));
         d->body = buf;
-        d->headers.setContentType(QByteArrayLiteral("text/html; charset=utf-8"));
+        d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 }
 
-void Response::redirect(const QByteArray &url, quint16 status)
+void Response::redirect(const QString &url, quint16 status)
 {
-    redirect(QUrl(QString(url)), status);
+    redirect(QUrl(url), status);
 }
 
 QUrl Response::location() const
