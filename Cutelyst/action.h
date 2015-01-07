@@ -45,12 +45,12 @@ public:
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    QMap<QByteArray, QByteArray> attributes() const;
+    QMap<QString, QString> attributes() const;
 
     /**
      * @return Returns the name of the component where this action is defined
      */
-    QByteArray className() const;
+    QString className() const;
 
     /**
      * @return Returns the controller where this action is defined
@@ -84,18 +84,18 @@ public:
      * @brief name
      * @return Returns the sub name of this action.
      */
-    QByteArray name() const;
+    QString name() const;
 
     /**
      * @brief name
      * @return Returns the private name of this action.
      */
-    QByteArray reverse() const;
+    QString reverse() const;
 
     /**
      * Returns the private namespace this action lives in.
      */
-    QByteArray ns() const;
+    QString ns() const;
 
     /**
      * @brief numberOfArgs

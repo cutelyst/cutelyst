@@ -59,7 +59,7 @@ QByteArray DispatchTypePath::list() const
     Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
-            QByteArray args = action->attributes().value("Args");
+            QString args = action->attributes().value("Args");
             if (args.isEmpty()) {
                 _path.append(QLatin1String("/..."));
             } else {
@@ -70,7 +70,7 @@ QByteArray DispatchTypePath::list() const
             _path.replace(multipleSlashes, QLatin1String("/"));
             pathLength = qMax(pathLength, _path.length());
 
-            QByteArray privateName = action->reverse();
+            QString privateName = action->reverse();
             if (!privateName.startsWith('/')) {
                 privateName.prepend('/');
             }
@@ -100,13 +100,13 @@ QByteArray DispatchTypePath::list() const
             }
             _path.replace(multipleSlashes, QLatin1String("/"));
 
-            QByteArray privateName = action->reverse();
+            QString privateName = action->reverse();
             if (!privateName.startsWith('/')) {
                 privateName.prepend('/');
             }
 
-            out << "| " << _path.leftJustified(pathLength).toUtf8().data()
-                << " | " << privateName.leftJustified(privateLength).data()
+            out << "| " << _path.leftJustified(pathLength).toLatin1().data()
+                << " | " << privateName.leftJustified(privateLength).toLatin1().data()
                 << " | " << endl;
         }
     }
@@ -141,8 +141,8 @@ bool DispatchTypePath::match(Context *ctx, const QString &path, const QStringLis
 bool DispatchTypePath::registerAction(Action *action)
 {
     bool ret = false;
-    QMap<QByteArray, QByteArray> attributes = action->attributes();
-    QMap<QByteArray, QByteArray>::iterator i = attributes.find("Path");
+    QMap<QString, QString> attributes = action->attributes();
+    QMap<QString, QString>::iterator i = attributes.find("Path");
     while (i != attributes.end() && i.key() == "Path") {
         if (registerPath(i.value(), action)) {
             ret = true;
@@ -158,12 +158,12 @@ bool DispatchTypePath::registerAction(Action *action)
 QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
-        QMap<QByteArray, QByteArray> attributes = action->attributes();
-        QMap<QByteArray, QByteArray>::ConstIterator i = attributes.constFind(QByteArrayLiteral("Path"));
+        QMap<QString, QString> attributes = action->attributes();
+        QMap<QString, QString>::ConstIterator i = attributes.constFind(QStringLiteral("Path"));
         while (i != attributes.constEnd() && i.key() == "Path") {
-            QByteArray path = i.value();
+            QString path = i.value();
             if (path.isEmpty()) {
-                path = QByteArrayLiteral("/");
+                path = QStringLiteral("/");
             }
 
             if (!path.startsWith('/')) {
@@ -173,7 +173,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
             return path;
         }
     }
-    return QByteArray();
+    return QString();
 }
 
 bool actionLessThan(Action *a1, Action *a2)

@@ -45,13 +45,13 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
 
     init(app, args);
 
-    d->name = args.value("name").toByteArray();
-    d->ns = args.value("namespace").toByteArray();
-    d->reverse = args.value("reverse").toByteArray();
+    d->name = args.value("name").toString();
+    d->ns = args.value("namespace").toString();
+    d->reverse = args.value("reverse").toString();
     d->method = method;
     d->controller = controller;
 
-    QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    QMap<QString, QString> attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->attributes = attributes;
 
     if (attributes.contains("Args")) {
@@ -63,13 +63,13 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
     }
 }
 
-QMap<QByteArray, QByteArray> Action::attributes() const
+QMap<QString, QString> Action::attributes() const
 {
     Q_D(const Action);
     return d->attributes;
 }
 
-QByteArray Action::className() const
+QString Action::className() const
 {
     Q_D(const Action);
     return d->controller->metaObject()->className();
@@ -106,19 +106,19 @@ bool Action::matchCaptures(int numberOfCaptures) const
     return d->numberOfCaptures == -1 || d->numberOfCaptures == numberOfCaptures;
 }
 
-QByteArray Action::name() const
+QString Action::name() const
 {
     Q_D(const Action);
     return d->name;
 }
 
-QByteArray Action::reverse() const
+QString Action::reverse() const
 {
     Q_D(const Action);
     return d->reverse;
 }
 
-QByteArray Action::ns() const
+QString Action::ns() const
 {
     Q_D(const Action);
     return d->ns;

@@ -28,11 +28,11 @@ class ActionPrivate
 {
 public:
     bool valid = true;
-    QByteArray name;
-    QByteArray ns;
-    QByteArray reverse;
+    QString name;
+    QString ns;
+    QString reverse;
     QMetaMethod method;
-    QMap<QByteArray, QByteArray> attributes;
+    QMap<QString, QString> attributes;
     Controller *controller;
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;

@@ -118,11 +118,7 @@ bool Dispatcher::dispatch(Context *ctx)
 {
     Action *action = ctx->action();
     if (action) {
-        QByteArray command = action->ns();
-        command.prepend('/');
-        command.reserve(command.size() + 12);
-        command.append("/_DISPATCH", 10);
-        return forward(ctx, command);
+        return forward(ctx,QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
     } else {
         const QString &path = ctx->req()->path();
         if (path.isEmpty()) {
@@ -324,9 +320,9 @@ QByteArray Dispatcher::printActions()
             if (!path.startsWith('/')) {
                 path.prepend('/');
             }
-            out << "| " << path.leftJustified(privateLength).data()
-                << " | " << action->className().leftJustified(classLength).data()
-                << " | " << action->name().leftJustified(actionLength).data()
+            out << "| " << path.leftJustified(privateLength).toLatin1().data()
+                << " | " << action->className().leftJustified(classLength).toLatin1().data()
+                << " | " << action->name().leftJustified(actionLength).toLatin1().data()
                 << " |" << endl;
         }
     }
