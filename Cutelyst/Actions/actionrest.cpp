@@ -78,10 +78,10 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QString &httpMeth
         ret = returnOptions(ctx, q->name());
     } else if (httpMethod == "HEAD") {
         // redispatch to GET
-        ret = dispatchRestMethod(ctx, QByteArrayLiteral("GET"));
+        ret = dispatchRestMethod(ctx, QStringLiteral("GET"));
     } else if (httpMethod != "not_implemented") {
         // try dispatching to foo_not_implemented
-        ret = dispatchRestMethod(ctx, QByteArrayLiteral("not_implemented"));
+        ret = dispatchRestMethod(ctx, QStringLiteral("not_implemented"));
     } else {
         // not_implemented
         ret = returnNotImplemented(ctx, q->name());
@@ -104,9 +104,9 @@ bool ActionRESTPrivate::returnOptions(Context *ctx, const QString &methodName) c
 bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QString &methodName) const
 {
     Response *response = ctx->response();
-    response->setContentType(QByteArrayLiteral("text/plain"));
+    response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->headers().insert(QByteArrayLiteral("Allow"),
+    response->headers().insert(QStringLiteral("Allow"),
                                getAllowedMethods(ctx->controller(), methodName));
     response->body() = "Method " + ctx->req()->method().toLatin1() + " not implemented for "
             + ctx->uriFor(methodName).toString().toLatin1();

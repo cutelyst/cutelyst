@@ -43,8 +43,8 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
 {
     Q_D(RenderView);
 
-    QMap<QByteArray, QByteArray> attributes;
-    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    QMap<QString, QString> attributes;
+    attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->view = application->view(attributes.value("View"));
 
     return Action::init(application, args);
@@ -60,10 +60,10 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
 
     Response *res = ctx->res();
     if (res->contentType().isEmpty()) {
-        res->setContentType(QByteArrayLiteral("text/html; charset=utf-8"));
+        res->setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 
-    if (ctx->req()->method() == "HEAD") {
+    if (ctx->req()->method() == QStringLiteral("HEAD")) {
         return true;
     }
 

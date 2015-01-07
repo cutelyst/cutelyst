@@ -225,11 +225,11 @@ bool Controller::_END(Context *ctx)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    QMap<QByteArray, QByteArray> attributes;
-    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
-    QByteArray actionClass = attributes.value("ActionClass");
+    QMap<QString, QString> attributes;
+    attributes = args.value("attributes").value<QMap<QString, QString> >();
+    QString actionClass = attributes.value("ActionClass");
 
-    QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
+    QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");
     if (object) {
         Action *action = qobject_cast<Action*>(object);
         if (action) {
@@ -251,8 +251,8 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         return 0;
     }
 
-    QByteArray name = args.value("name").toByteArray();
-    QRegularExpression regex("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$");
+    QString name = args.value("name").toString();
+    QRegularExpression regex(QStringLiteral("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$"));
     QRegularExpressionMatch match = regex.match(name);
     if (!match.hasMatch()) {
         QStack<Code *> roles = gatherActionRoles(args);
@@ -293,7 +293,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             }
             QMap<QString, QString> attrs = parseAttributes(method, attributeArray, name);
 
-            QString reverse = controller->ns() + '/' + name;
+            QString reverse = controller->ns() % QLatin1Char('/') % name;
 
             Action *action = createAction({
                                               {"name"      , QVariant::fromValue(name)},
