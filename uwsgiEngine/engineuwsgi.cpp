@@ -153,9 +153,8 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
         if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            QString key = QString::fromLatin1(httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5));
-            QString value = QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
-            headers.insert(key, value);
+            headers.insert(QString::fromLatin1(httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5)),
+                           QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len));
         }
     }
 
@@ -318,7 +317,7 @@ bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
         return false;
     }
 
-    QList<HeaderValuePair> headers = res->headers().headersForResponse();
+    const QList<HeaderValuePair> &headers = res->headers().headersForResponse();
     Q_FOREACH (const HeaderValuePair &pair, headers) {
         QByteArray key = pair.key.toLatin1();
         QByteArray value = pair.value.toLatin1();

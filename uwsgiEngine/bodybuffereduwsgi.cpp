@@ -87,7 +87,7 @@ qint64 BodyBufferedUWSGI::writeData(const char *data, qint64 maxSize)
 
 void BodyBufferedUWSGI::fillBuffer() const
 {
-    qCDebug(CUTELYST_UWSGI) << "Filling body buffer, size:" << m_request->post_cl;
+//    qCDebug(CUTELYST_UWSGI) << "Filling body buffer, size:" << m_request->post_cl;
     // Truncate is needed to reset buffer's content
     m_buffer->open(QIODevice::ReadWrite | Truncate);
 
