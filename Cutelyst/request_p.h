@@ -60,7 +60,6 @@ public:
     QString path;
     QByteArray query;
     QString serverAddress;
-    quint16 serverPort;
 
 protected:
     friend class Request;

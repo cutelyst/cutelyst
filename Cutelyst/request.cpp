@@ -86,14 +86,9 @@ QUrl Request::uri() const
         if (d->serverAddress.isNull()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
-            uri.setHost(d->serverAddress);
+            uri.setAuthority(d->serverAddress);
         }
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
-
-        // Append the server port if different from default one
-        if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
-            uri.setPort(d->serverPort);
-        }
 
         uri.setPath(d->path);
         if (!d->query.isEmpty()) {
@@ -114,19 +109,13 @@ QString Request::base() const
 
         // This is a hack just in case remote is not set
         if (d->serverAddress.isNull()) {
-            base.append(QHostInfo::localHostName().toLatin1());
+            base.append(QHostInfo::localHostName());
         } else {
             base.append(d->serverAddress);
         }
 
-        // Append the server port if different from default one
-        if ((d->https && d->serverPort != 443) || (!d->https && d->serverPort != 80)) {
-            base.append(':');
-            base.append(QString::number(d->serverPort));
-        }
-
         // base always have a trailing slash
-        base.append('/');
+        base.append(QChar('/'));
 
         d->base = base;
         d->baseParsed = true;
