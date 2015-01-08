@@ -155,18 +155,18 @@ void EngineUwsgi::processRequest(wsgi_request *req)
                               const_cast<char *>("HTTP_"), 5)) {
             QString key = QString::fromLatin1(httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5));
             QString value = QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len);
-            headers.insertMulti(key, value);
+            headers.insert(key, value);
         }
     }
 
     if (req->content_type_len > 0) {
-        headers.insertMulti(QStringLiteral("Content-Type"),
-                            QString::fromLatin1(req->content_type, req->content_type_len));
+        headers.insert(QStringLiteral("Content-Type"),
+                       QString::fromLatin1(req->content_type, req->content_type_len));
     }
 
     if (req->encoding_len > 0) {
-        headers.insertMulti(QStringLiteral("Content-Encoding"),
-                            QString::fromLatin1(req->encoding, req->encoding_len));
+        headers.insert(QStringLiteral("Content-Encoding"),
+                       QString::fromLatin1(req->encoding, req->encoding_len));
     }
     priv->headers = headers;
 
