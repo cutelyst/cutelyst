@@ -100,7 +100,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         }
 
         if (instanceUsed) {
-            d->constrollerHash.insert(controller->objectName().toLatin1(), controller);
+            d->constrollerHash.insert(controller->objectName(), controller);
         }
     }
 
@@ -118,7 +118,7 @@ bool Dispatcher::dispatch(Context *ctx)
 {
     Action *action = ctx->action();
     if (action) {
-        return forward(ctx,QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
+        return forward(ctx, QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
     } else {
         const QString &path = ctx->req()->path();
         if (path.isEmpty()) {
@@ -160,14 +160,15 @@ void Dispatcher::prepareAction(Context *ctx)
     pathParts.prepend(QStringLiteral(""));
 
     int pos = path.size();
-    QString actionPath;
 
     //  "foo/bar"
     //  "foo/" skip
     //  "foo"
     //  ""
-    do {
-        actionPath = path.mid(0, pos);
+    Q_FOREVER {
+        // Check out the dispatch types to see if any
+        // will handle the path at this level
+        const QString &actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(ctx, actionPath, args)) {
                 request->d_ptr->args = args;
@@ -188,13 +189,14 @@ void Dispatcher::prepareAction(Context *ctx)
             break;
         }
 
-        pos = path.lastIndexOf('/', --pos);
+        pos = path.lastIndexOf(QChar('/'), --pos);
         if (pos == -1) {
             pos = 0;
         }
 
+        // If not, move the last part path to args
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
-    } while (pos != -2);
+    }
 }
 
 Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) const
@@ -205,12 +207,9 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
         return 0;
     }
 
-    QString action = cleanNamespace(nameSpace);
-    action.reserve(action.size() + name.size() + 1);
-    action.append('/');
-    action.append(name);
+    const QString &ns = cleanNamespace(nameSpace);
 
-    return d->actionHash.value(action);
+    return d->actionHash.value(ns % QLatin1Char('/') % name);
 }
 
 Action *Dispatcher::getActionByPath(const QString &path) const
@@ -228,20 +227,19 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
 {
     Q_D(const Dispatcher);
 
-    ActionList ret;
     if (name.isEmpty()) {
-        return ret;
+        return ActionList();
     }
 
-    QString _ns = cleanNamespace(nameSpace);
+    const QString &ns = cleanNamespace(nameSpace);
 
-    ActionList containers = d->getContainers(_ns);
+    ActionList ret;
+    const ActionList &containers = d->getContainers(ns);
     Q_FOREACH (Action *action, containers) {
         if (action->name() == name) {
             ret.prepend(action);
         }
     }
-
     return ret;
 }
 
@@ -357,7 +355,6 @@ QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
 {
     QString ret = path;
     if (!ret.startsWith('/')) {
-        ret.prepend('/');
         ret.prepend(qobject_cast<Action *>(ctx->stack().last())->ns());
     }
 
@@ -402,12 +399,14 @@ QString Dispatcher::cleanNamespace(const QString &ns) const
     QString ret = ns;
     bool lastWasSlash = true; // remove initial slash
     int nsSize = ns.size();
-//    const char * data = ret.();
     for (int i = 0; i < nsSize; ++i) {
-        if (ret.at(i) == '/') {
+        // Mark if the last char was a slash
+        // so that two or more consecutive slashes
+        // could be converted to just one
+        // "a///b" -> "a/b"
+        if (ret.at(i) == QChar('/')) {
             if (lastWasSlash) {
                 ret.remove(i, 1);
-//                data = ret.constData();
                 --nsSize;
             } else {
                 lastWasSlash = true;
