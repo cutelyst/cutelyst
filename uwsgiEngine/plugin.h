@@ -22,10 +22,19 @@
 
 #define CUTELYST_MODIFIER1 0
 
-extern struct uwsgi_cutelyst {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct uwsgi_cutelyst {
     char *app;
     int reload;
     char *config;
 } options;
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif // PLUGIN_H
