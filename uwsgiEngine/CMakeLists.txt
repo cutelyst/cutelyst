@@ -1,7 +1,7 @@
 # uwsgi.h required if #ifdef UWSGI_UUID
 pkg_check_modules(UUID REQUIRED uuid)
 
-find_library(LIBCAP NAMES sys/capability.h REQUIRED)
+find_package(CAP REQUIRED)
 
 set(uswgi_engine_SRC
     bodybuffereduwsgi.cpp

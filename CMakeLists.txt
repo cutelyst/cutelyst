@@ -18,6 +18,10 @@ set(CUTELYST_API_LEVEL "0")
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
+
+# Include our cmake modules
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+
 # As moc files are generated in the binary dir, tell CMake
 # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
