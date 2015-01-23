@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -106,10 +106,15 @@ protected:
     virtual bool Auto(Context *ctx);
     virtual void End(Context *ctx);
 
-    // Called when registering
-    void init(Application *app);
-    // Called after all controllers got registered
-    void setupActions(Dispatcher *dispatcher);
+    /**
+     * This method is called after the application
+     * has registered all controllers.
+     *
+     * Reimplement this method if you need to configure
+     * internal variable and you need to know for
+     * example which configuration options are enabled.
+     */
+    virtual void init(Application *app);
 
     ControllerPrivate *d_ptr;
 

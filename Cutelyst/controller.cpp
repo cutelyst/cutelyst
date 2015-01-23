@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,7 +33,7 @@ using namespace Cutelyst;
 
 Controller::Controller(QObject *parent) :
     QObject(parent),
-    d_ptr(new ControllerPrivate)
+    d_ptr(new ControllerPrivate(this))
 {
 }
 
@@ -88,95 +88,7 @@ void Controller::End(Context *ctx)
 
 void Controller::init(Application *app)
 {
-    Q_D(Controller);
-
-    // Application must always be our parent
-    setParent(app);
-
-    const QMetaObject *meta = metaObject();
-    const QString &className = QString::fromLatin1(meta->className());
-    setObjectName(className);
-
-    QByteArray controlerNS;
-    for (int i = 0; i < meta->classInfoCount(); ++i) {
-        if (metaObject()->classInfo(i).name() == QLatin1String("Namespace")) {
-            controlerNS = meta->classInfo(i).value();
-            break;
-        }
-    }
-
-    if (controlerNS.isNull()) {
-        bool lastWasUpper = true;
-
-        for (int i = 0; i < className.length(); ++i) {
-            if (className.at(i).toLower() == className.at(i)) {
-                controlerNS.append(className.at(i));
-                lastWasUpper = false;
-            } else {
-                if (lastWasUpper) {
-                    controlerNS.append(className.at(i).toLower());
-                } else {
-                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
-                }
-                lastWasUpper = true;
-            }
-        }
-    }
-    d->pathPrefix = controlerNS;
-
-    d->registerActionMethods(meta, this, app);
-}
-
-void Controller::setupActions(Dispatcher *dispatcher)
-{
-    Q_D(Controller);
-
-    d->dispatcher = dispatcher;
-
-    ActionList beginList;
-    beginList = dispatcher->getActions(QStringLiteral("Begin"), d->pathPrefix);
-    if (!beginList.isEmpty()) {
-        d->begin = beginList.last();
-        d->actionSteps.append(d->begin);
-    }
-
-    d->autoList = dispatcher->getActions(QStringLiteral("Auto"), d->pathPrefix);
-    d->actionSteps.append(d->autoList);
-
-    ActionList endList;
-    endList = dispatcher->getActions(QStringLiteral("End"), d->pathPrefix);
-    if (!endList.isEmpty()) {
-        d->end = endList.last();
-    }
-
-    Q_FOREACH (Action *action, d->actions.values()) {
-        action->dispatcherReady(dispatcher, this);
-    }
-}
-
-void Controller::_DISPATCH(Context *ctx)
-{
-    Q_D(Controller);
-
-    bool failedState = false;
-
-    // Dispatch to _BEGIN and _AUTO
-    Q_FOREACH (Action *action, d->actionSteps) {
-        if (!action->dispatch(ctx)) {
-            failedState = true;
-            break;
-        }
-    }
-
-    // Dispatch to _ACTION
-    if (!failedState) {
-        ctx->action()->dispatch(ctx);
-    }
-
-    // Dispatch to _END
-    if (d->end) {
-        d->end->dispatch(ctx);
-    }
+    Q_UNUSED(app)
 }
 
 bool Controller::_BEGIN(Context *ctx)
@@ -222,6 +134,104 @@ bool Controller::_END(Context *ctx)
     return true;
 }
 
+
+ControllerPrivate::ControllerPrivate(Controller *parent) :
+    q_ptr(parent)
+{
+}
+
+void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
+{
+    Q_Q(Controller);
+
+    dispatcher = _dispatcher;
+
+    // Application must always be our parent
+    q->setParent(app);
+
+    const QMetaObject *meta = q->metaObject();
+    const QString &className = QString::fromLatin1(meta->className());
+    q->setObjectName(className);
+
+    QByteArray controlerNS;
+    for (int i = 0; i < meta->classInfoCount(); ++i) {
+        if (meta->classInfo(i).name() == QLatin1String("Namespace")) {
+            controlerNS = meta->classInfo(i).value();
+            break;
+        }
+    }
+
+    if (controlerNS.isNull()) {
+        bool lastWasUpper = true;
+
+        for (int i = 0; i < className.length(); ++i) {
+            if (className.at(i).toLower() == className.at(i)) {
+                controlerNS.append(className.at(i));
+                lastWasUpper = false;
+            } else {
+                if (lastWasUpper) {
+                    controlerNS.append(className.at(i).toLower());
+                } else {
+                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
+                }
+                lastWasUpper = true;
+            }
+        }
+    }
+    pathPrefix = controlerNS;
+
+    registerActionMethods(meta, q, app);
+}
+
+void ControllerPrivate::setupFinished()
+{
+    Q_Q(Controller);
+
+    const ActionList &beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
+    if (!beginList.isEmpty()) {
+        begin = beginList.last();
+        actionSteps.append(begin);
+    }
+
+    autoList = dispatcher->getActions(QStringLiteral("Auto"), pathPrefix);
+    actionSteps.append(autoList);
+
+    const ActionList &endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
+    if (!endList.isEmpty()) {
+        end = endList.last();
+    }
+
+    Q_FOREACH (Action *action, actions.values()) {
+        action->dispatcherReady(dispatcher, q);
+    }
+
+    q->init(qobject_cast<Application *>(q->parent()));
+}
+
+void Controller::_DISPATCH(Context *ctx)
+{
+    Q_D(Controller);
+
+    bool failedState = false;
+
+    // Dispatch to _BEGIN and _AUTO
+    Q_FOREACH (Action *action, d->actionSteps) {
+        if (!action->dispatch(ctx)) {
+            failedState = true;
+            break;
+        }
+    }
+
+    // Dispatch to _ACTION
+    if (!failedState) {
+        ctx->action()->dispatch(ctx);
+    }
+
+    // Dispatch to _END
+    if (d->end) {
+        d->end->dispatch(ctx);
+    }
+}
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {

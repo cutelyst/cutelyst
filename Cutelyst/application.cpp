@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #include "context_p.h"
 #include "request.h"
 #include "controller.h"
+#include "controller_p.h"
 #include "response.h"
 #include "dispatchtype.h"
 
@@ -141,6 +142,12 @@ QVariant Application::config(const QString &key, const QVariant &defaultValue) c
     return defaultValue;
 }
 
+Dispatcher *Application::dispatcher() const
+{
+    Q_D(const Application);
+    return d->dispatcher;
+}
+
 QVariantHash Application::config() const
 {
     Q_D(const Application);
@@ -167,7 +174,7 @@ bool Application::setup(Engine *engine)
     // to setup Controllers plugins stuff
     if (init()) {
         Q_FOREACH(Controller *controller, d->controllers) {
-            controller->init(this);
+            controller->d_ptr->init(this, d->dispatcher);
         }
 
         d->dispatcher->setupActions(d->controllers);

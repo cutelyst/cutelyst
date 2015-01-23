@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 #include "common.h"
 #include "context.h"
 #include "controller.h"
+#include "controller_p.h"
 #include "action.h"
 #include "request_p.h"
 #include "dispatchtypepath.h"
@@ -108,7 +109,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
     d->rootActions = d->containerHash.value("");
 
     Q_FOREACH (Controller *controller, controllers) {
-        controller->setupActions(this);
+        controller->d_ptr->setupFinished();
     }
 
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;

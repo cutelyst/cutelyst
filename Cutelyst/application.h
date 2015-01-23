@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,6 +32,7 @@ namespace Cutelyst {
 class Context;
 class Controller;
 class View;
+class Dispatcher;
 class DispatchType;
 class Request;
 class Response;
@@ -128,6 +129,8 @@ public:
     void registerDispatcher(DispatchType *dispatcher);
 
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+    Dispatcher *dispatcher() const;
 
     /**
      * User configuration for the application

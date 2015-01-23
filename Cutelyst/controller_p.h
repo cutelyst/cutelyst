@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,13 @@ namespace Cutelyst {
 
 class ControllerPrivate
 {
+    Q_DECLARE_PUBLIC(Controller)
 public:
+    ControllerPrivate(Controller *parent);
+    void init(Application *app, Dispatcher *_dispatcher);
+    // Called when the Dispatcher has finished
+    // setting up all controllers
+    void setupFinished();
     Action* actionClass(const QVariantHash &args);
     Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
@@ -37,6 +43,7 @@ public:
     QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
+    Controller *q_ptr;
     QString pathPrefix;
     Action *begin = 0;
     ActionList autoList;
