@@ -72,13 +72,21 @@ public:
     QString ifModifiedSince() const;
 
     /**
+     * This header fields is used to make a request conditional. If the requested resource has
+     * (or has not) been modified since the time specified in this field,
+     * then the server will return a 304 Not Modified response instead of the document itself.
+     * This method parses the header and convert to QDateTime assuming the date is in GMT
+     * timezone.
+     */
+    QDateTime ifModifiedSinceDateTime() const;
+
+    /**
      * This header indicates the date and time at which the resource was last modified.
      */
     QString lastModified() const;
 
     /**
      * Defines the date and time at which the resource was last modified.
-     * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
      */
     void setLastModified(const QString &value);
 
@@ -86,7 +94,7 @@ public:
      * Defines the date and time at which the resource was last modified.
      * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
      */
-    void setLastModifiedDateTime(const QDateTime &lastModified);
+    void setLastModified(const QDateTime &lastModified);
 
     /**
      * Returns the server header field contains information about the software
