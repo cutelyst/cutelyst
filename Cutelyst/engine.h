@@ -38,7 +38,7 @@ class Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit Engine(QObject *parent = 0);
+    explicit Engine(const QVariantHash &opts, QObject *parent = 0);
     virtual ~Engine();
 
     /**
@@ -60,6 +60,11 @@ public:
      * properly clean your process.
      */
     virtual void reload();
+
+    /**
+     * Engine options
+     */
+    QVariantHash opts() const;
 
     /**
      * @brief user configuration for the application

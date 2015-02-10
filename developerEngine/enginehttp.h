@@ -31,8 +31,8 @@ class EngineHttp : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineHttp(QObject *parent = 0);
-    ~EngineHttp();
+    explicit EngineHttp(const QVariantHash &opts, QObject *parent = 0);
+    virtual ~EngineHttp();
 
     bool init();
 

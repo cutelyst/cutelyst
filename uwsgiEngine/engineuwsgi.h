@@ -40,8 +40,8 @@ class EngineUwsgi : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(Application *app = 0);
-    ~EngineUwsgi();
+    explicit EngineUwsgi(const QVariantHash &opts, Application *app = 0);
+    virtual ~EngineUwsgi();
 
     void setThread(QThread *thread);
 

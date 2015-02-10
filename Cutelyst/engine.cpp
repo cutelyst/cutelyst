@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@
 
 using namespace Cutelyst;
 
-Engine::Engine(QObject *parent) :
+Engine::Engine(const QVariantHash &opts, QObject *parent) :
     QObject(parent),
     d_ptr(new EnginePrivate)
 {
@@ -52,6 +52,8 @@ Engine::Engine(QObject *parent) :
         }
         qCDebug(CUTELYST_CORE) << "Configuration:" << d->config;
     }
+
+    d->opts = opts;
 }
 
 Engine::~Engine()
@@ -224,6 +226,12 @@ QByteArray Engine::statusCode(quint16 status) const
 void Engine::reload()
 {
     qCWarning(CUTELYST_ENGINE) << "Default reload implementation called, doing nothing";
+}
+
+QVariantHash Engine::opts() const
+{
+    Q_D(const Engine);
+    return d->opts;
 }
 
 QVariantHash Engine::config(const QString &entity) const

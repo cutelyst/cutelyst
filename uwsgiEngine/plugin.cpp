@@ -195,7 +195,18 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
     qCDebug(CUTELYST_UWSGI) << "Loaded application:" << QCoreApplication::applicationName();
 
-    EngineUwsgi *mainEngine = new EngineUwsgi(app);
+    QVariantHash opts;
+    for (int i = 0; i < uwsgi.exported_opts_cnt; i++) {
+        const QString &key = QString::fromLatin1(uwsgi.exported_opts[i]->key);
+        if (uwsgi.exported_opts[i]->value == NULL) {
+            opts.insertMulti(key, QVariant());
+        } else {
+            opts.insertMulti(key, QString::fromLatin1(uwsgi.exported_opts[i]->value));
+        }
+    }
+    qCDebug(CUTELYST_UWSGI) << "Exported opts:" << opts;
+
+    EngineUwsgi *mainEngine = new EngineUwsgi(opts, app);
     if (!mainEngine->initApplication(app, false)) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
@@ -207,7 +218,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1 && i > 0) {
-            engine = new EngineUwsgi(app);
+            engine = new EngineUwsgi(opts, app);
             engine->setThread(new QThread);
 
             // Post fork might fail when on threaded mode

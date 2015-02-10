@@ -42,8 +42,8 @@ typedef struct {
     Request *request;
 } CachedRequest;
 
-EngineUwsgi::EngineUwsgi(Application *app) :
-    m_app(app)
+EngineUwsgi::EngineUwsgi(const QVariantHash &opts, Application *app) : Engine(opts, app)
+  , m_app(app)
 {
     connect(this, &EngineUwsgi::postFork,
             this, &EngineUwsgi::forked);

@@ -62,9 +62,8 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     }
 }
 
-EngineHttp::EngineHttp(QObject *parent) :
-    Engine(parent),
-    d_ptr(new EngineHttpPrivate)
+EngineHttp::EngineHttp(const QVariantHash &opts, QObject *parent) : Engine(opts, parent)
+  , d_ptr(new EngineHttpPrivate)
 {
     Q_D(EngineHttp);
 
