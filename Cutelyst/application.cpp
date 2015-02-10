@@ -108,6 +108,12 @@ bool Application::registerController(Controller *controller)
     return true;
 }
 
+QList<Controller *> Application::controllers() const
+{
+    Q_D(const Application);
+    return d->controllers;
+}
+
 bool Application::registerView(View *view, const QString &name)
 {
     Q_D(Application);
@@ -220,4 +226,20 @@ void Application::handleRequest(Request *req)
     priv->engine->finalize(ctx);
 
     delete ctx;
+}
+
+bool Application::enginePostFork()
+{
+    Q_D(Application);
+
+    if (!postFork()) {
+        return false;
+    }
+
+    Q_FOREACH (Controller *controller, d->controllers) {
+        if (!controller->postFork(this)) {
+            return false;
+        }
+    }
+    return true;
 }

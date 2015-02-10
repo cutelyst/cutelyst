@@ -73,20 +73,26 @@ bool Controller::operator==(const char *className)
 
 void Controller::Begin(Context *ctx)
 {
-
+    Q_UNUSED(ctx)
 }
 
 bool Controller::Auto(Context *ctx)
 {
+    Q_UNUSED(ctx)
     return true;
 }
 
 void Controller::End(Context *ctx)
 {
-
+    Q_UNUSED(ctx)
 }
 
-void Controller::init(Application *app)
+bool Controller::preFork(Application *app)
+{
+    Q_UNUSED(app)
+}
+
+bool Controller::postFork(Application *app)
 {
     Q_UNUSED(app)
 }
@@ -205,7 +211,7 @@ void ControllerPrivate::setupFinished()
         action->dispatcherReady(dispatcher, q);
     }
 
-    q->init(qobject_cast<Application *>(q->parent()));
+    q->preFork(qobject_cast<Application *>(q->parent()));
 }
 
 void Controller::_DISPATCH(Context *ctx)

@@ -118,6 +118,8 @@ public:
      */
     bool registerController(Controller *controller);
 
+    QList<Controller *> controllers() const;
+
     bool registerView(View *view, const QString &name = QString());
 
     View *view(const QString &name = QString()) const;
@@ -157,6 +159,7 @@ protected:
     friend class Engine;
     bool setup(Engine *engine);
     void handleRequest(Request *req);
+    bool enginePostFork();
 
     ApplicationPrivate *d_ptr;
 };

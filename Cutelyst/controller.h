@@ -114,7 +114,17 @@ protected:
      * internal variable and you need to know for
      * example which configuration options are enabled.
      */
-    virtual void init(Application *app);
+    virtual bool preFork(Application *app);
+
+    /**
+     * This method is called after the application
+     * has registered all controllers.
+     *
+     * Reimplement this method if you need to configure
+     * internal variable and you need to know for
+     * example which configuration options are enabled.
+     */
+    virtual bool postFork(Application *app);
 
     ControllerPrivate *d_ptr;
 

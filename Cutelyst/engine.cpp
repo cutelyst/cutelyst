@@ -128,7 +128,7 @@ bool Engine::postForkApplication()
         qCCritical(CUTELYST_ENGINE) << "Failed to postForkApplication on a null application";
         return false;
     }
-    return d->app->postFork();
+    return d->app->enginePostFork();
 }
 
 QByteArray Engine::statusCode(quint16 status) const
