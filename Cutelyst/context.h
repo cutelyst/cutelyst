@@ -173,7 +173,8 @@ public:
      *            });
      * \endcode
      */
-    void stash(const QVariantHash &unite);
+    inline void stash(const QVariantHash &unite)
+    { stash().unite(unite); }
 
     /**
      * Returns a QVariantHash reference to the stash,

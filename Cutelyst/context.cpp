@@ -164,13 +164,6 @@ void Context::setView(const QString &name)
     Q_D(Context);
     d->view = d->app->view(name);
 }
-
-void Context::stash(const QVariantHash &unite)
-{
-    Q_D(Context);
-    d->stash.unite(unite);
-}
-
 QVariantHash &Context::stash()
 {
     Q_D(Context);
