@@ -179,17 +179,8 @@ void Dispatcher::prepareAction(Context *ctx)
         // will handle the path at this level
         const QString &actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
-            if (type->match(ctx, actionPath, args)) {
-                request->d_ptr->args = args;
-
-                if (!request->match().isEmpty()) {
-                    qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
-                }
-
-                if (!args.isEmpty()) {
-                    qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
-                }
-                return;
+            if (type->match(ctx, actionPath, args) == DispatchType::ExactMatch) {
+                goto out;
             }
         }
 
@@ -205,6 +196,15 @@ void Dispatcher::prepareAction(Context *ctx)
 
         // If not, move the last part path to args
         args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
+    }
+
+out:
+    if (!request->match().isEmpty()) {
+        qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
+    }
+
+    if (!request->args().isEmpty()) {
+        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
     }
 }
 

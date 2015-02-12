@@ -118,7 +118,7 @@ QByteArray DispatchTypePath::list() const
     return buffer;
 }
 
-bool DispatchTypePath::match(Context *ctx, const QString &path, const QStringList &args) const
+Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QString &path, const QStringList &args) const
 {
     Q_D(const DispatchTypePath);
 
@@ -127,15 +127,22 @@ bool DispatchTypePath::match(Context *ctx, const QString &path, const QStringLis
         _path = QByteArray("/", 1);
     }
 
+    MatchType ret = NoMatch;
     int numberOfArgs = args.size();
     const ActionList &actions = d->paths.value(_path);
     Q_FOREACH (Action *action, actions) {
-        if (action->match(numberOfArgs)) {
-            setupMatchedAction(ctx, action, _path);
-            return true;
+        // If the number of args is -1 (not defined)
+        // it will slurp all args so we don't care
+        // about how many args was passed
+        if (action->numberOfArgs() == numberOfArgs) {
+            setupMatchedAction(ctx, action, _path, args);
+            return ExactMatch;
+        } else if (action->numberOfArgs() == -1) {
+            setupMatchedAction(ctx, action, _path, args);
+            ret = PartialMatch;
         }
     }
-    return false;
+    return ret;
 }
 
 bool DispatchTypePath::registerAction(Action *action)

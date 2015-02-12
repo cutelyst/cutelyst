@@ -103,14 +103,14 @@ public:
      * This is 0 if the action doesn't take any arguments and
      * undef if it will take any number of arguments.
      */
-    quint8 numberOfArgs() const;
+    qint8 numberOfArgs() const;
 
     /**
      * @brief numberOfCaptures
      * @return Returns the number of captures this action
      * expects for Chained actions.
      */
-    quint8 numberOfCaptures() const;
+    qint8 numberOfCaptures() const;
 
     /**
      * @brief meta

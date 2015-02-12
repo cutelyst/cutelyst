@@ -73,7 +73,6 @@ void StaticSimple::beforePrepareAction(bool *skipMethod)
     }
 }
 
-
 bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
 {
     Q_D(StaticSimple);

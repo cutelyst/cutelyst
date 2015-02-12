@@ -30,6 +30,11 @@ class DispatchType : public QObject
 {
     Q_OBJECT
 public:
+    enum MatchType {
+        NoMatch = 0,
+        PartialMatch,
+        ExactMatch
+    };
     explicit DispatchType(QObject *parent = 0);
     virtual ~DispatchType();
 
@@ -42,7 +47,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Context *ctx, const QString &path, const QStringList &args) const = 0;
+    virtual MatchType match(Context *ctx, const QString &path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action
@@ -74,7 +79,7 @@ public:
     virtual bool isLowPrecedence() const;
 
 protected:
-    void setupMatchedAction(Context *ctx, Action *action, const QString &match) const;
+    void setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args) const;
 };
 
 }

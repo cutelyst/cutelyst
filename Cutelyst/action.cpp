@@ -124,13 +124,13 @@ QString Action::ns() const
     return d->ns;
 }
 
-quint8 Action::numberOfArgs() const
+qint8 Action::numberOfArgs() const
 {
     Q_D(const Action);
     return d->numberOfArgs;
 }
 
-quint8 Action::numberOfCaptures() const
+qint8 Action::numberOfCaptures() const
 {
     Q_D(const Action);
     return d->numberOfCaptures;
