@@ -30,12 +30,6 @@ namespace Cutelyst {
 class ApplicationPrivate
 {
 public:
-    Application *q_ptr;
-    QString error;
-    int childFD;
-    int parentFD;
-    int childPID;
-
     bool init = false;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
