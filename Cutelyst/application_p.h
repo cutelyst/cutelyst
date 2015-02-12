@@ -41,6 +41,7 @@ public:
     QList<Plugin *> plugins;
     QList<Controller *> controllers;
     QHash<QString, View *> views;
+    Headers headers;
     QVariantHash config;
 };
 

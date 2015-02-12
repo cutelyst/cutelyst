@@ -182,8 +182,10 @@ public:
 
     QString header(const QString &field) const;
 
-    void setHeader(const QString &field, const QString &value)
-    { insert(field, value); }
+    /**
+     * When setting a header always use setHeader instead of insert
+     */
+    void setHeader(const QString &field, const QString &value);
 
     void setHeader(const QString &field, const QStringList &values);
 

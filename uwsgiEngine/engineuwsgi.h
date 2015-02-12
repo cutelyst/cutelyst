@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -54,8 +54,6 @@ public:
     void readRequestUWSGI(wsgi_request *req);
 
     void processRequest(wsgi_request *req);
-
-    inline QByteArray httpCase(char *key, int key_len) const;
 
     virtual void reload();
 

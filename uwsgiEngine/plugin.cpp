@@ -204,7 +204,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
             opts.insertMulti(key, QString::fromLatin1(uwsgi.exported_opts[i]->value));
         }
     }
-    qCDebug(CUTELYST_UWSGI) << "Exported opts:" << opts;
 
     EngineUwsgi *mainEngine = new EngineUwsgi(opts, app);
     if (!mainEngine->initApplication(app, false)) {

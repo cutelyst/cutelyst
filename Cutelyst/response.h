@@ -171,6 +171,7 @@ public:
 
 protected:
     ResponsePrivate *d_ptr;
+    friend class Application;
 };
 
 }

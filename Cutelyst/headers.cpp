@@ -30,32 +30,32 @@ using namespace Cutelyst;
 
 QString Headers::contentEncoding() const
 {
-    return value(QStringLiteral("Content-Encoding"));
+    return value(QStringLiteral("content_encoding"));
 }
 
 void Headers::setContentEncoding(const QString &encoding)
 {
-    insert(QStringLiteral("Content-Encoding"), encoding);
+    insert(QStringLiteral("content_encoding"), encoding);
 }
 
 QString Headers::contentType() const
 {
-    return value(QStringLiteral("Content-Type"));
+    return value(QStringLiteral("content_type"));
 }
 
 void Headers::setContentType(const QString &contentType)
 {
-    insert(QStringLiteral("Content-Type"), contentType);
+    insert(QStringLiteral("content_type"), contentType);
 }
 
 qint64 Headers::contentLength() const
 {
-    return value(QStringLiteral("Content-Length")).toLongLong();
+    return value(QStringLiteral("content_length")).toLongLong();
 }
 
 void Headers::setContentLength(qint64 value)
 {
-    insert(QStringLiteral("Content-Length"), QString::number(value));
+    insert(QStringLiteral("content_length"), QString::number(value));
 }
 
 void Headers::setDateWithDateTime(const QDateTime &date)
@@ -65,17 +65,17 @@ void Headers::setDateWithDateTime(const QDateTime &date)
     QLocale locale(QLocale::C);
     QString dt = locale.toString(date.toTimeSpec(Qt::UTC),
                                  QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
-    insert(QStringLiteral("Date"), dt);
+    insert(QStringLiteral("date"), dt);
 }
 
 QString Headers::ifModifiedSince() const
 {
-    return value(QStringLiteral("If-Modified-Since"));
+    return header(QStringLiteral("if_modified_since"));
 }
 
 QDateTime Headers::ifModifiedSinceDateTime() const
 {
-    Headers::ConstIterator it = constFind(QStringLiteral("If-Modified-Since"));
+    Headers::ConstIterator it = constFind(QStringLiteral("if_modified_since"));
     if (it == constEnd()) {
         return QDateTime();
     }
@@ -96,12 +96,12 @@ QDateTime Headers::ifModifiedSinceDateTime() const
 
 QString Headers::lastModified() const
 {
-    return value(QStringLiteral("Last-Modified"));
+    return value(QStringLiteral("last_modified"));
 }
 
 void Headers::setLastModified(const QString &value)
 {
-    insert(QStringLiteral("Last-Modified"), value);
+    insert(QStringLiteral("last_modified"), value);
 }
 
 void Headers::setLastModified(const QDateTime &lastModified)
@@ -116,57 +116,57 @@ void Headers::setLastModified(const QDateTime &lastModified)
 
 QString Headers::server() const
 {
-    return value(QStringLiteral("Server"));
+    return value(QStringLiteral("server"));
 }
 
 void Headers::setServer(const QString &value)
 {
-    insert(QStringLiteral("Server"), value);
+    insert(QStringLiteral("server"), value);
 }
 
 QString Headers::userAgent() const
 {
-    return value(QStringLiteral("User-Agent"));
+    return value(QStringLiteral("user_agent"));
 }
 
 void Headers::setUserAgent(const QString &value)
 {
-    insert(QStringLiteral("User-Agent"), value);
+    insert(QStringLiteral("user_agent"), value);
 }
 
 QString Headers::referer() const
 {
-    return value(QStringLiteral("Referer"));
+    return value(QStringLiteral("referer"));
 }
 
 void Headers::setReferer(const QString &value)
 {
-    insert(QStringLiteral("Referer"), value);
+    insert(QStringLiteral("referer"), value);
 }
 
 void Headers::setWwwAuthenticate(const QString &value)
 {
-    insert(QStringLiteral("WWW-Authenticate"), value);
+    insert(QStringLiteral("www_authenticate"), value);
 }
 
 void Headers::setProxyAuthenticate(const QString &value)
 {
-    insert(QStringLiteral("Proxy-Authenticate"), value);
+    insert(QStringLiteral("proxy_authenticate"), value);
 }
 
 QString Headers::authorization() const
 {
-    return value(QStringLiteral("Authorization"));
+    return value(QStringLiteral("authorization"));
 }
 
 QString Headers::authorizationBasic() const
 {
-    return HeadersPrivate::decodeBasicAuth(value(QStringLiteral("Authorization")));
+    return HeadersPrivate::decodeBasicAuth(authorization());
 }
 
 QPair<QString, QString> Headers::authorizationBasicPair() const
 {
-    return HeadersPrivate::decodeBasicAuthPair(value(QStringLiteral("Authorization")));
+    return HeadersPrivate::decodeBasicAuthPair(authorization());
 }
 
 void Headers::setAuthorizationBasic(const QString &username, const QString &password)
@@ -175,32 +175,65 @@ void Headers::setAuthorizationBasic(const QString &username, const QString &pass
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
     }
     QString result = username % QLatin1Char(':') % password;
-    insert(QStringLiteral("Authorization"), QStringLiteral("Basic ") + result.toLatin1().toBase64());
+    insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + result.toLatin1().toBase64());
 }
 
 QString Headers::proxyAuthorization() const
 {
-    return value(QStringLiteral("Proxy-Authorization"));
+    return value(QStringLiteral("proxy_authorization"));
 }
 
 QString Headers::proxyAuthorizationBasic() const
 {
-    return HeadersPrivate::decodeBasicAuth(value(QStringLiteral("Proxy-Authorization")));
+    return HeadersPrivate::decodeBasicAuth(proxyAuthorization());
 }
 
 QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
 {
-    return HeadersPrivate::decodeBasicAuthPair(value(QStringLiteral("Proxy-Authorization")));
+    return HeadersPrivate::decodeBasicAuthPair(proxyAuthorization());
 }
 
 QString Headers::header(const QString &field) const
 {
-    return value(field);
+    QString key = field;
+    int i = 0;
+    while (i < key.size()) {
+        QCharRef c = key[i];
+        if (c.isSpace()) {
+            key.remove(i, 1);
+            continue;
+        } else if (c == QChar('-')) {
+            c = QChar('_');
+        } else {
+            c = c.toLower();
+        }
+        ++i;
+    }
+    return value(key);
+}
+
+void Headers::setHeader(const QString &field, const QString &value)
+{
+    QString key = field;
+    int i = 0;
+    while (i < key.size()) {
+        QCharRef c = key[i];
+        if (c.isSpace()) {
+            key.remove(i, 1);
+            continue;
+        } else if (c == QChar('-')) {
+            c = QChar('_');
+        } else {
+            c = c.toLower();
+        }
+        ++i;
+    }
+    insert(key, value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
 {
-    insert(field, values.join(QLatin1String(", ")));
+    setHeader(field, values.join(QLatin1String(", ")));
 }
 
 static QString cutelyst_header_order(
@@ -281,9 +314,27 @@ QList<HeaderValuePair> Headers::headersForResponse() const
     QHash<QString, QString>::const_iterator it = constBegin();
     while (it != constEnd()) {
         HeaderValuePair pair;
-        pair.key = it.key();
+        QString key = it.key();
+
+        // The RFC 2616 and 7230 states keys are not case
+        // case sensitive, however several tools fail
+        // if the headers are not on camel case form.
+        bool lastWasDash = true;
+        for (int i = 0 ; i < key.size() ; ++i) {
+            QCharRef c = key[i];
+            if (c == QChar('_')) {
+                c = QChar('-');
+                lastWasDash = true;
+            } else if(lastWasDash) {
+                lastWasDash = false;
+                c = c.toUpper();
+            }
+        }
+
+        pair.key = key;
         pair.value = it.value();
         pair.weight = cutelyst_header_order.indexOf(pair.key);
+
         ret.append(pair);
         ++it;
     }
@@ -297,7 +348,7 @@ QList<HeaderValuePair> Headers::headersForResponse() const
 
 QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 {
-    if (!auth.isEmpty() && auth.startsWith("Basic ")) {
+    if (!auth.isEmpty() && auth.startsWith(QLatin1String("Basic "))) {
         int pos = auth.lastIndexOf(' ');
         if (pos != -1) {
             return QByteArray::fromBase64(auth.mid(pos).toLatin1());

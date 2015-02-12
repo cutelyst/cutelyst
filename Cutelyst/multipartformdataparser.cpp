@@ -129,8 +129,8 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer)
                 qCDebug(CUTELYST_MULTIPART) << "FinishHeader" << header;
                 if (buffer[i] == '\n') {
                     int dotdot = header.indexOf(':');
-                    headers.insert(header.left(dotdot),
-                                   QString::fromLatin1(header.mid(dotdot + 1).trimmed()));
+                    headers.setHeader(header.left(dotdot),
+                                      QString::fromLatin1(header.mid(dotdot + 1).trimmed()));
                     header.clear();
                     state = StartHeaders;
                 } else {

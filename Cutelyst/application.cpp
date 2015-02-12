@@ -19,12 +19,14 @@
 
 #include "application_p.h"
 
+#include "config.h"
 #include "common.h"
 #include "context_p.h"
 #include "request.h"
 #include "controller.h"
 #include "controller_p.h"
 #include "response.h"
+#include "response_p.h"
 #include "dispatchtype.h"
 
 #include "Actions/actionrest.h"
@@ -56,6 +58,8 @@ Application::Application(QObject *parent) :
 {
     Q_D(Application);
 
+    d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
+
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaType<ActionREST *>();
     qRegisterMetaType<RoleACL *>();
@@ -79,6 +83,12 @@ bool Application::postFork()
 {
     qCDebug(CUTELYST_CORE) << "Default Application::postFork called on pid:" << QCoreApplication::applicationPid();
     return true;
+}
+
+Headers &Application::defaultHeaders()
+{
+    Q_D(Application);
+    return d->headers;
 }
 
 bool Application::registerPlugin(Cutelyst::Plugin *plugin)
@@ -201,6 +211,7 @@ void Application::handleRequest(Request *req)
     priv->dispatcher = d->dispatcher;
     priv->request = req;
     priv->response = new Response;
+    priv->response->d_ptr->headers = d->headers;
     Context *ctx = new Context(priv);
 
     // Register application plugins

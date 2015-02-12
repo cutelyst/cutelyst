@@ -106,7 +106,7 @@ bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
                 }
 
                 headers.setLastModified(currentDateTime);
-                headers.insert(QStringLiteral("Cache-Control"), QStringLiteral("public"));
+                headers.setHeader(QStringLiteral("Cache-Control"), QStringLiteral("public"));
 
                 return true;
             }

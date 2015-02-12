@@ -38,6 +38,7 @@ class Request;
 class Response;
 class Engine;
 class Plugin;
+class Headers;
 class ApplicationPrivate;
 class Application : public QObject
 {
@@ -96,6 +97,13 @@ public:
      * @return False if the engine should not use this process
      */
     virtual bool postFork();
+
+    /**
+     * This is the HTTP default headers appended to each request
+     *
+     * Do not change it after the application has started.
+     */
+    Headers &defaultHeaders();
 
     /**
      * Registers a global plugin ie one that doesn't need

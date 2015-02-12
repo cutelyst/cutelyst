@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,7 +19,6 @@
 
 #include "response_p.h"
 #include "engine.h"
-#include "config.h"
 #include "common.h"
 
 #include <QBuffer>
@@ -30,8 +29,6 @@ Response::Response(QObject *parent) :
     QObject(parent),
     d_ptr(new ResponsePrivate)
 {
-    Q_D(Response);
-    d->headers.insert(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
 }
 
 Response::~Response()
@@ -55,7 +52,7 @@ void Response::setStatus(quint16 status)
 void Response::addHeaderValue(const QString &key, const QString &value)
 {
     Q_D(Response);
-    d->headers.insert(key, value);
+    d->headers.setHeader(key, value);
 }
 
 bool Response::hasBody() const
@@ -99,13 +96,13 @@ void Response::setBody(QIODevice *body)
 QString Response::contentEncoding() const
 {
     Q_D(const Response);
-    return d->headers.header(QStringLiteral("Content-Encoding"));
+    return d->headers.contentEncoding();
 }
 
 void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
-    d->headers.insert(QStringLiteral("Content-Encoding"), encoding);
+    d->headers.setContentEncoding(encoding);
 }
 
 qint64 Response::contentLength() const
@@ -156,7 +153,7 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->location = url;
     setStatus(status);
     if (url.isValid() && !d->body) {
-        d->headers.insert(QStringLiteral("Location"), url.toEncoded());
+        d->headers.setHeader(QStringLiteral("Location"), url.toEncoded());
 
         QBuffer *buf = new QBuffer;
         if (!buf->open(QIODevice::ReadWrite)) {

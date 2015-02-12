@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -153,19 +153,17 @@ void EngineUwsgi::processRequest(wsgi_request *req)
 
         if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
                               const_cast<char *>("HTTP_"), 5)) {
-            headers.insert(QString::fromLatin1(httpCase((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5)),
-                           QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len));
+            headers.setHeader(QString::fromLatin1((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5),
+                              QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len));
         }
     }
 
     if (req->content_type_len > 0) {
-        headers.insert(QStringLiteral("Content-Type"),
-                       QString::fromLatin1(req->content_type, req->content_type_len));
+        headers.setContentType(QString::fromLatin1(req->content_type, req->content_type_len));
     }
 
     if (req->encoding_len > 0) {
-        headers.insert(QStringLiteral("Content-Encoding"),
-                       QString::fromLatin1(req->encoding, req->encoding_len));
+        headers.setContentEncoding(QString::fromLatin1(req->encoding, req->encoding_len));
     }
     priv->headers = headers;
 
@@ -194,24 +192,6 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     handleRequest(cache->request, false);
 
     body->close();
-}
-
-QByteArray EngineUwsgi::httpCase(char *key, int key_len) const
-{
-    bool lastWasUnderscore = true;
-    for (int i = 0 ; i < key_len ; ++i) {
-        QChar buf = key[i];
-        if (buf == '_') {
-            key[i] = '-';
-            lastWasUnderscore = true;
-        } else if(lastWasUnderscore) {
-            lastWasUnderscore = false;
-        } else {
-            key[i] = buf.toLower().toLatin1();
-        }
-    }
-
-    return QByteArray::fromRawData(key, key_len);
 }
 
 void EngineUwsgi::reload()
