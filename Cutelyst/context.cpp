@@ -171,6 +171,12 @@ QVariantHash &Context::stash()
     return d->stash;
 }
 
+QVariant Context::stash(const QString &key) const
+{
+    Q_D(const Context);
+    return d->stash.value(key);
+}
+
 QStack<Code *> Context::stack() const
 {
     Q_D(const Context);
@@ -183,24 +189,30 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
 
     QUrl ret = d->request->uri();
 
-    QStringList encodedArgs;
-    encodedArgs.append(path);
+    if (!args.isEmpty()) {
+        QStringList encodedArgs;
+        encodedArgs.append(path);
 
-    Q_FOREACH (const QString &arg, args) {
-        encodedArgs.append(QUrl::toPercentEncoding(arg));
-    }
-    ret.setPath(encodedArgs.join(QLatin1Char('/')));
-
-    // Avoid a trailing '?'
-    QUrlQuery query;
-    if (queryValues.size()) {
-        QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
-        while (i != queryValues.constEnd()) {
-            query.addQueryItem(i.key(), i.value());
-            ++i;
+        Q_FOREACH (const QString &arg, args) {
+            encodedArgs.append(QUrl::toPercentEncoding(arg));
         }
+        ret.setPath(encodedArgs.join(QLatin1Char('/')));
+    } else {
+        ret.setPath(path);
     }
-    ret.setQuery(query);
+
+    if (!queryValues.isEmpty()) {
+        // Avoid a trailing '?'
+        QUrlQuery query;
+        if (queryValues.size()) {
+            QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
+            while (i != queryValues.constEnd()) {
+                query.addQueryItem(i.key(), i.value());
+                ++i;
+            }
+        }
+        ret.setQuery(query);
+    }
 
     return ret;
 }

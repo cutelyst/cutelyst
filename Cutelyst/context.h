@@ -190,6 +190,11 @@ public:
     QVariantHash &stash();
 
     /**
+     * A convinient method to retrieve a single value from the stash
+     */
+    QVariant stash(const QString &key) const;
+
+    /**
      * Returns the internal execution stack (actions that are currently executing).
      */
     QStack<Code *> stack() const;
