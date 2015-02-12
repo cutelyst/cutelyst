@@ -142,6 +142,8 @@ public:
 
     Dispatcher *dispatcher() const;
 
+    QList<DispatchType *> dispatchers() const;
+
     /**
      * User configuration for the application
      * @return A variant hash with configuration settings

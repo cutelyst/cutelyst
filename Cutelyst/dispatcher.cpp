@@ -38,6 +38,7 @@ Dispatcher::Dispatcher(QObject *parent) :
     QObject(parent),
     d_ptr(new DispatcherPrivate)
 {
+    registerDispatchType(new DispatchTypePath(this));
 }
 
 Dispatcher::~Dispatcher()
@@ -48,10 +49,6 @@ Dispatcher::~Dispatcher()
 void Dispatcher::setupActions(const QList<Controller*> &controllers)
 {
     Q_D(Dispatcher);
-
-    if (d->dispatchers.isEmpty()) {
-        registerDispatchType(new DispatchTypePath(this));
-    }
 
     ActionList registeredActions;
     Q_FOREACH (Controller *controller, controllers) {
@@ -110,6 +107,17 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
 
     Q_FOREACH (Controller *controller, controllers) {
         controller->d_ptr->setupFinished();
+    }
+
+    // Unregister any dispatcher that is not in use
+    int i = 0;
+    while (i < d->dispatchers.size()) {
+        DispatchType *type = d->dispatchers.at(i);
+        if (!type->inUse()) {
+            d->dispatchers.removeAt(i);
+            continue;
+        }
+        ++i;
     }
 
     qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
@@ -260,6 +268,12 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
         }
     }
     return QString();
+}
+
+QList<DispatchType *> Dispatcher::dispatchers() const
+{
+    Q_D(const Dispatcher);
+    return d->dispatchers;
 }
 
 void Dispatcher::registerDispatchType(DispatchType *dispatchType)

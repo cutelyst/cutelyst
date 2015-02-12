@@ -164,6 +164,12 @@ Dispatcher *Application::dispatcher() const
     return d->dispatcher;
 }
 
+QList<DispatchType *> Application::dispatchers() const
+{
+    Q_D(const Application);
+    return d->dispatcher->dispatchers();
+}
+
 QVariantHash Application::config() const
 {
     Q_D(const Application);

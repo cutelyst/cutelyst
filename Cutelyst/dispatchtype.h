@@ -57,6 +57,16 @@ public:
     virtual bool registerAction(Action *action);
 
     /**
+     * If false the dispatcher will be unregistered for
+     * performance reasons.
+     *
+     * In the common case if the dispatcher has registered
+     * any action, or in some special case that it doesn't need
+     * actions it will return true.
+     */
+    virtual bool inUse() const = 0;
+
+    /**
      * Returns true if the dispatch type has low precedence
      * when the precedence is the same the Class name is used
      * to sort them.

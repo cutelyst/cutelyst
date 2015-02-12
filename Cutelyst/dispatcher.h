@@ -70,6 +70,8 @@ public:
      */
     QString uriForAction(Action *action, const QStringList &captures) const;
 
+    QList<DispatchType *> dispatchers() const;
+
 protected:
     void setupActions(const QList<Controller *> &controllers);
 

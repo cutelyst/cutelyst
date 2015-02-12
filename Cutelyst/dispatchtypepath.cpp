@@ -155,6 +155,12 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
+bool DispatchTypePath::inUse() const
+{
+    Q_D(const DispatchTypePath);
+    return !d->paths.isEmpty();
+}
+
 QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {

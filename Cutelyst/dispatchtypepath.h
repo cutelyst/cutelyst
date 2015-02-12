@@ -42,6 +42,8 @@ public:
 
     virtual bool registerAction(Action *action);
 
+    virtual bool inUse() const;
+
     /**
      * Get a URI part for an action
      * Always returns NULL if captures is not empty since Path actions don't have captures
