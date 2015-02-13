@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,17 +29,16 @@ class MultiPartFormDataParser
 {
     Q_DECLARE_PRIVATE(MultiPartFormDataParser)
 public:
-    /**
-    * @brief MultiPartFormDataInternal
-    * @param contentType can be the whole HTTP Content-Type
-    * header or just it's value
-    * @param body
-    */
-    MultiPartFormDataParser(const QString &contentType, QIODevice *body);
+    MultiPartFormDataParser();
     virtual ~MultiPartFormDataParser();
 
-    void setBufferSize(int size);
-    virtual Uploads parse();
+    /**
+     * @brief MultiPartFormDataInternal
+     * @param contentType can be the whole HTTP Content-Type
+     * header or just it's value
+     * @param body
+     */
+    virtual Uploads parse(QIODevice *body, const QString &contentType, int bufferSize = 4096);
 
 protected:
     MultiPartFormDataParserPrivate *d_ptr;

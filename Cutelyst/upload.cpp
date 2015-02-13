@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -190,20 +190,20 @@ Upload::Upload(UploadPrivate *prv) :
 {
     Q_D(Upload);
     open(prv->device->openMode());
-    QString disposition = prv->headers.value(QStringLiteral("Content-Disposition"));
-    int start = disposition.indexOf("name=\"");
+    const QString &disposition = prv->headers.header(QStringLiteral("Content-Disposition"));
+    int start = disposition.indexOf(QLatin1String("name=\""));
     if (start != -1) {
         start += 6;
-        int end = disposition.indexOf("\"", start);
+        int end = disposition.indexOf(QLatin1String("\""), start);
         if (end != -1) {
             d->name = disposition.mid(start, end - start);
         }
     }
 
-    start = disposition.indexOf("filename=\"");
+    start = disposition.indexOf(QLatin1String("filename=\""));
     if (start != -1) {
         start += 10;
-        int end = disposition.indexOf("\"", start);
+        int end = disposition.indexOf(QLatin1String("\""), start);
         if (end != -1) {
             d->filename = disposition.mid(start, end - start);
         }

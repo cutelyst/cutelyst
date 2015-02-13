@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,13 +38,11 @@ public:
         EndData
     };
 
-    Uploads execute(char *buffer);
+    Uploads execute(char *buffer, int bufferSize);
     inline int findBoundary(char *buffer, int len, ParserState &state, int &boundaryPos);
 
-    char *boundary = 0;
-//    QByteArray boundary;
-    int boundaryLength = 0;
-    int bufferSize = 4096;
+    char *boundary;
+    int boundaryLength;
     QIODevice *body;
 
 };
