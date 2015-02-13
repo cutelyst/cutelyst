@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -153,7 +153,7 @@ bool DispatchTypePath::registerAction(Action *action)
     bool ret = false;
     QMap<QString, QString> attributes = action->attributes();
     QMap<QString, QString>::iterator i = attributes.find("Path");
-    while (i != attributes.end() && i.key() == "Path") {
+    while (i != attributes.end() && i.key() == QLatin1String("Path")) {
         if (registerPath(i.value(), action)) {
             ret = true;
         }

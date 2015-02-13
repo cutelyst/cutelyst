@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,43 +17,33 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_DISPATCHTYPEPATH_H
-#define CUTELYST_DISPATCHTYPEPATH_H
+#ifndef DISPATCHTYPECHAINED_H
+#define DISPATCHTYPECHAINED_H
 
-#include <Cutelyst/DispatchType>
+#include <QObject>
+
 #include <Cutelyst/Action>
+#include <Cutelyst/DispatchType>
 
 namespace Cutelyst {
 
-class DispatchTypePathPrivate;
-class DispatchTypePath : public DispatchType
+class DispatchTypeChainedPrivate;
+class DispatchTypeChained : public DispatchType
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(DispatchTypePath)
+    Q_DECLARE_PRIVATE(DispatchTypeChained)
 public:
-    explicit DispatchTypePath(QObject *parent = 0);
-    virtual ~DispatchTypePath();
-
-    virtual QByteArray list() const;
+    explicit DispatchTypeChained(QObject *parent = 0);
+    ~DispatchTypeChained();
 
     virtual MatchType match(Context *ctx, const QString &path, const QStringList &args) const;
 
     virtual bool registerAction(Action *action);
 
-    virtual bool inUse() const;
-
-    /**
-     * Get a URI part for an action
-     * Always returns NULL if captures is not empty since Path actions don't have captures
-     */
-    virtual QString uriForAction(Action *action, const QStringList &captures) const;
-
 private:
-    bool registerPath(const QString &path, Action *action);
-
-    DispatchTypePathPrivate *d_ptr;
+    DispatchTypeChainedPrivate *d_ptr;
 };
 
 }
 
-#endif // DispatchTypePath_H
+#endif // DISPATCHTYPECHAINED_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,19 +17,25 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef DISPATCHTYPEPATH_P_H
-#define DISPATCHTYPEPATH_P_H
+#ifndef DISPATCHTYPECHAINED_P_H
+#define DISPATCHTYPECHAINED_P_H
 
-#include "dispatchtypepath.h"
+#include "dispatchtypechained.h"
+
+
 
 namespace Cutelyst {
 
-class DispatchTypePathPrivate
+class DispatchTypeChainedPrivate
 {
 public:
-    QHash<QString, ActionList> paths;
+    void checkArgsAttr(Action *action, const QString &name);
+
+    ActionList endPoints;
+    QHash<QString, Action *> actions;
+    QHash<QString, QHash<QString, ActionList> > childrenOf;
 };
 
 }
 
-#endif // DISPATCHTYPEPATH_P_H
+#endif // DISPATCHTYPECHAINED_P_H

@@ -38,6 +38,7 @@
 #include <QStringList>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
 Q_LOGGING_CATEGORY(CUTELYST_CONTROLLER, "cutelyst.controller")
 Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
 Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")

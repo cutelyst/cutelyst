@@ -30,6 +30,8 @@ set(cutelystqt_SRC
     controller.cpp
     controller_p.h
     dispatchtype.cpp
+    dispatchtypechained.cpp
+    dispatchtypechained_p.h
     dispatchtypepath.cpp
     dispatchtypepath_p.h
     dispatcher.cpp
