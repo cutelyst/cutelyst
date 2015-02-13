@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,6 +29,7 @@
 
 #include <QUrl>
 #include <QUrlQuery>
+#include <QStringBuilder>
 
 using namespace Cutelyst;
 
@@ -196,9 +197,11 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
         Q_FOREACH (const QString &arg, args) {
             encodedArgs.append(QUrl::toPercentEncoding(arg));
         }
-        ret.setPath(encodedArgs.join(QLatin1Char('/')));
-    } else {
+        ret.setPath(QLatin1Char('/') % encodedArgs.join(QLatin1Char('/')));
+    } else if (path.startsWith(QChar('/'))) {
         ret.setPath(path);
+    } else {
+        ret.setPath(QLatin1Char('/') % path);
     }
 
     if (!queryValues.isEmpty()) {

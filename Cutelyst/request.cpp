@@ -88,9 +88,12 @@ QUrl Request::uri() const
         } else {
             uri.setAuthority(d->serverAddress);
         }
+
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
 
-        uri.setPath(d->path);
+        // if the path does not start with a slash it cleans the uri
+        uri.setPath(QLatin1Char('/') % d->path);
+
         if (!d->query.isEmpty()) {
             uri.setQuery(d->query);
         }
