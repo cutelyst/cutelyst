@@ -137,7 +137,10 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QS
         if (action->numberOfArgs() == numberOfArgs) {
             setupMatchedAction(ctx, action, _path, args);
             return ExactMatch;
-        } else if (action->numberOfArgs() == -1) {
+        } else if (action->numberOfArgs() == -1 &&
+                   !ctx->action()) {
+            // Only setup partial matches if no action is
+            // currently set
             setupMatchedAction(ctx, action, _path, args);
             ret = PartialMatch;
         }
