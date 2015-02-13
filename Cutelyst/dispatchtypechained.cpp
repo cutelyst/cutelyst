@@ -41,8 +41,9 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
         return NoMatch;
     }
 
-    Q_D(DispatchTypeChained);
+    Q_D(const DispatchTypeChained);
 
+    QStringList parts = path.split(QChar('/'));
 
 }
 
