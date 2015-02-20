@@ -90,11 +90,13 @@ void Controller::End(Context *ctx)
 bool Controller::preFork(Application *app)
 {
     Q_UNUSED(app)
+    return true;
 }
 
 bool Controller::postFork(Application *app)
 {
     Q_UNUSED(app)
+    return true;
 }
 
 bool Controller::_BEGIN(Context *ctx)
