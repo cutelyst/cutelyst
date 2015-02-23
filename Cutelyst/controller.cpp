@@ -328,15 +328,15 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 
 QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
-    QList<QPair<QByteArray, QByteArray> > attributes;
+    QList<QPair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
     // :Args:Local('fo"')o'):ActionClass('foo')
     // into
     // (QPair("Args",""), QPair("Local","'fo"')o'"), QPair("ActionClass","'foo'"))
 
-    QByteArray key;
-    QByteArray value;
+    QString key;
+    QString value;
     int size = str.size();
     int pos = 0;
     while (pos < size) {
@@ -382,6 +382,15 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             // stopre the key
             key = str.mid(keyStart, keyLength);
 
+            // remove quotes
+            if (!value.isEmpty()) {
+                if ((value.startsWith(QChar('\'')) && value.endsWith(QChar('\''))) ||
+                        (value.startsWith(QChar('"')) && value.endsWith(QChar('"')))) {
+                    value.remove(0, 1);
+                    value.remove(value.size() - 1, 1);
+                }
+            }
+
             // store the key/value pair found
             attributes.append(qMakePair(key, value));
             continue;
@@ -400,7 +409,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             ++parameterCount;
         } else {
             // store the key/value pair found
-            attributes.append(qMakePair(parameterTypes.at(i),
+            attributes.append(qMakePair(QString::fromLatin1(parameterTypes.at(i)),
                                         QByteArray()));
 
             // Print out deprecated declarations
@@ -414,8 +423,8 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
     for (int i = attributes.size() - 1; i >= 0; --i) {
-        const QPair<QByteArray, QByteArray> &pair = attributes.at(i);
-        QByteArray key = pair.first;
+        const QPair<QString, QString> &pair = attributes.at(i);
+        QString key = pair.first;
         QString value = pair.second;
         if (key == "Global") {
             key = QByteArrayLiteral("Path");
@@ -439,6 +448,8 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         } else if (key == "CaptureArgs") {
             QString captureArgs = value;
             value = captureArgs.remove(QRegularExpression("\\D")).toLocal8Bit();
+        } else if (key == QLatin1String("Chained")) {
+            value = parseChainedAttr(value);
         }
 
         ret.insertMulti(key, value);
@@ -483,6 +494,26 @@ QString ControllerPrivate::parsePathAttr(const QString &_value)
         return pathPrefix + '/' + value;
     }
     return pathPrefix;
+}
+
+QString ControllerPrivate::parseChainedAttr(const QString &attr)
+{
+    if (attr.isEmpty()) {
+        return QStringLiteral("/");
+    }
+
+    if (attr == QLatin1String(".")) {
+        return QLatin1Char('/') % pathPrefix;
+    } else if (!attr.startsWith(QChar('/'))) {
+        if (!pathPrefix.isEmpty()) {
+            return QLatin1Char('/') % pathPrefix % QLatin1Char('/') % attr;
+        } else {
+            // special case namespace '' (root)
+            return QLatin1Char('/') % attr;
+        }
+    }
+
+    return attr;
 }
 
 QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByteArray &super)

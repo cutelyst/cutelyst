@@ -40,6 +40,8 @@ public:
     QMap<QString, QString> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Code *> gatherActionRoles(const QVariantHash &args);
     QString parsePathAttr(const QString &_value);
+    QString parseChainedAttr(const QString &attr);
+
     QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 

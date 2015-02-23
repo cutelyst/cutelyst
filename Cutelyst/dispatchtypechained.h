@@ -36,9 +36,15 @@ public:
     explicit DispatchTypeChained(QObject *parent = 0);
     ~DispatchTypeChained();
 
+    virtual QByteArray list() const;
+
     virtual MatchType match(Context *ctx, const QString &path, const QStringList &args) const;
 
     virtual bool registerAction(Action *action);
+
+    virtual QString uriForAction(Action *action, const QStringList &captures) const;
+
+    virtual bool inUse() const;
 
 private:
     DispatchTypeChainedPrivate *d_ptr;

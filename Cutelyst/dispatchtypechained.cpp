@@ -35,6 +35,132 @@ DispatchTypeChained::~DispatchTypeChained()
 
 }
 
+
+bool actionReverseLessThan(Action *action1, Action *action2)
+{
+    return action1->reverse() < action2->reverse();
+}
+
+
+QByteArray DispatchTypeChained::list() const
+{
+    Q_D(const DispatchTypeChained);
+
+    ActionList endPoints = d->endPoints;
+    qSort(endPoints.begin(), endPoints.end(), actionReverseLessThan);
+
+    QList<QStringList> paths;
+    QList<QStringList> unattachedTable;
+    Q_FOREACH (Action *endPoint, endPoints) {
+        QStringList parts;
+        if (!endPoint->attributes().contains("Args")) {
+            parts.append(QLatin1String("..."));
+        } else {
+            for (int i = 0; i < endPoint->numberOfArgs(); ++i) {
+                parts.append(QLatin1String("*"));
+            }
+        }
+
+        QString parent;
+        QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(endPoint);
+        QString consumes = DispatchTypeChainedPrivate::listExtraConsumes(endPoint);
+        ActionList parents;
+        Action *current = endPoint;
+        while (current) {
+            if (current->attributes().contains("CaptureArgs")) {
+                for (int i = 0; i < endPoint->numberOfCaptures(); ++i) {
+                    parts.prepend(QLatin1String("*"));
+                }
+            }
+
+            Q_FOREACH (const QString &part, current->attributes().values("PathPart")) {
+                if (!part.isEmpty()) {
+                    parts.prepend(part);
+                }
+            }
+
+            parent = current->attributes().value("Chained");
+            current = d->actions.value(parent);
+            if (current) {
+                parents.prepend(current);
+            }
+        }
+
+        if (parent != QLatin1String("/")) {
+            QStringList row;
+            if (parents.isEmpty()) {
+                row.append(QLatin1Char('/') % endPoint->name());
+            } else {
+                row.append(QLatin1Char('/') % parents.first()->name());
+            }
+            row.append(parent);
+            unattachedTable.append(row);
+            continue;
+        }
+
+        QList<QStringList> rows;
+        Q_FOREACH (Action *p, parents) {
+            QString name = QLatin1Char('/') % p->name();
+
+            QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
+            if (!extra.isEmpty()) {
+                name.prepend(extra % QLatin1Char(' '));
+            }
+
+            if (p->attributes().contains("CaptureArgs")) {
+                name.append(QLatin1String(" (") % p->attributes().value("CaptureArgs") % QLatin1Char(')'));
+            }
+
+            QString ct = DispatchTypeChainedPrivate::listExtraConsumes(p);
+            if (!ct.isEmpty()) {
+                name.append(QLatin1String(" :") % ct);
+            }
+
+            if (p != parents[0]) {
+                name = QLatin1String("-> ") % name;
+            }
+
+            rows.append({QString(), name});
+        }
+
+        QString line;
+        if (!rows.isEmpty()) {
+            line.append(QLatin1String("=> "));
+        }
+        if (!extra.isEmpty()) {
+            line.append(extra % QLatin1Char(' '));
+        }
+        line.append(QLatin1Char('/') % endPoint->name());
+        if (!consumes.isEmpty()) {
+            line.append(QLatin1String(" :") % consumes);
+        }
+        rows.append({QString(), line});
+
+        rows[0][0] = QLatin1Char('/') % parts.join(QChar('/'));
+        paths.append(rows);
+    }
+
+    QByteArray buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
+
+    if (!paths.isEmpty()) {
+        QStringList chainedHeaders;
+        chainedHeaders.append("Path Spec");
+        chainedHeaders.append("Private");
+        out << buildTable("Loaded Chained actions:", chainedHeaders, paths);
+    }
+
+    if (!unattachedTable.isEmpty()) {
+        QStringList unattachedHeaders;
+        unattachedHeaders.append("Private");
+        unattachedHeaders.append("Missing parent");
+
+        out << buildTable("Unattached Chained actions:", unattachedHeaders, unattachedTable);
+    }
+
+    return buffer;
+}
+
 DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
@@ -57,18 +183,16 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    if (chainedList.size() > 0) {
+    if (chainedList.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-                << "Multiple Chained attributes not supported registering"
-                << action->reverse();
+                << "Multiple Chained attributes not supported registering" % action->reverse();
         exit(1);
     }
 
     const QString &chainedTo = chainedList.first();
-    if (chainedTo == QLatin1String("/")) {
+    if (chainedTo == QLatin1Char('/') % action->name()) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-                << "Actions cannot chain to themselves registering /"
-                << action->reverse();
+                << "Actions cannot chain to themselves registering /" % action->name();
         exit(1);
     }
 
@@ -97,7 +221,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->childrenOf[chainedTo][part].prepend(action);
 
-    d->actions[QLatin1Char('/') % action->reverse()] = action;
+    d->actions[QLatin1Char('/') % action->name()] = action;
 
     d->checkArgsAttr(action, "Args");
     d->checkArgsAttr(action, "CaptureArgs");
@@ -114,6 +238,17 @@ bool DispatchTypeChained::registerAction(Action *action)
     }
 
     return true;
+}
+
+QString DispatchTypeChained::uriForAction(Action *action, const QStringList &captures) const
+{
+    return QString();
+}
+
+bool DispatchTypeChained::inUse() const
+{
+    Q_D(const DispatchTypeChained);
+    return !d->actions.isEmpty();
 }
 
 void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name)
@@ -143,4 +278,22 @@ void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
                 << "(use '" << name << "' or '" << name << "(<number>)')";
         exit(1);
     }
+}
+
+QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
+{
+    if (action->attributes().contains("HTTP_METHODS")) {
+        QStringList extra = action->attributes().values("HTTP_METHODS");
+        return extra.join(QLatin1String(", "));
+    }
+    return QString();
+}
+
+QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
+{
+    if (action->attributes().contains("CONSUMES")) {
+        QStringList extra = action->attributes().values("CONSUMES");
+        return extra.join(QLatin1String(", "));
+    }
+    return QString();
 }

@@ -26,6 +26,7 @@
 #include "action.h"
 #include "request_p.h"
 #include "dispatchtypepath.h"
+#include "dispatchtypechained.h"
 
 #include <QUrl>
 #include <QMetaMethod>
@@ -39,6 +40,7 @@ Dispatcher::Dispatcher(QObject *parent) :
     d_ptr(new DispatcherPrivate)
 {
     registerDispatchType(new DispatchTypePath(this));
+    registerDispatchType(new DispatchTypeChained(this));
 }
 
 Dispatcher::~Dispatcher()

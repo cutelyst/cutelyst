@@ -30,6 +30,8 @@ class DispatchTypeChainedPrivate
 {
 public:
     void checkArgsAttr(Action *action, const QString &name);
+    static QString listExtraHttpMethods(Action *action);
+    static QString listExtraConsumes(Action *action);
 
     ActionList endPoints;
     QHash<QString, Action *> actions;
