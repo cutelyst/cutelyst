@@ -286,43 +286,12 @@ QByteArray Dispatcher::printActions()
 {
     Q_D(Dispatcher);
 
-    QByteArray buffer;
-    QTextStream out(&buffer, QIODevice::WriteOnly);
+    QStringList headers;
+    headers.append("Private");
+    headers.append("Class");
+    headers.append("Method");
 
-    out << "Loaded Private actions:" << endl;
-    QByteArray privateTitle("Private");
-    QByteArray classTitle("Class");
-    QByteArray methodTitle("Method");
-    int privateLength = privateTitle.length();
-    int classLength = classTitle.length();
-    int actionLength = methodTitle.length();
-    QHash<QString, Action*>::ConstIterator it = d->actionHash.constBegin();
-    while (it != d->actionHash.constEnd()) {
-        Action *action = it.value();
-        if (d->showInternalActions || !action->name().startsWith('_')) {
-            QString path = it.key();
-            if (!path.startsWith('/')) {
-                path.prepend('/');
-            }
-            privateLength = qMax(privateLength, path.length());
-            classLength = qMax(classLength, action->className().length());
-            actionLength = qMax(actionLength, action->name().length());
-        }
-        ++it;
-    }
-
-    out << "." << QString().fill(QLatin1Char('-'), privateLength + 2).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), classLength + 2).toUtf8().data()
-        << "+" << QString().fill(QLatin1Char('-'), actionLength + 2).toUtf8().data()
-        << "." << endl;
-    out << "| " << privateTitle.leftJustified(privateLength).data()
-        << " | " << classTitle.leftJustified(classLength).data()
-        << " | " << methodTitle.leftJustified(actionLength).data()
-        << " |" << endl;
-    out << "." << QByteArray().fill('-', privateLength + 2).data()
-        << "+" << QByteArray().fill('-', classLength + 2).data()
-        << "+" << QByteArray().fill('-', actionLength + 2).data()
-        << "." << endl;
+    QList<QStringList> table;
 
     QList<QString> keys = d->actionHash.keys();
     qSort(keys.begin(), keys.end());
@@ -333,17 +302,18 @@ QByteArray Dispatcher::printActions()
             if (!path.startsWith('/')) {
                 path.prepend('/');
             }
-            out << "| " << path.leftJustified(privateLength).toLatin1().data()
-                << " | " << action->className().leftJustified(classLength).toLatin1().data()
-                << " | " << action->name().leftJustified(actionLength).toLatin1().data()
-                << " |" << endl;
+
+            QStringList row;
+            row.append(path);
+            row.append(action->className());
+            row.append(action->name());
+            table.append(row);
         }
     }
 
-    out << "." << QByteArray().fill('-', privateLength + 2).data()
-        << "+" << QByteArray().fill('-', classLength + 2).data()
-        << "+" << QByteArray().fill('-', actionLength + 2).data()
-        << "." << endl;
+    QByteArray buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
+    out << DispatchType::buildTable("Loaded Private actions:", headers, table);
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {

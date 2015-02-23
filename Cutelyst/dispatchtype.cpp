@@ -51,6 +51,75 @@ bool DispatchType::isLowPrecedence() const
     return false;
 }
 
+QByteArray buildTableDivision(const QList<int> &columnsSize)
+{
+    QByteArray buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
+    for (int i = 0; i < columnsSize.size(); ++i) {
+        if (i) {
+            out << "+";
+        } else {
+            out << ".";
+        }
+        out << QByteArray().fill('-', columnsSize[i] + 2).data();
+    }
+    out << "." << endl;
+
+    return buffer;
+}
+
+QByteArray DispatchType::buildTable(const QString &title, const QStringList &headers, const QList<QStringList> &table)
+{
+    QList<int> columnsSize;
+
+    Q_FOREACH (const QString &header, headers) {
+        columnsSize.append(header.size());
+    }
+
+    Q_FOREACH (const QStringList &row, table) {
+        if (row.size() > headers.size()) {
+            qFatal("Incomplete table");
+            break;
+        }
+
+        for (int i = 0; i < row.size(); ++i) {
+            columnsSize[i] = qMax(columnsSize[i], row[i].size());
+        }
+    }
+
+    // printing
+    QByteArray buffer;
+    QTextStream out(&buffer, QIODevice::WriteOnly);
+    QByteArray div = buildTableDivision(columnsSize);
+
+    out << title << endl;
+
+    // Top line
+    out << div;
+
+    // header titles
+    for (int i = 0; i < headers.size(); ++i) {
+        out << "| " << headers[i].leftJustified(columnsSize[i]) << ' ';
+    }
+    out << '|' << endl;
+
+    // header bottom line
+    out << div;
+
+    Q_FOREACH (const QStringList &row, table) {
+        // content table
+        for (int i = 0; i < row.size(); ++i) {
+            out << "| " << row[i].leftJustified(columnsSize[i]) << ' ';
+        }
+        out << '|' << endl;
+    }
+
+    // table bottom line
+    out << div;
+
+    return buffer;
+}
+
 void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args) const
 {
     ctx->d_ptr->action = action;
