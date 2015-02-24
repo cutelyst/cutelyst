@@ -19,6 +19,7 @@
 
 #include "dispatchtypechained_p.h"
 #include "common.h"
+#include "actionchain.h"
 
 #include <QStringBuilder>
 
@@ -176,7 +177,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
     QStringList captures = ret.value(QStringLiteral("captures")).toStringList();
     QStringList parts = ret.value(QStringLiteral("parts")).toStringList();
 
-    Action *action = chain.first();
+    ActionChain *action = new ActionChain(chain, ctx);
     setupMatchedAction(ctx, action, QLatin1Char('/') % action->name(), parts, captures);
 
     return ExactMatch;
@@ -277,15 +278,17 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
     QStringList keys = children.keys();
     qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
     QVariantHash bestAction;
-    QStringList captures;
     Q_FOREACH (const QString &tryPart, keys) {
         QStringList parts = pathParts;
         if (!tryPart.isEmpty()) {
-            // remove the number of parts from tryPart
-            const QStringList &possiblePart = parts.mid(0, tryPart.count(QChar('/')));
+            // We want to count the number of parts a split would give
+            // and remove the number of parts from tryPart
+            int tryPartCount = tryPart.count(QChar('/')) + 1;
+            const QStringList &possiblePart = parts.mid(0, tryPartCount);
             if (tryPart != possiblePart.join(QChar('/'))) {
                 continue;
             }
+            parts = parts.mid(tryPartCount);
         }
 
         ActionList tryActions = children.value(tryPart);
@@ -308,6 +311,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                     continue;
                 }
 
+
                 // try the remaining parts against children of this action
                 QVariantHash ret = recurseMatch(ctx, QLatin1Char('/') % action->reverse(), localParts);
                 //    No best action currently
@@ -319,12 +323,13 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                 int n_pathparts = ret.value(QStringLiteral("n_pathparts")).toInt();
                 int bestActionParts = bestAction.value(QStringLiteral("parts")).toStringList().size();
 
-                if (actions.size() &&
-                        (bestAction.isEmpty() ||
-                         actionParts.size() < bestActionParts ||
-                         (actionParts.size() == bestActionParts &&
-                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
-                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
+                // TODO FIXME
+//                if (!actions.isEmpty() &&
+//                        (bestAction.isEmpty() ||
+//                         actionParts.size() < bestActionParts ||
+//                         (actionParts.size() == bestActionParts &&
+//                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
+//                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
                     actions.prepend(action);
                     actionCaptures.append(captures);
                     QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
@@ -334,7 +339,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                         { QStringLiteral("parts"), actionParts },
                         { QStringLiteral("n_pathparts"), pathparts.size() + n_pathparts },
                     };
-                }
+//                }
             } else {
                 {
                     // TODO stupid perl code
@@ -356,7 +361,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                         parts.size() < bestAction.value("parts").toInt() ||
                         (!parts.isEmpty() && !argsAttr.isEmpty() && argsAttr == QLatin1String("0"))) {
                     bestAction = {
-                        { QStringLiteral("actions"), QVariant::fromValue(action) },
+                        { QStringLiteral("actions"), QVariant::fromValue(ActionList() << action) },
                         { QStringLiteral("captures"), QStringList() },
                         { QStringLiteral("parts"), parts },
                         { QStringLiteral("n_pathparts"), pathparts.size() },

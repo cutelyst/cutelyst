@@ -35,7 +35,7 @@ class Action : public Code
 {
     Q_OBJECT
 public:
-    Action();
+    explicit Action(QObject *parent = 0);
     virtual ~Action();
 
     virtual Modifiers modifiers() const;
@@ -112,14 +112,6 @@ public:
      */
     qint8 numberOfCaptures() const;
 
-    /**
-     * @brief meta
-     * @return Returns the meta information about this action.
-     */
-    QMetaMethod meta() const;
-
-    bool isValid() const;
-
 protected:
     ActionPrivate *d_ptr;
     friend class Dispatcher;
@@ -131,9 +123,19 @@ protected:
     virtual bool doExecute(Context *ctx);
 
     /**
+     * The method to be invoked by this Action
+     */
+    void setMethod(const QMetaMethod &method);
+
+    /**
+     * The controller which this action belongs to
+     */
+    void setController(Controller *controller);
+
+    /**
      * Called by dispatcher to setup the Action
      */
-    void setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller, Application *app);
+    void setupAction(const QVariantHash &args, Application *app);
 
 private:
     Q_DECLARE_PRIVATE(Action)

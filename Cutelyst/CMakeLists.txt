@@ -18,6 +18,8 @@ set(cutelystqt_SRC
     context.cpp
     context_p.h
     action.cpp
+    actionchain.cpp
+    actionchain_p.h
     action_p.h
     Actions/actionrest.cpp
     Actions/actionrest_p.h

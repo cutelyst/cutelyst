@@ -280,7 +280,9 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         action->applyRoles(roles);
     }
 
-    action->setupAction(method, args, controller, app);
+    action->setMethod(method);
+    action->setController(controller);
+    action->setupAction(args, app);
 
     return action;
 }
@@ -309,7 +311,12 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             }
             QMap<QString, QString> attrs = parseAttributes(method, attributeArray, name);
 
-            QString reverse = controller->ns() % QLatin1Char('/') % name;
+            QString reverse;
+            if (controller->ns().isEmpty()) {
+                reverse = name;
+            } else {
+                reverse = controller->ns() % QLatin1Char('/') % name;
+            }
 
             Action *action = createAction({
                                               {"name"      , QVariant::fromValue(name)},

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,30 +17,20 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_ACTION_P_H
-#define CUTELYST_ACTION_P_H
+#ifndef ACTIONCHAIN_P_H
+#define ACTIONCHAIN_P_H
 
-#include "action.h"
+#include "actionchain.h"
 
 namespace Cutelyst {
 
-class ActionPrivate
+class ActionChainPrivate
 {
 public:
-    QString name;
-    QString ns;
-    QString reverse;
-    QMetaMethod method;
-    QMap<QString, QString> attributes;
-    Controller *controller = 0;
-    qint8 numberOfArgs = -1;
-    qint8 numberOfCaptures = -1;
-    QStringList emptyArgs = {
-        QString(), QString(), QString(),
-        QString(), QString(), QString(),
-        QString(), QString(), QString() };
+    ActionList chain;
 };
 
 }
 
-#endif // CUTELYST_ACTION_P_H
+#endif // ACTIONCHAIN_P_H
+

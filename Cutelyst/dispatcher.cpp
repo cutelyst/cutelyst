@@ -57,7 +57,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         bool instanceUsed = false;
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
-            if (action->isValid() && !d->actionHash.contains(action->reverse())) {
+            if (!d->actionHash.contains(action->reverse())) {
                 if (!action->attributes().contains("Private")) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -75,7 +75,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                d->actionHash.insert(action->reverse(), action);
+                d->actionHash.insert(action->ns() % QLatin1Char('/') % action->name(), action);
                 d->containerHash[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
@@ -206,7 +206,7 @@ out:
     }
 
     if (!request->args().isEmpty()) {
-        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << args.join(QLatin1Char('/'));
+        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << request->args().join(QLatin1Char('/'));
     }
 }
 
@@ -328,7 +328,6 @@ QByteArray Dispatcher::printActions()
 Action *Dispatcher::command2Action(Context *ctx, const QString &command, const QStringList &extraParams)
 {
     Q_D(Dispatcher);
-//    qDebug() << Q_FUNC_INFO << "Command" << command << d->actionHash.keys();
 
     Action *ret = d->actionHash.value(command);
     if (!ret) {

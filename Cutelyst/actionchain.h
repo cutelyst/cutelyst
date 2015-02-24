@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,30 +17,30 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_ACTION_P_H
-#define CUTELYST_ACTION_P_H
+#ifndef ACTIONCHAIN_H
+#define ACTIONCHAIN_H
 
-#include "action.h"
+#include <QObject>
+
+#include <action.h>
 
 namespace Cutelyst {
 
-class ActionPrivate
+class ActionChainPrivate;
+class ActionChain : public Action
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(ActionChain)
 public:
-    QString name;
-    QString ns;
-    QString reverse;
-    QMetaMethod method;
-    QMap<QString, QString> attributes;
-    Controller *controller = 0;
-    qint8 numberOfArgs = -1;
-    qint8 numberOfCaptures = -1;
-    QStringList emptyArgs = {
-        QString(), QString(), QString(),
-        QString(), QString(), QString(),
-        QString(), QString(), QString() };
+    explicit ActionChain(const ActionList &chain, QObject *parent = 0);
+    ~ActionChain();
+
+    bool dispatch(Context *ctx);
+
+protected:
+    ActionChainPrivate *d_ptr;
 };
 
 }
 
-#endif // CUTELYST_ACTION_P_H
+#endif // ACTIONCHAIN_H

@@ -24,8 +24,8 @@
 
 using namespace Cutelyst;
 
-Action::Action() :
-    d_ptr(new ActionPrivate)
+Action::Action(QObject *parent) : Code(parent)
+    , d_ptr(new ActionPrivate)
 {
 }
 
@@ -39,7 +39,19 @@ Code::Modifiers Action::modifiers() const
     return Code::OnlyExecute;
 }
 
-void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Controller *controller, Application *app)
+void Action::setMethod(const QMetaMethod &method)
+{
+    Q_D(Action);
+    d->method = method;
+}
+
+void Action::setController(Controller *controller)
+{
+    Q_D(Action);
+    d->controller = controller;
+}
+
+void Action::setupAction(const QVariantHash &args, Application *app)
 {
     Q_D(Action);
 
@@ -48,8 +60,6 @@ void Action::setupAction(const QMetaMethod &method, const QVariantHash &args, Co
     d->name = args.value("name").toString();
     d->ns = args.value("namespace").toString();
     d->reverse = args.value("reverse").toString();
-    d->method = method;
-    d->controller = controller;
 
     QMap<QString, QString> attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->attributes = attributes;
@@ -134,12 +144,6 @@ qint8 Action::numberOfCaptures() const
 {
     Q_D(const Action);
     return d->numberOfCaptures;
-}
-
-bool Action::isValid() const
-{
-    Q_D(const Action);
-    return d->valid;
 }
 
 bool Action::doExecute(Context *ctx)
