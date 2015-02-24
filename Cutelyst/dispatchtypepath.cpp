@@ -98,13 +98,13 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QS
         // it will slurp all args so we don't care
         // about how many args was passed
         if (action->numberOfArgs() == numberOfArgs) {
-            setupMatchedAction(ctx, action, _path, args);
+            setupMatchedAction(ctx, action, _path, args, QStringList());
             return ExactMatch;
         } else if (action->numberOfArgs() == -1 &&
                    !ctx->action()) {
             // Only setup partial matches if no action is
             // currently set
-            setupMatchedAction(ctx, action, _path, args);
+            setupMatchedAction(ctx, action, _path, args, QStringList());
             ret = PartialMatch;
         }
     }

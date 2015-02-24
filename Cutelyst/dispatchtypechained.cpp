@@ -35,12 +35,10 @@ DispatchTypeChained::~DispatchTypeChained()
 
 }
 
-
 bool actionReverseLessThan(Action *action1, Action *action2)
 {
     return action1->reverse() < action2->reverse();
 }
-
 
 QByteArray DispatchTypeChained::list() const
 {
@@ -169,8 +167,19 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
 
     Q_D(const DispatchTypeChained);
 
-    QStringList parts = path.split(QChar('/'));
+    QVariantHash ret = d->recurseMatch(ctx, QStringLiteral("/"), path.split(QChar('/')));
+    ActionList chain = ret.value(QStringLiteral("actions")).value<ActionList>();
+    if (ret.isEmpty() || chain.isEmpty()) {
+        return NoMatch;
+    }
 
+    QStringList captures = ret.value(QStringLiteral("captures")).toStringList();
+    QStringList parts = ret.value(QStringLiteral("parts")).toStringList();
+
+    Action *action = chain.first();
+    setupMatchedAction(ctx, action, QLatin1Char('/') % action->name(), parts, captures);
+
+    return ExactMatch;
 }
 
 bool DispatchTypeChained::registerAction(Action *action)
@@ -249,6 +258,115 @@ bool DispatchTypeChained::inUse() const
 {
     Q_D(const DispatchTypeChained);
     return !d->actions.isEmpty();
+}
+
+bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
+{
+    // action2 then action1 to try the longest part first
+    return action2.size() < action1.size();
+}
+
+QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QString &parent, const QStringList &pathParts) const
+{
+    QHash<QString, QHash<QString, ActionList> >::ConstIterator it = childrenOf.constFind(parent);
+    if (it == childrenOf.constEnd()) {
+        return QVariantHash();
+    }
+
+    QHash<QString, ActionList> children = it.value();
+    QStringList keys = children.keys();
+    qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
+    QVariantHash bestAction;
+    QStringList captures;
+    Q_FOREACH (const QString &tryPart, keys) {
+        QStringList parts = pathParts;
+        if (!tryPart.isEmpty()) {
+            // remove the number of parts from tryPart
+            const QStringList &possiblePart = parts.mid(0, tryPart.count(QChar('/')));
+            if (tryPart != possiblePart.join(QChar('/'))) {
+                continue;
+            }
+        }
+
+        ActionList tryActions = children.value(tryPart);
+        Q_FOREACH (Action *action, tryActions) {
+            if (action->attributes().contains("CaptureArgs")) {
+                int captureCount = action->numberOfCaptures();
+                // Short-circuit if not enough remaining parts
+                if (parts.size() < captureCount) {
+                    continue;
+                }
+
+                QStringList captures;
+                QStringList localParts = parts;
+
+                // strip CaptureArgs into list
+                captures = localParts.mid(0, captureCount);
+
+                // check if the action may fit, depending on a given test by the app
+                if (!action->matchCaptures(captures.size())) {
+                    continue;
+                }
+
+                // try the remaining parts against children of this action
+                QVariantHash ret = recurseMatch(ctx, QLatin1Char('/') % action->reverse(), localParts);
+                //    No best action currently
+                // OR The action has less parts
+                // OR The action has equal parts but less captured data (ergo more defined)
+                ActionList actions = ret.value(QStringLiteral("actions")).value<ActionList>();
+                QStringList actionCaptures = ret.value(QStringLiteral("captures")).toStringList();
+                QStringList actionParts = ret.value(QStringLiteral("parts")).toStringList();
+                int n_pathparts = ret.value(QStringLiteral("n_pathparts")).toInt();
+                int bestActionParts = bestAction.value(QStringLiteral("parts")).toStringList().size();
+
+                if (actions.size() &&
+                        (bestAction.isEmpty() ||
+                         actionParts.size() < bestActionParts ||
+                         (actionParts.size() == bestActionParts &&
+                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
+                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
+                    actions.prepend(action);
+                    actionCaptures.append(captures);
+                    QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
+                    bestAction = {
+                        { QStringLiteral("actions"), QVariant::fromValue(actions) },
+                        { QStringLiteral("captures"), actionCaptures },
+                        { QStringLiteral("parts"), actionParts },
+                        { QStringLiteral("n_pathparts"), pathparts.size() + n_pathparts },
+                    };
+                }
+            } else {
+                {
+                    // TODO stupid perl code
+                    if (!action->match(ctx->req()->args().size() + parts.size())) {
+                        continue;
+                    }
+                }
+
+                QString argsAttr = action->attributes().value("Args");
+                QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
+                //    No best action currently
+                // OR This one matches with fewer parts left than the current best action,
+                //    And therefore is a better match
+                // OR No parts and this expects 0
+                //    The current best action might also be Args(0),
+                //    but we couldn't chose between then anyway so we'll take the last seen
+
+                if (bestAction.isEmpty() ||
+                        parts.size() < bestAction.value("parts").toInt() ||
+                        (!parts.isEmpty() && !argsAttr.isEmpty() && argsAttr == QLatin1String("0"))) {
+                    bestAction = {
+                        { QStringLiteral("actions"), QVariant::fromValue(action) },
+                        { QStringLiteral("captures"), QStringList() },
+                        { QStringLiteral("parts"), parts },
+                        { QStringLiteral("n_pathparts"), pathparts.size() },
+                    };
+                }
+            }
+        }
+    }
+
+    return bestAction;
 }
 
 void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name)

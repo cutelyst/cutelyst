@@ -82,7 +82,7 @@ protected:
     friend class Dispatcher;
     static QByteArray buildTable(const QString &title, const QStringList &headers, const QList<QStringList> &table);
 
-    void setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args) const;
+    void setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args, const QStringList &captures) const;
 };
 
 }

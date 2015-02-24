@@ -120,9 +120,10 @@ QByteArray DispatchType::buildTable(const QString &title, const QStringList &hea
     return buffer;
 }
 
-void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args) const
+void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args, const QStringList &captures) const
 {
     ctx->d_ptr->action = action;
     ctx->d_ptr->request->d_ptr->match = match;
     ctx->d_ptr->request->d_ptr->args = args;
+    ctx->d_ptr->request->d_ptr->captures = captures;
 }

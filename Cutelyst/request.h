@@ -135,6 +135,11 @@ public:
     QStringList args() const;
 
     /**
+     * Captures
+     */
+    QStringList captures() const;
+
+    /**
      * Returns true or false to indicate that a connection is secure (https),
      * The reliability of it may depend on your server configuration, Cutelyst
      * relies on the Engine to set this information which is used to build up

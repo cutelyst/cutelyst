@@ -70,6 +70,7 @@ protected:
 
     // Engines don't need to touch this
     QStringList args;
+    QStringList captures;
     QString match;
 
     mutable bool urlParsed = false;

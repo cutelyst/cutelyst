@@ -150,6 +150,12 @@ QStringList Request::args() const
     return d->args;
 }
 
+QStringList Request::captures() const
+{
+    Q_D(const Request);
+    return d->captures;
+}
+
 bool Request::secure() const
 {
     Q_D(const Request);
@@ -335,6 +341,7 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 void RequestPrivate::reset()
 {
     args = QStringList();
+    captures = QStringList();
     urlParsed = false;
     baseParsed = false;
     cookiesParsed = false;
