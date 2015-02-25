@@ -176,9 +176,13 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
 
     QStringList captures = ret.value(QStringLiteral("captures")).toStringList();
     QStringList parts = ret.value(QStringLiteral("parts")).toStringList();
+    QStringList decodedArgs;
+    Q_FOREACH (const QString &arg, parts) {
+        decodedArgs.append(QUrl::fromPercentEncoding(arg.toLatin1()));
+    }
 
     ActionChain *action = new ActionChain(chain, ctx);
-    setupMatchedAction(ctx, action, QLatin1Char('/') % action->name(), parts, captures);
+    setupMatchedAction(ctx, action, QLatin1Char('/') % action->name(), decodedArgs, captures);
 
     return ExactMatch;
 }
@@ -323,13 +327,12 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                 int n_pathparts = ret.value(QStringLiteral("n_pathparts")).toInt();
                 int bestActionParts = bestAction.value(QStringLiteral("parts")).toStringList().size();
 
-                // TODO FIXME
-//                if (!actions.isEmpty() &&
-//                        (bestAction.isEmpty() ||
-//                         actionParts.size() < bestActionParts ||
-//                         (actionParts.size() == bestActionParts &&
-//                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
-//                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
+                if (!actions.isEmpty() &&
+                        (bestAction.isEmpty() ||
+                         actionParts.size() < bestActionParts ||
+                         (actionParts.size() == bestActionParts &&
+                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
+                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
                     actions.prepend(action);
                     actionCaptures.append(captures);
                     QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
@@ -339,7 +342,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                         { QStringLiteral("parts"), actionParts },
                         { QStringLiteral("n_pathparts"), pathparts.size() + n_pathparts },
                     };
-//                }
+                }
             } else {
                 {
                     // TODO stupid perl code
