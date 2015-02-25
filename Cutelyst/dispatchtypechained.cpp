@@ -52,11 +52,11 @@ QByteArray DispatchTypeChained::list() const
     QList<QStringList> unattachedTable;
     Q_FOREACH (Action *endPoint, endPoints) {
         QStringList parts;
-        if (!endPoint->attributes().contains("Args")) {
-            parts.append(QLatin1String("..."));
+        if (!endPoint->attributes().contains(QStringLiteral("Args"))) {
+            parts.append(QStringLiteral("..."));
         } else {
             for (int i = 0; i < endPoint->numberOfArgs(); ++i) {
-                parts.append(QLatin1String("*"));
+                parts.append(QStringLiteral("*"));
             }
         }
 
@@ -66,19 +66,18 @@ QByteArray DispatchTypeChained::list() const
         ActionList parents;
         Action *current = endPoint;
         while (current) {
-            if (current->attributes().contains("CaptureArgs")) {
-                for (int i = 0; i < current->numberOfCaptures(); ++i) {
-                    parts.prepend(QLatin1String("*"));
-                }
+            for (int i = 0; i < current->numberOfCaptures(); ++i) {
+                parts.prepend(QStringLiteral("*"));
             }
 
-            Q_FOREACH (const QString &part, current->attributes().values("PathPart")) {
+            const QStringList &pathParts = current->attributes().values(QStringLiteral("PathPart"));
+            Q_FOREACH (const QString &part, pathParts) {
                 if (!part.isEmpty()) {
                     parts.prepend(part);
                 }
             }
 
-            parent = current->attributes().value("Chained");
+            parent = current->attributes().value(QStringLiteral("Chained"));
             current = d->actions.value(parent);
             if (current) {
                 parents.prepend(current);
@@ -106,8 +105,9 @@ QByteArray DispatchTypeChained::list() const
                 name.prepend(extra % QLatin1Char(' '));
             }
 
-            if (p->attributes().contains("CaptureArgs")) {
-                name.append(QLatin1String(" (") % p->attributes().value("CaptureArgs") % QLatin1Char(')'));
+            QMap<QString, QString>::ConstIterator it = p->attributes().constFind(QStringLiteral("CaptureArgs"));
+            if (it != p->attributes().constEnd()) {
+                name.append(QLatin1String(" (") % it.value() % QLatin1Char(')'));
             }
 
             QString ct = DispatchTypeChainedPrivate::listExtraConsumes(p);
@@ -135,7 +135,7 @@ QByteArray DispatchTypeChained::list() const
         }
         rows.append({QString(), line});
 
-        rows[0][0] = QLatin1Char('/') % parts.join(QChar('/'));
+        rows[0][0] = QLatin1Char('/') % parts.join(QLatin1Char('/'));
         paths.append(rows);
     }
 
@@ -144,17 +144,17 @@ QByteArray DispatchTypeChained::list() const
 
     if (!paths.isEmpty()) {
         QStringList chainedHeaders;
-        chainedHeaders.append("Path Spec");
-        chainedHeaders.append("Private");
-        out << buildTable("Loaded Chained actions:", chainedHeaders, paths);
+        chainedHeaders.append(QStringLiteral("Path Spec"));
+        chainedHeaders.append(QStringLiteral("Private"));
+        out << buildTable(QStringLiteral("Loaded Chained actions:"), chainedHeaders, paths);
     }
 
     if (!unattachedTable.isEmpty()) {
         QStringList unattachedHeaders;
-        unattachedHeaders.append("Private");
-        unattachedHeaders.append("Missing parent");
+        unattachedHeaders.append(QStringLiteral("Private"));
+        unattachedHeaders.append(QStringLiteral("Missing parent"));
 
-        out << buildTable("Unattached Chained actions:", unattachedHeaders, unattachedTable);
+        out << buildTable(QStringLiteral("Unattached Chained actions:"), unattachedHeaders, unattachedTable);
     }
 
     return buffer;
@@ -168,7 +168,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
 
     Q_D(const DispatchTypeChained);
 
-    QVariantHash ret = d->recurseMatch(ctx, QStringLiteral("/"), path.split(QChar('/')));
+    QVariantHash ret = d->recurseMatch(ctx, QStringLiteral("/"), path.split(QLatin1Char('/')));
     ActionList chain = ret.value(QStringLiteral("actions")).value<ActionList>();
     if (ret.isEmpty() || chain.isEmpty()) {
         return NoMatch;
@@ -192,7 +192,7 @@ bool DispatchTypeChained::registerAction(Action *action)
     Q_D(DispatchTypeChained);
 
     const QMap<QString, QString> &attributes = action->attributes();
-    const QStringList &chainedList = attributes.values(QLatin1String("Chained"));
+    const QStringList &chainedList = attributes.values(QStringLiteral("Chained"));
     if (chainedList.isEmpty()) {
         return false;
     }
@@ -210,7 +210,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         exit(1);
     }
 
-    const QStringList &pathPart = attributes.values(QLatin1String("PathPart"));
+    const QStringList &pathPart = attributes.values(QStringLiteral("PathPart"));
 
     QString part = action->name();
 
@@ -223,7 +223,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         exit(1);
     }
 
-    if (part.startsWith(QChar('/'))) {
+    if (part.startsWith(QLatin1Char('/'))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Absolute parameters to PathPart not allowed registering"
                 << action->reverse();
@@ -237,17 +237,17 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->actions[QLatin1Char('/') % action->name()] = action;
 
-    d->checkArgsAttr(action, "Args");
-    d->checkArgsAttr(action, "CaptureArgs");
+    d->checkArgsAttr(action, QStringLiteral("Args"));
+    d->checkArgsAttr(action, QStringLiteral("CaptureArgs"));
 
-    if (attributes.contains("Args") && attributes.contains("CaptureArgs")) {
+    if (attributes.contains(QStringLiteral("Args")) && attributes.contains(QStringLiteral("CaptureArgs"))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Combining Args and CaptureArgs attributes not supported registering"
                 << action->reverse();
         exit(1);
     }
 
-    if (!attributes.contains("CaptureArgs")) {
+    if (!attributes.contains(QStringLiteral("CaptureArgs"))) {
         d->endPoints.prepend(action);
     }
 
@@ -287,9 +287,9 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
         if (!tryPart.isEmpty()) {
             // We want to count the number of parts a split would give
             // and remove the number of parts from tryPart
-            int tryPartCount = tryPart.count(QChar('/')) + 1;
+            int tryPartCount = tryPart.count(QLatin1Char('/')) + 1;
             const QStringList &possiblePart = parts.mid(0, tryPartCount);
-            if (tryPart != possiblePart.join(QChar('/'))) {
+            if (tryPart != possiblePart.join(QLatin1Char('/'))) {
                 continue;
             }
             parts = parts.mid(tryPartCount);
@@ -297,7 +297,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
 
         ActionList tryActions = children.value(tryPart);
         Q_FOREACH (Action *action, tryActions) {
-            if (action->attributes().contains("CaptureArgs")) {
+            if (action->attributes().contains(QStringLiteral("CaptureArgs"))) {
                 int captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts
                 if (parts.size() < captureCount) {
@@ -335,7 +335,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                           n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
                     actions.prepend(action);
                     actionCaptures.append(captures);
-                    QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
+                    QStringList pathparts = action->attributes().value("PathPart").split(QLatin1Char('/'));
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(actions) },
                         { QStringLiteral("captures"), actionCaptures },
@@ -351,8 +351,8 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                     }
                 }
 
-                QString argsAttr = action->attributes().value("Args");
-                QStringList pathparts = action->attributes().value("PathPart").split(QChar('/'));
+                QString argsAttr = action->attributes().value(QStringLiteral("Args"));
+                QStringList pathparts = action->attributes().value(QStringLiteral("PathPart")).split(QLatin1Char('/'));
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match
@@ -361,7 +361,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                 //    but we couldn't chose between then anyway so we'll take the last seen
 
                 if (bestAction.isEmpty() ||
-                        parts.size() < bestAction.value("parts").toInt() ||
+                        parts.size() < bestAction.value(QStringLiteral("parts")).toInt() ||
                         (!parts.isEmpty() && !argsAttr.isEmpty() && argsAttr == QLatin1String("0"))) {
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(ActionList() << action) },
@@ -410,7 +410,7 @@ QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
 {
     if (action->attributes().contains("HTTP_METHODS")) {
         QStringList extra = action->attributes().values("HTTP_METHODS");
-        return extra.join(QLatin1String(", "));
+        return extra.join(QStringLiteral(", "));
     }
     return QString();
 }
@@ -419,7 +419,7 @@ QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
 {
     if (action->attributes().contains("CONSUMES")) {
         QStringList extra = action->attributes().values("CONSUMES");
-        return extra.join(QLatin1String(", "));
+        return extra.join(QStringLiteral(", "));
     }
     return QString();
 }

@@ -58,7 +58,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
             if (!d->actionHash.contains(action->reverse())) {
-                if (!action->attributes().contains("Private")) {
+                if (!action->attributes().contains(QStringLiteral("Private"))) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
                         if (dispatch->registerAction(action)) {
@@ -79,11 +79,11 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
                 d->containerHash[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
-            } else if (action->name() != "_DISPATCH" &&
-                       action->name() != "_BEGIN" &&
-                       action->name() != "_AUTO" &&
-                       action->name() != "_ACTION" &&
-                       action->name() != "_END") {
+            } else if (action->name() != QLatin1String("_DISPATCH") &&
+                       action->name() != QLatin1String("_BEGIN") &&
+                       action->name() != QLatin1String("_AUTO") &&
+                       action->name() != QLatin1String("_ACTION") &&
+                       action->name() != QLatin1String("_END")) {
                 qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
                                              << action->controller()->objectName()
                                              << "controller was not registered in any dispatcher."
@@ -105,7 +105,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
     }
 
     // Cache root actions, BEFORE the controllers set them
-    d->rootActions = d->containerHash.value("");
+    d->rootActions = d->containerHash.value(QStringLiteral(""));
 
     Q_FOREACH (Controller *controller, controllers) {
         controller->d_ptr->setupFinished();
@@ -164,7 +164,7 @@ void Dispatcher::prepareAction(Context *ctx)
 
     Request *request = ctx->request();
     const QString &path = request->path();
-    QStringList pathParts = path.split(QChar('/'));
+    QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
 
     // Root action
@@ -191,7 +191,7 @@ void Dispatcher::prepareAction(Context *ctx)
             break;
         }
 
-        pos = path.lastIndexOf(QChar('/'), --pos);
+        pos = path.lastIndexOf(QLatin1Char('/'), --pos);
         if (pos == -1) {
             pos = 0;
         }
@@ -289,9 +289,9 @@ QByteArray Dispatcher::printActions()
     Q_D(Dispatcher);
 
     QStringList headers;
-    headers.append("Private");
-    headers.append("Class");
-    headers.append("Method");
+    headers.append(QStringLiteral("Private"));
+    headers.append(QStringLiteral("Class"));
+    headers.append(QStringLiteral("Method"));
 
     QList<QStringList> table;
 
@@ -299,10 +299,10 @@ QByteArray Dispatcher::printActions()
     qSort(keys.begin(), keys.end());
     Q_FOREACH (const QString &key, keys) {
         Action *action = d->actionHash.value(key);
-        if (d->showInternalActions || !action->name().startsWith('_')) {
+        if (d->showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
             QString path = key;
-            if (!path.startsWith('/')) {
-                path.prepend('/');
+            if (!path.startsWith(QLatin1Char('/'))) {
+                path.prepend(QLatin1Char('/'));
             }
 
             QStringList row;
@@ -315,7 +315,7 @@ QByteArray Dispatcher::printActions()
 
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
-    out << DispatchType::buildTable("Loaded Private actions:", headers, table);
+    out << DispatchType::buildTable(QStringLiteral("Loaded Private actions:"), headers, table);
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -340,11 +340,11 @@ Action *Dispatcher::command2Action(Context *ctx, const QString &command, const Q
 QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
 {
     QString ret = path;
-    if (!ret.startsWith('/')) {
+    if (!ret.startsWith(QLatin1Char('/'))) {
         ret.prepend(qobject_cast<Action *>(ctx->stack().last())->ns());
     }
 
-    if (ret.startsWith('/')) {
+    if (ret.startsWith(QLatin1Char('/'))) {
         ret.remove(0, 1);
     }
 
@@ -390,7 +390,7 @@ QString Dispatcher::cleanNamespace(const QString &ns) const
         // so that two or more consecutive slashes
         // could be converted to just one
         // "a///b" -> "a/b"
-        if (ret.at(i) == QChar('/')) {
+        if (ret.at(i) == QLatin1Char('/')) {
             if (lastWasSlash) {
                 ret.remove(i, 1);
                 --nsSize;
