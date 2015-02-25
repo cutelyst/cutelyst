@@ -79,6 +79,12 @@ QMap<QString, QString> Action::attributes() const
     return d->attributes;
 }
 
+void Action::setAttributes(const QMap<QString, QString> &attributes)
+{
+    Q_D(Action);
+    d->attributes = attributes;
+}
+
 QString Action::className() const
 {
     Q_D(const Action);

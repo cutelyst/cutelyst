@@ -381,7 +381,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
                     break;
                 } else if (str.at(pos) == ':') {
                     // Attribute has no value
-                    value = QByteArray();
+                    value = QString();
                     break;
                 }
                 ++keyLength;

@@ -199,7 +199,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 {
     Q_D(DispatchTypeChained);
 
-    const QMap<QString, QString> &attributes = action->attributes();
+    QMap<QString, QString> attributes = action->attributes();
     const QStringList &chainedList = attributes.values(QStringLiteral("Chained"));
     if (chainedList.isEmpty()) {
         return false;
@@ -222,7 +222,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     QString part = action->name();
 
-    if (pathPart.size() == 1 && !pathPart[0].isEmpty()) {
+    if (pathPart.size() == 1 && !pathPart[0].isNull()) {
         part = pathPart[0];
     } else if (pathPart.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
@@ -238,8 +238,8 @@ bool DispatchTypeChained::registerAction(Action *action)
         exit(1);
     }
 
-    // TODO
-//    action->attributes()["PathPart"] = part;
+    attributes.insert(QStringLiteral("PathPart"), part);
+    action->setAttributes(attributes);
 
     d->childrenOf[chainedTo][part].prepend(action);
 

@@ -47,6 +47,8 @@ public:
      */
     QMap<QString, QString> attributes() const;
 
+    void setAttributes(const QMap<QString, QString> &attributes);
+
     /**
      * @return Returns the name of the component where this action is defined
      */
