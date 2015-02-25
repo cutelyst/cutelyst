@@ -303,7 +303,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
             parts = parts.mid(tryPartCount);
         }
 
-        ActionList tryActions = children.value(tryPart);
+        const ActionList &tryActions = children.value(tryPart);
         Q_FOREACH (Action *action, tryActions) {
             if (action->attributes().contains(QStringLiteral("CaptureArgs"))) {
                 int captureCount = action->numberOfCaptures();
@@ -312,17 +312,14 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                     continue;
                 }
 
-                QStringList captures;
-                QStringList localParts = parts;
-
                 // strip CaptureArgs into list
-                captures = localParts.mid(0, captureCount);
+                QStringList captures = parts.mid(0, captureCount);
+                QStringList localParts = parts.mid(captureCount);
 
                 // check if the action may fit, depending on a given test by the app
                 if (!action->matchCaptures(captures.size())) {
                     continue;
                 }
-
 
                 // try the remaining parts against children of this action
                 QVariantHash ret = recurseMatch(ctx, QLatin1Char('/') % action->reverse(), localParts);
