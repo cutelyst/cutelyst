@@ -57,11 +57,12 @@ set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
-set (UWSGI_PLUGINS_DIR "/usr/lib/uwsgi/plugins")
+set (UWSGI_PLUGINS_DIR "/usr/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
+set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
-set(CMAKE_INSTALL_LIBDIR "lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
+set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
 
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 

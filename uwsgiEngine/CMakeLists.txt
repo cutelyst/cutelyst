@@ -11,10 +11,10 @@ set(uswgi_engine_SRC
     plugin.c
 )
 
-execute_process(COMMAND uwsgi --dot-h
+execute_process(COMMAND ${UWSGI_EXEC_PATH} --dot-h
                 OUTPUT_FILE uwsgi.h)
 
-execute_process(COMMAND uwsgi --cflags
+execute_process(COMMAND ${UWSGI_EXEC_PATH} --cflags
                 OUTPUT_VARIABLE UWSGI_CFLAGS
                 OUTPUT_STRIP_TRAILING_WHITESPACE
 )
