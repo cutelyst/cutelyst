@@ -67,7 +67,7 @@ QByteArray DispatchTypeChained::list() const
         Action *current = endPoint;
         while (current) {
             if (current->attributes().contains("CaptureArgs")) {
-                for (int i = 0; i < endPoint->numberOfCaptures(); ++i) {
+                for (int i = 0; i < current->numberOfCaptures(); ++i) {
                     parts.prepend(QLatin1String("*"));
                 }
             }
