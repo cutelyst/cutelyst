@@ -115,8 +115,8 @@ bool DispatchTypePath::registerAction(Action *action)
 {
     bool ret = false;
     QMap<QString, QString> attributes = action->attributes();
-    QMap<QString, QString>::iterator i = attributes.find("Path");
-    while (i != attributes.end() && i.key() == QLatin1String("Path")) {
+    QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
+    while (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
         if (registerPath(i.value(), action)) {
             ret = true;
         }
@@ -138,8 +138,8 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
 {
     if (captures.isEmpty()) {
         QMap<QString, QString> attributes = action->attributes();
-        QMap<QString, QString>::ConstIterator i = attributes.constFind(QStringLiteral("Path"));
-        while (i != attributes.constEnd() && i.key() == "Path") {
+        QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
+        while (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
             QString path = i.value();
             if (path.isEmpty()) {
                 path = QStringLiteral("/");
