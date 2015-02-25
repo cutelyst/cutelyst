@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,11 +21,13 @@
 #define DISPATCHTYPE_H
 
 #include <QObject>
+#include <QStringList>
 
 namespace Cutelyst {
 
 class Context;
 class Action;
+class Request;
 class DispatchType : public QObject
 {
     Q_OBJECT
@@ -80,9 +82,10 @@ public:
 
 protected:
     friend class Dispatcher;
-    static QByteArray buildTable(const QString &title, const QStringList &headers, const QList<QStringList> &table);
 
-    void setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args, const QStringList &captures) const;
+    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
+
+    void setupMatchedAction(Context *ctx, Action *action) const;
 };
 
 }

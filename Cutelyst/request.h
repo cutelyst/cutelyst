@@ -112,6 +112,12 @@ public:
     QString match() const;
 
     /**
+     * Defines the matching part of the request
+     * Useful for custom dispatchers
+     */
+    void setMatch(const QString &match);
+
+    /**
      * Returns a list of string containing the arguments.
      * For example, if your action was
      * \code{.h}
@@ -130,6 +136,12 @@ public:
     QStringList arguments() const;
 
     /**
+     * Defines the arguments of the request
+     * Useful for custom dispatchers and/or actions
+     */
+    void setArguments(const QStringList &arguments);
+
+    /**
      * Shortcut for arguments()
      */
     QStringList args() const;
@@ -138,6 +150,12 @@ public:
      * Captures
      */
     QStringList captures() const;
+
+    /**
+     * Defines the arguments of the request
+     * Useful for custom dispatchers and/or actions
+     */
+    void setCaptures(const QStringList &captures);
 
     /**
      * Returns true or false to indicate that a connection is secure (https),
@@ -250,8 +268,6 @@ public:
     Request(RequestPrivate *prv);
 
 protected:
-    void setArgs(const QStringList &args);
-
     RequestPrivate *d_ptr;
 
 private:

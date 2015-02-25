@@ -315,7 +315,9 @@ QByteArray Dispatcher::printActions()
 
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
-    out << DispatchType::buildTable(QStringLiteral("Loaded Private actions:"), headers, table);
+    out << DispatchType::buildTable(table,
+                                    headers,
+                                    QStringLiteral("Loaded Private actions:"));
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {

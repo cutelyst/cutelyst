@@ -53,12 +53,14 @@ bool ActionChain::dispatch(Context *ctx)
         if (action->numberOfCaptures()) {
             args = captures.mid(0, action->numberOfCaptures());
         }
-        // TODO
-//        ctx->request()->d_ptr->args = args;
 
+        Request *request =  ctx->request();
+        const QStringList &currentArgs = request->args();
+        request->setArguments(args);
         if (!action->dispatch(ctx)) {
             return false;
         }
+        request->setArguments(currentArgs);
     }
 
     return final->dispatch(ctx);

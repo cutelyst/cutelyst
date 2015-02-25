@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -68,7 +68,7 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
     return buffer;
 }
 
-QByteArray DispatchType::buildTable(const QString &title, const QStringList &headers, const QList<QStringList> &table)
+QByteArray DispatchType::buildTable(const QList<QStringList> &table, const QStringList &headers, const QString &title)
 {
     QList<int> columnsSize;
 
@@ -92,19 +92,23 @@ QByteArray DispatchType::buildTable(const QString &title, const QStringList &hea
     QTextStream out(&buffer, QIODevice::WriteOnly);
     QByteArray div = buildTableDivision(columnsSize);
 
-    out << title << endl;
+    if (!title.isEmpty()) {
+        out << title << endl;
+    }
 
     // Top line
     out << div;
 
-    // header titles
-    for (int i = 0; i < headers.size(); ++i) {
-        out << "| " << headers[i].leftJustified(columnsSize[i]) << ' ';
-    }
-    out << '|' << endl;
+    if (!headers.isEmpty()) {
+        // header titles
+        for (int i = 0; i < headers.size(); ++i) {
+            out << "| " << headers[i].leftJustified(columnsSize[i]) << ' ';
+        }
+        out << '|' << endl;
 
-    // header bottom line
-    out << div;
+        // header bottom line
+        out << div;
+    }
 
     Q_FOREACH (const QStringList &row, table) {
         // content table
@@ -120,10 +124,7 @@ QByteArray DispatchType::buildTable(const QString &title, const QStringList &hea
     return buffer;
 }
 
-void DispatchType::setupMatchedAction(Context *ctx, Action *action, const QString &match, const QStringList &args, const QStringList &captures) const
+void DispatchType::setupMatchedAction(Context *ctx, Action *action) const
 {
     ctx->d_ptr->action = action;
-    ctx->d_ptr->request->d_ptr->match = match;
-    ctx->d_ptr->request->d_ptr->args = args;
-    ctx->d_ptr->request->d_ptr->captures = captures;
 }

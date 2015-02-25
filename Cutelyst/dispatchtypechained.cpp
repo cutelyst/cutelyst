@@ -146,7 +146,9 @@ QByteArray DispatchTypeChained::list() const
         QStringList chainedHeaders;
         chainedHeaders.append(QStringLiteral("Path Spec"));
         chainedHeaders.append(QStringLiteral("Private"));
-        out << buildTable(QStringLiteral("Loaded Chained actions:"), chainedHeaders, paths);
+        out << buildTable(paths,
+                          chainedHeaders,
+                          QStringLiteral("Loaded Chained actions:"));
     }
 
     if (!unattachedTable.isEmpty()) {
@@ -154,7 +156,9 @@ QByteArray DispatchTypeChained::list() const
         unattachedHeaders.append(QStringLiteral("Private"));
         unattachedHeaders.append(QStringLiteral("Missing parent"));
 
-        out << buildTable(QStringLiteral("Unattached Chained actions:"), unattachedHeaders, unattachedTable);
+        out << buildTable(unattachedTable,
+                          unattachedHeaders,
+                          QStringLiteral("Unattached Chained actions:"));
     }
 
     return buffer;
@@ -182,7 +186,11 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
     }
 
     ActionChain *action = new ActionChain(chain, ctx);
-    setupMatchedAction(ctx, action, QLatin1Char('/') % action->name(), decodedArgs, captures);
+    Request *request = ctx->request();
+    request->setArguments(decodedArgs);
+    request->setCaptures(captures);
+    request->setMatch(QLatin1Char('/') % action->name());
+    setupMatchedAction(ctx, action);
 
     return ExactMatch;
 }
@@ -345,7 +353,6 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                 }
             } else {
                 {
-                    // TODO stupid perl code
                     if (!action->match(ctx->req()->args().size() + parts.size())) {
                         continue;
                     }

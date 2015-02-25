@@ -138,10 +138,22 @@ QString Request::match() const
     return d->match;
 }
 
+void Request::setMatch(const QString &match)
+{
+    Q_D(Request);
+    d->match = match;
+}
+
 QStringList Request::arguments() const
 {
     Q_D(const Request);
     return d->args;
+}
+
+void Request::setArguments(const QStringList &arguments)
+{
+    Q_D(Request);
+    d->args = arguments;
 }
 
 QStringList Request::args() const
@@ -154,6 +166,12 @@ QStringList Request::captures() const
 {
     Q_D(const Request);
     return d->captures;
+}
+
+void Request::setCaptures(const QStringList &captures)
+{
+    Q_D(Request);
+    d->captures = captures;
 }
 
 bool Request::secure() const
@@ -263,12 +281,6 @@ void *Request::engineData()
 {
     Q_D(Request);
     return d->requestPtr;
-}
-
-void Request::setArgs(const QStringList &args)
-{
-    Q_D(Request);
-    d->args = args;
 }
 
 void RequestPrivate::parseUrlQuery() const

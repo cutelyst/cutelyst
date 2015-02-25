@@ -78,7 +78,9 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return buildTable("Loaded Path actions:", headers, table);
+    return buildTable(table,
+                      headers,
+                      QStringLiteral("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QString &path, const QStringList &args) const
@@ -98,13 +100,18 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QS
         // it will slurp all args so we don't care
         // about how many args was passed
         if (action->numberOfArgs() == numberOfArgs) {
-            setupMatchedAction(ctx, action, _path, args, QStringList());
+            Request *request = ctx->request();
+            request->setMatch(_path);
+            setupMatchedAction(ctx, action);
             return ExactMatch;
         } else if (action->numberOfArgs() == -1 &&
                    !ctx->action()) {
             // Only setup partial matches if no action is
             // currently set
-            setupMatchedAction(ctx, action, _path, args, QStringList());
+            Request *request = ctx->request();
+            request->setArguments(args);
+            request->setMatch(_path);
+            setupMatchedAction(ctx, action);
             ret = PartialMatch;
         }
     }
