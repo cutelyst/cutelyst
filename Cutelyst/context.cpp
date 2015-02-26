@@ -190,18 +190,23 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
 
     QUrl ret = d->request->uri();
 
+    QString _path = path;
+    if (_path.isEmpty()) {
+        _path = d->action->controller()->ns();
+    }
+
     if (!args.isEmpty()) {
         QStringList encodedArgs;
-        encodedArgs.append(path);
+        encodedArgs.append(_path);
 
         Q_FOREACH (const QString &arg, args) {
             encodedArgs.append(QUrl::toPercentEncoding(arg));
         }
         ret.setPath(QLatin1Char('/') % encodedArgs.join(QLatin1Char('/')));
-    } else if (path.startsWith(QChar('/'))) {
-        ret.setPath(path);
+    } else if (_path.startsWith(QChar('/'))) {
+        ret.setPath(_path);
     } else {
-        ret.setPath(QLatin1Char('/') % path);
+        ret.setPath(QLatin1Char('/') % _path);
     }
 
     if (!queryValues.isEmpty()) {
@@ -222,16 +227,18 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
 
 QUrl Context::uriFor(Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
 {
-    Q_UNUSED(args)
+    return uriFor(action, QStringList(), args, queryValues);
+}
+
+QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+{
     Q_D(const Context);
 
     QString path;
     if (action) {
-        // TODO check action for captures
-        path = d->dispatcher->uriForAction(action, QStringList());
+        path = d->dispatcher->uriForAction(action, captures);
     } else {
-        // use the current action if none is provided
-        path = d->dispatcher->uriForAction(d->action, QStringList());
+        path = d->dispatcher->uriForAction(d->action, captures);
     }
 
     return uriFor(path, args, queryValues);

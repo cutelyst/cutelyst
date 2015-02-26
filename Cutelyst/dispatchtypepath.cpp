@@ -146,14 +146,14 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     if (captures.isEmpty()) {
         QMap<QString, QString> attributes = action->attributes();
         QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
-        while (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
+        if (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
             QString path = i.value();
             if (path.isEmpty()) {
                 path = QStringLiteral("/");
             }
 
-            if (!path.startsWith('/')) {
-                path.prepend('/');
+            if (!path.startsWith(QLatin1Char('/'))) {
+                path.prepend(QLatin1Char('/'));
             }
 
             return path;

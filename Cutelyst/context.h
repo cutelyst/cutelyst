@@ -245,6 +245,20 @@ public:
      * Constructs an absolute QUrl object based on the application root, the
      * provided path, and the additional arguments and query parameters provided.
      * When used as a string, provides a textual URI.
+     *
+     * If no arguments are provided, the URI for the current action is returned.
+     * To return the current action and also provide \p args, use
+     * ctx->uriFor(ctx->action(), args).
+     */
+    QUrl uriFor(Action *action,
+                const QStringList &captures,
+                const QStringList &args,
+                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+
+    /**
+     * Constructs an absolute QUrl object based on the application root, the
+     * provided path, and the additional arguments and query parameters provided.
+     * When used as a string, provides a textual URI.
      */
     inline QUrl uriForNoArgs(Action *action,
                              const QMultiHash<QString, QString> &queryValues) const

@@ -264,7 +264,48 @@ bool DispatchTypeChained::registerAction(Action *action)
 
 QString DispatchTypeChained::uriForAction(Action *action, const QStringList &captures) const
 {
-    return QString();
+    Q_D(const DispatchTypeChained);
+
+    const QMap<QString, QString> &attributes = action->attributes();
+    if (!(attributes.contains(QStringLiteral("Chained")) &&
+            !attributes.contains(QStringLiteral("CaptureArgs")))) {
+        return QString();
+    }
+
+    QString parent;
+    QStringList localCaptures = captures;
+    QStringList parts;
+    Action *curr = action;
+    while (curr) {
+        if (curr->attributes().contains(QStringLiteral("Chained"))) {
+            if (captures.size() < curr->numberOfCaptures()) {
+                // Not enough captures
+                return QString();
+            }
+
+            parts = localCaptures.mid(parts.size(), curr->numberOfCaptures()) + parts;
+        }
+
+        QString pp = curr->attributes().value(QStringLiteral("PathPart"));
+        if (!pp.isEmpty()) {
+            parts.prepend(pp);
+        }
+
+        parent = curr->attributes().value(QStringLiteral("Chained"));
+        curr = d->actions.value(parent);
+    }
+
+    if (parent != QLatin1String("/")) {
+        // fail for dangling action
+        return QString();
+    }
+
+    if (!localCaptures.isEmpty()) {
+        // fail for too many captures
+        return QString();
+    }
+
+    return QLatin1Char('/') % parts.join(QLatin1Char('/'));
 }
 
 bool DispatchTypeChained::inUse() const
