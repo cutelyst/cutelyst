@@ -49,6 +49,5 @@ struct uwsgi_plugin cutelyst_plugin = {
     .init_apps = uwsgi_cutelyst_init_apps,
     .options = uwsgi_cutelyst_options,
     .atexit = uwsgi_cutelyst_atexit,
-    .master_cleanup = uwsgi_cutelyst_master_cleanup,
 
 };

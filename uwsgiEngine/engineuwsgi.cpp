@@ -42,7 +42,7 @@ typedef struct {
     Request *request;
 } CachedRequest;
 
-EngineUwsgi::EngineUwsgi(const QVariantHash &opts, Application *app) : Engine(opts, app)
+EngineUwsgi::EngineUwsgi(const QVariantHash &opts, Application *app, QObject *parent) : Engine(opts, parent)
   , m_app(app)
 {
     connect(this, &EngineUwsgi::postFork,
@@ -331,7 +331,6 @@ void EngineUwsgi::forked()
 
         // Move the application and it's children to this thread
         m_app->moveToThread(thread());
-        m_app->setParent(this);
 
         // init and postfork
         if (!initApplication(m_app, true)) {

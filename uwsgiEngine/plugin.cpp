@@ -108,16 +108,6 @@ static void fsmon_reload(struct uwsgi_fsmon *fs)
 #endif // UWSGI_GO_CHEAP_CODE
 
 /**
- * This function is called when the master process is exiting
- */
-extern "C" void uwsgi_cutelyst_master_cleanup()
-{
-    qCDebug(CUTELYST_UWSGI) << "Master process finishing" << QCoreApplication::applicationPid();
-    delete qApp;
-    qCDebug(CUTELYST_UWSGI) << "Master process finished" << QCoreApplication::applicationPid();
-}
-
-/**
  * This function is called when the child process is exiting
  */
 extern "C" void uwsgi_cutelyst_atexit()
@@ -205,7 +195,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         }
     }
 
-    EngineUwsgi *mainEngine = new EngineUwsgi(opts, app);
+    EngineUwsgi *mainEngine = new EngineUwsgi(opts, app, qApp);
     if (!mainEngine->initApplication(app, false)) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
@@ -217,7 +207,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1 && i > 0) {
-            engine = new EngineUwsgi(opts, app);
+            engine = new EngineUwsgi(opts, app, qApp);
             engine->setThread(new QThread);
 
             // Post fork might fail when on threaded mode
