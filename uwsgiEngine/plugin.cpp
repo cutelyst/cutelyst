@@ -133,6 +133,11 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     qCDebug(CUTELYST_UWSGI) << "Cutelyst loading application:" << options.app;
 
+    // if the path is relative build a path
+    // relative to the current working directory
+    QDir cwd(uwsgi.cwd);
+    path = cwd.absoluteFilePath(path);
+
 #ifdef UWSGI_GO_CHEAP_CODE
     if (options.reload) {
         // Register application auto reload
@@ -140,8 +145,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
         uwsgi_register_fsmon(file, fsmon_reload, NULL);
     }
 #endif // UWSGI_GO_CHEAP_CODE
-
-    QDir cwd(uwsgi.cwd);
 
     // Set the configuration env
     QStringList args = QCoreApplication::arguments();
@@ -156,10 +159,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
             qputenv("CUTELYST_CONFIG", config.toUtf8());
         }
     }
-
-    // if the path is relative build a path
-    // relative to the current working directory
-    path = cwd.absoluteFilePath(path);
 
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
