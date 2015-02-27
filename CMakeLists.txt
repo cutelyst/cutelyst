@@ -3,7 +3,7 @@ project(cutelyst)
 
 cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 find_package(PkgConfig REQUIRED)
-find_package(Qt5 5.2.0 COMPONENTS
+find_package(Qt5 5.3.0 COMPONENTS
     Core
     Network
 )

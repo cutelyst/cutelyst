@@ -244,6 +244,11 @@ void Application::handleRequest(Request *req)
     }
     priv->engine->finalize(ctx);
 
+    qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
+            ctx->response()->status(),
+            ctx->response()->contentType().toLatin1().data(),
+            ctx->response()->contentLength());
+
     delete ctx;
 }
 
