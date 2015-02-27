@@ -212,7 +212,7 @@ public:
      */
     QUrl uriFor(const QString &path = QString(),
                 const QStringList &args = QStringList(),
-                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+                const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -225,7 +225,7 @@ public:
      * ctx->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
     inline QUrl uriForNoArgs(const QString &path,
-                             const QMultiHash<QString, QString> &queryValues) const
+                             const ParamsMultiMap &queryValues) const
     { return uriFor(path, QStringList(), queryValues); }
 
     /**
@@ -239,7 +239,7 @@ public:
      */
     QUrl uriFor(Action *action,
                 const QStringList &args = QStringList(),
-                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+                const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -250,10 +250,10 @@ public:
      * To return the current action and also provide \p args, use
      * ctx->uriFor(ctx->action(), args).
      */
-    QUrl uriFor(Action *action,
-                const QStringList &captures,
-                const QStringList &args,
-                const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+    QUrl uriForWithCaptures(Action *action,
+                            const QStringList &captures,
+                            const QStringList &args,
+                            const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -261,7 +261,7 @@ public:
      * When used as a string, provides a textual URI.
      */
     inline QUrl uriForNoArgs(Action *action,
-                             const QMultiHash<QString, QString> &queryValues) const
+                             const ParamsMultiMap &queryValues) const
     { return uriFor(action, QStringList(), queryValues); }
 
     /**
@@ -289,13 +289,13 @@ public:
      */
     QUrl uriForAction(const QString &path,
                       const QStringList &args = QStringList(),
-                      const QMultiHash<QString, QString> &queryValues = QMultiHash<QString, QString>()) const;
+                      const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * A convenience method for the uriForAction() without the arguments parameter
      */
     inline QUrl uriForActionNoArgs(const QString &path,
-                                   const QMultiHash<QString, QString> &queryValues) const;
+                                   const ParamsMultiMap &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -365,7 +365,7 @@ private:
     Q_DECLARE_PRIVATE(Context)
 };
 
-QUrl Context::uriForActionNoArgs(const QString &path, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
 { return uriForAction(path, QStringList(), queryValues); }
 
 }

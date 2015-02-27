@@ -31,8 +31,6 @@ namespace Cutelyst {
 class ContextPrivate
 {
 public:
-    ~ContextPrivate();
-
     Application *app;
     Engine *engine;
     Request *request;

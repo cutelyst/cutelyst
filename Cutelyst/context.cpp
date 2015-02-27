@@ -184,7 +184,7 @@ QStack<Code *> Context::stack() const
     return d->stack;
 }
 
-QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -213,7 +213,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
         // Avoid a trailing '?'
         QUrlQuery query;
         if (queryValues.size()) {
-            QMultiHash<QString, QString>::ConstIterator i = queryValues.constBegin();
+            ParamsMultiMap::ConstIterator i = queryValues.constBegin();
             while (i != queryValues.constEnd()) {
                 query.addQueryItem(i.key(), i.value());
                 ++i;
@@ -225,12 +225,12 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const QMultiH
     return ret;
 }
 
-QUrl Context::uriFor(Action *action, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriFor(Action *action, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
-    return uriFor(action, QStringList(), args, queryValues);
+    return uriForWithCaptures(action, QStringList(), args, queryValues);
 }
 
-QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriForWithCaptures(Action *action, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -244,7 +244,7 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     return uriFor(path, args, queryValues);
 }
 
-QUrl Context::uriForAction(const QString &path, const QStringList &args, const QMultiHash<QString, QString> &queryValues) const
+QUrl Context::uriForAction(const QString &path, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -349,9 +349,4 @@ void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, co
 {
     Q_D(Context);
     d->plugins[plugin].insert(key, value);
-}
-
-ContextPrivate::~ContextPrivate()
-{
-    delete response;
 }

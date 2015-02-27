@@ -217,9 +217,10 @@ void Application::handleRequest(Request *req)
     priv->engine = req->engine();
     priv->dispatcher = d->dispatcher;
     priv->request = req;
-    priv->response = new Response;
-    priv->response->d_ptr->headers = d->headers;
+
     Context *ctx = new Context(priv);
+    priv->response = new Response(ctx);
+    priv->response->d_ptr->headers = d->headers;
 
     // Register application plugins
     Q_FOREACH (Plugin *plugin, d->plugins) {
