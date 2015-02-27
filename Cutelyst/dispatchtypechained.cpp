@@ -277,13 +277,14 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     QStringList parts;
     Action *curr = action;
     while (curr) {
-        if (curr->attributes().contains(QStringLiteral("Chained"))) {
+        if (curr->attributes().contains(QStringLiteral("CaptureArgs"))) {
             if (captures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
                 return QString();
             }
 
-            parts = localCaptures.mid(parts.size(), curr->numberOfCaptures()) + parts;
+            parts = localCaptures.mid(localCaptures.size() - curr->numberOfCaptures()) + parts;
+            localCaptures = localCaptures.mid(0, localCaptures.size() - curr->numberOfCaptures());
         }
 
         QString pp = curr->attributes().value(QStringLiteral("PathPart"));
@@ -380,11 +381,10 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                           actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
                           n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
                     actions.prepend(action);
-                    actionCaptures.append(captures);
                     QStringList pathparts = action->attributes().value("PathPart").split(QLatin1Char('/'));
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(actions) },
-                        { QStringLiteral("captures"), actionCaptures },
+                        { QStringLiteral("captures"), captures + actionCaptures },
                         { QStringLiteral("parts"), actionParts },
                         { QStringLiteral("n_pathparts"), pathparts.size() + n_pathparts },
                     };

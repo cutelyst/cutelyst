@@ -252,7 +252,7 @@ public:
      */
     QUrl uriForWithCaptures(Action *action,
                             const QStringList &captures,
-                            const QStringList &args,
+                            const QStringList &args = QStringList(),
                             const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
