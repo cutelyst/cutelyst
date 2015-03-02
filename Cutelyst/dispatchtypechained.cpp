@@ -52,7 +52,7 @@ QByteArray DispatchTypeChained::list() const
     QList<QStringList> unattachedTable;
     Q_FOREACH (Action *endPoint, endPoints) {
         QStringList parts;
-        if (!endPoint->attributes().contains(QStringLiteral("Args"))) {
+        if (endPoint->attributes().value(QStringLiteral("Args")).isNull()) {
             parts.append(QStringLiteral("..."));
         } else {
             for (int i = 0; i < endPoint->numberOfArgs(); ++i) {

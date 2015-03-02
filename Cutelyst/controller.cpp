@@ -344,11 +344,12 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     // into
     // (QPair("Args",""), QPair("Local","'fo"')o'"), QPair("ActionClass","'foo'"))
 
-    QString key;
-    QString value;
     int size = str.size();
     int pos = 0;
     while (pos < size) {
+        QString key;
+        QString value;
+
         // find the start of a key
         if (str.at(pos) == ':') {
             int keyStart = ++pos;
@@ -381,7 +382,6 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
                     break;
                 } else if (str.at(pos) == ':') {
                     // Attribute has no value
-                    value = QString();
                     break;
                 }
                 ++keyLength;
@@ -409,24 +409,15 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 
     // if the method has the CaptureArgs as an argument
     // set it on the attributes
-    int parameterCount = 0;
-    bool ignoreParameters = false;
-    QList<QByteArray> parameterTypes = method.parameterTypes();
-    for (int i = 1; i < method.parameterCount(); ++i) {
-        int typeId = method.parameterType(i);
-        if (typeId == QMetaType::QString && !ignoreParameters) {
-            ++parameterCount;
-        } else {
-            // store the key/value pair found
-            attributes.append(qMakePair(QString::fromLatin1(parameterTypes.at(i)),
-                                        QByteArray()));
-
-            // Print out deprecated declarations
-            qCWarning(CUTELYST_CONTROLLER) << "Action attributes declaration DEPRECATED"
-                                           << name
-                                           << parameterTypes.at(i);
-        }
-    }
+    // TODO maybe add an AutoArgs attribute
+//    int parameterCount = 0;
+//    bool ignoreParameters = false;
+//    for (int i = 1; i < method.parameterCount(); ++i) {
+//        int typeId = method.parameterType(i);
+//        if (typeId == QMetaType::QString && !ignoreParameters) {
+//            ++parameterCount;
+//        }
+//    }
 
     QMap<QString, QString> ret;
     // Add the attributes to the hash in the reverse order so
@@ -435,26 +426,24 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         const QPair<QString, QString> &pair = attributes.at(i);
         QString key = pair.first;
         QString value = pair.second;
-        if (key == "Global") {
+        if (key == QLatin1String("Global")) {
             key = QByteArrayLiteral("Path");
             value = name;
             if (!value.startsWith('/')) {
                 value.prepend('/');
             }
             value = parsePathAttr(value);
-        } else if (key == "Local") {
+        } else if (key == QLatin1String("Local")) {
             key = QByteArrayLiteral("Path");
             value = parsePathAttr(name);
-        } else if (key == "Path") {
+        } else if (key == QLatin1String("Path")) {
             value = parsePathAttr(value);
-        } else if (key == "Args") {
+        } else if (key == QLatin1String("Args")) {
             QString args = value;
-            if (args.isEmpty()) {
-                value = QByteArray::number(parameterCount);
-            } else {
+            if (!args.isEmpty()) {
                 value = args.remove(QRegularExpression("\\D")).toLocal8Bit();
             }
-        } else if (key == "CaptureArgs") {
+        } else if (key == QLatin1String("CaptureArgs")) {
             QString captureArgs = value;
             value = captureArgs.remove(QRegularExpression("\\D")).toLocal8Bit();
         } else if (key == QLatin1String("Chained")) {
@@ -464,13 +453,9 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         ret.insertMulti(key, value);
     }
 
-    if (parameterCount && !ret.contains("Args")) {
-        ret.insert("Args", QByteArray::number(parameterCount));
-    }
-
     // If the method is private add a Private attribute
-    if (!ret.contains("Private") && method.access() == QMetaMethod::Private) {
-        ret.insert("Private", QByteArray());
+    if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
+        ret.insert(QStringLiteral("Private"), QByteArray());
     }
 
     return ret;

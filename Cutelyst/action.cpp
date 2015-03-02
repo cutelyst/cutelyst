@@ -64,12 +64,14 @@ void Action::setupAction(const QVariantHash &args, Application *app)
     QMap<QString, QString> attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->attributes = attributes;
 
-    if (attributes.contains("Args")) {
-        d->numberOfArgs = attributes.value("Args").toInt();
+    QString argsAttr = attributes.value(QStringLiteral("Args"));
+    if (!argsAttr.isEmpty()) {
+        d->numberOfArgs = argsAttr.toInt();
     }
 
-    if (attributes.contains("CaptureArgs")) {
-        d->numberOfCaptures = attributes.value("CaptureArgs").toInt();
+    QString capturesAttr = attributes.value(QStringLiteral("CaptureArgs"));
+    if (!capturesAttr.isEmpty()) {
+        d->numberOfCaptures = capturesAttr.toInt();
     }
 }
 
