@@ -390,10 +390,8 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                     };
                 }
             } else {
-                {
-                    if (!action->match(ctx->req()->args().size() + parts.size())) {
-                        continue;
-                    }
+                if (!action->match(ctx->req()->args().size() + parts.size())) {
+                    continue;
                 }
 
                 QString argsAttr = action->attributes().value(QStringLiteral("Args"));
