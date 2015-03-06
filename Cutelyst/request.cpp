@@ -25,6 +25,7 @@
 #include <QStringBuilder>
 #include <QRegularExpression>
 #include <QHostInfo>
+#include <QJsonDocument>
 
 using namespace Cutelyst;
 
@@ -186,6 +187,15 @@ QIODevice *Request::body() const
     return d->body;
 }
 
+QVariant Request::bodyData() const
+{
+    Q_D(const Request);
+    if (!d->bodyParsed) {
+        d->parseBody();
+    }
+    return d->bodyData;
+}
+
 ParamsMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
@@ -292,7 +302,9 @@ void RequestPrivate::parseUrlQuery() const
 void RequestPrivate::parseBody() const
 {
     ParamsMultiMap params;
-    const QString &contentType = headers.contentType();
+    QVariant data;
+
+    const QString &contentType = headers.contentType().toLower();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
@@ -300,6 +312,7 @@ void RequestPrivate::parseBody() const
         body->seek(0);
 
         params = parseUrlEncoded(body->readLine());
+        data = QVariant::fromValue(params);
 
         body->seek(posOrig);
     } else if (contentType.startsWith(QLatin1String("multipart/form-data"))) {
@@ -309,10 +322,18 @@ void RequestPrivate::parseBody() const
             Upload *upload = uploadList.at(i);
             uploads.insertMulti(upload->name(), upload);
         }
+    } else if (contentType == QLatin1String("application/json")) {
+        qint64 posOrig = body->pos();
+        body->seek(0);
+
+        data = QJsonDocument::fromJson(body->readAll());
+
+        body->seek(posOrig);
     }
 
     // Asign it here so that we clean it in case no if matched
     bodyParam = params;
+    bodyData = data;
 
     bodyParsed = true;
 }

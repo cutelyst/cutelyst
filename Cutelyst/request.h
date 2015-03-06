@@ -174,6 +174,21 @@ public:
     QIODevice *body() const;
 
     /**
+     * Returns a QVariant representation of POST/PUT body data that is not classic HTML
+     * form data, such as JSON, XML, etc. By default, Cutalyst will parse incoming
+     * data of the type 'application/json' and return access to that data via this method.
+     *
+     * You may define addition data_handlers.
+     *
+     * If the POST is malformed in some way (such as undefined or not content that matches
+     * the content-type) we return a null QVariant.
+     *
+     * If the POSTed content type does not match an available data handler,
+     * this will also return a null QVariant.
+     */
+    QVariant bodyData() const;
+
+    /**
      * Returns a QMultiHash of body (POST) parameters
      */
     ParamsMultiMap bodyParameters() const;

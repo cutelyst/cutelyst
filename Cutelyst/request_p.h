@@ -87,6 +87,7 @@ protected:
 
     mutable bool bodyParsed = false;
     mutable ParamsMultiMap bodyParam;
+    mutable QVariant bodyData;
 
     mutable bool paramParsed = false;
     mutable ParamsMultiMap param;
