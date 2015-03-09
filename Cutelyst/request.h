@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -48,6 +48,7 @@ class Request : public QObject
     Q_PROPERTY(QStringList arguments READ arguments)
     Q_PROPERTY(QStringList args READ args)
     Q_PROPERTY(bool secure READ secure)
+    Q_PROPERTY(QVariant bodyData READ bodyData)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap param READ parameters)
