@@ -176,7 +176,7 @@ public:
 
     /**
      * Returns a QVariant representation of POST/PUT body data that is not classic HTML
-     * form data, such as JSON, XML, etc. By default, Cutalyst will parse incoming
+     * form data, such as JSON, XML, etc. By default, Cutelyst will parse incoming
      * data of the type 'application/json' and return access to that data via this method.
      *
      * You may define addition data_handlers.
