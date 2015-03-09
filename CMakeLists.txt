@@ -90,3 +90,5 @@ add_subdirectory(developerEngine)
 
 # TODO rename to examples
 #add_subdirectory(server)
+
+add_subdirectory(cmd)
