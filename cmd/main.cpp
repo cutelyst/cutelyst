@@ -245,12 +245,16 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
         out << "{" << "\n";
         out << "}" << "\n";
         out << "\n";
+        out << "void " << controllerName << "::index" << "(Context *ctx)" << "\n";
+        out << "{" << "\n";
         if (helpers) {
-            out << "void " << controllerName << "::index" << "(Context *ctx)" << "\n";
-            out << "{" << "\n";
             out << "    ctx->response()->body() = ctx->welcomeMessage();" << "\n";
-            out << "}" << "\n";
-            out << "\n";
+        } else {
+            out << "    ctx->response()->body() = \"Matched Controller::" << controllerName << " in " << controllerName << ".\";" << "\n";
+        }
+        out << "}" << "\n";
+        out << "\n";
+        if (helpers) {
             out << "void " << controllerName << "::defaultPage" << "(Context *ctx)" << "\n";
             out << "{" << "\n";
             out << "    ctx->response()->body() = \"Page not found!\";" << "\n";
@@ -288,14 +292,16 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
         out << "class " << controllerName << " : public Controller" << "\n";
         out << "{" << "\n";
         out << "    Q_OBJECT" << "\n";
-        out << "    C_NAMESPACE(\"\")" << "\n";
+        if (helpers) {
+            out << "    C_NAMESPACE(\"\")" << "\n";
+        }
         out << "public:" << "\n";
         out << "    explicit " << controllerName << "(QObject *parent = 0);" << "\n";
         out << "    ~" << controllerName << "();" << "\n";
+        out << "\n";
+        out << "    C_ATTR(index, :Path :Args(0))" << "\n";
+        out << "    void index(Context *ctx);" << "\n";
         if (helpers) {
-            out << "\n";
-            out << "    C_ATTR(index, :Path :Args(0))" << "\n";
-            out << "    void index(Context *ctx);" << "\n";
             out << "\n";
             out << "    C_ATTR(defaultPage, :Path)" << "\n";
             out << "    void defaultPage(Context *ctx);" << "\n";
