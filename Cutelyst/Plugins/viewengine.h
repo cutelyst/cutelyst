@@ -56,7 +56,7 @@ public:
     virtual bool render(Context *ctx) const;
 
 private:
-    ViewInterface *m_interface = 0;
+    ViewInterface *m_interface;
 };
 
 }
