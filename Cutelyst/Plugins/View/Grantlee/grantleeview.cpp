@@ -42,6 +42,9 @@ GrantleeView::GrantleeView(QObject *parent) :
 
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
+
+    // make sure templates can be found on the current directory
+    setIncludePath(QDir::currentPath());
 }
 
 GrantleeView::~GrantleeView()

@@ -32,7 +32,7 @@ class GrantleeViewPrivate
 {
 public:
     QString includePath;
-    QString extension;
+    QString extension = QStringLiteral(".html");
     QString wrapper;
     Grantlee::Engine *engine;
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
