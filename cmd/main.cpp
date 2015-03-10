@@ -248,7 +248,7 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
         if (helpers) {
             out << "void " << controllerName << "::index" << "(Context *ctx)" << "\n";
             out << "{" << "\n";
-            out << "    ctx->response()->body() = \"Your Cutelyst Application is working!\";" << "\n";
+            out << "    ctx->response()->body() = ctx->welcomeMessage();" << "\n";
             out << "}" << "\n";
             out << "\n";
             out << "void " << controllerName << "::defaultPage" << "(Context *ctx)" << "\n";

@@ -346,6 +346,11 @@ public:
 
     QVariantHash config() const;
 
+    /**
+     * Returns the Catalyst welcome HTML page.
+     */
+    QByteArray welcomeMessage() const;
+
 Q_SIGNALS:
     void beforePrepareAction(bool *skipMethod);
     void beforeDispatch();
