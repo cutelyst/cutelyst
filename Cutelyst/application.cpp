@@ -197,6 +197,14 @@ bool Application::setup(Engine *engine)
     if (init()) {
         QString appName = QCoreApplication::applicationName();
 
+        QList<QStringList> tablePlugins;
+        Q_FOREACH(Plugin *plugin, d->plugins) {
+            QString className = QString::fromLatin1(plugin->metaObject()->className());
+            tablePlugins.append({ className });
+        }
+        qCDebug(CUTELYST_CORE) << DispatchType::buildTable(tablePlugins, QStringList(),
+                                                           QStringLiteral("Loaded plugins:")).data();
+
         QList<QStringList> table;
         Q_FOREACH(Controller *controller, d->controllers) {
             QString className = QString::fromLatin1(controller->metaObject()->className());

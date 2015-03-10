@@ -72,12 +72,24 @@ QByteArray DispatchType::buildTable(const QList<QStringList> &table, const QStri
 {
     QList<int> columnsSize;
 
-    Q_FOREACH (const QString &header, headers) {
-        columnsSize.append(header.size());
+    if (!headers.isEmpty()) {
+        Q_FOREACH (const QString &header, headers) {
+            columnsSize.append(header.size());
+        }
+    } else {
+        Q_FOREACH (const QStringList &rows, table) {
+            if (columnsSize.isEmpty()) {
+                Q_FOREACH (const QString &row, rows) {
+                    columnsSize.append(row.size());
+                }
+            } else if (rows.size() != columnsSize.size()) {
+                qFatal("Incomplete table");
+            }
+        }
     }
 
     Q_FOREACH (const QStringList &row, table) {
-        if (row.size() > headers.size()) {
+        if (row.size() > columnsSize.size()) {
             qFatal("Incomplete table");
             break;
         }
