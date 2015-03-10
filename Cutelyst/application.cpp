@@ -28,14 +28,14 @@
 #include "response.h"
 #include "response_p.h"
 #include "dispatchtype.h"
+#include "view.h"
 
 #include "Actions/actionrest.h"
 #include "Actions/roleacl.h"
 #include "Actions/renderview.h"
 
-#include <iostream>
-
 #include <QStringList>
+#include <QStringBuilder>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
@@ -50,7 +50,6 @@ Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
 Q_LOGGING_CATEGORY(CUTELYST_CODE, "cutelyst.code")
 
-using namespace std;
 using namespace Cutelyst;
 
 Application::Application(QObject *parent) :
@@ -196,6 +195,30 @@ bool Application::setup(Engine *engine)
     // Call the virtual application init
     // to setup Controllers plugins stuff
     if (init()) {
+        QString appName = QCoreApplication::applicationName();
+
+        QList<QStringList> table;
+        Q_FOREACH(Controller *controller, d->controllers) {
+            QString className = QString::fromLatin1(controller->metaObject()->className());
+            if (!className.startsWith(QLatin1String("Cutelyst"))) {
+                className = appName % QLatin1String("::Controller::") % className;
+            }
+            table.append({ className, QStringLiteral("instance")});
+        }
+
+        Q_FOREACH(View *view, d->views) {
+            QString className = QString::fromLatin1(view->metaObject()->className());
+            if (!className.startsWith(QLatin1String("Cutelyst"))) {
+                className = appName % QLatin1String("::View::") % className;
+            }
+            table.append({ className, QStringLiteral("instance")});
+        }
+
+        qCDebug(CUTELYST_CORE) << DispatchType::buildTable(table, {
+                                                               QStringLiteral("Class"), QStringLiteral("Type")
+                                                           },
+                                                           QStringLiteral("Loaded components:")).data();
+
         Q_FOREACH(Controller *controller, d->controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
