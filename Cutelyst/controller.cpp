@@ -427,14 +427,10 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         QString key = pair.first;
         QString value = pair.second;
         if (key == QLatin1String("Global")) {
-            key = QByteArrayLiteral("Path");
-            value = name;
-            if (!value.startsWith('/')) {
-                value.prepend('/');
-            }
-            value = parsePathAttr(value);
+            key = QStringLiteral("Path");
+            value = parsePathAttr(QLatin1Char('/') % name);
         } else if (key == QLatin1String("Local")) {
-            key = QByteArrayLiteral("Path");
+            key = QStringLiteral("Path");
             value = parsePathAttr(name);
         } else if (key == QLatin1String("Path")) {
             value = parsePathAttr(value);
@@ -479,13 +475,13 @@ QString ControllerPrivate::parsePathAttr(const QString &_value)
 {
     QString value = _value;
     if (value.isNull()) {
-        value = "";
+        value = QStringLiteral("");
     }
 
     if (value.startsWith(QChar('/'))) {
         return value;
     } else if (value.length()) {
-        return pathPrefix + '/' + value;
+        return pathPrefix % QLatin1Char('/') % value;
     }
     return pathPrefix;
 }
