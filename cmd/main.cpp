@@ -302,7 +302,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
             out << "\n";
             out << "private:\n";
             out << "    C_ATTR(End, :RenderView)" << "\n";
-            out << "    void End(Context *ctx) { Q_UNUSED (ctx); }" << "\n";
+            out << "    void End(Context *ctx) { Q_UNUSED(ctx); }" << "\n";
         }
         out << "};" << "\n";
         out << "\n";
