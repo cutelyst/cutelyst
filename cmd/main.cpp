@@ -301,7 +301,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
             out << "    void defaultPage(Context *ctx);" << "\n";
             out << "\n";
             out << "private:\n";
-            out << "    C_ATTR(End, :RenderView)" << "\n";
+            out << "    C_ATTR(End, :ActionClass(\"RenderView\"))" << "\n";
             out << "    void End(Context *ctx) { Q_UNUSED(ctx); }" << "\n";
         }
         out << "};" << "\n";
