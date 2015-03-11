@@ -55,6 +55,8 @@ public:
 
     bool render(Context *ctx);
 
+    virtual bool init(Application *application, const QVariantHash &args);
+
 protected:
     GrantleeViewPrivate *d_ptr;
 };

@@ -26,8 +26,8 @@
 #include "context_p.h"
 
 #include <QUrl>
-#include <QHostInfo>
 #include <QSettings>
+#include <QDir>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -65,7 +65,7 @@ void Engine::finalizeCookies(Context *ctx, void *engineData)
 {
     Response *res = ctx->response();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
-        res->addHeaderValue("Set-Cookie", cookie.toRawForm());
+        res->addHeaderValue(QStringLiteral("Set-Cookie"), cookie.toRawForm());
     }
 }
 
@@ -73,7 +73,7 @@ void Engine::finalizeError(Context *ctx)
 {
     Response *res = ctx->response();
 
-    res->setContentType("text/html; charset=utf-8");
+    res->setContentType(QStringLiteral("text/html; charset=utf-8"));
 
     QByteArray body;
 

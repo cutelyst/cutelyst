@@ -18,6 +18,8 @@
  */
 
 #include "viewengine.h"
+
+#include "application.h"
 #include "context.h"
 #include "response.h"
 #include "request.h"
@@ -34,13 +36,12 @@
 
 using namespace Cutelyst;
 
-ViewEngine::ViewEngine(const QString &engine, QObject *parent) :
-    View(parent),
-    m_interface(0)
+ViewEngine::ViewEngine(const QString &engine, Application *app) : View(app)
+  , m_interface(0)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
     Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
-        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName), app);
         QJsonObject json = pluginLoader.metaData()["MetaData"].toObject();
         if (json["name"].toString() == engine) {
             QObject *plugin = pluginLoader.instance();
@@ -49,7 +50,7 @@ ViewEngine::ViewEngine(const QString &engine, QObject *parent) :
                 if (!m_interface) {
                     qCCritical(CUTELYST_VIEW) << "Could not create an instance of the view engine:" << engine;
                 } else {
-                    m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance());
+                    m_interface = qobject_cast<ViewInterface *>(m_interface->metaObject()->newInstance(Q_ARG(QObject*, app)));
 
                     if (!m_interface) {
                         qCCritical(CUTELYST_VIEW) << "Could not create a NEW instance of the view engine:" << engine;

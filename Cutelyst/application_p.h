@@ -30,6 +30,8 @@ namespace Cutelyst {
 class ApplicationPrivate
 {
 public:
+    void setupHome();
+
     bool init = false;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;

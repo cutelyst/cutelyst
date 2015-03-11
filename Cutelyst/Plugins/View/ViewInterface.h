@@ -29,6 +29,8 @@ public:
     virtual void setCache(bool enable) = 0;
 
     virtual bool render(Cutelyst::Context *ctx) = 0;
+
+    virtual bool init(Application *application, const QVariantHash &args) = 0;
 };
 
 }

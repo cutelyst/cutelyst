@@ -150,7 +150,7 @@ bool EngineHttp::init()
         if (childProcess) {
             // We are not the parent anymore,
             // so we don't need the server class
-            if (app()->postFork()) {
+            if (postForkApplication()) {
                 //                    connect(child, &CutelystChildProcess::newConnection,
                 //                            this, &EngineHttp::onNewClientConnection);
                 //                    delete d->server;

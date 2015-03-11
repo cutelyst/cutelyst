@@ -64,6 +64,30 @@ public:
     explicit Application(QObject *parent = 0);
     virtual ~Application();
 
+    QList<Controller *> controllers() const;
+
+    View *view(const QString &name = QString()) const;
+
+    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+    Dispatcher *dispatcher() const;
+
+    QList<DispatchType *> dispatchers() const;
+
+    /**
+     * User configuration for the application
+     * @return A variant hash with configuration settings
+     */
+    QVariantHash config() const;
+
+    /**
+     * Merges path with config("HOME") and returns a QDir object.
+     */
+    QString pathTo(const QStringList &path) const;
+
+    bool inited() const;
+
+protected:
     /**
      * Do your application initialization here, if your
      * application should not proceed log some information
@@ -126,29 +150,13 @@ public:
      */
     bool registerController(Controller *controller);
 
-    QList<Controller *> controllers() const;
-
     bool registerView(View *view, const QString &name = QString());
-
-    View *view(const QString &name = QString()) const;
 
     /**
      * Registers a custom DispatchType, if none is registered
      * all the built-in dispatchers types will be registered
      */
     void registerDispatcher(DispatchType *dispatcher);
-
-    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
-
-    Dispatcher *dispatcher() const;
-
-    QList<DispatchType *> dispatchers() const;
-
-    /**
-     * User configuration for the application
-     * @return A variant hash with configuration settings
-     */
-    QVariantHash config() const;
 
 Q_SIGNALS:
     /**

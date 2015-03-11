@@ -34,6 +34,7 @@
 #include "Actions/roleacl.h"
 #include "Actions/renderview.h"
 
+#include <QDir>
 #include <QStringList>
 #include <QStringBuilder>
 
@@ -176,6 +177,18 @@ QVariantHash Application::config() const
     return d->config;
 }
 
+QString Cutelyst::Application::pathTo(const QStringList &path) const
+{
+    QDir home = config(QStringLiteral("home")).toString();
+    return home.absoluteFilePath(path.join(QChar('/')));
+}
+
+bool Cutelyst::Application::inited() const
+{
+    Q_D(const Application);
+    return d->init;
+}
+
 void Application::setConfig(const QString &key, const QVariant &value)
 {
     Q_D(Application);
@@ -190,7 +203,9 @@ bool Application::setup(Engine *engine)
         return true;
     }
 
-    d->config = engine->config(QCoreApplication::applicationName());
+    d->config = engine->config(QStringLiteral("CUTELYST"));
+
+    d->setupHome();
 
     // Call the virtual application init
     // to setup Controllers plugins stuff
@@ -297,4 +312,18 @@ bool Application::enginePostFork()
         }
     }
     return true;
+}
+
+
+void Cutelyst::ApplicationPrivate::setupHome()
+{
+    // Hook the current directory in config if "home" is not set
+    if (!config.contains("home")) {
+        config.insert("home", QDir::currentPath());
+    }
+
+    if (!config.contains("root")) {
+        QDir home = config.value("home").toString();
+        config.insert("root", home.absoluteFilePath("root"));
+    }
 }

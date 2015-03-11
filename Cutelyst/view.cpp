@@ -19,10 +19,11 @@
 
 #include "view.h"
 
+#include <Application>
+
 using namespace Cutelyst;
 
-View::View(QObject *parent) :
-    Code(parent)
+View::View(Application *app) : Code(app)
 {
 }
 

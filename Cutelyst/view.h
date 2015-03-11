@@ -31,7 +31,7 @@ class View : public Code
 {
     Q_OBJECT
 public:
-    explicit View(QObject *parent = 0);
+    View(Application *app);
     virtual ~View();
 
     /**

@@ -19,6 +19,7 @@
 
 #include "grantleeview_p.h"
 
+#include "application.h"
 #include "context.h"
 #include "action.h"
 #include "response.h"
@@ -43,8 +44,14 @@ GrantleeView::GrantleeView(QObject *parent) :
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
 
-    // make sure templates can be found on the current directory
-    setIncludePath(QDir::currentPath());
+    Application *app = qobject_cast<Application *>(parent);
+    if (app) {
+        // make sure templates can be found on the current directory
+        setIncludePath(app->config("root").toString());
+    } else {
+        // make sure templates can be found on the current directory
+        setIncludePath(QDir::currentPath());
+    }
 }
 
 GrantleeView::~GrantleeView()
@@ -169,4 +176,9 @@ bool GrantleeView::render(Context *ctx)
     }
 
     return tmpl->error() == Grantlee::NoError;
+}
+
+bool Cutelyst::GrantleeView::init(Cutelyst::Application *application, const QVariantHash &args)
+{
+
 }
