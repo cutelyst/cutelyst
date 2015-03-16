@@ -386,6 +386,9 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "# to always look for includes there:" << "\n";
         out << "set(CMAKE_INCLUDE_CURRENT_DIR ON)" << "\n";
         out << "\n";
+        out << "# Enable C++11 features" << "\n";
+        out << "add_definitions(-std=c++11)" << "\n";
+        out << "\n";
         out << "include_directories(" << "\n";
         out << "    ${CMAKE_SOURCE_DIR}" << "\n";
         out << "    ${CMAKE_CURRENT_BINARY_DIR}" << "\n";
