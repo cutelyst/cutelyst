@@ -86,7 +86,7 @@ public:
 
     static char *defaultRealm;
 
-    explicit Authentication(QObject *parent = 0);
+    Authentication(Application *parent);
     ~Authentication();
 
     bool setup(Context *ctx);

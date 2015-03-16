@@ -11,7 +11,7 @@ class StaticSimple : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticSimple)
 public:
-    explicit StaticSimple(QObject *parent = 0);
+    StaticSimple(Application *parent);
     virtual ~StaticSimple();
 
     void setIncludePaths(const QStringList &paths);

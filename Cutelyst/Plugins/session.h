@@ -31,7 +31,7 @@ class Session : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(Session)
 public:
-    explicit Session(QObject *parent = 0);
+    Session(Application *parent);
     virtual ~Session();
 
     bool setup(Context *ctx);

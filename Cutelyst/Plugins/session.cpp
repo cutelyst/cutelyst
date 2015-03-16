@@ -34,9 +34,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
-Session::Session(QObject *parent) :
-    Plugin(parent),
-    d_ptr(new SessionPrivate)
+Session::Session(Application *parent) : Plugin(parent)
+  , d_ptr(new SessionPrivate)
 {
 }
 

@@ -33,9 +33,8 @@ Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 
-Authentication::Authentication(QObject *parent) :
-    Plugin(parent),
-    d_ptr(new AuthenticationPrivate)
+Authentication::Authentication(Application *parent) : Plugin(parent)
+  , d_ptr(new AuthenticationPrivate)
 {
     qRegisterMetaType<User>();
     qRegisterMetaTypeStreamOperators<User>();

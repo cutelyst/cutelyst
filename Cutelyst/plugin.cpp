@@ -19,12 +19,12 @@
 
 #include "plugin.h"
 
+#include "application.h"
 #include "context.h"
 
 using namespace Cutelyst;
 
-Plugin::Plugin(QObject *parent) :
-    QObject(parent)
+Plugin::Plugin(Application *parent) : QObject(parent)
 {
 }
 

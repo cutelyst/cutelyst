@@ -167,7 +167,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "{" << "\n";
         out << "    registerController(new Root);" << "\n";
         out << "\n";
-        out << "    registerPlugin(new StaticSimple);" << "\n";
+        out << "    registerPlugin(new StaticSimple(this));" << "\n";
         out << "\n";
         out << "    return true;" << "\n";
         out << "}" << "\n";
@@ -334,7 +334,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        out << "file(GLOB_RECURSE " << appName << "_SRCS *)" << "\n";
+        out << "file(GLOB_RECURSE " << appName << "_SRCS *.cpp *.h)" << "\n";
         out << "\n";
         out << "set(" << appName << "_SRCS" << "\n";
         out << "    ${" << appName << "_SRCS}" << "\n";
@@ -395,7 +395,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "    ${CutelystQt5_INCLUDE_DIR}" << "\n";
         out << ")" << "\n";
         out << "\n";
-        out << "file(GLOB_RECURSE TEMPLATES_SRC root)" << "\n";
+        out << "file(GLOB_RECURSE TEMPLATES_SRC root/*)" << "\n";
         out << "\n";
         out << "add_subdirectory(src)" << "\n";
 

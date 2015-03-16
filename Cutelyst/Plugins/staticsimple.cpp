@@ -16,12 +16,11 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple")
 
-StaticSimple::StaticSimple(QObject *parent) :
-    Plugin(parent),
-    d_ptr(new StaticSimplePrivate)
+StaticSimple::StaticSimple(Application *parent) : Plugin(parent)
+  , d_ptr(new StaticSimplePrivate)
 {
     Q_D(StaticSimple);
-    d->includePaths.append(QDir::currentPath());
+    d->includePaths.append(parent->config("root").toString());
 }
 
 StaticSimple::~StaticSimple()
