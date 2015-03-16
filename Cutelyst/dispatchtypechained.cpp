@@ -87,9 +87,9 @@ QByteArray DispatchTypeChained::list() const
         if (parent != QLatin1String("/")) {
             QStringList row;
             if (parents.isEmpty()) {
-                row.append(QLatin1Char('/') % endPoint->name());
+                row.append(QLatin1Char('/') % endPoint->reverse());
             } else {
-                row.append(QLatin1Char('/') % parents.first()->name());
+                row.append(QLatin1Char('/') % parents.first()->reverse());
             }
             row.append(parent);
             unattachedTable.append(row);
@@ -98,7 +98,7 @@ QByteArray DispatchTypeChained::list() const
 
         QList<QStringList> rows;
         Q_FOREACH (Action *p, parents) {
-            QString name = QLatin1Char('/') % p->name();
+            QString name = QLatin1Char('/') % p->reverse();
 
             QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
             if (!extra.isEmpty()) {
@@ -243,7 +243,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->childrenOf[chainedTo][part].prepend(action);
 
-    d->actions[QLatin1Char('/') % action->name()] = action;
+    d->actions[QLatin1Char('/') % action->reverse()] = action;
 
     d->checkArgsAttr(action, QStringLiteral("Args"));
     d->checkArgsAttr(action, QStringLiteral("CaptureArgs"));
