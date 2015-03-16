@@ -180,7 +180,7 @@ QVariantHash Application::config() const
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
     QDir home = config(QStringLiteral("home")).toString();
-    return home.absoluteFilePath(path.join(QChar('/')));
+    return home.absoluteFilePath(path.join(QDir::separator()));
 }
 
 bool Cutelyst::Application::inited() const
