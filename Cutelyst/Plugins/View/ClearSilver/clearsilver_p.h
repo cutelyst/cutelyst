@@ -36,7 +36,7 @@ public:
     bool render(Context *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output);
     void renderError(Context *ctx, const QString &error) const;
 
-    QString includePath;
+    QStringList includePaths;
     QString extension;
     QString wrapper;
 };

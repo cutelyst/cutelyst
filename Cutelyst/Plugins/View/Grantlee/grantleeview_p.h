@@ -31,7 +31,7 @@ namespace Cutelyst {
 class GrantleeViewPrivate
 {
 public:
-    QString includePath;
+    QStringList includePaths;
     QString extension = QStringLiteral(".html");
     QString wrapper;
     Grantlee::Engine *engine;

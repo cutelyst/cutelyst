@@ -74,16 +74,16 @@ ViewEngine::~ViewEngine()
 {
 }
 
-QString ViewEngine::includePath() const
+QStringList ViewEngine::includePaths() const
 {
     Q_ASSERT(m_interface);
-    return m_interface->includePath();
+    return m_interface->includePaths();
 }
 
-void ViewEngine::setIncludePath(const QString &path)
+void ViewEngine::setIncludePaths(const QStringList &paths)
 {
     Q_ASSERT(m_interface);
-    m_interface->setIncludePath(path);
+    m_interface->setIncludePaths(paths);
 }
 
 QString ViewEngine::templateExtension() const

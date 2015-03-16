@@ -37,9 +37,9 @@ public:
     Q_INVOKABLE explicit GrantleeView(QObject *parent = 0);
     ~GrantleeView();
 
-    Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)
-    QString includePath() const;
-    void setIncludePath(const QString &path);
+    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    QStringList includePaths() const;
+    void setIncludePaths(const QStringList &paths);
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
     QString templateExtension() const;
@@ -54,8 +54,6 @@ public:
     void setCache(bool enable);
 
     bool render(Context *ctx);
-
-    virtual bool init(Application *application, const QVariantHash &args);
 
 protected:
     GrantleeViewPrivate *d_ptr;

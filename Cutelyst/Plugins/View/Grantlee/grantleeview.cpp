@@ -47,10 +47,10 @@ GrantleeView::GrantleeView(QObject *parent) :
     Application *app = qobject_cast<Application *>(parent);
     if (app) {
         // make sure templates can be found on the current directory
-        setIncludePath(app->config("root").toString());
+        setIncludePaths({ app->config("root").toString() });
     } else {
         // make sure templates can be found on the current directory
-        setIncludePath(QDir::currentPath());
+        setIncludePaths({ QDir::currentPath() });
     }
 }
 
@@ -59,17 +59,17 @@ GrantleeView::~GrantleeView()
     delete d_ptr;
 }
 
-QString GrantleeView::includePath() const
+QStringList GrantleeView::includePaths() const
 {
     Q_D(const GrantleeView);
-    return d->includePath;
+    return d->includePaths;
 }
 
-void GrantleeView::setIncludePath(const QString &path)
+void GrantleeView::setIncludePaths(const QStringList &paths)
 {
     Q_D(GrantleeView);
-    d->loader->setTemplateDirs(QStringList() << path);
-    d->includePath = path;
+    d->loader->setTemplateDirs(paths);
+    d->includePaths = paths;
 }
 
 QString GrantleeView::templateExtension() const
@@ -115,18 +115,20 @@ void GrantleeView::setCache(bool enable)
         d->engine->addTemplateLoader(d->loader);
     }
 
-    QDirIterator it(d->includePath,
-                    QDir::Files | QDir::NoDotAndDotDot,
-                    QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString path = it.next();
-        path.remove(d->includePath);
-        if (path.startsWith(QLatin1Char('/'))) {
-            path.remove(0, 1);
-        }
+    Q_FOREACH (const QString &includePath, d->includePaths) {
+        QDirIterator it(includePath,
+                        QDir::Files | QDir::NoDotAndDotDot,
+                        QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString path = it.next();
+            path.remove(includePath);
+            if (path.startsWith(QLatin1Char('/'))) {
+                path.remove(0, 1);
+            }
 
-        if (d->cache->canLoadTemplate(path)) {
-            d->cache->loadByName(path, d->engine);
+            if (d->cache->canLoadTemplate(path)) {
+                d->cache->loadByName(path, d->engine);
+            }
         }
     }
 }
@@ -176,9 +178,4 @@ bool GrantleeView::render(Context *ctx)
     }
 
     return tmpl->error() == Grantlee::NoError;
-}
-
-bool Cutelyst::GrantleeView::init(Cutelyst::Application *application, const QVariantHash &args)
-{
-
 }

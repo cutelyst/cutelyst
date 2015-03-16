@@ -35,8 +35,8 @@ public:
     ViewEngine(const QString &engine, Application *app);
     virtual ~ViewEngine();
 
-    QString includePath() const;
-    void setIncludePath(const QString &path);
+    QStringList includePaths() const;
+    void setIncludePaths(const QStringList &paths);
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
     QString templateExtension() const;

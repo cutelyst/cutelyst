@@ -12,9 +12,9 @@ class ViewInterface : public QObject
 public:
     explicit ViewInterface(QObject *parent = 0) : QObject(parent) {}
 
-    Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)
-    virtual QString includePath() const = 0;
-    virtual void setIncludePath(const QString &path) = 0;
+    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    virtual QStringList includePaths() const = 0;
+    virtual void setIncludePaths(const QStringList &paths) = 0;
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
     virtual QString templateExtension() const = 0;
@@ -29,8 +29,6 @@ public:
     virtual void setCache(bool enable) = 0;
 
     virtual bool render(Cutelyst::Context *ctx) = 0;
-
-    virtual bool init(Application *application, const QVariantHash &args) = 0;
 };
 
 }

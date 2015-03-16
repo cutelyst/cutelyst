@@ -37,9 +37,9 @@ public:
     Q_INVOKABLE explicit ClearSilver(QObject *parent = 0);
     ~ClearSilver();
 
-    Q_PROPERTY(QString includePath READ includePath WRITE setIncludePath)
-    QString includePath() const;
-    void setIncludePath(const QString &path);
+    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    QStringList includePaths() const;
+    void setIncludePaths(const QStringList &paths);
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
     QString templateExtension() const;

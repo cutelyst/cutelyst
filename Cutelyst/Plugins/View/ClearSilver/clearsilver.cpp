@@ -43,16 +43,16 @@ ClearSilver::~ClearSilver()
     delete d_ptr;
 }
 
-QString ClearSilver::includePath() const
+QStringList ClearSilver::includePaths() const
 {
     Q_D(const ClearSilver);
-    return d->includePath;
+    return d->includePaths;
 }
 
-void ClearSilver::setIncludePath(const QString &path)
+void ClearSilver::setIncludePaths(const QStringList &paths)
 {
     Q_D(ClearSilver);
-    d->includePath = path;
+    d->includePaths = paths;
 }
 
 QString ClearSilver::templateExtension() const
@@ -134,21 +134,23 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
         return nerr_raise(NERR_NOMEM, "Cound not cast ClearSilverPrivate");
     }
 
-    QFile file(priv->includePath % QLatin1Char('/') % filename);
+    Q_FOREACH (const QString &includePath, priv->includePaths) {
+        QFile file(includePath % QLatin1Char('/') % filename);
 
-    if (!file.exists()) {
-        qCWarning(CUTELYST_CLEARSILVER) << "Cound not find file:" << file.fileName();
-        return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", file.fileName().toLocal8Bit().data());
+        if (file.exists()) {
+            if (!file.open(QFile::ReadOnly)) {
+                qCWarning(CUTELYST_CLEARSILVER) << "Cound not open file:" << file.errorString();
+                return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
+            }
+
+            *contents = qstrdup(file.readAll().data());
+            qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();;
+            return 0;
+        }
     }
 
-    if (!file.open(QFile::ReadOnly)) {
-        qCWarning(CUTELYST_CLEARSILVER) << "Cound not open file:" << file.errorString();
-        return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
-    }
-
-    *contents = qstrdup(file.readAll().data());
-    qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();;
-    return 0;
+    qCWarning(CUTELYST_CLEARSILVER) << "Cound not find file:" << filename;
+    return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", filename);
 }
 
 bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output)
