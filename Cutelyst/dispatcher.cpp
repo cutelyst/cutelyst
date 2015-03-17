@@ -37,7 +37,7 @@ using namespace Cutelyst;
 
 Dispatcher::Dispatcher(QObject *parent) :
     QObject(parent),
-    d_ptr(new DispatcherPrivate)
+    d_ptr(new DispatcherPrivate(this))
 {
     registerDispatchType(new DispatchTypePath(this));
     registerDispatchType(new DispatchTypeChained(this));
@@ -149,7 +149,9 @@ bool Dispatcher::forward(Context *ctx, Action *action, const QStringList &argume
 
 bool Dispatcher::forward(Context *ctx, const QString &opname, const QStringList &arguments)
 {
-    Action *action = command2Action(ctx, opname);
+    Q_D(const Dispatcher);
+
+    Action *action = d->command2Action(ctx, opname);
     if (action) {
         return action->dispatch(ctx);
     }
@@ -327,61 +329,6 @@ QByteArray Dispatcher::printActions()
     return buffer;
 }
 
-Action *Dispatcher::command2Action(Context *ctx, const QString &command, const QStringList &extraParams)
-{
-    Q_D(Dispatcher);
-
-    Action *ret = d->actionHash.value(command);
-    if (!ret) {
-        ret = invokeAsPath(ctx, command, ctx->request()->args());
-    }
-
-    return ret;
-}
-
-QString Dispatcher::actionRel2Abs(Context *ctx, const QString &path)
-{
-    QString ret = path;
-    if (!ret.startsWith(QLatin1Char('/'))) {
-        ret.prepend(qobject_cast<Action *>(ctx->stack().last())->ns());
-    }
-
-    if (ret.startsWith(QLatin1Char('/'))) {
-        ret.remove(0, 1);
-    }
-
-    return ret;
-}
-
-Action *Dispatcher::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args)
-{
-    Action *ret;
-    QString path = actionRel2Abs(ctx, relativePath);
-
-    int pos = path.lastIndexOf('/');
-    int lastPos = path.size();
-    do {
-        if (pos == -1) {
-            ret = getAction(path, QString());
-            if (ret) {
-                return ret;
-            }
-        } else {
-            QString name = path.mid(pos + 1, lastPos);
-            path = path.mid(0, pos);
-            ret = getAction(name, path);
-            if (ret) {
-                return ret;
-            }
-        }
-
-        lastPos = pos;
-        pos = path.indexOf('/', pos - 1);
-    } while (pos != -1);
-
-    return 0;
-}
-
 QString Dispatcher::cleanNamespace(const QString &ns) const
 {
     QString ret = ns;
@@ -406,6 +353,10 @@ QString Dispatcher::cleanNamespace(const QString &ns) const
     return ret;
 }
 
+DispatcherPrivate::DispatcherPrivate(Dispatcher *q) : q_ptr(q)
+{
+}
+
 ActionList DispatcherPrivate::getContainers(const QString &ns) const
 {
     ActionList ret;
@@ -422,5 +373,62 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 //    qDebug() << containerHash.size() << rootActions;
     ret.append(rootActions);
 
+    return ret;
+}
+
+Action *DispatcherPrivate::command2Action(Context *ctx, const QString &command, const QStringList &extraParams) const
+{
+    Action *ret = actionHash.value(command);
+    if (!ret) {
+        ret = invokeAsPath(ctx, command, ctx->request()->args());
+    }
+
+    return ret;
+}
+
+Action *DispatcherPrivate::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args) const
+{
+    Q_Q(const Dispatcher);
+
+    Action *ret;
+    QString path = DispatcherPrivate::actionRel2Abs(ctx, relativePath);
+
+    int pos = path.lastIndexOf('/');
+    int lastPos = path.size();
+    do {
+        if (pos == -1) {
+            ret = q->getAction(path, QString());
+            if (ret) {
+                return ret;
+            }
+        } else {
+            QString name = path.mid(pos + 1, lastPos);
+            path = path.mid(0, pos);
+            ret = q->getAction(name, path);
+            if (ret) {
+                return ret;
+            }
+        }
+
+        lastPos = pos;
+        pos = path.indexOf('/', pos - 1);
+    } while (pos != -1);
+
+    return 0;
+}
+
+QString DispatcherPrivate::actionRel2Abs(Context *ctx, const QString &path)
+{
+    QString ret;
+    if (!path.startsWith(QLatin1Char('/'))) {
+        const QString &ns = qobject_cast<Action *>(ctx->stack().last())->ns();
+        ret = ns % QLatin1Char('/') % path;
+    } else {
+        ret = path;
+    }
+
+    if (ret.startsWith(QLatin1Char('/'))) {
+        ret.remove(0, 1);
+    }
     return ret;
 }

@@ -26,9 +26,16 @@ namespace Cutelyst {
 
 class DispatcherPrivate
 {
+    Q_DECLARE_PUBLIC(Dispatcher)
 public:
-    ActionList getContainers(const QString &ns) const;
+    DispatcherPrivate(Dispatcher *q);
 
+    ActionList getContainers(const QString &ns) const;
+    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList()) const;
+    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args) const;
+    static QString actionRel2Abs(Context *ctx, const QString &path);
+
+    Dispatcher *q_ptr;
     bool showInternalActions = false;
     QHash<QString, Action*> actionHash;
     QHash<QString, ActionList> containerHash;

@@ -94,9 +94,6 @@ protected:
 
 private:
     QByteArray printActions();
-    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList());
-    QString actionRel2Abs(Context *ctx, const QString &path);
-    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args);
     inline QString cleanNamespace(const QString &ns) const;
 
 protected:
