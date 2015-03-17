@@ -216,9 +216,23 @@ public:
     ParamsMultiMap parameters() const;
 
     /**
+     * Returns the value specified by key, it's equivalent to calling
+     * parameters().value().
+     */
+    inline QString param(const QString &key, const QString &defaultValue = QString()) const
+    { return parameters().value(key, defaultValue); }
+
+    /**
+     * Returns the values specified by key, it's equivalent to calling
+     * parameters().values().
+     */
+    inline QStringList params(const QString &key) const
+    { return parameters().values(key); }
+
+    /**
      * Short for parameters()
      */
-    inline ParamsMultiMap param() const { return parameters(); }
+    inline ParamsMultiMap params() const { return parameters(); }
 
     /**
      * @return the Content-Encoding header
