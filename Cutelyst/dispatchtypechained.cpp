@@ -129,7 +129,7 @@ QByteArray DispatchTypeChained::list() const
         if (!extra.isEmpty()) {
             line.append(extra % QLatin1Char(' '));
         }
-        line.append(QLatin1Char('/') % endPoint->name());
+        line.append(QLatin1Char('/') % endPoint->reverse());
         if (!consumes.isEmpty()) {
             line.append(QLatin1String(" :") % consumes);
         }
