@@ -26,8 +26,10 @@ namespace Cutelyst {
 
 class StoreMinimal : public AuthenticationStore
 {
+    Q_OBJECT
 public:
-    StoreMinimal();
+    explicit StoreMinimal(QObject *parent = 0);
+    virtual ~StoreMinimal();
 
     void addUser(const AuthenticationUser &user);
 

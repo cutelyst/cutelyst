@@ -21,7 +21,12 @@
 
 using namespace Cutelyst;
 
-StoreMinimal::StoreMinimal()
+StoreMinimal::StoreMinimal(QObject *parent) : AuthenticationStore(parent)
+{
+
+}
+
+StoreMinimal::~StoreMinimal()
 {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,8 +26,11 @@
 
 namespace Cutelyst {
 
+class CredentialHttpPrivate;
 class CredentialHttp : public AuthenticationCredential
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(CredentialHttp)
 public:
     enum PasswordType {
         None,
@@ -41,7 +44,8 @@ public:
         Digest,
         Basic
     };
-    explicit CredentialHttp();
+    explicit CredentialHttp(QObject *parent = 0);
+    virtual ~CredentialHttp();
 
     /**
      * Can be either any (the default), basic or digest.
@@ -83,30 +87,11 @@ public:
      */
     void setRequireSsl(bool require);
 
-    AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+    virtual AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
 
-private:
-    AuthenticationUser authenticateDigest(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticateBasic(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticationFailed(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+protected:
+    CredentialHttpPrivate *d_ptr;
 
-    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
-    bool isAuthTypeDigest() const;
-    bool isAuthTypeBasic() const;
-
-    QStringList buildAuthHeaderCommon() const;
-    QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
-    void createBasicAuthResponse(Context *ctx);
-
-    AuthType m_type = AuthType::Any;
-    QString m_usernameField = QStringLiteral("username");
-    QString m_passwordField = QStringLiteral("password");
-    PasswordType m_passwordType = PasswordType::None;
-    QCryptographicHash::Algorithm m_hashType = QCryptographicHash::Md5;
-    QString m_passwordPreSalt;
-    QString m_passwordPostSalt;
-    QString m_authorizationRequiredMessage;
-    bool m_requireSsl = false;
 };
 
 }

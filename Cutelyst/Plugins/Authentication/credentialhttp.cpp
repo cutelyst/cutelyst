@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,7 +17,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "credentialhttp.h"
+#include "credentialhttp_p.h"
 
 #include "../authenticationrealm.h"
 
@@ -32,117 +32,167 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp")
 
-CredentialHttp::CredentialHttp()
+CredentialHttp::CredentialHttp(QObject *parent) : AuthenticationCredential(parent)
+  , d_ptr(new CredentialHttpPrivate)
 {
+}
+
+CredentialHttp::~CredentialHttp()
+{
+    delete d_ptr;
 }
 
 void CredentialHttp::setType(CredentialHttp::AuthType type)
 {
-    m_type = type;
+    Q_D(CredentialHttp);
+    d->type = type;
 }
 
 void CredentialHttp::setAuthorizationRequiredMessage(const QString &message)
 {
-    m_authorizationRequiredMessage = message;
+    Q_D(CredentialHttp);
+    d->authorizationRequiredMessage = message;
 }
 
 QString CredentialHttp::passwordField() const
 {
-    return m_passwordField;
+    Q_D(const CredentialHttp);
+    return d->passwordField;
 }
 
 void CredentialHttp::setPasswordField(const QString &fieldName)
 {
-    m_passwordField = fieldName;
+    Q_D(CredentialHttp);
+    d->passwordField = fieldName;
 }
 
 CredentialHttp::PasswordType CredentialHttp::passwordType() const
 {
-    return m_passwordType;
+    Q_D(const CredentialHttp);
+    return d->passwordType;
 }
 
 void CredentialHttp::setPasswordType(CredentialHttp::PasswordType type)
 {
-    m_passwordType = type;
+    Q_D(CredentialHttp);
+    d->passwordType = type;
 }
 
 QCryptographicHash::Algorithm CredentialHttp::hashType() const
 {
-    return m_hashType;
+    Q_D(const CredentialHttp);
+    return d->hashType;
 }
 
 void CredentialHttp::setHashType(QCryptographicHash::Algorithm type)
 {
-    m_hashType = type;
+    Q_D(CredentialHttp);
+    d->hashType = type;
 }
 
 QString CredentialHttp::passwordPreSalt() const
 {
-    return m_passwordPreSalt;
+    Q_D(const CredentialHttp);
+    return d->passwordPreSalt;
 }
 
 void CredentialHttp::setPasswordPreSalt(const QString &passwordPreSalt)
 {
-    m_passwordPreSalt = passwordPreSalt;
+    Q_D(CredentialHttp);
+    d->passwordPreSalt = passwordPreSalt;
 }
 
 QString CredentialHttp::passwordPostSalt() const
 {
-    return m_passwordPostSalt;
+    Q_D(const CredentialHttp);
+    return d->passwordPostSalt;
 }
 
 void CredentialHttp::setPasswordPostSalt(const QString &passwordPostSalt)
 {
-    m_passwordPostSalt = passwordPostSalt;
+    Q_D(CredentialHttp);
+    d->passwordPostSalt = passwordPostSalt;
 }
 
 QString CredentialHttp::usernameField() const
 {
-    return m_usernameField;
+    Q_D(const CredentialHttp);
+    return d->usernameField;
 }
 
 void CredentialHttp::setUsernameField(const QString &fieldName)
 {
-    m_usernameField = fieldName;
+    Q_D(CredentialHttp);
+    d->usernameField = fieldName;
 }
 
 void CredentialHttp::setRequireSsl(bool require)
 {
-    m_requireSsl = require;
+    Q_D(CredentialHttp);
+    d->requireSsl = require;
 }
 
 AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
+    Q_D(CredentialHttp);
+
     AuthenticationUser ret;
-    if (m_requireSsl && !ctx->request()->secure()) {
-        return authenticationFailed(ctx, realm, authinfo);
+    if (d->requireSsl && !ctx->request()->secure()) {
+        return d->authenticationFailed(ctx, realm, authinfo);
     }
 
-    if (isAuthTypeDigest()) {
-        ret = authenticateDigest(ctx, realm, authinfo);
+    if (d->isAuthTypeDigest()) {
+        ret = d->authenticateDigest(ctx, realm, authinfo);
         if (!ret.isNull()) {
             return ret;
         }
     }
 
-    if (isAuthTypeBasic()) {
-        ret = authenticateBasic(ctx, realm, authinfo);
+    if (d->isAuthTypeBasic()) {
+        ret = d->authenticateBasic(ctx, realm, authinfo);
         if (!ret.isNull()) {
             return ret;
         }
     }
 
-    return authenticationFailed(ctx, realm, authinfo);
+    return d->authenticationFailed(ctx, realm, authinfo);
 }
 
-AuthenticationUser CredentialHttp::authenticateDigest(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
+{
+    const QString &password = authinfo.value(passwordField);
+    const QString &storedPassword = user.value(passwordField);
+
+    if (passwordType == CredentialHttp::None) {
+        qCDebug(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
+        return true;
+    } else if (passwordType == CredentialHttp::Clear) {
+        return storedPassword == password;
+    } else if (passwordType == CredentialHttp::Hashed) {
+        QCryptographicHash hash(hashType);
+        hash.addData(passwordPreSalt.toUtf8());
+        hash.addData(password.toUtf8());
+        hash.addData(passwordPostSalt.toUtf8());
+        QByteArray result =  hash.result();
+
+        return storedPassword == result ||
+                storedPassword == result.toHex() ||
+                storedPassword == result.toBase64();
+    } else if (passwordType == CredentialHttp::SelfCheck) {
+        return user.checkPassword(password);
+    }
+
+    return false;
+}
+
+AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     qCDebug(C_CREDENTIALHTTP) << "Checking http digest authentication.";
 
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
@@ -153,10 +203,10 @@ AuthenticationUser CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, Aut
     }
 
     CStringHash auth;
-    auth.insert(m_usernameField, userPass.first);
+    auth.insert(usernameField, userPass.first);
     AuthenticationUser user = realm->findUser(ctx, auth);
     if (!user.isNull()) {
-        auth.insert(m_passwordField, userPass.second);
+        auth.insert(passwordField, userPass.second);
         if (checkPassword(user, auth)) {
             return user;
         }
@@ -167,16 +217,16 @@ AuthenticationUser CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, Aut
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttp::authenticationFailed(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Response *res = ctx->response();
     res->setStatus(Response::Unauthorized); // 401
-    res->setContentType(QByteArrayLiteral("text/plain; charset=UTF-8"));
+    res->setContentType(QStringLiteral("text/plain; charset=UTF-8"));
 
-    if (m_authorizationRequiredMessage.isNull()) {
+    if (authorizationRequiredMessage.isNull()) {
         res->body() = QByteArrayLiteral("Authorization required.");
     } else {
-        res->body() = m_authorizationRequiredMessage.toUtf8();
+        res->body() = authorizationRequiredMessage.toUtf8();
     }
 
     // Create Digest response
@@ -192,44 +242,24 @@ AuthenticationUser CredentialHttp::authenticationFailed(Cutelyst::Context *ctx, 
     return AuthenticationUser();
 }
 
-bool CredentialHttp::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
+bool CredentialHttpPrivate::isAuthTypeDigest() const
 {
-    QString password = authinfo.value(m_passwordField);
-    QString storedPassword = user.value(m_passwordField);
+    return type == CredentialHttp::Digest || type == CredentialHttp::Any;
 
-    if (m_passwordType == None) {
-        qCDebug(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
-        return true;
-    } else if (m_passwordType == Clear) {
-        return storedPassword == password;
-    } else if (m_passwordType == Hashed) {
-        QCryptographicHash hash(m_hashType);
-        hash.addData(m_passwordPreSalt.toUtf8());
-        hash.addData(password.toUtf8());
-        hash.addData(m_passwordPostSalt.toUtf8());
-        QByteArray result =  hash.result();
-
-        return storedPassword == result ||
-                storedPassword == result.toHex() ||
-                storedPassword == result.toBase64();
-    } else if (m_passwordType == SelfCheck) {
-        return user.checkPassword(password);
-    }
-
-    return false;
 }
 
-bool CredentialHttp::isAuthTypeDigest() const
+bool CredentialHttpPrivate::isAuthTypeBasic() const
 {
-    return m_type == AuthType::Digest || m_type == AuthType::Any;
+    return type == CredentialHttp::Basic || type == CredentialHttp::Any;
 }
 
-bool CredentialHttp::isAuthTypeBasic() const
+void CredentialHttpPrivate::createBasicAuthResponse(Context *ctx)
 {
-    return m_type == AuthType::Basic || m_type == AuthType::Any;
+    ctx->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
+                                                                 buildAuthHeaderCommon()).toLatin1());
 }
 
-QStringList CredentialHttp::buildAuthHeaderCommon() const
+QStringList CredentialHttpPrivate::buildAuthHeaderCommon() const
 {
     // TODO
     // return realm="realmname"
@@ -237,17 +267,11 @@ QStringList CredentialHttp::buildAuthHeaderCommon() const
     return QStringList();
 }
 
-QString CredentialHttp::joinAuthHeaderParts(const QString &type, const QStringList &parts) const
+QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QStringList &parts) const
 {
     if (parts.isEmpty()) {
         return type;
     } else {
         return type % QLatin1Char(' ') % parts.join(QStringLiteral(", "));
     }
-}
-
-void CredentialHttp::createBasicAuthResponse(Cutelyst::Context *ctx)
-{
-    ctx->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
-                                                                 buildAuthHeaderCommon()).toLatin1());
 }

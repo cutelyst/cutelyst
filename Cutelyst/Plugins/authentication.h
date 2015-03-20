@@ -32,6 +32,9 @@ class AuthenticationCredential : public QObject
 {
     Q_OBJECT
 public:
+    explicit AuthenticationCredential(QObject *parent = 0);
+    virtual ~AuthenticationCredential();
+
     virtual AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo) = 0;
 };
 
@@ -39,6 +42,7 @@ class AuthenticationPrivate;
 class Authentication : public Plugin
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(Authentication)
 public:
     static char *defaultRealm;
 
@@ -49,7 +53,6 @@ public:
 
     AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
-    AuthenticationUser authenticate(Context *c, const QString &username, const QString &password, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser user(Context *c);
@@ -65,10 +68,6 @@ protected:
     AuthenticationRealm* findRealmForPersistedUser(Context *c);
 
     AuthenticationPrivate *d_ptr;
-
-private:
-    friend class Credential;
-    Q_DECLARE_PRIVATE(Authentication)
 };
 
 }

@@ -26,8 +26,9 @@ namespace Cutelyst {
 
 class StoreHtpasswd : public AuthenticationStore
 {
+    Q_OBJECT
 public:
-    StoreHtpasswd(const QString &file);
+    explicit StoreHtpasswd(const QString &file, QObject *parent = 0);
     virtual ~StoreHtpasswd();
 
     void addUser(const CStringHash &user);

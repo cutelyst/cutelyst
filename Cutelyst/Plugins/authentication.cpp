@@ -59,15 +59,6 @@ AuthenticationRealm *Authentication::realm(const QString &name) const
     return d->realms.value(name);
 }
 
-AuthenticationUser Authentication::authenticate(Cutelyst::Context *c, const QString &username, const QString &password, const QString &realm)
-{
-    return authenticate(c, {
-                            {QStringLiteral("username"), username},
-                            {QStringLiteral("password"), password}
-                        },
-                        realm);
-}
-
 AuthenticationUser Authentication::authenticate(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)
 {
     Q_D(Authentication);
@@ -235,3 +226,14 @@ AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) cons
     return realms.value(name);
 }
 
+
+
+Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)
+{
+
+}
+
+Cutelyst::AuthenticationCredential::~AuthenticationCredential()
+{
+
+}
