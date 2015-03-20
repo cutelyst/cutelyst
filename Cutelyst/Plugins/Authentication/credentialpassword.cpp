@@ -18,6 +18,7 @@
  */
 
 #include "credentialpassword.h"
+#include "../authenticationrealm.h"
 
 #include <QLoggingCategory>
 
@@ -25,9 +26,9 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALPASSWORD, "cutelyst.plugin.credentialpassword")
 
-Authentication::User CredentialPassword::authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialPassword::authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
-    Authentication::User user = realm->findUser(ctx, authinfo);
+    AuthenticationUser user = realm->findUser(ctx, authinfo);
     if (!user.isNull()) {
         if (checkPassword(user, authinfo)) {
             return user;
@@ -36,7 +37,7 @@ Authentication::User CredentialPassword::authenticate(Context *ctx, Authenticati
     } else {
         qCDebug(C_CREDENTIALPASSWORD) << "Unable to locate a user matching user info provided in realm";
     }
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
 QString CredentialPassword::passwordField() const
@@ -89,7 +90,7 @@ void CredentialPassword::setPasswordPostSalt(const QString &passwordPostSalt)
     m_passwordPostSalt = passwordPostSalt;
 }
 
-bool CredentialPassword::checkPassword(const Authentication::User &user, const CStringHash &authinfo)
+bool CredentialPassword::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
 {
     QString password = authinfo.value(m_passwordField);
     QString storedPassword = user.value(m_passwordField);

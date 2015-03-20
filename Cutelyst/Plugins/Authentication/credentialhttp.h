@@ -26,7 +26,7 @@
 
 namespace Cutelyst {
 
-class CredentialHttp : public Authentication::Credential
+class CredentialHttp : public AuthenticationCredential
 {
 public:
     enum PasswordType {
@@ -83,14 +83,14 @@ public:
      */
     void setRequireSsl(bool require);
 
-    Authentication::User authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
 
 private:
-    Authentication::User authenticateDigest(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
-    Authentication::User authenticateBasic(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
-    Authentication::User authenticationFailed(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticateDigest(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticateBasic(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticationFailed(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
 
-    bool checkPassword(const Authentication::User &user, const CStringHash &authinfo);
+    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
     bool isAuthTypeDigest() const;
     bool isAuthTypeBasic() const;
 

@@ -26,13 +26,13 @@ StoreMinimal::StoreMinimal()
 
 }
 
-void StoreMinimal::addUser(const Authentication::User &user)
+void StoreMinimal::addUser(const AuthenticationUser &user)
 {
     m_users << user;
 }
 
 
-Authentication::User StoreMinimal::findUser(Context *ctx, const CStringHash &userInfo)
+AuthenticationUser StoreMinimal::findUser(Context *ctx, const CStringHash &userInfo)
 {
     Q_UNUSED(ctx)
     QString id = userInfo[QStringLiteral("id")];
@@ -40,23 +40,23 @@ Authentication::User StoreMinimal::findUser(Context *ctx, const CStringHash &use
         id = userInfo[QStringLiteral("username")];
     }
 
-    Q_FOREACH (const Authentication::User &user, m_users) {
+    Q_FOREACH (const AuthenticationUser &user, m_users) {
         if (user.id() == id) {
             return user;
         }
     }
 
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
-QVariant StoreMinimal::forSession(Context *c, const Authentication::User &user)
+QVariant StoreMinimal::forSession(Context *c, const AuthenticationUser &user)
 {
     return user.id();
 }
 
-Authentication::User StoreMinimal::fromSession(Context *c, const QVariant &frozenUser)
+AuthenticationUser StoreMinimal::fromSession(Context *c, const QVariant &frozenUser)
 {
-    CStringHash userInfo;
-    userInfo[QStringLiteral("id")] = frozenUser.toString();
-    return findUser(c, userInfo);
+    return findUser(c, {
+                        {QStringLiteral("id"), frozenUser.toString()}
+                    });
 }

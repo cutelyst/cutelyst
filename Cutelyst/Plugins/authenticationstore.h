@@ -42,7 +42,7 @@ public:
      * Reimplement this if your store supports
      * automatic user creation
      */
-    virtual Authentication::User autoCreateUser(Context *ctx, const CStringHash &userinfo) const;
+    virtual AuthenticationUser autoCreateUser(Context *ctx, const CStringHash &userinfo) const;
 
     /**
      * Reimplement this if your store supports
@@ -54,12 +54,12 @@ public:
      * Reimplement this if your store supports
      * automatic user update
      */
-    virtual Authentication::User autoUpdateUser(Context *ctx, const CStringHash &userinfo) const;
+    virtual AuthenticationUser autoUpdateUser(Context *ctx, const CStringHash &userinfo) const;
 
     /**
      * Retrieve the user that matches the user info
      */
-    virtual Authentication::User findUser(Context *ctx, const CStringHash &userinfo) = 0;
+    virtual AuthenticationUser findUser(Context *ctx, const CStringHash &userinfo) = 0;
 
     /**
      * Reimplement this so that you return a
@@ -68,7 +68,7 @@ public:
      * The default implementation just returns
      * the user.
      */
-    virtual QVariant forSession(Context *ctx, const Authentication::User &user);
+    virtual QVariant forSession(Context *ctx, const AuthenticationUser &user);
 
     /**
      * Reimplement this so that you return a
@@ -77,7 +77,7 @@ public:
      * The default implementation just returns
      * the user.
      */
-    virtual Authentication::User fromSession(Context *ctx, const QVariant &frozenUser);
+    virtual AuthenticationUser fromSession(Context *ctx, const QVariant &frozenUser);
 };
 
 }

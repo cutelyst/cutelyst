@@ -19,6 +19,8 @@
 
 #include "credentialhttp.h"
 
+#include "../authenticationrealm.h"
+
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
 
@@ -109,9 +111,9 @@ void CredentialHttp::setRequireSsl(bool require)
     m_requireSsl = require;
 }
 
-Authentication::User CredentialHttp::authenticate(Cutelyst::Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
-    Authentication::User ret;
+    AuthenticationUser ret;
     if (m_requireSsl && !ctx->request()->secure()) {
         return authenticationFailed(ctx, realm, authinfo);
     }
@@ -133,26 +135,26 @@ Authentication::User CredentialHttp::authenticate(Cutelyst::Context *ctx, Authen
     return authenticationFailed(ctx, realm, authinfo);
 }
 
-Authentication::User CredentialHttp::authenticateDigest(Cutelyst::Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticateDigest(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     qCDebug(C_CREDENTIALHTTP) << "Checking http digest authentication.";
 
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
-Authentication::User CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
     QPair<QString, QString> userPass = ctx->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
-        return Authentication::User();
+        return AuthenticationUser();
     }
 
     CStringHash auth;
     auth.insert(m_usernameField, userPass.first);
-    Authentication::User user = realm->findUser(ctx, auth);
+    AuthenticationUser user = realm->findUser(ctx, auth);
     if (!user.isNull()) {
         auth.insert(m_passwordField, userPass.second);
         if (checkPassword(user, auth)) {
@@ -162,10 +164,10 @@ Authentication::User CredentialHttp::authenticateBasic(Cutelyst::Context *ctx, A
     } else {
         qCDebug(C_CREDENTIALHTTP) << "Unable to locate a user matching user info provided in realm";
     }
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
-Authentication::User CredentialHttp::authenticationFailed(Cutelyst::Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticationFailed(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Response *res = ctx->response();
     res->setStatus(Response::Unauthorized); // 401
@@ -187,10 +189,10 @@ Authentication::User CredentialHttp::authenticationFailed(Cutelyst::Context *ctx
         createBasicAuthResponse(ctx);
     }
 
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
-bool CredentialHttp::checkPassword(const Authentication::User &user, const CStringHash &authinfo)
+bool CredentialHttp::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
 {
     QString password = authinfo.value(m_passwordField);
     QString storedPassword = user.value(m_passwordField);

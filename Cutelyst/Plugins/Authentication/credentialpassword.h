@@ -25,7 +25,7 @@
 
 namespace Cutelyst {
 
-class CredentialPassword : public Authentication::Credential
+class CredentialPassword : public AuthenticationCredential
 {
 public:
     enum Type {
@@ -34,7 +34,7 @@ public:
         Hashed,
         SelfCheck
     };
-    Authentication::User authenticate(Context *ctx, Authentication::Realm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
 
     QString passwordField() const;
     void setPasswordField(const QString &fieldName);
@@ -52,7 +52,7 @@ public:
     void setPasswordPostSalt(const QString &passwordPostSalt);
 
 private:
-    bool checkPassword(const Authentication::User &user, const CStringHash &authinfo);
+    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
 
     QString m_passwordField = QStringLiteral("password");
     Type m_passwordType = None;

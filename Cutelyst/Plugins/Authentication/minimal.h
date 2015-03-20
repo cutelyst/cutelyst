@@ -29,16 +29,16 @@ class StoreMinimal : public AuthenticationStore
 public:
     StoreMinimal();
 
-    void addUser(const Authentication::User &user);
+    void addUser(const AuthenticationUser &user);
 
-    Authentication::User findUser(Context *ctx, const CStringHash &userInfo);
+    AuthenticationUser findUser(Context *ctx, const CStringHash &userInfo);
 
-    virtual QVariant forSession(Context *ctx, const Authentication::User &user);
+    virtual QVariant forSession(Context *ctx, const AuthenticationUser &user);
 
-    virtual Authentication::User fromSession(Context *ctx, const QVariant &frozenUser);
+    virtual AuthenticationUser fromSession(Context *ctx, const QVariant &frozenUser);
 
 private:
-    QList<Authentication::User> m_users;
+    QList<AuthenticationUser> m_users;
 };
 
 } // namespace CutelystPlugin

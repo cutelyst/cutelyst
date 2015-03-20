@@ -80,7 +80,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     }
 }
 
-Authentication::User StoreHtpasswd::findUser(Context *ctx, const CStringHash &userInfo)
+AuthenticationUser StoreHtpasswd::findUser(Context *ctx, const CStringHash &userInfo)
 {
     QString username = userInfo.value("username");
 
@@ -91,7 +91,7 @@ Authentication::User StoreHtpasswd::findUser(Context *ctx, const CStringHash &us
             QByteArray line = file.readLine();
             QList<QByteArray> parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username) {
-                Authentication::User ret;
+                AuthenticationUser ret;
                 ret.insert("username", username);
                 ret.setId(username);
                 ret.insert("password", parts.at(1));
@@ -100,17 +100,17 @@ Authentication::User StoreHtpasswd::findUser(Context *ctx, const CStringHash &us
             }
         }
     }
-    return Authentication::User();
+    return AuthenticationUser();
 }
 
-QVariant StoreHtpasswd::forSession(Context *ctx, const Authentication::User &user)
+QVariant StoreHtpasswd::forSession(Context *ctx, const AuthenticationUser &user)
 {
     return user.id();
 }
 
-Authentication::User StoreHtpasswd::fromSession(Context *ctx, const QVariant &frozenUser)
+AuthenticationUser StoreHtpasswd::fromSession(Context *c, const QVariant &frozenUser)
 {
-    CStringHash userInfo;
-    userInfo[QStringLiteral("username")] = frozenUser.toString();
-    return findUser(ctx, userInfo);
+    return findUser(c, {
+                        {QStringLiteral("username"), frozenUser.toString()}
+                    });
 }
