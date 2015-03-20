@@ -245,20 +245,20 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
         out << "{" << "\n";
         out << "}" << "\n";
         out << "\n";
-        out << "void " << controllerName << "::index" << "(Context *ctx)" << "\n";
+        out << "void " << controllerName << "::index" << "(Context *c)" << "\n";
         out << "{" << "\n";
         if (helpers) {
-            out << "    ctx->response()->body() = ctx->welcomeMessage();" << "\n";
+            out << "    c->response()->body() = c->welcomeMessage();" << "\n";
         } else {
-            out << "    ctx->response()->body() = \"Matched Controller::" << controllerName << " in " << controllerName << ".\";" << "\n";
+            out << "    c->response()->body() = \"Matched Controller::" << controllerName << " in " << controllerName << ".\";" << "\n";
         }
         out << "}" << "\n";
         out << "\n";
         if (helpers) {
-            out << "void " << controllerName << "::defaultPage" << "(Context *ctx)" << "\n";
+            out << "void " << controllerName << "::defaultPage" << "(Context *c)" << "\n";
             out << "{" << "\n";
-            out << "    ctx->response()->body() = \"Page not found!\";" << "\n";
-            out << "    ctx->response()->setStatus(404);" << "\n";
+            out << "    c->response()->body() = \"Page not found!\";" << "\n";
+            out << "    c->response()->setStatus(404);" << "\n";
             out << "}" << "\n";
             out << "\n";
         }
@@ -300,15 +300,15 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
         out << "    ~" << controllerName << "();" << "\n";
         out << "\n";
         out << "    C_ATTR(index, :Path :Args(0))" << "\n";
-        out << "    void index(Context *ctx);" << "\n";
+        out << "    void index(Context *c);" << "\n";
         if (helpers) {
             out << "\n";
             out << "    C_ATTR(defaultPage, :Path)" << "\n";
-            out << "    void defaultPage(Context *ctx);" << "\n";
+            out << "    void defaultPage(Context *c);" << "\n";
             out << "\n";
             out << "private:\n";
             out << "    C_ATTR(End, :ActionClass(\"RenderView\"))" << "\n";
-            out << "    void End(Context *ctx) { Q_UNUSED(ctx); }" << "\n";
+            out << "    void End(Context *c) { Q_UNUSED(c); }" << "\n";
         }
         out << "};" << "\n";
         out << "\n";

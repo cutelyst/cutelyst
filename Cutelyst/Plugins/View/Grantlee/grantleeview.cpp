@@ -159,6 +159,8 @@ bool GrantleeView::render(Context *ctx)
         }
     }
 
+    stash.insert(QStringLiteral("c"), QVariant::fromValue(ctx));
+    // DEPRECATED
     stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
     Grantlee::Context gCtx(stash);
 
