@@ -293,27 +293,10 @@ QList<Action *> Context::getActions(const QString &action, const QString &ns)
     return d->dispatcher->getActions(action, ns);
 }
 
-bool Context::registerPlugin(Plugin *plugin, bool takeOwnership)
-{
-    Q_D(Context);
-    if (plugin->setup(this)) {
-        if (takeOwnership) {
-            plugin->setParent(this);
-
-            if (plugin->isApplicationPlugin()) {
-                qCWarning(CUTELYST_CORE) << "The plugin:" << plugin->metaObject()->className() << "is an Application plugin and should be registered there";
-            }
-        }
-        d->plugins.insert(plugin, QVariantHash());
-        return true;
-    }
-    return false;
-}
-
 QList<Cutelyst::Plugin *> Context::plugins()
 {
     Q_D(Context);
-    return d->plugins.keys();
+    return d->plugins;
 }
 
 bool Context::execute(Code *code)
@@ -371,11 +354,11 @@ QByteArray Context::welcomeMessage() const
 QVariant Context::pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Context);
-    return d->plugins.value(plugin).value(key, defaultValue);
+    return d->pluginsConfig[plugin].value(key, defaultValue);
 }
 
 void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, const QVariant &value)
 {
     Q_D(Context);
-    d->plugins[plugin].insert(key, value);
+    d->pluginsConfig[plugin].insert(key, value);
 }

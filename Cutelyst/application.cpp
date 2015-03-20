@@ -96,13 +96,8 @@ bool Application::registerPlugin(Cutelyst::Plugin *plugin)
 {
     Q_D(Application);
 
-    if (plugin->isApplicationPlugin()) {
-        plugin->setParent(this);
-        d->plugins << plugin;
-        return true;
-    }
-    qCWarning(CUTELYST_CORE) << "The plugin:" << plugin->metaObject()->className() << "isn't an Application Plugin and cannot be registered";
-    return false;
+    d->plugins.append(plugin);
+    return true;
 }
 
 bool Application::registerController(Controller *controller)
@@ -115,7 +110,7 @@ bool Application::registerController(Controller *controller)
         return false;
     }
 
-    d->controllers << controller;
+    d->controllers.append(controller);
     return true;
 }
 
@@ -213,15 +208,17 @@ bool Application::setup(Engine *engine)
         QString appName = QCoreApplication::applicationName();
 
         QList<QStringList> tablePlugins;
-        Q_FOREACH(Plugin *plugin, d->plugins) {
+        Q_FOREACH (Plugin *plugin, d->plugins) {
             QString className = QString::fromLatin1(plugin->metaObject()->className());
             tablePlugins.append({ className });
+            // Configure plugins
+            plugin->setup(this);
         }
         qCDebug(CUTELYST_CORE) << DispatchType::buildTable(tablePlugins, QStringList(),
                                                            QStringLiteral("Loaded plugins:")).data();
 
         QList<QStringList> table;
-        Q_FOREACH(Controller *controller, d->controllers) {
+        Q_FOREACH (Controller *controller, d->controllers) {
             QString className = QString::fromLatin1(controller->metaObject()->className());
             if (!className.startsWith(QLatin1String("Cutelyst"))) {
                 className = appName % QLatin1String("::Controller::") % className;
@@ -229,7 +226,7 @@ bool Application::setup(Engine *engine)
             table.append({ className, QStringLiteral("instance")});
         }
 
-        Q_FOREACH(View *view, d->views) {
+        Q_FOREACH (View *view, d->views) {
             QString className = QString::fromLatin1(view->metaObject()->className());
             if (!className.startsWith(QLatin1String("Cutelyst"))) {
                 className = appName % QLatin1String("::View::") % className;
@@ -242,7 +239,7 @@ bool Application::setup(Engine *engine)
                                                            },
                                                            QStringLiteral("Loaded components:")).data();
 
-        Q_FOREACH(Controller *controller, d->controllers) {
+        Q_FOREACH (Controller *controller, d->controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
@@ -263,30 +260,23 @@ void Application::handleRequest(Request *req)
     priv->engine = req->engine();
     priv->dispatcher = d->dispatcher;
     priv->request = req;
+    priv->plugins = d->plugins;
 
     Context *ctx = new Context(priv);
     priv->response = new Response(ctx);
     priv->response->d_ptr->headers = d->headers;
 
-    // Register application plugins
-    Q_FOREACH (Plugin *plugin, d->plugins) {
-        ctx->registerPlugin(plugin, false);
-    }
-
-    // Register context plugins
-    Q_EMIT registerPlugins(ctx);
-
     // Process request
     bool skipMethod = false;
-    Q_EMIT ctx->beforePrepareAction(&skipMethod);
+    Q_EMIT beforePrepareAction(ctx, &skipMethod);
     if (!skipMethod) {
         d->dispatcher->prepareAction(ctx);
 
-        Q_EMIT ctx->beforeDispatch();
+        Q_EMIT beforeDispatch(ctx);
 
         d->dispatcher->dispatch(ctx);
 
-        Q_EMIT ctx->afterDispatch();
+        Q_EMIT afterDispatch(ctx);
     }
     priv->engine->finalize(ctx);
 

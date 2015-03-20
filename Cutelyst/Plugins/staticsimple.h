@@ -18,16 +18,14 @@ public:
 
     void setDirs(const QStringList &dirs);
 
-    bool setup(Context *ctx);
-
-    virtual bool isApplicationPlugin() const;
+    virtual bool setup(Application *app);
 
 protected:
     StaticSimplePrivate *d_ptr;
 
 private:
-    void beforePrepareAction(bool *skipMethod);
-    bool locateStaticFile(Context *ctx, const QString &relPath);
+    void beforePrepareAction(Context *c, bool *skipMethod);
+    bool locateStaticFile(Context *c, const QString &relPath);
 };
 
 }

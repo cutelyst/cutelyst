@@ -160,10 +160,27 @@ protected:
 
 Q_SIGNALS:
     /**
-     * Emited so that you register all plugins that are specifically
-     * to each request
+     * This signal is emitted before the Dispatcher
+     * is called to find an action.
+     * It's useful if you need to intercept requests
+     * before they are dispached.
+     * Always check skipMethod and return if it's true.
+     * In case you want to stop further processing set
+     * skipMethod to true.
      */
-    void registerPlugins(Context *ctx);
+    void beforePrepareAction(Context *c, bool *skipMethod);
+
+    /**
+     * This signal is emitted right after the Dispatcher
+     * returns the Action that will be executed.
+     */
+    void beforeDispatch(Context *c);
+
+    /**
+     * This signal is emitted right after the Action
+     * found by the dispatcher got executed.
+     */
+    void afterDispatch(Context *c);
 
 protected:
     /**

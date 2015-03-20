@@ -34,13 +34,13 @@ public:
     Session(Application *parent);
     virtual ~Session();
 
-    bool setup(Context *ctx);
+    virtual bool setup(Application *app);
 
-    QVariant value(const QString &key, const QVariant &defaultValue = QVariant());
-    void setValue(const QString &key, const QVariant &value);
-    void deleteValue(const QString &keys);
+    QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
+    void setValue(Context *c, const QString &key, const QVariant &value);
+    void deleteValue(Context *c, const QString &key);
 
-    bool isValid();
+    bool isValid(Context *c);
 
 protected:
     /**
@@ -59,11 +59,11 @@ protected:
     SessionPrivate *d_ptr;
 
 private:
-    void saveSession();
-    QVariant loadSession();
+    void saveSession(Context *c);
+    QVariant loadSession(Context *c);
     QString generateSessionId() const;
-    QString getSessionId() const;
-    QString filePath(const QString &sessionId) const;
+    QString getSessionId(Context *c) const;
+
 };
 
 }

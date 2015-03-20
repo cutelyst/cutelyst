@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -72,10 +72,10 @@ public:
         virtual User authenticate(Context *ctx, const CStringHash &authinfo);
 
     protected:
-        void removePersistedUser(Context *ctx);
-        User persistUser(Context *ctx, const Authentication::User &user);
-        User restoreUser(Context *ctx, const QVariant &frozenUser);
-        QVariant userIsRestorable(Context *ctx);
+        void removePersistedUser(Context *c);
+        User persistUser(Context *c, const Authentication::User &user);
+        User restoreUser(Context *c, const QVariant &frozenUser);
+        QVariant userIsRestorable(Context *c);
 
     private:
         friend class Authentication;
@@ -89,26 +89,26 @@ public:
     Authentication(Application *parent);
     ~Authentication();
 
-    bool setup(Context *ctx);
+    virtual bool setup(Application *app);
 
     void addRealm(Authentication::Realm *realm, const QString &name = QLatin1String(defaultRealm));
 
     Authentication::Realm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
-    User authenticate(const QString &username, const QString &password, const QString &realm = QLatin1String(defaultRealm));
-    User authenticate(const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
-    User findUser(const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
-    User user();
-    void setUser(const User &user);
-    bool userExists();
-    bool userInRealm(const QString &realm = QLatin1String(defaultRealm));
-    void logout();
+    User authenticate(Context *c, const QString &username, const QString &password, const QString &realm = QLatin1String(defaultRealm));
+    User authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
+    User findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
+    User user(Context *c);
+    void setUser(Context *c, const User &user);
+    bool userExists(Context *c);
+    bool userInRealm(Context *c, const QString &realm = QLatin1String(defaultRealm));
+    void logout(Context *c);
 
 protected:
-    void setAuthenticated(const User &user, const QString &realmName);
-    void persistUser(const User &user, const QString &realmName);
-    User restoreUser(const QVariant &frozenUser, const QString &realmName);
-    Realm* findRealmForPersistedUser();
+    void setAuthenticated(Context *c, const User &user, const QString &realmName);
+    void persistUser(Context *c, const User &user, const QString &realmName);
+    User restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName);
+    Realm* findRealmForPersistedUser(Context *c);
 
     AuthenticationPrivate *d_ptr;
 

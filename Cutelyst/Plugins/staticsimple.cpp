@@ -43,46 +43,40 @@ void StaticSimple::setDirs(const QStringList &dirs)
     d->dirs = dirs;
 }
 
-bool StaticSimple::setup(Context *ctx)
+bool StaticSimple::setup(Cutelyst::Application *app)
 {
-    connect(ctx, &Context::beforePrepareAction,
+    connect(app, &Application::beforePrepareAction,
             this, &StaticSimple::beforePrepareAction);
     return true;
 }
 
-bool StaticSimple::isApplicationPlugin() const
-{
-    return true;
-}
-
-void StaticSimple::beforePrepareAction(bool *skipMethod)
+void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
 {
     Q_D(StaticSimple);
 
-    Context *ctx = static_cast<Context *>(sender());
-    if (*skipMethod || !ctx) {
+    if (*skipMethod) {
         return;
     }
 
-    QString path = ctx->req()->path();
+    QString path = c->req()->path();
     QRegularExpression re = d->re; // Thread-safe
     QRegularExpressionMatch match = re.match(path);
-    if (match.hasMatch() && locateStaticFile(ctx, path)) {
+    if (match.hasMatch() && locateStaticFile(c, path)) {
         *skipMethod = true;
     }
 }
 
-bool StaticSimple::locateStaticFile(Context *ctx, const QString &relPath)
+bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
 {
-    Q_D(StaticSimple);
+    Q_D(const StaticSimple);
 
     Q_FOREACH (const QDir &includePath, d->includePaths) {
         QString path = includePath.absoluteFilePath(relPath);
         QFileInfo fileInfo(path);
         if (fileInfo.exists()) {
-            Response *res = ctx->res();
+            Response *res = c->res();
             const QDateTime &currentDateTime = fileInfo.lastModified();
-            if (currentDateTime == ctx->req()->headers().ifModifiedSinceDateTime()) {
+            if (currentDateTime == c->req()->headers().ifModifiedSinceDateTime()) {
                 res->setStatus(Response::NotModified);
                 return true;
             }

@@ -29,7 +29,8 @@ namespace Cutelyst {
 class SessionPrivate
 {
 public:
-    Context *ctx;
+    static QString filePath(const QString &sessionId);
+
     QString sessionName;
     QRegularExpression removeRE = QRegularExpression(QStringLiteral("-|{|}"));
 };

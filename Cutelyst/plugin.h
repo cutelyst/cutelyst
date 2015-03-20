@@ -40,18 +40,7 @@ public:
      * Reimplement this if you need to connect to
      * the signals emitted from Cutelyst::Application
      */
-    virtual bool setup(Context *ctx);
-
-    /**
-     * Reimplement this if the plugin can be
-     * used as an Application plugin, for
-     * example a plugin that doesn't need to keep
-     * request information like the StaticSimple plugin.
-     *
-     * @return true if the plugin can be used as an
-     * Application plugin (false is the default).
-     */
-    virtual bool isApplicationPlugin() const;
+    virtual bool setup(Application *app);
 
 protected:
     QVariant pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue = QVariant()) const;

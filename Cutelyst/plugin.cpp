@@ -28,15 +28,10 @@ Plugin::Plugin(Application *parent) : QObject(parent)
 {
 }
 
-bool Plugin::setup(Context *ctx)
+bool Plugin::setup(Application *app)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(app)
     return true;
-}
-
-bool Plugin::isApplicationPlugin() const
-{
-    return false;
 }
 
 QVariant Plugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const

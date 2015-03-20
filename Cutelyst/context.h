@@ -323,7 +323,6 @@ public:
      */
     QList<Action*> getActions(const QString &action, const QString &ns = QString());
 
-    bool registerPlugin(Plugin *plugin, bool takeOwnership = true);
     QList<Plugin *> plugins();
 
     template <typename T>
@@ -347,14 +346,9 @@ public:
     QVariantHash config() const;
 
     /**
-     * Returns the Catalyst welcome HTML page.
+     * Returns the Cutelyst welcome HTML page.
      */
     QByteArray welcomeMessage() const;
-
-Q_SIGNALS:
-    void beforePrepareAction(bool *skipMethod);
-    void beforeDispatch();
-    void afterDispatch();
 
 protected:
     QVariant pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
