@@ -66,6 +66,8 @@ int runServer(const QString &appFilename, int port, bool restart)
     args.append(QStringLiteral("--chdir"));
     args.append(projectDir.absolutePath());
 
+    args.append(QStringLiteral("-M"));
+
     args.append(QStringLiteral("--plugin"));
     args.append(QStringLiteral("cutelyst"));
 
