@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -299,7 +299,8 @@ public:
      * A convenience method for the uriForAction() without the arguments parameter
      */
     inline QUrl uriForActionNoArgs(const QString &path,
-                                   const ParamsMultiMap &queryValues) const;
+                                   const ParamsMultiMap &queryValues) const
+    { return uriForAction(path, QStringList(), queryValues); }
 
     /**
      * Returns true if the last executed Action requested
@@ -368,8 +369,6 @@ private:
     Q_DECLARE_PRIVATE(Context)
 };
 
-QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
-{ return uriForAction(path, QStringList(), queryValues); }
 
 }
 

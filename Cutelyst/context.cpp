@@ -349,7 +349,6 @@ QByteArray Context::welcomeMessage() const
     out << "         </div>\n";
     out << "    <body>\n";
     out << "</html>\n";
-    qDebug() << ret;
     return ret;
 }
 
