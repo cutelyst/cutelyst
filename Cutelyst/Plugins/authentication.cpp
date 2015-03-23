@@ -53,6 +53,11 @@ void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm, const QStrin
     d->realmsOrder.append(name);
 }
 
+void Cutelyst::Authentication::addRealm(Cutelyst::AuthenticationStore *store, Cutelyst::AuthenticationCredential *credential, const QString &name)
+{
+    addRealm(new AuthenticationRealm(store, credential, this), name);
+}
+
 AuthenticationRealm *Authentication::realm(const QString &name) const
 {
     Q_D(const Authentication);

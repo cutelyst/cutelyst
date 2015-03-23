@@ -50,6 +50,7 @@ public:
     virtual ~Authentication();
 
     void addRealm(AuthenticationRealm *realm, const QString &name = QLatin1String(defaultRealm));
+    void addRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm));
 
     AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
