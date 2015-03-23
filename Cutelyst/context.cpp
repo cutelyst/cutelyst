@@ -143,14 +143,16 @@ QString Cutelyst::Context::controllerName() const
     return d->action->controller()->metaObject()->className();
 }
 
+Controller *Context::controller() const
+{
+    Q_D(const Context);
+    return d->action->controller();
+}
+
 Controller *Context::controller(const QString &name) const
 {
     Q_D(const Context);
-    if (name.isEmpty()) {
-        return d->action->controller();
-    } else {
-        return d->dispatcher->controllers().value(name);
-    }
+    return d->dispatcher->controllers().value(name);
 }
 
 View *Context::view() const

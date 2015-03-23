@@ -130,11 +130,15 @@ public:
     QString controllerName() const;
 
     /**
-     * Returns the current controller or
-     * if name is not null the controller
-     * named by name
+     * Returns the current controller
      */
-    Controller *controller(const QString &name = QString()) const;
+    Controller *controller() const;
+
+    /**
+     * Returns the controller by name, or 0
+     * if the controller is not found
+     */
+    Controller *controller(const QString &name) const;
 
     /**
      * Returns the current view to be used
