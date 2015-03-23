@@ -64,7 +64,7 @@ AuthenticationRealm *Authentication::realm(const QString &name) const
     return d->realms.value(name);
 }
 
-AuthenticationUser Authentication::authenticate(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)
+bool Authentication::authenticate(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)
 {
     Q_D(Authentication);
 
@@ -75,11 +75,11 @@ AuthenticationUser Authentication::authenticate(Cutelyst::Context *c, const CStr
             setAuthenticated(c, user, realm);
         }
 
-        return user;
+        return !user.isNull();
     }
 
     qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
-    return AuthenticationUser();
+    return false;
 }
 
 AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)

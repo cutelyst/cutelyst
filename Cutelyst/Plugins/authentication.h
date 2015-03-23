@@ -54,7 +54,7 @@ public:
 
     AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
-    AuthenticationUser authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
+    bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser user(Context *c);
     void setUser(Context *c, const AuthenticationUser &user);
