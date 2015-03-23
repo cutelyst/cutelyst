@@ -71,20 +71,20 @@ bool Controller::operator==(const char *className)
     return !qstrcmp(metaObject()->className(), className);
 }
 
-void Controller::Begin(Context *ctx)
+void Controller::Begin(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
 }
 
-bool Controller::Auto(Context *ctx)
+bool Controller::Auto(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return true;
 }
 
-void Controller::End(Context *ctx)
+void Controller::End(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
 }
 
 bool Controller::preFork(Application *app)
@@ -99,45 +99,45 @@ bool Controller::postFork(Application *app)
     return true;
 }
 
-bool Controller::_BEGIN(Context *ctx)
+bool Controller::_BEGIN(Context *c)
 {
 //    qDebug() << Q_FUNC_INFO;
     Q_D(Controller);
     if (d->begin) {
-        d->begin->dispatch(ctx);
-        return !ctx->error();
+        d->begin->dispatch(c);
+        return !c->error();
     }
     return true;
 }
 
-bool Controller::_AUTO(Context *ctx)
+bool Controller::_AUTO(Context *c)
 {
 //    qDebug() << Q_FUNC_INFO;
     Q_D(Controller);
     Q_FOREACH (Action *autoAction, d->autoList) {
-        if (!autoAction->dispatch(ctx)) {
+        if (!autoAction->dispatch(c)) {
             return false;
         }
     }
     return true;
 }
 
-bool Controller::_ACTION(Context *ctx)
+bool Controller::_ACTION(Context *c)
 {
 //    qDebug() << Q_FUNC_INFO;
-    if (ctx->action()) {
-        return ctx->action()->dispatch(ctx);
+    if (c->action()) {
+        return c->action()->dispatch(c);
     }
-    return !ctx->error();
+    return !c->error();
 }
 
-bool Controller::_END(Context *ctx)
+bool Controller::_END(Context *c)
 {
 //    qDebug() << Q_FUNC_INFO;
     Q_D(Controller);
     if (d->end) {
-        d->end->dispatch(ctx);
-        return !ctx->error();
+        d->end->dispatch(c);
+        return !c->error();
     }
     return true;
 }
@@ -216,7 +216,7 @@ void ControllerPrivate::setupFinished()
     q->preFork(qobject_cast<Application *>(q->parent()));
 }
 
-void Controller::_DISPATCH(Context *ctx)
+void Controller::_DISPATCH(Context *c)
 {
     Q_D(Controller);
 
@@ -224,7 +224,7 @@ void Controller::_DISPATCH(Context *ctx)
 
     // Dispatch to _BEGIN and _AUTO
     Q_FOREACH (Action *action, d->actionSteps) {
-        if (!action->dispatch(ctx)) {
+        if (!action->dispatch(c)) {
             failedState = true;
             break;
         }
@@ -232,12 +232,12 @@ void Controller::_DISPATCH(Context *ctx)
 
     // Dispatch to _ACTION
     if (!failedState) {
-        ctx->action()->dispatch(ctx);
+        c->action()->dispatch(c);
     }
 
     // Dispatch to _END
     if (d->end) {
-        d->end->dispatch(ctx);
+        d->end->dispatch(c);
     }
 }
 
