@@ -108,15 +108,15 @@ bool ClearSilver::render(Context *ctx)
 
     qCDebug(CUTELYST_CLEARSILVER) << "Rendering template" <<templateFile;
     QByteArray output;
-    if (d->wrapper.isEmpty()) {
-        if (!d->render(ctx, templateFile, stash, output)) {
-            return false;
-        }
-    } else {
+    if (!d->render(ctx, templateFile, stash, output)) {
+        return false;
+    }
+
+    if (!d->wrapper.isEmpty()) {
         QString wrapperFile = d->wrapper;
 
         QVariantHash data = stash;
-        data["template"] = templateFile;
+        data.insert(QStringLiteral("content"), output);
 
         if (!d->render(ctx, wrapperFile, data, output)) {
             return false;

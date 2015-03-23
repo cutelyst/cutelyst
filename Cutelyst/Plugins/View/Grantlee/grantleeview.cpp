@@ -164,16 +164,16 @@ bool GrantleeView::render(Context *ctx)
     stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
     Grantlee::Context gCtx(stash);
 
-    Grantlee::Template tmpl;
-    if (d->wrapper.isEmpty()) {
-        tmpl = d->engine->loadByName(templateFile);
-    } else {
-        tmpl = d->engine->loadByName(d->wrapper);
-
-        gCtx.insert(QStringLiteral("template"), templateFile);
+    Grantlee::Template tmpl = d->engine->loadByName(templateFile);
+    QString content = tmpl->render(&gCtx);
+    if (!d->wrapper.isEmpty()) {
+        Grantlee::Template wrapper = d->engine->loadByName(d->wrapper);
+        Grantlee::SafeString safeContent(content, true);
+        gCtx.insert(QStringLiteral("content"), safeContent);
+        content = wrapper->render(&gCtx);
     }
 
-    ctx->res()->body() = tmpl->render(&gCtx).toUtf8();
+    ctx->res()->body() = content.toUtf8();
 
     if (tmpl->error() != Grantlee::NoError) {
         qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
