@@ -57,7 +57,7 @@ QByteArray DispatchTypePath::list() const
     Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
-            if (!action->attributes().contains("Args")) {
+            if (action->attributes().value(QStringLiteral("Args")).isNull()) {
                 _path.append(QLatin1String("/..."));
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
