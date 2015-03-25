@@ -163,21 +163,30 @@ bool GrantleeView::render(Context *ctx)
     // DEPRECATED
     stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
     Grantlee::Context gCtx(stash);
+    bool error = false;
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gCtx);
+    if (tmpl->error() != Grantlee::NoError) {
+        qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
+        ctx->res()->body() = tr("Internal server error.").toUtf8();
+        return false;
+    }
+
     if (!d->wrapper.isEmpty()) {
         Grantlee::Template wrapper = d->engine->loadByName(d->wrapper);
         Grantlee::SafeString safeContent(content, true);
         gCtx.insert(QStringLiteral("content"), safeContent);
         content = wrapper->render(&gCtx);
+
+        if (wrapper->error() != Grantlee::NoError) {
+            qCCritical(CUTELYST_GRANTLEE) << "Error while rendering wrapper template" << tmpl->errorString();
+            ctx->res()->body() = tr("Internal server error.").toUtf8();
+            return false;
+        }
     }
 
     ctx->res()->body() = content.toUtf8();
 
-    if (tmpl->error() != Grantlee::NoError) {
-        qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
-    }
-
-    return tmpl->error() == Grantlee::NoError;
+    return true;
 }
