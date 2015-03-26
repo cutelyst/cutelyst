@@ -110,7 +110,7 @@ void Headers::setLastModified(const QDateTime &lastModified)
     // and follow RFC 822
     QLocale locale(QLocale::C);
     QString dt = locale.toString(lastModified.toTimeSpec(Qt::UTC),
-                                 QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+                                 QStringLiteral("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
     setLastModified(dt);
 }
 
