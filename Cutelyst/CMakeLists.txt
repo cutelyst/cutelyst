@@ -9,6 +9,8 @@ set(cutelystqt_SRC
     upload_p.h
     multipartformdataparser.cpp
     multipartformdataparser_p.h
+    stats.cpp
+    stats_p.h
     headers.cpp
     headers_p.h
     request.cpp
@@ -87,6 +89,7 @@ set(cutelystqt_HEADERS
     Request
     response.h
     Response
+    stats.h
     upload.h
     Upload
     view.h

@@ -26,6 +26,7 @@
 #include "dispatcher.h"
 #include "controller.h"
 #include "application.h"
+#include "stats.h"
 
 #include "config.h"
 
@@ -305,9 +306,20 @@ bool Context::execute(Code *code)
 {
     Q_D(Context);
 
+    bool ret;
     d->stack.push(code);
 
-    bool ret = code->execute(this);
+    if (d->stats) {
+        QString statsInfo = d->statsStartExecute(code);
+
+        ret = code->execute(this);
+
+        if (!statsInfo.isNull()) {
+            d->statsFinishExecute(statsInfo);
+        }
+    } else {
+        ret = code->execute(this);
+    }
 
     d->stack.pop();
 
@@ -362,4 +374,31 @@ void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, co
 {
     Q_D(Context);
     d->pluginsConfig[plugin].insert(key, value);
+}
+
+
+QString ContextPrivate::statsStartExecute(Code *code)
+{
+    // Skip internal actions
+    if (code->name().startsWith(QChar('_'))) {
+        return QString();
+    }
+
+    QString actionName = code->reverse();
+    QString parentName;
+
+    Code *parent = 0;
+    if (!stack.isEmpty()) {
+        parent = stack.last();
+        parentName = parent->reverse();
+    }
+    stats->profileStart(actionName, parentName);
+
+    return actionName;
+}
+
+
+void ContextPrivate::statsFinishExecute(const QString &statsInfo)
+{
+    stats->profileEnd(statsInfo);
 }

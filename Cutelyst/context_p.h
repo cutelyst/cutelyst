@@ -28,9 +28,13 @@
 
 namespace Cutelyst {
 
+class Stats;
 class ContextPrivate
 {
 public:
+    QString statsStartExecute(Code *code);
+    void statsFinishExecute(const QString &statsInfo);
+
     Application *app;
     Engine *engine;
     Request *request;
@@ -44,6 +48,7 @@ public:
     bool detached = false;
     QStringList error;
     QVariantHash stash;
+    Stats *stats = 0;
     bool state = false;
 };
 

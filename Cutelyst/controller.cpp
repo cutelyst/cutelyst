@@ -284,6 +284,8 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
 
     action->setMethod(method);
     action->setController(controller);
+    action->setName(args.value("name").toString());
+    action->setReverse(args.value("reverse").toString());
     action->setupAction(args, app);
 
     return action;

@@ -80,11 +80,11 @@ public:
      */
     virtual bool isLowPrecedence() const;
 
+    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
+
 protected:
     friend class Dispatcher;
     friend class Application;
-
-    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
 
     void setupMatchedAction(Context *ctx, Action *action) const;
 };

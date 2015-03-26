@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,25 +17,30 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_CODE_P_H
-#define CUTELYST_CODE_P_H
+#ifndef STATS_H
+#define STATS_H
 
-#include "code.h"
+#include <QObject>
 
 namespace Cutelyst {
 
-class CodePrivate
+class StatsPrivate;
+class Stats : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(Stats)
 public:
-    bool proccessRoles = false;
-    QString name;
-    QString reverse;
-    QStack<Code *> beforeRoles;
-    QStack<Code *> aroundRoles;
-    QStack<Code *> afterRoles;
-    QStack<Code *> roles;
+    explicit Stats(QObject *parent = 0);
+    virtual ~Stats();
+
+    void profileStart(const QString &action, const QString &parent);
+    void profileEnd(const QString &action);
+    QByteArray report();
+
+protected:
+    StatsPrivate *d_ptr;
 };
 
 }
 
-#endif // CUTELYST_CODE_P_H
+#endif // STATS_H

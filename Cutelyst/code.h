@@ -49,6 +49,22 @@ public:
     virtual Modifiers modifiers() const = 0;
 
     /**
+     * @brief name
+     * @return Returns the sub name of this code.
+     */
+    QString name() const;
+
+    void setName(const QString &name);
+
+    /**
+     * @brief name
+     * @return Returns the private name of this action.
+     */
+    QString reverse() const;
+
+    void setReverse(const QString &reverse);
+
+    /**
      * A Does class is always attached to an action,
      * if this method returns false the application
      * will fail to start. Often useful if the user

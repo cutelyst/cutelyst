@@ -33,10 +33,40 @@ Code::~Code()
     delete d_ptr;
 }
 
+QString Code::name() const
+{
+    Q_D(const Code);
+    return d->name;
+}
+
+void Code::setName(const QString &name)
+{
+    Q_D(Code);
+    d->name = name;
+}
+
+QString Code::reverse() const
+{
+    Q_D(const Code);
+    return d->name;
+}
+
+void Code::setReverse(const QString &reverse)
+{
+    Q_D(Code);
+    d->reverse = reverse;
+}
+
 bool Code::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_UNUSED(application)
     Q_UNUSED(args)
+    Q_D(Code);
+
+    if (d->reverse.isNull()) {
+        d->reverse = metaObject()->className();
+    }
+
     return true;
 }
 

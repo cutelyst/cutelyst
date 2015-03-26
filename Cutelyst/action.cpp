@@ -57,9 +57,7 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     init(app, args);
 
-    d->name = args.value("name").toString();
     d->ns = args.value("namespace").toString();
-    d->reverse = args.value("reverse").toString();
 
     QMap<QString, QString> attributes = args.value("attributes").value<QMap<QString, QString> >();
     d->attributes = attributes;
@@ -122,18 +120,6 @@ bool Action::matchCaptures(int numberOfCaptures) const
     // about how many args was passed, otherwise
     // count them
     return d->numberOfCaptures == -1 || d->numberOfCaptures == numberOfCaptures;
-}
-
-QString Action::name() const
-{
-    Q_D(const Action);
-    return d->name;
-}
-
-QString Action::reverse() const
-{
-    Q_D(const Action);
-    return d->reverse;
 }
 
 QString Action::ns() const

@@ -27,9 +27,7 @@ namespace Cutelyst {
 class ActionPrivate
 {
 public:
-    QString name;
     QString ns;
-    QString reverse;
     QMetaMethod method;
     QMap<QString, QString> attributes;
     Controller *controller = 0;

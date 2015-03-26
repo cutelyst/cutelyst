@@ -31,8 +31,8 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
     Action *final = chain.last();
     setController(final->controller());
     QVariantHash args;
-    args.insert("name", final->name());
-    args.insert("reverse", final->reverse());
+    setName(final->name());
+    setReverse(final->reverse());
     args.insert("namespace", final->ns());
     setupAction(args, 0);
 }

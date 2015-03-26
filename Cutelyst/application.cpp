@@ -29,6 +29,7 @@
 #include "response_p.h"
 #include "dispatchtype.h"
 #include "view.h"
+#include "stats.h"
 
 #include "Actions/actionrest.h"
 #include "Actions/roleacl.h"
@@ -265,6 +266,7 @@ void Application::handleRequest(Request *req)
     Context *ctx = new Context(priv);
     priv->response = new Response(ctx);
     priv->response->d_ptr->headers = d->headers;
+    priv->stats = new Stats(ctx);
 
     // Process request
     bool skipMethod = false;
@@ -284,6 +286,8 @@ void Application::handleRequest(Request *req)
             ctx->response()->status(),
             ctx->response()->contentType().toLatin1().data(),
             ctx->response()->contentLength());
+
+    qCDebug(CUTELYST_STATS) << priv->stats->report().data();
 
     delete ctx;
 }
