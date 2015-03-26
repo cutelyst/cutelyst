@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,7 +30,7 @@
 
 using namespace Cutelyst;
 
-static QList<EngineUwsgi *> coreEngines;
+static QList<EngineUwsgi *> *coreEngines = 0;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -56,12 +56,14 @@ extern "C" int uwsgi_cutelyst_init()
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
+    coreEngines = new QList<EngineUwsgi *>();
+
     return 0;
 }
 
 extern "C" void uwsgi_cutelyst_post_fork()
 {
-    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
+    Q_FOREACH (EngineUwsgi *engine, *coreEngines) {
         if (engine->thread() != qApp->thread()) {
             engine->thread()->start();
         } else {
@@ -84,7 +86,7 @@ extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
         return -1;
     }
 
-    coreEngines.at(wsgi_req->async_id)->processRequest(wsgi_req);
+    coreEngines->at(wsgi_req->async_id)->processRequest(wsgi_req);
 
     return UWSGI_OK;
 }
@@ -114,10 +116,12 @@ extern "C" void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
-    Q_FOREACH (EngineUwsgi *engine, coreEngines) {
+    Q_FOREACH (EngineUwsgi *engine, *coreEngines) {
         engine->stop();
     }
-    qDeleteAll(coreEngines);
+    qDeleteAll(*coreEngines);
+
+    delete coreEngines;
 
     qCDebug(CUTELYST_UWSGI) << "Child process finished:" << QCoreApplication::applicationPid();
 }
@@ -199,7 +203,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }
-    coreEngines.append(mainEngine);
+    coreEngines->append(mainEngine);
 
     EngineUwsgi *engine = mainEngine;
     for (int i = 0; i < uwsgi.cores; ++i) {
@@ -213,7 +217,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
             QObject::connect(engine, &EngineUwsgi::engineDisabled,
                              mainEngine, &EngineUwsgi::reuseEngineRequests);
 
-            coreEngines.append(engine);
+            coreEngines->append(engine);
         }
 
         // Add core request
