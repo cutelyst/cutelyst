@@ -97,6 +97,15 @@ public:
      */
     bool postForkApplication();
 
+    /**
+     * Returns a time to be used for stats,
+     * the default implementation returns
+     * MSecsSinceEpoch, but if the engine
+     * supports a more precise value it
+     * can reimplement this method
+     */
+    virtual quint64 time();
+
 protected:
     /**
      * @brief finalizeCookies first called if no error

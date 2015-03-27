@@ -28,14 +28,16 @@ namespace Cutelyst {
 
 struct StatsAction {
     QString action;
-    QTime time;
-    int enlapsed = 0;
+    quint64 begin = 0;
+    quint64 end = 0;
 };
 
+class Engine;
 class StatsPrivate
 {
 public:
     QList<StatsAction> actions;
+    Engine *engine;
 };
 
 }

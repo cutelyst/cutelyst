@@ -285,6 +285,11 @@ QList<wsgi_request *> EngineUwsgi::unusedRequestQueue() const
     return m_unusedReq;
 }
 
+quint64 EngineUwsgi::time()
+{
+    return uwsgi_micros();
+}
+
 bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
 {
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);

@@ -18,7 +18,10 @@
  */
 
 #include "stats_p.h"
+
 #include "dispatchtype.h"
+#include "application.h"
+#include "engine.h"
 
 #include "common.h"
 
@@ -27,10 +30,11 @@
 
 using namespace Cutelyst;
 
-Stats::Stats(QObject *parent) : QObject(parent)
+Stats::Stats(Application *app) : QObject(app)
   , d_ptr(new StatsPrivate)
 {
-
+    Q_D(Stats);
+    d->engine = app->engine();
 }
 
 Stats::~Stats()
@@ -43,7 +47,7 @@ void Stats::profileStart(const QString &action, const QString &parent)
     Q_D(Stats);
     StatsAction stat;
     stat.action = action;
-    stat.time.start();
+    stat.begin = d->engine->time();
     d->actions.append(stat);
 }
 
@@ -53,7 +57,7 @@ void Stats::profileEnd(const QString &action)
     for (int i = 0; i < d->actions.size(); ++i) {
         StatsAction &stat = d->actions[i];
         if (stat.action == action) {
-            stat.enlapsed = stat.time.elapsed();
+            stat.end = d->engine->time();
             break;
         }
     }
@@ -69,7 +73,8 @@ QByteArray Stats::report()
 
     QList<QStringList> table;
     Q_FOREACH (StatsAction stat, d->actions) {
-        table.append({ stat.action, QString::number(stat.enlapsed) % QLatin1String(" ms") });
+        table.append({ stat.action,
+                       QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1String(" ms") });
     }
 
     return DispatchType::buildTable(table, {

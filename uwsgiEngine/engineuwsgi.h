@@ -72,6 +72,8 @@ public:
 
     QList<struct wsgi_request *> unusedRequestQueue() const;
 
+    virtual quint64 time();
+
 Q_SIGNALS:
     void postFork();
     void enableSockets(bool enable);

@@ -185,6 +185,12 @@ bool Cutelyst::Application::inited() const
     return d->init;
 }
 
+Cutelyst::Engine *Cutelyst::Application::engine() const
+{
+    Q_D(const Application);
+    return d->engine;
+}
+
 void Application::setConfig(const QString &key, const QVariant &value)
 {
     Q_D(Application);
@@ -199,6 +205,7 @@ bool Application::setup(Engine *engine)
         return true;
     }
 
+    d->engine = engine;
     d->config = engine->config(QStringLiteral("CUTELYST"));
 
     d->setupHome();
@@ -266,7 +273,7 @@ void Application::handleRequest(Request *req)
     Context *ctx = new Context(priv);
     priv->response = new Response(ctx);
     priv->response->d_ptr->headers = d->headers;
-    priv->stats = new Stats(ctx);
+    priv->stats = new Stats(this);
 
     // Process request
     bool skipMethod = false;

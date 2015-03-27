@@ -24,13 +24,14 @@
 
 namespace Cutelyst {
 
+class Application;
 class StatsPrivate;
 class Stats : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Stats)
 public:
-    explicit Stats(QObject *parent = 0);
+    explicit Stats(Application *app = 0);
     virtual ~Stats();
 
     void profileStart(const QString &action, const QString &parent);

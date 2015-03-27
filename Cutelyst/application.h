@@ -87,6 +87,8 @@ public:
 
     bool inited() const;
 
+    Engine *engine() const;
+
 protected:
     /**
      * Do your application initialization here, if your

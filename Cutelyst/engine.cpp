@@ -133,6 +133,11 @@ bool Engine::postForkApplication()
     return d->app->enginePostFork();
 }
 
+quint64 Engine::time()
+{
+    return QDateTime::currentDateTime().toMSecsSinceEpoch();
+}
+
 QByteArray Engine::statusCode(quint16 status) const
 {
     switch (status) {
