@@ -227,6 +227,21 @@ bool Application::setup(Engine *engine)
         qCDebug(CUTELYST_CORE) << DispatchType::buildTable(tablePlugins, QStringList(),
                                                            QStringLiteral("Loaded plugins:")).data();
 
+        qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
+        qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
+
+        QString home = d->config.value("home").toString();
+        if (home.isEmpty()) {
+            qCDebug(CUTELYST_CORE) << "Couldn't find home";
+        } else {
+            QFileInfo homeInfo = home;
+            if (homeInfo.isDir()) {
+                qCDebug(CUTELYST_CORE) << "Found home" << home;
+            } else {
+                qCDebug(CUTELYST_CORE) << "Home" << home << "doesn't exist";
+            }
+        }
+
         QList<QStringList> table;
         Q_FOREACH (Controller *controller, d->controllers) {
             QString className = QString::fromLatin1(controller->metaObject()->className());
