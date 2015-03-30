@@ -101,6 +101,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *ctx, const QS
         // about how many args was passed
         if (action->numberOfArgs() == numberOfArgs) {
             Request *request = ctx->request();
+            request->setArguments(args);
             request->setMatch(_path);
             setupMatchedAction(ctx, action);
             return ExactMatch;
