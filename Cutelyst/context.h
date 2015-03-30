@@ -315,8 +315,8 @@ public:
      */
     void detach(Action *action = 0);
 
-    bool forward(Action *action, const QStringList &arguments = QStringList());
-    bool forward(const QString &action, const QStringList &arguments = QStringList());
+    bool forward(Code *action);
+    bool forward(const QString &action);
 
     /**
      * Gets an action in a given namespace.

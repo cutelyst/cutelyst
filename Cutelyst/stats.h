@@ -34,9 +34,9 @@ public:
     explicit Stats(Application *app = 0);
     virtual ~Stats();
 
-    void profileStart(const QString &action, const QString &parent);
-    void profileEnd(const QString &action);
-    QByteArray report();
+    virtual void profileStart(const QString &action);
+    virtual void profileEnd(const QString &action);
+    virtual QByteArray report();
 
 protected:
     StatsPrivate *d_ptr;

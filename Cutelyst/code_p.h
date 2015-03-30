@@ -29,7 +29,6 @@ class CodePrivate
 public:
     bool proccessRoles = false;
     QString name;
-    QString reverse;
     QStack<Code *> beforeRoles;
     QStack<Code *> aroundRoles;
     QStack<Code *> afterRoles;

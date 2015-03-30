@@ -20,12 +20,17 @@
 #include "code_p.h"
 #include "common.h"
 
+#include <QStringBuilder>
+
 using namespace Cutelyst;
 
 Code::Code(QObject *parent) :
     QObject(parent),
     d_ptr(new CodePrivate)
 {
+    if (objectName().isNull()) {
+        setObjectName(this->metaObject()->className() % QLatin1String("->execute"));
+    }
 }
 
 Code::~Code()
@@ -45,28 +50,10 @@ void Code::setName(const QString &name)
     d->name = name;
 }
 
-QString Code::reverse() const
-{
-    Q_D(const Code);
-    return d->name;
-}
-
-void Code::setReverse(const QString &reverse)
-{
-    Q_D(Code);
-    d->reverse = reverse;
-}
-
 bool Code::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_UNUSED(application)
     Q_UNUSED(args)
-    Q_D(Code);
-
-    if (d->reverse.isNull()) {
-        d->reverse = metaObject()->className();
-    }
-
     return true;
 }
 

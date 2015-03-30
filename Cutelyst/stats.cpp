@@ -42,7 +42,7 @@ Stats::~Stats()
 
 }
 
-void Stats::profileStart(const QString &action, const QString &parent)
+void Stats::profileStart(const QString &action)
 {
     Q_D(Stats);
     StatsAction stat;

@@ -31,6 +31,7 @@
 #include <QPluginLoader>
 #include <QJsonArray>
 #include <QCoreApplication>
+#include <QStringBuilder>
 #include <QLoggingCategory>
 #include <QThread>
 
@@ -68,6 +69,9 @@ ViewEngine::ViewEngine(const QString &engine, Application *app) : View(app)
     } else {
         m_interface->setParent(this);
     }
+
+    // Set code name
+    setObjectName(metaObject()->className() % QLatin1String("::") % engine % QLatin1String("->execute"));
 }
 
 ViewEngine::~ViewEngine()

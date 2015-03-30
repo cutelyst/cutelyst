@@ -23,6 +23,7 @@
 #include "view.h"
 #include "application.h"
 
+#include <QStringBuilder>
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview")
@@ -32,6 +33,7 @@ using namespace Cutelyst;
 RenderView::RenderView() :
     d_ptr(new RenderViewPrivate)
 {
+    setObjectName(metaObject()->className() % QLatin1String("->execute"));
 }
 
 RenderView::~RenderView()
@@ -78,7 +80,7 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
 
     // First use the action View attribute
     if (d->view) {
-        return d->view->render(ctx);
+        return ctx->forward(d->view);
     }
 
     // If the above is not set try the
@@ -86,7 +88,7 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
     // application default
     View *view = ctx->view();
     if (view) {
-        return view->render(ctx);
+        return ctx->forward(view);
     }
 
     qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";

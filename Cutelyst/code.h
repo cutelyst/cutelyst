@@ -60,9 +60,10 @@ public:
      * @brief name
      * @return Returns the private name of this action.
      */
-    QString reverse() const;
+    QString reverse() const { return objectName(); }
 
-    void setReverse(const QString &reverse);
+    void setReverse(const QString &reverse)
+    { return setObjectName(reverse); }
 
     /**
      * A Does class is always attached to an action,

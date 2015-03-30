@@ -272,16 +272,16 @@ void Context::detach(Action *action)
     d->detached = true;
 }
 
-bool Context::forward(Action *action, const QStringList &arguments)
+bool Context::forward(Code *action)
 {
     Q_D(Context);
-    return d->dispatcher->forward(this, action, arguments);
+    return d->dispatcher->forward(this, action);
 }
 
-bool Context::forward(const QString &action, const QStringList &arguments)
+bool Context::forward(const QString &action)
 {
     Q_D(Context);
-    return d->dispatcher->forward(this, action, arguments);
+    return d->dispatcher->forward(this, action);
 }
 
 Action *Context::getAction(const QString &action, const QString &ns)
@@ -385,14 +385,17 @@ QString ContextPrivate::statsStartExecute(Code *code)
     }
 
     QString actionName = code->reverse();
-    QString parentName;
 
-    Code *parent = 0;
-    if (!stack.isEmpty()) {
-        parent = stack.last();
-        parentName = parent->reverse();
+    if (dynamic_cast<Action *>(code)) {
+        actionName = QLatin1Char('/') % actionName;
     }
-    stats->profileStart(actionName, parentName);
+
+    if (stack.size() > 2) {
+        actionName = QLatin1String("-> ") % actionName;
+        actionName = actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
+    }
+
+    stats->profileStart(actionName);
 
     return actionName;
 }

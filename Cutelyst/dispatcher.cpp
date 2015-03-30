@@ -141,13 +141,15 @@ bool Dispatcher::dispatch(Context *ctx)
     return false;
 }
 
-bool Dispatcher::forward(Context *ctx, Action *action, const QStringList &arguments)
+bool Dispatcher::forward(Context *ctx, Code *component)
 {
-    Q_ASSERT(action);
-    return action->dispatch(ctx);
+    Q_ASSERT(component);
+    // If the component was an Action
+    // the dispatch() would call ctx->execute
+    return ctx->execute(component);
 }
 
-bool Dispatcher::forward(Context *ctx, const QString &opname, const QStringList &arguments)
+bool Dispatcher::forward(Context *ctx, const QString &opname)
 {
     Q_D(const Dispatcher);
 
