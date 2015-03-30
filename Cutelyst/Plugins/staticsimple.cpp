@@ -93,8 +93,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
                 // use the extension to match to be faster
                 QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
                 if (mimeType.isValid()) {
-                    QString contentType = mimeType.name() % QLatin1String("; charset=utf-8");
-                    headers.setContentType(contentType.toLatin1());
+                    headers.setContentType(mimeType.name());
                 }
 
                 headers.setLastModified(currentDateTime);
