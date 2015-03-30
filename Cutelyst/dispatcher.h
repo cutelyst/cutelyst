@@ -92,10 +92,6 @@ protected:
 
     void registerDispatchType(DispatchType *dispatchType);
 
-private:
-    QByteArray printActions();
-    inline QString cleanNamespace(const QString &ns) const;
-
 protected:
     friend class Application;
     friend class Context;

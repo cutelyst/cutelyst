@@ -122,7 +122,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
         ++i;
     }
 
-    qCDebug(CUTELYST_DISPATCHER) << endl << printActions().data() << endl;
+    d->printActions();
 }
 
 bool Dispatcher::dispatch(Context *ctx)
@@ -222,7 +222,7 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
         return 0;
     }
 
-    const QString &ns = cleanNamespace(nameSpace);
+    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
 
     return d->actionHash.value(ns % QLatin1Char('/') % name);
 }
@@ -246,7 +246,7 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
         return ActionList();
     }
 
-    const QString &ns = cleanNamespace(nameSpace);
+    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
 
     ActionList ret;
     const ActionList &containers = d->getContainers(ns);
@@ -288,50 +288,7 @@ void Dispatcher::registerDispatchType(DispatchType *dispatchType)
     d->dispatchers.append(dispatchType);
 }
 
-QByteArray Dispatcher::printActions()
-{
-    Q_D(Dispatcher);
-
-    QStringList headers;
-    headers.append(QStringLiteral("Private"));
-    headers.append(QStringLiteral("Class"));
-    headers.append(QStringLiteral("Method"));
-
-    QList<QStringList> table;
-
-    QList<QString> keys = d->actionHash.keys();
-    qSort(keys.begin(), keys.end());
-    Q_FOREACH (const QString &key, keys) {
-        Action *action = d->actionHash.value(key);
-        if (d->showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
-            QString path = key;
-            if (!path.startsWith(QLatin1Char('/'))) {
-                path.prepend(QLatin1Char('/'));
-            }
-
-            QStringList row;
-            row.append(path);
-            row.append(action->className());
-            row.append(action->name());
-            table.append(row);
-        }
-    }
-
-    QByteArray buffer;
-    QTextStream out(&buffer, QIODevice::WriteOnly);
-    out << DispatchType::buildTable(table,
-                                    headers,
-                                    QStringLiteral("Loaded Private actions:"));
-
-    // List all public actions
-    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-        out << endl << dispatch->list();
-    }
-
-    return buffer;
-}
-
-QString Dispatcher::cleanNamespace(const QString &ns) const
+QString DispatcherPrivate::cleanNamespace(const QString &ns)
 {
     QString ret = ns;
     bool lastWasSlash = true; // remove initial slash
@@ -357,6 +314,41 @@ QString Dispatcher::cleanNamespace(const QString &ns) const
 
 DispatcherPrivate::DispatcherPrivate(Dispatcher *q) : q_ptr(q)
 {
+}
+
+void DispatcherPrivate::printActions() const
+{
+    QList<QStringList> table;
+
+    QList<QString> keys = actionHash.keys();
+    qSort(keys.begin(), keys.end());
+    Q_FOREACH (const QString &key, keys) {
+        Action *action = actionHash.value(key);
+        if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
+            QString path = key;
+            if (!path.startsWith(QLatin1Char('/'))) {
+                path.prepend(QLatin1Char('/'));
+            }
+
+            QStringList row;
+            row.append(path);
+            row.append(action->className());
+            row.append(action->name());
+            table.append(row);
+        }
+    }
+
+    qCDebug(CUTELYST_DISPATCHER) <<  DispatchType::buildTable(table, {
+                                                                  QStringLiteral("Private"),
+                                                                  QStringLiteral("Class"),
+                                                                  QStringLiteral("Method")
+                                                              },
+                                                              QStringLiteral("Loaded Private actions:")).data();
+
+    // List all public actions
+    Q_FOREACH (DispatchType *dispatch, dispatchers) {
+        qCDebug(CUTELYST_DISPATCHER) << dispatch->list().data();
+    }
 }
 
 ActionList DispatcherPrivate::getContainers(const QString &ns) const

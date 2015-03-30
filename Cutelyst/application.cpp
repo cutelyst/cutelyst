@@ -255,6 +255,10 @@ bool Application::setup(Engine *engine)
 
         d->dispatcher->setupActions(d->controllers);
         d->init = true;
+
+        qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2")
+                                  .arg(QCoreApplication::applicationName())
+                                  .arg(VERSION).toLatin1().data();
         return true;
     }
 
