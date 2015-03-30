@@ -159,11 +159,12 @@ bool GrantleeView::render(Context *ctx)
         }
     }
 
+    qCDebug(CUTELYST_GRANTLEE) << "Rendering template" << templateFile;
+
     stash.insert(QStringLiteral("c"), QVariant::fromValue(ctx));
     // DEPRECATED
     stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
     Grantlee::Context gCtx(stash);
-    bool error = false;
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gCtx);
