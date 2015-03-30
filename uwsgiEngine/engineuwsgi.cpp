@@ -113,9 +113,6 @@ void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
 
     processRequest(wsgi_req);
 
-    wsgi_req->end_of_request = uwsgi_micros();
-    qCDebug(CUTELYST_STATS) << QString("Request took: %1s").arg(QString::number((wsgi_req->end_of_request-wsgi_req->start_of_request)/1000000.0, 'f')).toLatin1().data();
-
 end:
     uwsgi_close_request(wsgi_req);
 }
@@ -127,6 +124,7 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     RequestPrivate *priv = cache->priv;
     priv->reset();
 
+    priv->startOfRequest = req->start_of_request;
     priv->https = req->https_len;
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our

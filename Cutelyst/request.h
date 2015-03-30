@@ -302,6 +302,7 @@ protected:
     RequestPrivate *d_ptr;
 
 private:
+    friend class Application;
     friend class Dispatcher;
     friend class DispatchType;
     Q_DECLARE_PRIVATE(Request)

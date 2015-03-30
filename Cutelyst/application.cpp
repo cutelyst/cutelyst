@@ -23,6 +23,7 @@
 #include "common.h"
 #include "context_p.h"
 #include "request.h"
+#include "request_p.h"
 #include "controller.h"
 #include "controller_p.h"
 #include "response.h"
@@ -205,6 +206,7 @@ bool Application::setup(Engine *engine)
         return true;
     }
 
+    d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
     d->config = engine->config(QStringLiteral("CUTELYST"));
 
@@ -273,7 +275,10 @@ void Application::handleRequest(Request *req)
     Context *ctx = new Context(priv);
     priv->response = new Response(ctx);
     priv->response->d_ptr->headers = d->headers;
-    priv->stats = new Stats(this);
+
+    if (d->useStats) {
+        priv->stats = new Stats(this);
+    }
 
     // Process request
     bool skipMethod = false;
@@ -289,12 +294,29 @@ void Application::handleRequest(Request *req)
     }
     priv->engine->finalize(ctx);
 
-    qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
-            ctx->response()->status(),
-            ctx->response()->contentType().toLatin1().data(),
-            ctx->response()->contentLength());
+    if (priv->stats) {
+        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
+                ctx->response()->status(),
+                ctx->response()->contentType().toLatin1().data(),
+                ctx->response()->contentLength());
 
-    qCDebug(CUTELYST_STATS) << priv->stats->report().data();
+        RequestPrivate *reqPriv = req->d_ptr;
+        reqPriv->endOfRequest = d->engine->time();
+        double enlapsed = (reqPriv->endOfRequest - reqPriv->startOfRequest) / 1000000.0;
+        QString average;
+        if (enlapsed == 0.0) {
+            average = QStringLiteral("??");
+        } else {
+            average = QString::number(1.0 / enlapsed, 'f');
+            average.truncate(average.size() - 3);
+        }
+        qCDebug(CUTELYST_STATS) << QString("Request took: %1s (%2/s)\n%3")
+                                   .arg(QString::number(enlapsed, 'f'))
+                                   .arg(average)
+                                   .arg(priv->stats->report())
+                                   .toLatin1().data();
+        delete priv->stats;
+    }
 
     delete ctx;
 }

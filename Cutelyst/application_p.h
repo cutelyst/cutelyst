@@ -39,6 +39,7 @@ public:
     QHash<QString, View *> views;
     Headers headers;
     QVariantHash config;
+    bool useStats;
     Engine *engine;
 };
 

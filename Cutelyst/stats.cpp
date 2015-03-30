@@ -63,7 +63,7 @@ void Stats::profileEnd(const QString &action)
     }
 }
 
-QByteArray Stats::report()
+QString Stats::report()
 {
     Q_D(Stats);
 
@@ -74,11 +74,10 @@ QByteArray Stats::report()
     QList<QStringList> table;
     Q_FOREACH (StatsAction stat, d->actions) {
         table.append({ stat.action,
-                       QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1String(" ms") });
+                       QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
     }
 
     return DispatchType::buildTable(table, {
                                         QStringLiteral("Action"), QStringLiteral("Time")
-                                    },
-                                    QStringLiteral("Request took:"));
+                                    });
 }

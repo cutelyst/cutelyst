@@ -52,6 +52,8 @@ public:
     quint16 remotePort;
     QString remoteUser;
     Engine *engine;
+    quint64 startOfRequest;
+    quint64 endOfRequest;
     // Pointer to Engine data
     void *requestPtr = 0;
 
