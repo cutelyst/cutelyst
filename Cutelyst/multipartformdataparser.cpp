@@ -42,7 +42,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 {
     Q_D(MultiPartFormDataParser);
 
-    QRegularExpression re("boundary=([^\";]+)");
+    QRegularExpression re(QStringLiteral("boundary=([^\";]+)"));
     QRegularExpressionMatch match = re.match(contentType);
     if (match.hasMatch()) {
         QString boundary = QLatin1String("--") % match.captured(1);
@@ -56,7 +56,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
         return Uploads();
     }
     d->body = body;
-    int buffer_size = qMin(bufferSize, 32);
+    int buffer_size = qMin(bufferSize, 1024);
 //    qCDebug(CUTELYST_MULTIPART) << "Boudary:" << d->boundary << d->boundaryLength;
 
     Uploads ret;
