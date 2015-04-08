@@ -32,6 +32,10 @@ class ApplicationPrivate
 public:
     void setupHome();
 
+    void logRequest(Request *req);
+    void logRequestParameters(const ParamsMultiMap &params, const QString &title);
+    void logRequestUploads(const QMap<QString, Upload *> &uploads);
+
     bool init = false;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;

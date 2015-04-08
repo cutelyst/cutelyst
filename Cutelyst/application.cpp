@@ -31,6 +31,7 @@
 #include "dispatchtype.h"
 #include "view.h"
 #include "stats.h"
+#include "utils.h"
 
 #include "Actions/actionrest.h"
 #include "Actions/roleacl.h"
@@ -224,8 +225,8 @@ bool Application::setup(Engine *engine)
             // Configure plugins
             plugin->setup(this);
         }
-        qCDebug(CUTELYST_CORE) << DispatchType::buildTable(tablePlugins, QStringList(),
-                                                           QStringLiteral("Loaded plugins:")).data();
+        qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
+                                                    QStringLiteral("Loaded plugins:")).data();
 
         qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
         qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
@@ -259,10 +260,10 @@ bool Application::setup(Engine *engine)
             table.append({ className, QStringLiteral("instance")});
         }
 
-        qCDebug(CUTELYST_CORE) << DispatchType::buildTable(table, {
-                                                               QStringLiteral("Class"), QStringLiteral("Type")
-                                                           },
-                                                           QStringLiteral("Loaded components:")).data();
+        qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
+                                                        QStringLiteral("Class"), QStringLiteral("Type")
+                                                    },
+                                                    QStringLiteral("Loaded components:")).data();
 
         Q_FOREACH (Controller *controller, d->controllers) {
             controller->d_ptr->init(this, d->dispatcher);
@@ -303,6 +304,10 @@ void Application::handleRequest(Request *req)
     bool skipMethod = false;
     Q_EMIT beforePrepareAction(ctx, &skipMethod);
     if (!skipMethod) {
+        if (CUTELYST_REQUEST().isEnabled(QtDebugMsg)) {
+            d->logRequest(req);
+        }
+
         d->dispatcher->prepareAction(ctx);
 
         Q_EMIT beforeDispatch(ctx);
@@ -368,4 +373,67 @@ void Cutelyst::ApplicationPrivate::setupHome()
         QDir home = config.value("home").toString();
         config.insert("root", home.absoluteFilePath("root"));
     }
+}
+
+void Cutelyst::ApplicationPrivate::logRequest(Request *req)
+{
+    QString path = req->path();
+    if (path.isEmpty()) {
+        path = QStringLiteral("/");
+    }
+    qCDebug(CUTELYST_REQUEST) << req->method() << "request for" << path << "from" << req->address().toString();
+
+    ParamsMultiMap params = req->queryParameters();
+    if (!params.isEmpty()) {
+        logRequestParameters(params, QStringLiteral("Query Parameters are:"));
+    }
+
+    params = req->bodyParameters();
+    if (!params.isEmpty()) {
+        logRequestParameters(params, QStringLiteral("Body Parameters are:"));
+    }
+
+    qDebug() << req->contentType();
+    QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
+    if (!uploads.isEmpty()) {
+        logRequestUploads(uploads);
+    }
+}
+
+void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QString &title)
+{
+
+    QList<QStringList> table;
+    ParamsMultiMap::ConstIterator it = params.constBegin();
+    while (it != params.constEnd()) {
+        table.append({ it.key(), it.value() });
+        ++it;
+    }
+    qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
+                                                       QStringLiteral("Parameter"),
+                                                       QStringLiteral("Value"),
+                                                   },
+                                                   title).data();
+}
+
+void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelyst::Upload *> &uploads)
+{
+    QList<QStringList> table;
+    QMap<QString, Cutelyst::Upload *>::ConstIterator it = uploads.constBegin();
+    while (it != uploads.constEnd()) {
+        Upload *upload = it.value();
+        table.append({ it.key(),
+                       upload->filename(),
+                       upload->contentType(),
+                       QString::number(upload->size())
+                     });
+        ++it;
+    }
+    qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
+                                                       QStringLiteral("Parameter"),
+                                                       QStringLiteral("Filename"),
+                                                       QStringLiteral("Type"),
+                                                       QStringLiteral("Size"),
+                                                   },
+                                                   QStringLiteral("File Uploads are:")).data();
 }

@@ -27,11 +27,11 @@
 #include "request_p.h"
 #include "dispatchtypepath.h"
 #include "dispatchtypechained.h"
+#include "utils.h"
 
 #include <QUrl>
 #include <QMetaMethod>
 #include <QStringBuilder>
-#include <QDebug>
 
 using namespace Cutelyst;
 
@@ -338,12 +338,12 @@ void DispatcherPrivate::printActions() const
         }
     }
 
-    qCDebug(CUTELYST_DISPATCHER) <<  DispatchType::buildTable(table, {
-                                                                  QStringLiteral("Private"),
-                                                                  QStringLiteral("Class"),
-                                                                  QStringLiteral("Method")
-                                                              },
-                                                              QStringLiteral("Loaded Private actions:")).data();
+    qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {
+                                                           QStringLiteral("Private"),
+                                                           QStringLiteral("Class"),
+                                                           QStringLiteral("Method")
+                                                       },
+                                                       QStringLiteral("Loaded Private actions:")).data();
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, dispatchers) {

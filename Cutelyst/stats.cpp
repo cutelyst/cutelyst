@@ -22,6 +22,7 @@
 #include "dispatchtype.h"
 #include "application.h"
 #include "engine.h"
+#include "utils.h"
 
 #include "common.h"
 
@@ -77,7 +78,7 @@ QString Stats::report()
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
     }
 
-    return DispatchType::buildTable(table, {
-                                        QStringLiteral("Action"), QStringLiteral("Time")
-                                    });
+    return Utils::buildTable(table, {
+                                 QStringLiteral("Action"), QStringLiteral("Time")
+                             });
 }

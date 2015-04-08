@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,40 +17,19 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "dispatchtype.h"
+#ifndef UTILS_H
+#define UTILS_H
 
-#include "context_p.h"
+#include <QStringList>
 
-using namespace Cutelyst;
+namespace Cutelyst {
 
-DispatchType::DispatchType(QObject *parent) :
-    QObject(parent)
+class Utils
 {
+public:
+    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
+};
+
 }
 
-DispatchType::~DispatchType()
-{
-}
-
-QString DispatchType::uriForAction(Action *action, const QStringList &captures) const
-{
-    Q_UNUSED(action)
-    Q_UNUSED(captures)
-    return QString();
-}
-
-bool DispatchType::registerAction(Action *action)
-{
-    Q_UNUSED(action)
-    return true;
-}
-
-bool DispatchType::isLowPrecedence() const
-{
-    return false;
-}
-
-void DispatchType::setupMatchedAction(Context *ctx, Action *action) const
-{
-    ctx->d_ptr->action = action;
-}
+#endif // UTILS_H

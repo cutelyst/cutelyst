@@ -5,6 +5,7 @@ include_directories(
 )
 
 set(cutelystqt_SRC
+    utils.cpp
     upload.cpp
     upload_p.h
     multipartformdataparser.cpp
@@ -96,6 +97,7 @@ set(cutelystqt_HEADERS
     View
     plugin.h
     Plugin
+    utils.h
 )
 
 set(cutelystqt_actions_HEADERS

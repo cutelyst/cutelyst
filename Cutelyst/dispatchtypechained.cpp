@@ -20,6 +20,7 @@
 #include "dispatchtypechained_p.h"
 #include "common.h"
 #include "actionchain.h"
+#include "utils.h"
 
 #include <QStringBuilder>
 
@@ -146,9 +147,9 @@ QByteArray DispatchTypeChained::list() const
         QStringList chainedHeaders;
         chainedHeaders.append(QStringLiteral("Path Spec"));
         chainedHeaders.append(QStringLiteral("Private"));
-        out << buildTable(paths,
-                          chainedHeaders,
-                          QStringLiteral("Loaded Chained actions:"));
+        out << Utils::buildTable(paths,
+                                 chainedHeaders,
+                                 QStringLiteral("Loaded Chained actions:"));
     }
 
     if (!unattachedTable.isEmpty()) {
@@ -156,9 +157,9 @@ QByteArray DispatchTypeChained::list() const
         unattachedHeaders.append(QStringLiteral("Private"));
         unattachedHeaders.append(QStringLiteral("Missing parent"));
 
-        out << buildTable(unattachedTable,
-                          unattachedHeaders,
-                          QStringLiteral("Unattached Chained actions:"));
+        out << Utils::buildTable(unattachedTable,
+                                 unattachedHeaders,
+                                 QStringLiteral("Unattached Chained actions:"));
     }
 
     return buffer;

@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "controller.h"
+#include "utils.h"
 
 #include <QStringBuilder>
 #include <QBuffer>
@@ -78,7 +79,7 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return buildTable(table,
+    return Utils::buildTable(table,
                       headers,
                       QStringLiteral("Loaded Path actions:"));
 }
