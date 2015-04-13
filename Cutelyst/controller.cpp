@@ -395,8 +395,8 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 
             // remove quotes
             if (!value.isEmpty()) {
-                if ((value.startsWith(QChar('\'')) && value.endsWith(QChar('\''))) ||
-                        (value.startsWith(QChar('"')) && value.endsWith(QChar('"')))) {
+                if ((value.startsWith(QLatin1Char('\'')) && value.endsWith(QLatin1Char('\''))) ||
+                        (value.startsWith(QLatin1Char('"')) && value.endsWith(QLatin1Char('"')))) {
                     value.remove(0, 1);
                     value.remove(value.size() - 1, 1);
                 }
@@ -480,7 +480,7 @@ QString ControllerPrivate::parsePathAttr(const QString &_value)
         value = QStringLiteral("");
     }
 
-    if (value.startsWith(QChar('/'))) {
+    if (value.startsWith(QLatin1Char('/'))) {
         return value;
     } else if (value.length()) {
         return pathPrefix % QLatin1Char('/') % value;
@@ -496,7 +496,7 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
 
     if (attr == QLatin1String(".")) {
         return QLatin1Char('/') % pathPrefix;
-    } else if (!attr.startsWith(QChar('/'))) {
+    } else if (!attr.startsWith(QLatin1Char('/'))) {
         if (!pathPrefix.isEmpty()) {
             return QLatin1Char('/') % pathPrefix % QLatin1Char('/') % attr;
         } else {
@@ -516,7 +516,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
 
         int id = QMetaType::type(instanceName.toLocal8Bit().data());
         if (!id) {
-            if (!instanceName.endsWith(QChar('*'))) {
+            if (!instanceName.endsWith(QLatin1Char('*'))) {
                 instanceName.append("*");
             }
 

@@ -208,7 +208,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
             encodedArgs.append(QUrl::toPercentEncoding(arg));
         }
         ret.setPath(QLatin1Char('/') % encodedArgs.join(QLatin1Char('/')));
-    } else if (_path.startsWith(QChar('/'))) {
+    } else if (_path.startsWith(QLatin1Char('/'))) {
         ret.setPath(_path);
     } else {
         ret.setPath(QLatin1Char('/') % _path);
@@ -380,7 +380,7 @@ void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, co
 QString ContextPrivate::statsStartExecute(Component *code)
 {
     // Skip internal actions
-    if (code->name().startsWith(QChar('_'))) {
+    if (code->name().startsWith(QLatin1Char('_'))) {
         return QString();
     }
 

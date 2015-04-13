@@ -119,7 +119,7 @@ QString Request::base() const
         }
 
         // base always have a trailing slash
-        base.append(QChar('/'));
+        base.append(QLatin1Char('/'));
 
         d->base = base;
         d->baseParsed = true;

@@ -347,8 +347,8 @@ QList<HeaderValuePair> Headers::headersForResponse() const
         bool lastWasDash = true;
         for (int i = 0 ; i < key.size() ; ++i) {
             QCharRef c = key[i];
-            if (c == QChar('_')) {
-                c = QChar('-');
+            if (c == QLatin1Char('_')) {
+                c = QLatin1Char('-');
                 lastWasDash = true;
             } else if(lastWasDash) {
                 lastWasDash = false;

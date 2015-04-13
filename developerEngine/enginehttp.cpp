@@ -105,7 +105,7 @@ EngineHttp::EngineHttp(const QVariantHash &opts, QObject *parent) : Engine(opts,
         Q_FOREACH (const QString &listen, parser.values(httpSocket)) {
             qCDebug(CUTELYST_ENGINE_HTTP) << "http-socket"<< listen;
             QTcpServer *server = new QTcpServer(this);
-            QStringList parts = listen.split(QChar(':'));
+            QStringList parts = listen.split(QLatin1Char(':'));
             if (parts.size() != 2) {
                 qCDebug(CUTELYST_ENGINE_HTTP) << "error parsing:" << listen;
                 exit(1);
