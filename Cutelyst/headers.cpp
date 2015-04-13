@@ -51,7 +51,8 @@ QString Headers::contentTypeCharset() const
     Q_FOREACH (const QString part, parts) {
         int pos = part.indexOf(QLatin1String("charset="));
         if (pos != -1) {
-            return part.mid(pos).trimmed().toUpper();
+            int endPos = part.indexOf(QLatin1Char(';'), pos);
+            return part.mid(pos + 8, endPos).trimmed().toUpper();
         }
     }
     return QString();
