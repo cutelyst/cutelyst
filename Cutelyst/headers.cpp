@@ -40,7 +40,8 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
-    return value(QStringLiteral("content_type"));
+    QString ct = value(QStringLiteral("content_type"));
+    return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
 void Headers::setContentType(const QString &contentType)

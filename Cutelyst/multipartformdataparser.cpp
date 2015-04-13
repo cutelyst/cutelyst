@@ -33,9 +33,7 @@ MultiPartFormDataParser::MultiPartFormDataParser() :
 
 MultiPartFormDataParser::~MultiPartFormDataParser()
 {
-    Q_D(MultiPartFormDataParser);
-    delete [] d->boundary;
-    delete d;
+    delete d_ptr;
 }
 
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
@@ -68,6 +66,8 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     d->body->seek(origPos);
 
     delete [] buffer;
+    delete [] d->boundary;
+
     return ret;
 }
 

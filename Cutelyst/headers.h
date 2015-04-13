@@ -40,6 +40,8 @@ public:
     /**
      * The Content-Type header field indicates the media type of the message content.
      * E.g.: "text/html"
+     * The value returned will be converted to lower case, and potential parameters
+     * will be ignored. If there is no such header field, then the empty string is returned.
      */
     QString contentType() const;
 

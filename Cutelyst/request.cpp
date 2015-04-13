@@ -304,7 +304,7 @@ void RequestPrivate::parseBody() const
     ParamsMultiMap params;
     QVariant data;
 
-    const QString &contentType = headers.contentType().toLower();
+    const QString &contentType = headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
@@ -315,9 +315,9 @@ void RequestPrivate::parseBody() const
         data = QVariant::fromValue(params);
 
         body->seek(posOrig);
-    } else if (contentType.startsWith(QLatin1String("multipart/form-data"))) {
+    } else if (contentType == QLatin1String("multipart/form-data")) {
         MultiPartFormDataParser parser;
-        Uploads uploadList = parser.parse(body, headers.contentType());
+        Uploads uploadList = parser.parse(body, headers.header(QStringLiteral("content_type")));
         for (int i = uploadList.size() - 1; i >= 0; --i) {
             Upload *upload = uploadList.at(i);
             uploads.insertMulti(upload->name(), upload);
