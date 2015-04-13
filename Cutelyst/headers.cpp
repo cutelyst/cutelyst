@@ -181,9 +181,15 @@ QString Headers::referer() const
     return value(QStringLiteral("referer"));
 }
 
-void Headers::setReferer(const QString &value)
+void Headers::setReferer(const QString &uri)
 {
-    insert(QStringLiteral("referer"), value);
+    int fragmentPos = uri.indexOf(QLatin1Char('#'));
+    if (fragmentPos != -1) {
+        // Strip fragment per RFC 2616, section 14.36.
+        insert(QStringLiteral("referer"), uri.mid(0, fragmentPos));
+    } else {
+        insert(QStringLiteral("referer"), uri);
+    }
 }
 
 void Headers::setWwwAuthenticate(const QString &value)

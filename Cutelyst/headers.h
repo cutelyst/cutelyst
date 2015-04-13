@@ -142,6 +142,12 @@ public:
 
     QString referer() const;
 
+    /**
+     * Sets the referrer (Referer) header.
+     * This method removes the fragment from the given URI if it is present,
+     * as mandated by RFC2616. Note that the removal does not happen automatically
+     * if using the setHeader() method to set the referrer
+     */
     void setReferer(const QString &value);
 
     /**
