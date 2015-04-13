@@ -23,7 +23,7 @@
 
 using namespace Cutelyst;
 
-View::View(Application *app) : Code(app)
+View::View(Application *app) : Component(app)
 {
 }
 
@@ -31,9 +31,9 @@ View::~View()
 {
 }
 
-Code::Modifiers View::modifiers() const
+Component::Modifiers View::modifiers() const
 {
-    return Code::OnlyExecute;
+    return Component::OnlyExecute;
 }
 
 bool View::render(Context *ctx) const

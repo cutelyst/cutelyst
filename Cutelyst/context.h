@@ -33,7 +33,7 @@ namespace Cutelyst {
 
 class Action;
 class Application;
-class Code;
+class Component;
 class Engine;
 class Response;
 class Dispatcher;
@@ -201,7 +201,7 @@ public:
     /**
      * Returns the internal execution stack (actions that are currently executing).
      */
-    QStack<Code *> stack() const;
+    QStack<Component *> stack() const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -315,7 +315,7 @@ public:
      */
     void detach(Action *action = 0);
 
-    bool forward(Code *action);
+    bool forward(Component *action);
     bool forward(const QString &action);
 
     /**
@@ -344,7 +344,7 @@ public:
     /**
      * Execute an action. Errors are available via error().
      */
-    bool execute(Code *code);
+    bool execute(Component *code);
 
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
 

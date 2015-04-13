@@ -81,7 +81,7 @@ protected:
      */
     bool dispatch(Context *ctx);
 
-    bool forward(Context *ctx, Code *component);
+    bool forward(Context *ctx, Component *component);
     bool forward(Context *ctx, const QString &opname);
     void prepareAction(Context *ctx);
 

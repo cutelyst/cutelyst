@@ -52,7 +52,7 @@ Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view")
 Q_LOGGING_CATEGORY(CUTELYST_REQUEST, "cutelyst.request")
 Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
 Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
-Q_LOGGING_CATEGORY(CUTELYST_CODE, "cutelyst.code")
+Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component")
 
 using namespace Cutelyst;
 

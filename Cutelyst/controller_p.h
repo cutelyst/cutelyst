@@ -21,7 +21,7 @@
 #define CONTROLLER_P_H
 
 #include "controller.h"
-#include "code.h"
+#include "component.h"
 
 namespace Cutelyst {
 
@@ -38,7 +38,7 @@ public:
     Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
     QMap<QString, QString> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
-    QStack<Code *> gatherActionRoles(const QVariantHash &args);
+    QStack<Component *> gatherActionRoles(const QVariantHash &args);
     QString parsePathAttr(const QString &_value);
     QString parseChainedAttr(const QString &attr);
 

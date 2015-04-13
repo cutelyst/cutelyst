@@ -32,7 +32,7 @@ class Stats;
 class ContextPrivate
 {
 public:
-    QString statsStartExecute(Code *code);
+    QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
 
     Application *app;
@@ -41,7 +41,7 @@ public:
     Response *response = 0;
     Action *action = 0;
     View *view = 0;
-    QStack<Code *> stack;
+    QStack<Component *> stack;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QHash<Plugin *, QVariantHash> pluginsConfig;

@@ -273,9 +273,9 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
     QRegularExpression regex(QStringLiteral("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$"));
     QRegularExpressionMatch match = regex.match(name);
     if (!match.hasMatch()) {
-        QStack<Code *> roles = gatherActionRoles(args);
+        QStack<Component *> roles = gatherActionRoles(args);
         for (int i = 0; i < roles.size(); ++i) {
-            Code *code = roles.at(i);
+            Component *code = roles.at(i);
             code->init(app, args);
             code->setParent(action);
         }
@@ -459,15 +459,15 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     return ret;
 }
 
-QStack<Code *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
+QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
-    QStack<Code *> roles;
+    QStack<Component *> roles;
     QMap<QByteArray, QByteArray> attributes;
     attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
     Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
-        QObject *object = instantiateClass(role, "Cutelyst::Code");
+        QObject *object = instantiateClass(role, "Cutelyst::Component");
         if (object) {
-            roles.push(qobject_cast<Code *>(object));
+            roles.push(qobject_cast<Component *>(object));
         }
     }
     return roles;

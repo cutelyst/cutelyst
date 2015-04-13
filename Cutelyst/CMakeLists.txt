@@ -41,8 +41,8 @@ set(cutelystqt_SRC
     dispatchtypepath_p.h
     dispatcher.cpp
     dispatcher_p.h
-    code.cpp
-    code_p.h
+    component.cpp
+    component_p.h
     view.cpp
     application.cpp
     application_p.h
@@ -76,8 +76,8 @@ set(cutelystqt_HEADERS
     Context
     controller.h
     Controller
-    code.h
-    Code
+    component.h
+    Component
     dispatcher.h
     Dispatcher
     dispatchtype.h

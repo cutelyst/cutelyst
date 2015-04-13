@@ -24,7 +24,7 @@
 
 using namespace Cutelyst;
 
-Action::Action(QObject *parent) : Code(parent)
+Action::Action(QObject *parent) : Component(parent)
     , d_ptr(new ActionPrivate)
 {
 }
@@ -34,9 +34,9 @@ Action::~Action()
     delete d_ptr;
 }
 
-Code::Modifiers Action::modifiers() const
+Component::Modifiers Action::modifiers() const
 {
-    return Code::OnlyExecute;
+    return Component::OnlyExecute;
 }
 
 void Action::setMethod(const QMetaMethod &method)

@@ -58,10 +58,10 @@ public:
     Q_INVOKABLE RenderView();
     virtual ~RenderView();
 
-    virtual bool init(Application *application, const QVariantHash &args);
+    virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
 
 protected:
-    virtual bool doExecute(Cutelyst::Context *ctx);
+    virtual bool doExecute(Cutelyst::Context *ctx) Q_DECL_FINAL;
 
     RenderViewPrivate *d_ptr;
 };

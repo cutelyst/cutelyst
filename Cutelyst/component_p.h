@@ -17,24 +17,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_CODE_P_H
-#define CUTELYST_CODE_P_H
+#ifndef CUTELYST_COMPONENT_P_H
+#define CUTELYST_COMPONENT_P_H
 
-#include "code.h"
+#include "component.h"
 
 namespace Cutelyst {
 
-class CodePrivate
+class ComponentPrivate
 {
 public:
     bool proccessRoles = false;
     QString name;
-    QStack<Code *> beforeRoles;
-    QStack<Code *> aroundRoles;
-    QStack<Code *> afterRoles;
-    QStack<Code *> roles;
+    QStack<Component *> beforeRoles;
+    QStack<Component *> aroundRoles;
+    QStack<Component *> afterRoles;
+    QStack<Component *> roles;
 };
 
 }
 
-#endif // CUTELYST_CODE_P_H
+#endif // CUTELYST_COMPONENT_P_H

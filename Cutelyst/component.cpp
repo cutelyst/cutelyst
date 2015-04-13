@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,65 +17,64 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "code_p.h"
+#include "component_p.h"
 #include "common.h"
 
 #include <QStringBuilder>
 
 using namespace Cutelyst;
 
-Code::Code(QObject *parent) :
-    QObject(parent),
-    d_ptr(new CodePrivate)
+Component::Component(QObject *parent) : QObject(parent)
+  , d_ptr(new ComponentPrivate)
 {
     if (objectName().isNull()) {
         setObjectName(this->metaObject()->className() % QLatin1String("->execute"));
     }
 }
 
-Code::~Code()
+Component::~Component()
 {
     delete d_ptr;
 }
 
-QString Code::name() const
+QString Component::name() const
 {
-    Q_D(const Code);
+    Q_D(const Component);
     return d->name;
 }
 
-void Code::setName(const QString &name)
+void Component::setName(const QString &name)
 {
-    Q_D(Code);
+    Q_D(Component);
     d->name = name;
 }
 
-bool Code::init(Cutelyst::Application *application, const QVariantHash &args)
+bool Component::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_UNUSED(application)
     Q_UNUSED(args)
     return true;
 }
 
-bool Code::execute(Context *ctx)
+bool Component::execute(Context *ctx)
 {
-    Q_D(Code);
+    Q_D(Component);
 
     if (d->proccessRoles) {
-        Q_FOREACH (Code *code, d->beforeRoles) {
+        Q_FOREACH (Component *code, d->beforeRoles) {
             if (!code->beforeExecute(ctx)) {
                 return false;
             }
         }
 
-        QStack<Code *> stack = d->aroundRoles;
+        QStack<Component *> stack = d->aroundRoles;
         // first item on the stack is always the execution code
         stack.push_front(this);
         if (!aroundExecute(ctx, stack)) {
             return false;
         }
 
-        Q_FOREACH (Code *code, d->afterRoles) {
+        Q_FOREACH (Component *code, d->afterRoles) {
             if (!code->afterExecute(ctx)) {
                 return false;
             }
@@ -88,48 +87,48 @@ bool Code::execute(Context *ctx)
     return doExecute(ctx);
 }
 
-bool Code::beforeExecute(Context *ctx)
+bool Component::beforeExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-bool Code::aroundExecute(Context *ctx, QStack<Cutelyst::Code *> stack)
+bool Component::aroundExecute(Context *ctx, QStack<Cutelyst::Component *> stack)
 {
     Q_UNUSED(ctx)
 
     int stackSize = stack.size();
     if (stackSize == 1) {
-        Code *code = stack.pop();
+        Component *code = stack.pop();
         return code->doExecute(ctx);
     } else if (stackSize > 1) {
-        Code *code = stack.pop();
+        Component *code = stack.pop();
         return code->aroundExecute(ctx, stack);
     }
 
     // Should NEVER happen
-    qCCritical(CUTELYST_CODE) << "Reached end of the stack!" << ctx->req()->uri();
+    qCCritical(CUTELYST_COMPONENT) << "Reached end of the stack!" << ctx->req()->uri();
     return false;
 }
 
-bool Code::afterExecute(Context *ctx)
+bool Component::afterExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-bool Code::doExecute(Context *ctx)
+bool Component::doExecute(Context *ctx)
 {
     Q_UNUSED(ctx)
     return true;
 }
 
-void Code::applyRoles(const QStack<Cutelyst::Code *> &roles)
+void Component::applyRoles(const QStack<Cutelyst::Component *> &roles)
 {
-    Q_D(Code);
+    Q_D(Component);
 
     for (int i = 0; i < roles.size(); ++i) {
-        Code *code = roles.at(i);
+        Component *code = roles.at(i);
         if (code->modifiers() & BeforeExecute) {
             d->beforeRoles.push(code);
         }
@@ -146,12 +145,12 @@ void Code::applyRoles(const QStack<Cutelyst::Code *> &roles)
     d->proccessRoles = true;
 }
 
-bool Code::dispatcherReady(const Dispatcher *dispatch, Controller *controller)
+bool Component::dispatcherReady(const Dispatcher *dispatch, Controller *controller)
 {
-    Q_D(Code);
+    Q_D(Component);
 
     for (int i = 0; i < d->roles.size(); ++i) {
-        Code *code = d->roles.at(i);
+        Component *code = d->roles.at(i);
         code->dispatcherReady(dispatch, controller);
     }
     return true;

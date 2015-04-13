@@ -17,8 +17,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CUTELYST_CODE_H
-#define CUTELYST_CODE_H
+#ifndef CUTELYST_COMPONENT_H
+#define CUTELYST_COMPONENT_H
 
 #include <QObject>
 
@@ -27,11 +27,11 @@
 namespace Cutelyst {
 
 class Context;
-class CodePrivate;
-class Code : public QObject
+class ComponentPrivate;
+class Component : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(Code)
+    Q_DECLARE_PRIVATE(Component)
     Q_ENUMS(Modifier)
     Q_FLAGS(Modifiers)
 public:
@@ -43,14 +43,14 @@ public:
     };
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
-    explicit Code(QObject *parent = 0);
-    virtual ~Code();
+    explicit Component(QObject *parent = 0);
+    virtual ~Component();
 
     virtual Modifiers modifiers() const = 0;
 
     /**
      * @brief name
-     * @return Returns the sub name of this code.
+     * @return Returns the sub name of this Component.
      */
     QString name() const;
 
@@ -78,13 +78,13 @@ public:
 protected:
     virtual bool beforeExecute(Context *ctx);
 
-    virtual bool aroundExecute(Context *ctx, QStack<Code *> stack);
+    virtual bool aroundExecute(Context *ctx, QStack<Component *> stack);
 
     virtual bool afterExecute(Context *ctx);
 
     virtual bool doExecute(Context *ctx);
 
-    void applyRoles(const QStack<Code *> &roles);
+    void applyRoles(const QStack<Component *> &roles);
 
     /**
      * Called by dispatcher once it's done preparing actions
@@ -96,9 +96,9 @@ protected:
 
 protected:
     friend class Controller;
-    CodePrivate *d_ptr;
+    ComponentPrivate *d_ptr;
 };
 
 }
 
-#endif // CUTELYST_CODE_H
+#endif // CUTELYST_COMPONENT_H

@@ -23,7 +23,7 @@
 #include <QStringList>
 #include <QMetaMethod>
 
-#include <Cutelyst/Code>
+#include <Cutelyst/Component>
 
 namespace Cutelyst {
 
@@ -31,14 +31,14 @@ class Context;
 class Controller;
 class Dispatcher;
 class ActionPrivate;
-class Action : public Code
+class Action : public Component
 {
     Q_OBJECT
 public:
     explicit Action(QObject *parent = 0);
     virtual ~Action();
 
-    virtual Modifiers modifiers() const;
+    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
 
     /**
      * Returns the attributes that are set for this action,
@@ -110,7 +110,7 @@ protected:
     /**
      * Execute this action against
      */
-    virtual bool doExecute(Context *ctx);
+    virtual bool doExecute(Context *ctx) Q_DECL_OVERRIDE;
 
     /**
      * The method to be invoked by this Action

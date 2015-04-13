@@ -183,7 +183,7 @@ QVariant Context::stash(const QString &key) const
     return d->stash.value(key);
 }
 
-QStack<Code *> Context::stack() const
+QStack<Component *> Context::stack() const
 {
     Q_D(const Context);
     return d->stack;
@@ -272,7 +272,7 @@ void Context::detach(Action *action)
     d->detached = true;
 }
 
-bool Context::forward(Code *action)
+bool Context::forward(Component *action)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action);
@@ -302,7 +302,7 @@ QList<Cutelyst::Plugin *> Context::plugins()
     return d->plugins;
 }
 
-bool Context::execute(Code *code)
+bool Context::execute(Component *code)
 {
     Q_D(Context);
 
@@ -377,7 +377,7 @@ void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, co
 }
 
 
-QString ContextPrivate::statsStartExecute(Code *code)
+QString ContextPrivate::statsStartExecute(Component *code)
 {
     // Skip internal actions
     if (code->name().startsWith(QChar('_'))) {

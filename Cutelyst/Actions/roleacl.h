@@ -22,13 +22,13 @@
 
 #include <QVariantHash>
 
-#include <Cutelyst/Code>
+#include <Cutelyst/Component>
 #include <Cutelyst/Context>
 
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class RoleACL : public Code
+class RoleACL : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
@@ -36,11 +36,11 @@ public:
     Q_INVOKABLE RoleACL();
     virtual ~RoleACL();
 
-    virtual Modifiers modifiers() const;
+    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
 
-    virtual bool init(Application *application, const QVariantHash &args);
+    virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
 
-    virtual bool aroundExecute(Context *ctx, QStack<Code *> stack);
+    virtual bool aroundExecute(Context *ctx, QStack<Component *> stack) Q_DECL_OVERRIDE;
 
     bool canVisit(Context *ctx) const;
 

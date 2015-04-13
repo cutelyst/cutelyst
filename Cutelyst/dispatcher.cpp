@@ -141,7 +141,7 @@ bool Dispatcher::dispatch(Context *ctx)
     return false;
 }
 
-bool Dispatcher::forward(Context *ctx, Code *component)
+bool Dispatcher::forward(Context *ctx, Component *component)
 {
     Q_ASSERT(component);
     // If the component was an Action

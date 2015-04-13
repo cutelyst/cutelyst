@@ -22,12 +22,12 @@
 
 #include <QObject>
 
-#include <Cutelyst/Code>
+#include <Cutelyst/Component>
 
 namespace Cutelyst {
 
 class Context;
-class View : public Code
+class View : public Component
 {
     Q_OBJECT
 public:
@@ -35,9 +35,9 @@ public:
     virtual ~View();
 
     /**
-     * The default implementation returns Code::OnlyExecute
+     * The default implementation returns Component::OnlyExecute
      */
-    virtual Modifiers modifiers() const;
+    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
 
     /**
      * All subclasses must reimplement this to
@@ -48,10 +48,11 @@ public:
 
 private:
     /**
-     * This is used by Code execute() when
+     * This is used by Component execute() when
      * using an ActionView
      */
-    bool doExecute(Context *ctx) { return render(ctx); }
+    bool doExecute(Context *ctx) Q_DECL_FINAL
+    { return render(ctx); }
 };
 
 }

@@ -39,7 +39,7 @@ RoleACL::~RoleACL()
     delete d_ptr;
 }
 
-Code::Modifiers RoleACL::modifiers() const
+Component::Modifiers RoleACL::modifiers() const
 {
     return AroundExecute;
 }
@@ -81,12 +81,12 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     return true;
 }
 
-bool RoleACL::aroundExecute(Context *ctx, QStack<Code *> stack)
+bool RoleACL::aroundExecute(Context *ctx, QStack<Cutelyst::Component *> stack)
 {
     Q_D(const RoleACL);
 
     if (canVisit(ctx)) {
-        return Code::aroundExecute(ctx, stack);
+        return Component::aroundExecute(ctx, stack);
     }
 
     ctx->detach(d->detachTo);
