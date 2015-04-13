@@ -24,24 +24,16 @@
 
 namespace Cutelyst {
 
-class MultiPartFormDataParserPrivate;
 class MultiPartFormDataParser
 {
-    Q_DECLARE_PRIVATE(MultiPartFormDataParser)
 public:
-    MultiPartFormDataParser();
-    virtual ~MultiPartFormDataParser();
-
     /**
      * @brief MultiPartFormDataInternal
      * @param contentType can be the whole HTTP Content-Type
      * header or just it's value
      * @param body
      */
-    virtual Uploads parse(QIODevice *body, const QString &contentType, int bufferSize = 4096);
-
-protected:
-    MultiPartFormDataParserPrivate *d_ptr;
+    static Uploads parse(QIODevice *body, const QString &contentType, int bufferSize = 4096);
 };
 
 }

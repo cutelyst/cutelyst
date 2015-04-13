@@ -316,8 +316,7 @@ void RequestPrivate::parseBody() const
 
         body->seek(posOrig);
     } else if (contentType == QLatin1String("multipart/form-data")) {
-        MultiPartFormDataParser parser;
-        Uploads uploadList = parser.parse(body, headers.header(QStringLiteral("content_type")));
+        Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")));
         for (int i = uploadList.size() - 1; i >= 0; --i) {
             Upload *upload = uploadList.at(i);
             uploads.insertMulti(upload->name(), upload);

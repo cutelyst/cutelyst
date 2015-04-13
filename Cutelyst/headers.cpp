@@ -44,6 +44,34 @@ QString Headers::contentType() const
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
+bool Headers::contentIsText() const
+{
+    return value(QStringLiteral("content_type")).startsWith(QLatin1String("text/"));
+}
+
+bool Headers::contentIsHtml() const
+{
+    QString ct = contentType();
+    return ct == QLatin1String("text/html") ||
+            ct == QLatin1String("application/xhtml+xml") ||
+            ct == QLatin1String("application/vnd.wap.xhtml+xml");
+}
+
+bool Headers::contentIsXHtml() const
+{
+    QString ct = contentType();
+    return ct == QLatin1String("application/xhtml+xml") ||
+            ct == QLatin1String("application/vnd.wap.xhtml+xml");
+}
+
+bool Headers::contentIsXml() const
+{
+    QString ct = contentType();
+    return ct == QLatin1String("text/xml") ||
+            ct == QLatin1String("application/xml") ||
+            ct.endsWith(QLatin1String("xml"));
+}
+
 void Headers::setContentType(const QString &contentType)
 {
     insert(QStringLiteral("content_type"), contentType);

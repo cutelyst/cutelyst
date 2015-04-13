@@ -46,6 +46,27 @@ public:
     QString contentType() const;
 
     /**
+     * Returns TRUE if the Content-Type header field indicate that the content is textual.
+     */
+    bool contentIsText() const;
+
+    /**
+     * Returns TRUE if the Content-Type header field indicate that the
+     * content is some kind of HTML (including XHTML).
+     */
+    bool contentIsHtml() const;
+
+    /**
+     * Returns TRUE if the Content-Type header field indicate that the content is XHTML.
+     */
+    bool contentIsXHtml() const;
+
+    /**
+     * Returns TRUE if the Content-Type header field indicate that the content is XML.
+     */
+    bool contentIsXml() const;
+
+    /**
      * The Content-Type header field indicates the media type of the message content.
      * E.g.: "text/html"
      */

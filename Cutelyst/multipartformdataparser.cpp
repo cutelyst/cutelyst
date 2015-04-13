@@ -26,19 +26,9 @@
 
 using namespace Cutelyst;
 
-MultiPartFormDataParser::MultiPartFormDataParser() :
-    d_ptr(new MultiPartFormDataParserPrivate)
-{
-}
-
-MultiPartFormDataParser::~MultiPartFormDataParser()
-{
-    delete d_ptr;
-}
-
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
 {
-    Q_D(MultiPartFormDataParser);
+    MultiPartFormDataParserPrivate *d;
 
     QRegularExpression re(QStringLiteral("boundary=([^\";]+)"));
     QRegularExpressionMatch match = re.match(contentType);
@@ -48,11 +38,13 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
             return Uploads();
         }
 
+        d = new MultiPartFormDataParserPrivate;
         d->boundary = qstrdup(boundary.toLatin1().data());
         d->boundaryLength = boundary.size();
     } else {
         return Uploads();
     }
+
     d->body = body;
     int buffer_size = qMin(bufferSize, 1024);
 //    qCDebug(CUTELYST_MULTIPART) << "Boudary:" << d->boundary << d->boundaryLength;
@@ -67,6 +59,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 
     delete [] buffer;
     delete [] d->boundary;
+    delete d;
 
     return ret;
 }
