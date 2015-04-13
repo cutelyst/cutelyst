@@ -44,6 +44,19 @@ QString Headers::contentType() const
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
+QString Headers::contentTypeCharset() const
+{
+    QString ct = value(QStringLiteral("content_type"));
+    QStringList parts = ct.split(QLatin1Char(';'));
+    Q_FOREACH (const QString part, parts) {
+        int pos = part.indexOf(QLatin1String("charset="));
+        if (pos != -1) {
+            return part.mid(pos).trimmed().toUpper();
+        }
+    }
+    return QString();
+}
+
 bool Headers::contentIsText() const
 {
     return value(QStringLiteral("content_type")).startsWith(QLatin1String("text/"));

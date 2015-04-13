@@ -46,6 +46,11 @@ public:
     QString contentType() const;
 
     /**
+     * Returns the upper-cased charset specified in the Content-Type header.
+     */
+    QString contentTypeCharset() const;
+
+    /**
      * Returns TRUE if the Content-Type header field indicate that the content is textual.
      */
     bool contentIsText() const;
