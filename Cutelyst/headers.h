@@ -216,6 +216,8 @@ public:
 
     QString header(const QString &field) const;
 
+    QString header(const QString &field, const QString &defaultValue) const;
+
     /**
      * When setting a header always use setHeader instead of insert
      */

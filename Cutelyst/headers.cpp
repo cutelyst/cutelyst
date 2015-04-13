@@ -246,6 +246,11 @@ QString Headers::header(const QString &field) const
     return value(HeadersPrivate::normalizeHeaderKey(field));
 }
 
+QString Headers::header(const QString &field, const QString &defaultValue) const
+{
+    return value(HeadersPrivate::normalizeHeaderKey(field), defaultValue);
+}
+
 void Headers::setHeader(const QString &field, const QString &value)
 {
     insert(HeadersPrivate::normalizeHeaderKey(field), value);

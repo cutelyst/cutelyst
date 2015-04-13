@@ -321,8 +321,8 @@ void Application::handleRequest(Request *req)
     if (priv->stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
                 ctx->response()->status(),
-                ctx->response()->contentType().toLatin1().data(),
-                ctx->response()->contentLength());
+                ctx->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),
+                ctx->response()->headers().header(QStringLiteral("Content-Length"), QStringLiteral("unknown")).toLatin1().data());
 
         RequestPrivate *reqPriv = req->d_ptr;
         reqPriv->endOfRequest = d->engine->time();
