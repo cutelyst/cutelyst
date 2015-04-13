@@ -243,45 +243,22 @@ QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
 
 QString Headers::header(const QString &field) const
 {
-    QString key = field;
-    int i = 0;
-    while (i < key.size()) {
-        QCharRef c = key[i];
-        if (c.isSpace()) {
-            key.remove(i, 1);
-            continue;
-        } else if (c == QChar('-')) {
-            c = QChar('_');
-        } else {
-            c = c.toLower();
-        }
-        ++i;
-    }
-    return value(key);
+    return value(HeadersPrivate::normalizeHeaderKey(field));
 }
 
 void Headers::setHeader(const QString &field, const QString &value)
 {
-    QString key = field;
-    int i = 0;
-    while (i < key.size()) {
-        QCharRef c = key[i];
-        if (c.isSpace()) {
-            key.remove(i, 1);
-            continue;
-        } else if (c == QChar('-')) {
-            c = QChar('_');
-        } else {
-            c = c.toLower();
-        }
-        ++i;
-    }
-    insert(key, value);
+    insert(HeadersPrivate::normalizeHeaderKey(field), value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
 {
     setHeader(field, values.join(QLatin1String(", ")));
+}
+
+void Headers::removeHeader(const QString &field)
+{
+    remove(HeadersPrivate::normalizeHeaderKey(field));
 }
 
 static QString cutelyst_header_order(
@@ -393,6 +370,25 @@ QList<HeaderValuePair> Headers::headersForResponse() const
     return ret;
 }
 
+
+QString HeadersPrivate::normalizeHeaderKey(const QString &field)
+{
+    QString key = field;
+    int i = 0;
+    while (i < key.size()) {
+        QCharRef c = key[i];
+        if (c.isSpace()) {
+            key.remove(i, 1);
+            continue;
+        } else if (c == QLatin1Char('-')) {
+            c = QLatin1Char('_');
+        } else {
+            c = c.toLower();
+        }
+        ++i;
+    }
+    return key;
+}
 
 QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 {

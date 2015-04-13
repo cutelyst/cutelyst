@@ -223,6 +223,8 @@ public:
 
     void setHeader(const QString &field, const QStringList &values);
 
+    void removeHeader(const QString &field);
+
     /**
      * Returns the hearder in the order suggested by HTTP RFC's
      * "good pratices", this function is mainly used by the Engine class
