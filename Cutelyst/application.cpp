@@ -326,7 +326,7 @@ void Application::handleRequest(Request *req)
     priv->engine->finalize(c);
 
     if (priv->stats) {
-        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
+        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 c->response()->status(),
                 c->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),
                 c->response()->headers().header(QStringLiteral("Content-Length"), QStringLiteral("unknown")).toLatin1().data());
