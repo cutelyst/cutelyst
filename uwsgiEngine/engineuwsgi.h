@@ -36,26 +36,26 @@ class Application;
 }
 
 using namespace Cutelyst;
-class EngineUwsgi : public Engine
+class uWSGI : public Engine
 {
     Q_OBJECT
 public:
-    explicit EngineUwsgi(const QVariantHash &opts, Application *app, QObject *parent = 0);
-    virtual ~EngineUwsgi();
+    explicit uWSGI(const QVariantHash &opts, Application *app, QObject *parent = 0);
+    virtual ~uWSGI();
 
     void setThread(QThread *thread);
 
-    virtual bool init();
+    virtual bool init() Q_DECL_FINAL;
 
-    virtual bool finalizeHeaders(Context *ctx, void *engineData);
+    virtual bool finalizeHeaders(Context *ctx, void *engineData) Q_DECL_FINAL;
 
-    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData);
+    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData) Q_DECL_FINAL;
 
     void readRequestUWSGI(wsgi_request *req);
 
     void processRequest(wsgi_request *req);
 
-    virtual void reload();
+    virtual void reload() Q_DECL_FINAL;
 
     void addUnusedRequest(wsgi_request *wsgi_req);
 
@@ -66,7 +66,7 @@ public:
      * fails to start on a thread so that we (main thread)
      * can reuse it's core requests
      */
-    void reuseEngineRequests(EngineUwsgi *engine);
+    void reuseEngineRequests(uWSGI *engine);
 
     void stop();
 
@@ -81,7 +81,7 @@ Q_SIGNALS:
     /**
      * emitted when forked() fails
      */
-    void engineDisabled(EngineUwsgi *engine);
+    void engineDisabled(uWSGI *engine);
 
 private:
     void forked();

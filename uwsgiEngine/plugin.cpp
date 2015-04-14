@@ -30,7 +30,7 @@
 
 using namespace Cutelyst;
 
-static QList<EngineUwsgi *> *coreEngines = 0;
+static QList<uWSGI *> *coreEngines = 0;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -56,14 +56,14 @@ extern "C" int uwsgi_cutelyst_init()
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
-    coreEngines = new QList<EngineUwsgi *>();
+    coreEngines = new QList<uWSGI *>();
 
     return 0;
 }
 
 extern "C" void uwsgi_cutelyst_post_fork()
 {
-    Q_FOREACH (EngineUwsgi *engine, *coreEngines) {
+    Q_FOREACH (uWSGI *engine, *coreEngines) {
         if (engine->thread() != qApp->thread()) {
             engine->thread()->start();
         } else {
@@ -116,7 +116,7 @@ extern "C" void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
-    Q_FOREACH (EngineUwsgi *engine, *coreEngines) {
+    Q_FOREACH (uWSGI *engine, *coreEngines) {
         engine->stop();
     }
     qDeleteAll(*coreEngines);
@@ -198,24 +198,24 @@ extern "C" void uwsgi_cutelyst_init_apps()
         }
     }
 
-    EngineUwsgi *mainEngine = new EngineUwsgi(opts, app, qApp);
+    uWSGI *mainEngine = new uWSGI(opts, app, qApp);
     if (!mainEngine->initApplication(app, false)) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }
     coreEngines->append(mainEngine);
 
-    EngineUwsgi *engine = mainEngine;
+    uWSGI *engine = mainEngine;
     for (int i = 0; i < uwsgi.cores; ++i) {
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1 && i > 0) {
-            engine = new EngineUwsgi(opts, app, qApp);
+            engine = new uWSGI(opts, app, qApp);
             engine->setThread(new QThread);
 
             // Post fork might fail when on threaded mode
-            QObject::connect(engine, &EngineUwsgi::engineDisabled,
-                             mainEngine, &EngineUwsgi::reuseEngineRequests);
+            QObject::connect(engine, &uWSGI::engineDisabled,
+                             mainEngine, &uWSGI::reuseEngineRequests);
 
             coreEngines->append(engine);
         }

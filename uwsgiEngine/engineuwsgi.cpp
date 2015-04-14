@@ -42,25 +42,25 @@ typedef struct {
     Request *request;
 } CachedRequest;
 
-EngineUwsgi::EngineUwsgi(const QVariantHash &opts, Application *app, QObject *parent) : Engine(opts, parent)
+uWSGI::uWSGI(const QVariantHash &opts, Application *app, QObject *parent) : Engine(opts, parent)
   , m_app(app)
 {
-    connect(this, &EngineUwsgi::postFork,
-            this, &EngineUwsgi::forked);
+    connect(this, &uWSGI::postFork,
+            this, &uWSGI::forked);
 }
 
-EngineUwsgi::~EngineUwsgi()
+uWSGI::~uWSGI()
 {
 }
 
-void EngineUwsgi::setThread(QThread *thread)
+void uWSGI::setThread(QThread *thread)
 {
     moveToThread(thread);
     connect(thread, &QThread::started,
-            this, &EngineUwsgi::forked, Qt::DirectConnection);
+            this, &uWSGI::forked, Qt::DirectConnection);
 }
 
-void EngineUwsgi::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
+void uWSGI::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
 {
     Q_UNUSED(ctx)
 
@@ -79,7 +79,7 @@ void EngineUwsgi::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
     }
 }
 
-void EngineUwsgi::readRequestUWSGI(wsgi_request *wsgi_req)
+void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
     for(;;) {
         int ret = uwsgi_wait_read_req(wsgi_req);
@@ -117,7 +117,7 @@ end:
     uwsgi_close_request(wsgi_req);
 }
 
-void EngineUwsgi::processRequest(wsgi_request *req)
+void uWSGI::processRequest(wsgi_request *req)
 {
     CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
 
@@ -192,13 +192,13 @@ void EngineUwsgi::processRequest(wsgi_request *req)
     body->close();
 }
 
-void EngineUwsgi::reload()
+void uWSGI::reload()
 {
     qCDebug(CUTELYST_UWSGI) << "Reloading application due application request";
     uwsgi_reload(uwsgi.argv);
 }
 
-void EngineUwsgi::addUnusedRequest(wsgi_request *wsgi_req)
+void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
 {
     CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
     if (cache) {
@@ -218,10 +218,10 @@ void EngineUwsgi::addUnusedRequest(wsgi_request *wsgi_req)
     m_unusedReq.append(wsgi_req);
 }
 
-void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
+void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 {
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
-    connect(this, &EngineUwsgi::enableSockets,
+    connect(this, &uWSGI::enableSockets,
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
@@ -262,14 +262,14 @@ void EngineUwsgi::watchSocket(struct uwsgi_socket *uwsgi_sock)
     });
 }
 
-void EngineUwsgi::reuseEngineRequests(EngineUwsgi *engine)
+void uWSGI::reuseEngineRequests(uWSGI *engine)
 {
     Q_FOREACH (struct wsgi_request *req, engine->unusedRequestQueue()) {
         addUnusedRequest(req);
     }
 }
 
-void EngineUwsgi::stop()
+void uWSGI::stop()
 {
     Q_EMIT enableSockets(false);
 
@@ -278,17 +278,17 @@ void EngineUwsgi::stop()
     }
 }
 
-QList<wsgi_request *> EngineUwsgi::unusedRequestQueue() const
+QList<wsgi_request *> uWSGI::unusedRequestQueue() const
 {
     return m_unusedReq;
 }
 
-quint64 EngineUwsgi::time()
+quint64 uWSGI::time()
 {
     return uwsgi_micros();
 }
 
-bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
+bool uWSGI::finalizeHeaders(Context *ctx, void *engineData)
 {
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
     Response *res = ctx->res();
@@ -316,12 +316,12 @@ bool EngineUwsgi::finalizeHeaders(Context *ctx, void *engineData)
     return true;
 }
 
-bool EngineUwsgi::init()
+bool uWSGI::init()
 {
     return true;
 }
 
-void EngineUwsgi::forked()
+void uWSGI::forked()
 {
     if (QThread::currentThread() != qApp->thread()) {
         m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
