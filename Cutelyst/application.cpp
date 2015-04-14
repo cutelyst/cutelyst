@@ -228,6 +228,13 @@ bool Application::setup(Engine *engine)
         qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
                                                     QStringLiteral("Loaded plugins:")).data();
 
+        QList<QStringList> tableDataHandlers;
+        tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
+        tableDataHandlers.append({ QLatin1String("application/json") });
+        tableDataHandlers.append({ QLatin1String("multipart/form-data") });
+        qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
+                                                    QStringLiteral("Loaded Request Data Handlers:")).data();
+
         qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
         qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
 
