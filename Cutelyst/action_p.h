@@ -29,6 +29,8 @@ class ActionPrivate
 public:
     QString ns;
     QMetaMethod method;
+    bool evaluateBool = false;
+    bool listSignature = false;
     QMap<QString, QString> attributes;
     Controller *controller = 0;
     qint8 numberOfArgs = -1;

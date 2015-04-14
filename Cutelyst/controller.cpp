@@ -409,18 +409,6 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         ++pos;
     }
 
-    // if the method has the CaptureArgs as an argument
-    // set it on the attributes
-    // TODO maybe add an AutoArgs attribute
-//    int parameterCount = 0;
-//    bool ignoreParameters = false;
-//    for (int i = 1; i < method.parameterCount(); ++i) {
-//        int typeId = method.parameterType(i);
-//        if (typeId == QMetaType::QString && !ignoreParameters) {
-//            ++parameterCount;
-//        }
-//    }
-
     QMap<QString, QString> ret;
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
@@ -449,6 +437,36 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         }
 
         ret.insertMulti(key, value);
+    }
+
+    // Handle special AutoArgs and AutoCaptureArgs case
+    if (!ret.contains(QLatin1String("Args")) && !ret.contains(QLatin1String("CaptureArgs")) &&
+            (ret.contains(QLatin1String("AutoArgs")) || ret.contains(QLatin1String("AutoCaptureArgs")))) {
+        if (ret.contains(QLatin1String("AutoArgs")) && ret.contains(QLatin1String("AutoCaptureArgs"))) {
+            qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed", name.data());
+        } else {
+            QString parameterName;
+            if (ret.contains(QLatin1String("AutoArgs"))) {
+                ret.remove(QLatin1String("AutoArgs"));
+                parameterName  = QStringLiteral("Args");
+            } else {
+                ret.remove(QLatin1String("AutoCaptureArgs"));
+                parameterName  = QStringLiteral("CaptureArgs");
+            }
+
+            // If the signature is not QStringList we count them
+            if (!(method.parameterCount() == 2 && method.parameterType(1) == QMetaType::QStringList)) {
+                int parameterCount = 0;
+                for (int i = 1; i < method.parameterCount(); ++i) {
+                    int typeId = method.parameterType(i);
+                    if (typeId == QMetaType::QString) {
+                        ++parameterCount;
+                    }
+                }
+                ret.insert(parameterName, QString::number(parameterCount));
+            }
+        }
+
     }
 
     // If the method is private add a Private attribute
