@@ -64,8 +64,9 @@ Engine::~Engine()
 void Engine::finalizeCookies(Context *c, void *engineData)
 {
     Response *res = c->response();
+    Headers &headers = res->headers();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
-        res->addHeaderValue(QStringLiteral("Set-Cookie"), cookie.toRawForm());
+        headers.setHeader(QStringLiteral("Set-Cookie"), cookie.toRawForm());
     }
 }
 
@@ -262,10 +263,18 @@ void Engine::finalize(Context *c)
         finalizeError(c);
     }
 
+    Response *response = c->response();
+
+    // Handle redirects
+    const QUrl &location = response->location();
+    if (!location.isEmpty()) {
+        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().data());
+        response->headers().setHeader(QStringLiteral("Location"), location.toEncoded());
+    }
+
     void *engineData = c->request()->engineData();
     finalizeCookies(c, engineData);
 
-    Response *response = c->response();
     QIODevice *body = response->bodyDevice();
     if (body) {
         response->setContentLength(body->size());

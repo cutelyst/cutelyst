@@ -36,15 +36,15 @@ public:
     explicit DispatchTypeChained(QObject *parent = 0);
     ~DispatchTypeChained();
 
-    virtual QByteArray list() const;
+    virtual QByteArray list() const Q_DECL_OVERRIDE;
 
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const;
+    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_OVERRIDE;
 
-    virtual bool registerAction(Action *action);
+    virtual bool registerAction(Action *action) Q_DECL_OVERRIDE;
 
-    virtual QString uriForAction(Action *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_OVERRIDE;
 
-    virtual bool inUse() const;
+    virtual bool inUse() const Q_DECL_OVERRIDE;
 
 private:
     DispatchTypeChainedPrivate *d_ptr;

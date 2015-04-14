@@ -97,8 +97,15 @@ public:
      */
     Action *actionFor(const QString &name) const;
 
+    /**
+     * Returns the Cutelyst::ActionList containing all actions which belongs to
+     * this controller.
+     */
     ActionList actions() const;
 
+    /**
+     * Return TRUE if className is equal to this Controller's name
+     */
     bool operator==(const char *className);
 
 protected:

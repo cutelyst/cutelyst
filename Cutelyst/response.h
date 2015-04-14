@@ -28,6 +28,7 @@
 
 namespace Cutelyst {
 
+class Context;
 class ResponsePrivate;
 class Response : public QObject
 {
@@ -79,13 +80,18 @@ public:
         HTTPVersionNotSupported      = 505,
         BandwidthLimitExceeded       = 509
     };
-    explicit Response(QObject *parent = 0);
+    explicit Response(Context *c);
     virtual ~Response();
 
+    /**
+     * The current response code status
+     */
     quint16 status() const;
-    void setStatus(quint16 status);
 
-    void addHeaderValue(const QString &key, const QString &value);
+    /**
+     * Sets the response code status
+     */
+    void setStatus(quint16 status);
 
     /**
      * Returns true if a body device has been defined.
@@ -113,14 +119,42 @@ public:
      */
     void setBody(QIODevice *body);
 
+    /**
+     * Short for headers().contentEncoding();
+     */
     QString contentEncoding() const;
+
+    /**
+     * Short for headers().setContentEncoding(encoding);
+     */
     void setContentEncoding(const QString &encoding);
 
+    /**
+     * Short for headers().contentLength();
+     */
     qint64 contentLength() const;
-    void setContentLength(qint64 length);
 
+    /**
+     * Short for headers().setContentLength(length);
+     */
+    void setContentLength(qint64 length)
+    { headers().setContentLength(length); }
+
+    /**
+     * Short for headers().contentType();
+     */
     QString contentType() const;
-    void setContentType(const QString &type);
+
+    /**
+     * Short for headers().setContentType(type);
+     */
+    void setContentType(const QString &type)
+    { headers().setContentType(type); }
+
+    /**
+     * Short for headers().contentTypeCharset();
+     */
+    QString contentTypeCharset() const;
 
     QList<QNetworkCookie> cookies() const;
     void addCookie(const QNetworkCookie &cookie);
@@ -158,6 +192,11 @@ public:
      * Returns the HTTP location set by the redirect
      */
     QUrl location() const;
+
+    /**
+     * Shortcut headers().header()
+     */
+    QString header(const QString &field) const;
 
     /**
      * Returns a reference to the response headers class

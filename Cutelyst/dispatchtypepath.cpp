@@ -122,11 +122,13 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
 
 bool DispatchTypePath::registerAction(Action *action)
 {
+    Q_D(DispatchTypePath);
+
     bool ret = false;
     QMap<QString, QString> attributes = action->attributes();
     QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
     while (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
-        if (registerPath(i.value(), action)) {
+        if (d->registerPath(i.value(), action)) {
             ret = true;
         }
 
@@ -169,10 +171,8 @@ bool actionLessThan(Action *a1, Action *a2)
     return a1->numberOfArgs() < a2->numberOfArgs();
 }
 
-bool DispatchTypePath::registerPath(const QString &path, Action *action)
+bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 {
-    Q_D(DispatchTypePath);
-
     QString _path = path;
     if (_path.startsWith('/')) {
         _path.remove(0, 1);
@@ -184,8 +184,9 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
         _path = QStringLiteral("/");
     }
 
-    if (d->paths.contains(_path)) {
-        ActionList actions = d->paths.value(_path);
+    QHash<QString, ActionList>::Iterator it = paths.find(_path);
+    if (it != paths.end()) {
+        ActionList actions = it.value();
         int actionNumberOfArgs = action->numberOfArgs();
         Q_FOREACH (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
@@ -201,9 +202,9 @@ bool DispatchTypePath::registerPath(const QString &path, Action *action)
 
         actions.append(action);
         qSort(actions.begin(), actions.end(), actionLessThan);
-        d->paths[_path] = actions;
+        it.value() = actions;
     } else {
-        d->paths.insert(_path, ActionList() << action);
+        paths.insert(_path, { action });
     }
     return true;
 }

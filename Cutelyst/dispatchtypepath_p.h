@@ -27,6 +27,8 @@ namespace Cutelyst {
 class DispatchTypePathPrivate
 {
 public:
+    bool registerPath(const QString &path, Action *action);
+
     QHash<QString, ActionList> paths;
 };
 

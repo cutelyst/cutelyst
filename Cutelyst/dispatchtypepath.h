@@ -34,23 +34,21 @@ public:
     explicit DispatchTypePath(QObject *parent = 0);
     virtual ~DispatchTypePath();
 
-    virtual QByteArray list() const;
+    virtual QByteArray list() const Q_DECL_OVERRIDE;
 
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const;
+    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_OVERRIDE;
 
-    virtual bool registerAction(Action *action);
+    virtual bool registerAction(Action *action) Q_DECL_OVERRIDE;
 
-    virtual bool inUse() const;
+    virtual bool inUse() const Q_DECL_OVERRIDE;
 
     /**
      * Get a URI part for an action
      * Always returns NULL if captures is not empty since Path actions don't have captures
      */
-    virtual QString uriForAction(Action *action, const QStringList &captures) const;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_OVERRIDE;
 
-private:
-    bool registerPath(const QString &path, Action *action);
-
+protected:
     DispatchTypePathPrivate *d_ptr;
 };
 

@@ -64,7 +64,7 @@ public:
     virtual ~Request();
 
     /**
-     * @return the address of the client
+     * Returns the address of the client
      */
     QHostAddress address() const;
 
@@ -78,18 +78,18 @@ public:
     QString hostname() const;
 
     /**
-     * @return the originating port of the client
+     * Returns the originating port of the client
      */
     quint16 port() const;
 
     /**
-     * @return the uri as close as possible to what
+     * Returns the uri as close as possible to what
      * the user has in his browser url.
      */
     QUrl uri() const;
 
     /**
-     * @return Contains the URI base. This will always have a trailing slash.
+     * Returns Contains the URI base. This will always have a trailing slash.
      * Note that the URI scheme (e.g., http vs. https) must be determined through
      * heuristics; depending on your server configuration, it may be incorrect.
      * See secure() for more info.
@@ -100,7 +100,7 @@ public:
     QString base() const;
 
     /**
-     * @return the path, i.e. the part of the URI after base(), for the current request.
+     * Returns the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
      * path will contain 'path/foo'
      */
@@ -169,7 +169,7 @@ public:
     bool secure() const;
 
     /**
-     * @return the message body of the request as
+     * Returns the message body of the request as
      * passed by the Engine, this can even be a file
      * if the Engine wants to.
      */
@@ -236,12 +236,12 @@ public:
     inline ParamsMultiMap params() const { return parameters(); }
 
     /**
-     * @return the Content-Encoding header
+     * Returns the Content-Encoding header
      */
     inline QString contentEncoding() const { return headers().contentEncoding(); }
 
     /**
-     * @return the Content-Type header
+     * Returns the Content-Type header
      */
     inline QString contentType() const { return headers().contentType(); }
 
@@ -255,22 +255,28 @@ public:
      */
     QList<QNetworkCookie> cookies() const;
 
-    inline QString header(const QString &key) const { return headers().value(key); }
+    /**
+     * Short for headers().header(key);
+     */
+    inline QString header(const QString &key) const { return headers().header(key); }
 
+    /**
+     * Returns the HTTP request headers
+     */
     Headers headers() const;
 
     /**
-     * @return the request method (GET, POST, HEAD, etc).
+     * Returns the request method (GET, POST, HEAD, etc).
      */
     QString method() const;
 
     /**
-     * @return the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
+     * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
     QString protocol() const;
 
     /**
-     * @return the user agent (browser) version string.
+     * Returns the user agent (browser) version string.
      */
     QString userAgent() const { return headers().userAgent(); }
 
@@ -280,7 +286,7 @@ public:
     QString referer() const { return headers().referer(); }
 
     /**
-     * @return the value of the REMOTE_USER environment variable.
+     * Returns the value of the REMOTE_USER environment variable.
      */
     QString remoteUser() const;
 

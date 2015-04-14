@@ -18,6 +18,8 @@
  */
 
 #include "response_p.h"
+
+#include "context.h"
 #include "engine.h"
 #include "common.h"
 
@@ -25,10 +27,10 @@
 
 using namespace Cutelyst;
 
-Response::Response(QObject *parent) :
-    QObject(parent),
-    d_ptr(new ResponsePrivate)
+Response::Response(Context *c) : QObject(c)
+  , d_ptr(new ResponsePrivate)
 {
+    d_ptr->context = c;
 }
 
 Response::~Response()
@@ -47,12 +49,6 @@ void Response::setStatus(quint16 status)
 {
     Q_D(Response);
     d->status = status;
-}
-
-void Response::addHeaderValue(const QString &key, const QString &value)
-{
-    Q_D(Response);
-    d->headers.setHeader(key, value);
 }
 
 bool Response::hasBody() const
@@ -111,22 +107,16 @@ qint64 Response::contentLength() const
     return d->headers.contentLength();
 }
 
-void Response::setContentLength(qint64 length)
-{
-    Q_D(Response);
-    d->headers.setContentLength(length);
-}
-
 QString Response::contentType() const
 {
     Q_D(const Response);
     return d->headers.contentType();
 }
 
-void Response::setContentType(const QString &type)
+QString Response::contentTypeCharset() const
 {
-    Q_D(Response);
-    d->headers.setContentType(type);
+    Q_D(const Response);
+    return d->headers.contentTypeCharset();
 }
 
 QList<QNetworkCookie> Response::cookies() const
@@ -153,8 +143,6 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->location = url;
     setStatus(status);
     if (url.isValid() && !d->body) {
-        d->headers.setHeader(QStringLiteral("Location"), url.toEncoded());
-
         QBuffer *buf = new QBuffer;
         if (!buf->open(QIODevice::ReadWrite)) {
             qCCritical(CUTELYST_RESPONSE) << "Could not open QBuffer to write redirect!" << url << status;
@@ -189,6 +177,12 @@ QUrl Response::location() const
     return d->location;
 }
 
+QString Response::header(const QString &field) const
+{
+    Q_D(const Response);
+    return d->headers.header(field);
+}
+
 Headers &Response::headers()
 {
     Q_D(Response);
@@ -198,6 +192,11 @@ Headers &Response::headers()
 void Response::write(const QByteArray &data)
 {
     Q_D(Response);
+
+    if (!d->finalizedHeaders) {
+
+    }
+
     if (d->body) {
         d->body->write(data);
     } else {

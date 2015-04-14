@@ -26,6 +26,7 @@
 
 namespace Cutelyst {
 
+class Context;
 class Engine;
 class ResponsePrivate
 {
@@ -35,6 +36,8 @@ public:
     QList<QNetworkCookie> cookies;
     QIODevice *body = 0;
     QUrl location;
+    bool finalizedHeaders = false;
+    Context *context;
     Engine *engine;
 };
 
