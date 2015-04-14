@@ -61,7 +61,7 @@ int runServer(const QString &appFilename, int port, bool restart)
 
     QStringList args;
     args.append(QStringLiteral("--http-socket"));
-    args.append(QLatin1String("0:") % QString::number(port));
+    args.append(QLatin1String(":") % QString::number(port));
 
     args.append(QStringLiteral("--chdir"));
     args.append(projectDir.absolutePath());

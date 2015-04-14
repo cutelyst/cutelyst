@@ -209,7 +209,7 @@ bool Application::setup(Engine *engine)
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
-    d->config = engine->config(QStringLiteral("CUTELYST"));
+    d->config = engine->config(QStringLiteral("Cutelyst"));
 
     d->setupHome();
 

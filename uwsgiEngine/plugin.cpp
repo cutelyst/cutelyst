@@ -43,7 +43,33 @@ extern "C" void uwsgi_cutelyst_on_load()
 {
     uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
 
-    (void) new QCoreApplication(uwsgi.argc, uwsgi.argv);
+    // Get the uwsgi options
+    QVariantHash opts;
+    for (int i = 0; i < uwsgi.exported_opts_cnt; i++) {
+        const QString &key = QString::fromLatin1(uwsgi.exported_opts[i]->key);
+        if (uwsgi.exported_opts[i]->value == NULL) {
+            opts.insertMulti(key, QVariant());
+        } else {
+            opts.insertMulti(key, QString::fromLatin1(uwsgi.exported_opts[i]->value));
+        }
+    }
+
+    // if the path is relative build a path
+    // relative to the current working directory
+    QDir cwd(uwsgi.cwd);
+
+    // Set the configuration env
+    QVariantHash::ConstIterator it = opts.constFind(QLatin1String("ini"));
+    if (it != opts.constEnd()) {
+        QString config = cwd.absoluteFilePath(it.value().toString());
+        qputenv("CUTELYST_CONFIG", config.toUtf8());
+        if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
+            qputenv("QT_LOGGING_CONF", config.toUtf8());
+        }
+    }
+
+    QCoreApplication *app = new QCoreApplication(uwsgi.argc, uwsgi.argv);
+    app->setProperty("UWSGI_OPTS", opts);
 
     if (qEnvironmentVariableIsEmpty("CUTELYST_NO_UWSGI_LOG")) {
         qInstallMessageHandler(cuteOutput);
@@ -150,20 +176,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
 #endif // UWSGI_GO_CHEAP_CODE
 
-    // Set the configuration env
-    QStringList args = QCoreApplication::arguments();
-    QString config(options.config);
-    if (!config.isNull()) {
-        config = cwd.absoluteFilePath(config);
-        qputenv("CUTELYST_CONFIG", config.toUtf8());
-    } else if (args.contains("--ini")) {
-        int index = args.indexOf("--ini");
-        if (index != -1 && index < args.size()) {
-            config = cwd.absoluteFilePath(args.at(index + 1));
-            qputenv("CUTELYST_CONFIG", config.toUtf8());
-        }
-    }
-
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
         qCCritical(CUTELYST_UWSGI) << "Could not load application:" << loader->errorString();
@@ -188,15 +200,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
     }
     qCDebug(CUTELYST_UWSGI) << "Loaded application:" << QCoreApplication::applicationName();
 
-    QVariantHash opts;
-    for (int i = 0; i < uwsgi.exported_opts_cnt; i++) {
-        const QString &key = QString::fromLatin1(uwsgi.exported_opts[i]->key);
-        if (uwsgi.exported_opts[i]->value == NULL) {
-            opts.insertMulti(key, QVariant());
-        } else {
-            opts.insertMulti(key, QString::fromLatin1(uwsgi.exported_opts[i]->value));
-        }
-    }
+    QVariantHash opts = qApp->property("UWSGI_OPTS").toHash();
 
     uWSGI *mainEngine = new uWSGI(opts, app, qApp);
     if (!mainEngine->initApplication(app, false)) {
