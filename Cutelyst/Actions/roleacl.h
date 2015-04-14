@@ -40,9 +40,9 @@ public:
 
     virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
 
-    virtual bool aroundExecute(Context *ctx, QStack<Component *> stack) Q_DECL_OVERRIDE;
+    virtual bool aroundExecute(Context *c, QStack<Component *> stack) Q_DECL_OVERRIDE;
 
-    bool canVisit(Context *ctx) const;
+    bool canVisit(Context *c) const;
 
 protected:
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller);

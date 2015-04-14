@@ -89,15 +89,15 @@ NEOERR* cutelyst_render(void *user, char *data)
     return 0;
 }
 
-bool ClearSilver::render(Context *ctx)
+bool ClearSilver::render(Context *c)
 {
     Q_D(ClearSilver);
 
-    const QVariantHash &stash = ctx->stash();
+    const QVariantHash &stash = c->stash();
     QString templateFile = stash.value(QLatin1String("template")).toString();
     if (templateFile.isEmpty()) {
-        if (ctx->action() && !ctx->action()->reverse().isEmpty()) {
-            templateFile = ctx->action()->reverse() % d->extension;
+        if (c->action() && !c->action()->reverse().isEmpty()) {
+            templateFile = c->action()->reverse() % d->extension;
         }
 
         if (templateFile.isEmpty()) {
@@ -108,7 +108,7 @@ bool ClearSilver::render(Context *ctx)
 
     qCDebug(CUTELYST_CLEARSILVER) << "Rendering template" <<templateFile;
     QByteArray output;
-    if (!d->render(ctx, templateFile, stash, output)) {
+    if (!d->render(c, templateFile, stash, output)) {
         return false;
     }
 
@@ -118,18 +118,18 @@ bool ClearSilver::render(Context *ctx)
         QVariantHash data = stash;
         data.insert(QStringLiteral("content"), output);
 
-        if (!d->render(ctx, wrapperFile, data, output)) {
+        if (!d->render(c, wrapperFile, data, output)) {
             return false;
         }
     }
 
-    ctx->res()->body() = output;
+    c->res()->body() = output;
     return true;
 }
 
-NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
+NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
 {
-    ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(ctx);
+    ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(c);
     if (!priv) {
         return nerr_raise(NERR_NOMEM, "Cound not cast ClearSilverPrivate");
     }
@@ -153,9 +153,9 @@ NEOERR* findFile(void *ctx, HDF *hdf, const char *filename, char **contents)
     return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", filename);
 }
 
-bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output)
+bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output)
 {
-    HDF *hdf = hdfForStash(ctx, stash);
+    HDF *hdf = hdfForStash(c, stash);
     CSPARSE *cs;
     NEOERR *error;
 
@@ -166,7 +166,7 @@ bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVa
         nerr_error_traceback(error, msg);
         QString errorMsg;
         errorMsg = QString::fromLatin1("Failed to init ClearSilver:\n%1").arg(msg->buf);
-        renderError(ctx, errorMsg);
+        renderError(c, errorMsg);
 
         hdf_destroy(&hdf);
         nerr_ignore(&error);
@@ -182,7 +182,7 @@ bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVa
         nerr_error_traceback(error, msg);
         QString errorMsg;
         errorMsg = QString::fromLatin1("Failed to parse template file: %1\n%2").arg(filename, msg->buf);
-        renderError(ctx, errorMsg);
+        renderError(c, errorMsg);
 
         nerr_log_error(error);
         hdf_destroy(&hdf);
@@ -198,24 +198,24 @@ bool ClearSilverPrivate::render(Context *ctx, const QString &filename, const QVa
     return true;
 }
 
-void ClearSilverPrivate::renderError(Context *ctx, const QString &error) const
+void ClearSilverPrivate::renderError(Context *c, const QString &error) const
 {
     qCCritical(CUTELYST_CLEARSILVER) << error;
-    ctx->res()->body() = error.toUtf8();
+    c->res()->body() = error.toUtf8();
 }
 
-HDF *ClearSilverPrivate::hdfForStash(Context *ctx, const QVariantHash &stash) const
+HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) const
 {
     HDF *hdf = 0;
     hdf_init(&hdf);
 
     serializeHash(hdf, stash);
 
-    const QMetaObject *meta = ctx->metaObject();
+    const QMetaObject *meta = c->metaObject();
     for (int i = 0; i < meta->propertyCount(); ++i) {
         QMetaProperty prop = meta->property(i);
-        QString name = QLatin1String("ctx.") % prop.name();
-        QVariant value = prop.read(ctx);
+        QString name = QLatin1String("c.") % prop.name();
+        QVariant value = prop.read(c);
         serializeVariant(hdf, value, name);
     }
     return hdf;

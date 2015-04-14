@@ -125,48 +125,48 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers)
     d->printActions();
 }
 
-bool Dispatcher::dispatch(Context *ctx)
+bool Dispatcher::dispatch(Context *c)
 {
-    Action *action = ctx->action();
+    Action *action = c->action();
     if (action) {
-        return forward(ctx, QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
+        return forward(c, QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
     } else {
-        const QString &path = ctx->req()->path();
+        const QString &path = c->req()->path();
         if (path.isEmpty()) {
-            ctx->error(tr("No default action defined"));
+            c->error(tr("No default action defined"));
         } else {
-            ctx->error(tr("Unknown resource \"%1\".").arg(path));
+            c->error(tr("Unknown resource \"%1\".").arg(path));
         };
     }
     return false;
 }
 
-bool Dispatcher::forward(Context *ctx, Component *component)
+bool Dispatcher::forward(Context *c, Component *component)
 {
     Q_ASSERT(component);
     // If the component was an Action
-    // the dispatch() would call ctx->execute
-    return ctx->execute(component);
+    // the dispatch() would call c->execute
+    return c->execute(component);
 }
 
-bool Dispatcher::forward(Context *ctx, const QString &opname)
+bool Dispatcher::forward(Context *c, const QString &opname)
 {
     Q_D(const Dispatcher);
 
-    Action *action = d->command2Action(ctx, opname);
+    Action *action = d->command2Action(c, opname);
     if (action) {
-        return action->dispatch(ctx);
+        return action->dispatch(c);
     }
 
     qCCritical(CUTELYST_DISPATCHER) << "Action not found" << action;
     return false;
 }
 
-void Dispatcher::prepareAction(Context *ctx)
+void Dispatcher::prepareAction(Context *c)
 {
     Q_D(Dispatcher);
 
-    Request *request = ctx->request();
+    Request *request = c->request();
     const QString &path = request->path();
     QStringList pathParts = path.split(QLatin1Char('/'));
     QStringList args;
@@ -185,7 +185,7 @@ void Dispatcher::prepareAction(Context *ctx)
         // will handle the path at this level
         const QString &actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
-            if (type->match(ctx, actionPath, args) == DispatchType::ExactMatch) {
+            if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
                 goto out;
             }
         }
@@ -370,22 +370,22 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
     return ret;
 }
 
-Action *DispatcherPrivate::command2Action(Context *ctx, const QString &command, const QStringList &extraParams) const
+Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &extraParams) const
 {
     Action *ret = actionHash.value(command);
     if (!ret) {
-        ret = invokeAsPath(ctx, command, ctx->request()->args());
+        ret = invokeAsPath(c, command, c->request()->args());
     }
 
     return ret;
 }
 
-Action *DispatcherPrivate::invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args) const
+Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const
 {
     Q_Q(const Dispatcher);
 
     Action *ret;
-    QString path = DispatcherPrivate::actionRel2Abs(ctx, relativePath);
+    QString path = DispatcherPrivate::actionRel2Abs(c, relativePath);
 
     int pos = path.lastIndexOf('/');
     int lastPos = path.size();
@@ -411,11 +411,11 @@ Action *DispatcherPrivate::invokeAsPath(Context *ctx, const QString &relativePat
     return 0;
 }
 
-QString DispatcherPrivate::actionRel2Abs(Context *ctx, const QString &path)
+QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
 {
     QString ret;
     if (!path.startsWith(QLatin1Char('/'))) {
-        const QString &ns = qobject_cast<Action *>(ctx->stack().last())->ns();
+        const QString &ns = qobject_cast<Action *>(c->stack().last())->ns();
         ret = ns % QLatin1Char('/') % path;
     } else {
         ret = path;

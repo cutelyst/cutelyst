@@ -132,30 +132,30 @@ void CredentialHttp::setRequireSsl(bool require)
     d->requireSsl = require;
 }
 
-AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Q_D(CredentialHttp);
 
     AuthenticationUser ret;
-    if (d->requireSsl && !ctx->request()->secure()) {
-        return d->authenticationFailed(ctx, realm, authinfo);
+    if (d->requireSsl && !c->request()->secure()) {
+        return d->authenticationFailed(c, realm, authinfo);
     }
 
     if (d->isAuthTypeDigest()) {
-        ret = d->authenticateDigest(ctx, realm, authinfo);
+        ret = d->authenticateDigest(c, realm, authinfo);
         if (!ret.isNull()) {
             return ret;
         }
     }
 
     if (d->isAuthTypeBasic()) {
-        ret = d->authenticateBasic(ctx, realm, authinfo);
+        ret = d->authenticateBasic(c, realm, authinfo);
         if (!ret.isNull()) {
             return ret;
         }
     }
 
-    return d->authenticationFailed(ctx, realm, authinfo);
+    return d->authenticationFailed(c, realm, authinfo);
 }
 
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
@@ -185,26 +185,26 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     return false;
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     qCDebug(C_CREDENTIALHTTP) << "Checking http digest authentication.";
 
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
-    QPair<QString, QString> userPass = ctx->req()->headers().authorizationBasicPair();
+    QPair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
         return AuthenticationUser();
     }
 
     CStringHash auth;
     auth.insert(usernameField, userPass.first);
-    AuthenticationUser user = realm->findUser(ctx, auth);
+    AuthenticationUser user = realm->findUser(c, auth);
     if (!user.isNull()) {
         auth.insert(passwordField, userPass.second);
         if (checkPassword(user, auth)) {
@@ -217,9 +217,9 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *ctx, Authen
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
-    Response *res = ctx->response();
+    Response *res = c->response();
     res->setStatus(Response::Unauthorized); // 401
     res->setContentType(QStringLiteral("text/plain; charset=UTF-8"));
 
@@ -236,7 +236,7 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *ctx, Aut
 
     // Create Basic response
     if (isAuthTypeBasic()) {
-        createBasicAuthResponse(ctx);
+        createBasicAuthResponse(c);
     }
 
     return AuthenticationUser();
@@ -253,9 +253,9 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
     return type == CredentialHttp::Basic || type == CredentialHttp::Any;
 }
 
-void CredentialHttpPrivate::createBasicAuthResponse(Context *ctx)
+void CredentialHttpPrivate::createBasicAuthResponse(Context *c)
 {
-    ctx->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
+    c->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
                                                                  buildAuthHeaderCommon()).toLatin1());
 }
 

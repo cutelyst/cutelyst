@@ -34,12 +34,12 @@ bool Plugin::setup(Application *app)
     return true;
 }
 
-QVariant Plugin::pluginProperty(Context *ctx, const QString &key, const QVariant &defaultValue) const
+QVariant Plugin::pluginProperty(Context *c, const QString &key, const QVariant &defaultValue) const
 {
-    return ctx->pluginProperty(const_cast<Plugin *>(this), key, defaultValue);
+    return c->pluginProperty(const_cast<Plugin *>(this), key, defaultValue);
 }
 
-void Plugin::setPluginProperty(Context *ctx, const QString &key, const QVariant &value)
+void Plugin::setPluginProperty(Context *c, const QString &key, const QVariant &value)
 {
-    ctx->setPluginProperty(this, key, value);
+    c->setPluginProperty(this, key, value);
 }

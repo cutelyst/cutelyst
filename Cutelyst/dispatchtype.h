@@ -49,7 +49,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual MatchType match(Context *ctx, const QString &path, const QStringList &args) const = 0;
+    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action
@@ -84,7 +84,7 @@ protected:
     friend class Dispatcher;
     friend class Application;
 
-    void setupMatchedAction(Context *ctx, Action *action) const;
+    void setupMatchedAction(Context *c, Action *action) const;
 };
 
 }

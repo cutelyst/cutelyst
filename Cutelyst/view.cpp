@@ -36,8 +36,8 @@ Component::Modifiers View::modifiers() const
     return Component::OnlyExecute;
 }
 
-bool View::render(Context *ctx) const
+bool View::render(Context *c) const
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return false;
 }

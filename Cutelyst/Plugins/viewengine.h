@@ -53,7 +53,7 @@ public:
     /**
      * Render the view using the choosen engine
      */
-    virtual bool render(Context *ctx) const;
+    virtual bool render(Context *c) const Q_DECL_OVERRIDE;
 
 private:
     ViewInterface *m_interface;

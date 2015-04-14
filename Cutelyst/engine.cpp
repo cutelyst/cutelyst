@@ -61,17 +61,17 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::finalizeCookies(Context *ctx, void *engineData)
+void Engine::finalizeCookies(Context *c, void *engineData)
 {
-    Response *res = ctx->response();
+    Response *res = c->response();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
         res->addHeaderValue(QStringLiteral("Set-Cookie"), cookie.toRawForm());
     }
 }
 
-void Engine::finalizeError(Context *ctx)
+void Engine::finalizeError(Context *c)
 {
-    Response *res = ctx->response();
+    Response *res = c->response();
 
     res->setContentType(QStringLiteral("text/html; charset=utf-8"));
 
@@ -81,7 +81,7 @@ void Engine::finalizeError(Context *ctx)
     // of ours if we'd give it less than 512 bytes.
     body.reserve(512);
 
-    body.append(ctx->errors().join(QLatin1Char('\n')).toUtf8());
+    body.append(c->errors().join(QLatin1Char('\n')).toUtf8());
 
     res->body() = body;
 
@@ -256,24 +256,24 @@ void Engine::handleRequest(Request *request, bool autoDelete)
     }
 }
 
-void Engine::finalize(Context *ctx)
+void Engine::finalize(Context *c)
 {
-    if (ctx->error()) {
-        finalizeError(ctx);
+    if (c->error()) {
+        finalizeError(c);
     }
 
-    void *engineData = ctx->request()->engineData();
-    finalizeCookies(ctx, engineData);
+    void *engineData = c->request()->engineData();
+    finalizeCookies(c, engineData);
 
-    Response *response = ctx->response();
+    Response *response = c->response();
     QIODevice *body = response->bodyDevice();
     if (body) {
         response->setContentLength(body->size());
     }
 
-    if (finalizeHeaders(ctx, engineData)) {
+    if (finalizeHeaders(c, engineData)) {
         if (body) {
-            finalizeBody(ctx, body, engineData);
+            finalizeBody(c, body, engineData);
         }
     }
 }

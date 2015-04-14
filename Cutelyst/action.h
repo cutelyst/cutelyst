@@ -62,7 +62,7 @@ public:
     /**
      * Dispatch this action against a context
      */
-    virtual bool dispatch(Context *ctx);
+    virtual bool dispatch(Context *c);
 
     /**
      * @brief Check Args attribute, and makes sure number of
@@ -110,7 +110,7 @@ protected:
     /**
      * Execute this action against
      */
-    virtual bool doExecute(Context *ctx) Q_DECL_OVERRIDE;
+    virtual bool doExecute(Context *c) Q_DECL_OVERRIDE;
 
     /**
      * The method to be invoked by this Action

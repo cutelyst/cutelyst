@@ -126,11 +126,11 @@ void ViewEngine::setCache(bool enable)
     m_interface->setCache(enable);
 }
 
-bool ViewEngine::render(Context *ctx) const
+bool ViewEngine::render(Context *c) const
 {
     Q_ASSERT(m_interface);
-    if (!m_interface->render(ctx)) {
-        ctx->response()->setStatus(Response::InternalServerError);
+    if (!m_interface->render(c)) {
+        c->response()->setStatus(Response::InternalServerError);
         return false;
     }
     return true;

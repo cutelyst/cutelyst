@@ -37,9 +37,9 @@ void StoreMinimal::addUser(const AuthenticationUser &user)
 }
 
 
-AuthenticationUser StoreMinimal::findUser(Context *ctx, const CStringHash &userInfo)
+AuthenticationUser StoreMinimal::findUser(Context *c, const CStringHash &userInfo)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     QString id = userInfo[QStringLiteral("id")];
     if (id.isEmpty()) {
         id = userInfo[QStringLiteral("username")];

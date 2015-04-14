@@ -29,7 +29,7 @@ namespace Cutelyst {
 class DispatchTypeChainedPrivate
 {
 public:
-    QVariantHash recurseMatch(Context *ctx, const QString &parent, const QStringList &pathParts) const;
+    QVariantHash recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const;
     void checkArgsAttr(Action *action, const QString &name);
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);

@@ -80,7 +80,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     }
 }
 
-AuthenticationUser StoreHtpasswd::findUser(Context *ctx, const CStringHash &userInfo)
+AuthenticationUser StoreHtpasswd::findUser(Context *c, const CStringHash &userInfo)
 {
     QString username = userInfo.value("username");
 
@@ -103,7 +103,7 @@ AuthenticationUser StoreHtpasswd::findUser(Context *ctx, const CStringHash &user
     return AuthenticationUser();
 }
 
-QVariant StoreHtpasswd::forSession(Context *ctx, const AuthenticationUser &user)
+QVariant StoreHtpasswd::forSession(Context *c, const AuthenticationUser &user)
 {
     return user.id();
 }

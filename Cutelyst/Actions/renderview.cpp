@@ -52,20 +52,20 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
     return Action::init(application, args);
 }
 
-bool RenderView::doExecute(Cutelyst::Context *ctx)
+bool RenderView::doExecute(Cutelyst::Context *c)
 {
     Q_D(const RenderView);
 
-    if (!Action::doExecute(ctx)) {
+    if (!Action::doExecute(c)) {
         return false;
     }
 
-    Response *res = ctx->res();
+    Response *res = c->res();
     if (res->contentType().isEmpty()) {
         res->setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 
-    if (ctx->req()->method() == QStringLiteral("HEAD")) {
+    if (c->req()->method() == QStringLiteral("HEAD")) {
         return true;
     }
 
@@ -80,15 +80,15 @@ bool RenderView::doExecute(Cutelyst::Context *ctx)
 
     // First use the action View attribute
     if (d->view) {
-        return ctx->forward(d->view);
+        return c->forward(d->view);
     }
 
     // If the above is not set try the
     // view choosen by the user or the
     // application default
-    View *view = ctx->view();
+    View *view = c->view();
     if (view) {
-        return ctx->forward(view);
+        return c->forward(view);
     }
 
     qCCritical(CUTELYST_RENDERVIEW) << "Could not find a view to render.";

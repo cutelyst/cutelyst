@@ -44,15 +44,15 @@ public:
      * do it's rendering.
      * Default implementation does nothing and returns false.
      */
-    virtual bool render(Context *ctx) const;
+    virtual bool render(Context *c) const;
 
 private:
     /**
      * This is used by Component execute() when
      * using an ActionView
      */
-    bool doExecute(Context *ctx) Q_DECL_FINAL
-    { return render(ctx); }
+    bool doExecute(Context *c) Q_DECL_FINAL
+    { return render(c); }
 };
 
 }

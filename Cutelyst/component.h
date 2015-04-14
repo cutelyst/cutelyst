@@ -73,16 +73,16 @@ public:
      */
     virtual bool init(Application *application, const QVariantHash &args);
 
-    bool execute(Context *ctx);
+    bool execute(Context *c);
 
 protected:
-    virtual bool beforeExecute(Context *ctx);
+    virtual bool beforeExecute(Context *c);
 
-    virtual bool aroundExecute(Context *ctx, QStack<Component *> stack);
+    virtual bool aroundExecute(Context *c, QStack<Component *> stack);
 
-    virtual bool afterExecute(Context *ctx);
+    virtual bool afterExecute(Context *c);
 
-    virtual bool doExecute(Context *ctx);
+    virtual bool doExecute(Context *c);
 
     void applyRoles(const QStack<Component *> &roles);
 

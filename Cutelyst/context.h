@@ -104,7 +104,7 @@ public:
      * i.e. the URI prefix corresponding to the controller
      * of the current action. For example:
      * // a class named FooBar which inherits Controller
-     * ctx->ns(); // returns 'foo/bar'
+     * c->ns(); // returns 'foo/bar'
      */
     QString ns() const;
 
@@ -171,7 +171,7 @@ public:
      * for a complete system integrated with Cutelyst).
      *
      * \code{.cpp}
-     * ctx->stash({
+     * c->stash({
      *              {"foo", 10},
      *              {"bar", QStringLiteral("my stash value")}
      *            });
@@ -209,9 +209,9 @@ public:
      * When used as a string, provides a textual URI.
      *
      * The first argument is taken as a public URI path relative
-     * ctx->ns (if it doesn't begin with a forward slash) or
+     * c->ns (if it doesn't begin with a forward slash) or
      * relative to the application root (if it does). It is then merged with
-     * ctx->request()->base() any \p args are appended as additional path
+     * c->request()->base() any \p args are appended as additional path
      * components; and any queryValues> are appended as "?foo=bar" parameters.
      */
     QUrl uriFor(const QString &path = QString(),
@@ -224,9 +224,9 @@ public:
      * When used as a string, provides a textual URI.
      *
      * The first argument is taken as a public URI path relative
-     * ctx->ns (if it doesn't begin with a forward slash) or
+     * c->ns (if it doesn't begin with a forward slash) or
      * relative to the application root (if it does). It is then merged with
-     * ctx->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
+     * c->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
     inline QUrl uriForNoArgs(const QString &path,
                              const ParamsMultiMap &queryValues) const
@@ -239,7 +239,7 @@ public:
      *
      * If no arguments are provided, the URI for the current action is returned.
      * To return the current action and also provide \p args, use
-     * ctx->uriFor(ctx->action(), args).
+     * c->uriFor(c->action(), args).
      */
     QUrl uriFor(Action *action,
                 const QStringList &args = QStringList(),
@@ -252,7 +252,7 @@ public:
      *
      * If no arguments are provided, the URI for the current action is returned.
      * To return the current action and also provide \p args, use
-     * ctx->uriFor(ctx->action(), args).
+     * c->uriFor(c->action(), args).
      */
     QUrl uriForWithCaptures(Action *action,
                             const QStringList &captures,
@@ -271,8 +271,8 @@ public:
     /**
      * A private path to the Cutelyst action you want to create a URI for.
      *
-     * This is a shortcut for calling ctx->dispatcher()->getActionByPath(path)
-     * and passing the resulting action and the remaining arguments to ctx->uri_for.
+     * This is a shortcut for calling c->dispatcher()->getActionByPath(path)
+     * and passing the resulting action and the remaining arguments to c->uri_for.
      *
      * Note that although the path looks like a URI that dispatches to the wanted action,
      * it is not a URI, but an internal path to that action.
@@ -283,12 +283,12 @@ public:
      * {
      * public:
      *   C_ATTR(lst, :Path(the-list))
-     *   void lst(Context *ctx);
+     *   void lst(Context *c);
      * };
      * \endcode
      *
      * You can use:
-     * ctx->uriForAction('/users/lst');
+     * c->uriForAction('/users/lst');
      * and it will create the URI /users/the-list.
      */
     QUrl uriForAction(const QString &path,

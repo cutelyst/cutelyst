@@ -165,7 +165,7 @@ QByteArray DispatchTypeChained::list() const
     return buffer;
 }
 
-DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &path, const QStringList &args) const
+DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
         return NoMatch;
@@ -173,7 +173,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
 
     Q_D(const DispatchTypeChained);
 
-    QVariantHash ret = d->recurseMatch(ctx, QStringLiteral("/"), path.split(QLatin1Char('/')));
+    QVariantHash ret = d->recurseMatch(c, QStringLiteral("/"), path.split(QLatin1Char('/')));
     ActionList chain = ret.value(QStringLiteral("actions")).value<ActionList>();
     if (ret.isEmpty() || chain.isEmpty()) {
         return NoMatch;
@@ -186,12 +186,12 @@ DispatchType::MatchType DispatchTypeChained::match(Context *ctx, const QString &
         decodedArgs.append(QUrl::fromPercentEncoding(arg.toLatin1()));
     }
 
-    ActionChain *action = new ActionChain(chain, ctx);
-    Request *request = ctx->request();
+    ActionChain *action = new ActionChain(chain, c);
+    Request *request = c->request();
     request->setArguments(decodedArgs);
     request->setCaptures(captures);
     request->setMatch(QLatin1Char('/') % action->name());
-    setupMatchedAction(ctx, action);
+    setupMatchedAction(c, action);
 
     return ExactMatch;
 }
@@ -322,7 +322,7 @@ bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
     return action2.size() < action1.size();
 }
 
-QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QString &parent, const QStringList &pathParts) const
+QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const
 {
     QHash<QString, QHash<QString, ActionList> >::ConstIterator it = childrenOf.constFind(parent);
     if (it == childrenOf.constEnd()) {
@@ -365,7 +365,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                 }
 
                 // try the remaining parts against children of this action
-                QVariantHash ret = recurseMatch(ctx, QLatin1Char('/') % action->reverse(), localParts);
+                QVariantHash ret = recurseMatch(c, QLatin1Char('/') % action->reverse(), localParts);
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)
@@ -391,7 +391,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *ctx, const QStrin
                     };
                 }
             } else {
-                if (!action->match(ctx->req()->args().size() + parts.size())) {
+                if (!action->match(c->req()->args().size() + parts.size())) {
                     continue;
                 }
 

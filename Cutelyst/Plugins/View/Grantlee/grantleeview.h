@@ -53,7 +53,7 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
-    bool render(Context *ctx);
+    bool render(Context *c) Q_DECL_FINAL;
 
 protected:
     GrantleeViewPrivate *d_ptr;

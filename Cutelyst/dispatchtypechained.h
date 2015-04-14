@@ -38,7 +38,7 @@ public:
 
     virtual QByteArray list() const;
 
-    virtual MatchType match(Context *ctx, const QString &path, const QStringList &args) const;
+    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const;
 
     virtual bool registerAction(Action *action);
 

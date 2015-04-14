@@ -39,24 +39,24 @@ ActionREST::~ActionREST()
     delete d_ptr;
 }
 
-bool ActionREST::dispatch(Context *ctx)
+bool ActionREST::dispatch(Context *c)
 {
     Q_D(const ActionREST);
 
-    bool ret = Action::dispatch(ctx);
+    bool ret = Action::dispatch(c);
     if (!ret) {
         return false;
     }
 
-    return d->dispatchRestMethod(ctx, ctx->request()->method());
+    return d->dispatchRestMethod(c, c->request()->method());
 }
 
-bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QString &httpMethod) const
+bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
 {
     Q_Q(const ActionREST);
     const QString &restMethod = q->name() % QLatin1Char('_') % httpMethod;
 
-    Controller *controller = ctx->controller();
+    Controller *controller = c->controller();
     Action *action = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
@@ -70,46 +70,46 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *ctx, const QString &httpMeth
     }
 
     if (action) {
-        return ctx->execute(action);
+        return c->execute(action);
     }
 
     bool ret = false;
     if (httpMethod == "OPTIONS") {
-        ret = returnOptions(ctx, q->name());
+        ret = returnOptions(c, q->name());
     } else if (httpMethod == "HEAD") {
         // redispatch to GET
-        ret = dispatchRestMethod(ctx, QStringLiteral("GET"));
+        ret = dispatchRestMethod(c, QStringLiteral("GET"));
     } else if (httpMethod != "not_implemented") {
         // try dispatching to foo_not_implemented
-        ret = dispatchRestMethod(ctx, QStringLiteral("not_implemented"));
+        ret = dispatchRestMethod(c, QStringLiteral("not_implemented"));
     } else {
         // not_implemented
-        ret = returnNotImplemented(ctx, q->name());
+        ret = returnNotImplemented(c, q->name());
     }
 
     return ret;
 }
 
-bool ActionRESTPrivate::returnOptions(Context *ctx, const QString &methodName) const
+bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) const
 {
-    Response *response = ctx->response();
+    Response *response = c->response();
     response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::OK); // 200
     response->headers().insert(QStringLiteral("Allow"),
-                               getAllowedMethods(ctx->controller(), methodName));
+                               getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
 }
 
-bool ActionRESTPrivate::returnNotImplemented(Context *ctx, const QString &methodName) const
+bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodName) const
 {
-    Response *response = ctx->response();
+    Response *response = c->response();
     response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::MethodNotAllowed); // 405
     response->headers().insert(QStringLiteral("Allow"),
-                               getAllowedMethods(ctx->controller(), methodName));
-    response->body() = "Method " + ctx->req()->method().toLatin1() + " not implemented for "
-            + ctx->uriFor(methodName).toString().toLatin1();
+                               getAllowedMethods(c->controller(), methodName));
+    response->body() = "Method " + c->req()->method().toLatin1() + " not implemented for "
+            + c->uriFor(methodName).toString().toLatin1();
     return true;
 }
 

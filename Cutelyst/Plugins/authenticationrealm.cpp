@@ -51,24 +51,24 @@ AuthenticationCredential *AuthenticationRealm::credential() const
     return m_credential;
 }
 
-AuthenticationUser AuthenticationRealm::findUser(Context *ctx, const CStringHash &userinfo)
+AuthenticationUser AuthenticationRealm::findUser(Context *c, const CStringHash &userinfo)
 {
-    AuthenticationUser ret = m_store->findUser(ctx, userinfo);
+    AuthenticationUser ret = m_store->findUser(c, userinfo);
 
     if (ret.isNull()) {
         if (m_store->canAutoCreateUser()) {
-            ret = m_store->autoCreateUser(ctx, userinfo);
+            ret = m_store->autoCreateUser(c, userinfo);
         }
     } else if (m_store->canAutoUpdateUser()) {
-        ret = m_store->autoUpdateUser(ctx, userinfo);
+        ret = m_store->autoUpdateUser(c, userinfo);
     }
 
     return ret;
 }
 
-AuthenticationUser AuthenticationRealm::authenticate(Context *ctx, const CStringHash &authinfo)
+AuthenticationUser AuthenticationRealm::authenticate(Context *c, const CStringHash &authinfo)
 {
-    return m_credential->authenticate(ctx, this, authinfo);
+    return m_credential->authenticate(c, this, authinfo);
 }
 
 void AuthenticationRealm::removePersistedUser(Context *c)
@@ -92,21 +92,21 @@ AuthenticationUser AuthenticationRealm::persistUser(Context *c, const Authentica
     return user;
 }
 
-AuthenticationUser AuthenticationRealm::restoreUser(Context *ctx, const QVariant &frozenUser)
+AuthenticationUser AuthenticationRealm::restoreUser(Context *c, const QVariant &frozenUser)
 {
     QVariant _frozenUser = frozenUser;
     if (_frozenUser.isNull()) {
-        _frozenUser = userIsRestorable(ctx);
+        _frozenUser = userIsRestorable(c);
     }
 
     if (_frozenUser.isNull()) {
         return AuthenticationUser();
     }
 
-    AuthenticationUser user = m_store->fromSession(ctx, _frozenUser);
+    AuthenticationUser user = m_store->fromSession(c, _frozenUser);
 
     if (!user.isNull()) {
-        ctx->plugin<Authentication*>()->setUser(ctx, user);
+        c->plugin<Authentication*>()->setUser(c, user);
 
         // Sets the realm the user originated in
         user.setAuthRealm(this);

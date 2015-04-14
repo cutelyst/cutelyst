@@ -35,7 +35,7 @@ public:
     explicit AuthenticationCredential(QObject *parent = 0);
     virtual ~AuthenticationCredential();
 
-    virtual AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo) = 0;
+    virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo) = 0;
 };
 
 class AuthenticationPrivate;

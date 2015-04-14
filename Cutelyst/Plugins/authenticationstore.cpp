@@ -36,7 +36,7 @@ bool AuthenticationStore::canAutoCreateUser() const
     return false;
 }
 
-AuthenticationUser AuthenticationStore::autoCreateUser(Context *ctx, const CStringHash &userinfo) const
+AuthenticationUser AuthenticationStore::autoCreateUser(Context *c, const CStringHash &userinfo) const
 {
     return AuthenticationUser();
 }
@@ -46,19 +46,19 @@ bool AuthenticationStore::canAutoUpdateUser() const
     return false;
 }
 
-AuthenticationUser AuthenticationStore::autoUpdateUser(Context *ctx, const CStringHash &userinfo) const
+AuthenticationUser AuthenticationStore::autoUpdateUser(Context *c, const CStringHash &userinfo) const
 {
     return AuthenticationUser();
 }
 
-QVariant AuthenticationStore::forSession(Context *ctx, const AuthenticationUser &user)
+QVariant AuthenticationStore::forSession(Context *c, const AuthenticationUser &user)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return QVariant::fromValue(user);
 }
 
-AuthenticationUser AuthenticationStore::fromSession(Context *ctx, const QVariant &frozenUser)
+AuthenticationUser AuthenticationStore::fromSession(Context *c, const QVariant &frozenUser)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return frozenUser.value<AuthenticationUser>();
 }

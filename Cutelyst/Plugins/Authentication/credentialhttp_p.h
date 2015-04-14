@@ -28,14 +28,14 @@ class CredentialHttpPrivate
 {
 public:
     bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
-    AuthenticationUser authenticateDigest(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticateBasic(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticationFailed(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticateDigest(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticateBasic(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticationFailed(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
 
     bool isAuthTypeDigest() const;
     bool isAuthTypeBasic() const;
 
-    void createBasicAuthResponse(Context *ctx);
+    void createBasicAuthResponse(Context *c);
     QStringList buildAuthHeaderCommon() const;
     QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
 

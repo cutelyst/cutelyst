@@ -127,7 +127,7 @@ public:
      * {
      * public:
      *   C_ATTR(bar, :Local)
-     *   void bar(Context *ctx);
+     *   void bar(Context *c);
      * };
      * \endcode
      * and the URI for the request was http://.../foo/bar/bah, the string

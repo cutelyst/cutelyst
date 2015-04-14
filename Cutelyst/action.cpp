@@ -97,9 +97,9 @@ Controller *Action::controller() const
     return d->controller;
 }
 
-bool Action::dispatch(Context *ctx)
+bool Action::dispatch(Context *c)
 {
-    return ctx->execute(this);
+    return c->execute(this);
 }
 
 bool Action::match(int numberOfArgs) const
@@ -140,14 +140,14 @@ qint8 Action::numberOfCaptures() const
     return d->numberOfCaptures;
 }
 
-bool Action::doExecute(Context *ctx)
+bool Action::doExecute(Context *c)
 {
     Q_D(const Action);
-    if (ctx->detached()) {
+    if (c->detached()) {
         return false;
     }
 
-    QStringList args = ctx->request()->args();
+    QStringList args = c->request()->args();
     // Fill the missing arguments
     args += d->emptyArgs;
 
@@ -157,7 +157,7 @@ bool Action::doExecute(Context *ctx)
         ret = d->method.invoke(d->controller,
                                Qt::DirectConnection,
                                Q_RETURN_ARG(bool, methodRet),
-                               Q_ARG(Cutelyst::Context*, ctx),
+                               Q_ARG(Cutelyst::Context*, c),
                                Q_ARG(QString, args.at(0)),
                                Q_ARG(QString, args.at(1)),
                                Q_ARG(QString, args.at(2)),
@@ -169,19 +169,19 @@ bool Action::doExecute(Context *ctx)
                                Q_ARG(QString, args.at(8)));
 
         if (ret) {
-            ctx->setState(methodRet);
+            c->setState(methodRet);
             return methodRet;
         }
 
         // The method failed to be called which means we should detach
-        ctx->detach();
-        ctx->setState(false);
+        c->detach();
+        c->setState(false);
 
         return false;
     } else {
         bool ret = d->method.invoke(d->controller,
                                     Qt::DirectConnection,
-                                    Q_ARG(Cutelyst::Context*, ctx),
+                                    Q_ARG(Cutelyst::Context*, c),
                                     Q_ARG(QString, args.at(0)),
                                     Q_ARG(QString, args.at(1)),
                                     Q_ARG(QString, args.at(2)),
@@ -191,7 +191,7 @@ bool Action::doExecute(Context *ctx)
                                     Q_ARG(QString, args.at(6)),
                                     Q_ARG(QString, args.at(7)),
                                     Q_ARG(QString, args.at(8)));
-        ctx->setState(ret);
+        c->setState(ret);
         return ret;
     }
 }

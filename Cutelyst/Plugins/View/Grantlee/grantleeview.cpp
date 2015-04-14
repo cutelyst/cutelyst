@@ -139,15 +139,15 @@ bool GrantleeView::isCaching() const
     return !d->cache.isNull();
 }
 
-bool GrantleeView::render(Context *ctx)
+bool GrantleeView::render(Context *c)
 {
     Q_D(const GrantleeView);
 
-    QVariantHash &stash = ctx->stash();
+    QVariantHash &stash = c->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
-        if (ctx->action() && !ctx->action()->reverse().isEmpty()) {
-            templateFile = ctx->action()->reverse() % d->extension;
+        if (c->action() && !c->action()->reverse().isEmpty()) {
+            templateFile = c->action()->reverse() % d->extension;
             if (templateFile.startsWith(QLatin1Char('/'))) {
                 templateFile.remove(0, 1);
             }
@@ -161,33 +161,33 @@ bool GrantleeView::render(Context *ctx)
 
     qCDebug(CUTELYST_GRANTLEE) << "Rendering template" << templateFile;
 
-    stash.insert(QStringLiteral("c"), QVariant::fromValue(ctx));
+    stash.insert(QStringLiteral("c"), QVariant::fromValue(c));
     // DEPRECATED
-    stash.insert(QStringLiteral("ctx"), QVariant::fromValue(ctx));
-    Grantlee::Context gCtx(stash);
+    stash.insert(QStringLiteral("ctx"), QVariant::fromValue(c));
+    Grantlee::Context gc(stash);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
-    QString content = tmpl->render(&gCtx);
+    QString content = tmpl->render(&gc);
     if (tmpl->error() != Grantlee::NoError) {
         qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
-        ctx->res()->body() = tr("Internal server error.").toUtf8();
+        c->res()->body() = tr("Internal server error.").toUtf8();
         return false;
     }
 
     if (!d->wrapper.isEmpty()) {
         Grantlee::Template wrapper = d->engine->loadByName(d->wrapper);
         Grantlee::SafeString safeContent(content, true);
-        gCtx.insert(QStringLiteral("content"), safeContent);
-        content = wrapper->render(&gCtx);
+        gc.insert(QStringLiteral("content"), safeContent);
+        content = wrapper->render(&gc);
 
         if (wrapper->error() != Grantlee::NoError) {
             qCCritical(CUTELYST_GRANTLEE) << "Error while rendering wrapper template" << tmpl->errorString();
-            ctx->res()->body() = tr("Internal server error.").toUtf8();
+            c->res()->body() = tr("Internal server error.").toUtf8();
             return false;
         }
     }
 
-    ctx->res()->body() = content.toUtf8();
+    c->res()->body() = content.toUtf8();
 
     return true;
 }

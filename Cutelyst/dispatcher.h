@@ -79,11 +79,11 @@ protected:
      * Delegate the dispatch to the action that matched the url, or return a
      * message about unknown resource
      */
-    bool dispatch(Context *ctx);
+    bool dispatch(Context *c);
 
-    bool forward(Context *ctx, Component *component);
-    bool forward(Context *ctx, const QString &opname);
-    void prepareAction(Context *ctx);
+    bool forward(Context *c, Component *component);
+    bool forward(Context *c, const QString &opname);
+    void prepareAction(Context *c);
 
     /**
      * Returns a list of actions on the desired namespace \pa ns

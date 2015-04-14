@@ -36,9 +36,9 @@ CredentialPassword::~CredentialPassword()
 
 }
 
-AuthenticationUser CredentialPassword::authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialPassword::authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
 {
-    AuthenticationUser user = realm->findUser(ctx, authinfo);
+    AuthenticationUser user = realm->findUser(c, authinfo);
     if (!user.isNull()) {
         if (checkPassword(user, authinfo)) {
             return user;

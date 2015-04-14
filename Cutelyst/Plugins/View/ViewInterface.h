@@ -28,7 +28,7 @@ public:
     virtual bool isCaching() const = 0;
     virtual void setCache(bool enable) = 0;
 
-    virtual bool render(Cutelyst::Context *ctx) = 0;
+    virtual bool render(Cutelyst::Context *c) = 0;
 };
 
 }

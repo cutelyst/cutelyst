@@ -109,38 +109,38 @@ public:
 protected:
     /**
      * @brief finalizeCookies first called if no error
-     * @param ctx
+     * @param c
      * Reimplement if you need a custom way
      * to Set-Cookie, the default implementation
-     * writes them to ctx->res()->headers()
+     * writes them to c->res()->headers()
      */
-    virtual void finalizeCookies(Context *ctx, void *engineData);
+    virtual void finalizeCookies(Context *c, void *engineData);
 
     /**
      * @brief finalizeHeaders called after finalizeCookies
-     * @param ctx
+     * @param c
      * Engines must reimplement this to write response
      * headers back to the caller
      */
-    virtual bool finalizeHeaders(Context *ctx, void *engineData) = 0;
+    virtual bool finalizeHeaders(Context *c, void *engineData) = 0;
 
     /**
      * @brief finalizeBody called after finalizeHeaders
-     * @param ctx
+     * @param c
      * Engines must reimplement this to write the
      * response body back to the caller
      */
-    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData) = 0;
+    virtual void finalizeBody(Context *c, QIODevice *body, void *engineData) = 0;
 
     /**
      * @brief finalizeError called on error
-     * @param ctx
+     * @param c
      * Engines should overwrite this if they
      * want to to make custom error messages.
      * Default implementation render an html
      * with errors.
      */
-    virtual void finalizeError(Context *ctx);
+    virtual void finalizeError(Context *c);
 
     /**
      * @brief handleRequest
@@ -151,7 +151,7 @@ protected:
      */
     void handleRequest(Request *request, bool autoDelete);
 
-    void finalize(Context *ctx);
+    void finalize(Context *c);
 
     EnginePrivate *d_ptr;
 

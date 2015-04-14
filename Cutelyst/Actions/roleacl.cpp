@@ -81,26 +81,26 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     return true;
 }
 
-bool RoleACL::aroundExecute(Context *ctx, QStack<Cutelyst::Component *> stack)
+bool RoleACL::aroundExecute(Context *c, QStack<Cutelyst::Component *> stack)
 {
     Q_D(const RoleACL);
 
-    if (canVisit(ctx)) {
-        return Component::aroundExecute(ctx, stack);
+    if (canVisit(c)) {
+        return Component::aroundExecute(c, stack);
     }
 
-    ctx->detach(d->detachTo);
+    c->detach(d->detachTo);
 
     return false;
 }
 
-bool RoleACL::canVisit(Context *ctx) const
+bool RoleACL::canVisit(Context *c) const
 {
     Q_D(const RoleACL);
 
-    Authentication *auth = ctx->plugin<Authentication*>();
+    Authentication *auth = c->plugin<Authentication*>();
     if (auth) {
-        QStringList user_has = auth->user(ctx).values(QStringLiteral("roles"));
+        QStringList user_has = auth->user(c).values(QStringLiteral("roles"));
 
         QStringList required = d->requiresRole;
         QStringList allowed = d->allowedRole;

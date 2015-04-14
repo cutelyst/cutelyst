@@ -36,7 +36,7 @@ public:
 protected:
     ActionRESTPrivate *d_ptr;
 
-    bool dispatch(Context *ctx) Q_DECL_FINAL;
+    bool dispatch(Context *c) Q_DECL_FINAL;
 };
 
 }

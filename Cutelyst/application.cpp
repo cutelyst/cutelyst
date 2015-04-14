@@ -299,8 +299,8 @@ void Application::handleRequest(Request *req)
     priv->request = req;
     priv->plugins = d->plugins;
 
-    Context *ctx = new Context(priv);
-    priv->response = new Response(ctx);
+    Context *c = new Context(priv);
+    priv->response = new Response(c);
     priv->response->d_ptr->headers = d->headers;
 
     if (d->useStats) {
@@ -309,27 +309,27 @@ void Application::handleRequest(Request *req)
 
     // Process request
     bool skipMethod = false;
-    Q_EMIT beforePrepareAction(ctx, &skipMethod);
+    Q_EMIT beforePrepareAction(c, &skipMethod);
     if (!skipMethod) {
         if (CUTELYST_REQUEST().isEnabled(QtDebugMsg)) {
             d->logRequest(req);
         }
 
-        d->dispatcher->prepareAction(ctx);
+        d->dispatcher->prepareAction(c);
 
-        Q_EMIT beforeDispatch(ctx);
+        Q_EMIT beforeDispatch(c);
 
-        d->dispatcher->dispatch(ctx);
+        d->dispatcher->dispatch(c);
 
-        Q_EMIT afterDispatch(ctx);
+        Q_EMIT afterDispatch(c);
     }
-    priv->engine->finalize(ctx);
+    priv->engine->finalize(c);
 
     if (priv->stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %lld",
-                ctx->response()->status(),
-                ctx->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),
-                ctx->response()->headers().header(QStringLiteral("Content-Length"), QStringLiteral("unknown")).toLatin1().data());
+                c->response()->status(),
+                c->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),
+                c->response()->headers().header(QStringLiteral("Content-Length"), QStringLiteral("unknown")).toLatin1().data());
 
         RequestPrivate *reqPriv = req->d_ptr;
         reqPriv->endOfRequest = d->engine->time();
@@ -349,7 +349,7 @@ void Application::handleRequest(Request *req)
         delete priv->stats;
     }
 
-    delete ctx;
+    delete c;
 }
 
 bool Application::enginePostFork()

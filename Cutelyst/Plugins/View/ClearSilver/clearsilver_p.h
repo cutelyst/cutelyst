@@ -29,12 +29,12 @@ namespace Cutelyst {
 class ClearSilverPrivate
 {
 public:
-    HDF *hdfForStash(Context *ctx, const QVariantHash &stash) const;
+    HDF *hdfForStash(Context *c, const QVariantHash &stash) const;
     void serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix = QString()) const;
     void serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix = QString()) const;
     void serializeVariant(HDF *hdf, const QVariant &value, const QString &key) const;
-    bool render(Context *ctx, const QString &filename, const QVariantHash &stash, QByteArray &output);
-    void renderError(Context *ctx, const QString &error) const;
+    bool render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output);
+    void renderError(Context *c, const QString &error) const;
 
     QStringList includePaths;
     QString extension;

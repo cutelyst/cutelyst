@@ -33,11 +33,11 @@ public:
 
     void addUser(const CStringHash &user);
 
-    virtual AuthenticationUser findUser(Context *ctx, const CStringHash &userInfo);
+    virtual AuthenticationUser findUser(Context *c, const CStringHash &userInfo) Q_DECL_FINAL;
 
-    virtual QVariant forSession(Context *ctx, const AuthenticationUser &user);
+    virtual QVariant forSession(Context *c, const AuthenticationUser &user) Q_DECL_FINAL;
 
-    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser);
+    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) Q_DECL_FINAL;
 };
 
 }

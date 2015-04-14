@@ -56,13 +56,13 @@ bool Component::init(Cutelyst::Application *application, const QVariantHash &arg
     return true;
 }
 
-bool Component::execute(Context *ctx)
+bool Component::execute(Context *c)
 {
     Q_D(Component);
 
     if (d->proccessRoles) {
         Q_FOREACH (Component *code, d->beforeRoles) {
-            if (!code->beforeExecute(ctx)) {
+            if (!code->beforeExecute(c)) {
                 return false;
             }
         }
@@ -70,12 +70,12 @@ bool Component::execute(Context *ctx)
         QStack<Component *> stack = d->aroundRoles;
         // first item on the stack is always the execution code
         stack.push_front(this);
-        if (!aroundExecute(ctx, stack)) {
+        if (!aroundExecute(c, stack)) {
             return false;
         }
 
         Q_FOREACH (Component *code, d->afterRoles) {
-            if (!code->afterExecute(ctx)) {
+            if (!code->afterExecute(c)) {
                 return false;
             }
         }
@@ -84,42 +84,42 @@ bool Component::execute(Context *ctx)
         return true;
     }
 
-    return doExecute(ctx);
+    return doExecute(c);
 }
 
-bool Component::beforeExecute(Context *ctx)
+bool Component::beforeExecute(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return true;
 }
 
-bool Component::aroundExecute(Context *ctx, QStack<Cutelyst::Component *> stack)
+bool Component::aroundExecute(Context *c, QStack<Cutelyst::Component *> stack)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
 
     int stackSize = stack.size();
     if (stackSize == 1) {
         Component *code = stack.pop();
-        return code->doExecute(ctx);
+        return code->doExecute(c);
     } else if (stackSize > 1) {
         Component *code = stack.pop();
-        return code->aroundExecute(ctx, stack);
+        return code->aroundExecute(c, stack);
     }
 
     // Should NEVER happen
-    qCCritical(CUTELYST_COMPONENT) << "Reached end of the stack!" << ctx->req()->uri();
+    qCCritical(CUTELYST_COMPONENT) << "Reached end of the stack!" << c->req()->uri();
     return false;
 }
 
-bool Component::afterExecute(Context *ctx)
+bool Component::afterExecute(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return true;
 }
 
-bool Component::doExecute(Context *ctx)
+bool Component::doExecute(Context *c)
 {
-    Q_UNUSED(ctx)
+    Q_UNUSED(c)
     return true;
 }
 

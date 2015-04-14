@@ -36,7 +36,7 @@ class RenderViewPrivate;
  * {
  * public:
  *   C_ATTR(End, :ActionClass(RenderView))
- *   void End(Context *ctx);
+ *   void End(Context *c);
  * };
  * \endcode
  * The above will render with the default
@@ -46,7 +46,7 @@ class RenderViewPrivate;
  * \code{.h}
  * ...
  *   C_ATTR(End, :ActionClass(RenderView) :View(ajax_view))
- *   void End(Context *ctx);
+ *   void End(Context *c);
  * ...
  * \endcode
  */
@@ -61,7 +61,7 @@ public:
     virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
 
 protected:
-    virtual bool doExecute(Cutelyst::Context *ctx) Q_DECL_FINAL;
+    virtual bool doExecute(Cutelyst::Context *c) Q_DECL_FINAL;
 
     RenderViewPrivate *d_ptr;
 };

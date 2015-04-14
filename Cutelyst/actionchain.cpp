@@ -42,10 +42,10 @@ ActionChain::~ActionChain()
     delete d_ptr;
 }
 
-bool ActionChain::dispatch(Context *ctx)
+bool ActionChain::dispatch(Context *c)
 {
     Q_D(ActionChain);
-    QStringList captures = ctx->req()->captures();
+    QStringList captures = c->req()->captures();
     ActionList chain = d->chain;
     Action *final = chain.takeLast();
     Q_FOREACH (Action *action, chain) {
@@ -54,15 +54,15 @@ bool ActionChain::dispatch(Context *ctx)
             args = captures.mid(0, action->numberOfCaptures());
         }
 
-        Request *request =  ctx->request();
+        Request *request =  c->request();
         const QStringList &currentArgs = request->args();
         request->setArguments(args);
-        if (!action->dispatch(ctx)) {
+        if (!action->dispatch(c)) {
             return false;
         }
         request->setArguments(currentArgs);
     }
 
-    return final->dispatch(ctx);
+    return final->dispatch(c);
 }
 

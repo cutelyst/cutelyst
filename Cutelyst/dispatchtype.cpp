@@ -50,7 +50,7 @@ bool DispatchType::isLowPrecedence() const
     return false;
 }
 
-void DispatchType::setupMatchedAction(Context *ctx, Action *action) const
+void DispatchType::setupMatchedAction(Context *c, Action *action) const
 {
-    ctx->d_ptr->action = action;
+    c->d_ptr->action = action;
 }

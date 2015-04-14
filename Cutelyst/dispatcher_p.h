@@ -32,9 +32,9 @@ public:
 
     void printActions() const;
     ActionList getContainers(const QString &ns) const;
-    Action *command2Action(Context *ctx, const QString &command, const QStringList &extraParams = QStringList()) const;
-    Action *invokeAsPath(Context *ctx, const QString &relativePath, const QStringList &args) const;
-    static QString actionRel2Abs(Context *ctx, const QString &path);
+    Action *command2Action(Context *c, const QString &command, const QStringList &extraParams = QStringList()) const;
+    Action *invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const;
+    static QString actionRel2Abs(Context *c, const QString &path);
     static QString cleanNamespace(const QString &ns);
 
     Dispatcher *q_ptr;

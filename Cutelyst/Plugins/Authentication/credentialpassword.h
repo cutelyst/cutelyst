@@ -38,7 +38,7 @@ public:
     explicit CredentialPassword(QObject *parent = 0);
     virtual ~CredentialPassword();
 
-    AuthenticationUser authenticate(Context *ctx, AuthenticationRealm *realm, const CStringHash &authinfo);
+    AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo) Q_DECL_FINAL;
 
     QString passwordField() const;
     void setPasswordField(const QString &fieldName);
