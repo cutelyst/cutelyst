@@ -139,7 +139,7 @@ bool DispatchTypePath::registerAction(Action *action)
     return ret;
 }
 
-bool DispatchTypePath::inUse() const
+bool DispatchTypePath::inUse()
 {
     Q_D(const DispatchTypePath);
     return !d->paths.isEmpty();

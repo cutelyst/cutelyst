@@ -44,7 +44,7 @@ public:
 
     virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_OVERRIDE;
 
-    virtual bool inUse() const Q_DECL_OVERRIDE;
+    virtual bool inUse() Q_DECL_OVERRIDE;
 
 private:
     DispatchTypeChainedPrivate *d_ptr;

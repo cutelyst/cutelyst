@@ -65,13 +65,15 @@ public:
 
     /**
      * If false the dispatcher will be unregistered for
-     * performance reasons.
+     * performance reasons. This method can be used to
+     * prepare actions for dispatcher as in a Chain of
+     * Actions there is no garantee of registering order.
      *
      * In the common case if the dispatcher has registered
      * any action, or in some special case that it doesn't need
      * actions it will return true.
      */
-    virtual bool inUse() const = 0;
+    virtual bool inUse() = 0;
 
     /**
      * Returns true if the dispatch type has low precedence

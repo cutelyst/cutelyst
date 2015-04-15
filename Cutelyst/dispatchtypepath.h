@@ -40,7 +40,7 @@ public:
 
     virtual bool registerAction(Action *action) Q_DECL_OVERRIDE;
 
-    virtual bool inUse() const Q_DECL_OVERRIDE;
+    virtual bool inUse() Q_DECL_OVERRIDE;
 
     /**
      * Get a URI part for an action

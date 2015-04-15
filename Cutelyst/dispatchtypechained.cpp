@@ -310,7 +310,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     return QLatin1Char('/') % parts.join(QLatin1Char('/'));
 }
 
-bool DispatchTypeChained::inUse() const
+bool DispatchTypeChained::inUse()
 {
     Q_D(const DispatchTypeChained);
     return !d->actions.isEmpty();
