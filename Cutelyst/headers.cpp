@@ -262,6 +262,22 @@ void Headers::setHeader(const QString &field, const QStringList &values)
     setHeader(field, values.join(QLatin1String(", ")));
 }
 
+void Headers::pushHeader(const QString &field, const QString &value)
+{
+    const QString &key = HeadersPrivate::normalizeHeaderKey(field);
+    const QString &old = Headers::value(key);
+    if (old.isEmpty()) {
+        insert(key, value);
+    } else {
+        insert(key, old % QLatin1String(", ") % value);
+    }
+}
+
+void Headers::pushHeader(const QString &field, const QStringList &values)
+{
+    pushHeader(field, values.join(QLatin1String(", ")));
+}
+
 void Headers::removeHeader(const QString &field)
 {
     remove(HeadersPrivate::normalizeHeaderKey(field));

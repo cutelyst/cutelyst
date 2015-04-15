@@ -198,6 +198,8 @@ public:
      */
     QString header(const QString &field) const;
 
+    void setHeader(const QString &field, const QString &value);
+
     /**
      * Returns a reference to the response headers class
      */
@@ -211,6 +213,7 @@ public:
 protected:
     ResponsePrivate *d_ptr;
     friend class Application;
+    friend class Engine;
 };
 
 }

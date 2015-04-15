@@ -183,6 +183,12 @@ QString Response::header(const QString &field) const
     return d->headers.header(field);
 }
 
+void Response::setHeader(const QString &field, const QString &value)
+{
+    Q_D(Response);
+    d->headers.setHeader(field, value);
+}
+
 Headers &Response::headers()
 {
     Q_D(Response);
@@ -194,7 +200,7 @@ void Response::write(const QByteArray &data)
     Q_D(Response);
 
     if (!d->finalizedHeaders) {
-
+//        d->context->fi
     }
 
     if (d->body) {

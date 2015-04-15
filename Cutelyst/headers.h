@@ -225,6 +225,10 @@ public:
 
     void setHeader(const QString &field, const QStringList &values);
 
+    void pushHeader(const QString &field, const QString &value);
+
+    void pushHeader(const QString &field, const QStringList &values);
+
     void removeHeader(const QString &field);
 
     /**
