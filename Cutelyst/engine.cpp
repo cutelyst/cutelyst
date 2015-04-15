@@ -22,7 +22,7 @@
 #include "common.h"
 #include "request_p.h"
 #include "application.h"
-#include "response.h"
+#include "response_p.h"
 #include "context_p.h"
 
 #include <QUrl>
@@ -61,13 +61,54 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::finalizeCookies(Context *c, void *engineData)
+void Engine::finalizeCookies(Context *c)
 {
     Response *res = c->response();
     Headers &headers = res->headers();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
-        headers.setHeader(QStringLiteral("Set-Cookie"), cookie.toRawForm());
+        headers.pushHeader(QStringLiteral("Set-Cookie"), cookie.toRawForm());
     }
+}
+
+bool Engine::finalizeHeaders(Context *c)
+{
+    Response *response = c->response();
+
+    // Check if we already finalized headers
+    if (response->d_ptr->finalizedHeaders) {
+        return true;
+    }
+
+    // Fix missing content length
+    if (response->hasBody() && !response->contentLength()) {
+        response->setContentLength(response->body().size());
+    }
+
+    const QString &protocol = c->request()->protocol();
+    if (protocol == QLatin1String("HTTP/1.1")) {
+        const QString &te = response->header(QStringLiteral("Transfer-Encoding"));
+        if (te == QLatin1String("chunked")) {
+            qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
+            c->d_ptr->chunked = true;
+        } else if (!response->contentLength()) {
+            qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
+            response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+            c->d_ptr->chunked = true;
+        }
+    }
+
+    // Handle redirects
+    const QUrl &location = response->location();
+    if (!location.isEmpty()) {
+        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().data());
+        response->headers().setHeader(QStringLiteral("Location"), location.toEncoded());
+    }
+
+    finalizeCookies(c);
+
+    // Done
+    response->d_ptr->finalizedHeaders = true;
+    return true;
 }
 
 void Engine::finalizeError(Context *c)
@@ -137,6 +178,20 @@ bool Engine::postForkApplication()
 quint64 Engine::time()
 {
     return QDateTime::currentDateTime().toMSecsSinceEpoch();
+}
+
+qint64 Engine::write(Context *c, const char *data, qint64 len)
+{
+    void *engineData = c->engineData();
+    if (c->d_ptr->chunked) {
+        char chunked[19];
+        int ret = snprintf(chunked, 19, "%X\r\n", (unsigned int) len);
+        if (ret <= 0 || ret >= 19) {
+            return -1;
+        }
+        doWrite(c, chunked, ret, engineData);
+    }
+    return doWrite(c, data, len, engineData);
 }
 
 QByteArray Engine::statusCode(quint16 status) const
@@ -265,24 +320,12 @@ void Engine::finalize(Context *c)
 
     Response *response = c->response();
 
-    // Handle redirects
-    const QUrl &location = response->location();
-    if (!location.isEmpty()) {
-        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().data());
-        response->headers().setHeader(QStringLiteral("Location"), location.toEncoded());
+    if (!response->d_ptr->finalizedHeaders) {
+        finalizeHeaders(c);
     }
-
-    void *engineData = c->request()->engineData();
-    finalizeCookies(c, engineData);
 
     QIODevice *body = response->bodyDevice();
     if (body) {
-        response->setContentLength(body->size());
-    }
-
-    if (finalizeHeaders(c, engineData)) {
-        if (body) {
-            finalizeBody(c, body, engineData);
-        }
+        finalizeBody(c, body, c->engineData());
     }
 }

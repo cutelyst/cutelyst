@@ -50,6 +50,10 @@ public:
     QVariantHash stash;
     Stats *stats = 0;
     bool state = false;
+    bool chunked = false;
+
+    // Pointer to Engine data
+    void *requestPtr = 0;
 };
 
 }

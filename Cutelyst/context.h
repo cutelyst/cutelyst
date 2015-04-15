@@ -355,6 +355,8 @@ public:
      */
     QByteArray welcomeMessage() const;
 
+    void *engineData();
+
 protected:
     QVariant pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
     void setPluginProperty(Plugin *plugin, const QString &name, const QVariant &value);
@@ -363,6 +365,7 @@ protected:
     friend class Action;
     friend class DispatchType;
     friend class Plugin;
+    friend class Engine;
     ContextPrivate *d_ptr;
 
 private:

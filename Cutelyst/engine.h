@@ -106,35 +106,35 @@ public:
      */
     virtual quint64 time();
 
-protected:
     /**
-     * @brief finalizeCookies first called if no error
-     * @param c
+     * Called by Response to manually write data
+     */
+    qint64 write(Context *c, const char *data, qint64 len);
+protected:
+
+    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
+
+    /**
      * Reimplement if you need a custom way
      * to Set-Cookie, the default implementation
      * writes them to c->res()->headers()
      */
-    virtual void finalizeCookies(Context *c, void *engineData);
+    virtual void finalizeCookies(Context *c);
 
     /**
-     * @brief finalizeHeaders called after finalizeCookies
-     * @param c
-     * Engines must reimplement this to write response
-     * headers back to the caller
+     * Finalize the headers, and call
+     * doFinalizeHeaders(), reimplemententions
+     * must call this first
      */
-    virtual bool finalizeHeaders(Context *c, void *engineData) = 0;
+    virtual bool finalizeHeaders(Context *c);
 
     /**
-     * @brief finalizeBody called after finalizeHeaders
-     * @param c
      * Engines must reimplement this to write the
      * response body back to the caller
      */
     virtual void finalizeBody(Context *c, QIODevice *body, void *engineData) = 0;
 
     /**
-     * @brief finalizeError called on error
-     * @param c
      * Engines should overwrite this if they
      * want to to make custom error messages.
      * Default implementation render an html
@@ -143,14 +143,15 @@ protected:
     virtual void finalizeError(Context *c);
 
     /**
-     * @brief handleRequest
-     * @param request
-     * @param response
      * Engines must call this when the Request/Response objects
      * are ready for to be processed
      */
     void handleRequest(Request *request, bool autoDelete);
 
+    /**
+     * Called by Application to deal
+     * with finalizing cookies, headers and body
+     */
     void finalize(Context *c);
 
     EnginePrivate *d_ptr;
@@ -158,6 +159,7 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Engine)
     friend class Application;
+    friend class Response;
 
     /**
      * @brief init the engine

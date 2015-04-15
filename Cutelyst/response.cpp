@@ -19,7 +19,7 @@
 
 #include "response_p.h"
 
-#include "context.h"
+#include "context_p.h"
 #include "engine.h"
 #include "common.h"
 
@@ -195,17 +195,19 @@ Headers &Response::headers()
     return d->headers;
 }
 
-void Response::write(const QByteArray &data)
+qint64 Response::write(const char *data, qint64 len)
 {
     Q_D(Response);
 
+    // Finalize headers if someone manually writes output
     if (!d->finalizedHeaders) {
-//        d->context->fi
+        d->engine->finalizeHeaders(d->context);
     }
 
-    if (d->body) {
-        d->body->write(data);
-    } else {
-        body().append(data);
-    }
+    return d->engine->write(d->context, data, len);
+}
+
+qint64 Response::write(const QByteArray &data)
+{
+    return write(data.data(), data.size());
 }

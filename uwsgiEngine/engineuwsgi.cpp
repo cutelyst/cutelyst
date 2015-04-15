@@ -79,6 +79,18 @@ void uWSGI::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
     }
 }
 
+qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData)
+{
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
+    char *block = strdup(data);
+    if (uwsgi_response_write_body_do(wsgi_req, block, len) != UWSGI_OK) {
+        qCWarning(CUTELYST_UWSGI) << "Failed to write body";
+        return -1;
+    }
+    free(block);
+    return len;
+}
+
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
     for(;;) {
@@ -288,9 +300,13 @@ quint64 uWSGI::time()
     return uwsgi_micros();
 }
 
-bool uWSGI::finalizeHeaders(Context *ctx, void *engineData)
+bool uWSGI::finalizeHeaders(Context *ctx)
 {
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
+    if (!Engine::finalizeHeaders(ctx)) {
+        return false;
+    }
+
+    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->request()->engineData());
     Response *res = ctx->res();
 
     QByteArray status = statusCode(res->status());

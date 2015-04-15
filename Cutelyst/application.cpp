@@ -298,6 +298,7 @@ void Application::handleRequest(Request *req)
     priv->dispatcher = d->dispatcher;
     priv->request = req;
     priv->plugins = d->plugins;
+    priv->requestPtr = req->d_ptr->requestPtr;
 
     Context *c = new Context(priv);
     priv->response = new Response(c);
@@ -323,7 +324,8 @@ void Application::handleRequest(Request *req)
 
         Q_EMIT afterDispatch(c);
     }
-    priv->engine->finalize(c);
+
+    d->engine->finalize(c);
 
     if (priv->stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",

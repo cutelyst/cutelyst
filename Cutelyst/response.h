@@ -205,10 +205,9 @@ public:
      */
     Headers &headers();
 
-    /**
-     * Writes data to the body
-     */
-    Q_INVOKABLE void write(const QByteArray &data);
+    qint64 write(const char *data, qint64 len);
+
+    qint64 write(const QByteArray &data);
 
 protected:
     ResponsePrivate *d_ptr;

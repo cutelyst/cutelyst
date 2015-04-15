@@ -364,6 +364,12 @@ QByteArray Context::welcomeMessage() const
     return ret;
 }
 
+void *Context::engineData()
+{
+    Q_D(const Context);
+    return d->requestPtr;
+}
+
 QVariant Context::pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Context);
