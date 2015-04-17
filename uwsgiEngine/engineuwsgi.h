@@ -49,8 +49,6 @@ public:
 
     virtual bool finalizeHeaders(Context *ctx) Q_DECL_FINAL;
 
-    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData) Q_DECL_FINAL;
-
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) Q_DECL_FINAL;
 
     void readRequestUWSGI(wsgi_request *req);

@@ -60,25 +60,6 @@ void uWSGI::setThread(QThread *thread)
             this, &uWSGI::forked, Qt::DirectConnection);
 }
 
-void uWSGI::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
-{
-    Q_UNUSED(ctx)
-
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
-    body->seek(0);
-    char block[4096];
-    while (!body->atEnd()) {
-        qint64 in = body->read(block, sizeof(block));
-        if (in <= 0)
-            break;
-
-        if (uwsgi_response_write_body_do(wsgi_req, block, in) != UWSGI_OK) {
-            qCWarning(CUTELYST_UWSGI) << "Failed to write body";
-            break;
-        }
-    }
-}
-
 qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);

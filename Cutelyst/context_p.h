@@ -51,6 +51,7 @@ public:
     Stats *stats = 0;
     bool state = false;
     bool chunked = false;
+    bool chunked_done = false;
 
     // Pointer to Engine data
     void *requestPtr = 0;

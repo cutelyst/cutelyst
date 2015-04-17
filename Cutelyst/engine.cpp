@@ -111,6 +111,22 @@ bool Engine::finalizeHeaders(Context *c)
     return true;
 }
 
+void Engine::finalizeBody(Context *c, QIODevice *body)
+{
+    body->seek(0);
+    char block[4096];
+    while (!body->atEnd()) {
+        qint64 in = body->read(block, sizeof(block));
+        if (in <= 0)
+            break;
+
+        if (write(c, block, in) != in) {
+            qCWarning(CUTELYST_ENGINE) << "Failed to write body";
+            break;
+        }
+    }
+}
+
 void Engine::finalizeError(Context *c)
 {
     Response *res = c->response();
@@ -190,6 +206,17 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
             return -1;
         }
         doWrite(c, chunked, ret, engineData);
+
+        qint64 retWrite = doWrite(c, data, len, engineData);
+
+        doWrite(c, "\r\n", 2, engineData);
+
+        // Flag if we wrote an empty chunk
+        if (!len) {
+            c->d_ptr->chunked_done = true;
+        }
+
+        return retWrite;
     }
     return doWrite(c, data, len, engineData);
 }
@@ -326,6 +353,11 @@ void Engine::finalize(Context *c)
 
     QIODevice *body = response->bodyDevice();
     if (body) {
-        finalizeBody(c, body, c->engineData());
+        finalizeBody(c, body);
+    }
+
+    if (c->d_ptr->chunked && !c->d_ptr->chunked_done) {
+        // Write the final '0' chunk
+        doWrite(c, "0\r\n\r\n", 5, c->engineData());
     }
 }

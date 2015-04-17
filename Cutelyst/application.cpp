@@ -294,7 +294,7 @@ void Application::handleRequest(Request *req)
 
     ContextPrivate *priv = new ContextPrivate;
     priv->app = this;
-    priv->engine = req->engine();
+    priv->engine = d->engine;
     priv->dispatcher = d->dispatcher;
     priv->request = req;
     priv->plugins = d->plugins;
@@ -302,7 +302,9 @@ void Application::handleRequest(Request *req)
 
     Context *c = new Context(priv);
     priv->response = new Response(c);
-    priv->response->d_ptr->headers = d->headers;
+    ResponsePrivate *resPriv = priv->response->d_ptr;
+    resPriv->engine = d->engine;
+    resPriv->headers = d->headers;
 
     if (d->useStats) {
         priv->stats = new Stats(this);
