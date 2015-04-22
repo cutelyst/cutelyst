@@ -122,7 +122,11 @@ void uWSGI::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    priv->path = QString::fromLatin1(req->path_info + 1, req->path_info_len - 1);
+    if (req->path_info_len) {
+        priv->path = QString::fromLatin1(req->path_info + 1, req->path_info_len - 1);
+    } else {
+        priv->path = QString();
+    }
 
     priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
     priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);
