@@ -79,20 +79,25 @@ bool Engine::finalizeHeaders(Context *c)
         return true;
     }
 
+    QIODevice *body = response->bodyDevice();
+
     // Fix missing content length
-    if (response->hasBody() && !response->contentLength()) {
-        response->setContentLength(response->body().size());
+    if (body && !response->contentLength()) {
+        response->setContentLength(body->size());
     }
 
     const QString &protocol = c->request()->protocol();
     if (protocol == QLatin1String("HTTP/1.1")) {
-        const QString &te = response->header(QStringLiteral("Transfer-Encoding"));
-        if (te == QLatin1String("chunked")) {
+        if (!response->contentLength()) {
+            quint16 status = response->status();
+            // if status is not 1xx or 204 NoContent or 304 NotModified
+            if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
+                qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
+                response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+                c->d_ptr->chunked = true;
+            }
+        } else if (response->header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
             qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
-            c->d_ptr->chunked = true;
-        } else if (!response->contentLength()) {
-            qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
-            response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
             c->d_ptr->chunked = true;
         }
     }
@@ -113,16 +118,32 @@ bool Engine::finalizeHeaders(Context *c)
 
 void Engine::finalizeBody(Context *c, QIODevice *body)
 {
-    body->seek(0);
-    char block[4096];
-    while (!body->atEnd()) {
-        qint64 in = body->read(block, sizeof(block));
-        if (in <= 0)
-            break;
+    if (c->d_ptr->chunked) {
+        body->seek(0);
+        char block[64 * 1024];
+        while (!body->atEnd()) {
+            qint64 in = body->read(block, sizeof(block));
+            if (in <= 0)
+                break;
 
-        if (write(c, block, in) != in) {
-            qCWarning(CUTELYST_ENGINE) << "Failed to write body";
-            break;
+            if (write(c, block, in) != in) {
+                qCWarning(CUTELYST_ENGINE) << "Failed to write body";
+                break;
+            }
+        }
+    } else  {
+        void *engineData = c->engineData();
+        body->seek(0);
+        char block[64 * 1024];
+        while (!body->atEnd()) {
+            qint64 in = body->read(block, sizeof(block));
+            if (in <= 0)
+                break;
+
+            if (doWrite(c, block, in, engineData) != in) {
+                qCWarning(CUTELYST_ENGINE) << "Failed to write body";
+                break;
+            }
         }
     }
 }

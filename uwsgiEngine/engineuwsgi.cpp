@@ -62,13 +62,12 @@ void uWSGI::setThread(QThread *thread)
 
 qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(engineData);
-    char *block = strdup(data);
-    if (uwsgi_response_write_body_do(wsgi_req, block, len) != UWSGI_OK) {
+    if (uwsgi_response_write_body_do(static_cast<wsgi_request*>(engineData),
+                                     const_cast<char *>(data),
+                                     len) != UWSGI_OK) {
         qCWarning(CUTELYST_UWSGI) << "Failed to write body";
         return -1;
     }
-    free(block);
     return len;
 }
 
