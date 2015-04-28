@@ -48,6 +48,10 @@ GrantleeView::GrantleeView(QObject *parent) :
     if (app) {
         // make sure templates can be found on the current directory
         setIncludePaths({ app->config("root").toString() });
+
+        // If CUTELYST_VAR is set the template might have become
+        // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
+        d->cutelystVar = app->config("CUTELYST_VAR", QStringLiteral("c")).toString();
     } else {
         // make sure templates can be found on the current directory
         setIncludePaths({ QDir::currentPath() });
@@ -161,9 +165,8 @@ bool GrantleeView::render(Context *c)
 
     qCDebug(CUTELYST_GRANTLEE) << "Rendering template" << templateFile;
 
-    stash.insert(QStringLiteral("c"), QVariant::fromValue(c));
-    // DEPRECATED
-    stash.insert(QStringLiteral("ctx"), QVariant::fromValue(c));
+    stash.insert(d->cutelystVar, QVariant::fromValue(c));
+
     Grantlee::Context gc(stash);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);

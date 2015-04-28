@@ -34,6 +34,7 @@ public:
     QStringList includePaths;
     QString extension = QStringLiteral(".html");
     QString wrapper;
+    QString cutelystVar;
     Grantlee::Engine *engine;
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
     QSharedPointer<Grantlee::CachingLoaderDecorator> cache;
