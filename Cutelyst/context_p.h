@@ -44,7 +44,6 @@ public:
     QStack<Component *> stack;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
-    QHash<Plugin *, QVariantHash> pluginsConfig;
     bool detached = false;
     QStringList error;
     QVariantHash stash;

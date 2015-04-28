@@ -370,19 +370,6 @@ void *Context::engineData()
     return d->requestPtr;
 }
 
-QVariant Context::pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue) const
-{
-    Q_D(const Context);
-    return d->pluginsConfig[plugin].value(key, defaultValue);
-}
-
-void Context::setPluginProperty(Cutelyst::Plugin *plugin, const QString &key, const QVariant &value)
-{
-    Q_D(Context);
-    d->pluginsConfig[plugin].insert(key, value);
-}
-
-
 QString ContextPrivate::statsStartExecute(Component *code)
 {
     // Skip internal actions

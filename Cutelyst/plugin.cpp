@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,14 +32,4 @@ bool Plugin::setup(Application *app)
 {
     Q_UNUSED(app)
     return true;
-}
-
-QVariant Plugin::pluginProperty(Context *c, const QString &key, const QVariant &defaultValue) const
-{
-    return c->pluginProperty(const_cast<Plugin *>(this), key, defaultValue);
-}
-
-void Plugin::setPluginProperty(Context *c, const QString &key, const QVariant &value)
-{
-    c->setPluginProperty(this, key, value);
 }

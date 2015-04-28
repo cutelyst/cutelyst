@@ -358,9 +358,6 @@ public:
     void *engineData();
 
 protected:
-    QVariant pluginProperty(Plugin * const plugin, const QString &key, const QVariant &defaultValue = QVariant()) const;
-    void setPluginProperty(Plugin *plugin, const QString &name, const QVariant &value);
-
     friend class Application;
     friend class Action;
     friend class DispatchType;

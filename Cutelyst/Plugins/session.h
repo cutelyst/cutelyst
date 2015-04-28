@@ -20,6 +20,8 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
+#include <QVariant>
+
 #include <Cutelyst/plugin.h>
 
 namespace Cutelyst {

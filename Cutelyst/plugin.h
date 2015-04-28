@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,10 +41,6 @@ public:
      * the signals emitted from Cutelyst::Application
      */
     virtual bool setup(Application *app);
-
-protected:
-    QVariant pluginProperty(Context *c, const QString &key, const QVariant &defaultValue = QVariant()) const;
-    void setPluginProperty(Context *c, const QString &key, const QVariant &value);
 };
 
 }

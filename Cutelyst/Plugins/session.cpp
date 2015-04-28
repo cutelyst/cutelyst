@@ -34,6 +34,9 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
+#define SESSION_VALUES "_session_values"
+#define SESSION_SAVE "_session_save"
+
 Session::Session(Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate)
 {
@@ -71,8 +74,8 @@ void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant 
     Q_D(Session);
     QVariantHash session = d->loadSession(c).toHash();
     session.insert(key, value);
-    c->setProperty("_session_values", session);
-    c->setProperty("_session_save", true);
+    c->setProperty(SESSION_VALUES, session);
+    c->setProperty(SESSION_SAVE, true);
 }
 
 void Session::deleteValue(Context *c, const QString &key)
@@ -168,7 +171,7 @@ QString SessionPrivate::getSessionId(Context *c, bool create) const
 void SessionPrivate::saveSession(Context *c)
 {
     Q_Q(Session);
-    if (!c->property("_session_save").toBool()) {
+    if (!c->property(SESSION_SAVE).toBool()) {
         return;
     }
 
@@ -183,7 +186,7 @@ void SessionPrivate::saveSession(Context *c)
 QVariant SessionPrivate::loadSession(Context *c)
 {
     Q_Q(Session);
-    QVariant property = c->property("_session_values");
+    QVariant property = c->property(SESSION_VALUES);
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
@@ -191,7 +194,7 @@ QVariant SessionPrivate::loadSession(Context *c)
     QString sessionid = getSessionId(c, false);
     if (!sessionid.isEmpty()) {
         QVariantHash session = q->retrieveSession(sessionid);
-        c->setProperty("_session_values", session);
+        c->setProperty(SESSION_VALUES, session);
         return session;
     }
     return QVariant();

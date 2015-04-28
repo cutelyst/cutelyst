@@ -27,12 +27,13 @@
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_UTILS_AUTH, "cutelyst.utils.auth")
+Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
-
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
+
+#define AUTHENTICATION_USER "_authentication_user"
 
 Authentication::Authentication(Application *parent) : Plugin(parent)
   , d_ptr(new AuthenticationPrivate)
@@ -98,7 +99,7 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const CStringH
 Cutelyst::AuthenticationUser Cutelyst::Authentication::user(Cutelyst::Context *c)
 {
     Q_D(Authentication);
-    QVariant user = pluginProperty(c, QStringLiteral("user"));
+    QVariant user = c->property(AUTHENTICATION_USER);
     if (user.isNull()) {        
         return restoreUser(c, QVariant(), QString());
     }
@@ -107,11 +108,10 @@ Cutelyst::AuthenticationUser Cutelyst::Authentication::user(Cutelyst::Context *c
 
 void Authentication::setUser(Context *c, const AuthenticationUser &user)
 {
-    Q_D(Authentication);
     if (user.isNull()) {
-        setPluginProperty(c, QStringLiteral("user"), QVariant());
+        c->setProperty(AUTHENTICATION_USER, QVariant());
     } else {
-        setPluginProperty(c, QStringLiteral("user"), QVariant::fromValue(user));
+        c->setProperty(AUTHENTICATION_USER, QVariant::fromValue(user));
     }
 }
 
@@ -122,7 +122,7 @@ bool Authentication::userExists(Cutelyst::Context *c)
 
 bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realm)
 {
-    QVariant user = pluginProperty(c, QStringLiteral("user"));
+    QVariant user = c->property(AUTHENTICATION_USER);
     if (user.isNull()) {
         return !restoreUser(c, QVariant(), realm).isNull();
     }
