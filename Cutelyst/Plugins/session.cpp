@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,6 +37,7 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 Session::Session(Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate)
 {
+    d_ptr->q_ptr = this;
 }
 
 Cutelyst::Session::~Session()
@@ -49,13 +50,14 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() % QStringLiteral("_session");
     connect(app, &Application::afterDispatch,
-            this, &Session::saveSession);
+            d, &SessionPrivate::saveSession);
     return true;
 }
 
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
 {
-    QVariant data = loadSession(c);
+    Q_D(Session);
+    QVariant data = d->loadSession(c);
     if (data.isNull()) {
         return defaultValue;
     }
@@ -66,10 +68,11 @@ QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant
 
 void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant &value)
 {
-    QVariantHash session = loadSession(c).value<QVariantHash>();
+    Q_D(Session);
+    QVariantHash session = d->loadSession(c).toHash();
     session.insert(key, value);
     c->setProperty("_session_values", session);
-    c->setProperty("sessionsave", true);
+    c->setProperty("_session_save", true);
 }
 
 void Session::deleteValue(Context *c, const QString &key)
@@ -79,7 +82,8 @@ void Session::deleteValue(Context *c, const QString &key)
 
 bool Session::isValid(Cutelyst::Context *c)
 {
-    return !loadSession(c).isNull();
+    Q_D(Session);
+    return !d->loadSession(c).isNull();
 }
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
@@ -114,38 +118,6 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
         }
         settings.endGroup();
     }
-}
-
-void Session::saveSession(Cutelyst::Context *c)
-{
-    Q_D(Session);
-    if (!c->property("_session_save").toBool()) {
-        return;
-    }
-
-    QString sessionId = d->getSessionId(c, true);
-    QNetworkCookie sessionCookie(d->sessionName.toLocal8Bit(),
-                                 sessionId.toLocal8Bit());
-    c->res()->addCookie(sessionCookie);
-    persistSession(sessionId,
-                   loadSession(c));
-}
-
-QVariant Session::loadSession(Cutelyst::Context *c)
-{
-    Q_D(Session);
-    QVariant property = c->property("_session_values");
-    if (!property.isNull()) {
-        return property.value<QVariantHash>();
-    }
-
-    QString sessionid = d->getSessionId(c, false);
-    if (!sessionid.isEmpty()) {
-        QVariantHash session = retrieveSession(sessionid);
-        c->setProperty("_session_values", session);
-        return session;
-    }
-    return QVariant();
 }
 
 QString SessionPrivate::filePath(const QString &sessionId)
@@ -191,4 +163,36 @@ QString SessionPrivate::getSessionId(Context *c, bool create) const
     }
 
     return sessionId;
+}
+
+void SessionPrivate::saveSession(Context *c)
+{
+    Q_Q(Session);
+    if (!c->property("_session_save").toBool()) {
+        return;
+    }
+
+    const QString &sessionId = getSessionId(c, true);
+    QNetworkCookie sessionCookie(sessionName.toLatin1(),
+                                 sessionId.toLatin1());
+    c->res()->addCookie(sessionCookie);
+    q->persistSession(sessionId,
+                      loadSession(c));
+}
+
+QVariant SessionPrivate::loadSession(Context *c)
+{
+    Q_Q(Session);
+    QVariant property = c->property("_session_values");
+    if (!property.isNull()) {
+        return property.value<QVariantHash>();
+    }
+
+    QString sessionid = getSessionId(c, false);
+    if (!sessionid.isEmpty()) {
+        QVariantHash session = q->retrieveSession(sessionid);
+        c->setProperty("_session_values", session);
+        return session;
+    }
+    return QVariant();
 }

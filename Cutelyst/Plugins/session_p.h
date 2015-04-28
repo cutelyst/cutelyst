@@ -26,12 +26,18 @@
 
 namespace Cutelyst {
 
-class SessionPrivate
+class SessionPrivate : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PUBLIC(Session)
 public:
+    Session *q_ptr;
+
     static QString filePath(const QString &sessionId);
     QString generateSessionId() const;
     QString getSessionId(Context *c, bool create) const;
+    void saveSession(Context *c);
+    QVariant loadSession(Context *c);
 
     QString sessionName;
     QRegularExpression removeRE = QRegularExpression(QStringLiteral("-|{|}"));

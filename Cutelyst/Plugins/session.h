@@ -57,10 +57,6 @@ protected:
 
 protected:
     SessionPrivate *d_ptr;
-
-private:
-    void saveSession(Context *c);
-    QVariant loadSession(Context *c);
 };
 
 }
