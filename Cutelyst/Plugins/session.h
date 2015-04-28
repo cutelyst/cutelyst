@@ -61,9 +61,6 @@ protected:
 private:
     void saveSession(Context *c);
     QVariant loadSession(Context *c);
-    QString generateSessionId() const;
-    QString getSessionId(Context *c) const;
-
 };
 
 }

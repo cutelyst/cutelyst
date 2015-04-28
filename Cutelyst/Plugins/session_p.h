@@ -30,6 +30,8 @@ class SessionPrivate
 {
 public:
     static QString filePath(const QString &sessionId);
+    QString generateSessionId() const;
+    QString getSessionId(Context *c, bool create) const;
 
     QString sessionName;
     QRegularExpression removeRE = QRegularExpression(QStringLiteral("-|{|}"));

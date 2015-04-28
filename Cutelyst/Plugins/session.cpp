@@ -123,7 +123,7 @@ void Session::saveSession(Cutelyst::Context *c)
         return;
     }
 
-    QString sessionId = getSessionId(c);
+    QString sessionId = d->getSessionId(c, true);
     QNetworkCookie sessionCookie(d->sessionName.toLocal8Bit(),
                                  sessionId.toLocal8Bit());
     c->res()->addCookie(sessionCookie);
@@ -133,50 +133,19 @@ void Session::saveSession(Cutelyst::Context *c)
 
 QVariant Session::loadSession(Cutelyst::Context *c)
 {
+    Q_D(Session);
     QVariant property = pluginProperty(c, "sessionvalues");
     if (!property.isNull()) {
         return property.value<QVariantHash>();
     }
 
-    QString sessionid = getSessionId(c);
+    QString sessionid = d->getSessionId(c, false);
     if (!sessionid.isEmpty()) {
         QVariantHash session = retrieveSession(sessionid);
         setPluginProperty(c, "sessionvalues", session);
         return session;
     }
     return QVariant();
-}
-
-QString Session::generateSessionId() const
-{
-    Q_D(const Session);
-    QRegularExpression re = d->removeRE; // Thread-safe
-    return QUuid::createUuid().toString().remove(re);
-}
-
-QString Session::getSessionId(Cutelyst::Context *c) const
-{
-    Q_D(const Session);
-    QVariant property = c->property("Session/_sessionid");
-    if (!property.isNull()) {
-        return property.value<QString>();
-    }
-
-    QString sessionId;
-    Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
-        if (cookie.name() == d->sessionName) {
-            sessionId = cookie.value();
-            qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
-        }
-    }
-
-    if (sessionId.isEmpty()) {
-        sessionId = generateSessionId();
-        qCDebug(C_SESSION) << "Created session" << sessionId;
-    }
-    c->setProperty("Session/_sessionid", sessionId);
-
-    return sessionId;
 }
 
 QString SessionPrivate::filePath(const QString &sessionId)
@@ -187,4 +156,39 @@ QString SessionPrivate::filePath(const QString &sessionId)
         qCWarning(C_SESSION) << "Failed to create path for session object" << path;
     }
     return path % QLatin1Char('/') % sessionId;
+}
+
+QString SessionPrivate::generateSessionId() const
+{
+    QRegularExpression re = removeRE; // Thread-safe
+    return QUuid::createUuid().toString().remove(re);
+}
+
+QString SessionPrivate::getSessionId(Context *c, bool create) const
+{
+    QVariant property = c->property("Session/_sessionid");
+    if (!property.isNull()) {
+        return property.toString();
+    }
+
+    QString sessionId;
+    Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
+        if (cookie.name() == sessionName) {
+            sessionId = cookie.value();
+            qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
+            break;
+        }
+    }
+
+    if (sessionId.isEmpty()) {
+        if (create) {
+            sessionId = generateSessionId();
+            qCDebug(C_SESSION) << "Created session" << sessionId;
+            c->setProperty("Session/_sessionid", sessionId);
+        }
+    } else {
+        c->setProperty("Session/_sessionid", sessionId);
+    }
+
+    return sessionId;
 }
