@@ -36,7 +36,7 @@ public:
 
     virtual QByteArray list() const Q_DECL_OVERRIDE;
 
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_OVERRIDE;
+    virtual MatchType match(Context *c, const QStringRef &path, const QStringList &args) const Q_DECL_OVERRIDE;
 
     virtual bool registerAction(Action *action) Q_DECL_OVERRIDE;
 

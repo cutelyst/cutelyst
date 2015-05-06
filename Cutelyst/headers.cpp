@@ -47,12 +47,12 @@ QString Headers::contentType() const
 QString Headers::contentTypeCharset() const
 {
     QString ct = value(QStringLiteral("content_type"));
-    QStringList parts = ct.split(QLatin1Char(';'));
-    Q_FOREACH (const QString part, parts) {
+    QVector<QStringRef> parts = ct.splitRef(QLatin1Char(';'));
+    Q_FOREACH (const QStringRef &part, parts) {
         int pos = part.indexOf(QLatin1String("charset="));
         if (pos != -1) {
             int endPos = part.indexOf(QLatin1Char(';'), pos);
-            return part.mid(pos + 8, endPos).trimmed().toUpper();
+            return part.mid(pos + 8, endPos).trimmed().toString().toUpper();
         }
     }
     return QString();

@@ -165,7 +165,7 @@ QByteArray DispatchTypeChained::list() const
     return buffer;
 }
 
-DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
+DispatchType::MatchType DispatchTypeChained::match(Context *c, const QStringRef &path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
         return NoMatch;
@@ -173,7 +173,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &pa
 
     Q_D(const DispatchTypeChained);
 
-    QVariantHash ret = d->recurseMatch(c, QStringLiteral("/"), path.split(QLatin1Char('/')));
+    QVariantHash ret = d->recurseMatch(c, QStringLiteral("/"), path.toString().split(QLatin1Char('/')));
     ActionList chain = ret.value(QStringLiteral("actions")).value<ActionList>();
     if (ret.isEmpty() || chain.isEmpty()) {
         return NoMatch;
@@ -382,7 +382,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                           actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
                           n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
                     actions.prepend(action);
-                    QStringList pathparts = action->attributes().value("PathPart").split(QLatin1Char('/'));
+                    QVector<QStringRef> pathparts = action->attributes().value(QStringLiteral("PathPart")).splitRef(QLatin1Char('/'));
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(actions) },
                         { QStringLiteral("captures"), captures + actionCaptures },
@@ -396,7 +396,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                 }
 
                 QString argsAttr = action->attributes().value(QStringLiteral("Args"));
-                QStringList pathparts = action->attributes().value(QStringLiteral("PathPart")).split(QLatin1Char('/'));
+                QVector<QStringRef> pathparts = action->attributes().value(QStringLiteral("PathPart")).splitRef(QLatin1Char('/'));
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match

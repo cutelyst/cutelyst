@@ -84,13 +84,15 @@ QByteArray DispatchTypePath::list() const
                       QStringLiteral("Loaded Path actions:"));
 }
 
-Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
+Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStringRef &path, const QStringList &args) const
 {
     Q_D(const DispatchTypePath);
 
-    QString _path = path;
-    if (_path.isEmpty()) {
-        _path = QByteArray("/", 1);
+    QString _path;
+    if (path.isEmpty()) {
+        _path = QStringLiteral("/");
+    } else {
+        _path = path.toString();
     }
 
     MatchType ret = NoMatch;

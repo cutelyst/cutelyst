@@ -168,11 +168,8 @@ void Dispatcher::prepareAction(Context *c)
 
     Request *request = c->request();
     const QString &path = request->path();
-    QStringList pathParts = path.split(QLatin1Char('/'));
+    QVector<QStringRef> pathParts = path.splitRef(QLatin1Char('/'));
     QStringList args;
-
-    // Root action
-    pathParts.prepend(QStringLiteral(""));
 
     int pos = path.size();
 
@@ -183,7 +180,7 @@ void Dispatcher::prepareAction(Context *c)
     Q_FOREVER {
         // Check out the dispatch types to see if any
         // will handle the path at this level
-        const QString &actionPath = path.mid(0, pos);
+        const QStringRef &actionPath = path.midRef(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
                 goto out;
@@ -201,7 +198,11 @@ void Dispatcher::prepareAction(Context *c)
         }
 
         // If not, move the last part path to args
-        args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
+        if (pathParts.isEmpty()) {
+            args.prepend(QString());
+        } else {
+            args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
+        }
     }
 
 out:
