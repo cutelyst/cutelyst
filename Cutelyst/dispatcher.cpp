@@ -153,7 +153,7 @@ bool Dispatcher::forward(Context *c, const QString &opname)
 {
     Q_D(const Dispatcher);
 
-    Action *action = d->command2Action(c, opname);
+    Action *action = d->command2Action(c, opname, c->request()->args());
     if (action) {
         return action->dispatch(c);
     }
@@ -223,8 +223,11 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
         return 0;
     }
 
-    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
+    if (nameSpace.isEmpty()) {
+        return d->actionHash.value(QLatin1Char('/') % name);
+    }
 
+    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
     return d->actionHash.value(ns % QLatin1Char('/') % name);
 }
 
@@ -371,14 +374,14 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
     return ret;
 }
 
-Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &extraParams) const
+Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &args) const
 {
-    Action *ret = actionHash.value(command);
-    if (!ret) {
-        ret = invokeAsPath(c, command, c->request()->args());
+    QHash<QString, Action*>::ConstIterator it = actionHash.constFind(command);
+    if (it != actionHash.constEnd()) {
+        return it.value();
     }
 
-    return ret;
+    return invokeAsPath(c, command, args);
 }
 
 Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const
@@ -397,7 +400,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
                 return ret;
             }
         } else {
-            QString name = path.mid(pos + 1, lastPos);
+            const QString &name = path.mid(pos + 1, lastPos);
             path = path.mid(0, pos);
             ret = q->getAction(name, path);
             if (ret) {
@@ -414,16 +417,14 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
 
 QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
 {
-    QString ret;
-    if (!path.startsWith(QLatin1Char('/'))) {
-        const QString &ns = qobject_cast<Action *>(c->stack().last())->ns();
-        ret = ns % QLatin1Char('/') % path;
-    } else {
-        ret = path;
+    if (path.startsWith(QLatin1Char('/'))) {
+        QString ret = path;
+        return ret.remove(0, 1);
     }
 
-    if (ret.startsWith(QLatin1Char('/'))) {
-        ret.remove(0, 1);
+    const QString &ns = qobject_cast<Action *>(c->stack().last())->ns();
+    if (ns.isEmpty()) {
+        return path;
     }
-    return ret;
+    return ns % QLatin1Char('/') % path;
 }
