@@ -54,7 +54,7 @@ QByteArray DispatchTypePath::list() const
     QList<QStringList> table;
 
     QStringList keys = d->paths.keys();
-    qSort(keys.begin(), keys.end());
+    keys.sort(Qt::CaseInsensitive);
     Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
@@ -80,8 +80,8 @@ QByteArray DispatchTypePath::list() const
     }
 
     return Utils::buildTable(table,
-                      headers,
-                      QStringLiteral("Loaded Path actions:"));
+                             headers,
+                             QStringLiteral("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStringRef &path, const QStringList &args) const
@@ -95,10 +95,14 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
         _path = path.toString();
     }
 
+    QHash<QString, ActionList>::ConstIterator it = d->paths.constFind(_path);
+    if (it == d->paths.constEnd()) {
+        return NoMatch;
+    }
+
     MatchType ret = NoMatch;
     int numberOfArgs = args.size();
-    const ActionList &actions = d->paths.value(_path);
-    Q_FOREACH (Action *action, actions) {
+    Q_FOREACH (Action *action, it.value()) {
         // If the number of args is -1 (not defined)
         // it will slurp all args so we don't care
         // about how many args was passed
