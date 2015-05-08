@@ -184,7 +184,7 @@ void Dispatcher::prepareAction(Context *c)
     Q_FOREVER {
         // Check out the dispatch types to see if any
         // will handle the path at this level
-        const QStringRef &actionPath = path.midRef(0, pos);
+        const QString &actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
                 goto out;

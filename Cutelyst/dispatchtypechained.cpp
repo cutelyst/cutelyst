@@ -165,7 +165,7 @@ QByteArray DispatchTypeChained::list() const
     return buffer;
 }
 
-DispatchType::MatchType DispatchTypeChained::match(Context *c, const QStringRef &path, const QStringList &args) const
+DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
         return NoMatch;
@@ -173,8 +173,8 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QStringRef 
 
     Q_D(const DispatchTypeChained);
 
-    QVariantHash ret = d->recurseMatch(c, QStringLiteral("/"), path.toString().split(QLatin1Char('/')));
-    ActionList chain = ret.value(QStringLiteral("actions")).value<ActionList>();
+    const QVariantHash &ret = d->recurseMatch(c, QStringLiteral("/"), path.split(QLatin1Char('/')));
+    const ActionList &chain = ret.value(QStringLiteral("actions")).value<ActionList>();
     if (ret.isEmpty() || chain.isEmpty()) {
         return NoMatch;
     }
