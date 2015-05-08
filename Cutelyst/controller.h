@@ -136,7 +136,7 @@ protected:
     ControllerPrivate *d_ptr;
 
 private Q_SLOTS:
-    void _DISPATCH(Context *c);
+    bool _DISPATCH(Context *c);
     bool _BEGIN(Context *c);
     bool _AUTO(Context *c);
     bool _ACTION(Context *c);

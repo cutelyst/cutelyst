@@ -129,6 +129,10 @@ bool Dispatcher::dispatch(Context *c)
 {
     Action *action = c->action();
     if (action) {
+        Controller *controller = action->controller();
+        if (controller) {
+            return controller->_DISPATCH(c);
+        }
         return forward(c, QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
     } else {
         const QString &path = c->req()->path();
@@ -136,7 +140,7 @@ bool Dispatcher::dispatch(Context *c)
             c->error(tr("No default action defined"));
         } else {
             c->error(tr("Unknown resource \"%1\".").arg(path));
-        };
+        }
     }
     return false;
 }
@@ -236,7 +240,7 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     Q_D(const Dispatcher);
 
     QString _path = path;
-    if (_path.startsWith('/')) {
+    if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);
     }
     return d->actionHash.value(_path);
@@ -324,8 +328,8 @@ void DispatcherPrivate::printActions() const
 {
     QList<QStringList> table;
 
-    QList<QString> keys = actionHash.keys();
-    qSort(keys.begin(), keys.end());
+    QStringList keys = actionHash.keys();
+    keys.sort(Qt::CaseInsensitive);
     Q_FOREACH (const QString &key, keys) {
         Action *action = actionHash.value(key);
         if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
@@ -365,7 +369,7 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
         while (pos > 0) {
 //            qDebug() << pos << ns.mid(0, pos);
             ret.append(containerHash.value(ns.mid(0, pos)));
-            pos = ns.lastIndexOf('/', pos - 1);
+            pos = ns.lastIndexOf(QLatin1Char('/'), pos - 1);
         }
     }
 //    qDebug() << containerHash.size() << rootActions;
@@ -391,7 +395,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
     Action *ret;
     QString path = DispatcherPrivate::actionRel2Abs(c, relativePath);
 
-    int pos = path.lastIndexOf('/');
+    int pos = path.lastIndexOf(QLatin1Char('/'));
     int lastPos = path.size();
     do {
         if (pos == -1) {
@@ -409,7 +413,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
         }
 
         lastPos = pos;
-        pos = path.indexOf('/', pos - 1);
+        pos = path.indexOf(QLatin1Char('/'), pos - 1);
     } while (pos != -1);
 
     return 0;

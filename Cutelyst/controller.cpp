@@ -216,7 +216,7 @@ void ControllerPrivate::setupFinished()
     q->preFork(qobject_cast<Application *>(q->parent()));
 }
 
-void Controller::_DISPATCH(Context *c)
+bool Controller::_DISPATCH(Context *c)
 {
     Q_D(Controller);
 
@@ -239,6 +239,8 @@ void Controller::_DISPATCH(Context *c)
     if (d->end) {
         d->end->dispatch(c);
     }
+
+    return c->state();
 }
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
