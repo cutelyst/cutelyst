@@ -40,13 +40,13 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
-    QString ct = value(QStringLiteral("content_type"));
+    const QString &ct = value(QStringLiteral("content_type"));
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
 QString Headers::contentTypeCharset() const
 {
-    QString ct = value(QStringLiteral("content_type"));
+    const QString &ct = value(QStringLiteral("content_type"));
     QVector<QStringRef> parts = ct.splitRef(QLatin1Char(';'));
     Q_FOREACH (const QStringRef &part, parts) {
         int pos = part.indexOf(QLatin1String("charset="));
@@ -65,7 +65,7 @@ bool Headers::contentIsText() const
 
 bool Headers::contentIsHtml() const
 {
-    QString ct = contentType();
+    const QString &ct = contentType();
     return ct == QLatin1String("text/html") ||
             ct == QLatin1String("application/xhtml+xml") ||
             ct == QLatin1String("application/vnd.wap.xhtml+xml");
@@ -73,14 +73,14 @@ bool Headers::contentIsHtml() const
 
 bool Headers::contentIsXHtml() const
 {
-    QString ct = contentType();
+    const QString &ct = contentType();
     return ct == QLatin1String("application/xhtml+xml") ||
             ct == QLatin1String("application/vnd.wap.xhtml+xml");
 }
 
 bool Headers::contentIsXml() const
 {
-    QString ct = contentType();
+    const QString &ct = contentType();
     return ct == QLatin1String("text/xml") ||
             ct == QLatin1String("application/xml") ||
             ct.endsWith(QLatin1String("xml"));
@@ -106,8 +106,8 @@ void Headers::setDateWithDateTime(const QDateTime &date)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     QLocale locale(QLocale::C);
-    QString dt = locale.toString(date.toTimeSpec(Qt::UTC),
-                                 QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    const QString &dt = locale.toString(date.toTimeSpec(Qt::UTC),
+                                        QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
     insert(QStringLiteral("date"), dt);
 }
 
@@ -152,8 +152,8 @@ void Headers::setLastModified(const QDateTime &lastModified)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     QLocale locale(QLocale::C);
-    QString dt = locale.toString(lastModified.toTimeSpec(Qt::UTC),
-                                 QStringLiteral("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    const QString &dt = locale.toString(lastModified.toTimeSpec(Qt::UTC),
+                                        QStringLiteral("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
     setLastModified(dt);
 }
 
