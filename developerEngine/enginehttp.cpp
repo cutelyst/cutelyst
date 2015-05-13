@@ -195,7 +195,7 @@ bool EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
     headers.setHeader("Connection", "keep-alive");
     headers.setContentLength(ctx->res()->contentLength());
 
-    Q_FOREACH (const HeaderValuePair &pair, headers.headersForResponse()) {
+    Q_FOREACH (const HeaderValuePair &pair, headersForResponse(headers)) {
         header.append(pair.key % QLatin1String(": ") % pair.value % QLatin1String("\r\n"));
     }
     header.append(QLatin1String("\r\n"));

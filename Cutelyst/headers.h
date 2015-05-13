@@ -24,12 +24,6 @@
 
 namespace Cutelyst {
 
-typedef struct {
-    int weight;
-    QString key;
-    QString value;
-} HeaderValuePair;
-
 class Headers : public QHash<QString, QString>
 {
 public:
@@ -230,12 +224,6 @@ public:
     void pushHeader(const QString &field, const QStringList &values);
 
     void removeHeader(const QString &field);
-
-    /**
-     * Returns the hearder in the order suggested by HTTP RFC's
-     * "good pratices", this function is mainly used by the Engine class
-     */
-    QList<HeaderValuePair> headersForResponse() const;
 };
 
 }

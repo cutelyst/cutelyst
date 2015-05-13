@@ -242,7 +242,7 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
     return doWrite(c, data, len, engineData);
 }
 
-QByteArray Engine::statusCode(quint16 status) const
+QByteArray Engine::statusCode(quint16 status)
 {
     switch (status) {
     case Response::OK:
@@ -381,4 +381,96 @@ void Engine::finalize(Context *c)
         // Write the final '0' chunk
         doWrite(c, "0\r\n\r\n", 5, c->engineData());
     }
+}
+
+static QString cutelyst_header_order(
+        // General headers
+        "Cache-Control\n"
+        "Connection\n"
+        "Date\n"
+        "Pragma\n"
+        "Trailer\n"
+        "Transfer-Encoding\n"
+        "Upgrade\n"
+        "Via\n"
+        "Warning\n"
+        // Request headers
+        "Accept\n"
+        "Accept-Charset\n"
+        "Accept-Encoding\n"
+        "Accept-Language\n"
+        "Authorization\n"
+        "Expect\n"
+        "From\n"
+        "Host\n"
+        "If-Match\n"
+        "If-Modified-Since\n"
+        "If-None-Match\n"
+        "If-Range\n"
+        "If-Unmodified-Since\n"
+        "Max-Forwards\n"
+        "Proxy-Authorization\n"
+        "Range\n"
+        "Referer\n"
+        "TE\n"
+        "User-Agent\n"
+        // Response headers
+        "Accept-Ranges\n"
+        "Age\n"
+        "ETag\n"
+        "Location\n"
+        "Proxy-Authenticate\n"
+        "Retry-After\n"
+        "Server\n"
+        "Vary\n"
+        "WWW-Authenticate\n"
+        // Entity headers
+        "Allow\n"
+        "Content-Encoding\n"
+        "Content-Language\n"
+        "Content-Length\n"
+        "Content-Location\n"
+        "Content-MD5\n"
+        "Content-Range\n"
+        "Content-Type\n"
+        "Expires\n"
+        "Last-Modified"
+        );
+
+bool httpGoodPracticeWeightSort(const HeaderValuePair &pair1, const HeaderValuePair &pair2)
+{
+    int index1 = pair1.weight;
+    int index2 = pair2.weight;
+
+    if (index1 != -1 && index2 != -1) {
+        // Both items are in the headerOrder list
+        return index1 < index2;
+    } else if (index1 == -1 && index2 == -1) {
+        // Noone of them are int the headerOrder list
+        return false;
+    }
+
+    // if the pair1 is in the header list it should go first
+    return index1 != -1;
+}
+
+QList<HeaderValuePair> Engine::headersForResponse(const Headers &headers)
+{
+    QList<HeaderValuePair> ret;
+
+    QHash<QString, QString>::ConstIterator it = headers.constBegin();
+    while (it != headers.constEnd()) {
+        HeaderValuePair pair;
+        pair.key = camelCaseHeader(it.key());
+        pair.value = it.value();
+        pair.weight = cutelyst_header_order.indexOf(pair.key);
+
+        ret.append(pair);
+        ++it;
+    }
+
+    // Sort base on the "good practices" of HTTP RCF
+    qSort(ret.begin(), ret.end(), &httpGoodPracticeWeightSort);
+
+    return ret;
 }

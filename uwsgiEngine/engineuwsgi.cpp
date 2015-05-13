@@ -286,10 +286,6 @@ quint64 uWSGI::time()
 
 bool uWSGI::finalizeHeaders(Context *ctx)
 {
-    if (!Engine::finalizeHeaders(ctx)) {
-        return false;
-    }
-
     struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->request()->engineData());
     Response *res = ctx->res();
 
@@ -300,10 +296,17 @@ bool uWSGI::finalizeHeaders(Context *ctx)
         return false;
     }
 
-    const QList<HeaderValuePair> &headers = res->headers().headersForResponse();
-    Q_FOREACH (const HeaderValuePair &pair, headers) {
-        QByteArray key = pair.key.toLatin1();
-        QByteArray value = pair.value.toLatin1();
+    if (!Engine::finalizeHeaders(ctx)) {
+        return false;
+    }
+
+    const Headers &headers = res->headers();
+    QHash<QString, QString>::ConstIterator it = headers.constBegin();
+    QHash<QString, QString>::ConstIterator end = headers.constEnd();
+    while (it != end) {
+        QByteArray key = camelCaseHeader(it.key()).toLatin1();
+        QByteArray value = it.value().toLatin1();
+
         if (uwsgi_response_add_header(wsgi_req,
                                       key.data(),
                                       key.size(),
@@ -311,6 +314,8 @@ bool uWSGI::finalizeHeaders(Context *ctx)
                                       value.size())) {
             return false;
         }
+
+        ++it;
     }
 
     return true;

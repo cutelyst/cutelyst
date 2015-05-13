@@ -27,13 +27,17 @@
 
 namespace Cutelyst {
 
+typedef struct {
+    int weight;
+    QString key;
+    QString value;
+} HeaderValuePair;
+
 class Application;
 class Context;
 class Request;
-class RequestPrivate;
-class Response;
-class EnginePrivate;
 class Headers;
+class EnginePrivate;
 class Engine : public QObject
 {
     Q_OBJECT
@@ -73,7 +77,7 @@ public:
      */
     QVariantHash config(const QString &entity) const;
 
-    QByteArray statusCode(quint16 status) const;
+    static QByteArray statusCode(quint16 status);
 
     /**
      * @brief initApplication
@@ -123,7 +127,7 @@ protected:
 
     /**
      * Finalize the headers, and call
-     * doFinalizeHeaders(), reimplemententions
+     * doWriteHeader(), reimplemententions
      * must call this first
      */
     virtual bool finalizeHeaders(Context *c);
@@ -153,6 +157,34 @@ protected:
      * with finalizing cookies, headers and body
      */
     void finalize(Context *c);
+
+    /**
+     * Returns the hearder in the order suggested by HTTP RFC's
+     * "good pratices", this function is mainly used by the Engine class
+     */
+    static QList<HeaderValuePair> headersForResponse(const Headers &headers);
+
+    /**
+     * Returns the header key in camel case form
+     */
+    static inline QString camelCaseHeader(const QString &headerKey) {
+        // The RFC 2616 and 7230 states keys are not case
+        // case sensitive, however several tools fail
+        // if the headers are not on camel case form.
+        QString key = headerKey;
+        bool lastWasDash = true;
+        for (int i = 0 ; i < key.size() ; ++i) {
+            QCharRef c = key[i];
+            if (c == QLatin1Char('_')) {
+                c = QLatin1Char('-');
+                lastWasDash = true;
+            } else if (lastWasDash) {
+                lastWasDash = false;
+                c = c.toUpper();
+            }
+        }
+        return key;
+    }
 
     EnginePrivate *d_ptr;
 
