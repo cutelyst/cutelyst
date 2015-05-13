@@ -221,16 +221,17 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
 {
     void *engineData = c->engineData();
     if (c->d_ptr->chunked) {
+
+        QByteArray chunk(data, len);
         char chunked[19];
         int ret = snprintf(chunked, 19, "%X\r\n", (unsigned int) len);
         if (ret <= 0 || ret >= 19) {
             return -1;
         }
-        doWrite(c, chunked, ret, engineData);
+        chunk.prepend(chunked, ret);
+        chunk.append("\r\n", 2);
 
-        qint64 retWrite = doWrite(c, data, len, engineData);
-
-        doWrite(c, "\r\n", 2, engineData);
+        qint64 retWrite = doWrite(c, chunk.data(), chunk.size(), engineData);
 
         // Flag if we wrote an empty chunk
         if (!len) {
