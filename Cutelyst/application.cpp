@@ -225,8 +225,11 @@ bool Application::setup(Engine *engine)
             // Configure plugins
             plugin->setup(this);
         }
-        qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
-                                                    QStringLiteral("Loaded plugins:")).data();
+
+        if (!tablePlugins.isEmpty()) {
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
+                                                        QStringLiteral("Loaded plugins:")).data();
+        }
 
         QList<QStringList> tableDataHandlers;
         tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
@@ -267,10 +270,12 @@ bool Application::setup(Engine *engine)
             table.append({ className, QStringLiteral("instance")});
         }
 
-        qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
-                                                        QStringLiteral("Class"), QStringLiteral("Type")
-                                                    },
-                                                    QStringLiteral("Loaded components:")).data();
+        if (!table.isEmpty()) {
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
+                                                            QStringLiteral("Class"), QStringLiteral("Type")
+                                                        },
+                                                        QStringLiteral("Loaded components:")).data();
+        }
 
         Q_FOREACH (Controller *controller, d->controllers) {
             controller->d_ptr->init(this, d->dispatcher);
@@ -279,9 +284,12 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers);
         d->init = true;
 
-        qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2")
+        qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2, Qt %3.")
                                   .arg(QCoreApplication::applicationName())
-                                  .arg(VERSION).toLatin1().data();
+                                  .arg(VERSION)
+                                  .arg(qVersion())
+                                  .toLatin1().data();
+
         return true;
     }
 
