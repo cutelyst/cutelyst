@@ -358,10 +358,12 @@ void uWSGI::forked()
 #endif // UWSGI_GO_CHEAP_CODE
     }
 
-    // Start Monitoring Sockets
-    struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
-    while(uwsgi_sock) {
-        watchSocket(uwsgi_sock);
-        uwsgi_sock = uwsgi_sock->next;
+    if (!m_unusedReq.isEmpty()) {
+        // Start Monitoring Sockets
+        struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
+        while(uwsgi_sock) {
+            watchSocket(uwsgi_sock);
+            uwsgi_sock = uwsgi_sock->next;
+        }
     }
 }

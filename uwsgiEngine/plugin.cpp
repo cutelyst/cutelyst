@@ -207,7 +207,6 @@ extern "C" void uwsgi_cutelyst_init_apps()
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }
-    coreEngines->append(mainEngine);
 
     uWSGI *engine = mainEngine;
     for (int i = 0; i < uwsgi.cores; ++i) {
@@ -218,7 +217,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
         // Create the desired threads
         // i > 0 the main thread counts as one thread
-        if (uwsgi.threads > 1 && i > 0) {
+        if (uwsgi.threads > 1) {
             QThread *thread = new QThread(qApp);
             // The engine can't have a parent otherwise
             // we can't move it
@@ -231,12 +230,15 @@ extern "C" void uwsgi_cutelyst_init_apps()
             engine->setThread(thread);
 
             // Post fork might fail when on threaded mode
-            QObject::connect(engine, &uWSGI::engineDisabled,
-                             mainEngine, &uWSGI::reuseEngineRequests, Qt::QueuedConnection);
+//            QObject::connect(engine, &uWSGI::engineDisabled,
+//                             mainEngine, &uWSGI::reuseEngineRequests, Qt::QueuedConnection);
 
-            coreEngines->append(engine);
         } else {
             engine->addUnusedRequest(wsgi_req);
+        }
+
+        if (!coreEngines->contains(engine)) {
+            coreEngines->append(engine);
         }
     }
 
