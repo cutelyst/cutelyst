@@ -222,7 +222,7 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
         struct wsgi_request *wsgi_req = m_unusedReq.takeFirst();
-        if (wsgi_req == NULL) {
+       if (wsgi_req == NULL) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
         }
@@ -234,7 +234,7 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
         uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 1;
 
         // accept the connection
-        if (wsgi_req_simple_accept(wsgi_req, fd)) {
+        if (wsgi_req_simple_accept(wsgi_req, fd) != 0) {
             uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
             m_unusedReq.append(wsgi_req);
             return;
@@ -339,6 +339,9 @@ void uWSGI::forked()
 
         // Move the application and it's children to this thread
         m_app->moveToThread(thread());
+
+        // We can now set a parent
+        m_app->setParent(this);
 
         // init and postfork
         if (!initApplication(m_app, true)) {

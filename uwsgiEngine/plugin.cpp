@@ -211,24 +211,33 @@ extern "C" void uwsgi_cutelyst_init_apps()
 
     uWSGI *engine = mainEngine;
     for (int i = 0; i < uwsgi.cores; ++i) {
-        // Create the desired threads
-        // i > 0 the main thread counts as one thread
-        if (uwsgi.threads > 1 && i > 0) {
-            engine = new uWSGI(opts, app, qApp);
-            engine->setThread(new QThread);
-
-            // Post fork might fail when on threaded mode
-            QObject::connect(engine, &uWSGI::engineDisabled,
-                             mainEngine, &uWSGI::reuseEngineRequests);
-
-            coreEngines->append(engine);
-        }
-
-        // Add core request
+        // Create the wsgi_request structure
         struct wsgi_request *wsgi_req = new wsgi_request;
         memset(wsgi_req, 0, sizeof(struct wsgi_request));
         wsgi_req->async_id = i;
-        engine->addUnusedRequest(wsgi_req);
+
+        // Create the desired threads
+        // i > 0 the main thread counts as one thread
+        if (uwsgi.threads > 1 && i > 0) {
+            QThread *thread = new QThread(qApp);
+            // The engine can't have a parent otherwise
+            // we can't move it
+            engine = new uWSGI(opts, app);
+
+            // the request must be added before moving threads
+            engine->addUnusedRequest(wsgi_req);
+
+            // Move to the new thread
+            engine->setThread(thread);
+
+            // Post fork might fail when on threaded mode
+            QObject::connect(engine, &uWSGI::engineDisabled,
+                             mainEngine, &uWSGI::reuseEngineRequests, Qt::QueuedConnection);
+
+            coreEngines->append(engine);
+        } else {
+            engine->addUnusedRequest(wsgi_req);
+        }
     }
 
     // register a new app under a specific "mountpoint"
