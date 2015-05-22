@@ -92,12 +92,17 @@ bool Session::isValid(Cutelyst::Context *c)
 QVariantHash Session::retrieveSession(const QString &sessionId) const
 {
     QVariantHash ret;
-    QSettings settings(SessionPrivate::filePath(sessionId), QSettings::IniFormat);
-    settings.beginGroup(QLatin1String("Data"));
-    Q_FOREACH (const QString &key, settings.allKeys()) {
-        ret.insert(key, settings.value(key));
+    const QString &sessionFile = SessionPrivate::filePath(sessionId);
+    if (QFileInfo::exists(sessionFile)) {
+        qCDebug(C_SESSION) << "Retrieving session values from" << sessionFile;
+
+        QSettings settings(sessionFile, QSettings::IniFormat);
+        settings.beginGroup(QLatin1String("Data"));
+        Q_FOREACH (const QString &key, settings.allKeys()) {
+            ret.insert(key, settings.value(key));
+        }
+        settings.endGroup();
     }
-    settings.endGroup();
     return ret;
 }
 
