@@ -108,10 +108,18 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
 
 void Session::persistSession(const QString &sessionId, const QVariant &data) const
 {
-    QSettings settings(SessionPrivate::filePath(sessionId), QSettings::IniFormat);
+    const QString &sessionFile = SessionPrivate::filePath(sessionId);
+
     if (data.isNull()) {
-        settings.clear();
+        qCDebug(C_SESSION) << "Clearing session values on" << sessionFile;
+        bool ret = QFile::remove(sessionFile);
+        if (!ret) {
+            QSettings settings(sessionFile, QSettings::IniFormat);
+            settings.clear();
+        }
     } else {
+        qCDebug(C_SESSION) << "Persisting session values to" << sessionFile;
+        QSettings settings(sessionFile, QSettings::IniFormat);
         settings.beginGroup(QLatin1String("Data"));
         QVariantHash hash = data.value<QVariantHash>();
         QVariantHash::ConstIterator it = hash.constBegin();
