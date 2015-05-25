@@ -60,12 +60,12 @@ bool Session::setup(Application *app)
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
 {
     Q_D(Session);
-    QVariant data = d->loadSession(c);
+    const QVariant &data = d->loadSession(c);
     if (data.isNull()) {
         return defaultValue;
     }
 
-    QVariantHash session = data.value<QVariantHash>();
+    const QVariantHash &session = data.toHash();
     return session.value(key, defaultValue);
 }
 
@@ -73,7 +73,11 @@ void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant 
 {
     Q_D(Session);
     QVariantHash session = d->loadSession(c).toHash();
-    session.insert(key, value);
+    if (value.isNull()) {
+        session.remove(key);
+    } else {
+        session.insert(key, value);
+    }
     c->setProperty(SESSION_VALUES, session);
     c->setProperty(SESSION_SAVE, true);
 }
@@ -109,8 +113,8 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
 void Session::persistSession(const QString &sessionId, const QVariant &data) const
 {
     const QString &sessionFile = SessionPrivate::filePath(sessionId);
-
-    if (data.isNull()) {
+    const QVariantHash &hash = data.toHash();
+    if (hash.isEmpty()) {
         qCDebug(C_SESSION) << "Clearing session values on" << sessionFile;
         bool ret = QFile::remove(sessionFile);
         if (!ret) {
@@ -121,7 +125,6 @@ void Session::persistSession(const QString &sessionId, const QVariant &data) con
         qCDebug(C_SESSION) << "Persisting session values to" << sessionFile;
         QSettings settings(sessionFile, QSettings::IniFormat);
         settings.beginGroup(QLatin1String("Data"));
-        QVariantHash hash = data.value<QVariantHash>();
         QVariantHash::ConstIterator it = hash.constBegin();
         while (it != hash.constEnd()) {
             if (it.value().isNull()) {
@@ -199,16 +202,18 @@ void SessionPrivate::saveSession(Context *c)
 QVariant SessionPrivate::loadSession(Context *c)
 {
     Q_Q(Session);
-    QVariant property = c->property(SESSION_VALUES);
+    const QVariant &property = c->property(SESSION_VALUES);
     if (!property.isNull()) {
-        return property.value<QVariantHash>();
+        return property.toHash();
     }
 
-    QString sessionid = getSessionId(c, false);
+    const QString &sessionid = getSessionId(c, false);
     if (!sessionid.isEmpty()) {
-        QVariantHash session = q->retrieveSession(sessionid);
+        const QVariantHash &session = q->retrieveSession(sessionid);
         c->setProperty(SESSION_VALUES, session);
         return session;
     }
-    return QVariant();
+
+    c->setProperty(SESSION_VALUES, QVariantHash());
+    return QVariantHash();
 }

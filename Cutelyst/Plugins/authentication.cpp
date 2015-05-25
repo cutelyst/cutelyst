@@ -71,7 +71,7 @@ bool Authentication::authenticate(Cutelyst::Context *c, const CStringHash &useri
 
     AuthenticationRealm *realmPtr = d->realm(realm);
     if (realmPtr) {
-        AuthenticationUser user = realmPtr->authenticate(c, userinfo);
+        const AuthenticationUser &user = realmPtr->authenticate(c, userinfo);
         if (!user.isNull()) {
             setAuthenticated(c, user, realm);
         }
