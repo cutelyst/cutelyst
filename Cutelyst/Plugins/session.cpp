@@ -36,6 +36,7 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 #define SESSION_VALUES "_session_values"
 #define SESSION_SAVE "_session_save"
+#define SESSION_ID "_session_id"
 
 Session::Session(Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate)
@@ -157,7 +158,7 @@ QString SessionPrivate::generateSessionId() const
 
 QString SessionPrivate::getSessionId(Context *c, bool create) const
 {
-    QVariant property = c->property("Session/_sessionid");
+    const QVariant &property = c->property(SESSION_ID);
     if (!property.isNull()) {
         return property.toString();
     }
@@ -175,10 +176,10 @@ QString SessionPrivate::getSessionId(Context *c, bool create) const
         if (create) {
             sessionId = generateSessionId();
             qCDebug(C_SESSION) << "Created session" << sessionId;
-            c->setProperty("Session/_sessionid", sessionId);
+            c->setProperty(SESSION_ID, sessionId);
         }
     } else {
-        c->setProperty("Session/_sessionid", sessionId);
+        c->setProperty(SESSION_ID, sessionId);
     }
 
     return sessionId;
