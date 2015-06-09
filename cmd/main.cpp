@@ -488,7 +488,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     QCoreApplication::setOrganizationName("Cutelyst");
-    QCoreApplication::setOrganizationDomain("cutelyst.ogr");
+    QCoreApplication::setOrganizationDomain("cutelyst.org");
     QCoreApplication::setApplicationName("cutelyst");
     QCoreApplication::setApplicationVersion("0.0.1");
 
