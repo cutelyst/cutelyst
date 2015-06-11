@@ -53,15 +53,13 @@ bool Session::setup(Application *app)
 {
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() % QStringLiteral("_session");
-    connect(app, &Application::afterDispatch,
-            d, &SessionPrivate::saveSession);
+    connect(app, &Application::afterDispatch, d, &SessionPrivate::saveSession);
     return true;
 }
 
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
 {
-    Q_D(Session);
-    const QVariant &data = d->loadSession(c);
+    const QVariant &data = SessionPrivate::loadSession(c);
     if (data.isNull()) {
         return defaultValue;
     }
@@ -72,8 +70,7 @@ QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant
 
 void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant &value)
 {
-    Q_D(Session);
-    QVariantHash session = d->loadSession(c).toHash();
+    QVariantHash session = SessionPrivate::loadSession(c).toHash();
     if (value.isNull()) {
         session.remove(key);
     } else {
@@ -90,8 +87,7 @@ void Session::deleteValue(Context *c, const QString &key)
 
 bool Session::isValid(Cutelyst::Context *c)
 {
-    Q_D(Session);
-    return !d->loadSession(c).isNull();
+    return !SessionPrivate::loadSession(c).isNull();
 }
 
 QVariantHash Session::retrieveSession(const QString &sessionId) const
@@ -150,13 +146,12 @@ QString SessionPrivate::filePath(const QString &sessionId)
     return path % QLatin1Char('/') % sessionId;
 }
 
-QString SessionPrivate::generateSessionId() const
+QString SessionPrivate::generateSessionId()
 {
-    QRegularExpression re = removeRE; // Thread-safe
-    return QUuid::createUuid().toString().remove(re);
+    return QUuid::createUuid().toString().mid(1, -2);
 }
 
-QString SessionPrivate::getSessionId(Context *c, bool create) const
+QString SessionPrivate::getSessionId(Context *c, const QString &sessionName, bool create)
 {
     const QVariant &property = c->property(SESSION_ID);
     if (!property.isNull()) {
@@ -187,32 +182,42 @@ QString SessionPrivate::getSessionId(Context *c, bool create) const
 
 void SessionPrivate::saveSession(Context *c)
 {
-    Q_Q(Session);
     if (!c->property(SESSION_SAVE).toBool()) {
         return;
     }
 
-    const QString &sessionId = getSessionId(c, true);
-    QNetworkCookie sessionCookie(sessionName.toLatin1(),
+    Session *session = c->plugin<Session*>();
+    if (!session) {
+        qCCritical(C_SESSION) << "Session plugin not registered";
+        return;
+    }
+
+    const QString &_sessionName = session->d_ptr->sessionName;
+    const QString &sessionId = getSessionId(c, _sessionName, true);
+    QNetworkCookie sessionCookie(_sessionName.toLatin1(),
                                  sessionId.toLatin1());
     c->res()->addCookie(sessionCookie);
-    q->persistSession(sessionId,
-                      loadSession(c));
+    session->persistSession(sessionId, loadSession(c));
 }
 
 QVariant SessionPrivate::loadSession(Context *c)
 {
-    Q_Q(Session);
     const QVariant &property = c->property(SESSION_VALUES);
     if (!property.isNull()) {
         return property.toHash();
     }
 
-    const QString &sessionid = getSessionId(c, false);
+    Session *session = c->plugin<Session*>();
+    if (!session) {
+        qCCritical(C_SESSION) << "Session plugin not registered";
+        return QVariant();
+    }
+
+    const QString &sessionid = getSessionId(c, session->d_ptr->sessionName, false);
     if (!sessionid.isEmpty()) {
-        const QVariantHash &session = q->retrieveSession(sessionid);
-        c->setProperty(SESSION_VALUES, session);
-        return session;
+        const QVariantHash &sessionHash = session->retrieveSession(sessionid);
+        c->setProperty(SESSION_VALUES, sessionHash);
+        return sessionHash;
     }
 
     c->setProperty(SESSION_VALUES, QVariantHash());

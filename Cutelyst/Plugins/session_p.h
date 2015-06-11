@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,13 +34,12 @@ public:
     Session *q_ptr;
 
     static QString filePath(const QString &sessionId);
-    QString generateSessionId() const;
-    QString getSessionId(Context *c, bool create) const;
-    void saveSession(Context *c);
-    QVariant loadSession(Context *c);
+    static QString generateSessionId();
+    static QString getSessionId(Context *c, const QString &sessionName, bool create);
+    static void saveSession(Context *c);
+    static QVariant loadSession(Context *c);
 
     QString sessionName;
-    QRegularExpression removeRE = QRegularExpression(QStringLiteral("-|{|}"));
 };
 
 }

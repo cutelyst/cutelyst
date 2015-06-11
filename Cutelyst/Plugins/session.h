@@ -38,11 +38,11 @@ public:
 
     virtual bool setup(Application *app);
 
-    QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
-    void setValue(Context *c, const QString &key, const QVariant &value);
-    void deleteValue(Context *c, const QString &key);
+    static QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
+    static void setValue(Context *c, const QString &key, const QVariant &value);
+    static void deleteValue(Context *c, const QString &key);
 
-    bool isValid(Context *c);
+    static bool isValid(Context *c);
 
 protected:
     /**
