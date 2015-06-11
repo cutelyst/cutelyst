@@ -28,6 +28,8 @@ class CredentialPasswordPrivate
 {
 public:
     bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
+    static QByteArray cryptoEnumToStr(QCryptographicHash::Algorithm method);
+    static int cryptoStrToEnum(const QByteArray &hashMethod);
 
     QString passwordField = QStringLiteral("password");
     CredentialPassword::Type passwordType = CredentialPassword::None;

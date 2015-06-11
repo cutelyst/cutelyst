@@ -57,6 +57,13 @@ public:
     QString passwordPostSalt() const;
     void setPasswordPostSalt(const QString &passwordPostSalt);
 
+    static bool validatePassword(const QByteArray &password, const QByteArray &correctHash);
+    static QByteArray createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize);
+    static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
+                             const QByteArray &password, const QByteArray &salt,
+                             int rounds, int keyLength);
+    QByteArray hmac(QCryptographicHash::Algorithm method, QByteArray key, const QByteArray& message);
+
 protected:
     CredentialPasswordPrivate *d_ptr;
 };
