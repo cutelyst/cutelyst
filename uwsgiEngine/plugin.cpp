@@ -34,6 +34,9 @@ static QList<uWSGI *> *coreEngines = 0;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
+#ifdef UWSGI_GO_CHEAP_CODE
+static void fsmon_reload(struct uwsgi_fsmon *fs);
+#endif
 
 /**
  * This function is called as soon as
@@ -79,6 +82,25 @@ extern "C" void uwsgi_cutelyst_on_load()
 extern "C" int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
+
+    // if the path is relative build a path
+    // relative to the current working directory
+    QDir cwd(uwsgi.cwd);
+
+    QString path(options.app);
+    if (path.isEmpty()) {
+        uwsgi_log("Cutelyst application name or path was not set\n");
+        exit(1);
+    }
+
+    path = cwd.absoluteFilePath(path);
+#ifdef UWSGI_GO_CHEAP_CODE
+    if (options.reload) {
+        // Register application auto reload
+        char *file = qstrdup(path.toUtf8().constData());
+        uwsgi_register_fsmon(file, fsmon_reload, NULL);
+    }
+#endif // UWSGI_GO_CHEAP_CODE
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
@@ -155,26 +177,13 @@ extern "C" void uwsgi_cutelyst_atexit()
 extern "C" void uwsgi_cutelyst_init_apps()
 {
     const QString &applicationName = QCoreApplication::applicationName();
-    QString path(options.app);
-    if (path.isEmpty()) {
-        qCCritical(CUTELYST_UWSGI) << "Cutelyst application name or path was not set";
-        exit(1);
-    }
 
     qCDebug(CUTELYST_UWSGI) << "Cutelyst loading application:" << options.app;
 
     // if the path is relative build a path
     // relative to the current working directory
     QDir cwd(uwsgi.cwd);
-    path = cwd.absoluteFilePath(path);
-
-#ifdef UWSGI_GO_CHEAP_CODE
-    if (options.reload) {
-        // Register application auto reload
-        char *file = qstrdup(path.toUtf8().constData());
-        uwsgi_register_fsmon(file, fsmon_reload, NULL);
-    }
-#endif // UWSGI_GO_CHEAP_CODE
+    QString path = cwd.absoluteFilePath(options.app);
 
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
@@ -246,6 +255,11 @@ extern "C" void uwsgi_cutelyst_init_apps()
     uwsgi_add_app(1, CUTELYST_MODIFIER1, (char *) "", 0, NULL, NULL);
 
     delete loader;
+
+    if (uwsgi.lazy_apps) {
+        // Make sure we start listening on lazy mode
+        uwsgi_cutelyst_post_fork();
+    }
 }
 
 void uwsgi_cutelyst_watch_signal(int signalFD)
