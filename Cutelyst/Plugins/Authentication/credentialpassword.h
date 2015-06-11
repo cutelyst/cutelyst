@@ -25,9 +25,11 @@
 
 namespace Cutelyst {
 
+class CredentialPasswordPrivate;
 class CredentialPassword : public AuthenticationCredential
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(CredentialPassword)
 public:
     enum Type {
         None,
@@ -55,14 +57,8 @@ public:
     QString passwordPostSalt() const;
     void setPasswordPostSalt(const QString &passwordPostSalt);
 
-private:
-    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
-
-    QString m_passwordField = QStringLiteral("password");
-    Type m_passwordType = None;
-    QCryptographicHash::Algorithm m_hashType = QCryptographicHash::Md5;
-    QString m_passwordPreSalt;
-    QString m_passwordPostSalt;
+protected:
+    CredentialPasswordPrivate *d_ptr;
 };
 
 } // namespace Plugin

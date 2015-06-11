@@ -61,6 +61,7 @@ set(cutelystqt_SRC
     Plugins/Authentication/minimal.cpp
     Plugins/Authentication/htpasswd.cpp
     Plugins/Authentication/credentialpassword.cpp
+    Plugins/Authentication/credentialpassword_p.h
     Plugins/Authentication/credentialhttp.cpp
     Plugins/Authentication/credentialhttp_p.h
 )
