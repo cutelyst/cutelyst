@@ -148,7 +148,7 @@ QString SessionPrivate::filePath(const QString &sessionId)
 
 QString SessionPrivate::generateSessionId()
 {
-    return QUuid::createUuid().toString().mid(1, -2);
+    return QUuid::createUuid().toString();
 }
 
 QString SessionPrivate::getSessionId(Context *c, const QString &sessionName, bool create)
