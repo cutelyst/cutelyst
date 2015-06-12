@@ -179,7 +179,7 @@ bool EngineHttp::init()
     return !d->child.isEmpty();
 }
 
-bool EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
+bool EngineHttp::finalizeHeaders(Context *ctx)
 {
     Q_D(EngineHttp);
 
@@ -213,18 +213,18 @@ bool EngineHttp::finalizeHeaders(Context *ctx, void *engineData)
         }
     }
 
-    int *id = static_cast<int*>(engineData);
+    int *id = static_cast<int*>(ctx->engineData());
     d->requests[*id]->m_socket->write(header);
 
     return true;
 }
 
-void EngineHttp::finalizeBody(Context *ctx, QIODevice *body, void *engineData)
+void EngineHttp::finalizeBody(Context *ctx, QIODevice *body)
 {
     Q_D(EngineHttp);
     Q_UNUSED(ctx)
 
-    int *id = static_cast<int*>(engineData);
+    int *id = static_cast<int*>(ctx->engineData());
     EngineHttpRequest *req = d->requests.value(*id);
     QTcpSocket *socket = req->m_socket;
 

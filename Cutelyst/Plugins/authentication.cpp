@@ -98,7 +98,6 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const CStringH
 
 Cutelyst::AuthenticationUser Cutelyst::Authentication::user(Cutelyst::Context *c)
 {
-    Q_D(Authentication);
     QVariant user = c->property(AUTHENTICATION_USER);
     if (user.isNull()) {        
         return restoreUser(c, QVariant(), QString());

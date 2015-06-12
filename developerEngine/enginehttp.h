@@ -36,8 +36,8 @@ public:
 
     bool init();
 
-    virtual bool finalizeHeaders(Context *ctx, void *engineData);
-    virtual void finalizeBody(Context *ctx, QIODevice *body, void *engineData);
+    virtual bool finalizeHeaders(Context *ctx);
+    virtual void finalizeBody(Context *ctx, QIODevice *body);
 
 protected:
     EngineHttpPrivate *d_ptr;

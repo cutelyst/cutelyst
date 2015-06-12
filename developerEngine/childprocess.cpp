@@ -163,7 +163,7 @@ ssize_t CutelystChildProcessPrivate::sendFD(int sock, void *buf, ssize_t buflen,
         cmsg->cmsg_type = SCM_RIGHTS;
 
         qDebug("passing fd %d\n", fd);
-        *((int *) CMSG_DATA(cmsg)) = fd;
+        *CMSG_DATA(cmsg) = fd;
     } else {
         msg.msg_control = NULL;
         msg.msg_controllen = 0;
@@ -221,7 +221,7 @@ ssize_t CutelystChildProcessPrivate::readFD(int sock, void *buf, ssize_t bufsize
                 exit(1);
             }
 
-            *fd = *((int *) CMSG_DATA(cmsg));
+            *fd = static_cast<int>(*CMSG_DATA(cmsg));
 //            qDebug("received fd %d\n", *fd);
         } else {
             *fd = -1;
