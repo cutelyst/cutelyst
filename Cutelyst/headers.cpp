@@ -315,16 +315,15 @@ QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 
 QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QString &auth)
 {
-    QPair<QString, QString> ret;
     const QByteArray &authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {
-            ret.first = QString::fromLatin1(authorization);
+            return qMakePair(QString::fromLatin1(authorization), QString());
         } else {
-            ret.first = QString::fromLatin1(authorization.left(pos));
-            ret.second = QString::fromLatin1(authorization.mid(pos + 1));
+            return qMakePair(QString::fromLatin1(authorization.left(pos)),
+                             QString::fromLatin1(authorization.mid(pos + 1)));
         }
     }
-    return ret;
+    return qMakePair(QString(), QString());
 }
