@@ -18,6 +18,7 @@
  */
 
 #include "credentialhttp_p.h"
+#include "credentialpassword.h"
 
 #include "../authenticationrealm.h"
 
@@ -160,7 +161,7 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
 
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
 {
-    const QString &password = authinfo.value(passwordField);
+    QString password = authinfo.value(passwordField);
     const QString &storedPassword = user.value(passwordField);
 
     if (passwordType == CredentialHttp::None) {
@@ -169,15 +170,15 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     } else if (passwordType == CredentialHttp::Clear) {
         return storedPassword == password;
     } else if (passwordType == CredentialHttp::Hashed) {
-        QCryptographicHash hash(hashType);
-        hash.addData(passwordPreSalt.toUtf8());
-        hash.addData(password.toUtf8());
-        hash.addData(passwordPostSalt.toUtf8());
-        QByteArray result =  hash.result();
+        if (!passwordPreSalt.isNull()) {
+            password.prepend(password);
+        }
 
-        return storedPassword == result ||
-                storedPassword == result.toHex() ||
-                storedPassword == result.toBase64();
+        if (!passwordPostSalt.isNull()) {
+            password.append(password);
+        }
+
+        return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
     } else if (passwordType == CredentialHttp::SelfCheck) {
         return user.checkPassword(password);
     }

@@ -251,7 +251,7 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
 {
     QString password = authinfo.value(passwordField);
-    QString storedPassword = user.value(passwordField);
+    const QString &storedPassword = user.value(passwordField);
 
     if (passwordType == CredentialPassword::None) {
         qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
@@ -259,14 +259,15 @@ bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, co
     } else if (passwordType == CredentialPassword::Clear) {
         return storedPassword == password;
     } else if (passwordType == CredentialPassword::Hashed) {
-        QCryptographicHash hash(hashType);
-        hash.addData(passwordPreSalt.toUtf8());
-        hash.addData(password.toUtf8());
-        hash.addData(passwordPostSalt.toUtf8());
-        QByteArray result =  hash.result();
+        if (!passwordPreSalt.isNull()) {
+            password.prepend(password);
+        }
 
-        return storedPassword == result.toHex() ||
-                storedPassword == result.toBase64();
+        if (!passwordPostSalt.isNull()) {
+            password.append(password);
+        }
+
+        return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
     } else if (passwordType == CredentialPassword::SelfCheck) {
         return user.checkPassword(password);
     }
@@ -280,31 +281,31 @@ QByteArray CredentialPasswordPrivate::cryptoEnumToStr(QCryptographicHash::Algori
 
 #ifndef QT_CRYPTOGRAPHICHASH_ONLY_SHA1
     if (method == QCryptographicHash::Md4) {
-        hashmethod = "md4";
+        hashmethod = QByteArrayLiteral("Md4");
     } else if (method == QCryptographicHash::Md5) {
-        hashmethod = "md5";
+        hashmethod = QByteArrayLiteral("Md5");
     }
 #endif
     if (method == QCryptographicHash::Sha1) {
-        hashmethod = "sha1";
+        hashmethod = QByteArrayLiteral("Sha1");
     }
 #ifndef QT_CRYPTOGRAPHICHASH_ONLY_SHA1
     if (method == QCryptographicHash::Sha224) {
-        hashmethod = "sha224";
+        hashmethod = QByteArrayLiteral("Sha224");
     } else if (method == QCryptographicHash::Sha256) {
-        hashmethod = "sha256";
+        hashmethod = QByteArrayLiteral("Sha256");
     } else if (method == QCryptographicHash::Sha384) {
-        hashmethod = "sha384";
+        hashmethod = QByteArrayLiteral("Sha384");
     } else if (method == QCryptographicHash::Sha512) {
-        hashmethod = "sha512";
+        hashmethod = QByteArrayLiteral("Sha512");
     } else if (method == QCryptographicHash::Sha3_224) {
-        hashmethod = "sha3_224";
+        hashmethod = QByteArrayLiteral("Sha3_224");
     } else if (method == QCryptographicHash::Sha3_256) {
-        hashmethod = "sha3_256";
+        hashmethod = QByteArrayLiteral("Sha3_256");
     } else if (method == QCryptographicHash::Sha3_384) {
-        hashmethod = "sha3_384";
+        hashmethod = QByteArrayLiteral("Sha3_384");
     } else if (method == QCryptographicHash::Sha3_512) {
-        hashmethod = "sha3_512";
+        hashmethod = QByteArrayLiteral("Sha3_512");
     }
 #endif
 
@@ -313,35 +314,35 @@ QByteArray CredentialPasswordPrivate::cryptoEnumToStr(QCryptographicHash::Algori
 
 int CredentialPasswordPrivate::cryptoStrToEnum(const QByteArray &hashMethod)
 {
-    QByteArray hashmethod = hashMethod.toLower();
+    QByteArray hashmethod = hashMethod;
 
     int method = -1;
 #ifndef QT_CRYPTOGRAPHICHASH_ONLY_SHA1
-    if (hashmethod == "md4") {
+    if (hashmethod == "Md4") {
         method = QCryptographicHash::Md4;
-    } else if (hashmethod == "md5") {
+    } else if (hashmethod == "Md5") {
         method = QCryptographicHash::Md5;
     }
 #endif
-    if (hashmethod == "sha1") {
+    if (hashmethod == "Sha1") {
         method = QCryptographicHash::Sha1;
     }
 #ifndef QT_CRYPTOGRAPHICHASH_ONLY_SHA1
-    if (hashmethod == "sha224") {
+    if (hashmethod == "Sha224") {
         method = QCryptographicHash::Sha224;
-    } else if (hashmethod == "sha256") {
+    } else if (hashmethod == "Sha256") {
         method = QCryptographicHash::Sha256;
-    } else if (hashmethod == "sha384") {
+    } else if (hashmethod == "Sha384") {
         method = QCryptographicHash::Sha384;
-    } else if (hashmethod == "sha512") {
+    } else if (hashmethod == "Sha512") {
         method = QCryptographicHash::Sha512;
-    } else if (hashmethod == "sha3_224") {
+    } else if (hashmethod == "Sha3_224") {
         method = QCryptographicHash::Sha3_224;
-    } else if (hashmethod == "sha3_256") {
+    } else if (hashmethod == "Sha3_256") {
         method = QCryptographicHash::Sha3_256;
-    } else if (hashmethod == "sha3_384") {
+    } else if (hashmethod == "Sha3_384") {
         method = QCryptographicHash::Sha3_384;
-    } else if (hashmethod == "sha3_512") {
+    } else if (hashmethod == "Sha3_512") {
         method = QCryptographicHash::Sha3_512;
     }
 #endif
