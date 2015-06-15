@@ -48,9 +48,6 @@ public:
     Type passwordType() const;
     void setPasswordType(Type type);
 
-    QCryptographicHash::Algorithm hashType() const;
-    void setHashType(QCryptographicHash::Algorithm type);
-
     QString passwordPreSalt() const;
     void setPasswordPreSalt(const QString &passwordPreSalt);
 

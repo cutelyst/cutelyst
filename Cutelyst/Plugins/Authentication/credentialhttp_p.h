@@ -43,7 +43,6 @@ public:
     QString usernameField = QStringLiteral("username");
     QString passwordField = QStringLiteral("password");
     CredentialHttp::PasswordType passwordType = CredentialHttp::None;
-    QCryptographicHash::Algorithm hashType = QCryptographicHash::Md5;
     QString passwordPreSalt;
     QString passwordPostSalt;
     QString authorizationRequiredMessage;

@@ -79,18 +79,6 @@ void CredentialHttp::setPasswordType(CredentialHttp::PasswordType type)
     d->passwordType = type;
 }
 
-QCryptographicHash::Algorithm CredentialHttp::hashType() const
-{
-    Q_D(const CredentialHttp);
-    return d->hashType;
-}
-
-void CredentialHttp::setHashType(QCryptographicHash::Algorithm type)
-{
-    Q_D(CredentialHttp);
-    d->hashType = type;
-}
-
 QString CredentialHttp::passwordPreSalt() const
 {
     Q_D(const CredentialHttp);

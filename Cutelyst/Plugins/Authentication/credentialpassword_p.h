@@ -33,7 +33,6 @@ public:
 
     QString passwordField = QStringLiteral("password");
     CredentialPassword::Type passwordType = CredentialPassword::None;
-    QCryptographicHash::Algorithm hashType = QCryptographicHash::Md5;
     QString passwordPreSalt;
     QString passwordPostSalt;
 };
