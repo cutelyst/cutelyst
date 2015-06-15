@@ -139,8 +139,6 @@ set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERS
 
 qt5_use_modules(cutelyst-qt5 Core Network)
 
-set_property(TARGET cutelyst-qt5 PROPERTY COMPILE_DEFINITIONS CUTELYST_STATIC)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst-qt5.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
   @ONLY
