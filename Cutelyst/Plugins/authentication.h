@@ -57,10 +57,10 @@ public:
     bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser user(Context *c);
-    void setUser(Context *c, const AuthenticationUser &user);
+    static void setUser(Context *c, const AuthenticationUser &user);
     bool userExists(Context *c);
     bool userInRealm(Context *c, const QString &realm = QLatin1String(defaultRealm));
-    void logout(Context *c);
+    static void logout(Context *c);
 
 protected:
     void setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName);

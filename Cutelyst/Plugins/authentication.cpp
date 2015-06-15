@@ -132,9 +132,14 @@ void Authentication::logout(Context *c)
 {
     setUser(c, AuthenticationUser());
 
-    AuthenticationRealm *realm = findRealmForPersistedUser(c);
-    if (realm) {
-        realm->removePersistedUser(c);
+    Authentication *auth = c->plugin<Authentication*>();
+    if (auth) {
+        AuthenticationRealm *realm = auth->findRealmForPersistedUser(c);
+        if (realm) {
+            realm->removePersistedUser(c);
+        }
+    } else {
+        qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
     }
 }
 
