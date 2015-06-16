@@ -52,6 +52,7 @@ Authentication::~Authentication()
 void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm, const QString &name)
 {
     Q_D(Authentication);
+    realm->setObjectName(name);
     d->realms.insert(name, realm);
     d->realmsOrder.append(name);
 }

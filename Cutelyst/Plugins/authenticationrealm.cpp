@@ -76,21 +76,18 @@ AuthenticationUser AuthenticationRealm::authenticate(Context *c, const CStringHa
 
 void AuthenticationRealm::removePersistedUser(Context *c)
 {
-    Session *session = c->plugin<Session*>();
-    if (session && session->isValid(c)) {
-        session->deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
-        session->deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM));
-    }
+    Session::deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
+    Session::deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM));
 }
 
 AuthenticationUser AuthenticationRealm::persistUser(Context *c, const AuthenticationUser &user)
 {
-    Session *session = c->plugin<Session*>();
-    if (session && session->isValid(c)) {
-        session->setValue(c,
-                          QStringLiteral(SESSION_AUTHENTICATION_USER),
-                          m_store->forSession(c, user));
-    }
+    Session::setValue(c,
+                      QStringLiteral(SESSION_AUTHENTICATION_USER),
+                      m_store->forSession(c, user));
+    Session::setValue(c,
+                      QStringLiteral(SESSION_AUTHENTICATION_USER_REALM),
+                      objectName());
 
     return user;
 }
