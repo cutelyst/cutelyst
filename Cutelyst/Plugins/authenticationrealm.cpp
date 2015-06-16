@@ -28,6 +28,9 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm")
 
+#define SESSION_AUTHENTICATION_USER "__authentication_user"
+#define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in authentication.cpp
+
 AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent)
     : QObject(parent)
     , m_store(store)
@@ -75,8 +78,8 @@ void AuthenticationRealm::removePersistedUser(Context *c)
 {
     Session *session = c->plugin<Session*>();
     if (session && session->isValid(c)) {
-        session->deleteValue(c, QStringLiteral("Authentication::user"));
-        session->deleteValue(c, QStringLiteral("Authentication::userRealm"));
+        session->deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
+        session->deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM));
     }
 }
 
@@ -85,7 +88,7 @@ AuthenticationUser AuthenticationRealm::persistUser(Context *c, const Authentica
     Session *session = c->plugin<Session*>();
     if (session && session->isValid(c)) {
         session->setValue(c,
-                          QStringLiteral("Authentication::user"),
+                          QStringLiteral(SESSION_AUTHENTICATION_USER),
                           m_store->forSession(c, user));
     }
 
@@ -119,9 +122,7 @@ AuthenticationUser AuthenticationRealm::restoreUser(Context *c, const QVariant &
 
 QVariant AuthenticationRealm::userIsRestorable(Context *c)
 {
-    Session *session = c->plugin<Session*>();
-    if (session && session->isValid(c)) {
-        return session->value(c, QStringLiteral("Authentication::user"));
-    }
-    return QVariant();
+    // No need to check if session is valid
+    // as ::value will do that for us
+    return Session::value(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
 }

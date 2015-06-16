@@ -34,9 +34,9 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
-#define SESSION_VALUES "_session_values"
-#define SESSION_SAVE "_session_save"
-#define SESSION_ID "_session_id"
+#define SESSION_VALUES "__session_values"
+#define SESSION_SAVE "__session_save"
+#define SESSION_ID "__session_id"
 
 Session::Session(Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate)

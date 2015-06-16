@@ -33,7 +33,9 @@ using namespace Cutelyst;
 
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 
-#define AUTHENTICATION_USER "_authentication_user"
+#define AUTHENTICATION_USER "__authentication_user"
+#define SESSION_USER_REALM "__authentication_user_realm"
+#define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in realm.cpp
 
 Authentication::Authentication(Application *parent) : Plugin(parent)
   , d_ptr(new AuthenticationPrivate)
@@ -116,7 +118,7 @@ void Authentication::setUser(Context *c, const AuthenticationUser &user)
 
 bool Authentication::userExists(Cutelyst::Context *c)
 {
-    return !user(c).isNull();
+    return !c->property(AUTHENTICATION_USER).isNull() || findRealmForPersistedUser(c);
 }
 
 bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realm)
@@ -165,7 +167,7 @@ void Authentication::persistUser(Context *c, const AuthenticationUser &user, con
 
     if (userExists(c)) {
         if (Session::isValid(c)) {
-            Session::setValue(c, QStringLiteral("Authentication::userRealm"), realmName);
+            Session::setValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM), realmName);
         }
 
         AuthenticationRealm *realmPtr = d->realm(realmName);
@@ -203,10 +205,9 @@ AuthenticationRealm *Authentication::findRealmForPersistedUser(Cutelyst::Context
 
     AuthenticationRealm *realm;
 
-    if (Session::isValid(c) &&
-            !Session::value(c, QStringLiteral("Authentication::userRealm")).isNull()) {
-        const QString &realmName = Session::value(c, QStringLiteral("Authentication::userRealm")).toString();
-        realm = d->realms.value(realmName);
+    const QVariant &realmVariant = Session::value(c, QStringLiteral(SESSION_USER_REALM));
+    if (!realmVariant.isNull()) {
+        realm = d->realms.value(realmVariant.toString());
         if (realm && !realm->userIsRestorable(c).isNull()) {
             return realm;
         }

@@ -58,6 +58,15 @@ public:
     AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser user(Context *c);
     static void setUser(Context *c, const AuthenticationUser &user);
+
+    /**
+     * Returns true if a user is logged in right now. The difference between
+     * userExists() and user() is that userExists will return true if a user is logged
+     * in, even if it has not been yet retrieved from the storage backend. If you only
+     * need to know if the user is logged in, depending on the storage mechanism this
+     * can be much more efficient.
+     * userExists() only looks into the session while user() is trying to restore the user.
+     */
     bool userExists(Context *c);
     bool userInRealm(Context *c, const QString &realm = QLatin1String(defaultRealm));
     static void logout(Context *c);
