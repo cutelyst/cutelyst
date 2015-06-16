@@ -67,7 +67,7 @@ public:
      * can be much more efficient.
      * userExists() only looks into the session while user() is trying to restore the user.
      */
-    bool userExists(Context *c);
+    static bool userExists(Context *c);
     bool userInRealm(Context *c, const QString &realm = QLatin1String(defaultRealm));
     static void logout(Context *c);
 

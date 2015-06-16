@@ -118,7 +118,19 @@ void Authentication::setUser(Context *c, const AuthenticationUser &user)
 
 bool Authentication::userExists(Cutelyst::Context *c)
 {
-    return !c->property(AUTHENTICATION_USER).isNull() || findRealmForPersistedUser(c);
+    if (!c->property(AUTHENTICATION_USER).isNull()) {
+        return true;
+    } else {
+        Authentication *auth = c->plugin<Authentication*>();
+        if (auth) {
+            if (auth->findRealmForPersistedUser(c)) {
+                return true;
+            }
+        } else {
+            qCCritical(C_AUTHENTICATION, "Authentication plugin not registered!");
+        }
+        return false;
+    }
 }
 
 bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realm)
