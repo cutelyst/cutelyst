@@ -359,6 +359,8 @@ public:
 
     ParamsMultiMap mangleParams(const ParamsMultiMap &args, bool append = false) const;
 
+    QUrl uriWith(const ParamsMultiMap &args, bool append = false) const;
+
     Engine *engine() const;
 
     void *engineData();

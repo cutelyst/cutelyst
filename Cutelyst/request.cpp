@@ -308,6 +308,21 @@ ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) co
     return ret;
 }
 
+QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
+{
+    QUrl ret = uri();
+    QUrlQuery urlQuery;
+    ParamsMultiMap query = mangleParams(args, append);
+    ParamsMultiMap::ConstIterator it = query.constBegin();
+    while (it != query.constEnd()) {
+        urlQuery.addQueryItem(it.key(), it.value());
+        ++it;
+    }
+    ret.setQuery(urlQuery);
+
+    return ret;
+}
+
 Engine *Request::engine() const
 {
     Q_D(const Request);
