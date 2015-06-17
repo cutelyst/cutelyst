@@ -196,9 +196,34 @@ public:
     ParamsMultiMap bodyParameters() const;
 
     /**
+     * Convenience method for geting a single body value passing a key and an optional default value
+     */
+    inline QString bodyParameter(const QString &key, const QString &defaultValue = QString()) const
+    { return bodyParameters().value(key, defaultValue); }
+
+    /**
+     * Convenience method for geting all body values passing a key
+     */
+    inline QStringList bodyParameters(const QString &key) const
+    { return bodyParameters().values(key); }
+
+    /**
      * Short for bodyParameters()
      */
-    inline ParamsMultiMap bodyParam() const { return bodyParameters(); }
+    inline ParamsMultiMap bodyParams() const
+    { return bodyParameters(); }
+
+    /**
+     * Convenience method for geting a single body value passing a key and an optional default value
+     */
+    inline QString bodyParam(const QString &key, const QString &defaultValue = QString()) const
+    { return bodyParameters().value(key, defaultValue); }
+
+    /**
+     * Convenience method for geting all body values passing a key
+     */
+    inline QStringList bodyParams(const QString &key) const
+    { return bodyParameters().values(key); }
 
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
@@ -206,9 +231,34 @@ public:
     ParamsMultiMap queryParameters() const;
 
     /**
+     * Convenience method for geting a single query value passing a key and an optional default value
+     */
+    inline QString queryParameter(const QString &key, const QString &defaultValue = QString()) const
+    { return queryParameters().value(key, defaultValue); }
+
+    /**
+     * Convenience method for geting all query values passing a key
+     */
+    inline QStringList queryParameters(const QString &key) const
+    { return queryParameters().values(key); }
+
+    /**
      * Short for queryParameters()
      */
-    inline ParamsMultiMap queryParam() const { return queryParameters(); }
+    inline ParamsMultiMap queryParams() const
+    { return queryParameters(); }
+
+    /**
+     * Convenience method for geting a single query value passing a key and an optional default value
+     */
+    inline QString queryParam(const QString &key, const QString &defaultValue = QString()) const
+    { return queryParameters().value(key, defaultValue); }
+
+    /**
+     * Convenience method for geting all query values passing a key
+     */
+    inline QStringList queryParams(const QString &key) const
+    { return queryParameters().values(key); }
 
     /**
      * Returns a QMultiHash containing both the query parameters (GET)
