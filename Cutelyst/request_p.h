@@ -86,6 +86,7 @@ protected:
 
     mutable bool queryParamParsed = false;
     mutable ParamsMultiMap queryParam;
+    mutable QString queryKeywords;
 
     mutable bool bodyParsed = false;
     mutable ParamsMultiMap bodyParam;

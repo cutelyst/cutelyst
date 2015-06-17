@@ -205,6 +205,15 @@ ParamsMultiMap Request::bodyParameters() const
     return d->bodyParam;
 }
 
+QString Request::queryKeywords() const
+{
+    Q_D(const Request);
+    if (!d->queryParamParsed) {
+        d->parseUrlQuery();
+    }
+    return d->queryKeywords;
+}
+
 ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
@@ -295,7 +304,12 @@ void *Request::engineData()
 
 void RequestPrivate::parseUrlQuery() const
 {
-    queryParam = parseUrlEncoded(query);
+    // Check for keywords (no = signs)
+    if (query.indexOf('=') < 0) {
+        queryKeywords = QUrl::fromPercentEncoding(query);
+    } else {
+        queryParam = parseUrlEncoded(query);
+    }
     queryParamParsed = true;
 }
 
@@ -378,6 +392,8 @@ void RequestPrivate::reset()
     baseParsed = false;
     cookiesParsed = false;
     queryParamParsed = false;
+    queryKeywords.clear();
+    queryParam.clear();
     bodyParsed = false;
     paramParsed = false;
     qDeleteAll(uploads);

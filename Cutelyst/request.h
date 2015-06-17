@@ -49,8 +49,8 @@ class Request : public QObject
     Q_PROPERTY(QStringList args READ args)
     Q_PROPERTY(bool secure READ secure)
     Q_PROPERTY(QVariant bodyData READ bodyData)
-    Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParam READ bodyParameters)
-    Q_PROPERTY(Cutelyst::ParamsMultiMap queryParam READ queryParameters)
+    Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParams READ bodyParameters)
+    Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap parameters READ parameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap params READ parameters)
     Q_PROPERTY(QString contentEncoding READ contentEncoding)
@@ -224,6 +224,15 @@ public:
      */
     inline QStringList bodyParams(const QString &key) const
     { return bodyParameters().values(key); }
+
+    /**
+     * Contains the keywords portion of a query string, when no '=' signs are present.
+     * * \code
+     * http://localhost/path?some+keywords
+     * c->request()->queryKeywords() will contain 'some keywords'
+     * \endcode
+     */
+    QString queryKeywords() const;
 
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
