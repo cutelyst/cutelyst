@@ -357,6 +357,8 @@ public:
     inline Upload *upload(const QString &name) const
     { return uploads().value(name); }
 
+    ParamsMultiMap mangleParams(const ParamsMultiMap &args, bool append = false) const;
+
     Engine *engine() const;
 
     void *engineData();

@@ -290,6 +290,24 @@ QMap<QString, Cutelyst::Upload *> Request::uploads() const
     return d->uploads;
 }
 
+ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) const
+{
+    ParamsMultiMap ret = queryParams();
+    if (append) {
+        // TODO check the order
+        // ret unite args OR args unite ret
+        ret.unite(args);
+    } else {
+        ParamsMultiMap::ConstIterator it = args.constBegin();
+        while (it != args.constEnd()) {
+            ret.insert(it.key(), it.value());
+            ++it;
+        }
+    }
+
+    return ret;
+}
+
 Engine *Request::engine() const
 {
     Q_D(const Request);
