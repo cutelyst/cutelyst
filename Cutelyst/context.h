@@ -369,7 +369,6 @@ private:
     Q_DECLARE_PRIVATE(Context)
 };
 
-
 }
 
 Q_DECLARE_METATYPE(Cutelyst::Context *)

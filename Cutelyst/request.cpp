@@ -293,12 +293,12 @@ QMap<QString, Cutelyst::Upload *> Request::uploads() const
 
 ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) const
 {
-    ParamsMultiMap ret = queryParams();
+    ParamsMultiMap ret;
     if (append) {
-        // TODO check the order
-        // ret unite args OR args unite ret
-        ret.unite(args);
+        ret = args;
+        ret.unite(queryParams());
     } else {
+        ret = queryParams();
         ParamsMultiMap::ConstIterator it = args.constBegin();
         while (it != args.constEnd()) {
             ret.insert(it.key(), it.value());

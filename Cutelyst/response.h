@@ -199,6 +199,9 @@ public:
      */
     QString header(const QString &field) const;
 
+    /**
+     * Shortcut headers().setHeader()
+     */
     void setHeader(const QString &field, const QString &value);
 
     /**
@@ -206,8 +209,22 @@ public:
      */
     Headers &headers();
 
+    /**
+     * Writes data to the response body, this will flush
+     * all response headers first and will enter in chunked
+     * mode if Transfer-Encoding header is set to chunked
+     * or if no content length is set and status is
+     * not 1xx or 204 (NoContent) or 304 (NotModified)
+     */
     qint64 write(const char *data, qint64 len);
 
+    /**
+     * Writes data to the response body, this will flush
+     * all response headers first and will enter in chunked
+     * mode if Transfer-Encoding header is set to chunked
+     * or if no content length is set and status is
+     * not 1xx or 204 (NoContent) or 304 (NotModified)
+     */
     qint64 write(const QByteArray &data);
 
 protected:

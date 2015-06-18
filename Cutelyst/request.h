@@ -351,20 +351,75 @@ public:
      */
     QString remoteUser() const;
 
+    /**
+     * Returns a map containing uploads, where their key is
+     * the field name.
+     */
     QMap<QString, Upload *> uploads() const;
 
+    /**
+     * Returns all (if any) Upload objects for the given field.
+     */
     inline Uploads uploads(const QString &name) const
     { return uploads().values(name); }
 
+    /**
+     * Returns the first Upload object for the given field,
+     * if no upload matches the field name this function
+     * returns 0.
+     */
     inline Upload *upload(const QString &name) const
     { return uploads().value(name); }
 
+    /**
+     * Returns a ParamsMultiMap of parameters stemming from the current request's params,
+     * plus the ones supplied.  Keys for which no current param exists will be
+     * added, keys with null values will be removed and keys with existing
+     * params will be replaced.
+     * Note that you can supply a true value as the final
+     * argument to change behavior with regards to existing parameters, appending
+     * values rather than replacing them.
+     *
+     * A quick example:
+     * \code{.cpp}
+     * // URI query params foo=1
+     * ParamsMultiMap params = request->mangleParams({ {"foo", "2"} });
+     * // Result is query params of foo=2
+     * \endcode
+     * versus append mode:
+     * \code{.cpp}
+     * // URI query params foo=1
+     * ParamsMultiMap params = request->mangleParams({ {"foo", "2"} }, true);
+     * // Result is query params of foo=1&foo=2
+     * \endcode
+     * This is the code behind uriWith().
+     */
     ParamsMultiMap mangleParams(const ParamsMultiMap &args, bool append = false) const;
 
+    /**
+     * Returns a rewritten URI object for the current request. Key/value pairs
+     * passed in will override existing parameters. You can remove an existing
+     * parameter by passing in an undef value. Unmodified pairs will be
+     * preserved.
+     *
+     * You may also pass an optional second parameter that puts uriWit() into
+     * append mode:
+     * \code{.cpp}
+     * req->uriWith({ {"key", "value"} }, true);
+     * \endcode
+     * See mangleParams() for an explanation of this behavior.
+     */
     QUrl uriWith(const ParamsMultiMap &args, bool append = false) const;
 
+    /**
+     * Returns the current Engine processing the requests.
+     */
     Engine *engine() const;
 
+    /**
+     * Returns the internal pointer that references a request in the engine.
+     * You should never use this method.
+     */
     void *engineData();
 
     Request(RequestPrivate *prv);
