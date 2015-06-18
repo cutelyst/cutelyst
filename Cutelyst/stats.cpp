@@ -26,8 +26,8 @@
 
 #include "common.h"
 
-#include <QStringList>
-#include <QStringBuilder>
+#include <QtCore/QStringList>
+#include <QtCore/QStringBuilder>
 
 using namespace Cutelyst;
 

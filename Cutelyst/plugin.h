@@ -20,16 +20,15 @@
 #ifndef CUTELYSTPLUGIN_H
 #define CUTELYSTPLUGIN_H
 
-#include <QObject>
-#include <QHash>
-#include <QVariant>
+#include <QtCore/qobject.h>
+#include <QtCore/qhash.h>
+#include <QtCore/qstring.h>
 
 namespace Cutelyst {
 
 typedef QHash<QString, QString> CStringHash;
 
 class Application;
-class Context;
 class Plugin : public QObject
 {
     Q_OBJECT

@@ -20,8 +20,8 @@
 #ifndef CUTELYST_APPLICATION_H
 #define CUTELYST_APPLICATION_H
 
-#include <QCoreApplication>
-#include <QVariant>
+#include <QtCore/qobject.h>
+#include <QtCore/qvariant.h>
 
 namespace Cutelyst {
 

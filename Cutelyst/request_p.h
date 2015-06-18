@@ -24,10 +24,11 @@
 
 #include "upload.h"
 
-#include <QStringList>
-#include <QHostAddress>
-#include <QUrlQuery>
-#include <QUrl>
+#include <QtCore/QStringList>
+#include <QtCore/QUrlQuery>
+#include <QtCore/QUrl>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {
 

@@ -24,11 +24,13 @@
 #include "context.h"
 #include "engine.h"
 
-#include <QStringBuilder>
-#include <QSettings>
-#include <QUuid>
-#include <QDir>
-#include <QLoggingCategory>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QSettings>
+#include <QtCore/QUuid>
+#include <QtCore/QDir>
+#include <QtCore/QLoggingCategory>
+#include <QtCore/QCoreApplication>
+#include <QtNetwork/QNetworkCookie>
 
 using namespace Cutelyst;
 

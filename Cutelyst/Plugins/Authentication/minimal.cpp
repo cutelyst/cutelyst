@@ -19,6 +19,8 @@
 
 #include "minimal.h"
 
+#include <QVariant>
+
 using namespace Cutelyst;
 
 StoreMinimal::StoreMinimal(QObject *parent) : AuthenticationStore(parent)

@@ -23,6 +23,7 @@
 #include "response.h"
 
 #include <QUrl>
+#include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {
 

@@ -24,6 +24,7 @@
 
 namespace Cutelyst {
 
+class Context;
 class AuthenticationStore;
 class AuthenticationCredential;
 class AuthenticationRealm : public QObject

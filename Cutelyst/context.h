@@ -20,14 +20,14 @@
 #ifndef CUTELYST_CONTEXT_H
 #define CUTELYST_CONTEXT_H
 
-#include <QObject>
-#include <QHash>
-#include <QVariant>
-#include <QUrl>
-#include <QStringList>
-#include <QStack>
+#include <QtCore/QObject>
+#include <QtCore/QHash>
+#include <QtCore/QVariant>
+#include <QtCore/QUrl>
+#include <QtCore/QStringList>
+#include <QtCore/QStack>
 
-#include <Cutelyst/Request>
+#include <Cutelyst/request.h>
 
 namespace Cutelyst {
 

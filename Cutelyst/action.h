@@ -20,10 +20,10 @@
 #ifndef CUTELYST_ACTION_H
 #define CUTELYST_ACTION_H
 
-#include <QStringList>
-#include <QMetaMethod>
+#include <QtCore/QStringList>
+#include <QtCore/QMetaMethod>
 
-#include <Cutelyst/Component>
+#include <Cutelyst/component.h>
 
 namespace Cutelyst {
 

@@ -22,10 +22,11 @@
 #include "common.h"
 #include "multipartformdataparser.h"
 
-#include <QStringBuilder>
-#include <QRegularExpression>
-#include <QHostInfo>
-#include <QJsonDocument>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QRegularExpression>
+#include <QtCore/QJsonDocument>
+#include <QtNetwork/QHostInfo>
+#include <QtNetwork/QNetworkCookie>
 
 using namespace Cutelyst;
 

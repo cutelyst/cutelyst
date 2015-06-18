@@ -20,11 +20,12 @@
 #ifndef CUTELYST_RESPONSE_H
 #define CUTELYST_RESPONSE_H
 
-#include <QObject>
-#include <QNetworkCookie>
-#include <QIODevice>
+#include <QtCore/qobject.h>
 
-#include <Cutelyst/Headers>
+#include <Cutelyst/headers.h>
+
+class QIODevice;
+class QNetworkCookie;
 
 namespace Cutelyst {
 

@@ -2,6 +2,7 @@
 #define CPSTATICSIMPLE_H
 
 #include <Cutelyst/plugin.h>
+#include <Cutelyst/context.h>
 
 namespace Cutelyst {
 

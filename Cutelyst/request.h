@@ -20,13 +20,15 @@
 #ifndef CUTELYST_REQUEST_H
 #define CUTELYST_REQUEST_H
 
-#include <QObject>
-#include <QHostAddress>
-#include <QNetworkCookie>
+#include <QtCore/qobject.h>
+#include <QtCore/qstringlist.h>
 
-#include <Cutelyst/ParamsMultiMap>
-#include <Cutelyst/Headers>
-typedef QMap<QString, QString> Params;
+#include <Cutelyst/paramsmultimap.h>
+#include <Cutelyst/headers.h>
+
+class QIODevice;
+class QHostAddress;
+class QNetworkCookie;
 
 namespace Cutelyst {
 

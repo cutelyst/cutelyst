@@ -22,7 +22,8 @@
 #include "bodyuwsgi.h"
 #include "bodybuffereduwsgi.h"
 
-#include <QSocketNotifier>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QCoreApplication>
 
 #include <Cutelyst/common.h>
 #include <Cutelyst/application.h>

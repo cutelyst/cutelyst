@@ -19,6 +19,8 @@
 
 #include "authenticationuser.h"
 
+#include <QVariant>
+
 using namespace Cutelyst;
 
 AuthenticationUser::AuthenticationUser()

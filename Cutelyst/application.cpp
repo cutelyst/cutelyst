@@ -37,9 +37,10 @@
 #include "Actions/roleacl.h"
 #include "Actions/renderview.h"
 
-#include <QDir>
-#include <QStringList>
-#include <QStringBuilder>
+#include <QtCore/QDir>
+#include <QtCore/QStringList>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QCoreApplication>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")

@@ -19,6 +19,8 @@
 
 #include "authenticationstore.h"
 
+#include <QVariant>
+
 using namespace Cutelyst;
 
 AuthenticationStore::AuthenticationStore(QObject *parent) : QObject(parent)

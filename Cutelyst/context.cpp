@@ -33,6 +33,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QStringBuilder>
+#include <QCoreApplication>
 
 using namespace Cutelyst;
 
