@@ -57,7 +57,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
             QByteArray line = file.readLine();
             QList<QByteArray> parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username) {
-                line = username.toLatin1() + ':' + user.value("password").toLatin1() + '\n';
+                line = username.toLatin1() + ':' + user.value("password").toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
@@ -94,7 +94,8 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const CStringHash &userIn
                 AuthenticationUser ret;
                 ret.insert("username", username);
                 ret.setId(username);
-                ret.insert("password", parts.at(1));
+                QByteArray password = parts.at(1);
+                ret.insert("password", password.replace(',', ':'));
                 return ret;
                 // TODO maybe support additional fields
             }
