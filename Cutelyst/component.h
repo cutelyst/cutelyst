@@ -20,13 +20,14 @@
 #ifndef CUTELYST_COMPONENT_H
 #define CUTELYST_COMPONENT_H
 
-#include <QObject>
-
-#include <Cutelyst/Context>
+#include <QtCore/qobject.h>
 
 namespace Cutelyst {
 
+class Application;
 class Context;
+class Controller;
+class Dispatcher;
 class ComponentPrivate;
 class Component : public QObject
 {

@@ -21,8 +21,10 @@
 #include "common.h"
 #include "actionchain.h"
 #include "utils.h"
+#include "context.h"
 
-#include <QStringBuilder>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QUrl>
 
 using namespace Cutelyst;
 

@@ -20,8 +20,8 @@
 #ifndef DISPATCHTYPE_H
 #define DISPATCHTYPE_H
 
-#include <QObject>
-#include <QStringList>
+#include <QtCore/qobject.h>
+#include <QtCore/qstringlist.h>
 
 namespace Cutelyst {
 

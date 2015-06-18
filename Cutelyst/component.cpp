@@ -19,8 +19,9 @@
 
 #include "component_p.h"
 #include "common.h"
+#include "context.h"
 
-#include <QStringBuilder>
+#include <QtCore/QStringBuilder>
 
 using namespace Cutelyst;
 

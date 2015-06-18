@@ -20,10 +20,8 @@
 #ifndef DISPATCHTYPECHAINED_H
 #define DISPATCHTYPECHAINED_H
 
-#include <QObject>
-
-#include <Cutelyst/Action>
-#include <Cutelyst/DispatchType>
+#include <Cutelyst/action.h>
+#include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
 

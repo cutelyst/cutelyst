@@ -20,7 +20,7 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
-#include <Cutelyst/Action>
+#include <Cutelyst/action.h>
 
 namespace Cutelyst {
 

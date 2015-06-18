@@ -22,6 +22,8 @@
 
 #include "component.h"
 
+#include <QtCore/qstack.h>
+
 namespace Cutelyst {
 
 class ComponentPrivate

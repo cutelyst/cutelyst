@@ -20,8 +20,8 @@
 #ifndef CUTELYST_DISPATCHTYPEPATH_H
 #define CUTELYST_DISPATCHTYPEPATH_H
 
-#include <Cutelyst/DispatchType>
-#include <Cutelyst/Action>
+#include <Cutelyst/action.h>
+#include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
 

@@ -20,11 +20,11 @@
 #ifndef CUTELYST_DISPATCHER_H
 #define CUTELYST_DISPATCHER_H
 
-#include <QObject>
-#include <QHash>
-#include <QStringList>
+#include <QtCore/qobject.h>
+#include <QtCore/qhash.h>
+#include <QtCore/qstringlist.h>
 
-#include <Cutelyst/Action>
+#include <Cutelyst/action.h>
 
 namespace Cutelyst {
 

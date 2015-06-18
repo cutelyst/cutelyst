@@ -22,9 +22,10 @@
 #include "response.h"
 #include "view.h"
 #include "application.h"
+#include "context.h"
 
-#include <QStringBuilder>
-#include <QLoggingCategory>
+#include <QtCore/QStringBuilder>
+#include <QtCore/QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview")
 

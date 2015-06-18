@@ -3,6 +3,8 @@
 
 #include "renderview.h"
 
+#include <Cutelyst/view.h>
+
 namespace Cutelyst {
 
 class RenderViewPrivate

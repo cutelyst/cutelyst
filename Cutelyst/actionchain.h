@@ -20,9 +20,9 @@
 #ifndef ACTIONCHAIN_H
 #define ACTIONCHAIN_H
 
-#include <QObject>
+#include <QtCore/qobject.h>
 
-#include <action.h>
+#include <Cutelyst/action.h>
 
 namespace Cutelyst {
 

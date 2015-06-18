@@ -20,7 +20,7 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
-#include <QDate>
+#include <QtCore/qdatetime.h>
 
 namespace Cutelyst {
 

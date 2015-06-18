@@ -20,10 +20,11 @@
 #ifndef UPLOAD_H
 #define UPLOAD_H
 
-#include <QIODevice>
-#include <QTemporaryFile>
+#include <QtCore/qiodevice.h>
 
-#include <Cutelyst/Headers>
+#include <Cutelyst/headers.h>
+
+class QTemporaryFile;
 
 namespace Cutelyst {
 

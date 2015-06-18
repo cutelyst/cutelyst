@@ -24,6 +24,7 @@
 #include "dispatcher.h"
 #include "engine.h"
 #include "plugin.h"
+#include "context.h"
 
 namespace Cutelyst {
 

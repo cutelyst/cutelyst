@@ -20,6 +20,8 @@
 #include "actionchain_p.h"
 #include "request_p.h"
 
+#include "context.h"
+
 using namespace Cutelyst;
 
 ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(parent)
