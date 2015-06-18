@@ -184,6 +184,12 @@ QVariant Context::stash(const QString &key) const
     return d->stash.value(key);
 }
 
+void Context::setStash(const QString &key, const QVariant &value)
+{
+    Q_D(Context);
+    d->stash.insert(key, value);
+}
+
 QStack<Component *> Context::stack() const
 {
     Q_D(const Context);

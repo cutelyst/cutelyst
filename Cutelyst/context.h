@@ -194,9 +194,14 @@ public:
     QVariantHash &stash();
 
     /**
-     * A convinient method to retrieve a single value from the stash
+     * A convenient method to retrieve a single value from the stash
      */
     QVariant stash(const QString &key) const;
+
+    /**
+     * A convenient method to set a single value to the stash
+     */
+    void setStash(const QString &key, const QVariant &value);
 
     /**
      * Returns the internal execution stack (actions that are currently executing).
