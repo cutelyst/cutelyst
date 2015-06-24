@@ -309,7 +309,7 @@ QList<Cutelyst::Plugin *> Context::plugins()
 bool Context::execute(Component *code)
 {
     Q_D(Context);
-    Q_ASSERT_X(code == 0, "Context::execute", "trying to execute a null Cutelyst::Component");
+    Q_ASSERT_X(code, "Context::execute", "trying to execute a null Cutelyst::Component");
 
     bool ret;
     d->stack.push(code);
