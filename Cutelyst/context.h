@@ -141,10 +141,9 @@ public:
     Controller *controller(const QString &name) const;
 
     /**
-     * Returns the current view to be used
+     * Returns the view set to be used
      * for rendering this request, if one
-     * is set by setView() or the default
-     * application view
+     * is set by setView() or 0 if none was set
      */
     View *view() const;
 
@@ -155,8 +154,11 @@ public:
      *
      * Action classes like RenderView will use
      * this value to overwrite their settings.
+     *
+     * Returns true if a view with the given
+     * name was found
      */
-    void setView(const QString &name);
+    bool setView(const QString &name);
 
     /**
      * You can set hash keys by passing arguments,

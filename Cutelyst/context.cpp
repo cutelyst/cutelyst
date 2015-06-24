@@ -160,16 +160,13 @@ Controller *Context::controller(const QString &name) const
 View *Context::view() const
 {
     Q_D(const Context);
-    if (d->view) {
-        return d->view;
-    }
-    return d->app->view();
+    return d->view;
 }
 
-void Context::setView(const QString &name)
+bool Context::setView(const QString &name)
 {
     Q_D(Context);
-    d->view = d->app->view(name);
+    return d->view = d->app->view(name);
 }
 
 QVariantHash &Context::stash()
