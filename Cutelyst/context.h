@@ -322,7 +322,44 @@ public:
      */
     void detach(Action *action = 0);
 
-    bool forward(Component *action);
+    /**
+     * This is one way of calling another action (method) in the same or
+     * a different controller. You can also use directly call another method
+     * to the same or a different controller.
+     *
+     * The main difference is that 'forward' uses some of the Cutelyst request
+     * cycle overhead, including debugging, which may be useful to you. On the
+     * other hand, there are some complications to using 'forward', restrictions
+     * on values returned from 'forward', and it may not handle errors as you prefer.
+     * Whether you use 'forward' or not is up to you; it is not considered superior to
+     * the other ways to call a method.
+     *
+     * forward calls Component::execute.
+     *
+     * Keep in mind that the End() method used is that of the caller action.
+     * So a c->detach() inside a forwarded action would run the End() method from
+     * the original action requested.
+     */
+    bool forward(Component *component);
+
+    /**
+     * This is one way of calling another action (method) in the same or
+     * a different controller. You can also use directly call another method
+     * to the same or a different controller.
+     *
+     * The main difference is that 'forward' uses some of the Cutelyst request
+     * cycle overhead, including debugging, which may be useful to you. On the
+     * other hand, there are some complications to using 'forward', restrictions
+     * on values returned from 'forward', and it may not handle errors as you prefer.
+     * Whether you use 'forward' or not is up to you; it is not considered superior to
+     * the other ways to call a method.
+     *
+     * forward calls another action, by its private name.
+     *
+     * Keep in mind that the End() method used is that of the caller action.
+     * So a c->detach() inside a forwarded action would run the End() method from
+     * the original action requested.
+     */
     bool forward(const QString &action);
 
     /**
