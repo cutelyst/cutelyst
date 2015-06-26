@@ -66,6 +66,8 @@ Application::Application(QObject *parent) :
     d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
+    qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
+
     qRegisterMetaType<ActionREST *>();
     qRegisterMetaType<RoleACL *>();
     qRegisterMetaType<RenderView *>();
