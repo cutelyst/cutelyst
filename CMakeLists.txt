@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 cmake_policy(VERSION 3.0)
 
 find_package(PkgConfig REQUIRED)
-find_package(Qt5 5.3.0 COMPONENTS
+find_package(Qt5 5.4.0 COMPONENTS
     Core
     Network
 )
