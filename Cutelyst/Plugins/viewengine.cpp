@@ -41,10 +41,12 @@ ViewEngine::ViewEngine(const QString &engine, Application *app) : View(app)
   , m_interface(0)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
+    QString error = "File not found";
     Q_FOREACH (QString fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName), app);
         QJsonObject json = pluginLoader.metaData()["MetaData"].toObject();
         if (json["name"].toString() == engine) {
+            error = pluginLoader.errorString();
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 m_interface = qobject_cast<ViewInterface *>(plugin);
@@ -62,10 +64,8 @@ ViewEngine::ViewEngine(const QString &engine, Application *app) : View(app)
         }
     }
 
-//    qDebug() << interface;
-
     if (!m_interface) {
-        qCCritical(CUTELYST_VIEW) << "View Engine not loaded:" << engine;
+        qFatal("Cound not load View Engine: %s, %s", engine.toLatin1().data(), error.toLatin1().data());
     } else {
         m_interface->setParent(this);
     }
@@ -80,55 +80,46 @@ ViewEngine::~ViewEngine()
 
 QStringList ViewEngine::includePaths() const
 {
-    Q_ASSERT(m_interface);
     return m_interface->includePaths();
 }
 
 void ViewEngine::setIncludePaths(const QStringList &paths)
 {
-    Q_ASSERT(m_interface);
     m_interface->setIncludePaths(paths);
 }
 
 QString ViewEngine::templateExtension() const
 {
-    Q_ASSERT(m_interface);
     return m_interface->templateExtension();
 }
 
 void ViewEngine::setTemplateExtension(const QString &extension)
 {
-    Q_ASSERT(m_interface);
     m_interface->setTemplateExtension(extension);
 }
 
 QString ViewEngine::wrapper() const
 {
-    Q_ASSERT(m_interface);
     return m_interface->wrapper();
 }
 
 void ViewEngine::setWrapper(const QString &name)
 {
-    Q_ASSERT(m_interface);
     m_interface->setWrapper(name);
 }
 
 bool ViewEngine::isCaching() const
 {
-    Q_ASSERT(m_interface);
     return m_interface->isCaching();
 }
 
 void ViewEngine::setCache(bool enable)
 {
-    Q_ASSERT(m_interface);
     m_interface->setCache(enable);
 }
 
 bool ViewEngine::render(Context *c) const
 {
-    Q_ASSERT(m_interface);
     if (!m_interface->render(c)) {
         c->response()->setStatus(Response::InternalServerError);
         return false;
