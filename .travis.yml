@@ -1,0 +1,40 @@
+language: cpp
+branches:
+  only:
+    - master
+
+os:
+  - linux
+  - osx
+
+env:
+  - CONFIG=Release
+  - CONFIG=Debug
+
+before_install:
+  - CMAKE_VERSION_MM=3.2
+  - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.1
+  - QT_VERSION_MM=54
+  - QT_VERSION_FULL=541
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL
+      && sudo apt-get update -qq
+      && sudo apt-get install -qq qt${QT_VERSION_MM}base qt${QT_VERSION_MM}script qt${QT_VERSION_MM}tools
+      && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM}
+      && wget http://www.cmake.org/files/v${CMAKE_VERSION_MM}/cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh
+      && sudo sh cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir;
+    fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake qt5; fi
+
+before_script:
+   - mkdir build
+   - cd build
+   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off
+
+script:
+   - cmake --build . --config $CONFIG
+   - ctest --output-on-failure
+
+notifications:
+  email: false
+
