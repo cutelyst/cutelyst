@@ -11,6 +11,12 @@ env:
   - CONFIG=Release
   - CONFIG=Debug
 
+language: c++
+
+compiler:
+  - g++
+  - clang
+
 before_install:
   - CMAKE_VERSION_MM=3.2
   - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.1
