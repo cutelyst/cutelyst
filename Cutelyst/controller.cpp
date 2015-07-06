@@ -246,8 +246,8 @@ bool Controller::_DISPATCH(Context *c)
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
     QMap<QString, QString> attributes;
-    attributes = args.value("attributes").value<QMap<QString, QString> >();
-    QString actionClass = attributes.value("ActionClass");
+    attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
     QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");
     if (object) {
@@ -271,7 +271,7 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         return 0;
     }
 
-    QString name = args.value("name").toString();
+    QString name = args.value(QStringLiteral("name")).toString();
     QRegularExpression regex(QStringLiteral("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$"));
     QRegularExpressionMatch match = regex.match(name);
     if (!match.hasMatch()) {
@@ -286,8 +286,8 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
 
     action->setMethod(method);
     action->setController(controller);
-    action->setName(args.value("name").toString());
-    action->setReverse(args.value("reverse").toString());
+    action->setName(args.value(QStringLiteral("name")).toString());
+    action->setReverse(args.value(QStringLiteral("reverse")).toString());
     action->setupAction(args, app);
 
     return action;
@@ -325,10 +325,10 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             }
 
             Action *action = createAction({
-                                              {"name"      , QVariant::fromValue(name)},
-                                              {"reverse"   , QVariant::fromValue(reverse)},
-                                              {"namespace" , QVariant::fromValue(controller->ns())},
-                                              {"attributes", QVariant::fromValue(attrs)}
+                                              {QStringLiteral("name")      , QVariant::fromValue(name)},
+                                              {QStringLiteral("reverse")   , QVariant::fromValue(reverse)},
+                                              {QStringLiteral("namespace") , QVariant::fromValue(controller->ns())},
+                                              {QStringLiteral("attributes"), QVariant::fromValue(attrs)}
                                           },
                                           method,
                                           controller,
@@ -483,9 +483,9 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
 {
     QStack<Component *> roles;
     QMap<QByteArray, QByteArray> attributes;
-    attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
     Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
-        QObject *object = instantiateClass(role, "Cutelyst::Component");
+        QObject *object = instantiateClass(role, QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }

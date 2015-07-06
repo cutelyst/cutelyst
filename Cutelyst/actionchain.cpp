@@ -35,7 +35,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
     QVariantHash args;
     setName(final->name());
     setReverse(final->reverse());
-    args.insert("namespace", final->ns());
+    args.insert(QStringLiteral("namespace"), final->ns());
     setupAction(args, 0);
 }
 

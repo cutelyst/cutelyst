@@ -387,7 +387,7 @@ void Engine::finalize(Context *c)
     }
 }
 
-static QString cutelyst_header_order(
+static const QString cutelyst_header_order(
         // General headers
         "Cache-Control\n"
         "Connection\n"
