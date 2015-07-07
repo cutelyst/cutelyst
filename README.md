@@ -32,7 +32,7 @@ examples are under MIT license.
 
 ## Requirements
 
- * uWSGI - to receive and parse protocols requests (>= 2.1 recommended)
+ * uWSGI - to receive and parse protocols requests (>= 1.8 recommended)
  * CMake - for the build system (>= 3.0)
  * Qt - the core library of this framework (>= 5.4)
  
