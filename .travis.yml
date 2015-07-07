@@ -14,7 +14,7 @@ env:
 language: c++
 
 compiler:
-  - g++
+  - clang
 
 before_install:
   - CMAKE_VERSION_MM=3.2
