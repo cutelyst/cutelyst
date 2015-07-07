@@ -1,4 +1,4 @@
-# Cutelyst
+# Cutelyst [![Build Status](https://travis-ci.org/cutelyst/cutelyst.svg?branch=master)](https://travis-ci.org/cutelyst/cutelyst)
 A Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework.
 
 Qt's meta object system is what powers the core of Cutelyst, this allows for introspecting controllers methods signatures and generate matching actions that can be invokable later. Some features:
