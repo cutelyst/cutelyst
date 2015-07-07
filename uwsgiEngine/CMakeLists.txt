@@ -1,3 +1,5 @@
+find_package(PkgConfig REQUIRED)
+
 # uwsgi.h required if #ifdef UWSGI_UUID
 pkg_check_modules(UUID REQUIRED uuid)
 

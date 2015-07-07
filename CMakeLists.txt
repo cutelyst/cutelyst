@@ -4,7 +4,6 @@ project(cutelyst)
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 cmake_policy(VERSION 3.0)
 
-find_package(PkgConfig REQUIRED)
 find_package(Qt5 5.4.0 COMPONENTS
     Core
     Network
@@ -60,6 +59,7 @@ set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
 set (UWSGI_PLUGINS_DIR "/usr/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
+find_program(UWSGI_EXEC_PATH NAMES uwsgi)
 set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
@@ -87,8 +87,14 @@ include_directories(
 )
 
 add_subdirectory(Cutelyst)
-add_subdirectory(uwsgiEngine)
+
+find_program(UWSGI_BIN NAMES uwsgi)
 add_subdirectory(developerEngine)
+
+if (UWSGI_EXEC_PATH)
+    add_subdirectory(uwsgiEngine)
+endif ()
+
 
 # TODO rename to examples
 #add_subdirectory(server)
