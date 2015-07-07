@@ -30,7 +30,7 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
 The library is under the LGPLv2 and public header files, documentation and
 examples are under MIT license.
 
-## Requirements
+## REQUIREMENTS
 
  * uWSGI - to receive and parse protocols requests (>= 1.8 recommended)
  * CMake - for the build system (>= 3.0)
