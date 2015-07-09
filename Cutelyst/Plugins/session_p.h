@@ -40,6 +40,7 @@ public:
     static QVariant loadSession(Context *c);
 
     QString sessionName;
+    quint64 sessionExpires;
 };
 
 }

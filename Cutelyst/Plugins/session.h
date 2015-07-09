@@ -36,7 +36,26 @@ public:
     Session(Application *parent);
     virtual ~Session();
 
+    /**
+     * If config has
+     * [Plugin_Session]
+     * expires = 1234
+     * it will change de default expires which is 7200 (two hours)
+     */
     virtual bool setup(Application *app);
+
+    /**
+     * Returns the current session id or null if
+     * there is no current session
+     */
+    static QString id(Context *c);
+
+    /**
+     * This method returns the time when the current session will expire, or 0 if there is no current session.
+     * If there is a session and it already expired, it will delete the session and return 0 as well.
+     */
+    static quint64 expires(Context *c);
+    static void setExpires(Context *c, quint64 expires);
 
     static QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
     static void setValue(Context *c, const QString &key, const QVariant &value);

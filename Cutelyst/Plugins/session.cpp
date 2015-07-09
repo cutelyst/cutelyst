@@ -55,8 +55,27 @@ bool Session::setup(Application *app)
 {
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() % QStringLiteral("_session");
+
+    QVariantHash config = app->config("Session_Plugin").toHash();
+    d->sessionExpires = config.value("expires", 7200).toULongLong();
+
     connect(app, &Application::afterDispatch, d, &SessionPrivate::saveSession);
     return true;
+}
+
+QString Session::id(Cutelyst::Context *c)
+{
+    return c->property(SESSION_ID).toString();
+}
+
+quint64 Session::expires(Context *c)
+{
+    return 0;
+}
+
+void Session::setExpires(Context *c, quint64 expires)
+{
+
 }
 
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
