@@ -71,6 +71,12 @@ protected:
     virtual QVariantHash retrieveSession(const QString &sessionId) const;
 
     /**
+     * This method is used to call the storage class and retrieve
+     * the session, the default implementation does that by using a file
+     */
+    virtual quint64 retrieveSessionExpires(const QString &sessionId) const;
+
+    /**
      * This methos is used to call the storage class and persist
      * the session data, the default implementation does that by using a file
      */

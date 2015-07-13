@@ -128,6 +128,12 @@ QVariantHash Session::retrieveSession(const QString &sessionId) const
     return ret;
 }
 
+quint64 Session::retrieveSessionExpires(const QString &sessionId) const
+{
+    Q_UNUSED(sessionId)
+    return 0;
+}
+
 void Session::persistSession(const QString &sessionId, const QVariant &data) const
 {
     const QString &sessionFile = SessionPrivate::filePath(sessionId);
@@ -169,7 +175,7 @@ QString SessionPrivate::filePath(const QString &sessionId)
 
 QString SessionPrivate::generateSessionId()
 {
-    return QUuid::createUuid().toString();
+    return QString::fromLatin1(QUuid::createUuid().toRfc4122().toHex());
 }
 
 QString SessionPrivate::getSessionId(Context *c, const QString &sessionName, bool create)
@@ -215,8 +221,13 @@ void SessionPrivate::saveSession(Context *c)
 
     const QString &_sessionName = session->d_ptr->sessionName;
     const QString &sessionId = getSessionId(c, _sessionName, true);
-    QNetworkCookie sessionCookie(_sessionName.toLatin1(),
-                                 sessionId.toLatin1());
+
+    QNetworkCookie sessionCookie(_sessionName.toLatin1(), sessionId.toLatin1());
+    sessionCookie.setPath(QStringLiteral("/"));
+    QDateTime expiresDt = QDateTime::currentDateTimeUtc().addSecs(session->d_ptr->sessionExpires);;
+    sessionCookie.setExpirationDate(expiresDt);
+    sessionCookie.setHttpOnly(true);
+
     c->res()->addCookie(sessionCookie);
     session->persistSession(sessionId, loadSession(c));
 }
