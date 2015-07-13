@@ -35,9 +35,12 @@ public:
 
     static QString filePath(const QString &sessionId);
     static QString generateSessionId();
-    static QString getSessionId(Context *c, const QString &sessionName, bool create);
+    static QString getSessionId(Context *c, const QString &sessionName);
+    static QString createSessionId(Context *c, quint64 expires);
     static void saveSession(Context *c);
-    static QVariant loadSession(Context *c);
+    static void deleteSession(Context *c, const QString &reason);
+    static QVariant loadSession(Context *c, bool createSessionId);
+    static bool validateSessionId(const QString &id);
 
     QString sessionName;
     quint64 sessionExpires;
