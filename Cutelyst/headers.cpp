@@ -105,9 +105,8 @@ void Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    QLocale locale(QLocale::C);
-    const QString &dt = locale.toString(date.toTimeSpec(Qt::UTC),
-                                        QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    const QString &dt = QLocale::c().toString(date.toUTC(),
+                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT")).toLatin1();
     insert(QStringLiteral("date"), dt);
 }
 
@@ -124,15 +123,14 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     }
 
     const QString &ifModifiedStr = it.value();
-    QLocale locale(QLocale::C);
 
     QDateTime localDT;
     if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
-        localDT = locale.toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
-                                    QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        localDT = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
     } else {
-        localDT = locale.toDateTime(ifModifiedStr,
-                                    QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        localDT = QLocale::c().toDateTime(ifModifiedStr,
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
     }
     return QDateTime(localDT.date(), localDT.time(), Qt::UTC);
 }
@@ -151,9 +149,8 @@ void Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    QLocale locale(QLocale::C);
-    const QString &dt = locale.toString(lastModified.toTimeSpec(Qt::UTC),
-                                        QStringLiteral("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    const QString &dt = QLocale::c().toString(lastModified.toUTC(),
+                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT")).toLatin1();
     setLastModified(dt);
 }
 
