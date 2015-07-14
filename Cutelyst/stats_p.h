@@ -22,8 +22,6 @@
 
 #include "stats.h"
 
-#include <QTime>
-
 namespace Cutelyst {
 
 struct StatsAction {
