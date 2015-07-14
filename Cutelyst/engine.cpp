@@ -217,7 +217,7 @@ bool Engine::postForkApplication()
 
 quint64 Engine::time()
 {
-    return QDateTime::currentDateTime().toMSecsSinceEpoch();
+    return QDateTime::currentMSecsSinceEpoch();
 }
 
 qint64 Engine::write(Context *c, const char *data, qint64 len)
