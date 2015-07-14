@@ -35,15 +35,30 @@ public:
 
     static QString filePath(const QString &sessionId);
     static QString generateSessionId();
+    static QString loadSessionId(Context *c, const QString &sessionName);
     static QString getSessionId(Context *c, const QString &sessionName);
+    static QString createSessionIdIfNeeded(Context *c, quint64 expires);
     static QString createSessionId(Context *c, quint64 expires);
     static void saveSession(Context *c);
     static void deleteSession(Context *c, const QString &reason);
-    static QVariant loadSession(Context *c, bool createSessionId);
+    static QVariant loadSession(Context *c);
     static bool validateSessionId(const QString &id);
+    static quint64 extendSessionExpires(Context *c, quint64 expires);
+    static quint64 getStoredSessionExpires(Context *c);
 
+    static QVariant initializeSessionData(Context *c);
+    static QDateTime saveSessionExpires(Context *c);
+    static QVariant loadSessionExpires(Context *c);
+    static quint64 initialSessionExpires(Context *c);
+    static quint64 calculateInitialSessionExpires(Context *c);
+    static quint64 resetSessionExpires(Context *c);
+
+    SessionStore *store = 0;
     QString sessionName;
     quint64 sessionExpires;
+    quint64 expiryThreshold;
+    bool verifyAddress;
+    bool verifyUserAgent;
 };
 
 }

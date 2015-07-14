@@ -50,6 +50,8 @@ set(cutelystqt_SRC
     Plugins/View/ViewInterface.h
     Plugins/session.cpp
     Plugins/session_p.h
+    Plugins/sessionstorefile.cpp
+    Plugins/sessionstorefile_p.h
     Plugins/staticsimple.cpp
     Plugins/staticsimple_p.h
     Plugins/viewengine.cpp
