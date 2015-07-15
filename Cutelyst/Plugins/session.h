@@ -35,6 +35,7 @@ public:
     virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue = QVariant()) = 0;
     virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) = 0;
     virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) = 0;
+    virtual bool deleteExpiredSessions(Context *c, quint64 expires) = 0;
 };
 
 class SessionPrivate;

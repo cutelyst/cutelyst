@@ -45,7 +45,7 @@ public:
     static quint64 extendSessionExpires(Session *session, Context *c, quint64 expires);
     static quint64 getStoredSessionExpires(Session *session, Context *c, const QString &sessionid);
 
-    static QVariant initializeSessionData(Context *c);
+    static QVariant initializeSessionData(Session *session, Context *c);
     static QDateTime saveSessionExpires(Context *c);
     static QVariant loadSessionExpires(Session *session, Context *c, const QString &sessionId);
     static quint64 initialSessionExpires(Session *session, Context *c);

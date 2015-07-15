@@ -68,6 +68,13 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
     return true;
 }
 
+bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(expires)
+    return true;
+}
+
 QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c, const QString &sid) const
 {
     QVariant sessionVariant = c->property(SESSION_STORE_FILE);
