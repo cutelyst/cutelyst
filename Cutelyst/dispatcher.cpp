@@ -20,6 +20,7 @@
 #include "dispatcher_p.h"
 
 #include "common.h"
+#include "application.h"
 #include "context.h"
 #include "controller.h"
 #include "controller_p.h"
@@ -35,12 +36,11 @@
 
 using namespace Cutelyst;
 
-Dispatcher::Dispatcher(QObject *parent) :
-    QObject(parent),
-    d_ptr(new DispatcherPrivate(this))
+Dispatcher::Dispatcher(Application *app) : QObject(app)
+  , d_ptr(new DispatcherPrivate(this))
 {
-    registerDispatchType(new DispatchTypePath(this));
-    registerDispatchType(new DispatchTypeChained(this));
+    new DispatchTypePath(app);
+    new DispatchTypeChained(app);
 }
 
 Dispatcher::~Dispatcher()
@@ -48,9 +48,11 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions(const QList<Controller*> &controllers)
+void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList<Cutelyst::DispatchType *> &dispatchers)
 {
     Q_D(Dispatcher);
+
+    d->dispatchers = dispatchers;
 
     ActionList registeredActions;
     Q_FOREACH (Controller *controller, controllers) {
@@ -288,12 +290,6 @@ QList<DispatchType *> Dispatcher::dispatchers() const
 {
     Q_D(const Dispatcher);
     return d->dispatchers;
-}
-
-void Dispatcher::registerDispatchType(DispatchType *dispatchType)
-{
-    Q_D(Dispatcher);
-    d->dispatchers.append(dispatchType);
 }
 
 QString DispatcherPrivate::cleanNamespace(const QString &ns)

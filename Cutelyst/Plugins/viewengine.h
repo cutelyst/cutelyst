@@ -32,7 +32,7 @@ class ViewEngine : public View
 {
     Q_OBJECT
 public:
-    ViewEngine(const QString &engine, Application *app);
+    explicit ViewEngine(const QString &engine, Application *app, const QString &name = QString());
     virtual ~ViewEngine();
 
     QStringList includePaths() const;

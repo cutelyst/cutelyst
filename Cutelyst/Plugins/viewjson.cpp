@@ -27,7 +27,7 @@
 
 using namespace Cutelyst;
 
-ViewJson::ViewJson(Application *app) : Cutelyst::View(app)
+ViewJson::ViewJson(Application *app, const QString &name) : View(app, name)
   , d_ptr(new ViewJsonPrivate)
 {
 

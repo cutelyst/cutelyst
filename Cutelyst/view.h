@@ -31,7 +31,7 @@ class View : public Component
 {
     Q_OBJECT
 public:
-    View(Application *app);
+    explicit View(Application *app, const QString &name = QString());
     virtual ~View();
 
     /**

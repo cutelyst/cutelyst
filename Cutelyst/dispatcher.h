@@ -36,7 +36,7 @@ class Dispatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit Dispatcher(QObject *parent = 0);
+    Dispatcher(Application *app);
     ~Dispatcher();
 
     /**
@@ -73,7 +73,7 @@ public:
     QList<DispatchType *> dispatchers() const;
 
 protected:
-    void setupActions(const QList<Controller *> &controllers);
+    void setupActions(const QList<Controller *> &controllers, const QList<DispatchType *> &dispatchers);
 
     /**
      * Delegate the dispatch to the action that matched the url, or return a
@@ -84,13 +84,6 @@ protected:
     bool forward(Context *c, Component *component);
     bool forward(Context *c, const QString &opname);
     void prepareAction(Context *c);
-
-    /**
-     * Returns a list of actions on the desired namespace \pa ns
-     */
-//    ActionList getActionsNs(const QByteArray &ns) const;
-
-    void registerDispatchType(DispatchType *dispatchType);
 
 protected:
     friend class Application;

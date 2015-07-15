@@ -77,7 +77,7 @@ class Controller : public QObject
 {
     Q_OBJECT
 public:
-    explicit Controller(QObject *parent = 0);
+    explicit Controller(Application *app);
     virtual ~Controller();
 
     /**

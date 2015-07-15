@@ -32,6 +32,7 @@ class ApplicationPrivate
 {
 public:
     void setupHome();
+    void setupChildren(const QObjectList &children);
 
     void logRequest(Request *req);
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
@@ -42,6 +43,7 @@ public:
     QList<Plugin *> plugins;
     QList<Controller *> controllers;
     QHash<QString, View *> views;
+    QList<DispatchType *> dispatchers;
     Headers headers;
     QVariantHash config;
     bool useStats;

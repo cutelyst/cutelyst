@@ -133,7 +133,7 @@ bool createController(const QString &controllerName)
     // Change the modification time of CMakeLists.txt to force FILE_GLOB to be updated
     utime(projectDir.absoluteFilePath(QStringLiteral("CMakeLists.txt")).toLatin1().data(), NULL);
 
-    qDebug() << "Now, on your application class include and register the controller.";
+    qDebug() << "Now, on your application class include and instantiate the controller.";
 
     return true;
 }
@@ -167,9 +167,9 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "\n";
         out << "bool " << appName << "::init" << "()" << "\n";
         out << "{" << "\n";
-        out << "    registerController(new Root);" << "\n";
+        out << "    new Root(this));" << "\n";
         out << "\n";
-        out << "    registerPlugin(new StaticSimple(this));" << "\n";
+        out << "    new StaticSimple(this);" << "\n";
         out << "\n";
         out << "    return true;" << "\n";
         out << "}" << "\n";

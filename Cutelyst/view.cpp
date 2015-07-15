@@ -23,8 +23,9 @@
 
 using namespace Cutelyst;
 
-View::View(Application *app) : Component(app)
+View::View(Application *app, const QString &name) : Component(app)
 {
+    setObjectName(name);
 }
 
 View::~View()
