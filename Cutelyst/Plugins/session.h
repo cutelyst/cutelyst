@@ -67,7 +67,13 @@ public:
      * If there is a session and it already expired, it will delete the session and return 0 as well.
      */
     static quint64 expires(Context *c);
-    static void setExpires(Context *c, quint64 expires);
+
+    /**
+     * change the session expiration time for this session
+     *
+     * Note that this only works to set the session longer than the config setting.
+     */
+    static void changeExpires(Context *c, quint64 expires);
 
     /**
      * This method is used to invalidate a session. It takes an optional parameter

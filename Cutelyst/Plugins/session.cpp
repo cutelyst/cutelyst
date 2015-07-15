@@ -89,7 +89,7 @@ void Session::setStorage(SessionStore *store)
 
 QString Session::id(Cutelyst::Context *c)
 {
-    QVariant sid = c->property(SESSION_ID);
+    const QVariant &sid = c->property(SESSION_ID);
     if (sid.isNull()) {
         Session *session = c->plugin<Session*>();
         if (!session) {
@@ -97,7 +97,7 @@ QString Session::id(Cutelyst::Context *c)
             return QString();
         }
 
-        sid = SessionPrivate::loadSessionId(c, session->d_ptr->sessionName);
+        return SessionPrivate::loadSessionId(c, session->d_ptr->sessionName);
     }
 
     return sid.toString();
@@ -124,9 +124,18 @@ quint64 Session::expires(Context *c)
     return 0;
 }
 
-void Session::setExpires(Context *c, quint64 expires)
+void Session::changeExpires(Context *c, quint64 expires)
 {
+    const QString &sid = Session::id(c);
+    quint64 timeExp = (QDateTime::currentMSecsSinceEpoch() / 1000) + expires;
 
+    Session *session = c->plugin<Session*>();
+    if (!session) {
+        qCCritical(C_SESSION) << "Session plugin not registered";
+        return;
+    }
+
+    session->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), timeExp);
 }
 
 void Session::deleteSession(Context *c, const QString &reason)
@@ -312,7 +321,8 @@ void SessionPrivate::deleteSession(Session *session, Context *c, const QString &
 
     c->setProperty(SESSION_DELETE_REASON, reason);
     c->setProperty(SESSION_VALUES, QVariant());
-    c->setProperty(SESSION_UPDATED, false);
+    // So an expired coockie is sent
+    c->setProperty(SESSION_UPDATED, true);
     // to prevent getSessionId from returning it
     c->setProperty(SESSION_DELETED_ID, true);
     c->setProperty(SESSION_ID, QVariant());
@@ -336,7 +346,7 @@ QVariant SessionPrivate::loadSession(Context *c)
     if (!loadSessionExpires(session, c, sid).isNull()) {
         if (SessionPrivate::validateSessionId(sid)) {
 
-            const QVariantHash &sessionData = session->d_ptr->store->getSessionData(c, sid, QStringLiteral("session:%1").arg(sid)).toHash();
+            const QVariantHash &sessionData = session->d_ptr->store->getSessionData(c, sid, QStringLiteral("session")).toHash();
             c->setProperty(SESSION_VALUES, sessionData);
 
             if (session->d_ptr->verifyAddress &&
