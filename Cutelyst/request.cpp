@@ -385,10 +385,96 @@ void RequestPrivate::parseBody() const
     bodyParsed = true;
 }
 
+static inline bool isSlit(char c)
+{
+    return c == ';' || c == ',';
+}
+
+int findNextSplit(const QByteArray &text, int from, int length)
+{
+    while (from < length) {
+        if (isSlit(text.at(from))) {
+            return from;
+        }
+        ++from;
+    }
+    return -1;
+}
+
+static inline bool isLWS(char c)
+{
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+static int nextNonWhitespace(const QByteArray &text, int from, int length)
+{
+    // RFC 2616 defines linear whitespace as:
+    //  LWS = [CRLF] 1*( SP | HT )
+    // We ignore the fact that CRLF must come as a pair at this point
+    // It's an invalid HTTP header if that happens.
+    while (from < length) {
+        if (isLWS(text.at(from)))
+            ++from;
+        else
+            return from;        // non-whitespace
+    }
+
+    // reached the end
+    return text.length();
+}
+
+static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &position)
+{
+    // format is one of:
+    //    (1)  token
+    //    (2)  token = token
+    //    (3)  token = quoted-string
+    const int length = text.length();
+    position = nextNonWhitespace(text, position, length);
+
+    int semiColonPosition = findNextSplit(text, position, length);
+    if (semiColonPosition < 0)
+        semiColonPosition = length; //no ';' means take everything to end of string
+
+    int equalsPosition = text.indexOf('=', position);
+    if (equalsPosition < 0 || equalsPosition > semiColonPosition) {
+        return qMakePair(QByteArray(), QByteArray()); //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
+    }
+
+    QByteArray first = text.mid(position, equalsPosition - position).trimmed();
+    QByteArray second;
+    int secondLength = semiColonPosition - equalsPosition - 1;
+    if (secondLength > 0)
+        second = text.mid(equalsPosition + 1, secondLength).trimmed();
+
+    position = semiColonPosition;
+    return qMakePair(first, second);
+}
+
 void RequestPrivate::parseCookies() const
 {
-    QString cookiesHeader = headers.header(QStringLiteral("Cookie"));
-    cookies = QNetworkCookie::parseCookies(cookiesHeader.replace(';', '\n').toLatin1());
+    QList<QNetworkCookie> ret;
+    const QByteArray &cookieString = headers.header(QStringLiteral("Cookie")).toLatin1();
+    int position = 0;
+    const int length = cookieString.length();
+    while (position < length) {
+        QPair<QByteArray,QByteArray> field = nextField(cookieString, position);
+        if (field.first.isEmpty()) {
+            // parsing error
+            break;
+        }
+
+        // Some foreign cookies are not in name=value format, so ignore them.
+        if (field.second.isEmpty()) {
+            ++position;
+            continue;
+        }
+        ret.append(QNetworkCookie(field.first, field.second));
+        ++position;
+
+    }
+
+    cookies = ret;
     cookiesParsed = true;
 }
 
