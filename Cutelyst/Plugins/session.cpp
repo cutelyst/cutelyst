@@ -229,10 +229,7 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
             return property.toString();
         }
 
-        qDebug() << c->req()->cookies();
-
         Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
-            qDebug() << cookie.name() << sessionName;
             if (cookie.name() == sessionName) {
                 sessionId = cookie.value();
                 qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
