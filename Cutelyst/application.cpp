@@ -107,6 +107,7 @@ QList<Controller *> Application::controllers() const
 View *Application::view(const QString &name) const
 {
     Q_D(const Application);
+    qDebug() << name << d->views;
     return d->views.value(name);
 }
 
@@ -370,12 +371,12 @@ void ApplicationPrivate::setupChildren(const QObjectList &children)
 
         View *view = qobject_cast<View *>(child);
         if (view) {
-            if (views.contains(view->objectName())) {
+            if (views.contains(view->name())) {
                 qCWarning(CUTELYST_CORE) << "Not registering View." << view->metaObject()->className()
-                                         << "There is already a view with this name:" << view->objectName();
+                                         << "There is already a view with this name:" << view->name();
                 continue;
             }
-            this->views.insert(view->objectName(), view);
+            views.insert(view->name(), view);
             continue;
         }
 

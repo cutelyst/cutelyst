@@ -34,6 +34,8 @@ public:
     explicit View(Application *app, const QString &name = QString());
     virtual ~View();
 
+    QString name() const;
+
     /**
      * The default implementation returns Component::OnlyExecute
      */

@@ -25,11 +25,16 @@ using namespace Cutelyst;
 
 View::View(Application *app, const QString &name) : Component(app)
 {
-    setObjectName(name);
+    setProperty("__name", name);
 }
 
 View::~View()
 {
+}
+
+QString View::name() const
+{
+    return property("__name").toString();
 }
 
 Component::Modifiers View::modifiers() const
