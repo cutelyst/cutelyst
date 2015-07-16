@@ -44,6 +44,7 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 #define SESSION_EXTENDED_EXPIRES "__session_extended_expires"
 #define SESSION_UPDATED "__session_updated"
 #define SESSION_ID "__session_id"
+#define SESSION_TRIED_LOADING_ID "__session_tried_loading_id"
 #define SESSION_DELETED_ID "__session_deleted_id"
 #define SESSION_DELETE_REASON "__session_delete_reason"
 
@@ -235,10 +236,14 @@ QString SessionPrivate::generateSessionId()
 
 QString SessionPrivate::loadSessionId(Context *c, const QString &sessionName)
 {
+    if (!c->property(SESSION_TRIED_LOADING_ID).isNull()) {
+        return QString();
+    }
+    c->setProperty(SESSION_TRIED_LOADING_ID, true);
+
     const QString &sid = getSessionId(c, sessionName);
     if (!sid.isNull() && !validateSessionId(sid)) {
         qCCritical(C_SESSION) << "Tried to set invalid session ID" << sid;
-        c->setProperty(SESSION_ID, QString());
         return QString();
     }
 
