@@ -108,7 +108,6 @@ QList<Controller *> Application::controllers() const
 View *Application::view(const QString &name) const
 {
     Q_D(const Application);
-    qDebug() << name << d->views;
     return d->views.value(name);
 }
 
