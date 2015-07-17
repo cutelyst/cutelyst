@@ -17,5 +17,7 @@ add_definitions(
 
 add_library(cutelyst-dev-http-qt5 SHARED ${httpEngine_SRC})
 set_target_properties(cutelyst-dev-http-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
-
-qt5_use_modules(cutelyst-dev-http-qt5 Core Network)
+target_link_libraries(cutelyst-dev-http-qt5
+    Qt5::Core
+    Qt5::Network
+)

@@ -346,12 +346,11 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << "# Create the application" << "\n";
         out << "add_library(" << appName << " SHARED ${" << appName << "_SRCS})" << "\n";
         out << "\n";
-        out << "# Link to Qt modules" << "\n";
-        out << "qt5_use_modules(" << appName << " Core)" << "\n";
-        out << "\n";
         out << "# Link to Cutelyst" << "\n";
         out << "target_link_libraries(" << appName << "\n";
         out << "    Cutelyst::cutelyst-qt5" << "\n";
+        out << "    Qt5::Core" << "\n";
+        out << "    Qt5::Network" << "\n";
         out << ")" << "\n";
         out << "\n";
 

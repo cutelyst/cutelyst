@@ -141,8 +141,10 @@ add_definitions(
 
 add_library(cutelyst-qt5 SHARED ${cutelystqt_SRC} ${cutelystqt_HEADERS} ${cutelystqt_HEADERS_PRIVATE})
 set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
-
-qt5_use_modules(cutelyst-qt5 Core Network)
+target_link_libraries(cutelyst-qt5
+    Qt5::Core
+    Qt5::Network
+)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst-qt5.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc

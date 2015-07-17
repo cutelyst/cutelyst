@@ -23,9 +23,10 @@ execute_process(COMMAND ${UWSGI_EXEC_PATH} --cflags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 ${UWSGI_CFLAGS}")
 
 add_library(cutelyst SHARED ${uswgi_engine_SRC})
-qt5_use_modules(cutelyst Core Network)
 target_link_libraries(cutelyst
     cutelyst-qt5
+    Qt5::Core
+    Qt5::Network
 )
 
 SET_TARGET_PROPERTIES(cutelyst
