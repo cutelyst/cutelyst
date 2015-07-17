@@ -20,7 +20,7 @@ before_install:
   - CMAKE_VERSION_MM=3.2
   - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.1
   - QT_VERSION_MM=55
-  - QT_VERSION_FULL=541
+  - QT_VERSION_FULL=55
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL
       && sudo apt-get update -qq
@@ -41,5 +41,5 @@ script:
    - ctest --output-on-failure
 
 notifications:
-  email: false
+  email: true
 
