@@ -77,13 +77,13 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
     for(;;) {
         int ret = uwsgi_wait_read_req(wsgi_req);
         if (ret <= 0) {
-            uwsgi_log("Failed wait read\n");
+            qCDebug(CUTELYST_UWSGI) << "Failed wait read.";
             goto end;
         }
 
         int status = wsgi_req->socket->proto(wsgi_req);
         if (status < 0) {
-            uwsgi_log("Failed broken socket\n");
+            qCDebug(CUTELYST_UWSGI) << "Failed broken socket.";
             goto end;
         } else if (status == 0) {
             break;
@@ -93,14 +93,13 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
         qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
-        uwsgi_log("Failed empty request\n");
         goto end;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
-        uwsgi_log("Invalid request. skip.\n");
-        qCDebug(CUTELYST_UWSGI) << "Invalid request. skip.";
+        // If static maps are set or there is some error
+        // this returns -1 so we just close the request
         goto end;
     }
 
@@ -223,7 +222,7 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
         struct wsgi_request *wsgi_req = m_unusedReq.takeFirst();
-       if (wsgi_req == NULL) {
+        if (wsgi_req == NULL) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
         }
