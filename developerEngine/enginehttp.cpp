@@ -48,17 +48,22 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
     case QtDebugMsg:
-        fprintf(stderr, "[debug] %s\n", localMsg.constData());
+        fprintf(stderr, "%s[debug] %s\n", context.category, localMsg.constData());
         break;
     case QtWarningMsg:
-        fprintf(stderr, "[warn] %s\n", localMsg.constData());
+        fprintf(stderr, "%s[warn] %s\n", context.category, localMsg.constData());
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "[crit] %s\n", localMsg.constData());
+        fprintf(stderr, "%s[crit] %s\n", context.category, localMsg.constData());
         break;
     case QtFatalMsg:
-        fprintf(stderr, "[fatal] %s\n", localMsg.constData());
+        fprintf(stderr, "%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+    case QtInfoMsg:
+        fprintf(stderr, "%s[info] %s\n", context.category, localMsg.constData());
+        break;
+#endif
     }
 }
 

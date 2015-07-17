@@ -19,7 +19,7 @@
 
 #include "authenticationuser.h"
 
-#include <QVariant>
+#include <QtCore/QDataStream>
 
 using namespace Cutelyst;
 

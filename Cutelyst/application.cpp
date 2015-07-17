@@ -39,6 +39,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
+#include <QtCore/QDataStream>
 #include <QtCore/QStringBuilder>
 #include <QtCore/QCoreApplication>
 

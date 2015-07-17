@@ -307,5 +307,10 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     case QtFatalMsg:
         uwsgi_log("%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+    case QtInfoMsg:
+        fprintf(stderr, "%s[info] %s\n", context.category, localMsg.constData());
+        break;
+#endif
     }
 }
