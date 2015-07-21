@@ -159,20 +159,11 @@ QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
-            Session *plugin = c->plugin<Session*>();
-            if (!plugin) {
-                qCCritical(C_SESSION) << "Session plugin not registered";
-                return QVariant();
-            }
-
-            SessionPrivate::createSessionIdIfNeeded(plugin, c, plugin->d_ptr->sessionExpires);
-            session = SessionPrivate::initializeSessionData(plugin, c);
-            c->setProperty(SESSION_VALUES, session);
+            return defaultValue;
         }
     }
 
-    const QVariantHash &data = session.toHash();
-    return data.value(key, defaultValue);
+    return session.toHash().value(key, defaultValue);
 }
 
 void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant &value)
@@ -283,45 +274,44 @@ QString SessionPrivate::createSessionIdIfNeeded(Session *session, Context *c, qu
 
 QString SessionPrivate::createSessionId(Session *session, Context *c, quint64 expires)
 {
-    QString sessionId = generateSessionId();
-    qCDebug(C_SESSION) << "Created session" << sessionId;
-    c->setProperty(SESSION_ID, sessionId);
-    resetSessionExpires(session, c, sessionId);
-    c->setProperty(SESSION_DELETED_ID, QVariant());
-    return sessionId;
+    QString sid = generateSessionId();
+
+    qCDebug(C_SESSION) << "Created session" << sid;
+
+    c->setProperty(SESSION_ID, sid);
+    resetSessionExpires(session, c, sid);
+    setSessionId(session, c, sid);
+
+    return sid;
 }
 
 void SessionPrivate::saveSession(Context *c)
 {
-    if (!c->property(SESSION_UPDATED).toBool()) {
-        return;
-    }
+    // fix cookie before we send headers
+    saveSessionExpires(c);
 
+    // Force extension of session_expires before finalizing headers, so a pos
+    // up to date. First call to session_expires will extend the expiry, methods
+    // just return the previously extended value.
+    Session::expires(c);
+
+    // Persist data
     Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
     }
+    saveSessionExpires(c);
+
+    if (!c->property(SESSION_UPDATED).toBool()) {
+        return;
+    }
+    SessionStore *store = session->d_ptr->store;
+    QVariantHash sessionData = c->property(SESSION_VALUES).toHash();
+    sessionData.insert(QStringLiteral("__updated"), QDateTime::currentMSecsSinceEpoch() / 1000);
 
     const QString &sid = c->property(SESSION_ID).toString();
-
-    bool deleted = !c->property(SESSION_DELETED_ID).isNull();
-    QDateTime expiresDt;
-    if (deleted) {
-        expiresDt = QDateTime::currentDateTimeUtc();
-    } else {
-        expiresDt = saveSessionExpires(c);
-
-        SessionStore *store = session->d_ptr->store;
-        QVariantHash sessionData = c->property(SESSION_VALUES).toHash();
-        sessionData.insert(QStringLiteral("__updated"), QDateTime::currentMSecsSinceEpoch() / 1000);
-
-        store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
-    }
-
-    QNetworkCookie cookie = makeSessionCookie(session, c, sid, expiresDt);
-
-    c->res()->setCookie(cookie);
+    store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
 }
 
 void SessionPrivate::deleteSession(Session *session, Context *c, const QString &reason)
@@ -334,16 +324,23 @@ void SessionPrivate::deleteSession(Session *session, Context *c, const QString &
         session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("session"));
         session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("expires"));
         session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("flash"));
+
+        deleteSessionId(session, c, sid);
     }
 
-    c->setProperty(SESSION_DELETE_REASON, reason);
+    // Reset the values in Context object
     c->setProperty(SESSION_VALUES, QVariant());
-    // So an expired coockie is sent
-    c->setProperty(SESSION_UPDATED, true);
-    // to prevent getSessionId from returning it
-    c->setProperty(SESSION_DELETED_ID, true);
     c->setProperty(SESSION_ID, QVariant());
     c->setProperty(SESSION_EXPIRES, QVariant());
+
+    c->setProperty(SESSION_DELETE_REASON, reason);
+}
+
+void SessionPrivate::deleteSessionId(Session *session, Context *c, const QString &sid)
+{
+    c->setProperty(SESSION_DELETED_ID, true); // to prevent get_session_id from returning it
+
+    updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::currentDateTimeUtc()));
 }
 
 QVariant SessionPrivate::loadSession(Context *c)
@@ -461,31 +458,25 @@ QVariant SessionPrivate::initializeSessionData(Session *session, Context *c)
     return ret;
 }
 
-QDateTime SessionPrivate::saveSessionExpires(Context *c)
+void SessionPrivate::saveSessionExpires(Context *c)
 {
     const QVariant &expires = c->property(SESSION_EXPIRES);
-    if (expires.isNull()) {
-        return QDateTime::currentDateTimeUtc();
-    }
+    if (!expires.isNull()) {
+        const QString &sid = Session::id(c);
+        if (!sid.isEmpty()) {
+            Session *session = c->plugin<Session*>();
+            if (!session) {
+                qCCritical(C_SESSION) << "Session plugin not registered";
+                return;
+            }
 
-    const QString &sid = Session::id(c);
-    if (!sid.isEmpty()) {
-        Session *session = c->plugin<Session*>();
-        if (!session) {
-            qCCritical(C_SESSION) << "Session plugin not registered";
-            return QDateTime::currentDateTimeUtc();
-        }
-
-        const quint64 current = getStoredSessionExpires(session, c, sid);
-        const quint64 extended = Session::expires(c);
-        if (extended > current) {
-            session->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), extended);
-
-            return QDateTime::fromMSecsSinceEpoch(extended * 1000);
+            const quint64 current = getStoredSessionExpires(session, c, sid);
+            const quint64 extended = Session::expires(c);
+            if (extended > current) {
+                session->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), extended);
+            }
         }
     }
-
-    return QDateTime::currentDateTimeUtc();
 }
 
 QVariant SessionPrivate::loadSessionExpires(Session *session, Context *c, const QString &sessionId)
@@ -565,6 +556,12 @@ QVariant SessionPrivate::getSessionCookie(Context *c, const QString &sessionName
 void SessionPrivate::extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires)
 {
     updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::fromMSecsSinceEpoch(expires * 1000)));
+}
+
+void SessionPrivate::setSessionId(Session *session, Context *c, const QString &sid)
+{
+    updateSessionCookie(c, makeSessionCookie(session, c, sid,
+                                             QDateTime::fromMSecsSinceEpoch(initialSessionExpires(session, c) * 1000)));
 }
 
 SessionStore::SessionStore(QObject *parent) : QObject(parent)
