@@ -32,7 +32,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QCoreApplication>
-#include <QtNetwork/QNetworkCookie>
 
 using namespace Cutelyst;
 
@@ -262,12 +261,10 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
             return property.toString();
         }
 
-        Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
-            if (cookie.name() == sessionName) {
-                sessionId = cookie.value();
-                qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
-                break;
-            }
+        QVariant cookie = getSessionCookie(c, sessionName);
+        if (!cookie.isNull()) {
+            sessionId = cookie.value<QNetworkCookie>().value();
+            qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
         }
     }
 
@@ -306,7 +303,6 @@ void SessionPrivate::saveSession(Context *c)
         return;
     }
 
-    const QString &_sessionName = session->d_ptr->sessionName;
     const QString &sid = c->property(SESSION_ID).toString();
 
     bool deleted = !c->property(SESSION_DELETED_ID).isNull();
@@ -323,12 +319,9 @@ void SessionPrivate::saveSession(Context *c)
         store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
     }
 
-    QNetworkCookie sessionCookie(_sessionName.toLatin1(), sid.toLatin1());
-    sessionCookie.setPath(QStringLiteral("/"));
-    sessionCookie.setExpirationDate(expiresDt);
-    sessionCookie.setHttpOnly(true);
+    QNetworkCookie cookie = makeSessionCookie(session, c, sid, expiresDt);
 
-    c->res()->addCookie(sessionCookie);
+    c->res()->setCookie(cookie);
 }
 
 void SessionPrivate::deleteSession(Session *session, Context *c, const QString &reason)
@@ -433,6 +426,7 @@ quint64 SessionPrivate::extendSessionExpires(Session *session, Context *c, quint
         if (!threshold || cutoff <= time || c->property(SESSION_UPDATED).toBool()) {
             quint64 updated = calculateInitialSessionExpires(session, c, sid);
             c->setProperty(SESSION_EXTENDED_EXPIRES, updated);
+            extendSessionId(session, c, sid, updated);
 
             return updated;
         } else {
@@ -540,6 +534,37 @@ quint64 SessionPrivate::resetSessionExpires(Session *session, Context *c, const 
     c->setProperty(SESSION_EXTENDED_EXPIRES, exp);
 
     return exp;
+}
+
+void SessionPrivate::updateSessionCookie(Context *c, const QNetworkCookie &updated)
+{
+    c->response()->setCookie(updated);
+}
+
+QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires)
+{
+    QNetworkCookie cookie(session->d_ptr->sessionName.toLatin1(), sid.toLatin1());
+    cookie.setPath(QStringLiteral("/"));
+    cookie.setExpirationDate(expires);
+    cookie.setHttpOnly(session->d_ptr->cookieHttpOnly);
+    cookie.setSecure(session->d_ptr->cookieSecure);
+
+    return cookie;
+}
+
+QVariant SessionPrivate::getSessionCookie(Context *c, const QString &sessionName)
+{
+    Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
+        if (cookie.name() == sessionName) {
+            return QVariant::fromValue(cookie);
+        }
+    }
+    return QVariant();
+}
+
+void SessionPrivate::extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires)
+{
+    updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::fromMSecsSinceEpoch(expires * 1000)));
 }
 
 SessionStore::SessionStore(QObject *parent) : QObject(parent)

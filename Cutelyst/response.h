@@ -157,8 +157,10 @@ public:
      */
     QString contentTypeCharset() const;
 
+    QNetworkCookie cookie(const QByteArray &name) const;
     QList<QNetworkCookie> cookies() const;
     void addCookie(const QNetworkCookie &cookie);
+    void setCookie(const QNetworkCookie &cookie);
     void setCookies(const QList<QNetworkCookie> &cookies);
 
     /**

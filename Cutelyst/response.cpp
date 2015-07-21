@@ -119,22 +119,36 @@ QString Response::contentTypeCharset() const
     return d->headers.contentTypeCharset();
 }
 
+QNetworkCookie Response::cookie(const QByteArray &name) const
+{
+    Q_D(const Response);
+    return d->cookies.value(name);
+}
+
 QList<QNetworkCookie> Response::cookies() const
 {
     Q_D(const Response);
-    return d->cookies;
+    return d->cookies.values();
 }
 
 void Response::addCookie(const QNetworkCookie &cookie)
 {
     Q_D(Response);
-    d->cookies << cookie;
+    d->cookies.insertMulti(cookie.name(), cookie);
+}
+
+void Response::setCookie(const QNetworkCookie &cookie)
+{
+    Q_D(Response);
+    d->cookies.insert(cookie.name(), cookie);
 }
 
 void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
     Q_D(Response);
-    d->cookies = cookies;
+    Q_FOREACH (const QNetworkCookie &cookie, cookies) {
+        d->cookies.insertMulti(cookie.name(), cookie);
+    }
 }
 
 void Response::redirect(const QUrl &url, quint16 status)

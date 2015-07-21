@@ -23,6 +23,7 @@
 #include "session.h"
 
 #include <QRegularExpression>
+#include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {
 
@@ -52,10 +53,17 @@ public:
     static quint64 calculateInitialSessionExpires(Session *session, Context *c, const QString &sessionId);
     static quint64 resetSessionExpires(Session *session, Context *c, const QString &sessionId);
 
+    static void updateSessionCookie(Context *c, const QNetworkCookie &updated);
+    static QNetworkCookie makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
+    static QVariant getSessionCookie(Context *c, const QString &sessionName);
+    static void extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires);
+
     SessionStore *store = 0;
     QString sessionName;
     quint64 sessionExpires;
     quint64 expiryThreshold;
+    bool cookieHttpOnly = true;
+    bool cookieSecure = false;
     bool verifyAddress;
     bool verifyUserAgent;
 };
