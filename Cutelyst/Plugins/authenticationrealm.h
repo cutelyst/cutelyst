@@ -48,6 +48,7 @@ protected:
 
 private:
     friend class Authentication;
+    friend class AuthenticationPrivate;
 
     AuthenticationStore *m_store;
     AuthenticationCredential *m_credential;

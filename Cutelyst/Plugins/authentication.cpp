@@ -76,7 +76,7 @@ bool Authentication::authenticate(Cutelyst::Context *c, const CStringHash &useri
     if (realmPtr) {
         const AuthenticationUser &user = realmPtr->authenticate(c, userinfo);
         if (!user.isNull()) {
-            setAuthenticated(c, user, realm);
+            AuthenticationPrivate::setAuthenticated(c, user, realm, d->realm(realm));
         }
 
         return !user.isNull();
@@ -99,22 +99,13 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const CStringH
     return AuthenticationUser();
 }
 
-Cutelyst::AuthenticationUser Cutelyst::Authentication::user(Cutelyst::Context *c)
+Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
 {
     QVariant user = c->property(AUTHENTICATION_USER);
     if (user.isNull()) {        
         return restoreUser(c, QVariant(), QString());
     }
     return user.value<AuthenticationUser>();
-}
-
-void Authentication::setUser(Context *c, const AuthenticationUser &user)
-{
-    if (user.isNull()) {
-        c->setProperty(AUTHENTICATION_USER, QVariant());
-    } else {
-        c->setProperty(AUTHENTICATION_USER, QVariant::fromValue(user));
-    }
 }
 
 bool Authentication::userExists(Cutelyst::Context *c)
@@ -124,7 +115,7 @@ bool Authentication::userExists(Cutelyst::Context *c)
     } else {
         Authentication *auth = c->plugin<Authentication*>();
         if (auth) {
-            if (auth->findRealmForPersistedUser(c)) {
+            if (AuthenticationPrivate::findRealmForPersistedUser(c, auth->d_ptr->realms, auth->d_ptr->realmsOrder)) {
                 return true;
             }
         } else {
@@ -145,48 +136,16 @@ bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realm)
 
 void Authentication::logout(Context *c)
 {
-    setUser(c, AuthenticationUser());
+    AuthenticationPrivate::setUser(c, AuthenticationUser());
 
     Authentication *auth = c->plugin<Authentication*>();
     if (auth) {
-        AuthenticationRealm *realm = auth->findRealmForPersistedUser(c);
+        AuthenticationRealm *realm = AuthenticationPrivate::findRealmForPersistedUser(c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
         if (realm) {
             realm->removePersistedUser(c);
         }
     } else {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
-    }
-}
-
-void Authentication::setAuthenticated(Cutelyst::Context *c, const AuthenticationUser &user, const QString &realmName)
-{
-    Q_D(Authentication);
-
-    setUser(c, user);
-
-    AuthenticationRealm *realmPtr = d->realm(realmName);
-    if (!realmPtr) {
-        qCWarning(C_AUTHENTICATION) << "Called with invalid realm" << realmName;
-    }
-    // TODO implement a user class
-//    $user->auth_realm($realm->name);
-
-    persistUser(c, user, realmName);
-}
-
-void Authentication::persistUser(Context *c, const AuthenticationUser &user, const QString &realmName)
-{
-    Q_D(Authentication);
-
-    if (userExists(c)) {
-        if (Session::isValid(c)) {
-            Session::setValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM), realmName);
-        }
-
-        AuthenticationRealm *realmPtr = d->realm(realmName);
-        if (realmPtr) {
-            realmPtr->persistUser(c, user);
-        }
     }
 }
 
@@ -196,7 +155,7 @@ AuthenticationUser Authentication::restoreUser(Cutelyst::Context *c, const QVari
 
     AuthenticationRealm *realmPtr = d->realm(realmName);
     if (!realmPtr) {
-        realmPtr = findRealmForPersistedUser(c);
+        realmPtr = AuthenticationPrivate::findRealmForPersistedUser(c, d->realms, d->realmsOrder);
     }
 
     if (!realmPtr) {
@@ -205,36 +164,11 @@ AuthenticationUser Authentication::restoreUser(Cutelyst::Context *c, const QVari
 
     AuthenticationUser user = realmPtr->restoreUser(c, frozenUser);
 
-    setUser(c, user);
+    AuthenticationPrivate::setUser(c, user);
     // TODO
     // $user->auth_realm($realm->name) if $user;
 
     return user;
-}
-
-AuthenticationRealm *Authentication::findRealmForPersistedUser(Cutelyst::Context *c)
-{
-    Q_D(Authentication);
-
-    AuthenticationRealm *realm;
-
-    const QVariant &realmVariant = Session::value(c, QStringLiteral(SESSION_USER_REALM));
-    if (!realmVariant.isNull()) {
-        realm = d->realms.value(realmVariant.toString());
-        if (realm && !realm->userIsRestorable(c).isNull()) {
-            return realm;
-        }
-    } else {
-        // we have no choice but to ask each realm whether it has a persisted user.
-        Q_FOREACH (const QString &realmName, d->realmsOrder) {
-            AuthenticationRealm *realm = d->realms.value(realmName);
-            if (realm && !realm->userIsRestorable(c).isNull()) {
-                return realm;
-            }
-        }
-    }
-
-    return 0;
 }
 
 AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const
@@ -246,7 +180,63 @@ AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) cons
     return realms.value(name);
 }
 
+AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c, const QHash<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder)
+{
+    AuthenticationRealm *realm;
 
+    const QVariant &realmVariant = Session::value(c, QStringLiteral(SESSION_USER_REALM));
+    if (!realmVariant.isNull()) {
+        realm = realms.value(realmVariant.toString());
+        if (realm && !realm->userIsRestorable(c).isNull()) {
+            return realm;
+        }
+    } else {
+        // we have no choice but to ask each realm whether it has a persisted user.
+        Q_FOREACH (const QString &realmName, realmsOrder) {
+            AuthenticationRealm *realm = realms.value(realmName);
+            if (realm && !realm->userIsRestorable(c).isNull()) {
+                return realm;
+            }
+        }
+    }
+
+    return 0;
+}
+
+void AuthenticationPrivate::setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm)
+{
+    AuthenticationPrivate::setUser(c, user);
+
+    if (!realm) {
+        qCWarning(C_AUTHENTICATION) << "Called with invalid realm" << realmName;
+    }
+    // TODO implement a user class
+//    $user->auth_realm($realm->name);
+
+    AuthenticationPrivate::persistUser(c, user, realmName, realm);
+}
+
+void AuthenticationPrivate::setUser(Context *c, const AuthenticationUser &user)
+{
+    if (user.isNull()) {
+        c->setProperty(AUTHENTICATION_USER, QVariant());
+    } else {
+        c->setProperty(AUTHENTICATION_USER, QVariant::fromValue(user));
+    }
+}
+
+void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm)
+{
+    if (Authentication::userExists(c)) {
+        if (Session::isValid(c)) {
+            Session::setValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM), realmName);
+        }
+
+        if (realm) {
+            realm->persistUser(c, user);
+        }
+    }
+}
 
 Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)
 {

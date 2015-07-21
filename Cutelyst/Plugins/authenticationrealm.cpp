@@ -106,8 +106,6 @@ AuthenticationUser AuthenticationRealm::restoreUser(Context *c, const QVariant &
     AuthenticationUser user = m_store->fromSession(c, _frozenUser);
 
     if (!user.isNull()) {
-        c->plugin<Authentication*>()->setUser(c, user);
-
         // Sets the realm the user originated in
         user.setAuthRealm(this);
     } else {

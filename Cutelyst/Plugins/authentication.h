@@ -58,7 +58,6 @@ public:
     bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
     AuthenticationUser user(Context *c);
-    static void setUser(Context *c, const AuthenticationUser &user);
 
     /**
      * Returns true if a user is logged in right now. The difference between
@@ -73,10 +72,7 @@ public:
     static void logout(Context *c);
 
 protected:
-    void setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName);
-    void persistUser(Context *c, const AuthenticationUser &user, const QString &realmName);
     AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName);
-    AuthenticationRealm* findRealmForPersistedUser(Context *c);
 
     AuthenticationPrivate *d_ptr;
 };
