@@ -21,10 +21,11 @@
 #define AUTHENTICATION_STORE_H
 
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
-class AuthenticationStore : public QObject
+class CUTELYST_LIBRARY AuthenticationStore : public QObject
 {
     Q_OBJECT
 public:

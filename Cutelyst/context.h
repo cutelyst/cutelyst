@@ -28,6 +28,7 @@
 #include <QtCore/QStack>
 
 #include <Cutelyst/request.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -41,7 +42,7 @@ class Controller;
 class View;
 class Plugin;
 class ContextPrivate;
-class Context : public QObject
+class CUTELYST_LIBRARY Context : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Action* action READ action)

@@ -22,6 +22,8 @@
 
 #include <QtCore/qobject.h>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 class Application;
@@ -29,7 +31,7 @@ class Context;
 class Controller;
 class Dispatcher;
 class ComponentPrivate;
-class Component : public QObject
+class CUTELYST_LIBRARY Component : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Component)

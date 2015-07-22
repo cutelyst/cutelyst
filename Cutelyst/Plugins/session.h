@@ -20,14 +20,15 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
-#include <QVariant>
+#include <QtCore/QVariant>
 
 #include <Cutelyst/plugin.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
 class Context;
-class SessionStore : public QObject {
+class CUTELYST_LIBRARY SessionStore : public QObject {
     Q_OBJECT
 public:
     explicit SessionStore(QObject *parent = 0);
@@ -39,7 +40,7 @@ public:
 };
 
 class SessionPrivate;
-class Session : public Plugin
+class CUTELYST_LIBRARY Session : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Session)

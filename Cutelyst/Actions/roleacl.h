@@ -20,15 +20,16 @@
 #ifndef ROLEACL_H
 #define ROLEACL_H
 
-#include <QVariantHash>
+#include <QtCore/QVariantHash>
 
-#include <Cutelyst/Component>
-#include <Cutelyst/Context>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/component.h>
+#include <Cutelyst/context.h>
 
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class RoleACL : public Component
+class CUTELYST_LIBRARY RoleACL : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)

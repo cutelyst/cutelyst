@@ -25,6 +25,7 @@
 #include <QtCore/qstringlist.h>
 
 #include <Cutelyst/action.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -32,7 +33,7 @@ class Context;
 class Controller;
 class DispatchType;
 class DispatcherPrivate;
-class Dispatcher : public QObject
+class CUTELYST_LIBRARY Dispatcher : public QObject
 {
     Q_OBJECT
 public:

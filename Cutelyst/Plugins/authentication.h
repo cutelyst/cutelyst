@@ -20,8 +20,8 @@
 #ifndef AUTHENTICATION_H
 #define AUTHENTICATION_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
-
 #include <Cutelyst/Plugins/authenticationuser.h>
 
 namespace Cutelyst {
@@ -29,7 +29,7 @@ namespace Cutelyst {
 class Context;
 class AuthenticationStore;
 class AuthenticationRealm;
-class AuthenticationCredential : public QObject
+class CUTELYST_LIBRARY AuthenticationCredential : public QObject
 {
     Q_OBJECT
 public:

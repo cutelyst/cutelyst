@@ -22,10 +22,11 @@
 
 #include <QObject>
 
-#include <Cutelyst/Action>
-#include <Cutelyst/Context>
-#include <Cutelyst/Request>
-#include <Cutelyst/Response>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/action.h>
+#include <Cutelyst/context.h>
+#include <Cutelyst/request.h>
+#include <Cutelyst/response.h>
 
 #define STR(X) #X
 #define C_PATH(X, Y) Q_CLASSINFO(STR(X ## _Path), STR(Y))
@@ -73,7 +74,7 @@ class ControllerPrivate;
  * \n However if no Args value is set, assumed to 'slurp' all
  *    remaining path parts under this namespace.
  */
-class Controller : public QObject
+class CUTELYST_LIBRARY Controller : public QObject
 {
     Q_OBJECT
 public:

@@ -22,13 +22,14 @@
 
 #include <QObject>
 
-#include <Cutelyst/View>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/view.h>
 
 namespace Cutelyst {
 
 class Context;
 class ViewInterface;
-class ViewEngine : public View
+class CUTELYST_LIBRARY ViewEngine : public View
 {
     Q_OBJECT
 public:

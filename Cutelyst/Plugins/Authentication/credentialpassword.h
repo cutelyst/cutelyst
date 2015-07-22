@@ -20,13 +20,15 @@
 #ifndef CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 #define CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 
+#include <QtCore/QCryptographicHash>
+
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/authentication.h>
-#include <QCryptographicHash>
 
 namespace Cutelyst {
 
 class CredentialPasswordPrivate;
-class CredentialPassword : public AuthenticationCredential
+class CUTELYST_LIBRARY CredentialPassword : public AuthenticationCredential
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialPassword)

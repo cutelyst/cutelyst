@@ -20,12 +20,13 @@
 #ifndef ACTIONREST_H
 #define ACTIONREST_H
 
-#include <Cutelyst/Action>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/action.h>
 
 namespace Cutelyst {
 
 class ActionRESTPrivate;
-class ActionREST : public Action
+class CUTELYST_LIBRARY ActionREST : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionREST)

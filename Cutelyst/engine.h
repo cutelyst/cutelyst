@@ -25,6 +25,8 @@
 #include <QUrlQuery>
 #include <QFile>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 typedef struct {
@@ -38,7 +40,7 @@ class Context;
 class Request;
 class Headers;
 class EnginePrivate;
-class Engine : public QObject
+class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:

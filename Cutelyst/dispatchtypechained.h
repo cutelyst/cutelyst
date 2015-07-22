@@ -20,13 +20,14 @@
 #ifndef DISPATCHTYPECHAINED_H
 #define DISPATCHTYPECHAINED_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
 
 class DispatchTypeChainedPrivate;
-class DispatchTypeChained : public DispatchType
+class CUTELYST_LIBRARY DispatchTypeChained : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypeChained)

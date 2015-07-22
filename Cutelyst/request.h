@@ -23,6 +23,7 @@
 #include <QtCore/qobject.h>
 #include <QtCore/qstringlist.h>
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/headers.h>
 
@@ -38,7 +39,7 @@ class Upload;
 typedef QList<Upload *> Uploads;
 
 class RequestPrivate;
-class Request : public QObject
+class CUTELYST_LIBRARY Request : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString hostname READ hostname)

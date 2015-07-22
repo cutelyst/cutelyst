@@ -20,13 +20,14 @@
 #ifndef CUTELYST_DISPATCHTYPEPATH_H
 #define CUTELYST_DISPATCHTYPEPATH_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
 
 class DispatchTypePathPrivate;
-class DispatchTypePath : public DispatchType
+class CUTELYST_LIBRARY DispatchTypePath : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)

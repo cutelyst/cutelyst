@@ -20,11 +20,12 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 
 namespace Cutelyst {
 
-class RenderViewPrivate;
+class CUTELYST_LIBRARY RenderViewPrivate;
 /**
  * The RenderView action allows to easily
  * call a renderer without including it's
@@ -50,7 +51,7 @@ class RenderViewPrivate;
  * ...
  * \endcode
  */
-class RenderView : public Action
+class CUTELYST_LIBRARY RenderView : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)

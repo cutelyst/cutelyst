@@ -23,12 +23,14 @@
 #include <QtCore/qobject.h>
 #include <QtCore/qstringlist.h>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 class Context;
 class Action;
 class Request;
-class DispatchType : public QObject
+class CUTELYST_LIBRARY DispatchType : public QObject
 {
     Q_OBJECT
 public:

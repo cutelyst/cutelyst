@@ -23,6 +23,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QMetaMethod>
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/component.h>
 
 namespace Cutelyst {
@@ -31,7 +32,7 @@ class Context;
 class Controller;
 class Dispatcher;
 class ActionPrivate;
-class Action : public Component
+class CUTELYST_LIBRARY Action : public Component
 {
     Q_OBJECT
 public:

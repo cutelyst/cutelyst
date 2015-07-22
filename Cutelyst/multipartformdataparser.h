@@ -20,11 +20,12 @@
 #ifndef MULTIPARTFORMDATAINTERNAL_H
 #define MULTIPARTFORMDATAINTERNAL_H
 
-#include <Cutelyst/Upload>
+#include <Cutelyst/upload.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
-class MultiPartFormDataParser
+class CUTELYST_LIBRARY MultiPartFormDataParser
 {
 public:
     /**

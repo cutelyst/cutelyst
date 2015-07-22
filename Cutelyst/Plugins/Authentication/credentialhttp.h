@@ -20,14 +20,15 @@
 #ifndef CREDENTIALHTTP_H
 #define CREDENTIALHTTP_H
 
-#include <Cutelyst/Plugins/authentication.h>
+#include <QtCore/QCryptographicHash>
 
-#include <QCryptographicHash>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Plugins/authentication.h>
 
 namespace Cutelyst {
 
 class CredentialHttpPrivate;
-class CredentialHttp : public AuthenticationCredential
+class CUTELYST_LIBRARY CredentialHttp : public AuthenticationCredential
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialHttp)

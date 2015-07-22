@@ -23,11 +23,12 @@
 #include <QtCore/qobject.h>
 
 #include <Cutelyst/action.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
 class ActionChainPrivate;
-class ActionChain : public Action
+class CUTELYST_LIBRARY ActionChain : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionChain)

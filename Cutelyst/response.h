@@ -22,6 +22,7 @@
 
 #include <QtCore/qobject.h>
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
 
 class QIODevice;
@@ -31,7 +32,7 @@ namespace Cutelyst {
 
 class Context;
 class ResponsePrivate;
-class Response : public QObject
+class CUTELYST_LIBRARY Response : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)

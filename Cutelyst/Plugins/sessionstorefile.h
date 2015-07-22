@@ -19,13 +19,13 @@
 #ifndef SESSIONSTOREFILE_H
 #define SESSIONSTOREFILE_H
 
-#include <QObject>
 #include <Cutelyst/Plugins/session.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
 class SessionStoreFilePrivate;
-class SessionStoreFile : public SessionStore
+class CUTELYST_LIBRARY SessionStoreFile : public SessionStore
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SessionStoreFile)

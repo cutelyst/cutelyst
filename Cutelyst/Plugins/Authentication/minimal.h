@@ -20,11 +20,12 @@
 #ifndef AUTHENTICATION_STORE_MINIMAL_H
 #define AUTHENTICATION_STORE_MINIMAL_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/authenticationstore.h>
 
 namespace Cutelyst {
 
-class StoreMinimal : public AuthenticationStore
+class CUTELYST_LIBRARY StoreMinimal : public AuthenticationStore
 {
     Q_OBJECT
 public:

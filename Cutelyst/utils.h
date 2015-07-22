@@ -20,11 +20,13 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <QStringList>
+#include <QtCore/QStringList>
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
-class Utils
+class CUTELYST_LIBRARY Utils
 {
 public:
     static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());

@@ -22,9 +22,11 @@
 
 #include <QtCore/qdatetime.h>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
-class Headers : public QHash<QString, QString>
+class CUTELYST_LIBRARY Headers : public QHash<QString, QString>
 {
 public:
     QString contentEncoding() const;

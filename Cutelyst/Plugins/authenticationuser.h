@@ -20,12 +20,13 @@
 #ifndef AUTHENTICATIONUSER_H
 #define AUTHENTICATIONUSER_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
 
 namespace Cutelyst {
 
 class AuthenticationRealm;
-class AuthenticationUser : public CStringHash
+class CUTELYST_LIBRARY AuthenticationUser : public CStringHash
 {
 public:
     AuthenticationUser();

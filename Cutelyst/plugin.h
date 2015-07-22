@@ -24,12 +24,14 @@
 #include <QtCore/qhash.h>
 #include <QtCore/qstring.h>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 typedef QHash<QString, QString> CStringHash;
 
 class Application;
-class Plugin : public QObject
+class CUTELYST_LIBRARY Plugin : public QObject
 {
     Q_OBJECT
 public:

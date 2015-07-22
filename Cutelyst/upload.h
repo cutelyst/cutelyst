@@ -22,6 +22,7 @@
 
 #include <QtCore/qiodevice.h>
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
 
 class QTemporaryFile;
@@ -29,7 +30,7 @@ class QTemporaryFile;
 namespace Cutelyst {
 
 class UploadPrivate;
-class Upload : public QIODevice
+class CUTELYST_LIBRARY Upload : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Upload)

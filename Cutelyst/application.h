@@ -23,6 +23,8 @@
 #include <QtCore/qobject.h>
 #include <QtCore/qvariant.h>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 #define CUTELYST_APPLICATION(x) \
@@ -40,7 +42,7 @@ class Engine;
 class Plugin;
 class Headers;
 class ApplicationPrivate;
-class Application : public QObject
+class CUTELYST_LIBRARY Application : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Application)

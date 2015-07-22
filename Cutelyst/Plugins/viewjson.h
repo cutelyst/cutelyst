@@ -20,6 +20,7 @@
 #ifndef VIEWJSON_H
 #define VIEWJSON_H
 
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/view.h>
 
 namespace Cutelyst {
@@ -29,7 +30,7 @@ class ViewJsonPrivate;
  * ViewJSON class is a Cutelyst View handler that returns stash
  * data in JSON format.
  */
-class ViewJson : public Cutelyst::View
+class CUTELYST_LIBRARY ViewJson : public Cutelyst::View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewJson)

@@ -22,11 +22,13 @@
 
 #include <QObject>
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
 
 class Application;
 class StatsPrivate;
-class Stats : public QObject
+class CUTELYST_LIBRARY Stats : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Stats)
