@@ -71,6 +71,7 @@ set(cutelystqt_SRC
 )
 
 set(cutelystqt_HEADERS
+    cutelyst_global.h
     paramsmultimap.h
     ParamsMultiMap
     action.h
