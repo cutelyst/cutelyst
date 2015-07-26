@@ -60,10 +60,10 @@ public:
     static inline void extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
 
-    SessionStore *store = 0;
-    QString sessionName;
     quint64 sessionExpires;
     quint64 expiryThreshold;
+    SessionStore *store = 0;
+    QString sessionName;
     bool cookieHttpOnly = true;
     bool cookieSecure = false;
     bool verifyAddress;

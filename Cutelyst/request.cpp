@@ -33,7 +33,6 @@ using namespace Cutelyst;
 Request::Request(RequestPrivate *prv) :
     d_ptr(prv)
 {
-
 }
 
 Request::~Request()

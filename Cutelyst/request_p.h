@@ -50,7 +50,6 @@ public:
     QIODevice *body = 0;
     QHostAddress remoteAddress;
     mutable QString remoteHostname;
-    quint16 remotePort;
     QString remoteUser;
     Engine *engine;
     quint64 startOfRequest;
@@ -58,11 +57,13 @@ public:
     // Pointer to Engine data
     void *requestPtr = 0;
 
-    bool https = false;
     // Path must not have a leading slash
     QString path;
     QByteArray query;
     QString serverAddress;
+
+    quint16 remotePort;
+    bool https = false;
 
 protected:
     friend class Request;
@@ -76,27 +77,22 @@ protected:
     QStringList captures;
     QString match;
 
-    mutable bool urlParsed = false;
     mutable QUrl url;
-
-    mutable bool baseParsed = false;
     mutable QString base;
-
-    mutable bool cookiesParsed = false;
     mutable QList<QNetworkCookie> cookies;
-
-    mutable bool queryParamParsed = false;
     mutable ParamsMultiMap queryParam;
     mutable QString queryKeywords;
-
-    mutable bool bodyParsed = false;
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
-
-    mutable bool paramParsed = false;
     mutable ParamsMultiMap param;
-
     mutable QMap<QString, Upload *> uploads;
+
+    mutable bool urlParsed = false;
+    mutable bool baseParsed = false;
+    mutable bool cookiesParsed = false;
+    mutable bool queryParamParsed = false;
+    mutable bool bodyParsed = false;
+    mutable bool paramParsed = false;
 };
 
 }

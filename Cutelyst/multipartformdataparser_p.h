@@ -41,9 +41,9 @@ public:
     Uploads execute(char *buffer, int bufferSize);
     inline int findBoundary(char *buffer, int len, ParserState &state, int &boundaryPos);
 
+    QIODevice *body;
     char *boundary;
     int boundaryLength;
-    QIODevice *body;
 
 };
 

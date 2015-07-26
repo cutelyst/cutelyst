@@ -29,12 +29,12 @@ namespace Cutelyst {
 class ComponentPrivate
 {
 public:
-    bool proccessRoles = false;
     QString name;
     QStack<Component *> beforeRoles;
     QStack<Component *> aroundRoles;
     QStack<Component *> afterRoles;
     QStack<Component *> roles;
+    bool proccessRoles = false;
 };
 
 }

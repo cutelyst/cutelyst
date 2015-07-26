@@ -35,6 +35,9 @@ public:
     QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
 
+    // Pointer to Engine data
+    void *requestPtr = 0;
+
     Application *app;
     Engine *engine;
     Request *request;
@@ -44,16 +47,13 @@ public:
     QStack<Component *> stack;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
-    bool detached = false;
     QStringList error;
     QVariantHash stash;
     Stats *stats = 0;
+    bool detached = false;
     bool state = false;
     bool chunked = false;
     bool chunked_done = false;
-
-    // Pointer to Engine data
-    void *requestPtr = 0;
 };
 
 }

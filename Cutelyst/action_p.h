@@ -29,16 +29,16 @@ class ActionPrivate
 public:
     QString ns;
     QMetaMethod method;
-    bool evaluateBool = false;
-    bool listSignature = false;
     QMap<QString, QString> attributes;
     Controller *controller = 0;
-    qint8 numberOfArgs = -1;
-    qint8 numberOfCaptures = -1;
     QStringList emptyArgs = {
         QString(), QString(), QString(),
         QString(), QString(), QString(),
         QString(), QString(), QString() };
+    qint8 numberOfArgs = -1;
+    qint8 numberOfCaptures = -1;
+    bool evaluateBool = false;
+    bool listSignature = false;
 };
 
 }

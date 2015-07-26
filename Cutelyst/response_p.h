@@ -33,14 +33,14 @@ class Engine;
 class ResponsePrivate
 {
 public:
-    quint16 status = Response::OK;
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
     QIODevice *body = 0;
     QUrl location;
-    bool finalizedHeaders = false;
     Context *context;
     Engine *engine;
+    quint16 status = Response::OK;
+    bool finalizedHeaders = false;
 };
 
 }

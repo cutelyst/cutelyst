@@ -38,7 +38,6 @@ public:
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
     void logRequestUploads(const QMap<QString, Upload *> &uploads);
 
-    bool init = false;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QList<Controller *> controllers;
@@ -46,8 +45,9 @@ public:
     QList<DispatchType *> dispatchers;
     Headers headers;
     QVariantHash config;
-    bool useStats;
     Engine *engine;
+    bool useStats;
+    bool init = false;
 };
 
 }
