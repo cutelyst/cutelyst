@@ -52,8 +52,8 @@ public:
     Action *end = 0;
     ActionList actionSteps;
     Dispatcher *dispatcher;
-    bool parsedActions = false;
     QHash<QString, Action *> actions;
+    bool parsedActions = false;
 };
 
 }
