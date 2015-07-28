@@ -109,6 +109,15 @@ end:
     uwsgi_close_request(wsgi_req);
 }
 
+static inline uint16_t notSlash(char *str, uint16_t length) {
+    for (uint16_t i = 0; i < length; ++i) {
+        if (str[i] != '/') {
+            return i;
+        }
+    }
+    return length;
+}
+
 void uWSGI::processRequest(wsgi_request *req)
 {
     CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
@@ -121,11 +130,8 @@ void uWSGI::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    if (req->path_info_len) {
-        priv->path = QString::fromLatin1(req->path_info + 1, req->path_info_len - 1);
-    } else {
-        priv->path = QString();
-    }
+    uint16_t pos = notSlash(req->path_info, req->path_info_len);
+    priv->path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
 
     priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
     priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);

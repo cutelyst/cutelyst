@@ -27,9 +27,9 @@ namespace Cutelyst {
 class HeadersPrivate
 {
 public:
-    static QString normalizeHeaderKey(const QString &field);
-    static QByteArray decodeBasicAuth(const QString &auth);
-    static QPair<QString, QString> decodeBasicAuthPair(const QString &auth);
+    static inline QString normalizeHeaderKey(const QString &field);
+    static inline QByteArray decodeBasicAuth(const QString &auth);
+    static inline QPair<QString, QString> decodeBasicAuthPair(const QString &auth);
 };
 
 }
