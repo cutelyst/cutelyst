@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "application.h"
+#include "engine.h"
 #include "context.h"
 #include "controller.h"
 #include "controller_p.h"
@@ -124,7 +125,9 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         ++i;
     }
 
-    d->printActions();
+    if (qobject_cast<Application*>(parent())->engine()->workerCore() == 0) {
+        d->printActions();
+    }
 }
 
 bool Dispatcher::dispatch(Context *c)

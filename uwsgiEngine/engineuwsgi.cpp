@@ -77,8 +77,12 @@ void uWSGI::setWorkerCore(int core)
 void uWSGI::setThread(QThread *thread)
 {
     moveToThread(thread);
-    connect(thread, &QThread::started,
-            this, &uWSGI::forked, Qt::DirectConnection);
+    if (this->thread() == thread) {
+        connect(thread, &QThread::started,
+                this, &uWSGI::forked, Qt::DirectConnection);
+    } else {
+        qCWarning(CUTELYST_UWSGI) << "Failed to set thread";
+    }
 }
 
 qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData)
@@ -354,11 +358,11 @@ bool uWSGI::init()
 
 void uWSGI::forked()
 {
-    if (QThread::currentThread() != qApp->thread()) {
+    if (workerCore() > 0) {
         m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
         if (!m_app) {
-            uwsgi_log("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
-                      "make sure your constructor has Q_INVOKABLE macro.\n");
+            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
+                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.\n");
             Q_EMIT engineDisabled(this);
             return;
         }
@@ -371,7 +375,7 @@ void uWSGI::forked()
 
         // init and postfork
         if (!initApplication(m_app, true)) {
-            uwsgi_log("Failed to init application on a different thread than main.\n");
+            qCCritical(CUTELYST_UWSGI) << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
             Q_EMIT engineDisabled(this);
             return;
         }

@@ -170,6 +170,7 @@ bool Application::setup(Engine *engine)
     if (d->init) {
         return true;
     }
+    d->init = true;
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
@@ -182,7 +183,7 @@ bool Application::setup(Engine *engine)
     if (init()) {
         d->setupChildren(children());
 
-        QString appName = QCoreApplication::applicationName();
+        bool zeroCore = engine->workerCore() == 0;
 
         QList<QStringList> tablePlugins;
         Q_FOREACH (Plugin *plugin, d->plugins) {
@@ -192,30 +193,38 @@ bool Application::setup(Engine *engine)
             plugin->setup(this);
         }
 
-        if (!tablePlugins.isEmpty()) {
+        if (zeroCore && !tablePlugins.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
                                                         QStringLiteral("Loaded plugins:")).data();
         }
 
-        QList<QStringList> tableDataHandlers;
-        tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
-        tableDataHandlers.append({ QLatin1String("application/json") });
-        tableDataHandlers.append({ QLatin1String("multipart/form-data") });
-        qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
-                                                    QStringLiteral("Loaded Request Data Handlers:")).data();
+        if (zeroCore) {
+            QList<QStringList> tableDataHandlers;
+            tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
+            tableDataHandlers.append({ QLatin1String("application/json") });
+            tableDataHandlers.append({ QLatin1String("multipart/form-data") });
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
+                                                        QStringLiteral("Loaded Request Data Handlers:")).data();
 
-        qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
-        qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
+            qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
+            qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
+        }
 
         QString home = d->config.value("home").toString();
         if (home.isEmpty()) {
-            qCDebug(CUTELYST_CORE) << "Couldn't find home";
+            if (zeroCore) {
+                qCDebug(CUTELYST_CORE) << "Couldn't find home";
+            }
         } else {
             QFileInfo homeInfo = home;
             if (homeInfo.isDir()) {
-                qCDebug(CUTELYST_CORE) << "Found home" << home;
+                if (zeroCore) {
+                    qCDebug(CUTELYST_CORE) << "Found home" << home;
+                }
             } else {
-                qCDebug(CUTELYST_CORE) << "Home" << home << "doesn't exist";
+                if (zeroCore) {
+                    qCDebug(CUTELYST_CORE) << "Home" << home << "doesn't exist";
+                }
             }
         }
 
@@ -230,7 +239,7 @@ bool Application::setup(Engine *engine)
             table.append({ className, QStringLiteral("View")});
         }
 
-        if (!table.isEmpty()) {
+        if (zeroCore && !table.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
                                                             QStringLiteral("Class"), QStringLiteral("Type")
                                                         },
@@ -242,13 +251,14 @@ bool Application::setup(Engine *engine)
         }
 
         d->dispatcher->setupActions(d->controllers, d->dispatchers);
-        d->init = true;
 
-        qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2, Qt %3.")
-                                  .arg(QCoreApplication::applicationName())
-                                  .arg(VERSION)
-                                  .arg(qVersion())
-                                  .toLatin1().data();
+        if (zeroCore) {
+            qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2, Qt %3.")
+                                      .arg(QCoreApplication::applicationName())
+                                      .arg(VERSION)
+                                      .arg(qVersion())
+                                      .toLatin1().data();
+        }
 
         Q_EMIT preForked(this);
 
