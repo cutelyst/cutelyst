@@ -157,6 +157,10 @@ Q_SIGNALS:
      */
     void afterDispatch(Context *c);
 
+    void preForked(Application *app);
+
+    void postForked(Application *app);
+
 protected:
     /**
      * Change the value of the configuration key

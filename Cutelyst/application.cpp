@@ -250,6 +250,8 @@ bool Application::setup(Engine *engine)
                                   .arg(qVersion())
                                   .toLatin1().data();
 
+        Q_EMIT preForked(this);
+
         return true;
     }
 
@@ -337,6 +339,9 @@ bool Application::enginePostFork()
             return false;
         }
     }
+
+    Q_EMIT postForked(this);
+
     return true;
 }
 
