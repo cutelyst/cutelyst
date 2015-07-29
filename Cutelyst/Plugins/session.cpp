@@ -69,7 +69,7 @@ bool Session::setup(Application *app)
     d->verifyAddress = config.value("verify_address", false).toBool();
     d->verifyUserAgent = config.value("verify_user_agent", false).toBool();
 
-    connect(app, &Application::afterDispatch, d, &SessionPrivate::saveSession);
+    connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
 
     if (!d->store) {
         d->store = new SessionStoreFile;
@@ -285,7 +285,7 @@ QString SessionPrivate::createSessionId(Session *session, Context *c, quint64 ex
     return sid;
 }
 
-void SessionPrivate::saveSession(Context *c)
+void SessionPrivate::_q_saveSession(Context *c)
 {
     // fix cookie before we send headers
     saveSessionExpires(c);
@@ -568,3 +568,5 @@ SessionStore::SessionStore(QObject *parent) : QObject(parent)
 {
 
 }
+
+#include "moc_session.cpp"

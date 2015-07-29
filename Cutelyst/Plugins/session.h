@@ -101,6 +101,9 @@ public:
 
 protected:
     SessionPrivate *d_ptr;
+
+private:
+    Q_PRIVATE_SLOT(d_func(), void _q_saveSession(Context*))
 };
 
 }

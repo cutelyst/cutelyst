@@ -27,9 +27,8 @@
 
 namespace Cutelyst {
 
-class SessionPrivate : public QObject
+class SessionPrivate
 {
-    Q_OBJECT
     Q_DECLARE_PUBLIC(Session)
 public:
     Session *q_ptr;
@@ -39,7 +38,7 @@ public:
     static QString getSessionId(Context *c, const QString &sessionName);
     static QString createSessionIdIfNeeded(Session *session, Context *c, quint64 expires);
     static inline QString createSessionId(Session *session, Context *c, quint64 expires);
-    static void saveSession(Context *c);
+    static void _q_saveSession(Context *c);
     static void deleteSession(Session *session, Context *c, const QString &reason);
     static inline void deleteSessionId(Session *session, Context *c, const QString &sid);
     static QVariant loadSession(Context *c);
