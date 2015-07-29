@@ -54,6 +54,38 @@ public:
     Application *app() const;
 
     /**
+     * Returns the worker id (process)
+     *
+     * The id is the number of the spwaned engine process,
+     * a single process workerId = 0, two process 0 for the first
+     * 1 for the second.
+     *
+     * \note the value returned from this function is
+     * only valid when postFork() is issued.
+     */
+    virtual int workerId() const = 0;
+
+    /**
+     * Returns the worker core (thread)
+     *
+     * Each worker process migth have a number of worker cores (threads),
+     * a single process with two worker threads will return 0 and 1 for
+     * each of the thread respectively.
+     */
+    virtual int workerCore() const = 0;
+
+    /**
+     * Returns true if this is the Zero worker,
+     * ie if workerId() == 0 and workerCore() == 0
+     *
+     * \note the value returned from this function is
+     * only valid when postFork() is issued.
+     */
+    inline bool isZeroWorker() const {
+        return !workerId() && !workerCore();
+    }
+
+    /**
      * @brief reload
      *
      * Reloads the engine, in some engines

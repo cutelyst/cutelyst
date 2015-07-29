@@ -54,6 +54,26 @@ uWSGI::~uWSGI()
 {
 }
 
+int uWSGI::workerId() const
+{
+    return m_workerId;
+}
+
+int uWSGI::workerCore() const
+{
+    return m_workerCore;
+}
+
+void uWSGI::setWorkerId(int id)
+{
+    m_workerId = id;
+}
+
+void uWSGI::setWorkerCore(int core)
+{
+    m_workerCore = core;
+}
+
 void uWSGI::setThread(QThread *thread)
 {
     moveToThread(thread);

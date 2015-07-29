@@ -112,6 +112,7 @@ extern "C" int uwsgi_cutelyst_init()
 extern "C" void uwsgi_cutelyst_post_fork()
 {
     Q_FOREACH (uWSGI *engine, *coreEngines) {
+        engine->setWorkerId(uwsgi.mywid - 1);
         if (engine->thread() != qApp->thread()) {
             engine->thread()->start();
         } else {
@@ -245,6 +246,7 @@ extern "C" void uwsgi_cutelyst_init_apps()
         } else {
             engine->addUnusedRequest(wsgi_req);
         }
+        engine->setWorkerCore(i);
 
         if (!coreEngines->contains(engine)) {
             coreEngines->append(engine);

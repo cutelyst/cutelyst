@@ -43,6 +43,13 @@ public:
     explicit uWSGI(const QVariantHash &opts, Application *app, QObject *parent = 0);
     virtual ~uWSGI();
 
+    virtual int workerId() const;
+
+    virtual int workerCore() const;
+
+    void setWorkerId(int id);
+    void setWorkerCore(int core);
+
     void setThread(QThread *thread);
 
     virtual bool init() Q_DECL_FINAL;
@@ -88,6 +95,8 @@ private:
 
     Cutelyst::Application *m_app;
     QList<struct wsgi_request *> m_unusedReq;
+    int m_workerId = 0;
+    int m_workerCore = 0;
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)
