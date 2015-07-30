@@ -38,6 +38,11 @@ Component::~Component()
     delete d_ptr;
 }
 
+Component::Modifiers Component::modifiers() const
+{
+    return Component::None;
+}
+
 QString Component::name() const
 {
     Q_D(const Component);

@@ -307,17 +307,17 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
         uwsgi_log("%s[debug] %s\n", context.category, localMsg.constData());
         break;
     case QtWarningMsg:
-        uwsgi_log("%s[warn] %s\n", context.category, localMsg.constData());
+        uwsgi_log("%s[warn]  %s\n", context.category, localMsg.constData());
         break;
     case QtCriticalMsg:
-        uwsgi_log("%s[crit] %s\n", context.category, localMsg.constData());
+        uwsgi_log("%s[crit]  %s\n", context.category, localMsg.constData());
         break;
     case QtFatalMsg:
         uwsgi_log("%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
     case QtInfoMsg:
-        fprintf(stderr, "%s[info] %s\n", context.category, localMsg.constData());
+        fprintf(stderr, "%s[info]  %s\n", context.category, localMsg.constData());
         break;
 #endif
     }

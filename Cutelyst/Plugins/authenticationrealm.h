@@ -22,13 +22,14 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/authenticationuser.h>
+#include <Cutelyst/component.h>
 
 namespace Cutelyst {
 
 class Context;
 class AuthenticationStore;
 class AuthenticationCredential;
-class CUTELYST_LIBRARY AuthenticationRealm : public QObject
+class CUTELYST_LIBRARY AuthenticationRealm : public Component
 {
     Q_OBJECT
 public:

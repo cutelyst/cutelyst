@@ -32,7 +32,7 @@ Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm")
 #define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in authentication.cpp
 
 AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent)
-    : QObject(parent)
+    : Component(parent)
     , m_store(store)
     , m_credential(credential)
 {

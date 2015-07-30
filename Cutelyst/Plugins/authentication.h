@@ -55,9 +55,18 @@ public:
 
     AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
-    bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
-    AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
-    AuthenticationUser user(Context *c);
+    /**
+     * Returns true if the userinfo could be validated against a realm.
+     */
+    static bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
+
+    static AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
+
+    /**
+     * Returns the authenticated user if any, if you only need to know if the user is
+     * authenticated (rather than retrieving it's ID) use userExists instead which is faster.
+     */
+    static AuthenticationUser user(Context *c);
 
     /**
      * Returns true if a user is logged in right now. The difference between
@@ -68,12 +77,20 @@ public:
      * userExists() only looks into the session while user() is trying to restore the user.
      */
     static bool userExists(Context *c);
-    bool userInRealm(Context *c, const QString &realm = QLatin1String(defaultRealm));
+
+    /**
+     * Works like user_exists, except that it only returns true if a user is both logged
+     * in right now and was retrieved from the realm provided.
+     */
+    static bool userInRealm(Context *c, const QString &realmName = QLatin1String(defaultRealm));
+
+    /**
+     * Logs the user out. Deletes the currently logged in user from the Context and the session.
+     * It does not delete the session.
+     */
     static void logout(Context *c);
 
 protected:
-    AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName);
-
     AuthenticationPrivate *d_ptr;
 };
 

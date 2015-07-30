@@ -39,17 +39,18 @@ class CUTELYST_LIBRARY Component : public QObject
     Q_FLAGS(Modifiers)
 public:
     enum Modifier {
-        OnlyExecute   = 0 << 1,
-        BeforeExecute = 1 << 1,
-        AroundExecute = 2 << 1,
-        AfterExecute  = 3 << 1,
+        None          = 0 << 1,
+        OnlyExecute   = 1 << 1,
+        BeforeExecute = 2 << 1,
+        AroundExecute = 3 << 1,
+        AfterExecute  = 4 << 1,
     };
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
     explicit Component(QObject *parent = 0);
     virtual ~Component();
 
-    virtual Modifiers modifiers() const = 0;
+    virtual Modifiers modifiers() const;
 
     /**
      * @brief name
@@ -61,7 +62,7 @@ public:
 
     /**
      * @brief name
-     * @return Returns the private name of this action.
+     * @return Returns the private name of this component.
      */
     QString reverse() const { return objectName(); }
 
