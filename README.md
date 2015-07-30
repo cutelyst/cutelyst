@@ -1,7 +1,7 @@
 # Cutelyst [![Build Status](https://travis-ci.org/cutelyst/cutelyst.svg?branch=master)](https://travis-ci.org/cutelyst/cutelyst)
-A Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework.
+A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
-Qt's meta object system is what powers the core of Cutelyst, this allows for introspecting controllers methods signatures and generate matching actions that can be invokable later. Some features:
+Qt's meta object system is what powers the core of Cutelyst, this allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Some features:
 
  * Multiple protocols support when using uWSGI engine
   * HTTP 1.1
@@ -20,14 +20,14 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
   * Authentication (with PBKDF2)
   * Authorization with RoleACL
  * Upload parser
- * JSON body as QJsonDocument when uploaded data is in JSON type
+ * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
  * Chunked reponses
  * Request profiling/stats
 
 ## LICENSE
 
-The library is under the LGPLv2 and public header files, documentation and
+The library is under the LGPLv2+ and public header files, documentation and
 examples are under MIT license.
 
 ## REQUIREMENTS
