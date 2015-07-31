@@ -38,7 +38,7 @@
 using namespace Cutelyst;
 
 ViewEngine::ViewEngine(const QString &engine, Application *app, const QString &name) : View(app, name)
-  , m_interface(0)
+  , m_interface(nullptr)
 {
     QDir pluginsDir("/usr/lib/cutelyst-plugins");
     QString error = "File not found";

@@ -36,20 +36,20 @@ public:
     void statsFinishExecute(const QString &statsInfo);
 
     // Pointer to Engine data
-    void *requestPtr = 0;
+    void *requestPtr = nullptr;
 
     Application *app;
     Engine *engine;
     Request *request;
-    Response *response = 0;
-    Action *action = 0;
-    View *view = 0;
+    Response *response = nullptr;
+    Action *action = nullptr;
+    View *view = nullptr;
     QStack<Component *> stack;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QStringList error;
     QVariantHash stash;
-    Stats *stats = 0;
+    Stats *stats = nullptr;
     bool detached = false;
     bool state = false;
     bool chunked = false;

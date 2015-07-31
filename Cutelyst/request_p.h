@@ -47,7 +47,7 @@ public:
     QString method;
     QString protocol;
     Headers headers;
-    QIODevice *body = 0;
+    QIODevice *body = nullptr;
     QHostAddress remoteAddress;
     mutable QString remoteHostname;
     QString remoteUser;
@@ -55,7 +55,7 @@ public:
     quint64 startOfRequest;
     quint64 endOfRequest;
     // Pointer to Engine data
-    void *requestPtr = 0;
+    void *requestPtr = nullptr;
 
     // Path must not have a leading slash
     QString path;

@@ -35,7 +35,7 @@ class ResponsePrivate
 public:
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
-    QIODevice *body = 0;
+    QIODevice *body = nullptr;
     QUrl location;
     Context *context;
     Engine *engine;

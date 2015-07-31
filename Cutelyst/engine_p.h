@@ -27,7 +27,7 @@ namespace Cutelyst {
 class EnginePrivate
 {
 public:
-    Application *app = 0;
+    Application *app = nullptr;
     QVariantHash opts;
     QHash<QString, QVariantHash> config;
 };

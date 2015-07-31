@@ -47,9 +47,9 @@ public:
 
     Controller *q_ptr;
     QString pathPrefix;
-    Action *begin = 0;
+    Action *begin = nullptr;
     ActionList autoList;
-    Action *end = 0;
+    Action *end = nullptr;
     ActionList actionSteps;
     Dispatcher *dispatcher;
     QHash<QString, Action *> actions;

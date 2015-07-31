@@ -61,7 +61,7 @@ public:
 
     quint64 sessionExpires;
     quint64 expiryThreshold;
-    SessionStore *store = 0;
+    SessionStore *store = nullptr;
     QString sessionName;
     bool cookieHttpOnly = true;
     bool cookieSecure = false;
