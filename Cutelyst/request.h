@@ -193,6 +193,8 @@ public:
      */
     QVariant bodyData() const;
 
+    QVariantMap bodyParametersVariant() const;
+
     /**
      * Returns a QMultiHash of body (POST) parameters
      */
@@ -237,6 +239,9 @@ public:
      */
     QString queryKeywords() const;
 
+
+    QVariantMap queryParametersVariant() const;
+
     /**
      * Returns a QMultiHash containing the query string (GET) parameters
      */
@@ -271,6 +276,8 @@ public:
      */
     inline QStringList queryParams(const QString &key) const
     { return queryParameters().values(key); }
+
+    QVariantMap parametersVariant() const;
 
     /**
      * Returns a QMultiHash containing both the query parameters (GET)

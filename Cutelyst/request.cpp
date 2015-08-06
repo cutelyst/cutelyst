@@ -196,6 +196,11 @@ QVariant Request::bodyData() const
     return d->bodyData;
 }
 
+QVariantMap Request::bodyParametersVariant() const
+{
+    return RequestPrivate::paramsMultiMapToVariantMap(bodyParameters());
+}
+
 ParamsMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
@@ -214,6 +219,11 @@ QString Request::queryKeywords() const
     return d->queryKeywords;
 }
 
+QVariantMap Request::queryParametersVariant() const
+{
+    return RequestPrivate::paramsMultiMapToVariantMap(queryParameters());
+}
+
 ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
@@ -221,6 +231,11 @@ ParamsMultiMap Request::queryParameters() const
         d->parseUrlQuery();
     }
     return d->queryParam;
+}
+
+QVariantMap Request::parametersVariant() const
+{
+    return RequestPrivate::paramsMultiMapToVariantMap(parameters());
 }
 
 ParamsMultiMap Request::parameters() const
@@ -499,6 +514,18 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
         ret.insertMulti(QUrl::fromPercentEncoding(parts.first()),
                         QString());
 
+    }
+    return ret;
+}
+
+QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)
+{
+    QVariantMap ret;
+    ParamsMultiMap::const_iterator begin = params.constBegin();
+    ParamsMultiMap::const_iterator end = params.constEnd();
+    while (begin != end) {
+        --end;
+        ret.insertMulti(ret.constBegin(), end.key(), end.value());
     }
     return ret;
 }

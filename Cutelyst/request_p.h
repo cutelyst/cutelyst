@@ -71,6 +71,7 @@ protected:
     friend class DispatchType;
 
     static ParamsMultiMap parseUrlEncoded(const QByteArray &line);
+    static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
     // Engines don't need to touch this
     QStringList args;
