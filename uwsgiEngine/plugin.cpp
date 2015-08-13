@@ -18,7 +18,6 @@
  */
 
 #include "engineuwsgi.h"
-#include "plugin.h"
 
 #include <Cutelyst/application.h>
 
@@ -28,7 +27,48 @@
 #include <QFileInfo>
 #include <QDir>
 
+#define CUTELYST_MODIFIER1 0
+
 using namespace Cutelyst;
+
+extern "C" {
+
+struct uwsgi_cutelyst {
+    char *app;
+    int reload;
+} options;
+
+int uwsgi_cutelyst_init(void);
+void uwsgi_cutelyst_post_fork(void);
+int uwsgi_cutelyst_request(struct wsgi_request *);
+void uwsgi_cutelyst_init_apps(void);
+void uwsgi_cutelyst_on_load(void);
+void uwsgi_cutelyst_atexit(void);
+void uwsgi_cutelyst_master_cleanup(void);
+
+}
+
+struct uwsgi_option uwsgi_cutelyst_options[] = {
+
+{const_cast<char *>("cutelyst-app"), required_argument, 0, const_cast<char *>("loads the Cutelyst Application"), uwsgi_opt_set_str, &options.app, 0},
+{const_cast<char *>("cutelyst-reload"), no_argument, 0, const_cast<char *>("auto reloads the application when app file changes"), uwsgi_opt_true, &options.reload, 0},
+{0, 0, 0, 0, 0, 0, 0},
+
+};
+
+struct uwsgi_plugin cutelyst_plugin = {
+
+    .name = "cutelyst",
+    .modifier1 = CUTELYST_MODIFIER1,
+    .on_load = uwsgi_cutelyst_on_load,
+    .init = uwsgi_cutelyst_init,
+    .post_fork = uwsgi_cutelyst_post_fork,
+    .request = uwsgi_cutelyst_request,
+    .init_apps = uwsgi_cutelyst_init_apps,
+    .options = uwsgi_cutelyst_options,
+    .atexit = uwsgi_cutelyst_atexit,
+
+};
 
 static QList<uWSGI *> *coreEngines = 0;
 

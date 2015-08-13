@@ -10,7 +10,6 @@ set(uswgi_engine_SRC
     bodyuwsgi.cpp
     engineuwsgi.cpp
     plugin.cpp
-    plugin.c
 )
 
 execute_process(COMMAND ${UWSGI_EXEC_PATH} --dot-h
