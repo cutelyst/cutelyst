@@ -29,9 +29,7 @@ extern "C" {
 struct uwsgi_cutelyst {
     char *app;
     int reload;
-};
-
-extern struct uwsgi_cutelyst options;
+} options;
 
 #ifdef __cplusplus
 }
