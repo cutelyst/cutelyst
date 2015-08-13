@@ -340,6 +340,16 @@ public:
     QString method() const;
 
     /**
+     * Returns true if the request method is POST.
+     */
+    bool isPost() const;
+
+    /**
+     * Returns true if the request method is GET.
+     */
+    bool isGet() const;
+
+    /**
      * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
     QString protocol() const;

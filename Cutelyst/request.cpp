@@ -284,6 +284,18 @@ QString Request::method() const
     return d->method;
 }
 
+bool Request::isPost() const
+{
+    Q_D(const Request);
+    return d->method == QStringLiteral("POST");
+}
+
+bool Request::isGet() const
+{
+    Q_D(const Request);
+    return d->method == QStringLiteral("GET");
+}
+
 QString Request::protocol() const
 {
     Q_D(const Request);
