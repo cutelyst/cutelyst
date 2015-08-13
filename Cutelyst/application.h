@@ -133,6 +133,35 @@ protected:
      */
     Headers &defaultHeaders();
 
+    /**
+     * Registers a global plugin ie one that doesn't need
+     * to be created explicity for a single request and returns
+     * true on plugin->isApplicationPlugin();
+     *
+     * @return True if the plugin could be registered
+     */
+    bool registerPlugin(Plugin *plugin);
+
+    /**
+     * This method registers a Controller class which
+     * is responsible for handlying Requests,
+     * since they are reused between multiple requests
+     * beaware of not storing data there, instead you
+     * might want to use a session plugin or the stash.
+     *
+     * @param controller the Controller class
+     * @return True if succeeded
+     */
+    bool registerController(Controller *controller);
+
+    bool registerView(View *view);
+
+    /**
+     * Registers a custom DispatchType, if none is registered
+     * all the built-in dispatchers types will be registered
+     */
+    bool registerDispatcher(DispatchType *dispatcher);
+
 Q_SIGNALS:
     /**
      * This signal is emitted before the Dispatcher

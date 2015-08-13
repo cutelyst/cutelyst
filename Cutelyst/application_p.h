@@ -30,6 +30,7 @@ namespace Cutelyst {
 
 class ApplicationPrivate
 {
+    Q_DECLARE_PUBLIC(Application)
 public:
     void setupHome();
     void setupChildren(const QObjectList &children);
@@ -38,6 +39,7 @@ public:
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
     void logRequestUploads(const QMap<QString, Upload *> &uploads);
 
+    Application *q_ptr;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QList<Controller *> controllers;

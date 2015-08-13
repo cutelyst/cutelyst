@@ -78,7 +78,7 @@ class CUTELYST_LIBRARY Controller : public QObject
 {
     Q_OBJECT
 public:
-    explicit Controller(Application *app);
+    explicit Controller(QObject *parent = 0);
     virtual ~Controller();
 
     /**

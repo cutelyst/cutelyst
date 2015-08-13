@@ -64,6 +64,7 @@ Application::Application(QObject *parent) :
 {
     Q_D(Application);
 
+    d->q_ptr = this;
     d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
@@ -97,6 +98,48 @@ Headers &Application::defaultHeaders()
 {
     Q_D(Application);
     return d->headers;
+}
+
+bool Application::registerPlugin(Plugin *plugin)
+{
+    Q_D(Application);
+    if (d->plugins.contains(plugin)) {
+        return false;
+    }
+    d->plugins.append(plugin);
+    return true;
+}
+
+bool Application::registerController(Controller *controller)
+{
+    Q_D(Application);
+    if (d->controllers.contains(controller)) {
+        return false;
+    }
+    d->controllers.append(controller);
+    return true;
+}
+
+bool Application::registerView(View *view)
+{
+    Q_D(Application);
+    if (d->views.contains(view->name())) {
+        qCWarning(CUTELYST_CORE) << "Not registering View." << view->metaObject()->className()
+                                 << "There is already a view with this name:" << view->name();
+        return false;
+    }
+    d->views.insert(view->name(), view);
+    return true;
+}
+
+bool Application::registerDispatcher(DispatchType *dispatcher)
+{
+    Q_D(Application);
+    if (d->dispatchers.contains(dispatcher)) {
+        return false;
+    }
+    d->dispatchers.append(dispatcher);
+    return true;
 }
 
 QList<Controller *> Application::controllers() const
@@ -371,33 +414,29 @@ void Cutelyst::ApplicationPrivate::setupHome()
 
 void ApplicationPrivate::setupChildren(const QObjectList &children)
 {
+    Q_Q(Application);
     Q_FOREACH (QObject *child, children) {
         Controller *controller = qobject_cast<Controller *>(child);
         if (controller) {
-            controllers.append(controller);
+            q->registerController(controller);
             continue;
         }
 
         Plugin *plugin = qobject_cast<Plugin *>(child);
         if (plugin) {
-            plugins.append(plugin);
+            q->registerPlugin(plugin);
             continue;
         }
 
         View *view = qobject_cast<View *>(child);
         if (view) {
-            if (views.contains(view->name())) {
-                qCWarning(CUTELYST_CORE) << "Not registering View." << view->metaObject()->className()
-                                         << "There is already a view with this name:" << view->name();
-                continue;
-            }
-            views.insert(view->name(), view);
+            q->registerView(view);
             continue;
         }
 
         DispatchType *dispatchType = qobject_cast<DispatchType *>(child);
         if (dispatchType) {
-            dispatchers.append(dispatchType);
+            q->registerDispatcher(dispatchType);
             continue;
         }
     }

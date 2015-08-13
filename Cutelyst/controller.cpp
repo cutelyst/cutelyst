@@ -31,9 +31,8 @@
 
 using namespace Cutelyst;
 
-Controller::Controller(Application *app) :
-    QObject(app),
-    d_ptr(new ControllerPrivate(this))
+Controller::Controller(QObject *parent) : QObject(parent)
+  , d_ptr(new ControllerPrivate(this))
 {
 }
 
