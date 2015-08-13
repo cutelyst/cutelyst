@@ -31,7 +31,7 @@
 
 using namespace Cutelyst;
 
-extern "C" struct uwsgi_cutelyst {
+struct uwsgi_cutelyst {
     char *app;
     int reload;
 } options;
@@ -48,7 +48,7 @@ static void fsmon_reload(struct uwsgi_fsmon *fs);
  * This function is called as soon as
  * the plugin is loaded
  */
-extern "C" void uwsgi_cutelyst_on_load()
+void uwsgi_cutelyst_on_load()
 {
     uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
 
@@ -85,7 +85,7 @@ extern "C" void uwsgi_cutelyst_on_load()
     }
 }
 
-extern "C" int uwsgi_cutelyst_init()
+int uwsgi_cutelyst_init()
 {
     uwsgi_log("Initializing Cutelyst plugin\n");
 
@@ -115,7 +115,7 @@ extern "C" int uwsgi_cutelyst_init()
     return 0;
 }
 
-extern "C" void uwsgi_cutelyst_post_fork()
+void uwsgi_cutelyst_post_fork()
 {
     Q_FOREACH (uWSGI *engine, *coreEngines) {
         engine->setWorkerId(uwsgi.mywid - 1);
@@ -127,7 +127,7 @@ extern "C" void uwsgi_cutelyst_post_fork()
     }
 }
 
-extern "C" int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
+int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 {
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
@@ -167,7 +167,7 @@ static void fsmon_reload(struct uwsgi_fsmon *fs)
 /**
  * This function is called when the child process is exiting
  */
-extern "C" void uwsgi_cutelyst_atexit()
+void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
@@ -181,7 +181,7 @@ extern "C" void uwsgi_cutelyst_atexit()
     qCDebug(CUTELYST_UWSGI) << "Child process finished:" << QCoreApplication::applicationPid();
 }
 
-extern "C" void uwsgi_cutelyst_init_apps()
+void uwsgi_cutelyst_init_apps()
 {
     const QString &applicationName = QCoreApplication::applicationName();
 
