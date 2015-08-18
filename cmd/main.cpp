@@ -375,7 +375,10 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         QTextStream out(&data);
         out << "project(" <<  appName << ")" << "\n";
         out << "\n";
-        out << "cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)" << "\n";
+        out << "cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)" << "\n";
+        out << "if (POLICY CMP0043)" << "\n";
+        out << "  cmake_policy(SET CMP0043 NEW)" << "\n";
+        out << "endif()" << "\n";
         out << "\n";
         out << "find_package(Qt5 COMPONENTS Core Network )" << "\n";
         out << "find_package(CutelystQt5 REQUIRED)" << "\n";
