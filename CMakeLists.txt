@@ -1,8 +1,9 @@
-# CMakeLists for libcutelyst-qt
 project(cutelyst)
 
-cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
-cmake_policy(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8.12)
+if (POLICY CMP0043)
+  cmake_policy(SET CMP0043 NEW)
+endif()
 
 find_package(Qt5 5.4.0 COMPONENTS
     Core
