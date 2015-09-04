@@ -489,7 +489,7 @@ QVariant SessionPrivate::loadSessionExpires(Session *session, Context *c, const 
     if (!sessionId.isEmpty()) {
         const quint64 expires = getStoredSessionExpires(session, c, sessionId);
 
-        if (expires >= QDateTime::currentMSecsSinceEpoch() / 1000) {
+        if (expires >= static_cast<quint64>(QDateTime::currentMSecsSinceEpoch() / 1000)) {
             c->setProperty(SESSION_EXPIRES, expires);
             return expires;
         } else {

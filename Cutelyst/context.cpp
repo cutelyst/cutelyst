@@ -166,7 +166,8 @@ View *Context::view() const
 bool Context::setView(const QString &name)
 {
     Q_D(Context);
-    return d->view = d->app->view(name);
+    d->view = d->app->view(name);
+    return d->view;
 }
 
 QVariantHash &Context::stash()
