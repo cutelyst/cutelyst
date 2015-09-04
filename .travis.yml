@@ -29,7 +29,10 @@ before_install:
       && wget http://www.cmake.org/files/v${CMAKE_VERSION_MM}/cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh
       && sudo sh cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir;
     fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake qt5; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+    brew update
+      && brew install cmake qt5 uwsgi
+    fi
 
 before_script:
    - mkdir build
@@ -41,5 +44,7 @@ script:
    - ctest --output-on-failure
 
 notifications:
-  email: true
+  email:
+    recipients:
+      - dantti12@gmail.com
 
