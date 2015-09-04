@@ -62,6 +62,7 @@ CutelystChildProcess::CutelystChildProcess(bool &childProcess, QObject *parent) 
 CutelystChildProcess::~CutelystChildProcess()
 {
     Q_D(CutelystChildProcess);
+#ifndef Q_OS_OSX
     if (d->childPID > 0) {
         // Finish the child process
         kill(d->childPID, SIGTERM);
@@ -80,6 +81,7 @@ CutelystChildProcess::~CutelystChildProcess()
             kill(d->childPID, SIGKILL);
         }
     }
+#endif
     delete d_ptr;
 }
 
