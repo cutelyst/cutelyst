@@ -90,13 +90,14 @@ include_directories(
 add_subdirectory(Cutelyst)
 add_subdirectory(Plugins)
 
-find_program(UWSGI_BIN NAMES uwsgi)
-add_subdirectory(developerEngine)
+if (NOT APPLE)
+    add_subdirectory(developerEngine)
+endif (NOT APPLE)
 
+find_program(UWSGI_BIN NAMES uwsgi)
 if (UWSGI_EXEC_PATH)
     add_subdirectory(uwsgiEngine)
-endif ()
-
+endif (UWSGI_EXEC_PATH)
 
 # TODO rename to examples
 #add_subdirectory(server)
