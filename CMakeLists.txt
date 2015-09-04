@@ -88,6 +88,7 @@ include_directories(
 )
 
 add_subdirectory(Cutelyst)
+add_subdirectory(Plugins)
 
 find_program(UWSGI_BIN NAMES uwsgi)
 add_subdirectory(developerEngine)
