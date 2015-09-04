@@ -48,10 +48,6 @@ public:
     QString wrapper() const;
     void setWrapper(const QString &name);
 
-    Q_PROPERTY(bool cache READ isCaching WRITE setCache)
-    bool isCaching() const;
-    void setCache(bool enable);
-
     bool render(Context *c) const Q_DECL_FINAL;
 
 protected:

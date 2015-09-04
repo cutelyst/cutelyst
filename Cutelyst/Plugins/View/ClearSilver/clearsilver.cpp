@@ -272,14 +272,3 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
         break;
     }
 }
-
-
-bool Cutelyst::ClearSilver::isCaching() const
-{
-    return false;
-}
-
-void ClearSilver::setCache(bool enable)
-{
-    Q_UNUSED(enable)
-}
