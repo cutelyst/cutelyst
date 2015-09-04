@@ -140,8 +140,18 @@ add_definitions(
     -std=c++11
 )
 
-add_library(cutelyst-qt5 SHARED ${cutelystqt_SRC} ${cutelystqt_HEADERS} ${cutelystqt_HEADERS_PRIVATE})
-set_target_properties(cutelyst-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
+add_library(cutelyst-qt5 SHARED
+    ${cutelystqt_SRC}
+    ${cutelystqt_HEADERS}
+    ${cutelystqt_HEADERS_PRIVATE}
+)
+add_library(CutelystQt5::Core ALIAS cutelyst-qt5)
+set_property(TARGET cutelyst-qt5 PROPERTY EXPORT_NAME Core)
+
+set_target_properties(cutelyst-qt5 PROPERTIES
+    VERSION ${CUTELYST_VERSION}
+    SOVERSION ${CUTELYST_API_LEVEL}
+)
 target_link_libraries(cutelyst-qt5
     Qt5::Core
     Qt5::Network
