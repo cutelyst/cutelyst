@@ -28,8 +28,9 @@ before_install:
       && sudo sh cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir;
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-    brew update
-      && brew install cmake qt5 uwsgi;
+      brew update;
+      brew outdated cmake || brew upgrade cmake;
+      brew outdated qt5 || brew upgrade qt5;
     fi
 
 before_script:
