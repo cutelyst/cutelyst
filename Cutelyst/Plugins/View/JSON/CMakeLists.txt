@@ -31,8 +31,6 @@ set_target_properties(cutelyst_qt5_plugin_view_json PROPERTIES
 
 target_link_libraries(cutelyst_qt5_plugin_view_json
     cutelyst-qt5
-    Qt5::Core
-    Qt5::Network
 )
 
 install(TARGETS cutelyst_qt5_plugin_view_json EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -88,7 +88,6 @@ include_directories(
 )
 
 add_subdirectory(Cutelyst)
-add_subdirectory(Plugins)
 
 if (NOT APPLE)
     add_subdirectory(developerEngine)

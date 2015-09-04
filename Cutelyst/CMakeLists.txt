@@ -52,7 +52,6 @@ set(cutelystqt_SRC
     Plugins/session_p.h
     Plugins/sessionstorefile.cpp
     Plugins/sessionstorefile_p.h
-    Plugins/viewengine.cpp
     Plugins/authenticationuser.cpp
     Plugins/authenticationrealm.cpp
     Plugins/authentication.cpp
@@ -111,7 +110,6 @@ set(cutelystqt_actions_HEADERS
 set(cutelystqt_plugin_HEADERS
     Plugins/session.h
     Plugins/Session
-    Plugins/viewengine.h
     Plugins/authenticationstore.h
     Plugins/authenticationuser.h
     Plugins/authenticationrealm.h

@@ -21,20 +21,19 @@
 #define GRANTLEE_VIEW_H
 
 #include <QObject>
+#include <QStringList>
 
-#include "../ViewInterface.h"
+#include <Cutelyst/View>
 
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
-class GrantleeView : public ViewInterface
+class GrantleeView : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
-    Q_PLUGIN_METADATA(IID "org.cutelyst.Grantlee" FILE "metadata.json")
-    Q_INTERFACES(Cutelyst::ViewInterface)
 public:
-    Q_INVOKABLE explicit GrantleeView(QObject *parent = 0);
+    explicit GrantleeView(QObject *parent = 0, const QString &name = QString());
     ~GrantleeView();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
@@ -53,7 +52,7 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
-    bool render(Context *c) Q_DECL_FINAL;
+    bool render(Context *c) const Q_DECL_FINAL;
 
 protected:
     GrantleeViewPrivate *d_ptr;

@@ -35,7 +35,7 @@ class CUTELYST_LIBRARY ViewJson : public Cutelyst::View
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewJson)
 public:
-    explicit ViewJson(Application *app, const QString &name = QString());
+    explicit ViewJson(QObject *parent, const QString &name = QString());
     virtual ~ViewJson();
 
     enum JsonFormat {

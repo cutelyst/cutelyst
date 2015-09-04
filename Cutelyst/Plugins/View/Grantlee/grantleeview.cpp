@@ -33,9 +33,8 @@ Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
 
 using namespace Cutelyst;
 
-GrantleeView::GrantleeView(QObject *parent) :
-    ViewInterface(parent),
-    d_ptr(new GrantleeViewPrivate)
+GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, name)
+  , d_ptr(new GrantleeViewPrivate)
 {
     Q_D(GrantleeView);
 
@@ -143,7 +142,7 @@ bool GrantleeView::isCaching() const
     return !d->cache.isNull();
 }
 
-bool GrantleeView::render(Context *c)
+bool GrantleeView::render(Context *c) const
 {
     Q_D(const GrantleeView);
 

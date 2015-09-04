@@ -21,18 +21,17 @@
 #define CLEARSILVER_H
 
 #include <QObject>
+#include <QStringList>
 
-#include "../ViewInterface.h"
+#include <Cutelyst/View>
 
 namespace Cutelyst {
 
 class ClearSilverPrivate;
-class ClearSilver : public ViewInterface
+class ClearSilver : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)
-    Q_PLUGIN_METADATA(IID "org.cutelyst.ClearSilver" FILE "metadata.json")
-    Q_INTERFACES(Cutelyst::ViewInterface)
 public:
     Q_INVOKABLE explicit ClearSilver(QObject *parent = 0);
     ~ClearSilver();
@@ -53,7 +52,7 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
-    bool render(Context *c) Q_DECL_FINAL;
+    bool render(Context *c) const Q_DECL_FINAL;
 
 protected:
     ClearSilverPrivate *d_ptr;

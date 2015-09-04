@@ -19,11 +19,11 @@
 
 #include "view.h"
 
-#include <Application>
+#include <QtCore/QVariant>
 
 using namespace Cutelyst;
 
-View::View(Application *app, const QString &name) : Component(app)
+View::View(QObject *parent, const QString &name) : Component(parent)
 {
     setProperty("__name", name);
 }

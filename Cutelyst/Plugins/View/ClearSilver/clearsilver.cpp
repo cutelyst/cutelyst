@@ -32,9 +32,8 @@ Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver")
 
 using namespace Cutelyst;
 
-ClearSilver::ClearSilver(QObject *parent) :
-    ViewInterface(parent),
-    d_ptr(new ClearSilverPrivate)
+ClearSilver::ClearSilver(QObject *parent) : View(parent)
+  , d_ptr(new ClearSilverPrivate)
 {
 }
 
@@ -89,9 +88,9 @@ NEOERR* cutelyst_render(void *user, char *data)
     return 0;
 }
 
-bool ClearSilver::render(Context *c)
+bool ClearSilver::render(Context *c) const
 {
-    Q_D(ClearSilver);
+    Q_D(const ClearSilver);
 
     const QVariantHash &stash = c->stash();
     QString templateFile = stash.value(QLatin1String("template")).toString();
@@ -153,7 +152,7 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
     return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", filename);
 }
 
-bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output)
+bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output) const
 {
     HDF *hdf = hdfForStash(c, stash);
     CSPARSE *cs;
@@ -173,7 +172,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         return false;
     }
 
-    cs_register_fileload(cs, this, findFile);
+    cs_register_fileload(cs, const_cast<ClearSilverPrivate*>(this), findFile);
 
     error = cs_parse_file(cs, filename.toLatin1().data());
     if (error) {

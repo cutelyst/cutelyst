@@ -32,7 +32,7 @@ class CUTELYST_LIBRARY View : public Component
 {
     Q_OBJECT
 public:
-    explicit View(Application *app, const QString &name = QString());
+    explicit View(QObject *parent, const QString &name = QString());
     virtual ~View();
 
     QString name() const;

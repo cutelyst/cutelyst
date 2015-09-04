@@ -14,3 +14,5 @@ if (ClearSilver_CS)
 else (ClearSilver_CS)
     message(STATUS "PLUGIN: Not building with ClearSilver template plugin.")
 endif (ClearSilver_CS)
+
+add_subdirectory(JSON)
