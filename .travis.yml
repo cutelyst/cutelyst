@@ -11,8 +11,6 @@ env:
   - CONFIG=Release
   - CONFIG=Debug
 
-language: c++
-
 compiler:
   - clang
 
@@ -31,7 +29,7 @@ before_install:
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
     brew update
-      && brew install cmake qt5 uwsgi
+      && brew install cmake qt5 uwsgi;
     fi
 
 before_script:
