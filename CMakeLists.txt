@@ -83,7 +83,7 @@ add_definitions(-DQT_NO_KEYWORDS)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/Cutelyst
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
