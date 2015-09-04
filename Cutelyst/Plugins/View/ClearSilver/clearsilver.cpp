@@ -140,7 +140,7 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
         if (file.exists()) {
             if (!file.open(QFile::ReadOnly)) {
                 qCWarning(CUTELYST_CLEARSILVER) << "Cound not open file:" << file.errorString();
-                return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLocal8Bit().data());
+                return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLatin1().data());
             }
 
             *contents = qstrdup(file.readAll().data());
@@ -175,7 +175,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
 
     cs_register_fileload(cs, this, findFile);
 
-    error = cs_parse_file(cs, filename.toLocal8Bit().data());
+    error = cs_parse_file(cs, filename.toLatin1().data());
     if (error) {
         STRING *msg = new STRING;
         string_init(msg);
@@ -255,10 +255,10 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
 
     switch (value.type()) {
     case QMetaType::QString:
-        hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
+        hdf_set_value(hdf, key.toLatin1().data(), value.toString().toLatin1().data());
         break;
     case QMetaType::Int:
-        hdf_set_int_value(hdf, key.toLocal8Bit().data(), value.toInt());
+        hdf_set_int_value(hdf, key.toLatin1().data(), value.toInt());
         break;
     case QMetaType::QVariantHash:
         serializeHash(hdf, value.toHash(), key);
@@ -268,7 +268,7 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
         break;
     default:
         if (value.canConvert(QMetaType::QString)) {
-            hdf_set_value(hdf, key.toLocal8Bit().data(), value.toString().toLocal8Bit().data());
+            hdf_set_value(hdf, key.toLatin1().data(), value.toString().toLatin1().data());
         }
         break;
     }

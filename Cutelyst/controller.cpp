@@ -428,11 +428,11 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         } else if (key == QLatin1String("Args")) {
             QString args = value;
             if (!args.isEmpty()) {
-                value = args.remove(QRegularExpression("\\D")).toLocal8Bit();
+                value = args.remove(QRegularExpression("\\D")).toLatin1();
             }
         } else if (key == QLatin1String("CaptureArgs")) {
             QString captureArgs = value;
-            value = captureArgs.remove(QRegularExpression("\\D")).toLocal8Bit();
+            value = captureArgs.remove(QRegularExpression("\\D")).toLatin1();
         } else if (key == QLatin1String("Chained")) {
             value = parseChainedAttr(value);
         }
@@ -533,16 +533,16 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
     if (!instanceName.isEmpty()) {
         instanceName.remove(QRegularExpression("\\W"));
 
-        int id = QMetaType::type(instanceName.toLocal8Bit().data());
+        int id = QMetaType::type(instanceName.toLatin1().data());
         if (!id) {
             if (!instanceName.endsWith(QLatin1Char('*'))) {
                 instanceName.append("*");
             }
 
-            id = QMetaType::type(instanceName.toLocal8Bit().data());
+            id = QMetaType::type(instanceName.toLatin1().data());
             if (!id && !instanceName.startsWith(QLatin1String("Cutelyst::"))) {
                 instanceName = QLatin1String("Cutelyst::") % instanceName;
-                id = QMetaType::type(instanceName.toLocal8Bit().data());
+                id = QMetaType::type(instanceName.toLatin1().data());
             }
         }
 
@@ -575,7 +575,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
                     << "Class name"
                     << instanceName
                     << "is not registerd, you can register it with qRegisterMetaType<"
-                    << instanceName.toLocal8Bit().data()
+                    << instanceName.toLatin1().data()
                     << ">();";
             exit(1);
         }
