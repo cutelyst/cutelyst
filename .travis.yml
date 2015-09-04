@@ -5,7 +5,7 @@ branches:
 
 os:
   - linux
-#  - osx
+  - osx
 
 env:
   - CONFIG=Release
@@ -31,6 +31,7 @@ before_install:
       brew update;
       brew outdated cmake || brew upgrade cmake;
       brew install qt5;
+      export CMAKE_PREFIX_PATH=$(brew --prefix qt5);
     fi
 
 before_script:
