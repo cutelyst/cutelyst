@@ -24,8 +24,6 @@ set(cutelystqt_SRC
     actionchain.cpp
     actionchain_p.h
     action_p.h
-    Actions/actionrest.cpp
-    Actions/actionrest_p.h
     Actions/renderview.cpp
     Actions/renderview_p.h
     Actions/roleacl.cpp
@@ -102,7 +100,6 @@ set(cutelystqt_HEADERS
 )
 
 set(cutelystqt_actions_HEADERS
-    Actions/actionrest.h
     Actions/renderview.h
     Actions/roleacl.h
 )
@@ -172,3 +169,4 @@ install(FILES ${cutelystqt_plugin_authentication_HEADERS}
 
 add_subdirectory(modules)
 add_subdirectory(Plugins)
+add_subdirectory(Actions)

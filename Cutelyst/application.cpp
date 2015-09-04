@@ -33,7 +33,6 @@
 #include "stats.h"
 #include "utils.h"
 
-#include "Actions/actionrest.h"
 #include "Actions/roleacl.h"
 #include "Actions/renderview.h"
 
@@ -70,7 +69,6 @@ Application::Application(QObject *parent) :
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
 
-    qRegisterMetaType<ActionREST *>();
     qRegisterMetaType<RoleACL *>();
     qRegisterMetaType<RenderView *>();
 
