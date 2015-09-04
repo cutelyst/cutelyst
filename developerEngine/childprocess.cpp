@@ -61,8 +61,8 @@ CutelystChildProcess::CutelystChildProcess(bool &childProcess, QObject *parent) 
 
 CutelystChildProcess::~CutelystChildProcess()
 {
-    Q_D(CutelystChildProcess);
 #ifndef Q_OS_OSX
+    Q_D(CutelystChildProcess);
     if (d->childPID > 0) {
         // Finish the child process
         kill(d->childPID, SIGTERM);
