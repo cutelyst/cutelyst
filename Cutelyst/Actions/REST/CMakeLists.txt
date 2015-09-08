@@ -7,7 +7,7 @@ include_directories(
 set(plugin_action_rest_SRC
     actionrest.cpp
     actionrest_p.h
-    actionrest.json
+    metadata.json
 )
 
 add_definitions(

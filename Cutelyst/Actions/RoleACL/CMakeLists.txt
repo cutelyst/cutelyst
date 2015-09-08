@@ -7,7 +7,7 @@ include_directories(
 set(plugin_action_roleacl_SRC
     roleacl.cpp
     roleacl_p.h
-    roleacl.json
+    metadata.json
 )
 
 add_definitions(
