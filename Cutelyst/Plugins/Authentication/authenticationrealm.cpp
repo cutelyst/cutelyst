@@ -20,9 +20,10 @@
 #include "authenticationrealm.h"
 
 #include "authenticationstore.h"
-#include "../session.h"
 #include "context.h"
 #include "common.h"
+
+#include <Cutelyst/Plugins/Session/session.h>
 
 using namespace Cutelyst;
 

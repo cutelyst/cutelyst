@@ -22,7 +22,8 @@
 #include "authenticationstore.h"
 #include "authenticationrealm.h"
 #include "context.h"
-#include "../session.h"
+
+#include <Cutelyst/Plugins/Session/session.h>
 
 #include <QLoggingCategory>
 

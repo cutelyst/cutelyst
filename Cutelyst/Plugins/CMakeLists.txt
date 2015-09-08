@@ -1,3 +1,4 @@
+add_subdirectory(Session)
 add_subdirectory(View)
 add_subdirectory(StaticSimple)
 add_subdirectory(Authentication)

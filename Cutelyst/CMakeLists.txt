@@ -42,10 +42,6 @@ set(cutelystqt_SRC
     application_p.h
     plugin.cpp
     Plugins/View/ViewInterface.h
-    Plugins/session.cpp
-    Plugins/session_p.h
-    Plugins/sessionstorefile.cpp
-    Plugins/sessionstorefile_p.h
 )
 
 set(cutelystqt_HEADERS
@@ -84,11 +80,6 @@ set(cutelystqt_HEADERS
     utils.h
 )
 
-set(cutelystqt_plugin_HEADERS
-    Plugins/session.h
-    Plugins/Session
-)
-
 set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
@@ -125,9 +116,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
 )
 install(FILES ${cutelystqt_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst
-)
-install(FILES ${cutelystqt_plugin_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
 )
 
 add_subdirectory(Plugins)

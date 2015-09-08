@@ -19,7 +19,7 @@
 #ifndef SESSIONSTOREFILE_H
 #define SESSIONSTOREFILE_H
 
-#include <Cutelyst/Plugins/session.h>
+#include <Cutelyst/Plugins/Session/session.h>
 #include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
