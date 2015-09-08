@@ -22,6 +22,7 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
+#include <Cutelyst/componentfactory.h>
 
 namespace Cutelyst {
 
@@ -56,7 +57,7 @@ class CUTELYST_LIBRARY RenderView : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)
 public:
-    Q_INVOKABLE RenderView();
+    explicit RenderView(QObject *parent = 0);
     virtual ~RenderView();
 
     virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
@@ -67,6 +68,16 @@ protected:
     RenderViewPrivate *d_ptr;
 };
 
+class RenderViewFactory : public QObject, public ComponentFactory
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
+    Q_INTERFACES(Cutelyst::ComponentFactory)
+public:
+    Component *createComponent(QObject *parent) { return new RenderView(parent); }
+};
+
 }
+
 
 #endif // RENDERVIEW_H

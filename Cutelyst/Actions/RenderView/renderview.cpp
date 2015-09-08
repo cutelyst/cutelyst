@@ -23,6 +23,7 @@
 #include "view.h"
 #include "application.h"
 #include "context.h"
+#include "componentfactory.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtCore/QLoggingCategory>
@@ -31,8 +32,8 @@ Q_LOGGING_CATEGORY(CUTELYST_RENDERVIEW, "cutelyst.renderview")
 
 using namespace Cutelyst;
 
-RenderView::RenderView() :
-    d_ptr(new RenderViewPrivate)
+RenderView::RenderView(QObject *parent) : Action(parent)
+    , d_ptr(new RenderViewPrivate)
 {
     setObjectName(metaObject()->className() % QLatin1String("->execute"));
 }

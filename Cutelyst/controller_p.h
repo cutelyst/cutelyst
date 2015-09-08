@@ -46,6 +46,7 @@ public:
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
     Controller *q_ptr;
+    Application *application;
     QString pathPrefix;
     Action *begin = nullptr;
     ActionList autoList;

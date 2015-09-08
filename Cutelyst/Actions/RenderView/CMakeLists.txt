@@ -7,7 +7,7 @@ include_directories(
 set(plugin_action_renderview_SRC
     renderview.cpp
     renderview_p.h
-    renderview.json
+    metadata.json
 )
 
 add_definitions(

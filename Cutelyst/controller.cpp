@@ -152,6 +152,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     Q_Q(Controller);
 
     dispatcher = _dispatcher;
+    application = app;
 
     // Application must always be our parent
     q->setParent(app);
@@ -566,6 +567,16 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
                 }
 
                 return object;
+            }
+        } else {
+            Component *component = application->createComponentPlugin(name);
+            if (component) {
+                return component;
+            }
+
+            component = application->createComponentPlugin(instanceName);
+            if (component) {
+                return component;
             }
         }
 

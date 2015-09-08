@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,39 +17,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef ACTIONREST_H
-#define ACTIONREST_H
+#ifndef COMPONENTFACTORY_H
+#define COMPONENTFACTORY_H
 
-#include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/action.h>
-#include <Cutelyst/componentfactory.h>
+#include <Context>
+#include <QString>
 
 namespace Cutelyst {
 
-class ActionRESTPrivate;
-class CUTELYST_LIBRARY ActionREST : public Action
+class ComponentFactory
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ActionREST)
 public:
-    explicit ActionREST(QObject *parent = 0);
-    virtual ~ActionREST();
+    virtual ~ComponentFactory() {}
 
-protected:
-    ActionRESTPrivate *d_ptr;
-
-    bool dispatch(Context *c) Q_DECL_FINAL;
-};
-
-class ActionRESTFactory : public QObject, public ComponentFactory
-{
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
-    Q_INTERFACES(Cutelyst::ComponentFactory)
-public:
-    Component *createComponent(QObject *parent) { return new ActionREST(parent); }
+    /**
+     * Component plugins should reimplement this to get a new
+     * instace of their component
+     */
+    virtual Component *createComponent(QObject *parent = 0) = 0;
 };
 
 }
 
-#endif // ACTIONREST_H
+#define ComponentFactory_iid "org.cutelyst.ComponentFactory"
+Q_DECLARE_INTERFACE(Cutelyst::ComponentFactory, ComponentFactory_iid)
+
+#endif // COMPONENTFACTORY_H

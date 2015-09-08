@@ -28,8 +28,8 @@
 
 using namespace Cutelyst;
 
-ActionREST::ActionREST() :
-    d_ptr(new ActionRESTPrivate)
+ActionREST::ActionREST(QObject *parent) : Action(parent)
+    , d_ptr(new ActionRESTPrivate)
 {
     d_ptr->q_ptr = this;
 }

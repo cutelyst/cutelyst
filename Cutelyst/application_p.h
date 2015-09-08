@@ -25,6 +25,7 @@
 #include "engine.h"
 #include "plugin.h"
 #include "context.h"
+#include "componentfactory.h"
 
 namespace Cutelyst {
 
@@ -45,6 +46,7 @@ public:
     QList<Controller *> controllers;
     QHash<QString, View *> views;
     QList<DispatchType *> dispatchers;
+    QHash<QString, ComponentFactory *> factories;
     Headers headers;
     QVariantHash config;
     Engine *engine;

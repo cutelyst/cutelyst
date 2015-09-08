@@ -25,6 +25,7 @@
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/component.h>
 #include <Cutelyst/context.h>
+#include <Cutelyst/componentfactory.h>
 
 namespace Cutelyst {
 
@@ -34,7 +35,7 @@ class CUTELYST_LIBRARY RoleACL : public Component
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
 public:
-    Q_INVOKABLE RoleACL();
+    explicit RoleACL(QObject *parent = 0);
     virtual ~RoleACL();
 
     virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
@@ -50,6 +51,16 @@ protected:
 
     RoleACLPrivate *d_ptr;
 };
+
+class RoleACLFactory : public QObject, public ComponentFactory
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
+    Q_INTERFACES(Cutelyst::ComponentFactory)
+public:
+    Component *createComponent(QObject *parent) { return new RoleACL(parent); }
+};
+
 
 }
 

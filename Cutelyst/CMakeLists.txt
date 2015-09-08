@@ -41,7 +41,6 @@ set(cutelystqt_SRC
     application.cpp
     application_p.h
     plugin.cpp
-    Plugins/View/ViewInterface.h
 )
 
 set(cutelystqt_HEADERS
@@ -56,6 +55,7 @@ set(cutelystqt_HEADERS
     Context
     controller.h
     Controller
+    componentfactory.h
     component.h
     Component
     dispatcher.h

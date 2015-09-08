@@ -38,6 +38,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QStringBuilder>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QPluginLoader>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
@@ -132,6 +133,46 @@ bool Application::registerDispatcher(DispatchType *dispatcher)
     }
     d->dispatchers.append(dispatcher);
     return true;
+}
+
+Component *Application::createComponentPlugin(const QString &name, QObject *parent)
+{
+    Q_D(Application);
+    QHash<QString, ComponentFactory *>::ConstIterator it = d->factories.constFind(name);
+    if (it != d->factories.constEnd()) {
+        ComponentFactory *factory = it.value();
+        if (factory) {
+            return factory->createComponent(parent);
+        } else {
+            return 0;
+        }
+    }
+
+    QDir pluginsDir("/usr/lib/cutelyst-plugins");
+    QPluginLoader loader;
+    Component *component = 0;
+    ComponentFactory *factory = 0;
+    Q_FOREACH (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
+        loader.setFileName(pluginsDir.absoluteFilePath(fileName));
+        const QJsonObject json = loader.metaData()["MetaData"].toObject();
+        if (json["name"].toString() == name) {
+            QObject *plugin = loader.instance();
+            if (plugin) {
+                factory = qobject_cast<ComponentFactory *>(plugin);
+                if (!factory) {
+                    qCCritical(CUTELYST_CORE) << "Could not create a factory for" << loader.fileName();
+                } else {
+                    component = factory->createComponent(parent);
+                }
+                break;
+            } else {
+                qCCritical(CUTELYST_CORE) << "Could not load plugin" << loader.fileName() << loader.errorString();
+            }
+        }
+    }
+    d->factories.insert(name, factory);
+
+    return component;
 }
 
 QList<Controller *> Application::controllers() const

@@ -33,6 +33,7 @@ namespace Cutelyst {
 
 class Context;
 class Controller;
+class Component;
 class View;
 class Dispatcher;
 class DispatchType;
@@ -90,6 +91,8 @@ public:
     bool inited() const;
 
     Engine *engine() const;
+
+    Component *createComponentPlugin(const QString &name, QObject *parent = 0);
 
 protected:
     /**

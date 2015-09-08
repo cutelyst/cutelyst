@@ -29,8 +29,8 @@
 
 using namespace Cutelyst;
 
-RoleACL::RoleACL() :
-    d_ptr(new RoleACLPrivate)
+RoleACL::RoleACL(QObject *parent) : Component(parent)
+    , d_ptr(new RoleACLPrivate)
 {
 }
 
