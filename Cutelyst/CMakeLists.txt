@@ -24,8 +24,6 @@ set(cutelystqt_SRC
     actionchain.cpp
     actionchain_p.h
     action_p.h
-    Actions/roleacl.cpp
-    Actions/roleacl_p.h
     engine.cpp
     engine_p.h
     controller.cpp
@@ -97,10 +95,6 @@ set(cutelystqt_HEADERS
     utils.h
 )
 
-set(cutelystqt_actions_HEADERS
-    Actions/roleacl.h
-)
-
 set(cutelystqt_plugin_HEADERS
     Plugins/session.h
     Plugins/Session
@@ -153,9 +147,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
 )
 install(FILES ${cutelystqt_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst
-)
-install(FILES ${cutelystqt_actions_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Actions
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
