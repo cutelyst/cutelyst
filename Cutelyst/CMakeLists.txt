@@ -24,8 +24,6 @@ set(cutelystqt_SRC
     actionchain.cpp
     actionchain_p.h
     action_p.h
-    Actions/renderview.cpp
-    Actions/renderview_p.h
     Actions/roleacl.cpp
     Actions/roleacl_p.h
     engine.cpp
@@ -100,7 +98,6 @@ set(cutelystqt_HEADERS
 )
 
 set(cutelystqt_actions_HEADERS
-    Actions/renderview.h
     Actions/roleacl.h
 )
 

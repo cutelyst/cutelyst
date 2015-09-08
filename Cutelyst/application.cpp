@@ -34,7 +34,6 @@
 #include "utils.h"
 
 #include "Actions/roleacl.h"
-#include "Actions/renderview.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
@@ -70,7 +69,6 @@ Application::Application(QObject *parent) :
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
 
     qRegisterMetaType<RoleACL *>();
-    qRegisterMetaType<RenderView *>();
 
     d->dispatcher = new Dispatcher(this);
 }

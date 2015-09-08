@@ -1,0 +1,25 @@
+include_directories(
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(plugin_action_renderview_SRC
+    renderview.cpp
+    renderview_p.h
+    renderview.json
+)
+
+add_definitions(
+    -std=c++11
+)
+
+add_library(plugin_action_renderview SHARED
+    ${plugin_action_renderview_SRC}
+)
+
+target_link_libraries(plugin_action_renderview
+    cutelyst-qt5
+)
+
+install(TARGETS plugin_action_renderview DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins)
