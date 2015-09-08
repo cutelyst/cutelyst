@@ -29,7 +29,7 @@ namespace Cutelyst {
 class CUTELYST_LIBRARY Utils
 {
 public:
-    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
+    static QByteArray buildTable(const QList<QStringList> &table, const QByteArrayList &headers = QByteArrayList(), const QByteArray &title = QByteArray());
 };
 
 }

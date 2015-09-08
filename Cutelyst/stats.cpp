@@ -79,6 +79,6 @@ QString Stats::report()
     }
 
     return Utils::buildTable(table, {
-                                 QStringLiteral("Action"), QStringLiteral("Time")
+                                 "Action", "Time"
                              });
 }

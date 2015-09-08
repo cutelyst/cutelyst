@@ -47,10 +47,6 @@ QByteArray DispatchTypePath::list() const
 
     QRegularExpression multipleSlashes("/{1,}");
 
-    QStringList headers;
-    headers.append("Path");
-    headers.append("Private");
-
     QList<QStringList> table;
 
     QStringList keys = d->paths.keys();
@@ -76,9 +72,8 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table,
-                             headers,
-                             QStringLiteral("Loaded Path actions:"));
+    return Utils::buildTable(table, { "Path", "Private" },
+                             "Loaded Path actions:");
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const

@@ -36,7 +36,7 @@ public:
     void setupChildren(const QObjectList &children);
 
     void logRequest(Request *req);
-    void logRequestParameters(const ParamsMultiMap &params, const QString &title);
+    void logRequestParameters(const ParamsMultiMap &params, const QByteArray &title);
     void logRequestUploads(const QMap<QString, Upload *> &uploads);
 
     Application *q_ptr;

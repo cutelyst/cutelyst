@@ -471,7 +471,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     }
 
     // If the method is private add a Private attribute
-    if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
+    if (!ret.contains("Private") && method.access() == QMetaMethod::Private) {
         ret.insert(QStringLiteral("Private"), QByteArray());
     }
 
@@ -481,10 +481,9 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    QMap<QByteArray, QByteArray> attributes;
-    attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
+    const QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
     Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
-        QObject *object = instantiateClass(role, QByteArrayLiteral("Cutelyst::Component"));
+        QObject *object = instantiateClass(role, "Cutelyst::Component");
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }

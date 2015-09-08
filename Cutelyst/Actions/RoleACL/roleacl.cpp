@@ -49,34 +49,34 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_D(RoleACL);
     Q_UNUSED(application)
 
-    QMap<QString, QString> attributes;
-    attributes = args.value("attributes").value<QMap<QString, QString> >();
-    d->actionReverse = args.value("reverse").toByteArray();
+    const QMap<QString, QString> attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    d->actionReverse = args.value(QStringLiteral("reverse")).toByteArray();
 
-    if (!attributes.contains("RequiresRole") && !attributes.contains("AllowedRole")) {
+    if (!attributes.contains(QStringLiteral("RequiresRole")) && !attributes.contains(QStringLiteral("AllowedRole"))) {
         qCritical() << "Action"
                     << d->actionReverse
                     << "requires at least one RequiresRole or AllowedRole attribute";
         return false;
     } else {
-        QStringList required = attributes.values("RequiresRole");
+        const QStringList required = attributes.values(QStringLiteral("RequiresRole"));
         Q_FOREACH (const QString &role, required) {
             d->requiresRole.append(role);
         }
 
-        QStringList allowed = attributes.values("AllowedRole");
+        const QStringList allowed = attributes.values(QStringLiteral("AllowedRole"));
         Q_FOREACH (const QString &role, allowed) {
             d->allowedRole.append(role);
         }
     }
 
-    if (!attributes.contains("ACLDetachTo") && !attributes.value("ACLDetachTo").isEmpty()) {
+    QMap<QString, QString>::ConstIterator it = attributes.constFind(QStringLiteral("ACLDetachTo"));
+    if (it == attributes.constEnd() || it.value().isEmpty()) {
         qCritical() << "Action"
                     << d->actionReverse
                     << "requires the ACLDetachTo(<action>) attribute";
         return false;
     }
-    d->aclDetachTo = attributes.value("ACLDetachTo");
+    d->aclDetachTo = it.value();
 
     return true;
 }

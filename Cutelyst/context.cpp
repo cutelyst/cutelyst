@@ -346,27 +346,27 @@ QVariantHash Context::config() const
 
 QByteArray Context::welcomeMessage() const
 {
-    QString name = QCoreApplication::applicationName();
+    const QString name = QCoreApplication::applicationName();
     response()->setContentType(QStringLiteral("text/html; charset=utf-8"));
     QByteArray ret;
     QTextStream out(&ret);
-    out << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n";
-    out << "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
-    out << "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
-    out << "    <head>\n";
-    out << "        <meta http-equiv=\"Content-Language\" content=\"en\" />\n";
-    out << "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-    out << "        <title>" << name << " on Cutelyst " << QStringLiteral(VERSION) << "</title>\n";
-    out << "    </head>\n";
-    out << "    <body>\n";
-    out << "        <div id=\"content\">\n";
-    out << "            <div id=\"topbar\">\n";
-    out << "               <h1><span id=\"appname\">" << name << "</span> on <a href=\"http://cutelyst.org\">Cutelyst</a>\n";
-    out << "                   " << QStringLiteral(VERSION) << "</h1>\n";
-    out << "             </div>\n";
-    out << "         </div>\n";
-    out << "    <body>\n";
-    out << "</html>\n";
+    out << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
+           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
+           "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n"
+           "    <head>\n"
+           "        <meta http-equiv=\"Content-Language\" content=\"en\" />\n"
+           "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n"
+           "        <title>" << name << " on Cutelyst " << VERSION << "</title>\n"
+           "    </head>\n"
+           "    <body>\n"
+           "        <div id=\"content\">\n"
+           "            <div id=\"topbar\">\n"
+           "               <h1><span id=\"appname\">" << name << "</span> on <a href=\"http://cutelyst.org\">Cutelyst</a>\n"
+           "                   " << VERSION << "</h1>\n"
+           "             </div>\n"
+           "         </div>\n"
+           "    <body>\n"
+           "</html>\n";
     return ret;
 }
 

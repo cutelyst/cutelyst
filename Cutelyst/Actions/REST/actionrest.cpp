@@ -60,7 +60,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     Action *action = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
-        ActionList actions = controller->actions();
+        const ActionList actions = controller->actions();
         Q_FOREACH (Action *controllerAction, actions) {
             if (controllerAction->name() == restMethod) {
                 action = controllerAction;
@@ -74,12 +74,12 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     }
 
     bool ret = false;
-    if (httpMethod == "OPTIONS") {
+    if (httpMethod == QLatin1String("OPTIONS")) {
         ret = returnOptions(c, q->name());
-    } else if (httpMethod == "HEAD") {
+    } else if (httpMethod == QLatin1String("HEAD")) {
         // redispatch to GET
         ret = dispatchRestMethod(c, QStringLiteral("GET"));
-    } else if (httpMethod != "not_implemented") {
+    } else if (httpMethod != QLatin1String("not_implemented")) {
         // try dispatching to foo_not_implemented
         ret = dispatchRestMethod(c, QStringLiteral("not_implemented"));
     } else {

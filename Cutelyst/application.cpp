@@ -209,7 +209,7 @@ bool Application::setup(Engine *engine)
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
-    d->config = engine->config(QStringLiteral("Cutelyst"));
+    d->config = engine->config("Cutelyst");
 
     d->setupHome();
 
@@ -229,8 +229,8 @@ bool Application::setup(Engine *engine)
         }
 
         if (zeroCore && !tablePlugins.isEmpty()) {
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
-                                                        QStringLiteral("Loaded plugins:")).data();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QByteArrayList(),
+                                                        "Loaded plugins:").data();
         }
 
         if (zeroCore) {
@@ -238,8 +238,8 @@ bool Application::setup(Engine *engine)
             tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
             tableDataHandlers.append({ QLatin1String("application/json") });
             tableDataHandlers.append({ QLatin1String("multipart/form-data") });
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
-                                                        QStringLiteral("Loaded Request Data Handlers:")).data();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QByteArrayList(),
+                                                        "Loaded Request Data Handlers:").data();
 
             qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
             qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
@@ -266,19 +266,19 @@ bool Application::setup(Engine *engine)
         QList<QStringList> table;
         Q_FOREACH (Controller *controller, d->controllers) {
             QString className = QString::fromLatin1(controller->metaObject()->className());
-            table.append({ className, QStringLiteral("Controller")});
+            table.append({ className, "Controller"});
         }
 
         Q_FOREACH (View *view, d->views) {
             QString className = QString::fromLatin1(view->metaObject()->className());
-            table.append({ className, QStringLiteral("View")});
+            table.append({ className, "View"});
         }
 
         if (zeroCore && !table.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
-                                                            QStringLiteral("Class"), QStringLiteral("Type")
+                                                            "Class", "Type"
                                                         },
-                                                        QStringLiteral("Loaded components:")).data();
+                                                        "Loaded components:").data();
         }
 
         Q_FOREACH (Controller *controller, d->controllers) {
@@ -444,12 +444,12 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Query Parameters are:"));
+        logRequestParameters(params, "Query Parameters are:");
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Body Parameters are:"));
+        logRequestParameters(params, "Body Parameters are:");
     }
 
     QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
@@ -458,7 +458,7 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
     }
 }
 
-void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QString &title)
+void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QByteArray &title)
 {
 
     QList<QStringList> table;
@@ -468,8 +468,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QStringLiteral("Parameter"),
-                                                       QStringLiteral("Value"),
+                                                       "Parameter",
+                                                       "Value",
                                                    },
                                                    title).data();
 }
@@ -488,10 +488,10 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelys
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QStringLiteral("Parameter"),
-                                                       QStringLiteral("Filename"),
-                                                       QStringLiteral("Type"),
-                                                       QStringLiteral("Size"),
+                                                       "Parameter",
+                                                       "Filename",
+                                                       "Type",
+                                                       "Size",
                                                    },
-                                                   QStringLiteral("File Uploads are:")).data();
+                                                   "File Uploads are:").data();
 }
