@@ -32,6 +32,6 @@ target_link_libraries(cutelyst_view_grantlee
 install(TARGETS cutelyst_view_grantlee EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_view_grantlee_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/Grantlee
         COMPONENT View::Grantlee
 )

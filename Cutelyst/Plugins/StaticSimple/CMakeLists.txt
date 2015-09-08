@@ -39,6 +39,6 @@ target_link_libraries(cutelyst_qt5_plugin_staticsimple
 install(TARGETS cutelyst_qt5_plugin_staticsimple EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_staticsimple_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/StaticSimple
         COMPONENT StaticSimple
 )

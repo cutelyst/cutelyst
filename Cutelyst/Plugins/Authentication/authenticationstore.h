@@ -20,7 +20,7 @@
 #ifndef AUTHENTICATION_STORE_H
 #define AUTHENTICATION_STORE_H
 
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {

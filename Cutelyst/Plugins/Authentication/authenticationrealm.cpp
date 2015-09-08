@@ -20,7 +20,7 @@
 #include "authenticationrealm.h"
 
 #include "authenticationstore.h"
-#include "session.h"
+#include "../session.h"
 #include "context.h"
 #include "common.h"
 

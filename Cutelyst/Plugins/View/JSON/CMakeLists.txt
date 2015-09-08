@@ -36,6 +36,6 @@ target_link_libraries(cutelyst_qt5_plugin_view_json
 install(TARGETS cutelyst_qt5_plugin_view_json EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_view_json_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/JSON
         COMPONENT View::JSON
 )

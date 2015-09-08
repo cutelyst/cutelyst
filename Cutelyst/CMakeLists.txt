@@ -46,17 +46,6 @@ set(cutelystqt_SRC
     Plugins/session_p.h
     Plugins/sessionstorefile.cpp
     Plugins/sessionstorefile_p.h
-    Plugins/authenticationuser.cpp
-    Plugins/authenticationrealm.cpp
-    Plugins/authentication.cpp
-    Plugins/authentication_p.h
-    Plugins/authenticationstore.cpp
-    Plugins/Authentication/minimal.cpp
-    Plugins/Authentication/htpasswd.cpp
-    Plugins/Authentication/credentialpassword.cpp
-    Plugins/Authentication/credentialpassword_p.h
-    Plugins/Authentication/credentialhttp.cpp
-    Plugins/Authentication/credentialhttp_p.h
 )
 
 set(cutelystqt_HEADERS
@@ -98,17 +87,6 @@ set(cutelystqt_HEADERS
 set(cutelystqt_plugin_HEADERS
     Plugins/session.h
     Plugins/Session
-    Plugins/authenticationstore.h
-    Plugins/authenticationuser.h
-    Plugins/authenticationrealm.h
-    Plugins/authentication.h
-)
-
-set(cutelystqt_plugin_authentication_HEADERS
-    Plugins/Authentication/minimal.h
-    Plugins/Authentication/htpasswd.h
-    Plugins/Authentication/credentialpassword.h
-    Plugins/Authentication/credentialhttp.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE
@@ -150,9 +128,6 @@ install(FILES ${cutelystqt_HEADERS}
 )
 install(FILES ${cutelystqt_plugin_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
-)
-install(FILES ${cutelystqt_plugin_authentication_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Authentication
 )
 
 add_subdirectory(Plugins)

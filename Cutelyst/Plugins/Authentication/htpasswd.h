@@ -21,7 +21,7 @@
 #define AUTHENTICATION_STORE_HTPASSWD_H
 
 #include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/Plugins/authenticationstore.h>
+#include <Cutelyst/Plugins/Authentication/authenticationstore.h>
 
 namespace Cutelyst {
 

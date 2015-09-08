@@ -33,6 +33,6 @@ target_link_libraries(cutelyst_view_clearsilver
 install(TARGETS cutelyst_view_clearsilver EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_view_clearsilver_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/ClearSilver
         COMPONENT View::ClearSilver
 )

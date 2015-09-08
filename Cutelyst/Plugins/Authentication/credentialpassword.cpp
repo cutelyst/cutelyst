@@ -18,7 +18,7 @@
  */
 
 #include "credentialpassword_p.h"
-#include "../authenticationrealm.h"
+#include "authenticationrealm.h"
 
 #include <QLoggingCategory>
 #include <QMessageAuthenticationCode>

@@ -23,7 +23,7 @@
 #include <QtCore/QCryptographicHash>
 
 #include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 
 namespace Cutelyst {
 

@@ -21,7 +21,7 @@
 #define AUTHENTICATIONREALM_H
 
 #include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/Plugins/authenticationuser.h>
+#include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 #include <Cutelyst/component.h>
 
 namespace Cutelyst {

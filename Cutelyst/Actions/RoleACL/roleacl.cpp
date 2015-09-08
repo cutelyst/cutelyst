@@ -21,7 +21,7 @@
 
 #include "common.h"
 
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Controller>
 #include <Cutelyst/Dispatcher>
 

@@ -20,7 +20,7 @@
 #include "credentialhttp_p.h"
 #include "credentialpassword.h"
 
-#include "../authenticationrealm.h"
+#include "authenticationrealm.h"
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>

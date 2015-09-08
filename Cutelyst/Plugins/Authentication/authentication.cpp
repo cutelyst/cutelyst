@@ -22,7 +22,7 @@
 #include "authenticationstore.h"
 #include "authenticationrealm.h"
 #include "context.h"
-#include "session.h"
+#include "../session.h"
 
 #include <QLoggingCategory>
 

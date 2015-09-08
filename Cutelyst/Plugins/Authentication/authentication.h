@@ -22,7 +22,7 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
-#include <Cutelyst/Plugins/authenticationuser.h>
+#include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 
 namespace Cutelyst {
 
