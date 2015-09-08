@@ -155,6 +155,5 @@ install(FILES ${cutelystqt_plugin_authentication_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Authentication
 )
 
-add_subdirectory(modules)
 add_subdirectory(Plugins)
 add_subdirectory(Actions)
