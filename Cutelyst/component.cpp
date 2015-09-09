@@ -29,7 +29,7 @@ Component::Component(QObject *parent) : QObject(parent)
   , d_ptr(new ComponentPrivate)
 {
     if (objectName().isNull()) {
-        setObjectName(this->metaObject()->className() % QLatin1String("->execute"));
+        setObjectName(QString::fromLatin1(this->metaObject()->className()) % QLatin1String("->execute"));
     }
 }
 

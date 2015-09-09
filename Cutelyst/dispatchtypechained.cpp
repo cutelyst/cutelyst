@@ -55,11 +55,11 @@ QByteArray DispatchTypeChained::list() const
     QList<QStringList> unattachedTable;
     Q_FOREACH (Action *endPoint, endPoints) {
         QStringList parts;
-        if (endPoint->attributes().value("Args").isNull()) {
-            parts.append("...");
+        if (endPoint->attributes().value(QLatin1String("Args")).isNull()) {
+            parts.append(QLatin1String("..."));
         } else {
             for (int i = 0; i < endPoint->numberOfArgs(); ++i) {
-                parts.append("*");
+                parts.append(QLatin1String("*"));
             }
         }
 
@@ -70,17 +70,17 @@ QByteArray DispatchTypeChained::list() const
         Action *current = endPoint;
         while (current) {
             for (int i = 0; i < current->numberOfCaptures(); ++i) {
-                parts.prepend("*");
+                parts.prepend(QLatin1String("*"));
             }
 
-            const QStringList &pathParts = current->attributes().values("PathPart");
+            const QStringList &pathParts = current->attributes().values(QLatin1String("PathPart"));
             Q_FOREACH (const QString &part, pathParts) {
                 if (!part.isEmpty()) {
                     parts.prepend(part);
                 }
             }
 
-            parent = current->attributes().value("Chained");
+            parent = current->attributes().value(QLatin1String("Chained"));
             current = d->actions.value(parent);
             if (current) {
                 parents.prepend(current);
@@ -108,7 +108,7 @@ QByteArray DispatchTypeChained::list() const
                 name.prepend(extra % QLatin1Char(' '));
             }
 
-            QMap<QString, QString>::ConstIterator it = p->attributes().constFind("CaptureArgs");
+            QMap<QString, QString>::ConstIterator it = p->attributes().constFind(QLatin1String("CaptureArgs"));
             if (it != p->attributes().constEnd()) {
                 name.append(QLatin1String(" (") % it.value() % QLatin1Char(')'));
             }
@@ -194,25 +194,25 @@ bool DispatchTypeChained::registerAction(Action *action)
     Q_D(DispatchTypeChained);
 
     QMap<QString, QString> attributes = action->attributes();
-    const QStringList &chainedList = attributes.values("Chained");
+    const QStringList &chainedList = attributes.values(QLatin1String("Chained"));
     if (chainedList.isEmpty()) {
         return false;
     }
 
     if (chainedList.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-                << "Multiple Chained attributes not supported registering" % action->reverse();
+                << "Multiple Chained attributes not supported registering" << action->reverse();
         exit(1);
     }
 
     const QString &chainedTo = chainedList.first();
     if (chainedTo == QLatin1Char('/') % action->name()) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-                << "Actions cannot chain to themselves registering /" % action->name();
+                << "Actions cannot chain to themselves registering /" << action->name();
         exit(1);
     }
 
-    const QStringList &pathPart = attributes.values("PathPart");
+    const QStringList &pathPart = attributes.values(QLatin1String("PathPart"));
 
     QString part = action->name();
 
@@ -239,17 +239,17 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->actions[QLatin1Char('/') % action->reverse()] = action;
 
-    d->checkArgsAttr(action, "Args");
-    d->checkArgsAttr(action, "CaptureArgs");
+    d->checkArgsAttr(action, QLatin1String("Args"));
+    d->checkArgsAttr(action, QLatin1String("CaptureArgs"));
 
-    if (attributes.contains("Args") && attributes.contains("CaptureArgs")) {
+    if (attributes.contains(QLatin1String("Args")) && attributes.contains(QLatin1String("CaptureArgs"))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Combining Args and CaptureArgs attributes not supported registering"
                 << action->reverse();
         exit(1);
     }
 
-    if (!attributes.contains("CaptureArgs")) {
+    if (!attributes.contains(QLatin1String("CaptureArgs"))) {
         d->endPoints.prepend(action);
     }
 
@@ -445,18 +445,18 @@ void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
 
 QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
 {
-    if (action->attributes().contains("HTTP_METHODS")) {
-        QStringList extra = action->attributes().values("HTTP_METHODS");
-        return extra.join(", ");
+    if (action->attributes().contains(QLatin1String("HTTP_METHODS"))) {
+        QStringList extra = action->attributes().values(QLatin1String("HTTP_METHODS"));
+        return extra.join(QLatin1String(", "));
     }
     return QString();
 }
 
 QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
 {
-    if (action->attributes().contains("CONSUMES")) {
-        QStringList extra = action->attributes().values("CONSUMES");
-        return extra.join(", ");
+    if (action->attributes().contains(QLatin1String("CONSUMES"))) {
+        QStringList extra = action->attributes().values(QLatin1String("CONSUMES"));
+        return extra.join(QLatin1String(", "));
     }
     return QString();
 }

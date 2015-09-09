@@ -148,14 +148,14 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
         }
     }
 
-    QDir pluginsDir("/usr/lib/cutelyst-plugins");
+    QDir pluginsDir(QLatin1String("/usr/lib/cutelyst-plugins"));
     QPluginLoader loader;
     Component *component = 0;
     ComponentFactory *factory = 0;
     Q_FOREACH (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
-        const QJsonObject json = loader.metaData()["MetaData"].toObject();
-        if (json["name"].toString() == name) {
+        const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();
+        if (json[QLatin1String("name")].toString() == name) {
             QObject *plugin = loader.instance();
             if (plugin) {
                 factory = qobject_cast<ComponentFactory *>(plugin);
@@ -250,7 +250,7 @@ bool Application::setup(Engine *engine)
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
-    d->config = engine->config("Cutelyst");
+    d->config = engine->config(QLatin1String("Cutelyst"));
 
     d->setupHome();
 
@@ -286,7 +286,7 @@ bool Application::setup(Engine *engine)
             qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
         }
 
-        QString home = d->config.value("home").toString();
+        QString home = d->config.value(QLatin1String("home")).toString();
         if (home.isEmpty()) {
             if (zeroCore) {
                 qCDebug(CUTELYST_CORE) << "Couldn't find home";
@@ -307,12 +307,12 @@ bool Application::setup(Engine *engine)
         QList<QStringList> table;
         Q_FOREACH (Controller *controller, d->controllers) {
             QString className = QString::fromLatin1(controller->metaObject()->className());
-            table.append({ className, "Controller"});
+            table.append({ className, QLatin1String("Controller")});
         }
 
         Q_FOREACH (View *view, d->views) {
             QString className = QString::fromLatin1(view->metaObject()->className());
-            table.append({ className, "View"});
+            table.append({ className, QLatin1String("View")});
         }
 
         if (zeroCore && !table.isEmpty()) {
@@ -329,10 +329,10 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers, d->dispatchers);
 
         if (zeroCore) {
-            qCDebug(CUTELYST_CORE) << QString("%1 powered by Cutelyst %2, Qt %3.")
+            qCDebug(CUTELYST_CORE) << QString(QLatin1String("%1 powered by Cutelyst %2, Qt %3."))
                                       .arg(QCoreApplication::applicationName())
-                                      .arg(VERSION)
-                                      .arg(qVersion())
+                                      .arg(QLatin1String(VERSION))
+                                      .arg(QLatin1String(qVersion()))
                                       .toLatin1().data();
         }
 
@@ -401,7 +401,7 @@ void Application::handleRequest(Request *req)
             average = QString::number(1.0 / enlapsed, 'f');
             average.truncate(average.size() - 3);
         }
-        qCDebug(CUTELYST_STATS) << QString("Request took: %1s (%2/s)\n%3")
+        qCDebug(CUTELYST_STATS) << QString(QLatin1String("Request took: %1s (%2/s)\n%3"))
                                    .arg(QString::number(enlapsed, 'f'))
                                    .arg(average)
                                    .arg(priv->stats->report())
@@ -435,13 +435,13 @@ bool Application::enginePostFork()
 void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
-    if (!config.contains("home")) {
-        config.insert("home", QDir::currentPath());
+    if (!config.contains(QLatin1String("home"))) {
+        config.insert(QLatin1String("home"), QDir::currentPath());
     }
 
-    if (!config.contains("root")) {
-        QDir home = config.value("home").toString();
-        config.insert("root", home.absoluteFilePath("root"));
+    if (!config.contains(QLatin1String("root"))) {
+        QDir home = config.value(QLatin1String("home")).toString();
+        config.insert(QLatin1String("root"), home.absoluteFilePath(QLatin1String("root")));
     }
 }
 

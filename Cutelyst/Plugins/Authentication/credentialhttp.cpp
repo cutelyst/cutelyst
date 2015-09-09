@@ -245,7 +245,7 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
 void CredentialHttpPrivate::createBasicAuthResponse(Context *c)
 {
     c->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
-                                                                 buildAuthHeaderCommon()).toLatin1());
+                                                               buildAuthHeaderCommon()));
 }
 
 QStringList CredentialHttpPrivate::buildAuthHeaderCommon() const

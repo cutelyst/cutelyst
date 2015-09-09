@@ -40,7 +40,7 @@ StoreHtpasswd::~StoreHtpasswd()
 
 void StoreHtpasswd::addUser(const CStringHash &user)
 {
-    QString username = user.value("username");
+    QString username = user.value(QLatin1String("username"));
 
     QString fileName = property("_file").toString();
     QTemporaryFile tmp(fileName % QLatin1String("-XXXXXXX"));
@@ -56,8 +56,8 @@ void StoreHtpasswd::addUser(const CStringHash &user)
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
             QList<QByteArray> parts = line.split(':');
-            if (!wrote && parts.size() >= 2 && parts.first() == username) {
-                line = username.toLatin1() + ':' + user.value("password").toLatin1().replace(':', ',') + '\n';
+            if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
+                line = username.toLatin1() + ':' + user.value(QLatin1String("password")).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
@@ -66,7 +66,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     }
 
     if (!wrote) {
-        QByteArray line = username.toLatin1() + ':' + user.value("password").toLatin1() + '\n';
+        QByteArray line = username.toLatin1() + ':' + user.value(QLatin1String("password")).toLatin1() + '\n';
         tmp.write(line);
     }
 
@@ -82,7 +82,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
 
 AuthenticationUser StoreHtpasswd::findUser(Context *c, const CStringHash &userInfo)
 {
-    QString username = userInfo.value("username");
+    QString username = userInfo.value(QLatin1String("username"));
 
     QString fileName = property("_file").toString();
     QFile file(fileName);
@@ -90,12 +90,12 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const CStringHash &userIn
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
             QList<QByteArray> parts = line.trimmed().split(':');
-            if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username) {
+            if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username.toLatin1()) {
                 AuthenticationUser ret;
-                ret.insert("username", username);
+                ret.insert(QLatin1String("username"), username);
                 ret.setId(username);
                 QByteArray password = parts.at(1);
-                ret.insert("password", password.replace(',', ':'));
+                ret.insert(QLatin1String("password"), QString::fromLatin1(password.replace(',', ':')));
                 return ret;
                 // TODO maybe support additional fields
             }

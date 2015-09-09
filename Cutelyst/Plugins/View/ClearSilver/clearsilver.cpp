@@ -134,7 +134,7 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
     }
 
     Q_FOREACH (const QString &includePath, priv->includePaths) {
-        QFile file(includePath % QLatin1Char('/') % filename);
+        QFile file(includePath % QLatin1Char('/') % QString::fromLatin1(filename));
 
         if (file.exists()) {
             if (!file.open(QFile::ReadOnly)) {
@@ -164,7 +164,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QString::fromLatin1("Failed to init ClearSilver:\n%1").arg(msg->buf);
+        errorMsg = QString::fromLatin1("Failed to init ClearSilver:\n%1").arg(QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         hdf_destroy(&hdf);
@@ -180,7 +180,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QString::fromLatin1("Failed to parse template file: %1\n%2").arg(filename, msg->buf);
+        errorMsg = QString::fromLatin1("Failed to parse template file: %1\n%2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         nerr_log_error(error);
@@ -213,7 +213,7 @@ HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) cons
     const QMetaObject *meta = c->metaObject();
     for (int i = 0; i < meta->propertyCount(); ++i) {
         QMetaProperty prop = meta->property(i);
-        QString name = QLatin1String("c.") % prop.name();
+        QString name = QLatin1String("c.") % QString::fromLatin1(prop.name());
         QVariant value = prop.read(c);
         serializeVariant(hdf, value, name);
     }

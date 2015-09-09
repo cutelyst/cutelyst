@@ -35,7 +35,7 @@ using namespace Cutelyst;
 RenderView::RenderView(QObject *parent) : Action(parent)
     , d_ptr(new RenderViewPrivate)
 {
-    setObjectName(metaObject()->className() % QLatin1String("->execute"));
+    setObjectName(QString::fromLatin1(metaObject()->className()) % QLatin1String("->execute"));
 }
 
 RenderView::~RenderView()

@@ -63,7 +63,7 @@ QString Request::hostname() const
     QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
         qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
-        d->remoteHostname = "";
+        d->remoteHostname = QLatin1String("");
         return QString();
     }
 
@@ -96,7 +96,7 @@ QUrl Request::uri() const
         uri.setPath(QLatin1Char('/') % d->path);
 
         if (!d->query.isEmpty()) {
-            uri.setQuery(d->query);
+            uri.setQuery(QString::fromLatin1(d->query));
         }
 
         d->url = uri;
@@ -256,7 +256,7 @@ QNetworkCookie Request::cookie(const QString &name) const
     }
 
     Q_FOREACH (const QNetworkCookie &cookie, d->cookies) {
-        if (cookie.name() == name) {
+        if (QString::fromLatin1(cookie.name()) == name) {
             return cookie;
         }
     }

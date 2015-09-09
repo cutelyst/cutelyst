@@ -43,9 +43,9 @@ Engine::Engine(const QVariantHash &opts, QObject *parent) :
 
     // Load application configuration
     if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {
-        QByteArray config = qgetenv("CUTELYST_CONFIG");
+        const QByteArray config = qgetenv("CUTELYST_CONFIG");
         qCDebug(CUTELYST_CORE) << "Reading config file:" << config;
-        QSettings settings(config, QSettings::IniFormat);
+        QSettings settings(QString::fromLatin1(config), QSettings::IniFormat);
         Q_FOREACH (const QString &group, settings.childGroups()) {
             settings.beginGroup(group);
             Q_FOREACH (const QString &key, settings.childKeys()) {
@@ -69,7 +69,7 @@ void Engine::finalizeCookies(Context *c)
     Response *res = c->response();
     Headers &headers = res->headers();
     Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
-        headers.pushHeader(QStringLiteral("Set-Cookie"), cookie.toRawForm());
+        headers.pushHeader(QStringLiteral("Set-Cookie"), QString::fromLatin1(cookie.toRawForm()));
     }
 }
 
@@ -109,7 +109,7 @@ bool Engine::finalizeHeaders(Context *c)
     const QUrl &location = response->location();
     if (!location.isEmpty()) {
         qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().data());
-        response->headers().setHeader(QStringLiteral("Location"), location.toEncoded());
+        response->headers().setHeader(QStringLiteral("Location"), QString::fromLatin1(location.toEncoded()));
     }
 
     finalizeCookies(c);
@@ -387,7 +387,7 @@ void Engine::finalize(Context *c)
     }
 }
 
-static const QString cutelyst_header_order(
+static const QByteArray cutelyst_header_order(
         // General headers
         "Cache-Control\n"
         "Connection\n"
@@ -467,7 +467,7 @@ QList<HeaderValuePair> Engine::headersForResponse(const Headers &headers)
         HeaderValuePair pair;
         pair.key = camelCaseHeader(it.key());
         pair.value = it.value();
-        pair.weight = cutelyst_header_order.indexOf(pair.key);
+        pair.weight = cutelyst_header_order.indexOf(pair.key.toLatin1());
 
         ret.append(pair);
         ++it;

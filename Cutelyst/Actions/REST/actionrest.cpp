@@ -133,5 +133,5 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, c
     methods.sort();
     methods.removeDuplicates();
 
-    return methods.join(QStringLiteral(", ")).toLatin1();
+    return methods.join(QStringLiteral(", "));
 }

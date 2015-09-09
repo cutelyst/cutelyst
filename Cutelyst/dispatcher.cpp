@@ -61,7 +61,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
             if (!d->actionHash.contains(action->reverse())) {
-                if (!action->attributes().contains("Private")) {
+                if (!action->attributes().contains(QLatin1String("Private"))) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
                         if (dispatch->registerAction(action)) {
@@ -108,7 +108,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
     }
 
     // Cache root actions, BEFORE the controllers set them
-    d->rootActions = d->containerHash.value("");
+    d->rootActions = d->containerHash.value(QLatin1String(""));
 
     Q_FOREACH (Controller *controller, controllers) {
         controller->d_ptr->setupFinished();

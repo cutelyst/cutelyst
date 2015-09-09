@@ -89,14 +89,14 @@ EngineHttp::EngineHttp(const QVariantHash &opts, QObject *parent) : Engine(opts,
 
     QCommandLineParser parser;
 
-    QCommandLineOption httpSocket("http-socket",
+    QCommandLineOption httpSocket(QLatin1String("http-socket"),
                                   QCoreApplication::translate("main", "Bind to the specified UNIX/TCP socket using HTTP protocol."),
-                                  "address:port");
+                                  QLatin1String("address:port"));
     parser.addOption(httpSocket);
 
     // An option with a value
-    QCommandLineOption workers(QStringList() << "p" << "processes" << "workers-directory",
-                               QCoreApplication::translate("main", "Copy all source files into <directory>."), "number");
+    QCommandLineOption workers(QStringList() << QLatin1String("p") << QLatin1String("processes") << QLatin1String("workers-directory"),
+                               QCoreApplication::translate("main", "Copy all source files into <directory>."), QLatin1String("number"));
     parser.addOption(workers);
 
     // Process the actual command line arguments given by the user
@@ -189,31 +189,32 @@ bool EngineHttp::finalizeHeaders(Context *ctx)
     Q_D(EngineHttp);
 
     QByteArray header;
-    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n").arg(statusCode(ctx->response()->status()).data()));
+    header.append(QString::fromLatin1("HTTP/1.1 %1\r\n")
+                  .arg(QString::fromLatin1(statusCode(ctx->response()->status()))).toLatin1());
 
     Headers headers = ctx->response()->headers();
 
     QDateTime utc = QDateTime::currentDateTime();
     utc.setTimeSpec(Qt::UTC);
     headers.setDateWithDateTime(utc);
-    headers.setServer("Cutelyst-HTTP-Engine");
-    headers.setHeader("Connection", "keep-alive");
+    headers.setServer(QLatin1String("Cutelyst-HTTP-Engine"));
+    headers.setHeader(QLatin1String("Connection"), QLatin1String("keep-alive"));
     headers.setContentLength(ctx->res()->contentLength());
 
     Q_FOREACH (const HeaderValuePair &pair, headersForResponse(headers)) {
-        header.append(pair.key % QLatin1String(": ") % pair.value % QLatin1String("\r\n"));
+        header.append(pair.key.toLatin1() + ": " + pair.value.toLatin1() + "\r\n");
     }
-    header.append(QLatin1String("\r\n"));
+    header.append("\r\n");
 
-    if (!headers.contains(QByteArrayLiteral("Content-Type")) &&
+    if (!headers.contains(QLatin1String("Content-Type")) &&
             ctx->res()->hasBody()) {
         QMimeDatabase db;
         QMimeType mimeType = db.mimeTypeForData(ctx->res()->bodyDevice());
         if (mimeType.isValid()) {
             if (mimeType.name() == QLatin1String("text/html")) {
-                headers.setContentType("text/html; charset=utf-8");
+                headers.setContentType(QLatin1String("text/html; charset=utf-8"));
             } else {
-                headers.setContentType(mimeType.name().toLocal8Bit());
+                headers.setContentType(mimeType.name());
             }
         }
     }
@@ -267,8 +268,8 @@ void EngineHttp::removeConnection()
 void EngineHttp::processRequest(void *requestData, const QUrl &url, const QByteArray &method, const QByteArray &protocol, const Headers &headers, QIODevice *body)
 {
     RequestPrivate *priv = new RequestPrivate;
-    priv->method = method;
-    priv->protocol = protocol;
+    priv->method = QString::fromLatin1(method);
+    priv->protocol = QString::fromLatin1(protocol);
     priv->headers = headers;
     priv->body = body;
     priv->requestPtr = requestData;
@@ -371,16 +372,16 @@ void EngineHttpRequest::process()
             QByteArray section = m_buffer.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
             m_bufLastIndex = newLine + 1;
 
-            QRegularExpression methodProtocolRE("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$");
-            QRegularExpression methodRE("(\\w+)\\s+(.*)");
+            QRegularExpression methodProtocolRE(QLatin1String("(\\w+)\\s+(.*)(?:\\s+(HTTP.*))$"));
+            QRegularExpression methodRE(QLatin1String("(\\w+)\\s+(.*)"));
             bool badRequest = false;
-            QRegularExpressionMatch match = methodProtocolRE.match(section);
+            QRegularExpressionMatch match = methodProtocolRE.match(QString::fromLatin1(section));
             if (match.hasMatch()) {
                 m_method = match.captured(1).toLocal8Bit();
                 m_path = match.captured(2);
                 m_protocol = match.captured(3).toLocal8Bit();
             } else {
-                match = methodRE.match(section);
+                match = methodRE.match(QString::fromLatin1(section));
                 if (match.hasMatch()) {
                     m_method = match.captured(1).toLocal8Bit();
                     m_path = match.captured(2);
@@ -396,14 +397,14 @@ void EngineHttpRequest::process()
 
     if (!m_finishedHeaders) {
         while ((newLine = m_buffer.indexOf('\n', m_bufLastIndex)) != -1) {
-            QString section = m_buffer.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1);
+            QString section = QString::fromLatin1(m_buffer.mid(m_bufLastIndex, newLine - m_bufLastIndex - 1));
 //            qDebug() << "[header] " << section << section.isEmpty();
             m_bufLastIndex = newLine + 1;
 
             if (!section.isEmpty()) {
-                m_headers[section.section(QLatin1Char(':'), 0, 0).toUtf8()] = section.section(QLatin1Char(':'), 1).trimmed().toUtf8();
+                m_headers[section.section(QLatin1Char(':'), 0, 0)] = section.section(QLatin1Char(':'), 1).trimmed();
             } else {
-                m_bodySize = m_headers.header("Content-Length").toULongLong();
+                m_bodySize = m_headers.contentLength();
                 m_finishedHeaders = true;
             }
         }
@@ -420,10 +421,10 @@ void EngineHttpRequest::process()
     }
 
     QUrl url;
-    if (m_headers.contains("Host")) {
-        url = QLatin1String("http://") % m_headers["Host"] % m_path;
+    if (m_headers.contains(QLatin1String("Host"))) {
+        url = QUrl(QLatin1String("http://") % m_headers.header(QLatin1String("Host")) % m_path, QUrl::StrictMode);
     } else {
-        url = QLatin1String("http://") % QHostInfo::localHostName() % m_path;
+        url = QUrl(QLatin1String("http://") % QHostInfo::localHostName() % m_path, QUrl::StrictMode);
     }
 
     m_buffer.clear();

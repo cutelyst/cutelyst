@@ -65,7 +65,7 @@ void uwsgi_cutelyst_on_load()
 
     // if the path is relative build a path
     // relative to the current working directory
-    QDir cwd(uwsgi.cwd);
+    QDir cwd(QString::fromLatin1(uwsgi.cwd));
 
     // Set the configuration env
     QVariantHash::ConstIterator it = opts.constFind(QLatin1String("ini"));
@@ -91,9 +91,9 @@ int uwsgi_cutelyst_init()
 
     // if the path is relative build a path
     // relative to the current working directory
-    QDir cwd(uwsgi.cwd);
+    QDir cwd(QString::fromLocal8Bit(uwsgi.cwd));
 
-    QString path(options.app);
+    QString path(QString::fromLocal8Bit(options.app));
     if (path.isEmpty()) {
         uwsgi_log("Cutelyst application name or path was not set\n");
         exit(1);
@@ -150,7 +150,7 @@ int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 static void fsmon_reload(struct uwsgi_fsmon *fs)
 {
     qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
-    QFileInfo fileInfo(fs->path);
+    QFileInfo fileInfo(QString::fromLocal8Bit(fs->path));
     int count = 0;
     // Ugly hack to wait for 2 seconds for the file to be filled
     while (fileInfo.size() == 0 && count < 10) {
@@ -189,8 +189,8 @@ void uwsgi_cutelyst_init_apps()
 
     // if the path is relative build a path
     // relative to the current working directory
-    QDir cwd(uwsgi.cwd);
-    QString path = cwd.absoluteFilePath(options.app);
+    QDir cwd(QString::fromLocal8Bit(uwsgi.cwd));
+    QString path = cwd.absoluteFilePath(QString::fromLocal8Bit(options.app));
 
     QPluginLoader *loader = new QPluginLoader(path);
     if (!loader->load()) {
@@ -212,7 +212,7 @@ void uwsgi_cutelyst_init_apps()
 
     // Sets the application name with the name from our library
     if (QCoreApplication::applicationName() == applicationName) {
-        QCoreApplication::setApplicationName(app->metaObject()->className());
+        QCoreApplication::setApplicationName(QString::fromLatin1(app->metaObject()->className()));
     }
     qCDebug(CUTELYST_UWSGI) << "Loaded application:" << QCoreApplication::applicationName();
 

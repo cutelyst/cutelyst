@@ -69,7 +69,7 @@ QString Stats::report()
     Q_D(Stats);
 
     if (d->actions.isEmpty()) {
-        return QByteArray();
+        return QString();
     }
 
     QList<QStringList> table;
@@ -78,7 +78,7 @@ QString Stats::report()
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
     }
 
-    return Utils::buildTable(table, {
-                                 "Action", "Time"
-                             });
+    return QString::fromLatin1(Utils::buildTable(table, {
+                                                     "Action", "Time"
+                                                 }));
 }

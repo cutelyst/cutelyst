@@ -106,7 +106,7 @@ void Headers::setDateWithDateTime(const QDateTime &date)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const QString &dt = QLocale::c().toString(date.toUTC(),
-                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT")).toLatin1();
+                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     insert(QStringLiteral("date"), dt);
 }
 
@@ -150,7 +150,7 @@ void Headers::setLastModified(const QDateTime &lastModified)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const QString &dt = QLocale::c().toString(lastModified.toUTC(),
-                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT")).toLatin1();
+                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
 }
 
@@ -207,7 +207,7 @@ QString Headers::authorization() const
 
 QString Headers::authorizationBasic() const
 {
-    return HeadersPrivate::decodeBasicAuth(authorization());
+    return QString::fromLatin1(HeadersPrivate::decodeBasicAuth(authorization()));
 }
 
 QPair<QString, QString> Headers::authorizationBasicPair() const
@@ -217,11 +217,11 @@ QPair<QString, QString> Headers::authorizationBasicPair() const
 
 void Headers::setAuthorizationBasic(const QString &username, const QString &password)
 {
-    if (username.contains(':')) {
+    if (username.contains(QLatin1Char(':'))) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
     }
     QString result = username % QLatin1Char(':') % password;
-    insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + result.toLatin1().toBase64());
+    insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64()));
 }
 
 QString Headers::proxyAuthorization() const
@@ -231,7 +231,7 @@ QString Headers::proxyAuthorization() const
 
 QString Headers::proxyAuthorizationBasic() const
 {
-    return HeadersPrivate::decodeBasicAuth(proxyAuthorization());
+    return QString::fromLatin1(HeadersPrivate::decodeBasicAuth(proxyAuthorization()));
 }
 
 QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
@@ -302,7 +302,7 @@ QString HeadersPrivate::normalizeHeaderKey(const QString &field)
 QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 {
     if (!auth.isEmpty() && auth.startsWith(QLatin1String("Basic "))) {
-        int pos = auth.lastIndexOf(' ');
+        int pos = auth.lastIndexOf(QLatin1Char(' '));
         if (pos != -1) {
             return QByteArray::fromBase64(auth.mid(pos).toLatin1());
         }

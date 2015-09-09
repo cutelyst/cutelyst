@@ -43,7 +43,7 @@ public:
     /**
      * Returns a named action from a given namespace.
      */
-    Action *getAction(const QString &name, const QString &nameSpace = QByteArray()) const;
+    Action *getAction(const QString &name, const QString &nameSpace = QString()) const;
 
     /**
      * Returns the named action by its full private path.

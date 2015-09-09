@@ -45,7 +45,7 @@ QByteArray DispatchTypePath::list() const
 {
     Q_D(const DispatchTypePath);
 
-    QRegularExpression multipleSlashes("/{1,}");
+    QRegularExpression multipleSlashes(QLatin1String("/{1,}"));
 
     QList<QStringList> table;
 
@@ -64,8 +64,8 @@ QByteArray DispatchTypePath::list() const
             _path.replace(multipleSlashes, QLatin1String("/"));
 
             QString privateName = action->reverse();
-            if (!privateName.startsWith('/')) {
-                privateName.prepend('/');
+            if (!privateName.startsWith(QLatin1Char('/'))) {
+                privateName.prepend(QLatin1Char('/'));
             }
 
             table.append({ _path, privateName });
@@ -170,7 +170,7 @@ bool actionLessThan(Action *a1, Action *a2)
 bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
-    if (_path.startsWith('/')) {
+    if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {

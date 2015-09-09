@@ -63,11 +63,11 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() % QStringLiteral("_session");
 
-    const QVariantHash &config = app->config("Session_Plugin").toHash();
-    d->sessionExpires = config.value("expires", 7200).toULongLong();
-    d->expiryThreshold = config.value("expiry_threshold", 0).toULongLong();
-    d->verifyAddress = config.value("verify_address", false).toBool();
-    d->verifyUserAgent = config.value("verify_user_agent", false).toBool();
+    const QVariantHash &config = app->config(QLatin1String("Session_Plugin")).toHash();
+    d->sessionExpires = config.value(QLatin1String("expires"), 7200).toULongLong();
+    d->expiryThreshold = config.value(QLatin1String("expiry_threshold"), 0).toULongLong();
+    d->verifyAddress = config.value(QLatin1String("verify_address"), false).toBool();
+    d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
 
@@ -254,7 +254,7 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
 
         QVariant cookie = getSessionCookie(c, sessionName);
         if (!cookie.isNull()) {
-            sessionId = cookie.value<QNetworkCookie>().value();
+            sessionId = QString::fromLatin1(cookie.value<QNetworkCookie>().value());
             qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
         }
     }
@@ -400,7 +400,7 @@ bool SessionPrivate::validateSessionId(const QString &id)
     const int size = id.size();
     while (i < size) {
         QChar c = id[i];
-        if ((c >= 'a' && c <= 'f') || (c >= '0' && c <= '9')) {
+        if ((c >= QLatin1Char('a') && c <= QLatin1Char('f')) || (c >= QLatin1Char('0') && c <= QLatin1Char('9'))) {
             ++i;
             continue;
         }
@@ -545,8 +545,9 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, c
 
 QVariant SessionPrivate::getSessionCookie(Context *c, const QString &sessionName)
 {
+    const QByteArray name = sessionName.toLatin1();
     Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
-        if (cookie.name() == sessionName) {
+        if (cookie.name() == name) {
             return QVariant::fromValue(cookie);
         }
     }

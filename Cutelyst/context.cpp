@@ -142,7 +142,7 @@ Dispatcher *Context::dispatcher() const
 QString Cutelyst::Context::controllerName() const
 {
     Q_D(const Context);
-    return d->action->controller()->metaObject()->className();
+    return QString::fromLatin1(d->action->controller()->metaObject()->className());
 }
 
 Controller *Context::controller() const
@@ -210,7 +210,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         encodedArgs.append(_path);
 
         Q_FOREACH (const QString &arg, args) {
-            encodedArgs.append(QUrl::toPercentEncoding(arg));
+            encodedArgs.append(QString::fromLatin1(QUrl::toPercentEncoding(arg)));
         }
         ret.setPath(QLatin1Char('/') % encodedArgs.join(QLatin1Char('/')));
     } else if (_path.startsWith(QLatin1Char('/'))) {

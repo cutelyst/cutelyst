@@ -163,7 +163,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
 
     QByteArray controlerNS;
     for (int i = 0; i < meta->classInfoCount(); ++i) {
-        if (meta->classInfo(i).name() == QLatin1String("Namespace")) {
+        if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
             controlerNS = meta->classInfo(i).value();
             break;
         }
@@ -174,19 +174,19 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
 
         for (int i = 0; i < className.length(); ++i) {
             if (className.at(i).toLower() == className.at(i)) {
-                controlerNS.append(className.at(i));
+                controlerNS.append(className.at(i).toLatin1());
                 lastWasUpper = false;
             } else {
                 if (lastWasUpper) {
-                    controlerNS.append(className.at(i).toLower());
+                    controlerNS.append(className.at(i).toLower().toLatin1());
                 } else {
-                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
+                    controlerNS.append('/' + className.at(i).toLower().toLatin1());
                 }
                 lastWasUpper = true;
             }
         }
     }
-    pathPrefix = controlerNS;
+    pathPrefix = QString::fromLatin1(controlerNS);
 
     registerActionMethods(meta, q, app);
 }
@@ -319,9 +319,9 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 
             QString reverse;
             if (controller->ns().isEmpty()) {
-                reverse = name;
+                reverse = QString::fromLatin1(name);
             } else {
-                reverse = controller->ns() % QLatin1Char('/') % name;
+                reverse = controller->ns() % QLatin1Char('/') % QString::fromLatin1(name);
             }
 
             Action *action = createAction({
@@ -369,12 +369,12 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
                             if (++pos < size && str.at(pos) == ':') {
                                 // found the start of a key so this is
                                 // really the end of a value
-                                value = str.mid(valueStart, valueEnd - valueStart);
+                                value = QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
                                 break;
                             } else if (pos >= size) {
                                 // found the end of the string
                                 // save the remainig as the value
-                                value = str.mid(valueStart, valueEnd - valueStart);
+                                value = QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
                                 break;
                             }
                             // string was not '):' or ')$'
@@ -393,7 +393,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             }
 
             // stopre the key
-            key = str.mid(keyStart, keyLength);
+            key = QString::fromLatin1(str.mid(keyStart, keyLength));
 
             // remove quotes
             if (!value.isEmpty()) {
@@ -420,20 +420,20 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         QString value = pair.second;
         if (key == QLatin1String("Global")) {
             key = QStringLiteral("Path");
-            value = parsePathAttr(QLatin1Char('/') % name);
+            value = parsePathAttr(QLatin1Char('/') % QString::fromLatin1(name));
         } else if (key == QLatin1String("Local")) {
             key = QStringLiteral("Path");
-            value = parsePathAttr(name);
+            value = parsePathAttr(QString::fromLatin1(name));
         } else if (key == QLatin1String("Path")) {
             value = parsePathAttr(value);
         } else if (key == QLatin1String("Args")) {
             QString args = value;
             if (!args.isEmpty()) {
-                value = args.remove(QRegularExpression("\\D")).toLatin1();
+                value = args.remove(QRegularExpression(QLatin1String("\\D")));
             }
         } else if (key == QLatin1String("CaptureArgs")) {
             QString captureArgs = value;
-            value = captureArgs.remove(QRegularExpression("\\D")).toLatin1();
+            value = captureArgs.remove(QRegularExpression(QLatin1String("\\D")));
         } else if (key == QLatin1String("Chained")) {
             value = parseChainedAttr(value);
         }
@@ -472,8 +472,8 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     }
 
     // If the method is private add a Private attribute
-    if (!ret.contains("Private") && method.access() == QMetaMethod::Private) {
-        ret.insert(QStringLiteral("Private"), QByteArray());
+    if (!ret.contains(QLatin1String("Private")) && method.access() == QMetaMethod::Private) {
+        ret.insert(QStringLiteral("Private"), QString());
     }
 
     return ret;
@@ -482,7 +482,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    const QMap<QByteArray, QByteArray> attributes = args.value("attributes").value<QMap<QByteArray, QByteArray> >();
+    const QMap<QByteArray, QByteArray> attributes = args.value(QLatin1String("attributes")).value<QMap<QByteArray, QByteArray> >();
     Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
         QObject *object = instantiateClass(role, "Cutelyst::Component");
         if (object) {
@@ -529,14 +529,14 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
 
 QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByteArray &super)
 {
-    QString instanceName = name;
+    QString instanceName = QString::fromLatin1(name);
     if (!instanceName.isEmpty()) {
-        instanceName.remove(QRegularExpression("\\W"));
+        instanceName.remove(QRegularExpression(QLatin1String("\\W")));
 
         int id = QMetaType::type(instanceName.toLatin1().data());
         if (!id) {
             if (!instanceName.endsWith(QLatin1Char('*'))) {
-                instanceName.append("*");
+                instanceName.append(QLatin1Char('*'));
             }
 
             id = QMetaType::type(instanceName.toLatin1().data());
@@ -569,7 +569,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
                 return object;
             }
         } else {
-            Component *component = application->createComponentPlugin(name);
+            Component *component = application->createComponentPlugin(QString::fromLatin1(name));
             if (component) {
                 return component;
             }
