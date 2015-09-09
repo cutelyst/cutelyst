@@ -39,9 +39,9 @@ public:
     // call reset before reusing it
     void reset();
 
-    void parseUrlQuery() const;
-    void parseBody() const;
-    void parseCookies() const;
+    inline void parseUrlQuery() const;
+    inline void parseBody() const;
+    inline void parseCookies() const;
 
     // Manually filled by the Engine
     QString method;

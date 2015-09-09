@@ -364,11 +364,14 @@ void *Request::engineData()
 
 void RequestPrivate::parseUrlQuery() const
 {
-    // Check for keywords (no = signs)
-    if (query.indexOf('=') < 0) {
-        queryKeywords = QUrl::fromPercentEncoding(query);
-    } else {
-        queryParam = parseUrlEncoded(query);
+    // TODO move this to the asignment of query
+    if (query.size()) {
+        // Check for keywords (no = signs)
+        if (query.indexOf('=') < 0) {
+            queryKeywords = QUrl::fromPercentEncoding(query);
+        } else {
+            queryParam = parseUrlEncoded(query);
+        }
     }
     queryParamParsed = true;
 }
