@@ -161,10 +161,10 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     const QString &className = QString::fromLatin1(meta->className());
     q->setObjectName(className);
 
-    QByteArray controlerNS;
+    QString controlerNS;
     for (int i = 0; i < meta->classInfoCount(); ++i) {
         if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
-            controlerNS = meta->classInfo(i).value();
+            controlerNS = QString::fromLatin1(meta->classInfo(i).value());
             break;
         }
     }
@@ -174,19 +174,19 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
 
         for (int i = 0; i < className.length(); ++i) {
             if (className.at(i).toLower() == className.at(i)) {
-                controlerNS.append(className.at(i).toLatin1());
+                controlerNS.append(className.at(i));
                 lastWasUpper = false;
             } else {
                 if (lastWasUpper) {
-                    controlerNS.append(className.at(i).toLower().toLatin1());
+                    controlerNS.append(className.at(i).toLower());
                 } else {
-                    controlerNS.append('/' + className.at(i).toLower().toLatin1());
+                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
                 }
                 lastWasUpper = true;
             }
         }
     }
-    pathPrefix = QString::fromLatin1(controlerNS);
+    pathPrefix = controlerNS;
 
     registerActionMethods(meta, q, app);
 }
