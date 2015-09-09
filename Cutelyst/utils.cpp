@@ -74,6 +74,7 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     // printing
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
+    out.setFieldAlignment(QTextStream::AlignLeft);
     QByteArray div = buildTableDivision(columnsSize);
 
     if (!title.isEmpty()) {
@@ -86,7 +87,13 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     if (!headers.isEmpty()) {
         // header titles
         for (int i = 0; i < headers.size(); ++i) {
-            out << "| " << headers[i].leftJustified(columnsSize[i]) << ' ';
+            out << "| ";
+
+            out.setFieldWidth(columnsSize[i]);
+            out << headers[i];
+
+            out.setFieldWidth(0);
+            out << ' ';
         }
         out << '|' << endl;
 
@@ -97,7 +104,13 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     Q_FOREACH (const QStringList &row, table) {
         // content table
         for (int i = 0; i < row.size(); ++i) {
-            out << "| " << row[i].leftJustified(columnsSize[i]) << ' ';
+            out << "| ";
+
+            out.setFieldWidth(columnsSize[i]);
+            out << row[i];
+
+            out.setFieldWidth(0);
+            out << ' ';
         }
         out << '|' << endl;
     }
