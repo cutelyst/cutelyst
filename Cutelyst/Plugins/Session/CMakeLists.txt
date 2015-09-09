@@ -17,10 +17,6 @@ set(plugin_session_HEADERS
     Session
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst_qt5_plugin_session SHARED
     ${plugin_session_SRC}
     ${plugin_session_HEADERS}

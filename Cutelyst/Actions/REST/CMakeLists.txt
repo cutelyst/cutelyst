@@ -10,10 +10,6 @@ set(plugin_action_rest_SRC
     metadata.json
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(plugin_action_rest SHARED
     ${plugin_action_rest_SRC}
 )

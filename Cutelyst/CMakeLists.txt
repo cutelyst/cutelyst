@@ -84,10 +84,6 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst-qt5 SHARED
     ${cutelystqt_SRC}
     ${cutelystqt_HEADERS}

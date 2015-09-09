@@ -11,10 +11,6 @@ set(httpEngine_SRC
     childprocess_p.h
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst-dev-http-qt5 SHARED ${httpEngine_SRC})
 set_target_properties(cutelyst-dev-http-qt5 PROPERTIES VERSION ${CUTELYST_VERSION} SOVERSION ${CUTELYST_API_LEVEL})
 target_link_libraries(cutelyst-dev-http-qt5

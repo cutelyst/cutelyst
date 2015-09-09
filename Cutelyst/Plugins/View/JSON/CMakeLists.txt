@@ -13,10 +13,6 @@ set(plugin_view_json_HEADERS
     viewjson.h
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst_qt5_plugin_view_json SHARED
     ${plugin_view_json_SRC}
     ${plugin_view_json_HEADERS}

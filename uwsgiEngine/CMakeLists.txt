@@ -19,7 +19,7 @@ execute_process(COMMAND ${UWSGI_EXEC_PATH} --cflags
                 OUTPUT_VARIABLE UWSGI_CFLAGS
                 OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 ${UWSGI_CFLAGS}")
+add_definitions(${UWSGI_CFLAGS})
 
 add_library(cutelyst SHARED ${uswgi_engine_SRC})
 target_link_libraries(cutelyst

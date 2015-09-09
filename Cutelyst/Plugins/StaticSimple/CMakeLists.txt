@@ -14,10 +14,6 @@ set(plugin_staticsimple_HEADERS
     StaticSimple
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst_qt5_plugin_staticsimple SHARED
     ${plugin_staticsimple_SRC}
     ${plugin_staticsimple_HEADERS}

@@ -29,10 +29,6 @@ set(plugin_authentication_HEADERS
     credentialhttp.h
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(cutelyst_qt5_plugin_authentication SHARED
     ${plugin_authentication_SRC}
     ${plugin_authentication_HEADERS}

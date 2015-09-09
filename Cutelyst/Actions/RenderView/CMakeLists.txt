@@ -10,10 +10,6 @@ set(plugin_action_renderview_SRC
     metadata.json
 )
 
-add_definitions(
-    -std=c++11
-)
-
 add_library(plugin_action_renderview SHARED
     ${plugin_action_renderview_SRC}
 )
