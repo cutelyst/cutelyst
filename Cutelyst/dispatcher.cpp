@@ -346,11 +346,11 @@ void DispatcherPrivate::printActions() const
     }
 
     qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {
-                                                           "Private",
-                                                           "Class",
-                                                           "Method"
+                                                           QLatin1String("Private"),
+                                                           QLatin1String("Class"),
+                                                           QLatin1String("Method")
                                                        },
-                                                       "Loaded Private actions:").data();
+                                                       QLatin1String("Loaded Private actions:")).data();
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, dispatchers) {

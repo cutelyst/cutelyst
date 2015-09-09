@@ -270,8 +270,8 @@ bool Application::setup(Engine *engine)
         }
 
         if (zeroCore && !tablePlugins.isEmpty()) {
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QByteArrayList(),
-                                                        "Loaded plugins:").data();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
+                                                        QLatin1String("Loaded plugins:")).data();
         }
 
         if (zeroCore) {
@@ -279,8 +279,8 @@ bool Application::setup(Engine *engine)
             tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
             tableDataHandlers.append({ QLatin1String("application/json") });
             tableDataHandlers.append({ QLatin1String("multipart/form-data") });
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QByteArrayList(),
-                                                        "Loaded Request Data Handlers:").data();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
+                                                        QLatin1String("Loaded Request Data Handlers:")).data();
 
             qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
             qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
@@ -317,9 +317,9 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore && !table.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
-                                                            "Class", "Type"
+                                                            QLatin1String("Class"), QLatin1String("Type")
                                                         },
-                                                        "Loaded components:").data();
+                                                        QLatin1String("Loaded components:")).data();
         }
 
         Q_FOREACH (Controller *controller, d->controllers) {
@@ -485,12 +485,12 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, "Query Parameters are:");
+        logRequestParameters(params, QLatin1String("Query Parameters are:"));
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, "Body Parameters are:");
+        logRequestParameters(params, QLatin1String("Body Parameters are:"));
     }
 
     QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
@@ -499,7 +499,7 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
     }
 }
 
-void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QByteArray &title)
+void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QString &title)
 {
 
     QList<QStringList> table;
@@ -509,8 +509,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       "Parameter",
-                                                       "Value",
+                                                       QLatin1String("Parameter"),
+                                                       QLatin1String("Value"),
                                                    },
                                                    title).data();
 }
@@ -529,10 +529,10 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelys
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       "Parameter",
-                                                       "Filename",
-                                                       "Type",
-                                                       "Size",
+                                                       QLatin1String("Parameter"),
+                                                       QLatin1String("Filename"),
+                                                       QLatin1String("Type"),
+                                                       QLatin1String("Size"),
                                                    },
-                                                   "File Uploads are:").data();
+                                                   QLatin1String("File Uploads are:")).data();
 }

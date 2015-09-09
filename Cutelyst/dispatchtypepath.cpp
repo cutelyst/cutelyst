@@ -72,8 +72,8 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, { "Path", "Private" },
-                             "Loaded Path actions:");
+    return Utils::buildTable(table, { QLatin1String("Path"), QLatin1String("Private") },
+                             QLatin1String("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const

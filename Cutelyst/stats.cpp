@@ -79,6 +79,6 @@ QString Stats::report()
     }
 
     return QString::fromLatin1(Utils::buildTable(table, {
-                                                     "Action", "Time"
+                                                     QLatin1String("Action"), QLatin1String("Time")
                                                  }));
 }

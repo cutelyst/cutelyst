@@ -40,12 +40,12 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
     return buffer;
 }
 
-QByteArray Utils::buildTable(const QList<QStringList> &table, const QByteArrayList &headers, const QByteArray &title)
+QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList &headers, const QString &title)
 {
     QList<int> columnsSize;
 
     if (!headers.isEmpty()) {
-        Q_FOREACH (const QByteArray &header, headers) {
+        Q_FOREACH (const QString &header, headers) {
             columnsSize.append(header.size());
         }
     } else {

@@ -146,13 +146,13 @@ QByteArray DispatchTypeChained::list() const
     QTextStream out(&buffer, QIODevice::WriteOnly);
 
     if (!paths.isEmpty()) {
-        out << Utils::buildTable(paths, { "Path Spec", "Private" },
-                                 "Loaded Chained actions:");
+        out << Utils::buildTable(paths, { QLatin1String("Path Spec"), QLatin1String("Private") },
+                                 QLatin1String("Loaded Chained actions:"));
     }
 
     if (!unattachedTable.isEmpty()) {
-        out << Utils::buildTable(unattachedTable, { "Private", "Missing parent" },
-                                 "Unattached Chained actions:");
+        out << Utils::buildTable(unattachedTable, { QLatin1String("Private"), QLatin1String("Missing parent") },
+                                 QLatin1String("Unattached Chained actions:"));
     }
 
     return buffer;
