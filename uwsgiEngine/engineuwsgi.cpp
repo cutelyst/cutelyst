@@ -158,20 +158,22 @@ void uWSGI::processRequest(wsgi_request *req)
     const QString remoteAddress = QString::fromLatin1(req->remote_addr, req->remote_addr_len);
     const QString remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
 
-    uint16_t remote_port_len;
-    char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    quint16 remotePort = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
-
+    quint16 remotePort = 0;
     Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
+        // Skip fields less than 6 chars
         if (req->hvec[i].iov_len < 6) {
             continue;
         }
 
-        if (!uwsgi_startswith((char *) req->hvec[i].iov_base,
+        if (!uwsgi_startswith(static_cast<char *>(req->hvec[i].iov_base),
                               const_cast<char *>("HTTP_"), 5)) {
-            headers.setHeader(QString::fromLatin1((char *) req->hvec[i].iov_base+5, req->hvec[i].iov_len-5),
-                              QString::fromLatin1((char *) req->hvec[i + 1].iov_base, req->hvec[i + 1].iov_len));
+            headers.setHeader(QString::fromLatin1(static_cast<char *>(req->hvec[i].iov_base) + 5, req->hvec[i].iov_len - 5),
+                              QString::fromLatin1(static_cast<char *>(req->hvec[i + 1].iov_base), req->hvec[i + 1].iov_len));
+        } else if (!remotePort &&
+                   !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
+                                  static_cast<char *>(req->hvec[i - 1].iov_base), req->hvec[i - 1].iov_len)) {
+            remotePort = QByteArray::fromRawData(static_cast<char *>(req->hvec[i].iov_base), req->hvec[i].iov_len).toUInt();
         }
     }
 
