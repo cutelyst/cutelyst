@@ -161,11 +161,6 @@ void uWSGI::processRequest(wsgi_request *req)
     quint16 remotePort = 0;
     Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
-        // Skip fields less than 6 chars
-        if (req->hvec[i].iov_len < 6) {
-            continue;
-        }
-
         if (!uwsgi_startswith(static_cast<char *>(req->hvec[i].iov_base),
                               const_cast<char *>("HTTP_"), 5)) {
             headers.setHeader(QString::fromLatin1(static_cast<char *>(req->hvec[i].iov_base) + 5, req->hvec[i].iov_len - 5),
