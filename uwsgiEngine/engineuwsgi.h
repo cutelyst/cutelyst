@@ -77,7 +77,7 @@ public:
 
     void stop();
 
-    QList<struct wsgi_request *> unusedRequestQueue() const;
+    QVector<wsgi_request *> unusedRequestQueue() const;
 
     virtual quint64 time();
 
@@ -94,7 +94,7 @@ private:
     void forked();
 
     Cutelyst::Application *m_app;
-    QList<struct wsgi_request *> m_unusedReq;
+    QVector<struct wsgi_request *> m_unusedReq;
     int m_workerId = 0;
     int m_workerCore = 0;
 };

@@ -253,7 +253,7 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
-        struct wsgi_request *wsgi_req = m_unusedReq.takeFirst();
+        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
         if (wsgi_req == NULL) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
@@ -306,7 +306,7 @@ void uWSGI::stop()
     }
 }
 
-QList<wsgi_request *> uWSGI::unusedRequestQueue() const
+QVector<wsgi_request *> uWSGI::unusedRequestQueue() const
 {
     return m_unusedReq;
 }
