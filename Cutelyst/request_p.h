@@ -36,42 +36,45 @@ class Engine;
 class RequestPrivate
 {
 public:
-    // call reset before reusing it
-    void reset();
+    RequestPrivate(Engine *_engine,
+                   const QString &_method,
+                   const QString &_path,
+                   const QByteArray &_query,
+                   const QString &_protocol,
+                   bool _isSecure,
+                   const QString &_serverAddress,
+                   const QString &_remoteAddress,
+                   quint16 _remotePort,
+                   const QString &_remoteUser,
+                   const Headers &_headers,
+                   quint64 _startOfRequest,
+                   QIODevice *_body,
+                   void *_requestPtr);
 
     inline void parseUrlQuery() const;
     inline void parseBody() const;
     inline void parseCookies() const;
 
+    static inline ParamsMultiMap parseUrlEncoded(const QByteArray &line);
+    static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
+
     // Manually filled by the Engine
+    Engine *engine;
     QString method;
+    // Path must not have a leading slash
+    QString path;
+    QByteArray query;
     QString protocol;
+    QString serverAddress;
+    QHostAddress remoteAddress;
+    QString remoteUser;
     Headers headers;
     QIODevice *body = nullptr;
-    QHostAddress remoteAddress;
     mutable QString remoteHostname;
-    QString remoteUser;
-    Engine *engine;
     quint64 startOfRequest;
     quint64 endOfRequest;
     // Pointer to Engine data
     void *requestPtr = nullptr;
-
-    // Path must not have a leading slash
-    QString path;
-    QByteArray query;
-    QString serverAddress;
-
-    quint16 remotePort;
-    bool https = false;
-
-protected:
-    friend class Request;
-    friend class Dispatcher;
-    friend class DispatchType;
-
-    static inline ParamsMultiMap parseUrlEncoded(const QByteArray &line);
-    static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
     // Engines don't need to touch this
     QStringList args;
@@ -87,6 +90,9 @@ protected:
     mutable QVariant bodyData;
     mutable ParamsMultiMap param;
     mutable QMap<QString, Upload *> uploads;
+
+    quint16 remotePort;
+    bool https = false;
 
     mutable bool urlParsed = false;
     mutable bool baseParsed = false;

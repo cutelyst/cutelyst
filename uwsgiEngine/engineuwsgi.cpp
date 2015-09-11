@@ -29,7 +29,7 @@
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
-#include <Cutelyst/request_p.h>
+#include <Cutelyst/request.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
@@ -39,8 +39,6 @@ typedef struct {
     QFile *bodyFile;
     BodyUWSGI *bodyUWSGI;
     BodyBufferedUWSGI *bodyBufferedUWSGI;
-    RequestPrivate *priv;
-    Request *request;
 } CachedRequest;
 
 uWSGI::uWSGI(const QVariantHash &opts, Application *app, QObject *parent) : Engine(opts, parent)
@@ -146,28 +144,23 @@ void uWSGI::processRequest(wsgi_request *req)
 {
     CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
 
-    RequestPrivate *priv = cache->priv;
-    priv->reset();
-
-    priv->startOfRequest = req->start_of_request;
-    priv->https = req->https_len;
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
     uint16_t pos = notSlash(req->path_info, req->path_info_len);
-    priv->path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
+    const QString path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
 
-    priv->serverAddress = QString::fromLatin1(req->host, req->host_len);
-    priv->query = QByteArray::fromRawData(req->query_string, req->query_string_len);
+    const QString serverAddress = QString::fromLatin1(req->host, req->host_len);
+    const QByteArray query = QByteArray::fromRawData(req->query_string, req->query_string_len);
 
-    priv->method = QString::fromLatin1(req->method, req->method_len);
-    priv->protocol = QString::fromLatin1(req->protocol, req->protocol_len);
-    priv->remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
-    priv->remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
+    const QString method = QString::fromLatin1(req->method, req->method_len);
+    const QString protocol = QString::fromLatin1(req->protocol, req->protocol_len);
+    const QString remoteAddress = QString::fromLatin1(req->remote_addr, req->remote_addr_len);
+    const QString remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
 
     uint16_t remote_port_len;
     char *remote_port = uwsgi_get_var(req, (char *) "REMOTE_PORT", 11, &remote_port_len);
-    priv->remotePort = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
+    quint16 remotePort = QByteArray::fromRawData(remote_port, remote_port_len).toUInt();
 
     Headers headers;
     for (int i = 0; i < req->var_cnt; i += 2) {
@@ -189,7 +182,6 @@ void uWSGI::processRequest(wsgi_request *req)
     if (req->encoding_len > 0) {
         headers.setContentEncoding(QString::fromLatin1(req->encoding, req->encoding_len));
     }
-    priv->headers = headers;
 
     QIODevice *body;
     if (req->post_file) {
@@ -211,9 +203,20 @@ void uWSGI::processRequest(wsgi_request *req)
         // the body.
         body = cache->bodyBufferedUWSGI;
     }
-    priv->body = body;
 
-    handleRequest(cache->request, false);
+    Engine::processRequest(method,
+                           path,
+                           query,
+                           protocol,
+                           req->https_len,
+                           serverAddress,
+                           remoteAddress,
+                           remotePort,
+                           remoteUser,
+                           headers,
+                           req->start_of_request,
+                           body,
+                           req);
 
     body->close();
 }
@@ -235,10 +238,7 @@ void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
     cache->bodyFile = new QFile(this);
     cache->bodyUWSGI = new BodyUWSGI(wsgi_req, this);
     cache->bodyBufferedUWSGI = new BodyBufferedUWSGI(wsgi_req, this);
-    cache->priv = new RequestPrivate;
-    cache->priv->engine = this;
-    cache->priv->requestPtr = wsgi_req;
-    cache->request = new Request(cache->priv);
+
     wsgi_req->async_environ = cache;
 
     m_unusedReq.append(wsgi_req);

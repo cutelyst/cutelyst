@@ -353,17 +353,6 @@ QVariantHash Engine::config(const QString &entity) const
     return d->config.value(entity);
 }
 
-void Engine::handleRequest(Request *request, bool autoDelete)
-{
-    Q_D(Engine);
-    Q_ASSERT(d->app);
-    d->app->handleRequest(request);
-
-    if (autoDelete) {
-        delete request;
-    }
-}
-
 void Engine::finalize(Context *c)
 {
     if (c->error()) {
@@ -477,4 +466,40 @@ QList<HeaderValuePair> Engine::headersForResponse(const Headers &headers)
     qSort(ret.begin(), ret.end(), &httpGoodPracticeWeightSort);
 
     return ret;
+}
+
+void Engine::processRequest(const QString &method,
+                            const QString &path,
+                            const QByteArray &query,
+                            const QString &protocol,
+                            bool isSecure,
+                            const QString &serverAddress,
+                            const QString &remoteAddress,
+                            quint16 remotePort,
+                            const QString &remoteUser,
+                            const Headers &headers,
+                            quint64 startOfRequest,
+                            QIODevice *body,
+                            void *requestPtr)
+{
+    Q_D(Engine);
+
+    RequestPrivate *prv = new RequestPrivate(this,
+                                             method,
+                                             path,
+                                             query,
+                                             protocol,
+                                             isSecure,
+                                             serverAddress,
+                                             remoteAddress,
+                                             remotePort,
+                                             remoteUser,
+                                             headers,
+                                             startOfRequest,
+                                             body,
+                                             requestPtr);
+
+    Request *request = new Request(prv);
+    d->app->handleRequest(request);
+    delete request;
 }

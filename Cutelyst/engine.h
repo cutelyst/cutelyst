@@ -40,6 +40,7 @@ class Context;
 class Request;
 class Headers;
 class EnginePrivate;
+class RequestPrivate;
 class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
@@ -181,12 +182,6 @@ protected:
     virtual void finalizeError(Context *c);
 
     /**
-     * Engines must call this when the Request/Response objects
-     * are ready for to be processed
-     */
-    void handleRequest(Request *request, bool autoDelete);
-
-    /**
      * Called by Application to deal
      * with finalizing cookies, headers and body
      */
@@ -219,6 +214,20 @@ protected:
         }
         return key;
     }
+
+    void processRequest(const QString &method,
+                        const QString &path,
+                        const QByteArray &query,
+                        const QString &protocol,
+                        bool https,
+                        const QString &serverAddress,
+                        const QString &remoteAddress,
+                        quint16 remotePort,
+                        const QString &remoteUser,
+                        const Headers &headers,
+                        quint64 startOfRequest,
+                        QIODevice *body,
+                        void *requestPtr);
 
     EnginePrivate *d_ptr;
 

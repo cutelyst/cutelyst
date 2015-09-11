@@ -37,6 +37,7 @@ Request::Request(RequestPrivate *prv) :
 
 Request::~Request()
 {
+    qDeleteAll(d_ptr->uploads);
     delete d_ptr;
 }
 
@@ -533,6 +534,38 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
     return ret;
 }
 
+RequestPrivate::RequestPrivate(Engine *_engine,
+                               const QString &_method,
+                               const QString &_path,
+                               const QByteArray &_query,
+                               const QString &_protocol,
+                               bool _isSecure,
+                               const QString &_serverAddress,
+                               const QString &_remoteAddress,
+                               quint16 _remotePort,
+                               const QString &_remoteUser,
+                               const Headers &_headers,
+                               quint64 _startOfRequest,
+                               QIODevice *_body,
+                               void *_requestPtr)
+    : engine(_engine)
+    , method(_method)
+    , path(_path)
+    , query(_query)
+    , protocol(_protocol)
+    , serverAddress(_serverAddress)
+    , remoteAddress(_remoteAddress)
+    , remoteUser(_remoteUser)
+    , headers(_headers)
+    , body(_body)
+    , startOfRequest(_startOfRequest)
+    , requestPtr(_requestPtr)
+    , remotePort(_remotePort)
+    , https(_isSecure)
+{
+
+}
+
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)
 {
     QVariantMap ret;
@@ -543,20 +576,4 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
         ret.insertMulti(ret.constBegin(), end.key(), end.value());
     }
     return ret;
-}
-
-void RequestPrivate::reset()
-{
-    args = QStringList();
-    captures = QStringList();
-    urlParsed = false;
-    baseParsed = false;
-    cookiesParsed = false;
-    queryParamParsed = false;
-    queryKeywords.clear();
-    queryParam.clear();
-    bodyParsed = false;
-    paramParsed = false;
-    qDeleteAll(uploads);
-    uploads.clear();
 }
