@@ -160,15 +160,18 @@ void uWSGI::processRequest(wsgi_request *req)
 
     quint16 remotePort = 0;
     Headers headers;
-    for (int i = 0; i < req->var_cnt; i += 2) {
-        if (!uwsgi_startswith(static_cast<char *>(req->hvec[i].iov_base),
+    // we scan the table in reverse, as updated values are at the end
+    for (int i = req->var_cnt - 1; i > 0; i -= 2) {
+        struct iovec &name = req->hvec[i - 1];
+        struct iovec &value = req->hvec[i];
+        if (!uwsgi_startswith(static_cast<char *>(name.iov_base),
                               const_cast<char *>("HTTP_"), 5)) {
-            headers.setHeader(QString::fromLatin1(static_cast<char *>(req->hvec[i].iov_base) + 5, req->hvec[i].iov_len - 5),
-                              QString::fromLatin1(static_cast<char *>(req->hvec[i + 1].iov_base), req->hvec[i + 1].iov_len));
+            headers.setHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
+                              QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
         } else if (!remotePort &&
                    !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
-                                  static_cast<char *>(req->hvec[i - 1].iov_base), req->hvec[i - 1].iov_len)) {
-            remotePort = QByteArray::fromRawData(static_cast<char *>(req->hvec[i].iov_base), req->hvec[i].iov_len).toUInt();
+                                  static_cast<char *>(name.iov_base), name.iov_len)) {
+            remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len).toUInt();
         }
     }
 
