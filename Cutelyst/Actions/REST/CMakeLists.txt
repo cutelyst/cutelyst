@@ -12,4 +12,4 @@ target_link_libraries(plugin_action_rest
     cutelyst-qt5
 )
 
-install(TARGETS plugin_action_rest DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins)
+install(TARGETS plugin_action_rest DESTINATION ${CUTELYST_PLUGINS_DIR})

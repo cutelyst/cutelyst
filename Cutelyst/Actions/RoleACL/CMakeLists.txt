@@ -13,4 +13,4 @@ target_link_libraries(plugin_action_roleacl
     cutelyst_qt5_plugin_authentication
 )
 
-install(TARGETS plugin_action_roleacl DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins)
+install(TARGETS plugin_action_roleacl DESTINATION ${CUTELYST_PLUGINS_DIR})
