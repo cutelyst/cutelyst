@@ -22,4 +22,7 @@
 /* Version number of package */
 #define VERSION "@VERSION@"
 
+/* Directory where the plugins are located */
+#define CUTELYST_PLUGINS_DIR "@CUTELYST_PLUGINS_DIR@"
+
 #endif /*CONFIG_H*/

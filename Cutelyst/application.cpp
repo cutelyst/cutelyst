@@ -148,7 +148,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
         }
     }
 
-    QDir pluginsDir(QLatin1String("/usr/lib/cutelyst-plugins"));
+    QDir pluginsDir(QLatin1String(CUTELYST_PLUGINS_DIR));
     QPluginLoader loader;
     Component *component = 0;
     ComponentFactory *factory = 0;
