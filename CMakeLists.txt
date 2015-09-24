@@ -62,6 +62,7 @@ set (BUILDDIR "${CMAKE_BINARY_DIR}")
 set (UWSGI_PLUGINS_DIR "/usr/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
 find_program(UWSGI_EXEC_PATH NAMES uwsgi)
 set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
+set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
