@@ -203,32 +203,27 @@ public:
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParameter(const QString &key, const QString &defaultValue = QString()) const
-    { return bodyParameters().value(key, defaultValue); }
+    inline QString bodyParameter(const QString &key, const QString &defaultValue = QString()) const;
 
     /**
      * Convenience method for geting all body values passing a key
      */
-    inline QStringList bodyParameters(const QString &key) const
-    { return bodyParameters().values(key); }
+    inline QStringList bodyParameters(const QString &key) const;
 
     /**
      * Short for bodyParameters()
      */
-    inline ParamsMultiMap bodyParams() const
-    { return bodyParameters(); }
+    inline ParamsMultiMap bodyParams() const;
 
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParam(const QString &key, const QString &defaultValue = QString()) const
-    { return bodyParameters().value(key, defaultValue); }
+    inline QString bodyParam(const QString &key, const QString &defaultValue = QString()) const;
 
     /**
      * Convenience method for geting all body values passing a key
      */
-    inline QStringList bodyParams(const QString &key) const
-    { return bodyParameters().values(key); }
+    inline QStringList bodyParams(const QString &key) const;
 
     /**
      * Contains the keywords portion of a query string, when no '=' signs are present.
@@ -250,32 +245,27 @@ public:
     /**
      * Convenience method for geting a single query value passing a key and an optional default value
      */
-    inline QString queryParameter(const QString &key, const QString &defaultValue = QString()) const
-    { return queryParameters().value(key, defaultValue); }
+    inline QString queryParameter(const QString &key, const QString &defaultValue = QString()) const;
 
     /**
      * Convenience method for geting all query values passing a key
      */
-    inline QStringList queryParameters(const QString &key) const
-    { return queryParameters().values(key); }
+    inline QStringList queryParameters(const QString &key) const;
 
     /**
      * Short for queryParameters()
      */
-    inline ParamsMultiMap queryParams() const
-    { return queryParameters(); }
+    inline ParamsMultiMap queryParams() const;
 
     /**
      * Convenience method for geting a single query value passing a key and an optional default value
      */
-    inline QString queryParam(const QString &key, const QString &defaultValue = QString()) const
-    { return queryParameters().value(key, defaultValue); }
+    inline QString queryParam(const QString &key, const QString &defaultValue = QString()) const;
 
     /**
      * Convenience method for geting all query values passing a key
      */
-    inline QStringList queryParams(const QString &key) const
-    { return queryParameters().values(key); }
+    inline QStringList queryParams(const QString &key) const;
 
     QVariantMap parametersVariant() const;
 
@@ -289,30 +279,28 @@ public:
      * Returns the value specified by key, it's equivalent to calling
      * parameters().value().
      */
-    inline QString param(const QString &key, const QString &defaultValue = QString()) const
-    { return parameters().value(key, defaultValue); }
+    inline QString param(const QString &key, const QString &defaultValue = QString()) const;
 
     /**
      * Returns the values specified by key, it's equivalent to calling
      * parameters().values().
      */
-    inline QStringList params(const QString &key) const
-    { return parameters().values(key); }
+    inline QStringList params(const QString &key) const;
 
     /**
      * Short for parameters()
      */
-    inline ParamsMultiMap params() const { return parameters(); }
+    inline ParamsMultiMap params() const;
 
     /**
      * Returns the Content-Encoding header
      */
-    inline QString contentEncoding() const { return headers().contentEncoding(); }
+    inline QString contentEncoding() const;
 
     /**
      * Returns the Content-Type header
      */
-    inline QString contentType() const { return headers().contentType(); }
+    inline QString contentType() const;
 
     /**
      * Returns the cookie with the given name
@@ -327,7 +315,7 @@ public:
     /**
      * Short for headers().header(key);
      */
-    inline QString header(const QString &key) const { return headers().header(key); }
+    inline QString header(const QString &key) const;
 
     /**
      * Returns the HTTP request headers
@@ -357,12 +345,12 @@ public:
     /**
      * Returns the user agent (browser) version string.
      */
-    QString userAgent() const { return headers().userAgent(); }
+    inline QString userAgent() const;
 
     /**
      * referer Shortcut for header("Referer")
      */
-    QString referer() const { return headers().referer(); }
+    inline QString referer() const;
 
     /**
      * Returns the value of the REMOTE_USER environment variable.
@@ -378,16 +366,14 @@ public:
     /**
      * Returns all (if any) Upload objects for the given field.
      */
-    inline Uploads uploads(const QString &name) const
-    { return uploads().values(name); }
+    inline Uploads uploads(const QString &name) const;
 
     /**
      * Returns the first Upload object for the given field,
      * if no upload matches the field name this function
      * returns 0.
      */
-    inline Upload *upload(const QString &name) const
-    { return uploads().value(name); }
+    inline Upload *upload(const QString &name) const;
 
     /**
      * Returns a ParamsMultiMap of parameters stemming from the current request's params,
@@ -451,6 +437,66 @@ private:
     friend class DispatchType;
     Q_DECLARE_PRIVATE(Request)
 };
+
+inline QString Request::bodyParameter(const QString &key, const QString &defaultValue) const
+{ return bodyParameters().value(key, defaultValue); }
+
+inline QStringList Request::bodyParameters(const QString &key) const
+{ return bodyParameters().values(key); }
+
+inline ParamsMultiMap Request::bodyParams() const
+{ return bodyParameters(); }
+
+inline QString Request::bodyParam(const QString &key, const QString &defaultValue) const
+{ return bodyParameters().value(key, defaultValue); }
+
+inline QStringList Request::bodyParams(const QString &key) const
+{ return bodyParameters().values(key); }
+
+inline QString Request::queryParameter(const QString &key, const QString &defaultValue) const
+{ return queryParameters().value(key, defaultValue); }
+
+inline QStringList Request::queryParameters(const QString &key) const
+{ return queryParameters().values(key); }
+
+inline ParamsMultiMap Request::queryParams() const
+{ return queryParameters(); }
+
+inline QString Request::queryParam(const QString &key, const QString &defaultValue) const
+{ return queryParameters().value(key, defaultValue); }
+
+inline QStringList Request::queryParams(const QString &key) const
+{ return queryParameters().values(key); }
+
+inline QString Request::param(const QString &key, const QString &defaultValue) const
+{ return parameters().value(key, defaultValue); }
+
+inline QStringList Request::params(const QString &key) const
+{ return parameters().values(key); }
+
+inline ParamsMultiMap Request::params() const
+{ return parameters(); }
+
+inline QString Request::contentEncoding() const
+{ return headers().contentEncoding(); }
+
+inline QString Request::contentType() const
+{ return headers().contentType(); }
+
+inline QString Request::header(const QString &key) const
+{ return headers().header(key); }
+
+inline QString Request::userAgent() const
+{ return headers().userAgent(); }
+
+inline QString Request::referer() const
+{ return headers().referer(); }
+
+inline Uploads Request::uploads(const QString &name) const
+{ return uploads().values(name); }
+
+inline Upload *Request::upload(const QString &name) const
+{ return uploads().value(name); }
 
 }
 

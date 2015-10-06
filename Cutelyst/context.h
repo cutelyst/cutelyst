@@ -180,8 +180,7 @@ public:
      *            });
      * \endcode
      */
-    inline void stash(const QVariantHash &unite)
-    { stash().unite(unite); }
+    inline void stash(const QVariantHash &unite);
 
     /**
      * Returns a QVariantHash reference to the stash,
@@ -237,8 +236,7 @@ public:
      * c->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
     inline QUrl uriForNoArgs(const QString &path,
-                             const ParamsMultiMap &queryValues) const
-    { return uriFor(path, QStringList(), queryValues); }
+                             const ParamsMultiMap &queryValues) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -273,8 +271,7 @@ public:
      * When used as a string, provides a textual URI.
      */
     inline QUrl uriForNoArgs(Action *action,
-                             const ParamsMultiMap &queryValues) const
-    { return uriFor(action, QStringList(), queryValues); }
+                             const ParamsMultiMap &queryValues) const;
 
     /**
      * A private path to the Cutelyst action you want to create a URI for.
@@ -307,8 +304,7 @@ public:
      * A convenience method for the uriForAction() without the arguments parameter
      */
     inline QUrl uriForActionNoArgs(const QString &path,
-                                   const ParamsMultiMap &queryValues) const
-    { return uriForAction(path, QStringList(), queryValues); }
+                                   const ParamsMultiMap &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -413,6 +409,18 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Context)
 };
+
+inline void Context::stash(const QVariantHash &unite)
+{ stash().unite(unite); }
+
+inline QUrl Context::uriForNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
+{ return uriFor(path, QStringList(), queryValues); }
+
+inline QUrl Context::uriForNoArgs(Action *action, const ParamsMultiMap &queryValues) const
+{ return uriFor(action, QStringList(), queryValues); }
+
+inline QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
+{ return uriForAction(path, QStringList(), queryValues); }
 
 }
 

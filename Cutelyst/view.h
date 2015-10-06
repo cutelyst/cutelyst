@@ -54,9 +54,11 @@ private:
      * This is used by Component execute() when
      * using an ActionView
      */
-    bool doExecute(Context *c) Q_DECL_FINAL
-    { return render(c); }
+    inline bool doExecute(Context *c) Q_DECL_FINAL;
 };
+
+inline bool View::doExecute(Context *c)
+{ return render(c); }
 
 }
 

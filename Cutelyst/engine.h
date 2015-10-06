@@ -82,9 +82,7 @@ public:
      * \note the value returned from this function is
      * only valid when postFork() is issued.
      */
-    inline bool isZeroWorker() const {
-        return !workerId() && !workerCore();
-    }
+    inline bool isZeroWorker() const;
 
     /**
      * @brief reload
@@ -242,6 +240,10 @@ private:
      */
     virtual bool init() = 0;
 };
+
+inline bool Engine::isZeroWorker() const {
+    return !workerId() && !workerCore();
+}
 
 }
 
