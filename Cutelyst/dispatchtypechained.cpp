@@ -272,8 +272,9 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     Action *curr = action;
     while (curr) {
         if (curr->attributes().contains(QStringLiteral("CaptureArgs"))) {
-            if (captures.size() < curr->numberOfCaptures()) {
+            if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
+                qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures";
                 return QString();
             }
 
@@ -292,11 +293,13 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
 
     if (parent != QLatin1String("/")) {
         // fail for dangling action
+        qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: dangling action" << parent;
         return QString();
     }
 
     if (!localCaptures.isEmpty()) {
         // fail for too many captures
+        qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: too many captures" << localCaptures;
         return QString();
     }
 
