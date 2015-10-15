@@ -266,12 +266,12 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     return uriFor(path, localArgs, queryValues);
 }
 
-QUrl Context::uriForAction(const QString &path, const QStringList &args, const ParamsMultiMap &queryValues) const
+QUrl Context::uriForAction(const QString &path, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
     Action *action = d->dispatcher->getActionByPath(path);
-    return uriFor(action, QStringList(), args, queryValues);
+    return uriFor(action, captures, args, queryValues);
 }
 
 bool Context::detached() const

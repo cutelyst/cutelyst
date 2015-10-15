@@ -284,14 +284,15 @@ public:
      * and it will create the URI /users/the-list.
      */
     QUrl uriForAction(const QString &path,
+                      const QStringList &captures = QStringList(),
                       const QStringList &args = QStringList(),
                       const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * A convenience method for the uriForAction() without the arguments parameter
      */
-    inline QUrl uriForActionNoArgs(const QString &path,
-                                   const ParamsMultiMap &queryValues) const;
+    inline QUrl uriForAction(const QString &path,
+                             const ParamsMultiMap &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -406,8 +407,8 @@ inline QUrl Context::uriFor(const QString &path, const ParamsMultiMap &queryValu
 inline QUrl Context::uriFor(Action *action, const ParamsMultiMap &queryValues) const
 { return uriFor(action, QStringList(), QStringList(), queryValues); }
 
-inline QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
-{ return uriForAction(path, QStringList(), queryValues); }
+inline QUrl Context::uriForAction(const QString &path, const ParamsMultiMap &queryValues) const
+{ return uriForAction(path, QStringList(), QStringList(), queryValues); }
 
 }
 
