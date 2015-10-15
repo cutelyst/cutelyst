@@ -32,6 +32,13 @@ DispatchType::~DispatchType()
 {
 }
 
+Action *DispatchType::expandAction(Context *c, Action *action) const
+{
+    Q_UNUSED(c)
+    Q_UNUSED(action)
+    return nullptr;
+}
+
 QString DispatchType::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_UNUSED(action)
