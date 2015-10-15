@@ -85,7 +85,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
         _path = QStringLiteral("/");
     }
 
-    QHash<QString, ActionList>::ConstIterator it = d->paths.constFind(_path);
+    StringActionsMap::ConstIterator it = d->paths.constFind(_path);
     if (it == d->paths.constEnd()) {
         return NoMatch;
     }
@@ -180,9 +180,9 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         _path = QStringLiteral("/");
     }
 
-    QHash<QString, ActionList>::Iterator it = paths.find(_path);
+    StringActionsMap::Iterator it = paths.find(_path);
     if (it != paths.end()) {
-        ActionList actions = it.value();
+        Actions actions = it.value();
         int actionNumberOfArgs = action->numberOfArgs();
         Q_FOREACH (const Action *regAction, actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {

@@ -22,9 +22,12 @@
 
 #include "dispatchtypechained.h"
 
-
-
 namespace Cutelyst {
+
+typedef QMap<QString, Action *> StringActionMap;
+typedef QVector<Action *> Actions;
+typedef QMap<QString, Actions> StringActionsMap;
+typedef QMap<QString, StringActionsMap> StringStringActionsMap;
 
 class DispatchTypeChainedPrivate
 {
@@ -35,8 +38,8 @@ public:
     static QString listExtraConsumes(Action *action);
 
     ActionList endPoints;
-    QHash<QString, Action *> actions;
-    QHash<QString, QHash<QString, ActionList> > childrenOf;
+    StringActionMap actions;
+    StringStringActionsMap childrenOf;
 };
 
 }

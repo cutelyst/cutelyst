@@ -317,12 +317,12 @@ bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
 
 QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const
 {
-    QHash<QString, QHash<QString, ActionList> >::ConstIterator it = childrenOf.constFind(parent);
+    StringStringActionsMap::ConstIterator it = childrenOf.constFind(parent);
     if (it == childrenOf.constEnd()) {
         return QVariantHash();
     }
 
-    QHash<QString, ActionList> children = it.value();
+    const StringActionsMap children = it.value();
     QStringList keys = children.keys();
     qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
     QVariantHash bestAction;
@@ -339,7 +339,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
             parts = parts.mid(tryPartCount);
         }
 
-        const ActionList &tryActions = children.value(tryPart);
+        const Actions tryActions = children.value(tryPart);
         Q_FOREACH (Action *action, tryActions) {
             if (action->attributes().contains(QStringLiteral("CaptureArgs"))) {
                 int captureCount = action->numberOfCaptures();
@@ -358,13 +358,13 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                 }
 
                 // try the remaining parts against children of this action
-                QVariantHash ret = recurseMatch(c, QLatin1Char('/') % action->reverse(), localParts);
+                const QVariantHash ret = recurseMatch(c, QLatin1Char('/') % action->reverse(), localParts);
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)
                 ActionList actions = ret.value(QStringLiteral("actions")).value<ActionList>();
-                QStringList actionCaptures = ret.value(QStringLiteral("captures")).toStringList();
-                QStringList actionParts = ret.value(QStringLiteral("parts")).toStringList();
+                const QStringList actionCaptures = ret.value(QStringLiteral("captures")).toStringList();
+                const QStringList actionParts = ret.value(QStringLiteral("parts")).toStringList();
                 int n_pathparts = ret.value(QStringLiteral("n_pathparts")).toInt();
                 int bestActionParts = bestAction.value(QStringLiteral("parts")).toStringList().size();
 

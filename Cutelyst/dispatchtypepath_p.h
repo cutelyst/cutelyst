@@ -24,12 +24,15 @@
 
 namespace Cutelyst {
 
+typedef QVector<Action *> Actions;
+typedef QMap<QString, Actions> StringActionsMap;
+
 class DispatchTypePathPrivate
 {
 public:
     bool registerPath(const QString &path, Action *action);
 
-    QHash<QString, ActionList> paths;
+    StringActionsMap paths;
 };
 
 }
