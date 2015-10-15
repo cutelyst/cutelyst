@@ -306,6 +306,29 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     return QLatin1Char('/') % parts.join(QLatin1Char('/'));
 }
 
+Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
+{
+    Q_D(const DispatchTypeChained);
+
+    if (action) {
+        const QMap<QString, QString> &attributes = action->attributes();
+        if (!attributes.contains(QStringLiteral("Chained"))) {
+            return action;
+        }
+    }
+
+    ActionList chain;
+    Action *curr = action;
+
+    while (curr) {
+        chain.append(curr);
+        const QString parent = curr->attributes().value(QStringLiteral("Chained"));
+        curr = d->actions.value(parent);
+    }
+
+    return new ActionChain(chain, c);
+}
+
 bool DispatchTypeChained::inUse()
 {
     Q_D(const DispatchTypeChained);

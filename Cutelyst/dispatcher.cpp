@@ -289,6 +289,18 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
     return QString();
 }
 
+Action *Dispatcher::expandAction(Context *c, Action *action) const
+{
+    Q_D(const Dispatcher);
+    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
+        Action *expandedAction = dispatch->expandAction(c, action);
+        if (expandedAction) {
+            return expandedAction;
+        }
+    }
+    return nullptr;
+}
+
 QList<DispatchType *> Dispatcher::dispatchers() const
 {
     Q_D(const Dispatcher);

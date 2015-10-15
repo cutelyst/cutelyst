@@ -248,22 +248,9 @@ public:
      * c->uriFor(c->action(), args).
      */
     QUrl uriFor(Action *action,
+                const QStringList &captures = QStringList(),
                 const QStringList &args = QStringList(),
                 const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
-
-    /**
-     * Constructs an absolute QUrl object based on the application root, the
-     * provided path, and the additional arguments and query parameters provided.
-     * When used as a string, provides a textual URI.
-     *
-     * If no arguments are provided, the URI for the current action is returned.
-     * To return the current action and also provide \p args, use
-     * c->uriFor(c->action(), args).
-     */
-    QUrl uriForWithCaptures(Action *action,
-                            const QStringList &captures,
-                            const QStringList &args = QStringList(),
-                            const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -417,7 +404,7 @@ inline QUrl Context::uriForNoArgs(const QString &path, const ParamsMultiMap &que
 { return uriFor(path, QStringList(), queryValues); }
 
 inline QUrl Context::uriForNoArgs(Action *action, const ParamsMultiMap &queryValues) const
-{ return uriFor(action, QStringList(), queryValues); }
+{ return uriFor(action, QStringList(), QStringList(), queryValues); }
 
 inline QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
 { return uriForAction(path, QStringList(), queryValues); }

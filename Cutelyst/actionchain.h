@@ -36,6 +36,8 @@ public:
     explicit ActionChain(const ActionList &chain, QObject *parent = 0);
     ~ActionChain();
 
+    virtual qint8 numberOfCaptures() const Q_DECL_FINAL;
+
     bool dispatch(Context *c) Q_DECL_FINAL;
 
 protected:

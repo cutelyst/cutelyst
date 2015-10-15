@@ -58,6 +58,8 @@ public:
      */
     virtual QString uriForAction(Action *action, const QStringList &captures) const = 0;
 
+    virtual Action *expandAction(Context *c, Action *action) const = 0;
+
     /**
      * @brief registerAction
      * @param action

@@ -162,6 +162,13 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     return QString();
 }
 
+Action *DispatchTypePath::expandAction(Cutelyst::Context *c, Action *action) const
+{
+    Q_UNUSED(c)
+    Q_UNUSED(action)
+    return nullptr;
+}
+
 bool actionLessThan(Action *a1, Action *a2)
 {
     return a1->numberOfArgs() < a2->numberOfArgs();

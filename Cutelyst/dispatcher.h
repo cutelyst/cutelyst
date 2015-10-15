@@ -71,6 +71,8 @@ public:
      */
     QString uriForAction(Action *action, const QStringList &captures) const;
 
+    Action *expandAction(Context *c, Action *action) const;
+
     QList<DispatchType *> dispatchers() const;
 
 protected:

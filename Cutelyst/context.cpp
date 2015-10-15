@@ -235,23 +235,35 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     return ret;
 }
 
-QUrl Context::uriFor(Action *action, const QStringList &args, const ParamsMultiMap &queryValues) const
-{
-    return uriForWithCaptures(action, QStringList(), args, queryValues);
-}
-
-QUrl Context::uriForWithCaptures(Action *action, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
+QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
-    QString path;
-    if (action) {
-        path = d->dispatcher->uriForAction(action, captures);
-    } else {
-        path = d->dispatcher->uriForAction(d->action, captures);
+    Action *localAction = action;
+    if (!localAction) {
+        localAction = d->action;
     }
 
-    return uriFor(path, args, queryValues);
+    QStringList localArgs = args;
+    QStringList localCaptures = captures;
+
+    Action *expandedAction = d->dispatcher->expandAction(const_cast<Context*>(this), action);
+    qDebug() << Q_FUNC_INFO << action << action->numberOfCaptures();
+    if (expandedAction->numberOfCaptures() > 0) {
+        while (localCaptures.size() < expandedAction->numberOfCaptures()
+               && localArgs.size()) {
+            localCaptures.append(localArgs.takeFirst());
+        }
+    } else {
+        QStringList localCapturesAux = localCaptures;
+        localCapturesAux.append(localArgs);
+        localArgs = localCapturesAux;
+        localCaptures = QStringList();
+    }
+
+    const QString path = d->dispatcher->uriForAction(localAction, localCaptures);
+
+    return uriFor(path, localArgs, queryValues);
 }
 
 QUrl Context::uriForAction(const QString &path, const QStringList &args, const ParamsMultiMap &queryValues) const
@@ -259,7 +271,7 @@ QUrl Context::uriForAction(const QString &path, const QStringList &args, const P
     Q_D(const Context);
 
     Action *action = d->dispatcher->getActionByPath(path);
-    return uriFor(action, args, queryValues);
+    return uriFor(action, QStringList(), args, queryValues);
 }
 
 bool Context::detached() const

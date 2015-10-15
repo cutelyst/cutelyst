@@ -69,7 +69,7 @@ public:
      * @brief Check Args attribute, and makes sure number of
      * args matches the setting. Always returns true if Args is omitted.
      */
-    bool match(int numberOfArgs) const;
+    virtual bool match(int numberOfArgs) const;
 
     /**
      * @brief Can be implemented by action class
@@ -81,7 +81,7 @@ public:
      * match to continue, returning makes the chain not match
      * (and alternate, less preferred chains will be attempted).
      */
-    bool matchCaptures(int numberOfCaptures) const;
+    virtual bool matchCaptures(int numberOfCaptures) const;
 
     /**
      * Returns the private namespace this action lives in.
@@ -94,14 +94,14 @@ public:
      * This is 0 if the action doesn't take any arguments and
      * undef if it will take any number of arguments.
      */
-    qint8 numberOfArgs() const;
+    virtual qint8 numberOfArgs() const;
 
     /**
      * @brief numberOfCaptures
      * @return Returns the number of captures this action
      * expects for Chained actions.
      */
-    qint8 numberOfCaptures() const;
+    virtual qint8 numberOfCaptures() const;
 
 protected:
     ActionPrivate *d_ptr;

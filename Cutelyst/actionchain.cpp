@@ -44,6 +44,19 @@ ActionChain::~ActionChain()
     delete d_ptr;
 }
 
+qint8 ActionChain::numberOfCaptures() const
+{
+    Q_D(const ActionChain);
+
+    qint8 captures = 0;
+    Q_FOREACH (Action *action, d->chain) {
+        if (action->numberOfCaptures() > 0) {
+            captures += action->numberOfCaptures();
+        }
+    }
+    return captures;
+}
+
 bool ActionChain::dispatch(Context *c)
 {
     Q_D(ActionChain);

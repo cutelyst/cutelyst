@@ -43,6 +43,8 @@ public:
 
     virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_OVERRIDE;
 
+    Action *expandAction(Context *c, Action *action) const Q_DECL_FINAL;
+
     virtual bool inUse() Q_DECL_OVERRIDE;
 
 private:
