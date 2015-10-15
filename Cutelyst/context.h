@@ -235,8 +235,8 @@ public:
      * relative to the application root (if it does). It is then merged with
      * c->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
-    inline QUrl uriForNoArgs(const QString &path,
-                             const ParamsMultiMap &queryValues) const;
+    inline QUrl uriFor(const QString &path,
+                       const ParamsMultiMap &queryValues) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -257,8 +257,8 @@ public:
      * provided path, and the additional arguments and query parameters provided.
      * When used as a string, provides a textual URI.
      */
-    inline QUrl uriForNoArgs(Action *action,
-                             const ParamsMultiMap &queryValues) const;
+    inline QUrl uriFor(Action *action,
+                       const ParamsMultiMap &queryValues) const;
 
     /**
      * A private path to the Cutelyst action you want to create a URI for.
@@ -400,10 +400,10 @@ private:
 inline void Context::stash(const QVariantHash &unite)
 { stash().unite(unite); }
 
-inline QUrl Context::uriForNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
+inline QUrl Context::uriFor(const QString &path, const ParamsMultiMap &queryValues) const
 { return uriFor(path, QStringList(), queryValues); }
 
-inline QUrl Context::uriForNoArgs(Action *action, const ParamsMultiMap &queryValues) const
+inline QUrl Context::uriFor(Action *action, const ParamsMultiMap &queryValues) const
 { return uriFor(action, QStringList(), QStringList(), queryValues); }
 
 inline QUrl Context::uriForActionNoArgs(const QString &path, const ParamsMultiMap &queryValues) const
