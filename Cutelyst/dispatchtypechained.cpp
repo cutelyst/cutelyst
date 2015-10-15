@@ -183,7 +183,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &pa
     Request *request = c->request();
     request->setArguments(decodedArgs);
     request->setCaptures(captures);
-    request->setMatch(QLatin1Char('/') % action->name());
+    request->setMatch(QLatin1Char('/') % action->reverse());
     setupMatchedAction(c, action);
 
     return ExactMatch;
