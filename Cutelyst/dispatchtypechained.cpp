@@ -263,6 +263,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     const QMap<QString, QString> &attributes = action->attributes();
     if (!(attributes.contains(QStringLiteral("Chained")) &&
             !attributes.contains(QStringLiteral("CaptureArgs")))) {
+        qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: action is not an end point" << action;
         return QString();
     }
 
@@ -271,10 +272,11 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     QStringList parts;
     Action *curr = action;
     while (curr) {
-        if (curr->attributes().contains(QStringLiteral("CaptureArgs"))) {
+        const QMap<QString, QString> attributes = curr->attributes();
+        if (attributes.contains(QStringLiteral("CaptureArgs"))) {
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
-                qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures";
+                qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures" << curr->numberOfCaptures() << captures.size();
                 return QString();
             }
 
@@ -282,12 +284,12 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
             localCaptures = localCaptures.mid(0, localCaptures.size() - curr->numberOfCaptures());
         }
 
-        QString pp = curr->attributes().value(QStringLiteral("PathPart"));
+        const QString pp = attributes.value(QStringLiteral("PathPart"));
         if (!pp.isEmpty()) {
             parts.prepend(pp);
         }
 
-        parent = curr->attributes().value(QStringLiteral("Chained"));
+        parent = attributes.value(QStringLiteral("Chained"));
         curr = d->actions.value(parent);
     }
 
@@ -310,18 +312,21 @@ Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
 {
     Q_D(const DispatchTypeChained);
 
-    if (action) {
-        const QMap<QString, QString> &attributes = action->attributes();
-        if (!attributes.contains(QStringLiteral("Chained"))) {
-            return action;
-        }
+    // Do not expand action if action already is an ActionChain
+    if (qobject_cast<ActionChain*>(action)) {
+        return action;
+    }
+
+    // The action must be chained to something
+    if (!action->attributes().contains(QStringLiteral("Chained"))) {
+        return 0;
     }
 
     ActionList chain;
     Action *curr = action;
 
     while (curr) {
-        chain.append(curr);
+        chain.prepend(curr);
         const QString parent = curr->attributes().value(QStringLiteral("Chained"));
         curr = d->actions.value(parent);
     }

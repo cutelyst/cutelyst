@@ -248,7 +248,6 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     QStringList localCaptures = captures;
 
     Action *expandedAction = d->dispatcher->expandAction(const_cast<Context*>(this), action);
-    qDebug() << Q_FUNC_INFO << action << action->numberOfCaptures();
     if (expandedAction->numberOfCaptures() > 0) {
         while (localCaptures.size() < expandedAction->numberOfCaptures()
                && localArgs.size()) {
@@ -271,6 +270,10 @@ QUrl Context::uriForAction(const QString &path, const QStringList &captures, con
     Q_D(const Context);
 
     Action *action = d->dispatcher->getActionByPath(path);
+    if (!action) {
+        qCWarning(CUTELYST_CORE) << "Can not find action for" << path;
+        return QUrl();
+    }
     return uriFor(action, captures, args, queryValues);
 }
 

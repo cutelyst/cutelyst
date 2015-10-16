@@ -31,12 +31,20 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
     d->chain = chain;
 
     Action *final = chain.last();
-    setController(final->controller());
     QVariantHash args;
-    setName(final->name());
-    setReverse(final->reverse());
     args.insert(QStringLiteral("namespace"), final->ns());
     setupAction(args, 0);
+
+    setName(final->name());
+    setReverse(final->reverse());
+    setAttributes(final->attributes());
+    setController(final->controller());
+
+    Q_FOREACH (Action *action, chain) {
+        if (action->numberOfCaptures() > 0) {
+            d->captures += action->numberOfCaptures();
+        }
+    }
 }
 
 ActionChain::~ActionChain()
@@ -47,14 +55,7 @@ ActionChain::~ActionChain()
 qint8 ActionChain::numberOfCaptures() const
 {
     Q_D(const ActionChain);
-
-    qint8 captures = 0;
-    Q_FOREACH (Action *action, d->chain) {
-        if (action->numberOfCaptures() > 0) {
-            captures += action->numberOfCaptures();
-        }
-    }
-    return captures;
+    return d->captures;
 }
 
 bool ActionChain::dispatch(Context *c)

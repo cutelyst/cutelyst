@@ -298,7 +298,7 @@ Action *Dispatcher::expandAction(Context *c, Action *action) const
             return expandedAction;
         }
     }
-    return nullptr;
+    return action;
 }
 
 QList<DispatchType *> Dispatcher::dispatchers() const
