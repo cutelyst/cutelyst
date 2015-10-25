@@ -80,8 +80,18 @@ void uwsgi_cutelyst_on_load()
     QCoreApplication *app = new QCoreApplication(uwsgi.argc, uwsgi.argv);
     app->setProperty("UWSGI_OPTS", opts);
 
-    if (qEnvironmentVariableIsEmpty("CUTELYST_NO_UWSGI_LOG")) {
+    if (qEnvironmentVariableIsSet("CUTELYST_UWSGI_LOG")) {
         qInstallMessageHandler(cuteOutput);
+    }
+
+    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
+        qputenv("QT_MESSAGE_PATTERN",
+                "%{category}[%{if-debug}debug%{endif}%{if-info}info%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
+#else
+        qputenv("QT_MESSAGE_PATTERN",
+                "%{category}[%{if-debug}debug%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
+#endif
     }
 }
 
