@@ -61,23 +61,25 @@ qint8 ActionChain::numberOfCaptures() const
 bool ActionChain::dispatch(Context *c)
 {
     Q_D(ActionChain);
-    QStringList captures = c->req()->captures();
+
+    Request *request =  c->request();
+    QStringList captures = request->captures();
+    const QStringList &currentArgs = request->args();
     ActionList chain = d->chain;
     Action *final = chain.takeLast();
+
     Q_FOREACH (Action *action, chain) {
         QStringList args;
-        if (action->numberOfCaptures()) {
-            args = captures.mid(0, action->numberOfCaptures());
+        while (args.size() < action->numberOfCaptures() && !captures.isEmpty()) {
+            args.append(captures.takeFirst());
         }
 
-        Request *request =  c->request();
-        const QStringList &currentArgs = request->args();
         request->setArguments(args);
         if (!action->dispatch(c)) {
             return false;
         }
-        request->setArguments(currentArgs);
     }
+    request->setArguments(currentArgs);
 
     return final->dispatch(c);
 }
