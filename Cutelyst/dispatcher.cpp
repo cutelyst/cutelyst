@@ -391,7 +391,7 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 
 Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &args) const
 {
-    QHash<QString, Action*>::ConstIterator it = actionHash.constFind(command);
+    auto it = actionHash.constFind(command);
     if (it != actionHash.constEnd()) {
         return it.value();
     }

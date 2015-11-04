@@ -121,14 +121,14 @@ bool DispatchTypePath::registerAction(Action *action)
     Q_D(DispatchTypePath);
 
     bool ret = false;
-    QMap<QString, QString> attributes = action->attributes();
-    QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
-    while (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
-        if (d->registerPath(i.value(), action)) {
+    const auto attributes = action->attributes();
+    auto it = attributes.constFind(QLatin1String("Path"));
+    while (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
+        if (d->registerPath(it.value(), action)) {
             ret = true;
         }
 
-        ++i;
+        ++it;
     }
 
     // We always register valid actions
@@ -144,16 +144,16 @@ bool DispatchTypePath::inUse()
 QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
     if (captures.isEmpty()) {
-        QMap<QString, QString> attributes = action->attributes();
-        QMap<QString, QString>::ConstIterator i = attributes.constFind(QLatin1String("Path"));
-        if (i != attributes.constEnd() && i.key() == QLatin1String("Path")) {
-            QString path = i.value();
+        const auto attributes = action->attributes();
+        auto it = attributes.constFind(QLatin1String("Path"));
+        if (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
+            const QString path = it.value();
             if (path.isEmpty()) {
-                path = QStringLiteral("/");
+                return QStringLiteral("/");
             }
 
             if (!path.startsWith(QLatin1Char('/'))) {
-                path.prepend(QLatin1Char('/'));
+                return QLatin1Char('/') % path;
             }
 
             return path;

@@ -337,7 +337,14 @@ Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
 bool DispatchTypeChained::inUse()
 {
     Q_D(const DispatchTypeChained);
-    return !d->actions.isEmpty();
+
+    if (d->actions.isEmpty()) {
+        return false;
+    }
+
+    // Optimize end points
+
+    return true;
 }
 
 bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
