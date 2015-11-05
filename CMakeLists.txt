@@ -8,6 +8,7 @@ endif()
 find_package(Qt5 5.4.0 COMPONENTS
     Core
     Network
+    Sql
 )
 
 set(CUTELYST_VERSION_MAJOR  "0")
