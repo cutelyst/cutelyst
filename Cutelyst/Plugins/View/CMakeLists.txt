@@ -16,3 +16,11 @@ else (ClearSilver_CS)
 endif (ClearSilver_CS)
 
 add_subdirectory(JSON)
+
+find_package(SimpleMailQt5)
+if (SimpleMailQt5_FOUND)
+    message(STATUS "PLUGIN: View::Email found.")
+    add_subdirectory(Email)
+else (SimpleMailQt5_FOUND)
+    message(STATUS "PLUGIN: Not building with View::Email plugin.")
+endif (SimpleMailQt5_FOUND)
