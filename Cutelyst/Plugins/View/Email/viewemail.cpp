@@ -74,6 +74,7 @@ bool ViewEmail::render(Context *c) const
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
         qCCritical(CUTELYST_VIEW_EMAIL) << "Cannot render template, template name or template stash key not defined";
+        c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
         return false;
     }
 
@@ -104,6 +105,7 @@ bool ViewEmail::render(Context *c) const
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
         qCCritical(CUTELYST_VIEW_EMAIL) << "Can't send email without parts or body, check stash";
+        c->error(QLatin1String("Can't send email without parts or body, check stash"));
         return false;
     }
 
