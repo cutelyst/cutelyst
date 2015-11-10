@@ -149,6 +149,13 @@ public:
     View *view() const;
 
     /**
+     * Returns the view set to be used
+     * for rendering this request, if one
+     * is set by setView() or 0 if none was set
+     */
+    View *view(const QString &name) const;
+
+    /**
      * Defines the view to be used to render
      * the request, it must be previously
      * be registered by Cutelyst::Application.

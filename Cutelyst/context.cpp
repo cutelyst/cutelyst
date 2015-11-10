@@ -56,7 +56,9 @@ bool Context::error() const
 void Context::error(const QString &error)
 {
     Q_D(Context);
-    if (!error.isEmpty()) {
+    if (!error.isNull()) {
+        d->error.clear();
+    } else {
         d->error << error;
     }
 }
@@ -161,6 +163,12 @@ View *Context::view() const
 {
     Q_D(const Context);
     return d->view;
+}
+
+View *Context::view(const QString &name) const
+{
+    Q_D(const Context);
+    return d->app->view(name);
 }
 
 bool Context::setView(const QString &name)
