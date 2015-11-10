@@ -25,21 +25,40 @@
 
 #include <QtCore/QLoggingCategory>
 
-#include <simplemail-qt5/SimpleMail/mimemessage.h>
-#include <simplemail-qt5/SimpleMail/emailaddress.h>
-
-using namespace Cutelyst;
+#include <SimpleMail/mimemessage.h>
+#include <SimpleMail/emailaddress.h>
+#include <SimpleMail/mimetext.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email")
+
+using namespace Cutelyst;
+using namespace SimpleMail;
 
 ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(parent, name)
   , d_ptr(new ViewEmailPrivate)
 {
     Q_D(ViewEmail);
+    d->sender = new Sender(this);
 
+    QVariantHash config;
     Application *app = qobject_cast<Application *>(parent);
     if (app) {
-        d->stashKey = app->config(QLatin1String("VIEW_EMAIL_STASH_KEY"), QStringLiteral("email")).toString();
+        config = app->config(QLatin1String("VIEW_EMAIL")).toHash();
+    }
+
+    d->stashKey = config.value(QLatin1String("stash_key"), QStringLiteral("email")).toString();
+
+    if (!config.value(QLatin1String("sender_host")).isNull()) {
+        d->sender->setHost(config.value(QLatin1String("sender_host")).toString());
+    }
+    if (!config.value(QLatin1String("sender_port")).isNull()) {
+        d->sender->setPort(config.value(QLatin1String("sender_port")).toInt());
+    }
+    if (!config.value(QLatin1String("sender_username")).isNull()) {
+        d->sender->setUser(config.value(QLatin1String("sender_username")).toString());
+    }
+    if (!config.value(QLatin1String("sender_password")).isNull()) {
+        d->sender->setPassword(config.value(QLatin1String("sender_password")).toString());
     }
 }
 
@@ -88,8 +107,14 @@ bool ViewEmail::render(Context *c) const
         return false;
     }
 
+    if (!body.isNull()) {
+        message.addPart(new MimeText(body.toString()));
+    }
 
-
+    if (!d->sender->sendMail(message)) {
+        c->error(QString::fromLatin1(d->sender->responseText()));
+        return false;
+    }
 
     return true;
 }

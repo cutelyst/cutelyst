@@ -25,6 +25,9 @@
 #include <QtCore/QStringList>
 #include <QtCore/QRegularExpression>
 
+#include <SimpleMail/sender.h>
+
+using namespace SimpleMail;
 namespace Cutelyst {
 
 class ViewEmailPrivate
@@ -33,6 +36,7 @@ public:
     QString stashKey;
     QStringList exposeKeys;
     QRegularExpression exposeRE;
+    Sender *sender;
 };
 
 }

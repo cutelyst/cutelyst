@@ -1,3 +1,7 @@
+include_directories(
+    ${SimpleMailQt5_INCLUDE_DIR}
+)
+
 set(plugin_view_email_SRC
     viewemail.cpp
     viewemail_p.h
@@ -20,6 +24,7 @@ set_target_properties(cutelyst_qt5_plugin_view_email PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_view_email
+    LINK_PRIVATE SimpleMail::Core
     cutelyst-qt5
 )
 
