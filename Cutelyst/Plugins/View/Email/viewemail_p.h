@@ -30,7 +30,7 @@ namespace Cutelyst {
 class ViewEmailPrivate
 {
 public:
-    QString exposeKey;
+    QString stashKey;
     QStringList exposeKeys;
     QRegularExpression exposeRE;
 };
