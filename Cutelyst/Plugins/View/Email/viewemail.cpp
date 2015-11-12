@@ -107,7 +107,12 @@ QByteArray ViewEmail::render(Context *c) const
         return QByteArray();
     }
 
-    if (!body.isNull()) {
+    if (!parts.isNull()) {
+        QVariantList partsVariant = parts.toList();
+        Q_FOREACH (const QVariant &part, partsVariant) {
+            message.addPart(part.value<MimePart*>());
+        }
+    } else if (!body.isNull()) {
         message.setContent(new MimeText(body.toString()));
     }
 

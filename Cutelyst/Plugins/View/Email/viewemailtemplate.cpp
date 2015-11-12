@@ -36,7 +36,7 @@ ViewEmailTemplate::ViewEmailTemplate(QObject *parent, const QString &name) : Vie
 
 }
 
-QVariant generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
+MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
 {
     const QString defaultView = d->defaultView;
     const QString defaultContentType = d->defaultContentType;
@@ -62,7 +62,7 @@ QVariant generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVari
     // validate the per template view
     if (!view) {
         c->error(QLatin1String("Could not find a view to render"));
-        return QVariant();
+        return nullptr;
     }
 
     QString templateString = partHash.value(QStringLiteral("template")).toString();;
@@ -79,9 +79,10 @@ QVariant generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVari
     c->stash() == currentStash;
 
 
+    MimePart *part = new MimePart();
+    part->setContent(output);
 
-
-    return QVariant();
+    return part;
 }
 
 QByteArray ViewEmailTemplate::render(Context *c) const
@@ -95,17 +96,22 @@ QByteArray ViewEmailTemplate::render(Context *c) const
         return ViewEmail::render(c);
     }
 
+    QVariantList parts;
     if (!templateList.isEmpty() && templateList.first().type() == QVariant::Hash) {
         // multipart API
 
         Q_FOREACH (const QVariant &part, templateList) {
             const QVariantHash partHash = part.toHash();
-            QVariant partObj = generatePart(c, d, partHash);
+            MimePart *partObj = generatePart(c, d, partHash);
+            parts.append(QVariant::fromValue(partObj));
         }
 
     } else if (!templateHash.isEmpty()) {
         // single part API
+        MimePart *partObj = generatePart(c, d, templateHash);
+        parts.append(QVariant::fromValue(partObj));
     }
+    c->setStash(QStringLiteral("parts"), parts);
 
     return ViewEmail::render(c);
 }
