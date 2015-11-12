@@ -67,15 +67,14 @@ ViewEmail::~ViewEmail()
     delete d_ptr;
 }
 
-bool ViewEmail::render(Context *c) const
+QByteArray ViewEmail::render(Context *c) const
 {
     Q_D(const ViewEmail);
 
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
-        qCCritical(CUTELYST_VIEW_EMAIL) << "Cannot render template, template name or template stash key not defined";
         c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
-        return false;
+        return QByteArray();
     }
 
     MimeMessage message;
@@ -104,9 +103,8 @@ bool ViewEmail::render(Context *c) const
     QVariant body = email.value(QStringLiteral("body"));
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
-        qCCritical(CUTELYST_VIEW_EMAIL) << "Can't send email without parts or body, check stash";
         c->error(QLatin1String("Can't send email without parts or body, check stash"));
-        return false;
+        return QByteArray();
     }
 
     if (!body.isNull()) {
@@ -115,8 +113,8 @@ bool ViewEmail::render(Context *c) const
 
     if (!d->sender->sendMail(message)) {
         c->error(QString::fromLatin1(d->sender->responseText()));
-        return false;
+        return QByteArray();
     }
 
-    return true;
+    return QByteArray();
 }

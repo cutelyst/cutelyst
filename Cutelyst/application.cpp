@@ -263,8 +263,10 @@ bool Application::setup(Engine *engine)
 
         QList<QStringList> tablePlugins;
         Q_FOREACH (Plugin *plugin, d->plugins) {
-            QString className = QString::fromLatin1(plugin->metaObject()->className());
-            tablePlugins.append({ className });
+            if (plugin->objectName().isNull()) {
+                plugin->setObjectName(QString::fromLatin1(plugin->metaObject()->className()));
+            }
+            tablePlugins.append({ plugin->objectName() });
             // Configure plugins
             plugin->setup(this);
         }
@@ -311,8 +313,11 @@ bool Application::setup(Engine *engine)
         }
 
         Q_FOREACH (View *view, d->views) {
-            QString className = QString::fromLatin1(view->metaObject()->className());
-            table.append({ className, QLatin1String("View")});
+            if (view->reverse().isNull()) {
+                const QString className = QString::fromLatin1(view->metaObject()->className()) % QLatin1String("->execute");
+                view->setReverse(className);
+            }
+            table.append({ view->reverse(), QLatin1String("View")});
         }
 
         if (zeroCore && !table.isEmpty()) {

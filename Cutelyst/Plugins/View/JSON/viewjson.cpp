@@ -90,7 +90,7 @@ void ViewJson::setExposeStashRegularExpression(const QRegularExpression &re)
     d->exposeRE = re;
 }
 
-bool ViewJson::render(Context *c) const
+QByteArray ViewJson::render(Context *c) const
 {
     Q_D(const ViewJson);
 
@@ -152,7 +152,5 @@ bool ViewJson::render(Context *c) const
     Response *res = c->response();
     res->setContentType(QStringLiteral("application/json; charset=utf-8"));
 
-    res->body() = document.toJson(d->format);
-
-    return true;
+    return document.toJson(d->format);
 }

@@ -28,9 +28,6 @@ using namespace Cutelyst;
 Component::Component(QObject *parent) : QObject(parent)
   , d_ptr(new ComponentPrivate)
 {
-    if (objectName().isNull()) {
-        setObjectName(QString::fromLatin1(this->metaObject()->className()) % QLatin1String("->execute"));
-    }
 }
 
 Component::~Component()

@@ -38,7 +38,7 @@ public:
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
 
-    virtual bool render(Cutelyst::Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const Q_DECL_FINAL;
 
 protected:
     ViewEmailPrivate *d_ptr;

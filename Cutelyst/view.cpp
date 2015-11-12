@@ -19,7 +19,13 @@
 
 #include "view.h"
 
+#include "common.h"
+
+#include <Cutelyst/Context>
+#include <Cutelyst/Response>
+
 #include <QtCore/QVariant>
+#include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
 
@@ -42,8 +48,20 @@ Component::Modifiers View::modifiers() const
     return Component::OnlyExecute;
 }
 
-bool View::render(Context *c) const
+bool View::doExecute(Context *c)
 {
-    Q_UNUSED(c)
-    return false;
+    const QByteArray output = render(c);
+    if (c->error()) {
+        Q_FOREACH (const QString &error, c->errors()) {
+            qCCritical(CUTELYST_VIEW) << error;
+        }
+    }
+
+    Response *response = c->response();
+    if (response->hasBody() || !output.isNull()) {
+        // Do not set a null body on an already null body
+        response->body() = output;
+    }
+
+    return c->error();
 }

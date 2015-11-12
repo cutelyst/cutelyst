@@ -88,7 +88,7 @@ NEOERR* cutelyst_render(void *user, char *data)
     return 0;
 }
 
-bool ClearSilver::render(Context *c) const
+QByteArray ClearSilver::render(Context *c) const
 {
     Q_D(const ClearSilver);
 
@@ -100,15 +100,15 @@ bool ClearSilver::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            qCCritical(CUTELYST_CLEARSILVER) << "Cannot render template, template name or template stash key not defined";
-            return false;
+            c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
+            return QByteArray();
         }
     }
 
     qCDebug(CUTELYST_CLEARSILVER) << "Rendering template" <<templateFile;
     QByteArray output;
     if (!d->render(c, templateFile, stash, output)) {
-        return false;
+        return QByteArray();
     }
 
     if (!d->wrapper.isEmpty()) {
@@ -118,12 +118,11 @@ bool ClearSilver::render(Context *c) const
         data.insert(QStringLiteral("content"), output);
 
         if (!d->render(c, wrapperFile, data, output)) {
-            return false;
+            return QByteArray();
         }
     }
 
-    c->res()->body() = output;
-    return true;
+    return output;
 }
 
 NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
@@ -138,7 +137,6 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
 
         if (file.exists()) {
             if (!file.open(QFile::ReadOnly)) {
-                qCWarning(CUTELYST_CLEARSILVER) << "Cound not open file:" << file.errorString();
                 return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLatin1().data());
             }
 
@@ -148,7 +146,6 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
         }
     }
 
-    qCWarning(CUTELYST_CLEARSILVER) << "Cound not find file:" << filename;
     return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", filename);
 }
 
@@ -199,7 +196,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
 
 void ClearSilverPrivate::renderError(Context *c, const QString &error) const
 {
-    qCCritical(CUTELYST_CLEARSILVER) << error;
+    c->error(error);
     c->res()->body() = error.toUtf8();
 }
 

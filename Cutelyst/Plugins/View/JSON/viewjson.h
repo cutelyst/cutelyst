@@ -84,7 +84,7 @@ public:
      */
     void setExposeStashRegularExpression(const QRegularExpression &re);
 
-    virtual bool render(Cutelyst::Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const Q_DECL_FINAL;
 
 protected:
     ViewJsonPrivate *d_ptr;

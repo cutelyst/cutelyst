@@ -52,7 +52,7 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
-    bool render(Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const Q_DECL_FINAL;
 
 protected:
     GrantleeViewPrivate *d_ptr;

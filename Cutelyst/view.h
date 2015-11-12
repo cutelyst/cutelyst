@@ -43,22 +43,20 @@ public:
     virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
 
     /**
-     * All subclasses must reimplement this to
-     * do it's rendering.
-     * Default implementation does nothing and returns false.
+     * All subclasses must reimplement this when doing it's rendering.
+     * If an error (c->error()) is not set c->response()->body() is defined
+     * with the returned value, this is useful if the view is not
+     * meant to be used as a body.
      */
-    virtual bool render(Context *c) const;
+    virtual QByteArray render(Context *c) const = 0;
 
 private:
     /**
      * This is used by Component execute() when
      * using an ActionView
      */
-    inline bool doExecute(Context *c) Q_DECL_FINAL;
+    bool doExecute(Context *c) Q_DECL_FINAL;
 };
-
-inline bool View::doExecute(Context *c)
-{ return render(c); }
 
 }
 

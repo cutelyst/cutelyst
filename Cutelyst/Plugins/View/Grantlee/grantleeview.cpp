@@ -142,7 +142,7 @@ bool GrantleeView::isCaching() const
     return !d->cache.isNull();
 }
 
-bool GrantleeView::render(Context *c) const
+QByteArray GrantleeView::render(Context *c) const
 {
     Q_D(const GrantleeView);
 
@@ -157,8 +157,8 @@ bool GrantleeView::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            qCCritical(CUTELYST_GRANTLEE) << "Cannot render template, template name or template stash key not defined";
-            return false;
+            c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
+            return QByteArray();
         }
     }
 
@@ -171,9 +171,9 @@ bool GrantleeView::render(Context *c) const
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gc);
     if (tmpl->error() != Grantlee::NoError) {
-        qCCritical(CUTELYST_GRANTLEE) << "Error while rendering template" << tmpl->errorString();
         c->res()->body() = tr("Internal server error.").toUtf8();
-        return false;
+        c->error(QLatin1String("Error while rendering template: ") % tmpl->errorString());
+        return QByteArray();
     }
 
     if (!d->wrapper.isEmpty()) {
@@ -183,13 +183,11 @@ bool GrantleeView::render(Context *c) const
         content = wrapper->render(&gc);
 
         if (wrapper->error() != Grantlee::NoError) {
-            qCCritical(CUTELYST_GRANTLEE) << "Error while rendering wrapper template" << tmpl->errorString();
             c->res()->body() = tr("Internal server error.").toUtf8();
-            return false;
+            c->error(QLatin1String("Error while rendering template: ") % tmpl->errorString());
+            return QByteArray();
         }
     }
 
-    c->res()->body() = content.toUtf8();
-
-    return true;
+    return content.toUtf8();
 }
