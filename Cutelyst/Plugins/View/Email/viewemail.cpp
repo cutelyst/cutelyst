@@ -108,7 +108,7 @@ QByteArray ViewEmail::render(Context *c) const
     }
 
     if (!body.isNull()) {
-        message.addPart(new MimeText(body.toString()));
+        message.setContent(new MimeText(body.toString()));
     }
 
     if (!d->sender->sendMail(message)) {
@@ -117,4 +117,9 @@ QByteArray ViewEmail::render(Context *c) const
     }
 
     return QByteArray();
+}
+
+ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(parent, name)
+{
+    d_ptr = d;
 }

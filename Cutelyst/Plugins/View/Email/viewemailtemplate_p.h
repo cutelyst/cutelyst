@@ -17,35 +17,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef VIEWEMAIL_H
-#define VIEWEMAIL_H
+#ifndef VIEWEMAILTEMPLATE_P_H
+#define VIEWEMAILTEMPLATE_P_H
 
-#include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/view.h>
+#include "viewemailtemplate.h"
+#include "viewemail_p.h"
 
+using namespace SimpleMail;
 namespace Cutelyst {
 
-class ViewEmailPrivate;
-/**
- * ViewEmail class is a Cutelyst View handler that returns stash
- * data in Email format.
- */
-class CUTELYST_LIBRARY ViewEmail : public Cutelyst::View
+class ViewEmailTemplatePrivate : public ViewEmailPrivate
 {
-    Q_OBJECT
 public:
-    explicit ViewEmail(QObject *parent, const QString &name = QString());
-    virtual ~ViewEmail();
+    QString templatePrefix;
+    QString defaultView;
+    QString defaultContentType;
+    QString defaultCharset;
 
-    QByteArray render(Context *c) const Q_DECL_OVERRIDE;
-
-protected:
-    ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
-
-    Q_DECLARE_PRIVATE(ViewEmail)
-    ViewEmailPrivate *d_ptr;
 };
 
 }
 
-#endif // VIEWEMAIL_H
+#endif // VIEWEMAILTEMPLATE_P_H
+

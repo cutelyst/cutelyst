@@ -5,10 +5,13 @@ include_directories(
 set(plugin_view_email_SRC
     viewemail.cpp
     viewemail_p.h
+    viewemailtemplate.cpp
+    viewemailtemplate_p.h
 )
 
 set(plugin_view_email_HEADERS
     viewemail.h
+    viewemailtemplate.h
 )
 
 add_library(cutelyst_qt5_plugin_view_email SHARED
