@@ -69,7 +69,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
         }
     }
 
-    QMap<QString, QString>::ConstIterator it = attributes.constFind(QStringLiteral("ACLDetachTo"));
+    auto it = attributes.constFind(QStringLiteral("ACLDetachTo"));
     if (it == attributes.constEnd() || it.value().isEmpty()) {
         qCritical() << "Action"
                     << d->actionReverse

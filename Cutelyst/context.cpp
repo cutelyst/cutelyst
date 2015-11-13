@@ -231,10 +231,10 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         // Avoid a trailing '?'
         QUrlQuery query;
         if (queryValues.size()) {
-            ParamsMultiMap::ConstIterator i = queryValues.constBegin();
-            while (i != queryValues.constEnd()) {
-                query.addQueryItem(i.key(), i.value());
-                ++i;
+            auto it = queryValues.constBegin();
+            while (it != queryValues.constEnd()) {
+                query.addQueryItem(it.key(), it.value());
+                ++it;
             }
         }
         ret.setQuery(query);

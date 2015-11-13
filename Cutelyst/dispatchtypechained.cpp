@@ -108,7 +108,7 @@ QByteArray DispatchTypeChained::list() const
                 name.prepend(extra % QLatin1Char(' '));
             }
 
-            QMap<QString, QString>::ConstIterator it = p->attributes().constFind(QLatin1String("CaptureArgs"));
+            auto it = p->attributes().constFind(QLatin1String("CaptureArgs"));
             if (it != p->attributes().constEnd()) {
                 name.append(QLatin1String(" (") % it.value() % QLatin1Char(')'));
             }
@@ -355,7 +355,7 @@ bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
 
 QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const
 {
-    StringStringActionsMap::ConstIterator it = childrenOf.constFind(parent);
+    auto it = childrenOf.constFind(parent);
     if (it == childrenOf.constEnd()) {
         return QVariantHash();
     }

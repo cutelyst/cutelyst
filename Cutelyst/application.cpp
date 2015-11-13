@@ -138,7 +138,7 @@ bool Application::registerDispatcher(DispatchType *dispatcher)
 Component *Application::createComponentPlugin(const QString &name, QObject *parent)
 {
     Q_D(Application);
-    QHash<QString, ComponentFactory *>::ConstIterator it = d->factories.constFind(name);
+    auto it = d->factories.constFind(name);
     if (it != d->factories.constEnd()) {
         ComponentFactory *factory = it.value();
         if (factory) {
@@ -190,7 +190,7 @@ View *Application::view(const QString &name) const
 QVariant Application::config(const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Application);
-    QVariantHash::const_iterator it = d->config.constFind(key);
+    auto it = d->config.constFind(key);
     if (it != d->config.constEnd()) {
         return it.value();
     }
@@ -508,7 +508,7 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
 {
 
     QList<QStringList> table;
-    ParamsMultiMap::ConstIterator it = params.constBegin();
+    auto it = params.constBegin();
     while (it != params.constEnd()) {
         table.append({ it.key(), it.value() });
         ++it;
@@ -523,7 +523,7 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
 void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelyst::Upload *> &uploads)
 {
     QList<QStringList> table;
-    QMap<QString, Cutelyst::Upload *>::ConstIterator it = uploads.constBegin();
+    auto it = uploads.constBegin();
     while (it != uploads.constEnd()) {
         Upload *upload = it.value();
         table.append({ it.key(),

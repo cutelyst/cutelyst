@@ -326,7 +326,7 @@ ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) co
         ret.unite(queryParams());
     } else {
         ret = queryParams();
-        ParamsMultiMap::ConstIterator it = args.constBegin();
+        auto it = args.constBegin();
         while (it != args.constEnd()) {
             ret.insert(it.key(), it.value());
             ++it;
@@ -341,7 +341,7 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
     QUrl ret = uri();
     QUrlQuery urlQuery;
     ParamsMultiMap query = mangleParams(args, append);
-    ParamsMultiMap::ConstIterator it = query.constBegin();
+    auto it = query.constBegin();
     while (it != query.constEnd()) {
         urlQuery.addQueryItem(it.key(), it.value());
         ++it;
@@ -569,8 +569,8 @@ RequestPrivate::RequestPrivate(Engine *_engine,
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)
 {
     QVariantMap ret;
-    ParamsMultiMap::const_iterator begin = params.constBegin();
-    ParamsMultiMap::const_iterator end = params.constEnd();
+    auto begin = params.constBegin();
+    auto end = params.constEnd();
     while (begin != end) {
         --end;
         ret.insertMulti(ret.constBegin(), end.key(), end.value());

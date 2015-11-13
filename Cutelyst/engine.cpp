@@ -451,7 +451,7 @@ QList<HeaderValuePair> Engine::headersForResponse(const Headers &headers)
 {
     QList<HeaderValuePair> ret;
 
-    QHash<QString, QString>::ConstIterator it = headers.constBegin();
+    auto it = headers.constBegin();
     while (it != headers.constEnd()) {
         HeaderValuePair pair;
         pair.key = camelCaseHeader(it.key());

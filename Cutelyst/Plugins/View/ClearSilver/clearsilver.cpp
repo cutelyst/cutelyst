@@ -224,7 +224,7 @@ void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const
         _prefix = prefix % QLatin1Char('.');
     }
 
-    QVariantHash::ConstIterator it = hash.constBegin();
+    auto it = hash.constBegin();
     while (it != hash.constEnd()) {
         serializeVariant(hdf, it.value(), _prefix % it.key());
         ++it;
@@ -238,7 +238,7 @@ void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QS
         _prefix = prefix % QLatin1Char('.');
     }
 
-    QVariantMap::ConstIterator it = map.constBegin();
+    auto it = map.constBegin();
     while (it != map.constEnd()) {
         serializeVariant(hdf, it.value(), _prefix % it.key());
         ++it;

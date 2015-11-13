@@ -117,7 +117,7 @@ QString Headers::ifModifiedSince() const
 
 QDateTime Headers::ifModifiedSinceDateTime() const
 {
-    Headers::ConstIterator it = constFind(QStringLiteral("if_modified_since"));
+    auto it = constFind(QStringLiteral("if_modified_since"));
     if (it == constEnd()) {
         return QDateTime();
     }
