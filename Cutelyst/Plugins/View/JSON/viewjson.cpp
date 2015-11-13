@@ -96,24 +96,15 @@ QByteArray ViewJson::render(Context *c) const
 
     QJsonDocument document;
 
-    const QVariantHash &stash = c->stash();
+    const QVariantHash stash = c->stash();
 
-    // TODO once 5.5 is out and we depend on it use QJsonObject::fromVariantHash
-    QVariantMap workaround;
     switch (d->exposeMode) {
     case All:
-    {
-        QVariantHash::ConstIterator it = stash.constBegin();
-        while (it != stash.constEnd()) {
-            workaround.insert(it.key(), it.value());
-            ++it;
-        }
-        document.setObject(QJsonObject::fromVariantMap(workaround));
+        document.setObject(QJsonObject::fromVariantHash(stash));
         break;
-    }
     case String:
     {
-        QVariantHash::ConstIterator it = stash.constFind(d->exposeKey);
+        auto it = stash.constFind(d->exposeKey);
         if (it != stash.constEnd()) {
             QJsonObject obj;
             obj.insert(d->exposeKey, QJsonValue::fromVariant(it.value()));
@@ -123,34 +114,37 @@ QByteArray ViewJson::render(Context *c) const
     }
     case StringList:
     {
-        QVariantHash::ConstIterator it = stash.constBegin();
+        QVariantHash exposedStash;
+
+        auto it = stash.constBegin();
         while (it != stash.constEnd()) {
             const QString &key = it.key();
             if (d->exposeKeys.contains(key)) {
-                workaround.insert(it.key(), it.value());
+                exposedStash.insertMulti(it.key(), it.value());
             }
             ++it;
         }
-        document.setObject(QJsonObject::fromVariantMap(workaround));
+        document.setObject(QJsonObject::fromVariantHash(exposedStash));
         break;
     }
     case RegularExpression:
     {
-        QVariantHash::ConstIterator it = stash.constBegin();
+        QVariantHash exposedStash;
+
+        auto it = stash.constBegin();
         while (it != stash.constEnd()) {
             const QString &key = it.key();
             if (d->exposeRE.match(key).hasMatch()) {
-                workaround.insert(key, it.value());
+                exposedStash.insertMulti(key, it.value());
             }
             ++it;
         }
-        document.setObject(QJsonObject::fromVariantMap(workaround));
+        document.setObject(QJsonObject::fromVariantHash(exposedStash));
         break;
     }
     }
 
-    Response *res = c->response();
-    res->setContentType(QStringLiteral("application/json; charset=utf-8"));
+    c->response()->setContentType(QStringLiteral("application/json; charset=utf-8"));
 
     return document.toJson(d->format);
 }
