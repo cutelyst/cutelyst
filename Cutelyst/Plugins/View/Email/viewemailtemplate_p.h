@@ -31,9 +31,6 @@ class ViewEmailTemplatePrivate : public ViewEmailPrivate
 public:
     QString templatePrefix;
     QString defaultView;
-    QString defaultContentType;
-    QString defaultCharset;
-
 };
 
 }

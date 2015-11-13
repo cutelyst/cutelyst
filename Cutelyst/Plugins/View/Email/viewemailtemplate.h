@@ -29,8 +29,36 @@ class ViewEmailTemplatePrivate;
 class ViewEmailTemplate : public ViewEmail
 {
     Q_OBJECT
+    Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix)
+    Q_PROPERTY(QString defaultView READ defaultView WRITE setDefaultView)
 public:
     explicit ViewEmailTemplate(QObject *parent, const QString &name = QString());
+
+    /**
+     * Returns the optional prefix to look somewhere under the existing configured
+     * template  paths.
+     */
+    QString templatePrefix() const;
+
+    /**
+     * Defines the optional prefix to look somewhere under the existing configured
+     * template  paths.
+     */
+    void setTemplatePrefix(const QString &prefix);
+
+    /**
+     * Returns the default view used to render the templates.
+     */
+    QString defaultView() const;
+
+    /**
+     * Defines the default view used to render the templates.
+     * If none is specified neither here nor in the stash
+     * Cutelysts default view is used.
+     * Warning: if you don't tell Cutelyst explicit which of your views should
+     * be its default one, this class may choose the wrong one!
+     */
+    void setDefaultView(const QString &view);
 
     QByteArray render(Context *c) const Q_DECL_OVERRIDE;
 

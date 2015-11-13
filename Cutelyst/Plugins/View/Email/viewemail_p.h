@@ -34,6 +34,8 @@ class ViewEmailPrivate
 {
 public:
     QString stashKey;
+    QString defaultContentType;
+    QString defaultCharset;
     QStringList exposeKeys;
     QRegularExpression exposeRE;
     Sender *sender;

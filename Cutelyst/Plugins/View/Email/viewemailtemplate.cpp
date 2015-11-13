@@ -36,6 +36,30 @@ ViewEmailTemplate::ViewEmailTemplate(QObject *parent, const QString &name) : Vie
 
 }
 
+QString ViewEmailTemplate::templatePrefix() const
+{
+    Q_D(const ViewEmailTemplate);
+    return d->templatePrefix;
+}
+
+void ViewEmailTemplate::setTemplatePrefix(const QString &prefix)
+{
+    Q_D(ViewEmailTemplate);
+    d->templatePrefix = prefix;
+}
+
+QString ViewEmailTemplate::defaultView() const
+{
+    Q_D(const ViewEmailTemplate);
+    return d->defaultView;
+}
+
+void ViewEmailTemplate::setDefaultView(const QString &view)
+{
+    Q_D(ViewEmailTemplate);
+    d->defaultView = view;
+}
+
 MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
 {
     const QString defaultView = d->defaultView;

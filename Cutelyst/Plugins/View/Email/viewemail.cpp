@@ -67,6 +67,90 @@ ViewEmail::~ViewEmail()
     delete d_ptr;
 }
 
+QString ViewEmail::stashKey() const
+{
+    Q_D(const ViewEmail);
+    return d->stashKey;
+}
+
+void ViewEmail::setStashKey(const QString &stashKey)
+{
+    Q_D(ViewEmail);
+    d->stashKey = stashKey;
+}
+
+QString ViewEmail::defaultContentType() const
+{
+    Q_D(const ViewEmail);
+    return d->defaultContentType;
+}
+
+void ViewEmail::setDefaultContentType(const QString &contentType)
+{
+    Q_D(ViewEmail);
+    d->defaultContentType = contentType;
+}
+
+QString ViewEmail::defaultCharset() const
+{
+    Q_D(const ViewEmail);
+    return d->defaultCharset;
+}
+
+void ViewEmail::setDefaultCharset(const QString &charset)
+{
+    Q_D(ViewEmail);
+    d->defaultCharset = charset;
+}
+
+QString ViewEmail::senderHost() const
+{
+    Q_D(const ViewEmail);
+    return d->sender->host();
+}
+
+void ViewEmail::setSenderHost(const QString &host)
+{
+    Q_D(ViewEmail);
+    d->sender->setHost(host);
+}
+
+int ViewEmail::senderPort() const
+{
+    Q_D(const ViewEmail);
+    return d->sender->port();
+}
+
+void ViewEmail::setSenderPort(int port)
+{
+    Q_D(ViewEmail);
+    d->sender->setPort(port);
+}
+
+QString ViewEmail::senderUser() const
+{
+    Q_D(const ViewEmail);
+    return d->sender->user();
+}
+
+void ViewEmail::setSenderUser(const QString &user)
+{
+    Q_D(ViewEmail);
+    d->sender->setUser(user);
+}
+
+QString ViewEmail::senderPassword() const
+{
+    Q_D(const ViewEmail);
+    return d->sender->password();
+}
+
+void ViewEmail::setSenderPassword(const QString &password)
+{
+    Q_D(ViewEmail);
+    d->sender->setPassword(password);
+}
+
 QByteArray ViewEmail::render(Context *c) const
 {
     Q_D(const ViewEmail);

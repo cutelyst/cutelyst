@@ -33,9 +33,52 @@ class ViewEmailPrivate;
 class CUTELYST_LIBRARY ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
+    Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey)
+    Q_PROPERTY(QString defaultContentType READ defaultContentType WRITE setDefaultContentType)
 public:
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
+
+    QString stashKey() const;
+    void setStashKey(const QString &stashKey);
+
+    /**
+     * Returns the default content type (mime type).
+     */
+    QString defaultContentType() const;
+
+    /**
+     * Defines the default content type (mime type).
+     */
+    void setDefaultContentType(const QString &contentType);
+
+    /**
+     * Returns the default charset for every MIME part with the
+     * content type text.
+     */
+    QString defaultCharset() const;
+
+    /**
+     * Defines the default charset for every MIME part with the
+     * content type text.
+     * According to RFC2049 a MIME part without a charset should
+     * be treated as US-ASCII by the mail client.
+     * If the charset is not set it won't be set for all MIME parts
+     * without an overridden one.
+     */
+    void setDefaultCharset(const QString &charset);
+
+    QString senderHost() const;
+    void setSenderHost(const QString &host);
+
+    int senderPort() const;
+    void setSenderPort(int port);
+
+    QString senderUser() const;
+    void setSenderUser(const QString &user);
+
+    QString senderPassword() const;
+    void setSenderPassword(const QString &password);
 
     QByteArray render(Context *c) const Q_DECL_OVERRIDE;
 
