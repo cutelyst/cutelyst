@@ -334,11 +334,11 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers, d->dispatchers);
 
         if (zeroCore) {
-            qCDebug(CUTELYST_CORE) << QString(QLatin1String("%1 powered by Cutelyst %2, Qt %3."))
-                                      .arg(QCoreApplication::applicationName())
-                                      .arg(QLatin1String(VERSION))
-                                      .arg(QLatin1String(qVersion()))
-                                      .toLatin1().data();
+            qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
+                                     .arg(QCoreApplication::applicationName())
+                                     .arg(QLatin1String(VERSION))
+                                     .arg(QLatin1String(qVersion()))
+                                     .toLatin1().data();
         }
 
         Q_EMIT preForked(this);
@@ -406,11 +406,11 @@ void Application::handleRequest(Request *req)
             average = QString::number(1.0 / enlapsed, 'f');
             average.truncate(average.size() - 3);
         }
-        qCDebug(CUTELYST_STATS) << QString(QLatin1String("Request took: %1s (%2/s)\n%3"))
-                                   .arg(QString::number(enlapsed, 'f'))
-                                   .arg(average)
-                                   .arg(priv->stats->report())
-                                   .toLatin1().data();
+        qCInfo(CUTELYST_STATS) << QString::fromLatin1("Request took: %1s (%2/s)\n%3")
+                                  .arg(QString::number(enlapsed, 'f'))
+                                  .arg(average)
+                                  .arg(priv->stats->report())
+                                  .toLatin1().data();
         delete priv->stats;
     }
 

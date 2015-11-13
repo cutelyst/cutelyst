@@ -146,7 +146,7 @@ QByteArray GrantleeView::render(Context *c) const
 {
     Q_D(const GrantleeView);
 
-    const QVariantHash stash = c->stash();
+    QVariantHash stash = c->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
         if (c->action() && !c->action()->reverse().isEmpty()) {

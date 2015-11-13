@@ -85,13 +85,8 @@ void uwsgi_cutelyst_on_load()
     }
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         qputenv("QT_MESSAGE_PATTERN",
                 "%{category}[%{if-debug}debug%{endif}%{if-info}info%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
-#else
-        qputenv("QT_MESSAGE_PATTERN",
-                "%{category}[%{if-debug}debug%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
-#endif
     }
 }
 
@@ -331,11 +326,9 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
     case QtFatalMsg:
         uwsgi_log("%s[fatal] %s\n", context.category, localMsg.constData());
         abort();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
     case QtInfoMsg:
-        fprintf(stderr, "%s[info]  %s\n", context.category, localMsg.constData());
+        uwsgi_log("%s[info]  %s\n", context.category, localMsg.constData());
         break;
-#endif
     }
 }
 

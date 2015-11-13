@@ -35,7 +35,6 @@ class CUTELYST_LIBRARY Component : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Component)
-    Q_ENUMS(Modifier)
     Q_FLAGS(Modifiers)
 public:
     enum Modifier {
@@ -45,6 +44,7 @@ public:
         AroundExecute = 3 << 1,
         AfterExecute  = 4 << 1,
     };
+    Q_ENUM(Modifier)
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
     explicit Component(QObject *parent = 0);

@@ -36,7 +36,6 @@ class CUTELYST_LIBRARY Response : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)
-    Q_ENUMS(HttpStatus)
 public:
     enum HttpStatus {
         Continue                     = 100,
@@ -82,6 +81,8 @@ public:
         HTTPVersionNotSupported      = 505,
         BandwidthLimitExceeded       = 509
     };
+    Q_ENUM(HttpStatus)
+
     explicit Response(Context *c);
     virtual ~Response();
 
