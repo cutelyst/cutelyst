@@ -146,7 +146,7 @@ bool CredentialPassword::validatePassword(const QByteArray &password, const QByt
 QByteArray CredentialPassword::createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize)
 {
     QByteArray salt;
-    QFile random(QLatin1String("/dev/urandom"));
+    QFile random(QStringLiteral("/dev/urandom"));
     if (!random.open(QIODevice::ReadOnly)) {
         salt = QUuid::createUuid().toByteArray().toBase64();
     } else {

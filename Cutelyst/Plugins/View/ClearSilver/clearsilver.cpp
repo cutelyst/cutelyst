@@ -93,14 +93,14 @@ QByteArray ClearSilver::render(Context *c) const
     Q_D(const ClearSilver);
 
     const QVariantHash &stash = c->stash();
-    QString templateFile = stash.value(QLatin1String("template")).toString();
+    QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
         if (c->action() && !c->action()->reverse().isEmpty()) {
             templateFile = c->action()->reverse() % d->extension;
         }
 
         if (templateFile.isEmpty()) {
-            c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
+            c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
             return QByteArray();
         }
     }
@@ -140,8 +140,8 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
                 return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLatin1().data());
             }
 
-            *contents = qstrdup(file.readAll().data());
-            qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();;
+            *contents = qstrdup(file.readAll().constData());
+            qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();
             return 0;
         }
     }
@@ -161,7 +161,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QString::fromLatin1("Failed to init ClearSilver:\n%1").arg(QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to init ClearSilver:\n%1").arg(QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         hdf_destroy(&hdf);
@@ -177,7 +177,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QString::fromLatin1("Failed to parse template file: %1\n%2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to parse template file: %1\n%2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         nerr_log_error(error);

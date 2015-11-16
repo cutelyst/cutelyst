@@ -74,7 +74,7 @@ configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 #
 # Custom C flags
 #
-set (MAINTAINER_CFLAGS "-Werror -Wall -Wcast-align -Wno-uninitialized -Wempty-body -Wformat-security -Wformat -Winit-self")
+set (MAINTAINER_CFLAGS "-Werror -Wall -Wcast-align -Wno-uninitialized -Wempty-body -Wformat-security -Wformat -Winit-self -Xclang -load -Xclang ClangLazy.so -Xclang -add-plugin -Xclang clang-lazy")
 option (DISABLE_MAINTAINER_CFLAGS "Disable maintainer CFlags" ON)
 if (DISABLE_MAINTAINER_CFLAGS)
 	set (MAINTAINER_CFLAGS "")

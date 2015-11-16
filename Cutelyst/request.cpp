@@ -243,7 +243,8 @@ ParamsMultiMap Request::parameters() const
 {
     Q_D(const Request);
     if (!d->paramParsed) {
-        d->param = queryParameters().unite(bodyParameters());
+        d->param = queryParameters();
+        d->param.unite(bodyParameters());
         d->paramParsed = true;
     }
     return d->param;

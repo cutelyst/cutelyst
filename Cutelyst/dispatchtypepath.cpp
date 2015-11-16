@@ -45,7 +45,7 @@ QByteArray DispatchTypePath::list() const
 {
     Q_D(const DispatchTypePath);
 
-    QRegularExpression multipleSlashes(QLatin1String("/{1,}"));
+    QRegularExpression multipleSlashes(QStringLiteral("/{1,}"));
 
     QList<QStringList> table;
 
@@ -61,7 +61,7 @@ QByteArray DispatchTypePath::list() const
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(multipleSlashes, QLatin1String("/"));
+            _path.replace(multipleSlashes, QStringLiteral("/"));
 
             QString privateName = action->reverse();
             if (!privateName.startsWith(QLatin1Char('/'))) {
@@ -72,8 +72,8 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, { QLatin1String("Path"), QLatin1String("Private") },
-                             QLatin1String("Loaded Path actions:"));
+    return Utils::buildTable(table, { QStringLiteral("Path"), QStringLiteral("Private") },
+                             QStringLiteral("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
@@ -122,7 +122,7 @@ bool DispatchTypePath::registerAction(Action *action)
 
     bool ret = false;
     const auto attributes = action->attributes();
-    auto it = attributes.constFind(QLatin1String("Path"));
+    auto it = attributes.constFind(QStringLiteral("Path"));
     while (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
         if (d->registerPath(it.value(), action)) {
             ret = true;
@@ -145,7 +145,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
 {
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
-        auto it = attributes.constFind(QLatin1String("Path"));
+        auto it = attributes.constFind(QStringLiteral("Path"));
         if (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
             const QString path = it.value();
             if (path.isEmpty()) {

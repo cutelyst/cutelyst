@@ -61,7 +61,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
             if (!d->actionHash.contains(action->reverse())) {
-                if (!action->attributes().contains(QLatin1String("Private"))) {
+                if (!action->attributes().contains(QStringLiteral("Private"))) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
                         if (dispatch->registerAction(action)) {
@@ -358,15 +358,15 @@ void DispatcherPrivate::printActions() const
     }
 
     qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {
-                                                           QLatin1String("Private"),
-                                                           QLatin1String("Class"),
-                                                           QLatin1String("Method")
+                                                           QStringLiteral("Private"),
+                                                           QStringLiteral("Class"),
+                                                           QStringLiteral("Method")
                                                        },
-                                                       QLatin1String("Loaded Private actions:")).data();
+                                                       QStringLiteral("Loaded Private actions:")).constData();
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, dispatchers) {
-        qCDebug(CUTELYST_DISPATCHER) << dispatch->list().data();
+        qCDebug(CUTELYST_DISPATCHER) << dispatch->list().constData();
     }
 }
 
@@ -437,7 +437,8 @@ QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
         return ret.remove(0, 1);
     }
 
-    const QString &ns = qobject_cast<Action *>(c->stack().last())->ns();
+    const auto stack = c->stack();
+    const QString ns = qobject_cast<Action *>(stack.last())->ns();
     if (ns.isEmpty()) {
         return path;
     }

@@ -85,7 +85,7 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
 
     // validate the per template view
     if (!view) {
-        c->error(QLatin1String("Could not find a view to render"));
+        c->error(QStringLiteral("Could not find a view to render"));
         return nullptr;
     }
 

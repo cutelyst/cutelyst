@@ -89,7 +89,7 @@ protected:
     ViewEmailPrivate *d_ptr;
 
 private:
-    void init();
+    void initSender();
 };
 
 }

@@ -46,11 +46,11 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
     Application *app = qobject_cast<Application *>(parent);
     if (app) {
         // make sure templates can be found on the current directory
-        setIncludePaths({ app->config(QLatin1String("root")).toString() });
+        setIncludePaths({ app->config(QStringLiteral("root")).toString() });
 
         // If CUTELYST_VAR is set the template might have become
         // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
-        d->cutelystVar = app->config(QLatin1String("CUTELYST_VAR"), QStringLiteral("c")).toString();
+        d->cutelystVar = app->config(QStringLiteral("CUTELYST_VAR"), QStringLiteral("c")).toString();
     } else {
         // make sure templates can be found on the current directory
         setIncludePaths({ QDir::currentPath() });
@@ -157,7 +157,7 @@ QByteArray GrantleeView::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
+            c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
             return QByteArray();
         }
     }

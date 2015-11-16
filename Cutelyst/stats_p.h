@@ -22,6 +22,8 @@
 
 #include "stats.h"
 
+#include <QtCore/QVector>
+
 namespace Cutelyst {
 
 struct StatsAction {
@@ -34,7 +36,7 @@ class Engine;
 class StatsPrivate
 {
 public:
-    QList<StatsAction> actions;
+    QVector<StatsAction> actions;
     Engine *engine;
 };
 

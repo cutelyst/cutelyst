@@ -63,11 +63,11 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() % QStringLiteral("_session");
 
-    const QVariantHash &config = app->config(QLatin1String("Session_Plugin")).toHash();
-    d->sessionExpires = config.value(QLatin1String("expires"), 7200).toULongLong();
-    d->expiryThreshold = config.value(QLatin1String("expiry_threshold"), 0).toULongLong();
-    d->verifyAddress = config.value(QLatin1String("verify_address"), false).toBool();
-    d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
+    const QVariantHash &config = app->config(QStringLiteral("Session_Plugin")).toHash();
+    d->sessionExpires = config.value(QStringLiteral("expires"), 7200).toULongLong();
+    d->expiryThreshold = config.value(QStringLiteral("expiry_threshold"), 0).toULongLong();
+    d->verifyAddress = config.value(QStringLiteral("verify_address"), false).toBool();
+    d->verifyUserAgent = config.value(QStringLiteral("verify_user_agent"), false).toBool();
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
 

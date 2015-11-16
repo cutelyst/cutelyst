@@ -68,7 +68,7 @@ void uwsgi_cutelyst_on_load()
     QDir cwd(QString::fromLatin1(uwsgi.cwd));
 
     // Set the configuration env
-    QVariantHash::ConstIterator it = opts.constFind(QLatin1String("ini"));
+    QVariantHash::ConstIterator it = opts.constFind(QStringLiteral("ini"));
     if (it != opts.constEnd()) {
         QString config = cwd.absoluteFilePath(it.value().toString());
         qputenv("CUTELYST_CONFIG", config.toUtf8());

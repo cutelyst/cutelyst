@@ -50,9 +50,9 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_UNUSED(application)
 
     const QMap<QString, QString> attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
-    d->actionReverse = args.value(QLatin1String("reverse")).toString();
+    d->actionReverse = args.value(QStringLiteral("reverse")).toString();
 
-    if (!attributes.contains(QLatin1String("RequiresRole")) && !attributes.contains(QLatin1String("AllowedRole"))) {
+    if (!attributes.contains(QStringLiteral("RequiresRole")) && !attributes.contains(QStringLiteral("AllowedRole"))) {
         qCritical() << "Action"
                     << d->actionReverse
                     << "requires at least one RequiresRole or AllowedRole attribute";

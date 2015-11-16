@@ -106,7 +106,7 @@ void Headers::setDateWithDateTime(const QDateTime &date)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const QString &dt = QLocale::c().toString(date.toUTC(),
-                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     insert(QStringLiteral("date"), dt);
 }
 
@@ -150,7 +150,7 @@ void Headers::setLastModified(const QDateTime &lastModified)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const QString &dt = QLocale::c().toString(lastModified.toUTC(),
-                                              QLatin1String("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
 }
 
@@ -256,7 +256,7 @@ void Headers::setHeader(const QString &field, const QString &value)
 
 void Headers::setHeader(const QString &field, const QStringList &values)
 {
-    setHeader(field, values.join(QLatin1String(", ")));
+    setHeader(field, values.join(QStringLiteral(", ")));
 }
 
 void Headers::pushHeader(const QString &field, const QString &value)
@@ -272,7 +272,7 @@ void Headers::pushHeader(const QString &field, const QString &value)
 
 void Headers::pushHeader(const QString &field, const QStringList &values)
 {
-    pushHeader(field, values.join(QLatin1String(", ")));
+    pushHeader(field, values.join(QStringLiteral(", ")));
 }
 
 void Headers::removeHeader(const QString &field)

@@ -28,6 +28,7 @@
 #include <QUrl>
 #include <QSettings>
 #include <QDir>
+#include <QtCore/QByteArray>
 #include <QDebug>
 
 using namespace Cutelyst;
@@ -108,7 +109,7 @@ bool Engine::finalizeHeaders(Context *c)
     // Handle redirects
     const QUrl &location = response->location();
     if (!location.isEmpty()) {
-        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().data());
+        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().constData());
         response->headers().setHeader(QStringLiteral("Location"), QString::fromLatin1(location.toEncoded()));
     }
 
@@ -376,7 +377,7 @@ void Engine::finalize(Context *c)
     }
 }
 
-static const QByteArray cutelyst_header_order(
+static const QByteArray cutelyst_header_order (
         // General headers
         "Cache-Control\n"
         "Connection\n"

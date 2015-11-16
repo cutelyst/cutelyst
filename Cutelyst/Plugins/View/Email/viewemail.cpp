@@ -37,7 +37,7 @@ using namespace SimpleMail;
 ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(parent, name)
   , d_ptr(new ViewEmailPrivate)
 {
-    init();
+    initSender();
 }
 
 ViewEmail::~ViewEmail()
@@ -135,7 +135,7 @@ QByteArray ViewEmail::render(Context *c) const
 
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
-        c->error(QLatin1String("Cannot render template, template name or template stash key not defined"));
+        c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
         return QByteArray();
     }
 
@@ -165,7 +165,7 @@ QByteArray ViewEmail::render(Context *c) const
     QVariant body = email.value(QStringLiteral("body"));
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
-        c->error(QLatin1String("Can't send email without parts or body, check stash"));
+        c->error(QStringLiteral("Can't send email without parts or body, check stash"));
         return QByteArray();
     }
 
@@ -195,10 +195,10 @@ ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) 
 {
     d_ptr = d;
 
-    init();
+    initSender();
 }
 
-void ViewEmail::init()
+void ViewEmail::initSender()
 {
     Q_D(ViewEmail);
     d->sender = new Sender(this);
@@ -206,21 +206,21 @@ void ViewEmail::init()
     QVariantHash config;
     Application *app = qobject_cast<Application *>(parent());
     if (app) {
-        config = app->config(QLatin1String("VIEW_EMAIL")).toHash();
+        config = app->config(QStringLiteral("VIEW_EMAIL")).toHash();
     }
 
-    d->stashKey = config.value(QLatin1String("stash_key"), QStringLiteral("email")).toString();
+    d->stashKey = config.value(QStringLiteral("stash_key"), QStringLiteral("email")).toString();
 
-    if (!config.value(QLatin1String("sender_host")).isNull()) {
-        d->sender->setHost(config.value(QLatin1String("sender_host")).toString());
+    if (!config.value(QStringLiteral("sender_host")).isNull()) {
+        d->sender->setHost(config.value(QStringLiteral("sender_host")).toString());
     }
-    if (!config.value(QLatin1String("sender_port")).isNull()) {
-        d->sender->setPort(config.value(QLatin1String("sender_port")).toInt());
+    if (!config.value(QStringLiteral("sender_port")).isNull()) {
+        d->sender->setPort(config.value(QStringLiteral("sender_port")).toInt());
     }
-    if (!config.value(QLatin1String("sender_username")).isNull()) {
-        d->sender->setUser(config.value(QLatin1String("sender_username")).toString());
+    if (!config.value(QStringLiteral("sender_username")).isNull()) {
+        d->sender->setUser(config.value(QStringLiteral("sender_username")).toString());
     }
-    if (!config.value(QLatin1String("sender_password")).isNull()) {
-        d->sender->setPassword(config.value(QLatin1String("sender_password")).toString());
+    if (!config.value(QStringLiteral("sender_password")).isNull()) {
+        d->sender->setPassword(config.value(QStringLiteral("sender_password")).toString());
     }
 }

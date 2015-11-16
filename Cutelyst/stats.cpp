@@ -73,7 +73,7 @@ QString Stats::report()
     }
 
     QList<QStringList> table;
-    Q_FOREACH (StatsAction stat, d->actions) {
+    Q_FOREACH (const StatsAction &stat, d->actions) {
         table.append({ stat.action,
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
     }

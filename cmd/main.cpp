@@ -78,9 +78,9 @@ int runServer(const QString &appFilename, int port, bool restart)
         args.append(QStringLiteral("--cutelyst-reload"));
     }
 
-    qDebug() << "Running: uwsgi" << args.join(QLatin1String(" ")).toLatin1().data();
+    qDebug() << "Running: uwsgi" << args.join(QStringLiteral(" ")).toLatin1().data();
 
-    return QProcess::execute(QLatin1String("uwsgi"), args);
+    return QProcess::execute(QStringLiteral("uwsgi"), args);
 }
 
 bool findProjectDir(const QDir &dir, QDir *projectDir)
@@ -107,7 +107,7 @@ bool findProjectDir(const QDir &dir, QDir *projectDir)
 
 bool createController(const QString &controllerName)
 {
-    if (controllerName.contains(QRegularExpression(QLatin1String("\\W"))) || controllerName.contains(QRegularExpression(QLatin1String("^\\d")))) {
+    if (controllerName.contains(QRegularExpression(QStringLiteral("\\W"))) || controllerName.contains(QRegularExpression(QStringLiteral("^\\d")))) {
         qDebug() << "Error: Invalid Controller name.";
         return false;
     }
@@ -118,13 +118,13 @@ bool createController(const QString &controllerName)
         return false;
     }
 
-    if (!buildControllerHeader(projectDir.absoluteFilePath(QLatin1String("src/")) % controllerName.toLower() % QLatin1String(".h"),
+    if (!buildControllerHeader(projectDir.absoluteFilePath(QStringLiteral("src/")) % controllerName.toLower() % QLatin1String(".h"),
                                controllerName,
                                false)) {
         return false;
     }
 
-    if (!buildControllerImplementation(projectDir.absoluteFilePath(QLatin1String("src/")) % controllerName.toLower() % QLatin1String(".cpp"),
+    if (!buildControllerImplementation(projectDir.absoluteFilePath(QStringLiteral("src/")) % controllerName.toLower() % QLatin1String(".cpp"),
                                        controllerName,
                                        false)) {
         return false;
@@ -429,7 +429,7 @@ bool createDir(const QDir &parentDir, const QString &name)
 
 bool createApplication(const QString &name)
 {
-    if (name.contains(QRegularExpression(QLatin1String("\\W"))) || name.contains(QRegularExpression(QLatin1String("^\\d")))) {
+    if (name.contains(QRegularExpression(QStringLiteral("\\W"))) || name.contains(QRegularExpression(QStringLiteral("^\\d")))) {
         qDebug() << "Error: Invalid Application name.";
         return false;
     }
@@ -489,10 +489,10 @@ bool createApplication(const QString &name)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    QCoreApplication::setOrganizationName(QLatin1String("Cutelyst"));
-    QCoreApplication::setOrganizationDomain(QLatin1String("cutelyst.org"));
-    QCoreApplication::setApplicationName(QLatin1String("cutelyst"));
-    QCoreApplication::setApplicationVersion(QLatin1String("0.0.1"));
+    QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
+    QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
+    QCoreApplication::setApplicationName(QStringLiteral("cutelyst"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("0.0.1"));
 
     QTranslator qtTranslator;
     qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
@@ -501,33 +501,33 @@ int main(int argc, char *argv[])
 
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QLatin1String("Creates a skeleton for a new application, and for controllers"));
+    parser.setApplicationDescription(QStringLiteral("Creates a skeleton for a new application, and for controllers"));
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption appName = QCommandLineOption(QLatin1String("create-app"),
-                                                    QLatin1String("Creates a new Cutelyst application"),
-                                                    QLatin1String("app_name"));
+    QCommandLineOption appName = QCommandLineOption(QStringLiteral("create-app"),
+                                                    QStringLiteral("Creates a new Cutelyst application"),
+                                                    QStringLiteral("app_name"));
     parser.addOption(appName);
-    QCommandLineOption controller = QCommandLineOption(QLatin1String("controller"),
-                                                       QLatin1String("Name of the Controller application to create"),
-                                                       QLatin1String("controller_name"));
+    QCommandLineOption controller = QCommandLineOption(QStringLiteral("controller"),
+                                                       QStringLiteral("Name of the Controller application to create"),
+                                                       QStringLiteral("controller_name"));
 
     parser.addOption(controller);
-    QCommandLineOption server = QCommandLineOption(QLatin1String("server"),
-                                                   QLatin1String("Development server (requires uWSGI)"));
+    QCommandLineOption server = QCommandLineOption(QStringLiteral("server"),
+                                                   QStringLiteral("Development server (requires uWSGI)"));
     parser.addOption(server);
-    QCommandLineOption appFile = QCommandLineOption(QLatin1String("app-file"),
-                                                    QLatin1String("Application file of to use with the server (usually in build/src/lib*.so),"
+    QCommandLineOption appFile = QCommandLineOption(QStringLiteral("app-file"),
+                                                    QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so),"
                                                     " if not set it will try to auto-detect"),
-                                                    QLatin1String("file_name"));
+                                                    QStringLiteral("file_name"));
     parser.addOption(appFile);
-    QCommandLineOption serverPort = QCommandLineOption({ QLatin1String("server-port"), QLatin1String("p") },
-                                                       QLatin1String("Development server port"),
-                                                       QLatin1String("port"));
+    QCommandLineOption serverPort = QCommandLineOption({ QStringLiteral("server-port"), QStringLiteral("p") },
+                                                       QStringLiteral("Development server port"),
+                                                       QStringLiteral("port"));
     parser.addOption(serverPort);
-    QCommandLineOption restart = QCommandLineOption({ QLatin1String("restart"), QLatin1String("r") },
-                                                    QLatin1String("Restarts the development server when the application file changes"));
+    QCommandLineOption restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
+                                                    QStringLiteral("Restarts the development server when the application file changes"));
     parser.addOption(restart);
 
     // Process the actual command line arguments given by the user

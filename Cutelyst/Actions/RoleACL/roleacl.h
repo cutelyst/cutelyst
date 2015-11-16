@@ -47,7 +47,7 @@ public:
     bool canVisit(Context *c) const;
 
 protected:
-    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller);
+    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) Q_DECL_OVERRIDE;
 
     RoleACLPrivate *d_ptr;
 };
