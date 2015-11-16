@@ -37,29 +37,7 @@ using namespace SimpleMail;
 ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(parent, name)
   , d_ptr(new ViewEmailPrivate)
 {
-    Q_D(ViewEmail);
-    d->sender = new Sender(this);
-
-    QVariantHash config;
-    Application *app = qobject_cast<Application *>(parent);
-    if (app) {
-        config = app->config(QLatin1String("VIEW_EMAIL")).toHash();
-    }
-
-    d->stashKey = config.value(QLatin1String("stash_key"), QStringLiteral("email")).toString();
-
-    if (!config.value(QLatin1String("sender_host")).isNull()) {
-        d->sender->setHost(config.value(QLatin1String("sender_host")).toString());
-    }
-    if (!config.value(QLatin1String("sender_port")).isNull()) {
-        d->sender->setPort(config.value(QLatin1String("sender_port")).toInt());
-    }
-    if (!config.value(QLatin1String("sender_username")).isNull()) {
-        d->sender->setUser(config.value(QLatin1String("sender_username")).toString());
-    }
-    if (!config.value(QLatin1String("sender_password")).isNull()) {
-        d->sender->setPassword(config.value(QLatin1String("sender_password")).toString());
-    }
+    init();
 }
 
 ViewEmail::~ViewEmail()
@@ -192,11 +170,16 @@ QByteArray ViewEmail::render(Context *c) const
     }
 
     if (!parts.isNull()) {
-        QVariantList partsVariant = parts.toList();
+        const QVariantList partsVariant = parts.toList();
         Q_FOREACH (const QVariant &part, partsVariant) {
-            message.addPart(part.value<MimePart*>());
+            MimePart *mime = part.value<MimePart*>();
+            if (mime) {
+                message.addPart(mime);
+            } else {
+                qCCritical(CUTELYST_VIEW_EMAIL) << "Failed to cast MimePart";
+            }
         }
-    } else if (!body.isNull()) {
+    } else {
         message.setContent(new MimeText(body.toString()));
     }
 
@@ -211,4 +194,33 @@ QByteArray ViewEmail::render(Context *c) const
 ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(parent, name)
 {
     d_ptr = d;
+
+    init();
+}
+
+void ViewEmail::init()
+{
+    Q_D(ViewEmail);
+    d->sender = new Sender(this);
+
+    QVariantHash config;
+    Application *app = qobject_cast<Application *>(parent());
+    if (app) {
+        config = app->config(QLatin1String("VIEW_EMAIL")).toHash();
+    }
+
+    d->stashKey = config.value(QLatin1String("stash_key"), QStringLiteral("email")).toString();
+
+    if (!config.value(QLatin1String("sender_host")).isNull()) {
+        d->sender->setHost(config.value(QLatin1String("sender_host")).toString());
+    }
+    if (!config.value(QLatin1String("sender_port")).isNull()) {
+        d->sender->setPort(config.value(QLatin1String("sender_port")).toInt());
+    }
+    if (!config.value(QLatin1String("sender_username")).isNull()) {
+        d->sender->setUser(config.value(QLatin1String("sender_username")).toString());
+    }
+    if (!config.value(QLatin1String("sender_password")).isNull()) {
+        d->sender->setPassword(config.value(QLatin1String("sender_password")).toString());
+    }
 }

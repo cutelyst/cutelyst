@@ -100,6 +100,9 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     c->stash(partHash);
     c->setStash(QStringLiteral("template"), templateString);
     QByteArray output = view->render(c);
+    if (c->error()) {
+        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Errors" << c->errors();
+    }
     c->stash() = currentStash;
 
     MimePart *part = new MimePart();
@@ -112,29 +115,36 @@ QByteArray ViewEmailTemplate::render(Context *c) const
 {
     Q_D(const ViewEmailTemplate);
 
-    const QVariantHash email = c->stash(d->stashKey).toHash();
-    const QVariantHash templateHash = email.value(QStringLiteral("template")).toHash();
+    QVariantHash email = c->stash(d->stashKey).toHash();
+    const QString templateName = email.value(QStringLiteral("template")).toString();
     const QVariantList templateList = email.value(QStringLiteral("templates")).toList();
-    if (templateHash.isEmpty() || templateList.isEmpty()) {
+    if (templateName.isEmpty() && templateList.isEmpty()) {
         return ViewEmail::render(c);
     }
 
-    QVariantList parts;
+    QVariantList parts = email.value(QStringLiteral("parts")).toList();
     if (!templateList.isEmpty() && templateList.first().type() == QVariant::Hash) {
         // multipart API
-
         Q_FOREACH (const QVariant &part, templateList) {
             const QVariantHash partHash = part.toHash();
             MimePart *partObj = generatePart(c, d, partHash);
             parts.append(QVariant::fromValue(partObj));
         }
 
-    } else if (!templateHash.isEmpty()) {
+    } else if (!templateName.isEmpty()) {
         // single part API
-        MimePart *partObj = generatePart(c, d, templateHash);
+        QVariantHash partArgs({
+                                  {QStringLiteral("template"), templateName},
+
+                              });
+        if (!email.value(QStringLiteral("content_type")).toString().isEmpty()) {
+            partArgs.insert(QStringLiteral("content_type"), email.value(QStringLiteral("content_type")).toString());
+        }
+        MimePart *partObj = generatePart(c, d, partArgs);
         parts.append(QVariant::fromValue(partObj));
     }
-    c->setStash(QStringLiteral("parts"), parts);
+    email.insert(QStringLiteral("parts"), parts);
+    c->setStash(d->stashKey, email);
 
     return ViewEmail::render(c);
 }

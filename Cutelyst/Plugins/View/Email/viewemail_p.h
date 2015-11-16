@@ -33,7 +33,7 @@ namespace Cutelyst {
 class ViewEmailPrivate
 {
 public:
-    QString stashKey;
+    QString stashKey = QStringLiteral("email");
     QString defaultContentType;
     QString defaultCharset;
     QStringList exposeKeys;

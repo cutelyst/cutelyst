@@ -60,6 +60,7 @@ void Context::error(const QString &error)
         d->error.clear();
     } else {
         d->error << error;
+        qCCritical(CUTELYST_CORE) << error;
     }
 }
 

@@ -87,6 +87,9 @@ protected:
 
     Q_DECLARE_PRIVATE(ViewEmail)
     ViewEmailPrivate *d_ptr;
+
+private:
+    void init();
 };
 
 }
