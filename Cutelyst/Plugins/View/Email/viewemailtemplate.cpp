@@ -100,8 +100,7 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     c->stash(partHash);
     c->setStash(QStringLiteral("template"), templateString);
     QByteArray output = view->render(c);
-    c->stash() == currentStash;
-
+    c->stash() = currentStash;
 
     MimePart *part = new MimePart();
     part->setContent(output);
