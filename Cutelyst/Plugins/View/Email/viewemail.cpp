@@ -191,6 +191,18 @@ QByteArray ViewEmail::render(Context *c) const
                 qCCritical(CUTELYST_VIEW_EMAIL) << "Failed to cast MimePart";
             }
         }
+
+        auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
+        if (contentTypeIt != email.constEnd()
+                && !contentTypeIt.value().isNull()
+                && !contentTypeIt.value().toString().isEmpty()) {
+            const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
+            qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
+            message.getContent().setContentType(contentType);
+        } else if (!d->defaultContentType.isEmpty()) {
+            qCDebug(CUTELYST_VIEW_EMAIL) << "Using default content_type" << d->defaultContentType;
+            message.getContent().setContentType(d->defaultContentType);
+        }
     } else {
         MimeText *part = new MimeText(body.toString());
         d->setupAttributes(part, email);
