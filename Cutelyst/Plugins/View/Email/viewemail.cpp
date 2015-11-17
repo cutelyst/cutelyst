@@ -57,28 +57,40 @@ void ViewEmail::setStashKey(const QString &stashKey)
     d->stashKey = stashKey;
 }
 
-QString ViewEmail::defaultContentType() const
+QByteArray ViewEmail::defaultContentType() const
 {
     Q_D(const ViewEmail);
     return d->defaultContentType;
 }
 
-void ViewEmail::setDefaultContentType(const QString &contentType)
+void ViewEmail::setDefaultContentType(const QByteArray &contentType)
 {
     Q_D(ViewEmail);
     d->defaultContentType = contentType;
 }
 
-QString ViewEmail::defaultCharset() const
+QByteArray ViewEmail::defaultCharset() const
 {
     Q_D(const ViewEmail);
     return d->defaultCharset;
 }
 
-void ViewEmail::setDefaultCharset(const QString &charset)
+void ViewEmail::setDefaultCharset(const QByteArray &charset)
 {
     Q_D(ViewEmail);
     d->defaultCharset = charset;
+}
+
+QByteArray ViewEmail::defaultEncoding() const
+{
+    Q_D(const ViewEmail);
+    return d->defaultEncoding;
+}
+
+void ViewEmail::setDefaultEncoding(const QByteArray &encoding)
+{
+    Q_D(ViewEmail);
+    d->defaultEncoding = encoding;
 }
 
 QString ViewEmail::senderHost() const
@@ -180,7 +192,9 @@ QByteArray ViewEmail::render(Context *c) const
             }
         }
     } else {
-        message.setContent(new MimeText(body.toString()));
+        MimeText *part = new MimeText(body.toString());
+        d->setupAttributes(part, email);
+        message.setContent(part);
     }
 
     if (!d->sender->sendMail(message)) {
@@ -222,5 +236,60 @@ void ViewEmail::initSender()
     }
     if (!config.value(QStringLiteral("sender_password")).isNull()) {
         d->sender->setPassword(config.value(QStringLiteral("sender_password")).toString());
+    }
+}
+
+
+void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs) const
+{
+    auto contentTypeIt = attrs.constFind(QStringLiteral("content_type"));
+    if (contentTypeIt != attrs.constEnd()
+            && !contentTypeIt.value().isNull()
+            && !contentTypeIt.value().toString().isEmpty()) {
+        const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
+        part->setContentType(contentType);
+    } else if (!defaultContentType.isEmpty()) {
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using default content_type" << defaultContentType;
+        part->setContentType(defaultContentType);
+    }
+
+    auto charsetIt = attrs.constFind(QStringLiteral("charset"));
+    if (charsetIt != attrs.constEnd()
+            && !charsetIt.value().isNull()
+            && !charsetIt.value().toString().isEmpty()) {
+        const QByteArray charset = charsetIt.value().toString().toLatin1();
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified charset" << charset;
+        part->setCharset(charset);
+    } else if (!defaultCharset.isEmpty()) {
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using default charset" << defaultCharset;
+        part->setCharset(defaultCharset);
+    }
+
+    auto encodingIt = attrs.constFind(QStringLiteral("encoding"));
+    if (encodingIt != attrs.constEnd()
+            && !encodingIt.value().isNull()
+            && !encodingIt.value().toString().isEmpty()) {
+        const QByteArray encoding = encodingIt.value().toString().toLatin1();
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified encoding" << encoding;
+        setupEncoding(part, encoding);
+    } else if (!defaultEncoding.isEmpty()) {
+        qCDebug(CUTELYST_VIEW_EMAIL) << "Using default charset" << defaultEncoding;
+        setupEncoding(part, defaultEncoding);
+    }
+}
+
+void ViewEmailPrivate::setupEncoding(MimePart *part, const QByteArray &encoding) const
+{
+    if (encoding == "7bit") {
+        part->setEncoding(MimePart::_7Bit);
+    } else if (encoding == "8bit") {
+        part->setEncoding(MimePart::_8Bit);
+    } else if (encoding == "base64") {
+        part->setEncoding(MimePart::Base64);
+    } else if (encoding == "quoted-printable") {
+        part->setEncoding(MimePart::QuotedPrintable);
+    } else {
+        qCCritical(CUTELYST_VIEW_EMAIL) << "Unknown encoding" << encoding;
     }
 }

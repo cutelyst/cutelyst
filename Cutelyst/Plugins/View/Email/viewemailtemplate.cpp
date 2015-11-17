@@ -33,7 +33,9 @@ using namespace Cutelyst;
 
 ViewEmailTemplate::ViewEmailTemplate(QObject *parent, const QString &name) : ViewEmail(new ViewEmailTemplatePrivate, parent, name)
 {
+    Q_D(ViewEmailTemplate);
 
+    d->defaultContentType = "text/html";
 }
 
 QString ViewEmailTemplate::templatePrefix() const
@@ -63,8 +65,6 @@ void ViewEmailTemplate::setDefaultView(const QString &view)
 MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)
 {
     const QString defaultView = d->defaultView;
-    const QString defaultContentType = d->defaultContentType;
-    const QString defaultCharset = d->defaultCharset;
 
     View *view = nullptr;
     auto viewIt = partHash.constFind(QStringLiteral("view"));
@@ -108,6 +108,8 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     MimePart *part = new MimePart();
     part->setContent(output);
 
+    d->setupAttributes(part, partHash);
+
     return part;
 }
 
@@ -137,8 +139,9 @@ QByteArray ViewEmailTemplate::render(Context *c) const
                                   {QStringLiteral("template"), templateName},
 
                               });
-        if (!email.value(QStringLiteral("content_type")).toString().isEmpty()) {
-            partArgs.insert(QStringLiteral("content_type"), email.value(QStringLiteral("content_type")).toString());
+        auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
+        if (contentTypeIt != email.constEnd() && !contentTypeIt.value().toString().isEmpty()) {
+            partArgs.insert(QStringLiteral("content_type"), contentTypeIt.value().toString());
         }
         MimePart *partObj = generatePart(c, d, partArgs);
         parts.append(QVariant::fromValue(partObj));

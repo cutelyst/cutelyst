@@ -34,7 +34,9 @@ class CUTELYST_LIBRARY ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey)
-    Q_PROPERTY(QString defaultContentType READ defaultContentType WRITE setDefaultContentType)
+    Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType)
+    Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset)
+    Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding)
 public:
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
@@ -45,18 +47,18 @@ public:
     /**
      * Returns the default content type (mime type).
      */
-    QString defaultContentType() const;
+    QByteArray defaultContentType() const;
 
     /**
      * Defines the default content type (mime type).
      */
-    void setDefaultContentType(const QString &contentType);
+    void setDefaultContentType(const QByteArray &contentType);
 
     /**
      * Returns the default charset for every MIME part with the
      * content type text.
      */
-    QString defaultCharset() const;
+    QByteArray defaultCharset() const;
 
     /**
      * Defines the default charset for every MIME part with the
@@ -66,7 +68,10 @@ public:
      * If the charset is not set it won't be set for all MIME parts
      * without an overridden one.
      */
-    void setDefaultCharset(const QString &charset);
+    void setDefaultCharset(const QByteArray &charset);
+
+    QByteArray defaultEncoding() const;
+    void setDefaultEncoding(const QByteArray &encoding);
 
     QString senderHost() const;
     void setSenderHost(const QString &host);

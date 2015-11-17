@@ -33,9 +33,13 @@ namespace Cutelyst {
 class ViewEmailPrivate
 {
 public:
+    void setupAttributes(MimePart *part, const QVariantHash &attrs) const;
+    void setupEncoding(MimePart *part, const QByteArray &encoding) const;
+
     QString stashKey = QStringLiteral("email");
-    QString defaultContentType;
-    QString defaultCharset;
+    QByteArray defaultContentType = "text/plain";
+    QByteArray defaultCharset;
+    QByteArray defaultEncoding;
     QStringList exposeKeys;
     QRegularExpression exposeRE;
     Sender *sender;
