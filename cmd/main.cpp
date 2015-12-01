@@ -167,7 +167,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "\n";
         out << "bool " << appName << "::init" << "()" << "\n";
         out << "{" << "\n";
-        out << "    new Root(this));" << "\n";
+        out << "    new Root(this);" << "\n";
         out << "\n";
         out << "    new StaticSimple(this);" << "\n";
         out << "\n";
