@@ -151,7 +151,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         QFileInfo fileInfo(filename);
         out << "#include \"" << fileInfo.baseName() << ".h\"" << "\n";
         out << "\n";
-        out << "#include <Cutelyst/Plugins/StaticSimple>" << "\n";
+        out << "#include <Cutelyst/Plugins/StaticSimple/staticsimple.h>" << "\n";
         out << "\n";
         out << "#include \"root.h\"" << "\n";
         out << "\n";
@@ -167,7 +167,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "\n";
         out << "bool " << appName << "::init" << "()" << "\n";
         out << "{" << "\n";
-        out << "    new Root(this));" << "\n";
+        out << "    new Root(this);" << "\n";
         out << "\n";
         out << "    new StaticSimple(this);" << "\n";
         out << "\n";
