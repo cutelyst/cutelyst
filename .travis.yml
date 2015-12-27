@@ -18,7 +18,7 @@ compiler:
 
 before_install:
   - QT_VERSION_MM=55
-  - QT_VERSION_FULL=55-trusty
+  - QT_VERSION_FULL=551-trusty
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL
       && sudo apt-get update -qq
