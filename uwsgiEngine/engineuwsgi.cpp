@@ -24,6 +24,7 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QTimer>
 
 #include <Cutelyst/common.h>
 #include <Cutelyst/application.h>
@@ -241,7 +242,7 @@ void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
     m_unusedReq.append(wsgi_req);
 }
 
-void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
+uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 {
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
     connect(this, &uWSGI::enableSockets,
@@ -284,6 +285,116 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 
         m_unusedReq.append(wsgi_req);
     });
+
+    return uwsgi_sock->next;
+}
+
+uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
+{
+    QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
+    connect(this, &uWSGI::enableSockets,
+            socketNotifier, &QSocketNotifier::setEnabled);
+    connect(socketNotifier, &QSocketNotifier::activated,
+            [=](int fd) {
+        if (m_unusedReq.isEmpty()) {
+            uwsgi_async_queue_is_full(uwsgi_now());
+            return;
+        }
+
+        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
+
+        // fill wsgi_request structure
+        wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
+
+        // mark core as used
+        uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 1;
+
+        // accept the connection (since uWSGI 1.5 all of the sockets are non-blocking)
+        if (wsgi_req_simple_accept(wsgi_req, fd) != 0) {
+            uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
+            m_unusedReq.append(wsgi_req);
+            return;
+        }
+
+        wsgi_req->start_of_request = uwsgi_micros();
+        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
+
+#ifdef UWSGI_GO_CHEAP_CODE
+        // enter harakiri mode
+        if (uwsgi.harakiri_options.workers > 0) {
+            set_harakiri(uwsgi.harakiri_options.workers);
+        }
+#endif // UWSGI_GO_CHEAP_CODE
+
+        QSocketNotifier *requestNotifier = new QSocketNotifier(wsgi_req->fd, QSocketNotifier::Read, this);
+        QTimer *timeoutTimer = new QTimer(requestNotifier);
+        timeoutTimer->setInterval(uwsgi.socket_timeout * 1000);
+        connect(timeoutTimer, &QTimer::timeout,
+                [=]() {
+            CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
+            requestNotifier->setEnabled(false);
+            uwsgi_close_request(wsgi_req);
+            requestNotifier->deleteLater();
+            m_unusedReq.append(wsgi_req);
+
+            wsgi_req->async_environ = cache;
+        });
+
+        connect(requestNotifier, &QSocketNotifier::activated,
+                [=](int fd) {
+            Q_UNUSED(fd)
+            int status = wsgi_req->socket->proto(wsgi_req);
+            if (status > 0) {
+                // still need to read
+                timeoutTimer->start();
+                return;
+            } else if (status < 0) {
+                qCDebug(CUTELYST_UWSGI) << "Failed broken socket.";
+                goto end;
+            }
+
+            // empty request ?
+            if (!wsgi_req->uh->pktsize) {
+                qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
+                goto end;
+            }
+
+            // get uwsgi variables
+            if (uwsgi_parse_vars(wsgi_req)) {
+                // If static maps are set or there is some error
+                // this returns -1 so we just close the request
+                goto end;
+            }
+
+            // We must disable the socket because the next
+            // request is likely to happen before deleteLater
+            // is processed.
+            requestNotifier->setEnabled(false);
+            delete timeoutTimer;
+            processRequest(wsgi_req);
+            goto endDisabledNotifier;
+
+end:
+            // We must disable the socket because the next
+            // request is likely to happen before deleteLater
+            // is processed.
+            requestNotifier->setEnabled(false);
+
+endDisabledNotifier:
+            CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
+
+            uwsgi_close_request(wsgi_req);
+            requestNotifier->deleteLater();
+            m_unusedReq.append(wsgi_req);
+
+            wsgi_req->async_environ = cache;
+        });
+
+        timeoutTimer->start();
+
+    });
+
+    return uwsgi_sock->next;
 }
 
 void uWSGI::reuseEngineRequests(uWSGI *engine)
@@ -389,9 +500,14 @@ void uWSGI::forked()
     if (!m_unusedReq.isEmpty()) {
         // Start Monitoring Sockets
         struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
-        while(uwsgi_sock) {
-            watchSocket(uwsgi_sock);
-            uwsgi_sock = uwsgi_sock->next;
+        if (m_unusedReq.size() > 1) {
+            while(uwsgi_sock) {
+                uwsgi_sock = watchSocketAsync(uwsgi_sock);
+            }
+        } else {
+            while(uwsgi_sock) {
+                uwsgi_sock = watchSocket(uwsgi_sock);
+            }
         }
     }
 }

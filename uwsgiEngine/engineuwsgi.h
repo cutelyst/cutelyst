@@ -64,7 +64,9 @@ public:
 
     void addUnusedRequest(wsgi_request *wsgi_req);
 
-    void watchSocket(struct uwsgi_socket *uwsgi_sock);
+    uwsgi_socket *watchSocket(struct uwsgi_socket *uwsgi_sock);
+
+    uwsgi_socket *watchSocketAsync(struct uwsgi_socket *uwsgi_sock);
 
     /**
      * This method is called when an engine
