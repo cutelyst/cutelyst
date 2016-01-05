@@ -482,7 +482,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    const QMap<QByteArray, QByteArray> attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
+    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
     Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
         QObject *object = instantiateClass(role, "Cutelyst::Component");
         if (object) {

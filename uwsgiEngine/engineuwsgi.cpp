@@ -251,11 +251,12 @@ void uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
-        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
-        if (wsgi_req == NULL) {
+        if (m_unusedReq.isEmpty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
         }
+
+        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
 
         // fill wsgi_request structure
         wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
