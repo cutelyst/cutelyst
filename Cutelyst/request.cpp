@@ -30,6 +30,8 @@
 
 using namespace Cutelyst;
 
+static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &position);
+
 Request::Request(RequestPrivate *prv) :
     d_ptr(prv)
 {
@@ -47,29 +49,21 @@ QHostAddress Request::address() const
     return d->remoteAddress;
 }
 
+inline QString remoteAddressLookup(const QString &remoteAddress)
+{
+    QHostInfo ptr = QHostInfo::fromName(remoteAddress);
+    if (ptr.error() != QHostInfo::NoError) {
+        qCWarning(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << remoteAddress;
+        return QString();
+    }
+    return ptr.hostName();
+}
+
 QString Request::hostname() const
 {
     Q_D(const Request);
-
-    // We have the client hostname
-    if (!d->remoteHostname.isEmpty()) {
-        return d->remoteHostname;
-    } else {
-        // We tried to get the client hostname but failed
-        if (!d->remoteHostname.isNull()) {
-            return QString();
-        }
-    }
-
-    QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
-    if (ptr.error() != QHostInfo::NoError) {
-        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
-        d->remoteHostname = QLatin1String("");
-        return QString();
-    }
-
-    d->remoteHostname = ptr.hostName();
-    return d->remoteHostname;
+    static QString remoteHostName = remoteAddressLookup(d->remoteAddress.toString());
+    return remoteHostName;
 }
 
 quint16 Request::port() const
@@ -81,51 +75,15 @@ quint16 Request::port() const
 QUrl Request::uri() const
 {
     Q_D(const Request);
-    if (!d->urlParsed) {
-        QUrl uri;
-
-        // This is a hack just in case remote is not set
-        if (d->serverAddress.isNull()) {
-            uri.setHost(QHostInfo::localHostName());
-        } else {
-            uri.setAuthority(d->serverAddress);
-        }
-
-        uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
-
-        // if the path does not start with a slash it cleans the uri
-        uri.setPath(QLatin1Char('/') % d->path);
-
-        if (!d->query.isEmpty()) {
-            uri.setQuery(QString::fromLatin1(d->query));
-        }
-
-        d->url = uri;
-        d->urlParsed = true;
-    }
-    return d->url;
+    static QUrl url = d->parseUrl();
+    return url;
 }
 
 QString Request::base() const
 {
     Q_D(const Request);
-    if (!d->baseParsed) {
-        QString base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
-
-        // This is a hack just in case remote is not set
-        if (d->serverAddress.isNull()) {
-            base.append(QHostInfo::localHostName());
-        } else {
-            base.append(d->serverAddress);
-        }
-
-        // base always have a trailing slash
-        base.append(QLatin1Char('/'));
-
-        d->base = base;
-        d->baseParsed = true;
-    }
-    return d->base;
+    static QString base = d->parseBase();
+    return base;
 }
 
 QString Request::path() const
@@ -211,13 +169,20 @@ ParamsMultiMap Request::bodyParameters() const
     return d->bodyParam;
 }
 
+inline QString parseQueryKeywords(const QByteArray &query)
+{
+    QString keywords;
+    if (query.indexOf('=') < 0) {
+        keywords = QUrl::fromPercentEncoding(query);
+    }
+    return keywords;
+}
+
 QString Request::queryKeywords() const
 {
     Q_D(const Request);
-    if (!d->queryParamParsed) {
-        d->parseUrlQuery();
-    }
-    return d->queryKeywords;
+    static QString keywords = parseQueryKeywords(d->query);
+    return keywords;
 }
 
 QVariantMap Request::queryParametersVariant() const
@@ -225,13 +190,20 @@ QVariantMap Request::queryParametersVariant() const
     return RequestPrivate::paramsMultiMapToVariantMap(queryParameters());
 }
 
+inline ParamsMultiMap parseUrlQuery(const QByteArray &query)
+{
+    ParamsMultiMap queryParam;
+    if (query.indexOf('=') >= 0) {
+        queryParam = RequestPrivate::parseUrlEncoded(query);
+    }
+    return queryParam;
+}
+
 ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
-    if (!d->queryParamParsed) {
-        d->parseUrlQuery();
-    }
-    return d->queryParam;
+    static ParamsMultiMap queryParams = parseUrlQuery(d->query);
+    return queryParams;
 }
 
 QVariantMap Request::parametersVariant() const
@@ -241,23 +213,13 @@ QVariantMap Request::parametersVariant() const
 
 ParamsMultiMap Request::parameters() const
 {
-    Q_D(const Request);
-    if (!d->paramParsed) {
-        d->param = queryParameters();
-        d->param.unite(bodyParameters());
-        d->paramParsed = true;
-    }
-    return d->param;
+    static ParamsMultiMap params = ParamsMultiMap().unite(queryParameters()).unite(bodyParameters());
+    return params;
 }
 
 QNetworkCookie Request::cookie(const QString &name) const
 {
-    Q_D(const Request);
-    if (!d->cookiesParsed) {
-        d->parseCookies();
-    }
-
-    Q_FOREACH (const QNetworkCookie &cookie, d->cookies) {
+    Q_FOREACH (const QNetworkCookie &cookie, cookies()) {
         if (QString::fromLatin1(cookie.name()) == name) {
             return cookie;
         }
@@ -265,13 +227,37 @@ QNetworkCookie Request::cookie(const QString &name) const
     return QNetworkCookie();
 }
 
+inline QList<QNetworkCookie> parseCookies(const QByteArray &cookieString)
+{
+    QList<QNetworkCookie> ret;
+
+    int position = 0;
+    const int length = cookieString.length();
+    while (position < length) {
+        QPair<QByteArray,QByteArray> field = nextField(cookieString, position);
+        if (field.first.isEmpty()) {
+            // parsing error
+            break;
+        }
+
+        // Some foreign cookies are not in name=value format, so ignore them.
+        if (field.second.isEmpty()) {
+            ++position;
+            continue;
+        }
+        ret.append(QNetworkCookie(field.first, field.second));
+        ++position;
+
+    }
+
+    return ret;
+}
+
 QList<QNetworkCookie> Request::cookies() const
 {
     Q_D(const Request);
-    if (!d->cookiesParsed) {
-        d->parseCookies();
-    }
-    return d->cookies;
+    static QList<QNetworkCookie> cookies = parseCookies(d->headers.header(QStringLiteral("Cookie")).toLatin1());
+    return cookies;
 }
 
 Headers Request::headers() const
@@ -362,20 +348,6 @@ void *Request::engineData()
 {
     Q_D(Request);
     return d->requestPtr;
-}
-
-void RequestPrivate::parseUrlQuery() const
-{
-    // TODO move this to the asignment of query
-    if (query.size()) {
-        // Check for keywords (no = signs)
-        if (query.indexOf('=') < 0) {
-            queryKeywords = QUrl::fromPercentEncoding(query);
-        } else {
-            queryParam = parseUrlEncoded(query);
-        }
-    }
-    queryParamParsed = true;
 }
 
 void RequestPrivate::parseBody() const
@@ -482,33 +454,6 @@ static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &posi
     return qMakePair(first, second);
 }
 
-void RequestPrivate::parseCookies() const
-{
-    QList<QNetworkCookie> ret;
-    const QByteArray &cookieString = headers.header(QStringLiteral("Cookie")).toLatin1();
-    int position = 0;
-    const int length = cookieString.length();
-    while (position < length) {
-        QPair<QByteArray,QByteArray> field = nextField(cookieString, position);
-        if (field.first.isEmpty()) {
-            // parsing error
-            break;
-        }
-
-        // Some foreign cookies are not in name=value format, so ignore them.
-        if (field.second.isEmpty()) {
-            ++position;
-            continue;
-        }
-        ret.append(QNetworkCookie(field.first, field.second));
-        ++position;
-
-    }
-
-    cookies = ret;
-    cookiesParsed = true;
-}
-
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
@@ -577,4 +522,44 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
         ret.insertMulti(ret.constBegin(), end.key(), end.value());
     }
     return ret;
+}
+
+QUrl RequestPrivate::parseUrl() const
+{
+    QUrl uri;
+
+    // This is a hack just in case remote is not set
+    if (serverAddress.isNull()) {
+        uri.setHost(QHostInfo::localHostName());
+    } else {
+        uri.setAuthority(serverAddress);
+    }
+
+    uri.setScheme(https ? QStringLiteral("https") : QStringLiteral("http"));
+
+    // if the path does not start with a slash it cleans the uri
+    uri.setPath(QLatin1Char('/') % path);
+
+    if (!query.isEmpty()) {
+        uri.setQuery(QString::fromLatin1(query));
+    }
+
+    return uri;
+}
+
+QString RequestPrivate::parseBase() const
+{
+    QString base = https ? QStringLiteral("https://") : QStringLiteral("http://");
+
+    // This is a hack just in case remote is not set
+    if (serverAddress.isNull()) {
+        base.append(QHostInfo::localHostName());
+    } else {
+        base.append(serverAddress);
+    }
+
+    // base always have a trailing slash
+    base.append(QLatin1Char('/'));
+
+    return base;
 }
