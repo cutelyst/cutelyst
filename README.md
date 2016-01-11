@@ -12,6 +12,7 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
   * Grantlee
   * Clearsilver
   * JSON
+  * Email
  * Dispatcher
   * Chained
   * Path
@@ -34,5 +35,5 @@ examples are under MIT license.
 
  * uWSGI - to receive and parse protocols requests (>= 1.8 recommended)
  * CMake - for the build system (>= 3.0)
- * Qt - the core library of this framework (>= 5.4)
+ * Qt - the core library of this framework (>= 5.5)
  
