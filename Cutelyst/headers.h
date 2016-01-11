@@ -42,9 +42,21 @@ public:
     QString contentType() const;
 
     /**
+     * The Content-Type header field indicates the media type of the message content.
+     * E.g.: "text/html"
+     */
+    void setContentType(const QString &contentType);
+
+    /**
      * Returns the upper-cased charset specified in the Content-Type header.
      */
     QString contentTypeCharset() const;
+
+    /**
+     * The Content-Type header field indicates the media type of the message content.
+     * this defines the charset of the content-type
+     */
+    void setContentTypeCharset(const QString &charset);
 
     /**
      * Returns TRUE if the Content-Type header field indicate that the content is textual.
@@ -68,12 +80,6 @@ public:
     bool contentIsXml() const;
 
     /**
-     * The Content-Type header field indicates the media type of the message content.
-     * E.g.: "text/html"
-     */
-    void setContentType(const QString &contentType);
-
-    /**
      * Returns the size in bytes of the message content
      */
     qint64 contentLength() const;
@@ -88,6 +94,9 @@ public:
      */
     void setDateWithDateTime(const QDateTime &date);
 
+    /**
+     * Returns the date header as QDateTime
+     */
     QDateTime date();
 
     /**

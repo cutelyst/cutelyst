@@ -40,22 +40,62 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
-    const QString &ct = value(QStringLiteral("content_type"));
+    const QString ct = value(QStringLiteral("content_type"));
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
+}
+
+void Headers::setContentType(const QString &contentType)
+{
+    insert(QStringLiteral("content_type"), contentType);
 }
 
 QString Headers::contentTypeCharset() const
 {
-    const QString &ct = value(QStringLiteral("content_type"));
-    QVector<QStringRef> parts = ct.splitRef(QLatin1Char(';'));
-    Q_FOREACH (const QStringRef &part, parts) {
-        int pos = part.indexOf(QLatin1String("charset="));
-        if (pos != -1) {
-            int endPos = part.indexOf(QLatin1Char(';'), pos);
-            return part.mid(pos + 8, endPos).trimmed().toString().toUpper();
-        }
+    const auto it = constFind(QStringLiteral("content_type"));
+    if (it == constEnd()) {
+        return QString();
+    }
+
+    const QString contentType = it.value();
+    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+    if (pos != -1) {
+        int endPos = contentType.indexOf(QLatin1Char(';'), pos);
+        return contentType.mid(pos + 8, endPos).trimmed().toUpper();
     }
     return QString();
+}
+
+void Headers::setContentTypeCharset(const QString &charset)
+{
+    const auto it = constFind(QStringLiteral("content_type"));
+    if (it == constEnd() || (it.value().isEmpty() && !charset.isEmpty())) {
+        insert(QStringLiteral("content_type"), QLatin1String("charset=") % charset);
+        return;
+    }
+
+    QString contentType = it.value();
+    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+    if (pos != -1) {
+        int endPos = contentType.indexOf(QLatin1Char(';'), pos);
+        if (endPos == -1) {
+            if (charset.isEmpty()) {
+                int lastPos = contentType.lastIndexOf(QLatin1Char(';'), pos);
+                if (lastPos == -1) {
+                    remove(QStringLiteral("content_type"));
+                    return;
+                } else {
+                    contentType.remove(lastPos, contentType.length() - lastPos);
+                }
+            } else {
+                contentType.replace(pos + 8, contentType.length() - pos + 8, charset);
+            }
+        } else {
+            contentType.replace(pos + 8, endPos, charset);
+        }
+    } else if (!charset.isEmpty()) {
+        contentType.append(QLatin1String("; charset=") % charset);
+    }
+    insert(QStringLiteral("content_type"), contentType);
 }
 
 bool Headers::contentIsText() const
@@ -65,7 +105,7 @@ bool Headers::contentIsText() const
 
 bool Headers::contentIsHtml() const
 {
-    const QString &ct = contentType();
+    const QString ct = contentType();
     return ct == QLatin1String("text/html") ||
             ct == QLatin1String("application/xhtml+xml") ||
             ct == QLatin1String("application/vnd.wap.xhtml+xml");
@@ -73,22 +113,17 @@ bool Headers::contentIsHtml() const
 
 bool Headers::contentIsXHtml() const
 {
-    const QString &ct = contentType();
+    const QString ct = contentType();
     return ct == QLatin1String("application/xhtml+xml") ||
             ct == QLatin1String("application/vnd.wap.xhtml+xml");
 }
 
 bool Headers::contentIsXml() const
 {
-    const QString &ct = contentType();
+    const QString ct = contentType();
     return ct == QLatin1String("text/xml") ||
             ct == QLatin1String("application/xml") ||
             ct.endsWith(QLatin1String("xml"));
-}
-
-void Headers::setContentType(const QString &contentType)
-{
-    insert(QStringLiteral("content_type"), contentType);
 }
 
 qint64 Headers::contentLength() const
@@ -105,8 +140,8 @@ void Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const QString &dt = QLocale::c().toString(date.toUTC(),
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    const QString dt = QLocale::c().toString(date.toUTC(),
+                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     insert(QStringLiteral("date"), dt);
 }
 
@@ -240,6 +275,7 @@ void Headers::setAuthorizationBasic(const QString &username, const QString &pass
 {
     if (username.contains(QLatin1Char(':'))) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
+        return;
     }
     QString result = username % QLatin1Char(':') % password;
     insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64()));
