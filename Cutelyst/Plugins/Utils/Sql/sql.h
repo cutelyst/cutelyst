@@ -21,36 +21,35 @@
 #define CSQL_H
 
 #include <QtCore/QVariant>
+#include <QtSql/QSqlDatabase>
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/paramsmultimap.h>
 
-class QSqlQuery;
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Sql
-{
-public:
+namespace Sql {
+
     /**
      * Returns a QVariant hash for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    static QVariantHash queryToHashObject(QSqlQuery *query);
+    QVariantHash queryToHashObject(QSqlQuery *query);
 
     /**
      * Returns a variant list of QVariant hashes for all the rows
      * in the query object, it's useful for creating
      * stash objects for say a list of users
      */
-    static QVariantList queryToHashList(QSqlQuery *query);
+    QVariantList queryToHashList(QSqlQuery *query);
 
     /**
      * Returns a QVariant map for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    static QVariantMap queryToMapObject(QSqlQuery *query);
+    QVariantMap queryToMapObject(QSqlQuery *query);
 
     /**
      * Returns a variant list of QVariant maps for all the rows
@@ -58,16 +57,24 @@ public:
      * stash objects for say a list of users to be used by
      * JSON serializer
      */
-    static QVariantList queryToMapList(QSqlQuery *query);
+    QVariantList queryToMapList(QSqlQuery *query);
 
     /**
      * Bind params to the query, using the param name as
      * the placeholder prebended with ':', if htmlEscaped
      * is true the bound values will be the return of toHtmlEscaped()
      */
-    static void bindParamsToQuery(QSqlQuery *query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
+    void bindParamsToQuery(QSqlQuery *query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
 
-};
+    /**
+     * Returns a QSqlQuery object prepared with \pa query using the \pa db database
+     * This is specially useful to avoid pointers to prepered queries.
+     * Best used as
+     * static QSqlQuery query = preparedQuery("SELECT * FROM", someDb);
+     */
+    QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase());
+
+}
 
 }
 

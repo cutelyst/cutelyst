@@ -22,6 +22,7 @@
 #include <QtCore/QLoggingCategory>
 
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
 
 Q_LOGGING_CATEGORY(C_SQL, "cutelyst.utils.sql")
@@ -112,4 +113,13 @@ void Sql::bindParamsToQuery(QSqlQuery *query, const Cutelyst::ParamsMultiMap &pa
             ++it;
         }
     }
+}
+
+QSqlQuery Sql::preparedQuery(const QString &query, QSqlDatabase db)
+{
+    QSqlQuery sqlQuery(db);
+    if (!sqlQuery.prepare(query)) {
+        qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
+    }
+    return sqlQuery;
 }
