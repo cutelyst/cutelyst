@@ -39,6 +39,12 @@ endif(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
 #
 # Options
 #
+option( DISABLE_MAINTAINER_CFLAGS "Disable maintainer CFlags" ON )
+option( BUILD_TESTS "Build the Cutelyst tests" TRUE )
+
+if (BUILD_TESTS)
+  enable_testing()
+endif()
 
 # NONE
 
@@ -75,7 +81,6 @@ configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 # Custom C flags
 #
 set (MAINTAINER_CFLAGS "-Werror -Wall -Wcast-align -Wno-uninitialized -Wempty-body -Wformat-security -Wformat -Winit-self")
-option (DISABLE_MAINTAINER_CFLAGS "Disable maintainer CFlags" ON)
 if (DISABLE_MAINTAINER_CFLAGS)
 	set (MAINTAINER_CFLAGS "")
 endif (DISABLE_MAINTAINER_CFLAGS)
@@ -137,3 +142,7 @@ endif (UWSGI_EXEC_PATH)
 #add_subdirectory(server)
 
 add_subdirectory(cmd)
+
+if (BUILD_TESTS)
+  add_subdirectory(tests)
+endif()

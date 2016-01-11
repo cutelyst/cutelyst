@@ -110,6 +110,27 @@ void Headers::setDateWithDateTime(const QDateTime &date)
     insert(QStringLiteral("date"), dt);
 }
 
+QDateTime Headers::date()
+{
+    auto it = constFind(QStringLiteral("date"));
+    if (it == constEnd()) {
+        return QDateTime();
+    }
+
+    const QString date = it.value();
+
+    QDateTime localDT;
+    if (date.endsWith(QLatin1String(" GMT"))) {
+        localDT = QLocale::c().toDateTime(date.left(date.size() - 4),
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+    } else {
+        localDT = QLocale::c().toDateTime(date,
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+    }
+
+    return QDateTime(localDT.date(), localDT.time(), Qt::UTC);
+}
+
 QString Headers::ifModifiedSince() const
 {
     return header(QStringLiteral("if_modified_since"));
@@ -122,7 +143,7 @@ QDateTime Headers::ifModifiedSinceDateTime() const
         return QDateTime();
     }
 
-    const QString &ifModifiedStr = it.value();
+    const QString ifModifiedStr = it.value();
 
     QDateTime localDT;
     if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {

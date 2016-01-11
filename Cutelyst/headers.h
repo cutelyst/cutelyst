@@ -88,6 +88,8 @@ public:
      */
     void setDateWithDateTime(const QDateTime &date);
 
+    QDateTime date();
+
     /**
      * This header fields is used to make a request conditional. If the requested resource has
      * (or has not) been modified since the time specified in this field,
