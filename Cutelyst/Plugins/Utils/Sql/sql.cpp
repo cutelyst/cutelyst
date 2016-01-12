@@ -29,86 +29,86 @@ Q_LOGGING_CATEGORY(C_SQL, "cutelyst.utils.sql")
 
 using namespace Cutelyst;
 
-QVariantHash Sql::queryToHashObject(QSqlQuery *query)
+QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 {
     QVariantHash ret;
-    if (query->next()) {
-        int columns = query->record().count();
+    if (query.next()) {
+        int columns = query.record().count();
         for (int i = 0; i < columns; ++i) {
-            ret.insert(query->record().fieldName(i), query->value(i));
+            ret.insert(query.record().fieldName(i), query.value(i));
         }
     }
     return ret;
 }
 
-QVariantList Sql::queryToHashList(QSqlQuery *query)
+QVariantList Sql::queryToHashList(QSqlQuery &query)
 {
-    int columns = query->record().count();
+    int columns = query.record().count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
-        cols.append(query->record().fieldName(i));
+        cols.append(query.record().fieldName(i));
     }
 
     QVariantList ret;
-    while (query->next()) {
+    while (query.next()) {
         QVariantHash line;
         for (int i = 0; i < columns; ++i) {
-            line.insert(cols.at(i), query->value(i));
+            line.insert(cols.at(i), query.value(i));
         }
         ret.append(line);
     }
     return ret;
 }
 
-QVariantMap Sql::queryToMapObject(QSqlQuery *query)
+QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 {
     QVariantMap ret;
-    if (query->next()) {
-        int columns = query->record().count();
+    if (query.next()) {
+        int columns = query.record().count();
         for (int i = 0; i < columns; ++i) {
-            ret.insert(query->record().fieldName(i), query->value(i));
+            ret.insert(query.record().fieldName(i), query.value(i));
         }
     }
     return ret;
 }
 
-QVariantList Sql::queryToMapList(QSqlQuery *query)
+QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
-    int columns = query->record().count();
+    int columns = query.record().count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
-        cols.append(query->record().fieldName(i));
+        cols.append(query.record().fieldName(i));
     }
 
     QVariantList ret;
-    while (query->next()) {
+    while (query.next()) {
         QVariantMap line;
         for (int i = 0; i < columns; ++i) {
-            line.insert(cols.at(i), query->value(i));
+            line.insert(cols.at(i), query.value(i));
         }
         ret.append(line);
     }
     return ret;
 }
 
-void Sql::bindParamsToQuery(QSqlQuery *query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped)
+void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped)
 {
     auto it = params.constBegin();
     if (htmlEscaped) {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query->bindValue(QLatin1Char(':') % it.key(), QVariant());
+                query.bindValue(QLatin1Char(':') % it.key(), QVariant());
             } else {
-                query->bindValue(QLatin1Char(':') % it.key(), it.value().toHtmlEscaped());
+                query.bindValue(QLatin1Char(':') % it.key(), it.value().toHtmlEscaped());
             }
             ++it;
         }
     } else {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query->bindValue(QLatin1Char(':') % it.key(), QVariant());
+                query.bindValue(QLatin1Char(':') % it.key(), QVariant());
             } else {
-                query->bindValue(QLatin1Char(':') % it.key(), it.value());
+                query.bindValue(QLatin1Char(':') % it.key(), it.value());
             }
             ++it;
         }
