@@ -27,7 +27,7 @@ namespace Cutelyst {
 class CredentialPasswordPrivate
 {
 public:
-    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
+    bool checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo);
     static QByteArray cryptoEnumToStr(QCryptographicHash::Algorithm method);
     static int cryptoStrToEnum(const QByteArray &hashMethod);
 

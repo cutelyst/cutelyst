@@ -32,9 +32,9 @@ public:
     explicit StoreHtpasswd(const QString &file, QObject *parent = 0);
     virtual ~StoreHtpasswd();
 
-    void addUser(const CStringHash &user);
+    void addUser(const ParamsMultiMap &user);
 
-    virtual AuthenticationUser findUser(Context *c, const CStringHash &userInfo) Q_DECL_FINAL;
+    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) Q_DECL_FINAL;
 
     virtual QVariant forSession(Context *c, const AuthenticationUser &user) Q_DECL_FINAL;
 

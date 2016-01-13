@@ -34,7 +34,7 @@ public:
 
     void addUser(const AuthenticationUser &user);
 
-    AuthenticationUser findUser(Context *c, const CStringHash &userInfo) Q_DECL_FINAL;
+    AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) Q_DECL_FINAL;
 
     virtual QVariant forSession(Context *c, const AuthenticationUser &user) Q_DECL_FINAL;
 

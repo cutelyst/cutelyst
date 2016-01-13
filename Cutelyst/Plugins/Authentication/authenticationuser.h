@@ -21,12 +21,13 @@
 #define AUTHENTICATIONUSER_H
 
 #include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/plugin.h>
 
 namespace Cutelyst {
 
 class AuthenticationRealm;
-class CUTELYST_LIBRARY AuthenticationUser : public CStringHash
+class CUTELYST_LIBRARY AuthenticationUser : public ParamsMultiMap
 {
 public:
     AuthenticationUser();

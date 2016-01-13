@@ -38,7 +38,7 @@ bool AuthenticationStore::canAutoCreateUser() const
     return false;
 }
 
-AuthenticationUser AuthenticationStore::autoCreateUser(Context *c, const CStringHash &userinfo) const
+AuthenticationUser AuthenticationStore::autoCreateUser(Context *c, const ParamsMultiMap &userinfo) const
 {
     return AuthenticationUser();
 }
@@ -48,7 +48,7 @@ bool AuthenticationStore::canAutoUpdateUser() const
     return false;
 }
 
-AuthenticationUser AuthenticationStore::autoUpdateUser(Context *c, const CStringHash &userinfo) const
+AuthenticationUser AuthenticationStore::autoUpdateUser(Context *c, const ParamsMultiMap &userinfo) const
 {
     return AuthenticationUser();
 }

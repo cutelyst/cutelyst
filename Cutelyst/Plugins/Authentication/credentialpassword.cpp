@@ -40,7 +40,7 @@ CredentialPassword::~CredentialPassword()
     delete d_ptr;
 }
 
-AuthenticationUser CredentialPassword::authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialPassword::authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     Q_D(CredentialPassword);
     AuthenticationUser user = realm->findUser(c, authinfo);
@@ -236,7 +236,7 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
                                     method);
 }
 
-bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
+bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
     QString password = authinfo.value(passwordField);
     const QString &storedPassword = user.value(passwordField);

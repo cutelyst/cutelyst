@@ -55,7 +55,7 @@ AuthenticationCredential *AuthenticationRealm::credential() const
     return m_credential;
 }
 
-AuthenticationUser AuthenticationRealm::findUser(Context *c, const CStringHash &userinfo)
+AuthenticationUser AuthenticationRealm::findUser(Context *c, const ParamsMultiMap &userinfo)
 {
     AuthenticationUser ret = m_store->findUser(c, userinfo);
 
@@ -70,7 +70,7 @@ AuthenticationUser AuthenticationRealm::findUser(Context *c, const CStringHash &
     return ret;
 }
 
-AuthenticationUser AuthenticationRealm::authenticate(Context *c, const CStringHash &authinfo)
+AuthenticationUser AuthenticationRealm::authenticate(Context *c, const ParamsMultiMap &authinfo)
 {
     return m_credential->authenticate(c, this, authinfo);
 }

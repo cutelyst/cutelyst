@@ -28,8 +28,6 @@
 
 namespace Cutelyst {
 
-typedef QHash<QString, QString> CStringHash;
-
 class Application;
 class CUTELYST_LIBRARY Plugin : public QObject
 {

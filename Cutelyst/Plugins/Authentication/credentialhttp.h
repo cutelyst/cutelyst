@@ -85,7 +85,7 @@ public:
      */
     void setRequireSsl(bool require);
 
-    AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo) Q_DECL_FINAL;
+    AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) Q_DECL_FINAL;
 
 protected:
     CredentialHttpPrivate *d_ptr;

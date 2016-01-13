@@ -27,10 +27,10 @@ namespace Cutelyst {
 class CredentialHttpPrivate
 {
 public:
-    bool checkPassword(const AuthenticationUser &user, const CStringHash &authinfo);
-    AuthenticationUser authenticateDigest(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticateBasic(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
-    AuthenticationUser authenticationFailed(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo);
+    bool checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo);
+    AuthenticationUser authenticateDigest(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
+    AuthenticationUser authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
+    AuthenticationUser authenticationFailed(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
 
     bool isAuthTypeDigest() const;
     bool isAuthTypeBasic() const;

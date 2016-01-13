@@ -121,7 +121,7 @@ void CredentialHttp::setRequireSsl(bool require)
     d->requireSsl = require;
 }
 
-AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     Q_D(CredentialHttp);
 
@@ -147,7 +147,7 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
     return d->authenticationFailed(c, realm, authinfo);
 }
 
-bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const CStringHash &authinfo)
+bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
     QString password = authinfo.value(passwordField);
     const QString &storedPassword = user.value(passwordField);
@@ -174,14 +174,14 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     return false;
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     qCDebug(C_CREDENTIALHTTP) << "Checking http digest authentication.";
 
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
@@ -191,7 +191,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
         return AuthenticationUser();
     }
 
-    CStringHash auth;
+    ParamsMultiMap auth;
     auth.insert(usernameField, userPass.first);
     AuthenticationUser user = realm->findUser(c, auth);
     if (!user.isNull()) {
@@ -206,7 +206,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     return AuthenticationUser();
 }
 
-AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo)
+AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     Response *res = c->response();
     res->setStatus(Response::Unauthorized); // 401

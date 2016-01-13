@@ -68,7 +68,7 @@ AuthenticationRealm *Authentication::realm(const QString &name) const
     return d->realms.value(name);
 }
 
-bool Authentication::authenticate(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)
+bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &userinfo, const QString &realm)
 {
     Authentication *auth = c->plugin<Authentication*>();
     if (!auth) {
@@ -90,7 +90,7 @@ bool Authentication::authenticate(Cutelyst::Context *c, const CStringHash &useri
     return false;
 }
 
-AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const CStringHash &userinfo, const QString &realm)
+AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const ParamsMultiMap &userinfo, const QString &realm)
 {
     Authentication *auth = c->plugin<Authentication*>();
     if (!auth) {

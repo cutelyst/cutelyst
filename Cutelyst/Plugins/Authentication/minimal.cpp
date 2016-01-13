@@ -39,7 +39,7 @@ void StoreMinimal::addUser(const AuthenticationUser &user)
 }
 
 
-AuthenticationUser StoreMinimal::findUser(Context *c, const CStringHash &userInfo)
+AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
     Q_UNUSED(c)
     QString id = userInfo[QStringLiteral("id")];

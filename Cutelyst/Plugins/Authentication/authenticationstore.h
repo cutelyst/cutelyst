@@ -43,7 +43,7 @@ public:
      * Reimplement this if your store supports
      * automatic user creation
      */
-    virtual AuthenticationUser autoCreateUser(Context *c, const CStringHash &userinfo) const;
+    virtual AuthenticationUser autoCreateUser(Context *c, const ParamsMultiMap &userinfo) const;
 
     /**
      * Reimplement this if your store supports
@@ -55,12 +55,12 @@ public:
      * Reimplement this if your store supports
      * automatic user update
      */
-    virtual AuthenticationUser autoUpdateUser(Context *c, const CStringHash &userinfo) const;
+    virtual AuthenticationUser autoUpdateUser(Context *c, const ParamsMultiMap &userinfo) const;
 
     /**
      * Retrieve the user that matches the user info
      */
-    virtual AuthenticationUser findUser(Context *c, const CStringHash &userinfo) = 0;
+    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo) = 0;
 
     /**
      * Reimplement this so that you return a

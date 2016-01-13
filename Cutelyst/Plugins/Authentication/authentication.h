@@ -22,6 +22,7 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
+#include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 
 namespace Cutelyst {
@@ -36,7 +37,7 @@ public:
     explicit AuthenticationCredential(QObject *parent = 0);
     virtual ~AuthenticationCredential();
 
-    virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const CStringHash &authinfo) = 0;
+    virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) = 0;
 };
 
 class AuthenticationPrivate;
@@ -58,9 +59,9 @@ public:
     /**
      * Returns true if the userinfo could be validated against a realm.
      */
-    static bool authenticate(Context *c, const CStringHash &userinfo = CStringHash(), const QString &realm = QLatin1String(defaultRealm));
+    static bool authenticate(Context *c, const ParamsMultiMap &userinfo = ParamsMultiMap(), const QString &realm = QLatin1String(defaultRealm));
 
-    static AuthenticationUser findUser(Context *c, const CStringHash &userinfo, const QString &realm = QLatin1String(defaultRealm));
+    static AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
 
     /**
      * Returns the authenticated user if any, if you only need to know if the user is

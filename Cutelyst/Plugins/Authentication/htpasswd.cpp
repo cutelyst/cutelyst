@@ -38,7 +38,7 @@ StoreHtpasswd::~StoreHtpasswd()
 
 }
 
-void StoreHtpasswd::addUser(const CStringHash &user)
+void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 {
     QString username = user.value(QStringLiteral("username"));
 
@@ -80,7 +80,7 @@ void StoreHtpasswd::addUser(const CStringHash &user)
     }
 }
 
-AuthenticationUser StoreHtpasswd::findUser(Context *c, const CStringHash &userInfo)
+AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
     QString username = userInfo.value(QStringLiteral("username"));
 

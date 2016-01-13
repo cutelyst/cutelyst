@@ -39,8 +39,8 @@ public:
     AuthenticationStore *store() const;
     AuthenticationCredential *credential() const;
 
-    virtual AuthenticationUser findUser(Context *c, const CStringHash &userinfo);
-    virtual AuthenticationUser authenticate(Context *c, const CStringHash &authinfo);
+    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
+    virtual AuthenticationUser authenticate(Context *c, const ParamsMultiMap &authinfo);
 
 protected:
     void removePersistedUser(Context *c);
