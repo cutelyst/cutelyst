@@ -51,12 +51,12 @@ public:
                    QIODevice *_body,
                    void *_requestPtr);
 
+    inline void parseUrlQuery() const;
     inline void parseBody() const;
+    inline void parseCookies() const;
 
     static inline ParamsMultiMap parseUrlEncoded(const QByteArray &line);
     static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
-    inline QUrl parseUrl() const;
-    inline QString parseBase() const;
 
     // Manually filled by the Engine
     Engine *engine;
@@ -70,6 +70,7 @@ public:
     QString remoteUser;
     Headers headers;
     QIODevice *body = nullptr;
+    mutable QString remoteHostname;
     quint64 startOfRequest;
     quint64 endOfRequest;
     // Pointer to Engine data
@@ -80,14 +81,25 @@ public:
     QStringList captures;
     QString match;
 
+    mutable QUrl url;
+    mutable QString base;
+    mutable QList<QNetworkCookie> cookies;
+    mutable ParamsMultiMap queryParam;
+    mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
+    mutable ParamsMultiMap param;
     mutable QMap<QString, Upload *> uploads;
 
     quint16 remotePort;
     bool https = false;
 
+    mutable bool urlParsed = false;
+    mutable bool baseParsed = false;
+    mutable bool cookiesParsed = false;
+    mutable bool queryParamParsed = false;
     mutable bool bodyParsed = false;
+    mutable bool paramParsed = false;
 };
 
 }
