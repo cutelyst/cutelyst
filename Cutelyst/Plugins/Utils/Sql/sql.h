@@ -69,10 +69,15 @@ namespace Sql {
     /**
      * Returns a QSqlQuery object prepared with \pa query using the \pa db database
      * This is specially useful to avoid pointers to prepered queries.
+     *
      * Best used as
      * static QSqlQuery query = preparedQuery("SELECT * FROM", someDb);
+     *
+     * The returned object is set to forward only and you MUST NEVER
+     * use this way on threaded applications as the static object
+     * is then shared by the two instances.
      */
-    QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase());
+    QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
 
 }
 

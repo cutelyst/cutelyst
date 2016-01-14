@@ -115,9 +115,10 @@ void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &pa
     }
 }
 
-QSqlQuery Sql::preparedQuery(const QString &query, QSqlDatabase db)
+QSqlQuery Sql::preparedQuery(const QString &query, QSqlDatabase db, bool forwardOnly)
 {
     QSqlQuery sqlQuery(db);
+    sqlQuery.setForwardOnly(forwardOnly);
     if (!sqlQuery.prepare(query)) {
         qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
     }
