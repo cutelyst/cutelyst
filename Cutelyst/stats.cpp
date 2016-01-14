@@ -31,7 +31,7 @@
 
 using namespace Cutelyst;
 
-Stats::Stats(Application *app) : QObject(app)
+Stats::Stats(Application *app, QObject *parent) : QObject(parent)
   , d_ptr(new StatsPrivate)
 {
     Q_D(Stats);
@@ -40,7 +40,7 @@ Stats::Stats(Application *app) : QObject(app)
 
 Stats::~Stats()
 {
-
+    delete d_ptr;
 }
 
 void Stats::profileStart(const QString &action)

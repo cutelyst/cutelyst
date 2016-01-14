@@ -366,7 +366,7 @@ void Application::handleRequest(Request *req)
     resPriv->headers = d->headers;
 
     if (d->useStats) {
-        priv->stats = new Stats(this);
+        priv->stats = new Stats(this, c);
     }
 
     // Process request

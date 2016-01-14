@@ -33,7 +33,7 @@ class CUTELYST_LIBRARY Stats : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Stats)
 public:
-    explicit Stats(Application *app = 0);
+    explicit Stats(Application *app, QObject *parent = 0);
     virtual ~Stats();
 
     virtual void profileStart(const QString &action);
