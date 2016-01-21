@@ -30,18 +30,22 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 {
     MultiPartFormDataParserPrivate *d;
 
-    QRegularExpression re(QStringLiteral("boundary=([^\";]+)"));
+    static QRegularExpression staticRE(QStringLiteral("boundary=\"?([^\";]+)\"?"));
+    QRegularExpression re = staticRE;
     QRegularExpressionMatch match = re.match(contentType);
     if (match.hasMatch()) {
-        QString boundary = QLatin1String("--") % match.captured(1);
+        QString boundary = match.captured(1);
         if (boundary.isEmpty()) {
+            qCWarning(CUTELYST_MULTIPART) << "Boudary matched empty string" << contentType;
             return Uploads();
         }
+        boundary.prepend(QLatin1String("--"));
 
         d = new MultiPartFormDataParserPrivate;
         d->boundary = qstrdup(boundary.toLatin1().data());
         d->boundaryLength = boundary.size();
     } else {
+        qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
         return Uploads();
     }
 

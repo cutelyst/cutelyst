@@ -383,7 +383,7 @@ void RequestPrivate::parseBody() const
     ParamsMultiMap params;
     QVariant data;
 
-    const QString &contentType = headers.contentType();
+    const QString contentType = headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
