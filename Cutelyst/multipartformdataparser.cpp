@@ -21,7 +21,6 @@
 #include "upload_p.h"
 #include "common.h"
 
-#include <QRegularExpression>
 #include <QStringBuilder>
 
 using namespace Cutelyst;
@@ -30,13 +29,15 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 {
     MultiPartFormDataParserPrivate *d;
 
-    static QRegularExpression staticRE(QStringLiteral("boundary=\"?([^\";]+)\"?"));
-    QRegularExpression re = staticRE;
-    QRegularExpressionMatch match = re.match(contentType);
-    if (match.hasMatch()) {
-        QString boundary = match.captured(1);
-        if (boundary.isEmpty()) {
-            qCWarning(CUTELYST_MULTIPART) << "Boudary matched empty string" << contentType;
+    int start = contentType.indexOf(QLatin1String("boundary=\""));
+    if (start != -1) {
+        start += 10;
+        QString boundary;
+        int end = contentType.indexOf(QLatin1String("\""), start);
+        if (end != -1) {
+            boundary = contentType.mid(start, end - start);
+        } else {
+            qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
             return Uploads();
         }
         boundary.prepend(QLatin1String("--"));
