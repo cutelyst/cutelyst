@@ -396,9 +396,10 @@ void RequestPrivate::parseBody() const
         body->seek(posOrig);
     } else if (contentType == QLatin1String("multipart/form-data")) {
         Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")));
-        for (int i = uploadList.size() - 1; i >= 0; --i) {
-            Upload *upload = uploadList.at(i);
-            uploads.insertMulti(upload->name(), upload);
+        auto it = uploadList.constEnd();
+        while (it != uploadList.constBegin()) {
+            --it;
+            uploads.insertMulti((*it)->name(), *it);
         }
     } else if (contentType == QLatin1String("application/json")) {
         qint64 posOrig = body->pos();
