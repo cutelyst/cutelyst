@@ -23,7 +23,6 @@
 #include "multipartformdataparser.h"
 
 #include <QtCore/QStringBuilder>
-#include <QtCore/QRegularExpression>
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QNetworkCookie>

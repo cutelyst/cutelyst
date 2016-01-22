@@ -1,5 +1,6 @@
 set(plugin_staticsimple_SRC
     staticsimple.cpp
+    staticsimple_p.h
     staticsimple.h
 )
 
@@ -21,9 +22,7 @@ set_target_properties(cutelyst_qt5_plugin_staticsimple PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_staticsimple
-    cutelyst-qt5
-    Qt5::Core
-    Qt5::Network
+    PRIVATE cutelyst-qt5
 )
 
 install(TARGETS cutelyst_qt5_plugin_staticsimple EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -36,10 +36,8 @@ set_target_properties(cutelyst_qt5_plugin_authentication PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_authentication
-    LINK_PRIVATE cutelyst-qt5
-    LINK_PRIVATE cutelyst_qt5_plugin_session
-    Qt5::Core
-    Qt5::Network
+    PRIVATE cutelyst-qt5
+    PRIVATE cutelyst_qt5_plugin_session
 )
 
 install(TARGETS cutelyst_qt5_plugin_authentication EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

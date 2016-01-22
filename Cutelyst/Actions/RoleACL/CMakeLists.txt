@@ -9,8 +9,8 @@ add_library(plugin_action_roleacl SHARED
 )
 
 target_link_libraries(plugin_action_roleacl
-    cutelyst-qt5
-    cutelyst_qt5_plugin_authentication
+    PRIVATE cutelyst-qt5
+    PRIVATE cutelyst_qt5_plugin_authentication
 )
 
 install(TARGETS plugin_action_roleacl DESTINATION ${CUTELYST_PLUGINS_DIR})

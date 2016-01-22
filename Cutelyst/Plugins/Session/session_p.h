@@ -22,7 +22,6 @@
 
 #include "session.h"
 
-#include <QtCore/QRegularExpression>
 #include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {

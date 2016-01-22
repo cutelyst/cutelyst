@@ -23,8 +23,8 @@ set_target_properties(cutelyst_view_grantlee PROPERTIES
 )
 
 target_link_libraries(cutelyst_view_grantlee
-    LINK_PRIVATE Grantlee5::Templates
-    cutelyst-qt5
+    PRIVATE Grantlee5::Templates
+    PRIVATE cutelyst-qt5
 )
 
 install(TARGETS cutelyst_view_grantlee EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

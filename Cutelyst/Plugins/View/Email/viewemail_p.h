@@ -23,7 +23,6 @@
 #include "viewemail.h"
 
 #include <QtCore/QStringList>
-#include <QtCore/QRegularExpression>
 
 #include <SimpleMail/sender.h>
 
@@ -41,7 +40,6 @@ public:
     QByteArray defaultCharset;
     QByteArray defaultEncoding;
     QStringList exposeKeys;
-    QRegularExpression exposeRE;
     Sender *sender;
 };
 

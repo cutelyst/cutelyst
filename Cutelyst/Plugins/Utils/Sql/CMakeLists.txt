@@ -22,10 +22,8 @@ set_target_properties(cutelyst_qt5_plugin_utils_sql PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_utils_sql
-    cutelyst-qt5
-    Qt5::Core
-    Qt5::Network
-    Qt5::Sql
+    PRIVATE cutelyst-qt5
+    PRIVATE Qt5::Sql
 )
 
 install(TARGETS cutelyst_qt5_plugin_utils_sql EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -27,8 +27,8 @@ set_target_properties(cutelyst_qt5_plugin_view_email PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_view_email
-    LINK_PRIVATE SimpleMail::Core
-    cutelyst-qt5
+    PRIVATE SimpleMail::Core
+    PRIVATE cutelyst-qt5
 )
 
 install(TARGETS cutelyst_qt5_plugin_view_email EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

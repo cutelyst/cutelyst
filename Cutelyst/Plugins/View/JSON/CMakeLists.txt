@@ -20,7 +20,7 @@ set_target_properties(cutelyst_qt5_plugin_view_json PROPERTIES
 )
 
 target_link_libraries(cutelyst_qt5_plugin_view_json
-    cutelyst-qt5
+    PRIVATE cutelyst-qt5
 )
 
 install(TARGETS cutelyst_qt5_plugin_view_json EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

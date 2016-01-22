@@ -23,9 +23,9 @@ set_target_properties(cutelyst_view_clearsilver PROPERTIES
 )
 
 target_link_libraries(cutelyst_view_clearsilver
-    cutelyst-qt5
-    ${ClearSilver_CS}
-    ${ClearSilver_Util}
+    PRIVATE cutelyst-qt5
+    PRIVATE ${ClearSilver_CS}
+    PRIVATE ${ClearSilver_Util}
 )
 
 install(TARGETS cutelyst_view_clearsilver EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
