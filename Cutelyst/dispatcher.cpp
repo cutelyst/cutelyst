@@ -415,7 +415,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
                 return ret;
             }
         } else {
-            const QString &name = path.mid(pos + 1, lastPos);
+            const QString name = path.mid(pos + 1, lastPos);
             path = path.mid(0, pos);
             ret = q->getAction(name, path);
             if (ret) {
@@ -433,12 +433,10 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
 QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
 {
     if (path.startsWith(QLatin1Char('/'))) {
-        QString ret = path;
-        return ret.remove(0, 1);
+        return path.mid(1);
     }
 
-    const auto stack = c->stack();
-    const QString ns = qobject_cast<Action *>(stack.last())->ns();
+    const QString ns = qobject_cast<Action *>(c->stack().last())->ns();
     if (ns.isEmpty()) {
         return path;
     }
