@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -43,10 +43,11 @@ protected:
     virtual qint64 writeData(const char * data, qint64 maxSize);
 
 private:
-    void fillBuffer() const;
+    void fillBuffer();
 
     wsgi_request *m_request;
     mutable QBuffer *m_buffer;
+    mutable bool m_filled = false;
 };
 
 #endif // BODYBUFFEREDUWSGI_H

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -192,16 +192,19 @@ void uWSGI::processRequest(wsgi_request *req)
         } else {
 //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
             body = cache->bodyBufferedUWSGI;
+            body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
         }
     } else if (uwsgi.post_buffering) {
 //        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
         body = cache->bodyUWSGI;
+        body->reset();
     } else {
         // BodyBufferedUWSGI is an IO device which will
         // only consume the body when some of it's functions
         // is called, this is because here we can't seek
         // the body.
         body = cache->bodyBufferedUWSGI;
+        body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
     }
 
     Engine::processRequest(method,
