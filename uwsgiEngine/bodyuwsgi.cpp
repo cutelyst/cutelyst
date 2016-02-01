@@ -43,7 +43,6 @@ bool BodyUWSGI::seek(qint64 off)
 {
     QIODevice::seek(off);
     uwsgi_request_body_seek(m_request, off);
-    m_request->post_readline_pos = m_request->post_pos;
     return true;
 }
 
@@ -54,18 +53,18 @@ void BodyUWSGI::close()
 
 qint64 BodyUWSGI::readData(char *data, qint64 maxlen)
 {
-    ssize_t body_len = 0;
-    char *body = uwsgi_request_body_read(m_request, maxlen, &body_len);
-    memcpy(data, body, body_len);
-    return body_len;
-}
+    ssize_t rlen = 0;
+    char *buf = uwsgi_request_body_read(m_request, maxlen, &rlen);
 
-qint64 BodyUWSGI::readLineData(char *data, qint64 maxlen)
-{
-    ssize_t body_len = 0;
-    char *body = uwsgi_request_body_readline(m_request, maxlen, &body_len);
-    memcpy(data, body, body_len);
-    return body_len;
+    if (buf == uwsgi.empty) {
+        return 0;
+    } else if (buf == NULL) {
+        return -1;
+    }
+
+    memcpy(data, buf, rlen);
+
+    return rlen;
 }
 
 qint64 BodyUWSGI::writeData(const char *data, qint64 maxSize)
