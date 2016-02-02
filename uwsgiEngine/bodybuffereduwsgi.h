@@ -21,7 +21,6 @@
 #define BODYBUFFEREDUWSGI_H
 
 #include <QIODevice>
-#include <QBuffer>
 
 struct wsgi_request;
 
@@ -33,20 +32,20 @@ public:
 
     virtual qint64 pos() const;
     virtual qint64 size() const;
-    virtual bool seek(qint64 off);
+    virtual bool seek(qint64 pos);
 
     virtual void close();
 
 protected:
-    virtual qint64 readData(char *data, qint64 maxlen);
-    virtual qint64 readLineData(char *data, qint64 maxlen);
+    virtual qint64 readData(char *data, qint64 len);
     virtual qint64 writeData(const char * data, qint64 maxSize);
 
 private:
-    void fillBuffer();
+    inline void fillBuffer();
 
     wsgi_request *m_request;
-    mutable QBuffer *m_buffer;
+    mutable QByteArray m_buf;
+    mutable bool m_filled = false;
 };
 
 #endif // BODYBUFFEREDUWSGI_H
