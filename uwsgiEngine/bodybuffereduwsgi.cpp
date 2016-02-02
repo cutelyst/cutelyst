@@ -89,17 +89,19 @@ void BodyBufferedUWSGI::fillBuffer()
 {
 //    qCDebug(CUTELYST_UWSGI) << "Filling body buffer, size:" << m_request->post_cl;
 
-    m_buffer->open(QIODevice::ReadWrite | Truncate);
-    m_buffer->buffer().resize(m_request->post_cl);
+    QByteArray buff;
+    buff.reserve(m_request->post_cl);
 
     size_t remains = m_request->post_cl;
     while (remains > 0) {
-        ssize_t body_len;
-        char *body_data = uwsgi_request_body_read(m_request, UMIN(remains, 4096) , &body_len);
+        ssize_t body_len = 0; // it MUST be initted, for some reason...
+        char *body_data =  uwsgi_request_body_read(m_request, remains, &body_len);
         if (!body_data || body_data == uwsgi.empty) {
             break;
         }
-        m_buffer->write(body_data, body_len);
+        buff.append(body_data, body_len);
         remains -= body_len;
     }
+    m_buffer->setData(buff);
+    m_buffer->open(QIODevice::ReadOnly);
 }
