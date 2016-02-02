@@ -47,7 +47,6 @@ private:
 
     wsgi_request *m_request;
     mutable QBuffer *m_buffer;
-    mutable bool m_filled = false;
 };
 
 #endif // BODYBUFFEREDUWSGI_H
