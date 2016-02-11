@@ -86,9 +86,9 @@ QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c
     }
 
     QString root = QDir::tempPath()
-            % QLatin1Char('/') % QCoreApplication::applicationName()
-            % QLatin1Char('/') % QStringLiteral("session")
-            % QLatin1Char('/') % QStringLiteral("data");
+            % QLatin1Char('/')
+            % QCoreApplication::applicationName()
+            % QLatin1String("/session/data");
     QDir dir;
     if (!dir.mkpath(root)) {
         qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;
