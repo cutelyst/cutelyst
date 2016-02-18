@@ -429,7 +429,9 @@ bool createDir(const QDir &parentDir, const QString &name)
 
 bool createApplication(const QString &name)
 {
-    if (name.contains(QRegularExpression(QStringLiteral("\\W"))) || name.contains(QRegularExpression(QStringLiteral("^\\d")))) {
+    QString nameWithUnderscore = name;
+    nameWithUnderscore.replace(QLatin1Char('-'), QLatin1Char('_'));
+    if (nameWithUnderscore.contains(QRegularExpression(QStringLiteral("\\W"))) || nameWithUnderscore.contains(QRegularExpression(QStringLiteral("^\\d")))) {
         qDebug() << "Error: Invalid Application name.";
         return false;
     }
@@ -440,7 +442,7 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!buildProjectCMakeLists(name % QStringLiteral("/CMakeLists.txt"), name)) {
+    if (!buildProjectCMakeLists(name % QStringLiteral("/CMakeLists.txt"), nameWithUnderscore)) {
         return false;
     }
 
@@ -457,7 +459,7 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!buildSrcCMakeLists(name % QLatin1String("/src/CMakeLists.txt"), name)) {
+    if (!buildSrcCMakeLists(name % QLatin1String("/src/CMakeLists.txt"), nameWithUnderscore)) {
         return false;
     }
 
@@ -473,11 +475,13 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    if (!buildApplicationHeader(name % QLatin1String("/src/") % name.toLower() % QLatin1String(".h"), name)) {
+    if (!buildApplicationHeader(name % QLatin1String("/src/") % name.toLower() % QLatin1String(".h"),
+                                nameWithUnderscore)) {
         return false;
     }
 
-    if (!buildApplicationImplementation(name % QLatin1String("/src/") % name.toLower() % QLatin1String(".cpp"), name)) {
+    if (!buildApplicationImplementation(name % QLatin1String("/src/") % name.toLower() % QLatin1String(".cpp"),
+                                        nameWithUnderscore)) {
         return false;
     }
 
