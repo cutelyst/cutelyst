@@ -349,6 +349,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << "# Link to Cutelyst" << "\n";
         out << "target_link_libraries(" << appName << "\n";
         out << "    Cutelyst::Core" << "\n";
+        out << "    Cutelyst::StaticSimple" << "\n";
         out << "    Qt5::Core" << "\n";
         out << "    Qt5::Network" << "\n";
         out << ")" << "\n";
@@ -380,7 +381,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "  cmake_policy(SET CMP0043 NEW)" << "\n";
         out << "endif()" << "\n";
         out << "\n";
-        out << "find_package(Qt5 COMPONENTS Core Network )" << "\n";
+        out << "find_package(Qt5 COMPONENTS Core Network REQUIRED)" << "\n";
         out << "find_package(CutelystQt5 REQUIRED)" << "\n";
         out << "\n";
         out << "# Auto generate moc files" << "\n";
