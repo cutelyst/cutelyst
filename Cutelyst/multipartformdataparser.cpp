@@ -29,15 +29,29 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 {
     MultiPartFormDataParserPrivate *d;
 
-    int start = contentType.indexOf(QLatin1String("boundary=\""));
+    int start = contentType.indexOf(QLatin1String("boundary="));
     if (start != -1) {
-        start += 10;
+        start += 9;
+
         QString boundary;
-        int end = contentType.indexOf(QLatin1String("\""), start);
-        if (end != -1) {
-            boundary = contentType.mid(start, end - start);
-        } else {
-            qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
+        const int len = contentType.length();
+        boundary.reserve(contentType.length() - start + 2);
+        int quotes = 0;
+        for (int i = start; i < len; ++i) {
+            const QChar ch = contentType.at(i);
+            if (ch == QLatin1Char('\"')) {
+                if (++quotes == 2) {
+                    break;
+                }
+            } else if (ch == QLatin1Char(';')) {
+                break;
+            } else {
+                boundary += ch;
+            }
+        }
+
+        if (boundary.isEmpty()) {
+            qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
             return Uploads();
         }
         boundary.prepend(QLatin1String("--"));
