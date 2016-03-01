@@ -40,7 +40,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
         for (int i = start; i < len; ++i) {
             const QChar ch = contentType.at(i);
             if (ch == QLatin1Char('\"')) {
-                if (++quotes == 2) {
+                if ((quotes == 0 && i > start) || ++quotes == 2) {
                     break;
                 }
             } else if (ch == QLatin1Char(';')) {
