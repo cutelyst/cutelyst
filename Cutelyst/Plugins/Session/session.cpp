@@ -91,7 +91,7 @@ QString Session::id(Cutelyst::Context *c)
 {
     const QVariant &sid = c->property(SESSION_ID);
     if (sid.isNull()) {
-        Session *session = c->plugin<Session*>();
+        static thread_local Session *session = c->plugin<Session*>();
         if (!session) {
             qCCritical(C_SESSION) << "Session plugin not registered";
             return QString();
@@ -110,7 +110,7 @@ quint64 Session::expires(Context *c)
         return expires.toULongLong();
     }
 
-    Session *session = c->plugin<Session*>();
+    static thread_local Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return 0;
@@ -129,7 +129,7 @@ void Session::changeExpires(Context *c, quint64 expires)
     const QString &sid = Session::id(c);
     const quint64 timeExp = (QDateTime::currentMSecsSinceEpoch() / 1000) + expires;
 
-    Session *session = c->plugin<Session*>();
+    static thread_local Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
@@ -140,7 +140,7 @@ void Session::changeExpires(Context *c, quint64 expires)
 
 void Session::deleteSession(Context *c, const QString &reason)
 {
-    Session *session = c->plugin<Session*>();
+    static thread_local Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
@@ -172,7 +172,7 @@ void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant 
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
-            Session *plugin = c->plugin<Session*>();
+            static thread_local Session *plugin = c->plugin<Session*>();
             if (!plugin) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
@@ -196,7 +196,7 @@ void Session::deleteValue(Context *c, const QString &key)
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
-            Session *plugin = c->plugin<Session*>();
+            static thread_local Session *plugin = c->plugin<Session*>();
             if (!plugin) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
@@ -296,7 +296,7 @@ void SessionPrivate::_q_saveSession(Context *c)
     Session::expires(c);
 
     // Persist data
-    Session *session = c->plugin<Session*>();
+    static thread_local Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
@@ -350,7 +350,7 @@ QVariant SessionPrivate::loadSession(Context *c)
         return property.toHash();
     }
 
-    Session *session = c->plugin<Session*>();
+    static thread_local Session *session = c->plugin<Session*>();
     if (!session) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return QVariant();
@@ -464,7 +464,7 @@ void SessionPrivate::saveSessionExpires(Context *c)
     if (!expires.isNull()) {
         const QString &sid = Session::id(c);
         if (!sid.isEmpty()) {
-            Session *session = c->plugin<Session*>();
+            static thread_local Session *session = c->plugin<Session*>();
             if (!session) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
