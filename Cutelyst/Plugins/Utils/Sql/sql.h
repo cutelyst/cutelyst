@@ -70,12 +70,16 @@ namespace Sql {
      * Returns a QSqlQuery object prepared with \pa query using the \pa db database
      * This is specially useful to avoid pointers to prepered queries.
      *
-     * Best used as
-     * static QSqlQuery query = preparedQuery("SELECT * FROM", someDb);
+     * For applications that uses default QSqlDatabase() connection, not thread-safe:
+     * QSqlQuery query = CPreparedSqlQuery("SELECT * FROM");
      *
-     * The returned object is set to forward only and you MUST NEVER
-     * use this way on threaded applications as the static object
-     * is then shared by the two instances.
+     * For applications that do not use default QSqlDatabase(), the returned QSqlQuery
+     * is a static thread_local which glues QSqlQuery to the current thread but you must
+     * have a per thread QSqlDatabase() connection for this to be completely safe:
+     * QSqlQuery query = CPreparedSqlQueryForDatabase("SELECT * FROM", QSqlDatabase::data);
+     *
+     * The returned object is set to forward only and you must use a different
+     * database connection and thread_local on static objects to be thread-safe.
      */
     QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
 
@@ -83,4 +87,20 @@ namespace Sql {
 
 }
 
-#endif // CSESSION_H
+#  define CPreparedSqlQueryForDatabase(str, db) \
+    ([]() -> QSqlQuery { \
+        static thread_local QSqlQuery query_temp = \
+            Cutelyst::Sql::preparedQuery(str, db); \
+        return query_temp; \
+    }()) \
+    /**/
+
+#  define CPreparedSqlQuery(str) \
+    ([]() -> QSqlQuery { \
+        static QSqlQuery query_temp = \
+            Cutelyst::Sql::preparedQuery(str); \
+        return query_temp; \
+    }()) \
+    /**/
+
+#endif // CSQL_H
