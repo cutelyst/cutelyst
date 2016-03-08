@@ -33,16 +33,12 @@ using namespace Cutelyst;
 
 struct uwsgi_cutelyst {
     char *app;
-    int reload;
 } options;
 
 static QList<uWSGI *> *coreEngines = nullptr;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
-#ifdef UWSGI_GO_CHEAP_CODE
-static void fsmon_reload(struct uwsgi_fsmon *fs);
-#endif
 
 /**
  * This function is called as soon as
@@ -105,13 +101,6 @@ int uwsgi_cutelyst_init()
     }
 
     path = cwd.absoluteFilePath(path);
-#ifdef UWSGI_GO_CHEAP_CODE
-    if (options.reload) {
-        // Register application auto reload
-        char *file = qstrdup(path.toUtf8().constData());
-        uwsgi_register_fsmon(file, fsmon_reload, NULL);
-    }
-#endif // UWSGI_GO_CHEAP_CODE
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
@@ -150,24 +139,6 @@ int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
 
     return UWSGI_OK;
 }
-
-#ifdef UWSGI_GO_CHEAP_CODE // Actually we only need uwsgi 2.0.1
-static void fsmon_reload(struct uwsgi_fsmon *fs)
-{
-    qCDebug(CUTELYST_UWSGI) << "Reloading application due to file change";
-    QFileInfo fileInfo(QString::fromLocal8Bit(fs->path));
-    int count = 0;
-    // Ugly hack to wait for 2 seconds for the file to be filled
-    while (fileInfo.size() == 0 && count < 10) {
-        ++count;
-        qCDebug(CUTELYST_UWSGI) << "Sleeping as the application file is empty" << count;
-        usleep(200 * 1000);
-        fileInfo.refresh();
-    }
-
-    uwsgi_reload(uwsgi.argv);
-}
-#endif // UWSGI_GO_CHEAP_CODE
 
 /**
  * This function is called when the child process is exiting
@@ -335,7 +306,6 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
 struct uwsgi_option uwsgi_cutelyst_options[] = {
 
 {const_cast<char *>("cutelyst-app"), required_argument, 0, const_cast<char *>("loads the Cutelyst Application"), uwsgi_opt_set_str, &options.app, 0},
-{const_cast<char *>("cutelyst-reload"), no_argument, 0, const_cast<char *>("auto reloads the application when app file changes"), uwsgi_opt_true, &options.reload, 0},
 {0, 0, 0, 0, 0, 0, 0},
 
 };
