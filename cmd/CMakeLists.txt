@@ -4,6 +4,7 @@ include_directories(
 )
 
 set(cutelyst_cmd_SRCS
+    uwsgiprocess.cpp
     main.cpp
 )
 

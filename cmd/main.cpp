@@ -9,101 +9,18 @@
 
 #include <QRegularExpression>
 #include <QStringBuilder>
-#include <QProcess>
-#include <QDirIterator>
 #include <QDir>
-
-#include <QMimeDatabase>
 
 #include <ostream>
 #include <utime.h>
+
+#include "uwsgiprocess.h"
 
 #define OUT_EXISTS  "  exists"
 #define OUT_CREATED " created"
 
 bool buildControllerHeader(const QString &filename, const QString &controllerName, bool helpers);
 bool buildControllerImplementation(const QString &filename, const QString &controllerName, bool helpers);
-bool findProjectDir(const QDir &dir, QDir *projectDir);
-
-QString findApplication(const QDir &projectDir)
-{
-    QMimeDatabase m_db;
-
-    QDirIterator it(projectDir.absolutePath(), QDir::Files, QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString file = it.next();
-        QMimeType mime = m_db.mimeTypeForFile(file);
-        if (mime.inherits(QStringLiteral("application/x-sharedlib"))) {
-            return file;
-        }
-    }
-    return QString();
-}
-
-int runServer(const QString &appFilename, int port, bool restart)
-{
-    QDir projectDir;
-    if (!findProjectDir(QDir::current(), &projectDir)) {
-        qDebug() << "Error: failed to find project";
-        return false;
-    }
-
-    QString localFilename = appFilename;
-    if (localFilename.isEmpty()) {
-        localFilename = findApplication(projectDir);
-    }
-
-    QFileInfo fileInfo(localFilename);
-    if (!fileInfo.exists()) {
-        qDebug() << "Error: Application file not found";
-        return false;
-    }
-
-    QStringList args;
-    args.append(QStringLiteral("--http-socket"));
-    args.append(QLatin1String(":") % QString::number(port));
-
-    args.append(QStringLiteral("--chdir"));
-    args.append(projectDir.absolutePath());
-
-    args.append(QStringLiteral("-M"));
-
-    args.append(QStringLiteral("--plugin"));
-    args.append(QStringLiteral("cutelyst"));
-
-    args.append(QStringLiteral("--cutelyst-app"));
-    args.append(localFilename);
-
-    if (restart) {
-        args.append(QStringLiteral("--cutelyst-reload"));
-    }
-
-    qDebug() << "Running: uwsgi" << args.join(QStringLiteral(" ")).toLatin1().data();
-
-    return QProcess::execute(QStringLiteral("uwsgi"), args);
-}
-
-bool findProjectDir(const QDir &dir, QDir *projectDir)
-{
-    QFile cmake(dir.absoluteFilePath(QStringLiteral("CMakeLists.txt")));
-    if (cmake.exists()) {
-        if (cmake.open(QFile::ReadOnly | QFile::Text)) {
-            while (!cmake.atEnd()) {
-                QByteArray line = cmake.readLine();
-                if (line.toLower().startsWith(QByteArrayLiteral("project"))) {
-                    *projectDir = dir;
-                    return true;
-                }
-            }
-        }
-    }
-
-    QDir localDir = dir;
-    if (localDir.cdUp()) {
-        return findProjectDir(localDir, projectDir);
-    }
-    return false;
-}
 
 bool createController(const QString &controllerName)
 {
@@ -113,7 +30,7 @@ bool createController(const QString &controllerName)
     }
 
     QDir projectDir;
-    if (!findProjectDir(QDir::current(), &projectDir)) {
+    if (!uwsgiProcess::findProjectDir(QDir::current(), &projectDir)) {
         qDebug() << "Error: failed to find project";
         return false;
     }
@@ -520,7 +437,7 @@ int main(int argc, char *argv[])
 
     parser.addOption(controller);
     QCommandLineOption server = QCommandLineOption(QStringLiteral("server"),
-                                                   QStringLiteral("Development server (requires uWSGI)"));
+                                                   QStringLiteral("Starts a HTTP server (requires uWSGI)"));
     parser.addOption(server);
     QCommandLineOption appFile = QCommandLineOption(QStringLiteral("app-file"),
                                                     QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so),"
@@ -554,7 +471,13 @@ int main(int argc, char *argv[])
         if (parser.isSet(serverPort)) {
             port = parser.value(serverPort).toInt();
         }
-        return runServer(filename, port, parser.isSet(restart));
+
+        uwsgiProcess server;
+        if (!server.run(filename, port, parser.isSet(restart))) {
+            return 1;
+        }
+
+        return app.exec();
     } else {
         parser.showHelp(1);
     }
