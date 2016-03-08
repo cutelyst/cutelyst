@@ -36,7 +36,7 @@ struct uwsgi_cutelyst {
     int reload;
 } options;
 
-static QList<uWSGI *> *coreEngines = 0;
+static QList<uWSGI *> *coreEngines = nullptr;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -275,7 +275,7 @@ void uwsgi_cutelyst_init_apps()
 
     delete loader;
 
-    if (uwsgi.lazy_apps) {
+    if (uwsgi.lazy || uwsgi.lazy_apps) {
         // Make sure we start listening on lazy mode
         uwsgi_cutelyst_post_fork();
     }
