@@ -85,20 +85,6 @@ public:
     inline bool isZeroWorker() const;
 
     /**
-     * @brief reload
-     *
-     * Reloads the engine, in some engines
-     * this means restarting the worker process
-     * others might just ignore.
-     *
-     * Default implementation does nothing.
-     *
-     * \warning Use with care as this might not
-     * properly clean your process.
-     */
-    virtual void reload();
-
-    /**
      * Engine options
      */
     QVariantHash opts() const;

@@ -62,8 +62,6 @@ public:
 
     void processRequest(wsgi_request *req);
 
-    virtual void reload() Q_DECL_FINAL;
-
     void addUnusedRequest(wsgi_request *wsgi_req);
 
     void watchSocket(struct uwsgi_socket *uwsgi_sock);

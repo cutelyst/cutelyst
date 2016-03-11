@@ -224,12 +224,6 @@ void uWSGI::processRequest(wsgi_request *req)
     body->close();
 }
 
-void uWSGI::reload()
-{
-    qCDebug(CUTELYST_UWSGI) << "Reloading application due application request";
-    uwsgi_reload(uwsgi.argv);
-}
-
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
 {
     CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);

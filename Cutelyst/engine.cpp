@@ -337,11 +337,6 @@ QByteArray Engine::statusCode(quint16 status)
     }
 }
 
-void Engine::reload()
-{
-    qCWarning(CUTELYST_ENGINE) << "Default reload implementation called, doing nothing";
-}
-
 QVariantHash Engine::opts() const
 {
     Q_D(const Engine);
