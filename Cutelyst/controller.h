@@ -33,6 +33,14 @@
 #define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
 #define C_ATTR(X, Y) Q_CLASSINFO(STR(X), STR(Y)) Q_INVOKABLE
 
+#  define CActionFor(str) \
+    ([this]() -> Action * { \
+        static thread_local Action *action = \
+            Cutelyst::Controller::actionFor(str); \
+        return action; \
+    }()) \
+    /**/
+
 namespace  Cutelyst {
 
 class ControllerPrivate;
@@ -95,6 +103,8 @@ public:
     /**
      * Returns the Cutelyst::Action object (if any) for a given method name in
      * this class namespace.
+     *
+     * You can also use the macro CActionFor to keep the resolved action around.
      */
     Action *actionFor(const QString &name) const;
 
