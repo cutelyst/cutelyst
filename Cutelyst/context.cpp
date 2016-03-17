@@ -56,7 +56,7 @@ bool Context::error() const
 void Context::error(const QString &error)
 {
     Q_D(Context);
-    if (!error.isNull()) {
+    if (error.isNull()) {
         d->error.clear();
     } else {
         d->error << error;
