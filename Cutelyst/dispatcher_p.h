@@ -39,10 +39,10 @@ public:
     static inline QString cleanNamespace(const QString &ns);
 
     Dispatcher *q_ptr;
-    QHash<QString, Action*> actionHash;
-    QHash<QString, ActionList> containerHash;
+    QMap<QString, Action*> actions;
+    QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
-    QHash<QString, Controller *> constrollerHash;
+    QMap<QString, Controller *> controllers;
     QList<DispatchType*> dispatchers;
     bool showInternalActions = false;
 };

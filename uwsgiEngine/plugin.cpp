@@ -49,9 +49,9 @@ void uwsgi_cutelyst_on_load()
     uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
 
     // Get the uwsgi options
-    QVariantHash opts;
+    QVariantMap opts;
     for (int i = 0; i < uwsgi.exported_opts_cnt; i++) {
-        const QString &key = QString::fromLatin1(uwsgi.exported_opts[i]->key);
+        const QString key = QString::fromLatin1(uwsgi.exported_opts[i]->key);
         if (uwsgi.exported_opts[i]->value == NULL) {
             opts.insertMulti(key, QVariant());
         } else {
@@ -64,9 +64,9 @@ void uwsgi_cutelyst_on_load()
     QDir cwd(QString::fromLatin1(uwsgi.cwd));
 
     // Set the configuration env
-    QVariantHash::ConstIterator it = opts.constFind(QStringLiteral("ini"));
+    auto it = opts.constFind(QStringLiteral("ini"));
     if (it != opts.constEnd()) {
-        QString config = cwd.absoluteFilePath(it.value().toString());
+        const QString config = cwd.absoluteFilePath(it.value().toString());
         qputenv("CUTELYST_CONFIG", config.toUtf8());
         if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
             qputenv("QT_LOGGING_CONF", config.toUtf8());
@@ -192,7 +192,7 @@ void uwsgi_cutelyst_init_apps()
     }
     qCDebug(CUTELYST_UWSGI) << "Loaded application:" << QCoreApplication::applicationName();
 
-    QVariantHash opts = qApp->property("UWSGI_OPTS").toHash();
+    QVariantMap opts = qApp->property("UWSGI_OPTS").toMap();
 
     uWSGI *mainEngine = new uWSGI(opts, app);
     if (!mainEngine->initApplication(app, false)) {

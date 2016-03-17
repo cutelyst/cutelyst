@@ -40,7 +40,7 @@ class uWSGI : public Engine
 {
     Q_OBJECT
 public:
-    explicit uWSGI(const QVariantHash &opts, Application *app, QObject *parent = 0);
+    explicit uWSGI(const QVariantMap &opts, Application *app, QObject *parent = 0);
     virtual ~uWSGI();
 
     virtual int workerId() const;

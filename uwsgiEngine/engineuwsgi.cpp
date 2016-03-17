@@ -41,7 +41,7 @@ typedef struct {
     BodyBufferedUWSGI *bodyBufferedUWSGI;
 } CachedRequest;
 
-uWSGI::uWSGI(const QVariantHash &opts, Application *app, QObject *parent) : Engine(opts, parent)
+uWSGI::uWSGI(const QVariantMap &opts, Application *app, QObject *parent) : Engine(opts, parent)
   , m_app(app)
 {
     connect(this, &uWSGI::postFork,

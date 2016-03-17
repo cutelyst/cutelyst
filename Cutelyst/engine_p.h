@@ -28,8 +28,8 @@ class EnginePrivate
 {
 public:
     Application *app = nullptr;
-    QVariantHash opts;
-    QHash<QString, QVariantHash> config;
+    QVariantMap opts;
+    QMap<QString, QVariantMap> config;
 };
 
 }

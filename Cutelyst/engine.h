@@ -45,7 +45,7 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit Engine(const QVariantHash &opts, QObject *parent = 0);
+    explicit Engine(const QVariantMap &opts, QObject *parent = 0);
     virtual ~Engine();
 
     /**
@@ -87,14 +87,14 @@ public:
     /**
      * Engine options
      */
-    QVariantHash opts() const;
+    QVariantMap opts() const;
 
     /**
      * @brief user configuration for the application
      * @param entity the entity you are interested in
      * @return the configuration settings
      */
-    QVariantHash config(const QString &entity) const;
+    QVariantMap config(const QString &entity) const;
 
     static QByteArray statusCode(quint16 status);
 

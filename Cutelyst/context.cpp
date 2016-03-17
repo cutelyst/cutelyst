@@ -362,7 +362,7 @@ QVariant Context::config(const QString &key, const QVariant &defaultValue) const
     return d->app->config(key, defaultValue);
 }
 
-QVariantHash Context::config() const
+QVariantMap Context::config() const
 {
     Q_D(const Context);
     return d->app->config();

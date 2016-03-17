@@ -209,7 +209,7 @@ QList<DispatchType *> Application::dispatchers() const
     return d->dispatcher->dispatchers();
 }
 
-QVariantHash Application::config() const
+QVariantMap Application::config() const
 {
     Q_D(const Application);
     return d->config;

@@ -59,7 +59,7 @@ public:
     /**
      * Returns a hash of registered controllers
      */
-    QHash<QString, Controller *> controllers() const;
+    QMap<QString, Controller *> controllers() const;
 
     /**
      * Takes a Catalyst::Action object and action parameters and returns a URI

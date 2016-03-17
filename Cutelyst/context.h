@@ -21,7 +21,6 @@
 #define CUTELYST_CONTEXT_H
 
 #include <QtCore/QObject>
-#include <QtCore/QHash>
 #include <QtCore/QVariant>
 #include <QtCore/QUrl>
 #include <QtCore/QStringList>
@@ -53,7 +52,7 @@ class CUTELYST_LIBRARY Context : public QObject
     Q_PROPERTY(Request *request READ request)
     Q_PROPERTY(Controller *controller READ controller)
     Q_PROPERTY(QString controllerName READ controllerName)
-    Q_PROPERTY(QVariantHash config READ config)
+    Q_PROPERTY(QVariantMap config READ config)
     Q_PROPERTY(bool state READ state)
 public:
     Context(ContextPrivate *priv);
@@ -384,7 +383,7 @@ public:
 
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
-    QVariantHash config() const;
+    QVariantMap config() const;
 
     /**
      * Returns the Cutelyst welcome HTML page.

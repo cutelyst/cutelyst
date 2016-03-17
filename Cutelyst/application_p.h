@@ -44,11 +44,11 @@ public:
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QList<Controller *> controllers;
-    QHash<QString, View *> views;
+    QMap<QString, View *> views;
     QList<DispatchType *> dispatchers;
-    QHash<QString, ComponentFactory *> factories;
+    QMap<QString, ComponentFactory *> factories;
     Headers headers;
-    QVariantHash config;
+    QVariantMap config;
     Engine *engine;
     bool useStats;
     bool init = false;

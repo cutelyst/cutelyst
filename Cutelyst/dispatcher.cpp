@@ -60,7 +60,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         bool instanceUsed = false;
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
-            if (!d->actionHash.contains(action->reverse())) {
+            if (!d->actions.contains(action->reverse())) {
                 if (!action->attributes().contains(QStringLiteral("Private"))) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
@@ -78,8 +78,8 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                d->actionHash.insert(action->ns() % QLatin1Char('/') % action->name(), action);
-                d->containerHash[action->ns()] << action;
+                d->actions.insert(action->ns() % QLatin1Char('/') % action->name(), action);
+                d->actionContainer[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
             } else if (action->name() != QLatin1String("_DISPATCH") &&
@@ -96,19 +96,19 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
                 qCCritical(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
                                                 << action->controller()->objectName()
                                                 << "controller was alread registered by the"
-                                                << d->actionHash.value(action->reverse())->controller()->objectName()
+                                                << d->actions.value(action->reverse())->controller()->objectName()
                                                 << "controller.";
                 exit(1);
             }
         }
 
         if (instanceUsed) {
-            d->constrollerHash.insert(controller->objectName(), controller);
+            d->controllers.insert(controller->objectName(), controller);
         }
     }
 
     // Cache root actions, BEFORE the controllers set them
-    d->rootActions = d->containerHash.value(QLatin1String(""));
+    d->rootActions = d->actionContainer.value(QLatin1String(""));
 
     Q_FOREACH (Controller *controller, controllers) {
         controller->d_ptr->setupFinished();
@@ -233,11 +233,11 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     if (nameSpace.isEmpty()) {
-        return d->actionHash.value(QLatin1Char('/') % name);
+        return d->actions.value(QLatin1Char('/') % name);
     }
 
-    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return d->actionHash.value(ns % QLatin1Char('/') % name);
+    const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
+    return d->actions.value(ns % QLatin1Char('/') % name);
 }
 
 Action *Dispatcher::getActionByPath(const QString &path) const
@@ -248,7 +248,7 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);
     }
-    return d->actionHash.value(_path);
+    return d->actions.value(_path);
 }
 
 ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace) const
@@ -271,10 +271,10 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
     return ret;
 }
 
-QHash<QString, Controller *> Dispatcher::controllers() const
+QMap<QString, Controller *> Dispatcher::controllers() const
 {
     Q_D(const Dispatcher);
-    return d->constrollerHash;
+    return d->controllers;
 }
 
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures) const
@@ -339,10 +339,10 @@ void DispatcherPrivate::printActions() const
 {
     QList<QStringList> table;
 
-    QStringList keys = actionHash.keys();
+    QStringList keys = actions.keys();
     keys.sort(Qt::CaseInsensitive);
     Q_FOREACH (const QString &key, keys) {
-        Action *action = actionHash.value(key);
+        Action *action = actions.value(key);
         if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
             QString path = key;
             if (!path.startsWith(QLatin1Char('/'))) {
@@ -379,11 +379,11 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 //        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {
 //            qDebug() << pos << ns.mid(0, pos);
-            ret.append(containerHash.value(ns.mid(0, pos)));
+            ret.append(actionContainer.value(ns.mid(0, pos)));
             pos = ns.lastIndexOf(QLatin1Char('/'), pos - 1);
         }
     }
-//    qDebug() << containerHash.size() << rootActions;
+//    qDebug() << actionContainer.size() << rootActions;
     ret.append(rootActions);
 
     return ret;
@@ -391,8 +391,8 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 
 Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &args) const
 {
-    auto it = actionHash.constFind(command);
-    if (it != actionHash.constEnd()) {
+    auto it = actions.constFind(command);
+    if (it != actions.constEnd()) {
         return it.value();
     }
 

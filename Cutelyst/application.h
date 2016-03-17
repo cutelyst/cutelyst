@@ -81,7 +81,7 @@ public:
      * User configuration for the application
      * @return A variant hash with configuration settings
      */
-    QVariantHash config() const;
+    QVariantMap config() const;
 
     /**
      * Merges path with config("HOME") and returns a QDir object.

@@ -33,7 +33,7 @@
 
 using namespace Cutelyst;
 
-Engine::Engine(const QVariantHash &opts, QObject *parent) :
+Engine::Engine(const QVariantMap &opts, QObject *parent) :
     QObject(parent),
     d_ptr(new EnginePrivate)
 {
@@ -337,13 +337,13 @@ QByteArray Engine::statusCode(quint16 status)
     }
 }
 
-QVariantHash Engine::opts() const
+QVariantMap Engine::opts() const
 {
     Q_D(const Engine);
     return d->opts;
 }
 
-QVariantHash Engine::config(const QString &entity) const
+QVariantMap Engine::config(const QString &entity) const
 {
     Q_D(const Engine);
     return d->config.value(entity);

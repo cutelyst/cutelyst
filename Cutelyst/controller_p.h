@@ -53,7 +53,7 @@ public:
     Action *end = nullptr;
     ActionList actionSteps;
     Dispatcher *dispatcher;
-    QHash<QString, Action *> actions;
+    QMap<QString, Action *> actions;
     bool parsedActions = false;
 };
 
