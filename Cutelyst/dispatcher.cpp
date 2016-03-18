@@ -167,7 +167,7 @@ bool Dispatcher::forward(Context *c, const QString &opname)
         return action->dispatch(c);
     }
 
-    qCCritical(CUTELYST_DISPATCHER) << "Action not found" << action;
+    qCCritical(CUTELYST_DISPATCHER) << "Action not found" << opname << c->request()->args();
     return false;
 }
 
