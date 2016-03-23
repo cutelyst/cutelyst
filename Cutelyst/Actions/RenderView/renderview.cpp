@@ -47,8 +47,8 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
 {
     Q_D(RenderView);
 
-    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
-    d->view = application->view(attributes.value(QStringLiteral("View")));
+    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
+    d->view = application->view(attributes.value(QLatin1String("View")));
 
     return Action::init(application, args);
 }

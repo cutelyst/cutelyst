@@ -45,7 +45,7 @@ QByteArray DispatchTypePath::list() const
 {
     Q_D(const DispatchTypePath);
 
-    QRegularExpression multipleSlashes(QStringLiteral("/{1,}"));
+    QRegularExpression multipleSlashes(QLatin1String("/{1,}"));
 
     QList<QStringList> table;
 
@@ -54,14 +54,14 @@ QByteArray DispatchTypePath::list() const
     Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
             QString _path = QLatin1Char('/') % path;
-            if (action->attributes().value(QStringLiteral("Args")).isNull()) {
+            if (action->attributes().value(QLatin1String("Args")).isNull()) {
                 _path.append(QLatin1String("/..."));
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
                     _path.append(QLatin1String("/*"));
                 }
             }
-            _path.replace(multipleSlashes, QStringLiteral("/"));
+            _path.replace(multipleSlashes, QLatin1String("/"));
 
             QString privateName = action->reverse();
             if (!privateName.startsWith(QLatin1Char('/'))) {
@@ -72,8 +72,8 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, { QStringLiteral("Path"), QStringLiteral("Private") },
-                             QStringLiteral("Loaded Path actions:"));
+    return Utils::buildTable(table, { QLatin1String("Path"), QLatin1String("Private") },
+                             QLatin1String("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
@@ -122,7 +122,7 @@ bool DispatchTypePath::registerAction(Action *action)
 
     bool ret = false;
     const auto attributes = action->attributes();
-    auto it = attributes.constFind(QStringLiteral("Path"));
+    auto it = attributes.constFind(QLatin1String("Path"));
     while (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
         if (d->registerPath(it.value(), action)) {
             ret = true;

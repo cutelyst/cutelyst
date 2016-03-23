@@ -62,7 +62,7 @@ Application::Application(QObject *parent) :
     Q_D(Application);
 
     d->q_ptr = this;
-    d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
+    d->headers.setHeader(QLatin1String("X-Cutelyst"), QLatin1String(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
@@ -148,14 +148,14 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
         }
     }
 
-    QDir pluginsDir(QStringLiteral(CUTELYST_PLUGINS_DIR));
+    QDir pluginsDir(QLatin1String(CUTELYST_PLUGINS_DIR));
     QPluginLoader loader;
     Component *component = 0;
     ComponentFactory *factory = 0;
     Q_FOREACH (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
-        const QJsonObject json = loader.metaData()[QStringLiteral("MetaData")].toObject();
-        if (json[QStringLiteral("name")].toString() == name) {
+        const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();
+        if (json[QLatin1String("name")].toString() == name) {
             QObject *plugin = loader.instance();
             if (plugin) {
                 factory = qobject_cast<ComponentFactory *>(plugin);
@@ -250,7 +250,7 @@ bool Application::setup(Engine *engine)
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
     d->engine = engine;
-    d->config = engine->config(QStringLiteral("Cutelyst"));
+    d->config = engine->config(QLatin1String("Cutelyst"));
 
     d->setupHome();
 
@@ -273,7 +273,7 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore && !tablePlugins.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
-                                                        QStringLiteral("Loaded plugins:")).constData();
+                                                        QLatin1String("Loaded plugins:")).constData();
         }
 
         if (zeroCore) {
@@ -282,13 +282,13 @@ bool Application::setup(Engine *engine)
             tableDataHandlers.append({ QLatin1String("application/json") });
             tableDataHandlers.append({ QLatin1String("multipart/form-data") });
             qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
-                                                        QStringLiteral("Loaded Request Data Handlers:")).constData();
+                                                        QLatin1String("Loaded Request Data Handlers:")).constData();
 
             qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
             qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
         }
 
-        QString home = d->config.value(QStringLiteral("home")).toString();
+        QString home = d->config.value(QLatin1String("home")).toString();
         if (home.isEmpty()) {
             if (zeroCore) {
                 qCDebug(CUTELYST_CORE) << "Couldn't find home";
@@ -322,9 +322,9 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore && !table.isEmpty()) {
             qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
-                                                            QStringLiteral("Class"), QStringLiteral("Type")
+                                                            QLatin1String("Class"), QLatin1String("Type")
                                                         },
-                                                        QStringLiteral("Loaded components:")).constData();
+                                                        QLatin1String("Loaded components:")).constData();
         }
 
         Q_FOREACH (Controller *controller, d->controllers) {
@@ -334,7 +334,7 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers, d->dispatchers);
 
         if (zeroCore) {
-            qCInfo(CUTELYST_CORE) << QStringLiteral("%1 powered by Cutelyst %2, Qt %3.")
+            qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
                                      .arg(QCoreApplication::applicationName(), QStringLiteral(VERSION), QLatin1String(qVersion()))
                                      .toLatin1().constData();
         }
@@ -436,13 +436,13 @@ bool Application::enginePostFork()
 void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
-    if (!config.contains(QStringLiteral("home"))) {
-        config.insert(QStringLiteral("home"), QDir::currentPath());
+    if (!config.contains(QLatin1String("home"))) {
+        config.insert(QLatin1String("home"), QDir::currentPath());
     }
 
-    if (!config.contains(QStringLiteral("root"))) {
-        QDir home = config.value(QStringLiteral("home")).toString();
-        config.insert(QStringLiteral("root"), home.absoluteFilePath(QStringLiteral("root")));
+    if (!config.contains(QLatin1String("root"))) {
+        QDir home = config.value(QLatin1String("home")).toString();
+        config.insert(QStringLiteral("root"), home.absoluteFilePath(QLatin1String("root")));
     }
 }
 
@@ -486,12 +486,12 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Query Parameters are:"));
+        logRequestParameters(params, QLatin1String("Query Parameters are:"));
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Body Parameters are:"));
+        logRequestParameters(params, QLatin1String("Body Parameters are:"));
     }
 
     QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
@@ -510,8 +510,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QStringLiteral("Parameter"),
-                                                       QStringLiteral("Value"),
+                                                       QLatin1String("Parameter"),
+                                                       QLatin1String("Value"),
                                                    },
                                                    title).constData();
 }

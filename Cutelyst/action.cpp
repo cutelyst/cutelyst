@@ -64,17 +64,17 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     init(app, args);
 
-    d->ns = args.value(QStringLiteral("namespace")).toString();
+    d->ns = args.value(QLatin1String("namespace")).toString();
 
-    const QMap<QString, QString> attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
     d->attributes = attributes;
 
-    const QString argsAttr = attributes.value(QStringLiteral("Args"));
+    const QString argsAttr = attributes.value(QLatin1String("Args"));
     if (!argsAttr.isEmpty()) {
         d->numberOfArgs = argsAttr.toInt();
     }
 
-    const QString capturesAttr = attributes.value(QStringLiteral("CaptureArgs"));
+    const QString capturesAttr = attributes.value(QLatin1String("CaptureArgs"));
     if (!capturesAttr.isEmpty()) {
         d->numberOfCaptures = capturesAttr.toInt();
     }

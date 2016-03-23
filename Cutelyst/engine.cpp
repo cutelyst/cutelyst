@@ -40,7 +40,7 @@ Engine::Engine(const QVariantMap &opts, QObject *parent) :
     Q_D(Engine);
 
     // Debug messages should be disabled by default
-    QLoggingCategory::setFilterRules(QStringLiteral("cutelyst.*.debug=false"));
+    QLoggingCategory::setFilterRules(QLatin1String("cutelyst.*.debug=false"));
 
     // Load application configuration
     if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {

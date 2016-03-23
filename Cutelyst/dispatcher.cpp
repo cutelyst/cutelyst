@@ -61,7 +61,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
-                if (!action->attributes().contains(QStringLiteral("Private"))) {
+                if (!action->attributes().contains(QLatin1String("Private"))) {
                     // Register the action with each dispatcher
                     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
                         if (dispatch->registerAction(action)) {
@@ -358,11 +358,11 @@ void DispatcherPrivate::printActions() const
     }
 
     qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {
-                                                           QStringLiteral("Private"),
-                                                           QStringLiteral("Class"),
-                                                           QStringLiteral("Method")
+                                                           QLatin1String("Private"),
+                                                           QLatin1String("Class"),
+                                                           QLatin1String("Method")
                                                        },
-                                                       QStringLiteral("Loaded Private actions:")).constData();
+                                                       QLatin1String("Loaded Private actions:")).constData();
 
     // List all public actions
     Q_FOREACH (DispatchType *dispatch, dispatchers) {

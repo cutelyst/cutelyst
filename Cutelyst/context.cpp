@@ -371,7 +371,7 @@ QVariantMap Context::config() const
 QByteArray Context::welcomeMessage() const
 {
     const QString name = QCoreApplication::applicationName();
-    response()->setContentType(QStringLiteral("text/html; charset=utf-8"));
+    response()->setContentType(QLatin1String("text/html; charset=utf-8"));
     QByteArray ret;
     QTextStream out(&ret);
     out << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
