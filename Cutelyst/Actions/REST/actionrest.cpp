@@ -54,7 +54,7 @@ bool ActionREST::dispatch(Context *c)
 bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
 {
     Q_Q(const ActionREST);
-    const QString &restMethod = q->name() % QLatin1Char('_') % httpMethod;
+    const QString restMethod = q->name() % QLatin1Char('_') % httpMethod;
 
     Controller *controller = c->controller();
     Action *action = controller->actionFor(restMethod);
@@ -95,8 +95,8 @@ bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) con
     Response *response = c->response();
     response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::OK); // 200
-    response->headers().insert(QStringLiteral("Allow"),
-                               getAllowedMethods(c->controller(), methodName));
+    response->headers().setHeader(QStringLiteral("Allow"),
+                                  getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
 }
@@ -106,8 +106,8 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
     Response *response = c->response();
     response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->headers().insert(QStringLiteral("Allow"),
-                               getAllowedMethods(c->controller(), methodName));
+    response->headers().setHeader(QStringLiteral("Allow"),
+                                  getAllowedMethods(c->controller(), methodName));
     response->body() = "Method " + c->req()->method().toLatin1() + " not implemented for "
             + c->uriFor(methodName).toString().toLatin1();
     return true;
@@ -116,10 +116,10 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, const QString &methodName) const
 {
     QStringList methods;
-    QString name = methodName % QLatin1Char('_');
-    ActionList actions = controller->actions();
+    const QString name = methodName % QLatin1Char('_');
+    const ActionList actions = controller->actions();
     Q_FOREACH (Action *action, actions) {
-        const QString &method = action->name();
+        const QString method = action->name();
         if (method.startsWith(name)) {
             methods.append(method.mid(name.size()));
         }

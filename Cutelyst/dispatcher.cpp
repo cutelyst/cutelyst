@@ -259,10 +259,10 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
         return ActionList();
     }
 
-    const QString &ns = DispatcherPrivate::cleanNamespace(nameSpace);
+    const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
 
     ActionList ret;
-    const ActionList &containers = d->getContainers(ns);
+    const ActionList containers = d->getContainers(ns);
     Q_FOREACH (Action *action, containers) {
         if (action->name() == name) {
             ret.prepend(action);

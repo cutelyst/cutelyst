@@ -159,7 +159,7 @@ void uwsgi_cutelyst_atexit()
 
 void uwsgi_cutelyst_init_apps()
 {
-    const QString &applicationName = QCoreApplication::applicationName();
+    const QString applicationName = QCoreApplication::applicationName();
 
     qCDebug(CUTELYST_UWSGI) << "Cutelyst loading application:" << options.app;
 

@@ -60,7 +60,7 @@ QString Request::hostname() const
         }
     }
 
-    QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
+    const QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
         qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
         d->remoteHostname = QLatin1String("");
@@ -485,7 +485,7 @@ static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &posi
 void RequestPrivate::parseCookies() const
 {
     QList<QNetworkCookie> ret;
-    const QByteArray &cookieString = headers.header(QStringLiteral("Cookie")).toLatin1();
+    const QByteArray cookieString = headers.header(QStringLiteral("Cookie")).toLatin1();
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {
@@ -512,9 +512,9 @@ void RequestPrivate::parseCookies() const
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
-    const QList<QByteArray> &items = line.split('&');
+    const QList<QByteArray> items = line.split('&');
     for (int i = items.size() - 1; i >= 0; --i) {
-        const QByteArray &parameter = items.at(i);
+        const QByteArray parameter = items.at(i);
         if (parameter.isEmpty()) {
             continue;
         }

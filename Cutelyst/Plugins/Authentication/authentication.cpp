@@ -78,7 +78,7 @@ bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &us
 
     AuthenticationRealm *realmPtr = auth->d_ptr->realm(realm);
     if (realmPtr) {
-        const AuthenticationUser &user = realmPtr->authenticate(c, userinfo);
+        const AuthenticationUser user = realmPtr->authenticate(c, userinfo);
         if (!user.isNull()) {
             AuthenticationPrivate::setAuthenticated(c, user, realm, auth->d_ptr->realm(realm));
         }
@@ -208,7 +208,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c
 {
     AuthenticationRealm *realm;
 
-    const QVariant &realmVariant = Session::value(c, QStringLiteral(AUTHENTICATION_USER_REALM));
+    const QVariant realmVariant = Session::value(c, QStringLiteral(AUTHENTICATION_USER_REALM));
     if (!realmVariant.isNull()) {
         realm = realms.value(realmVariant.toString());
         if (realm && !realm->userIsRestorable(c).isNull()) {

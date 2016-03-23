@@ -205,8 +205,8 @@ void Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const QString &dt = QLocale::c().toString(lastModified.toUTC(),
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    const QString dt = QLocale::c().toString(lastModified.toUTC(),
+                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
 }
 
@@ -318,8 +318,8 @@ void Headers::setHeader(const QString &field, const QStringList &values)
 
 void Headers::pushHeader(const QString &field, const QString &value)
 {
-    const QString &key = HeadersPrivate::normalizeHeaderKey(field);
-    const QString &old = Headers::value(key);
+    const QString key = HeadersPrivate::normalizeHeaderKey(field);
+    const QString old = Headers::value(key);
     if (old.isEmpty()) {
         insert(key, value);
     } else {
@@ -369,7 +369,7 @@ QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 
 QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QString &auth)
 {
-    const QByteArray &authorization = decodeBasicAuth(auth);
+    const QByteArray authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {

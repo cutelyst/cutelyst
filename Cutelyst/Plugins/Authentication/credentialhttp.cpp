@@ -150,7 +150,7 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
     QString password = authinfo.value(passwordField);
-    const QString &storedPassword = user.value(passwordField);
+    const QString storedPassword = user.value(passwordField);
 
     if (passwordType == CredentialHttp::None) {
         qCDebug(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";

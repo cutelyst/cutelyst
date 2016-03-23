@@ -56,7 +56,7 @@ void Stats::profileEnd(const QString &action)
 {
     Q_D(Stats);
     for (int i = 0; i < d->actions.size(); ++i) {
-        StatsAction &stat = d->actions[i];
+        StatsAction stat = d->actions[i];
         if (stat.action == action) {
             stat.end = d->engine->time();
             break;

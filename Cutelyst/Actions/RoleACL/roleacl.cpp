@@ -102,8 +102,8 @@ bool RoleACL::canVisit(Context *c) const
     if (auth) {
         const QStringList user_has = auth->user(c).values(QStringLiteral("roles"));
 
-        const QStringList &required = d->requiresRole;
-        const QStringList &allowed = d->allowedRole;
+        const QStringList required = d->requiresRole;
+        const QStringList allowed = d->allowedRole;
 
         if (!required.isEmpty() && !allowed.isEmpty()) {
             Q_FOREACH (const QString &role, required) {

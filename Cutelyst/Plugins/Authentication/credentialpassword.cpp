@@ -153,7 +153,7 @@ QByteArray CredentialPassword::createPassword(const QByteArray &password, QCrypt
         salt = random.read(saltByteSize).toBase64();
     }
 
-    const QByteArray &methodStr = CredentialPasswordPrivate::cryptoEnumToStr(method);
+    const QByteArray methodStr = CredentialPasswordPrivate::cryptoEnumToStr(method);
     return methodStr + ':' + QByteArray::number(iterations) + ':' + salt + ':' +
             pbkdf2(
                 method,
@@ -239,7 +239,7 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
     QString password = authinfo.value(passwordField);
-    const QString &storedPassword = user.value(passwordField);
+    const QString storedPassword = user.value(passwordField);
 
     if (passwordType == CredentialPassword::None) {
         qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";

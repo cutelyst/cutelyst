@@ -328,10 +328,10 @@ bool uWSGI::finalizeHeaders(Context *ctx)
         return false;
     }
 
-    const Headers &headers = res->headers();
-    QHash<QString, QString>::ConstIterator it = headers.constBegin();
-    QHash<QString, QString>::ConstIterator end = headers.constEnd();
-    while (it != end) {
+    const Headers headers = res->headers();
+    auto it = headers.constBegin();
+    auto endIt = headers.constEnd();
+    while (it != endIt) {
         QByteArray key = camelCaseHeader(it.key()).toLatin1();
         QByteArray value = it.value().toLatin1();
 

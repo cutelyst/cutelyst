@@ -64,7 +64,7 @@ bool ActionChain::dispatch(Context *c)
 
     Request *request =  c->request();
     QStringList captures = request->captures();
-    const QStringList &currentArgs = request->args();
+    const QStringList currentArgs = request->args();
     ActionList chain = d->chain;
     Action *final = chain.takeLast();
 

@@ -158,7 +158,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     q->setParent(app);
 
     const QMetaObject *meta = q->metaObject();
-    const QString &className = QString::fromLatin1(meta->className());
+    const QString className = QString::fromLatin1(meta->className());
     q->setObjectName(className);
 
     QString controlerNS;
@@ -195,7 +195,7 @@ void ControllerPrivate::setupFinished()
 {
     Q_Q(Controller);
 
-    const ActionList &beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
+    const ActionList beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
     if (!beginList.isEmpty()) {
         begin = beginList.last();
         actionSteps.append(begin);
@@ -204,7 +204,7 @@ void ControllerPrivate::setupFinished()
     autoList = dispatcher->getActions(QStringLiteral("Auto"), pathPrefix);
     actionSteps.append(autoList);
 
-    const ActionList &endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
+    const ActionList endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
     if (!endList.isEmpty()) {
         end = endList.last();
     }
@@ -247,7 +247,7 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
     QMap<QString, QString> attributes;
     attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
-    QString actionClass = attributes.value(QStringLiteral("ActionClass"));
+    const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
     QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");
     if (object) {
@@ -271,7 +271,7 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         return 0;
     }
 
-    QString name = args.value(QStringLiteral("name")).toString();
+    const QString name = args.value(QStringLiteral("name")).toString();
     QRegularExpression regex(QStringLiteral("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$"));
     QRegularExpressionMatch match = regex.match(name);
     if (!match.hasMatch()) {
@@ -297,8 +297,8 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 {
     // Setup actions
     for (int i = 0; i < meta->methodCount(); ++i) {
-        const QMetaMethod &method = meta->method(i);
-        const QByteArray &name = method.name();
+        const QMetaMethod method = meta->method(i);
+        const QByteArray name = method.name();
 
         // We register actions that are either a Q_SLOT
         // or a Q_INVOKABLE function which has the first
@@ -415,7 +415,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
     for (int i = attributes.size() - 1; i >= 0; --i) {
-        const QPair<QString, QString> &pair = attributes.at(i);
+        const QPair<QString, QString> pair = attributes.at(i);
         QString key = pair.first;
         QString value = pair.second;
         if (key == QLatin1String("Global")) {
