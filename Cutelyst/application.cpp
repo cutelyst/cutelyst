@@ -62,7 +62,7 @@ Application::Application(QObject *parent) :
     Q_D(Application);
 
     d->q_ptr = this;
-    d->headers.setHeader(QLatin1String("X-Cutelyst"), QLatin1String(VERSION));
+    d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
@@ -438,7 +438,7 @@ void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
     if (!config.contains(QLatin1String("home"))) {
-        config.insert(QLatin1String("home"), QDir::currentPath());
+        config.insert(QStringLiteral("home"), QDir::currentPath());
     }
 
     if (!config.contains(QLatin1String("root"))) {
@@ -487,12 +487,12 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QLatin1String("Query Parameters are:"));
+        logRequestParameters(params, QStringLiteral("Query Parameters are:"));
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QLatin1String("Body Parameters are:"));
+        logRequestParameters(params, QStringLiteral("Body Parameters are:"));
     }
 
     QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
@@ -511,8 +511,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Value"),
+                                                       QStringLiteral("Parameter"),
+                                                       QStringLiteral("Value"),
                                                    },
                                                    title).constData();
 }
@@ -531,10 +531,10 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelys
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Filename"),
-                                                       QLatin1String("Type"),
-                                                       QLatin1String("Size"),
+                                                       QStringLiteral("Parameter"),
+                                                       QStringLiteral("Filename"),
+                                                       QStringLiteral("Type"),
+                                                       QStringLiteral("Size"),
                                                    },
                                                    QStringLiteral("File Uploads are:")).constData();
 }
