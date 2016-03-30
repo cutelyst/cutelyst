@@ -55,21 +55,22 @@ void Stats::profileStart(const QString &action)
 void Stats::profileEnd(const QString &action)
 {
     Q_D(Stats);
-    for (int i = 0; i < d->actions.size(); ++i) {
-        StatsAction stat = d->actions[i];
-        if (stat.action == action) {
-            stat.end = d->engine->time();
+    auto it = d->actions.begin();
+    while (it != d->actions.end()) {
+        if (it->action == action) {
+            it->end = d->engine->time();
             break;
         }
+        ++it;
     }
 }
 
-QString Stats::report()
+QByteArray Stats::report()
 {
-    Q_D(Stats);
+    Q_D(const Stats);
 
     if (d->actions.isEmpty()) {
-        return QString();
+        return QByteArray();
     }
 
     QList<QStringList> table;
@@ -78,7 +79,7 @@ QString Stats::report()
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
     }
 
-    return QString::fromLatin1(Utils::buildTable(table, {
-                                                     QLatin1String("Action"), QLatin1String("Time")
-                                                 }));
+    return Utils::buildTable(table, {
+                                 QStringLiteral("Action"), QStringLiteral("Time")
+                             });
 }

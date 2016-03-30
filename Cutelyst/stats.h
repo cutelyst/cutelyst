@@ -38,7 +38,7 @@ public:
 
     virtual void profileStart(const QString &action);
     virtual void profileEnd(const QString &action);
-    virtual QString report();
+    virtual QByteArray report();
 
 protected:
     StatsPrivate *d_ptr;

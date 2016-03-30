@@ -405,9 +405,9 @@ void Application::handleRequest(Request *req)
             average = QString::number(1.0 / enlapsed, 'f');
             average.truncate(average.size() - 3);
         }
-        qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                  .arg(QString::number(enlapsed, 'f'), average, priv->stats->report())
-                                  .toLatin1().constData();
+        qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: %1s (%2/s)\n")
+                                  .arg(QString::number(enlapsed, 'f'), average)
+                                  .toLatin1().constData() << priv->stats->report().constData();
         delete priv->stats;
     }
 

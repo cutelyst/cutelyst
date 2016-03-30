@@ -27,15 +27,16 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
 {
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
+    out << '\r';
     for (int i = 0; i < columnsSize.size(); ++i) {
         if (i) {
-            out << "+";
+            out << '+';
         } else {
-            out << ".";
+            out << '.';
         }
         out << QByteArray().fill('-', columnsSize[i] + 2).data();
     }
-    out << "." << endl;
+    out << '.' << endl;
 
     return buffer;
 }
