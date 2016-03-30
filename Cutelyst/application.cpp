@@ -106,10 +106,11 @@ bool Application::registerPlugin(Plugin *plugin)
 bool Application::registerController(Controller *controller)
 {
     Q_D(Application);
-    if (d->controllers.contains(controller)) {
+    auto name = QString::fromLatin1(controller->metaObject()->className());
+    if (d->controllers.contains(name)) {
         return false;
     }
-    d->controllers.append(controller);
+    d->controllers.insert(name, controller);
     return true;
 }
 
@@ -178,7 +179,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
 QList<Controller *> Application::controllers() const
 {
     Q_D(const Application);
-    return d->controllers;
+    return d->controllers.values();
 }
 
 View *Application::view(const QString &name) const
@@ -307,9 +308,8 @@ bool Application::setup(Engine *engine)
         }
 
         QList<QStringList> table;
-        Q_FOREACH (Controller *controller, d->controllers) {
-            QString className = QString::fromLatin1(controller->metaObject()->className());
-            table.append({ className, QLatin1String("Controller")});
+        Q_FOREACH (const QString controller, d->controllers.keys()) {
+            table.append({ controller, QLatin1String("Controller")});
         }
 
         Q_FOREACH (View *view, d->views) {
@@ -327,11 +327,12 @@ bool Application::setup(Engine *engine)
                                                         QLatin1String("Loaded components:")).constData();
         }
 
-        Q_FOREACH (Controller *controller, d->controllers) {
+        auto controllers = d->controllers.values();
+        Q_FOREACH (Controller *controller, controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
-        d->dispatcher->setupActions(d->controllers, d->dispatchers);
+        d->dispatcher->setupActions(controllers, d->dispatchers);
 
         if (zeroCore) {
             qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")

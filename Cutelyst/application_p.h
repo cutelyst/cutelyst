@@ -43,7 +43,7 @@ public:
     Application *q_ptr;
     Dispatcher *dispatcher;
     QList<Plugin *> plugins;
-    QList<Controller *> controllers;
+    QMap<QString, Controller *> controllers;
     QMap<QString, View *> views;
     QList<DispatchType *> dispatchers;
     QMap<QString, ComponentFactory *> factories;
