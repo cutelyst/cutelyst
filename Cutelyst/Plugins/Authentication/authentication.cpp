@@ -204,7 +204,7 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant
     return user;
 }
 
-AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c, const QHash<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder)
+AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c, const QMap<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder)
 {
     AuthenticationRealm *realm;
 
