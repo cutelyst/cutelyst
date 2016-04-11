@@ -94,21 +94,19 @@ QByteArray ViewJson::render(Context *c) const
 {
     Q_D(const ViewJson);
 
-    QJsonDocument document;
+    QJsonObject obj;
 
     const QVariantHash stash = c->stash();
 
     switch (d->exposeMode) {
     case All:
-        document.setObject(QJsonObject::fromVariantHash(stash));
+        obj = QJsonObject::fromVariantHash(stash);
         break;
     case String:
     {
         auto it = stash.constFind(d->exposeKey);
         if (it != stash.constEnd()) {
-            QJsonObject obj;
             obj.insert(d->exposeKey, QJsonValue::fromVariant(it.value()));
-            document.setObject(obj);
         }
         break;
     }
@@ -118,33 +116,34 @@ QByteArray ViewJson::render(Context *c) const
 
         auto it = stash.constBegin();
         while (it != stash.constEnd()) {
-            const QString &key = it.key();
+            const QString key = it.key();
             if (d->exposeKeys.contains(key)) {
                 exposedStash.insertMulti(it.key(), it.value());
             }
             ++it;
         }
-        document.setObject(QJsonObject::fromVariantHash(exposedStash));
+        obj = QJsonObject::fromVariantHash(exposedStash);
         break;
     }
     case RegularExpression:
     {
         QVariantHash exposedStash;
+        QRegularExpression re = d->exposeRE; // thread safety
 
         auto it = stash.constBegin();
         while (it != stash.constEnd()) {
-            const QString &key = it.key();
-            if (d->exposeRE.match(key).hasMatch()) {
+            const QString key = it.key();
+            if (re.match(key).hasMatch()) {
                 exposedStash.insertMulti(key, it.value());
             }
             ++it;
         }
-        document.setObject(QJsonObject::fromVariantHash(exposedStash));
+        obj = QJsonObject::fromVariantHash(exposedStash);
         break;
     }
     }
 
-    c->response()->setContentType(QStringLiteral("application/json; charset=utf-8"));
+    c->response()->setContentType(QStringLiteral("application/json"));
 
-    return document.toJson(d->format);
+    return QJsonDocument(obj).toJson(d->format);
 }
