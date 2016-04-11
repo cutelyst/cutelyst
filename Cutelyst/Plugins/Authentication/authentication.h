@@ -59,7 +59,12 @@ public:
     /**
      * Returns true if the userinfo could be validated against a realm.
      */
-    static bool authenticate(Context *c, const ParamsMultiMap &userinfo = ParamsMultiMap(), const QString &realm = QLatin1String(defaultRealm));
+    static bool authenticate(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
+
+    /**
+     * Returns true if the request information could be validated against a realm.
+     */
+    inline static bool authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
 
     static AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
 
@@ -94,6 +99,10 @@ public:
 protected:
     AuthenticationPrivate *d_ptr;
 };
+
+inline bool Authentication::authenticate(Context *c, const QString &realm) {
+    return Authentication::authenticate(c, ParamsMultiMap(), realm);
+}
 
 }
 
