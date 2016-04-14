@@ -186,7 +186,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     Q_UNUSED(authinfo)
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
-    QPair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
+    const QPair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
         return AuthenticationUser();
     }

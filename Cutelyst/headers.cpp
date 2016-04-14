@@ -40,7 +40,7 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
-    const QString ct = value(QStringLiteral("content_type"));
+    const auto ct = value(QStringLiteral("content_type"));
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
@@ -205,8 +205,8 @@ void Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const QString dt = QLocale::c().toString(lastModified.toUTC(),
-                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    const auto dt = QLocale::c().toString(lastModified.toUTC(),
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
 }
 
@@ -277,7 +277,7 @@ void Headers::setAuthorizationBasic(const QString &username, const QString &pass
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
         return;
     }
-    QString result = username % QLatin1Char(':') % password;
+    const QString result = username % QLatin1Char(':') % password;
     insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64()));
 }
 

@@ -90,7 +90,7 @@ bool Engine::finalizeHeaders(Context *c)
         response->setContentLength(body->size());
     }
 
-    const QString &protocol = c->request()->protocol();
+    const QString protocol = c->request()->protocol();
     if (protocol == QLatin1String("HTTP/1.1")) {
         if (!response->contentLength()) {
             quint16 status = response->status();

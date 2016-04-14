@@ -495,7 +495,7 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
         logRequestParameters(params, QStringLiteral("Body Parameters are:"));
     }
 
-    QMap<QString, Cutelyst::Upload *> uploads = req->uploads();
+    const auto uploads = req->uploads();
     if (!uploads.isEmpty()) {
         logRequestUploads(uploads);
     }

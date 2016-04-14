@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -66,7 +66,7 @@ bool RenderView::doExecute(Cutelyst::Context *c)
         res->setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 
-    if (c->req()->method() == QStringLiteral("HEAD")) {
+    if (c->req()->method() == QLatin1String("HEAD")) {
         return true;
     }
 
