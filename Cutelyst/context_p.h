@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 
 #include "context.h"
 #include "plugin.h"
+#include "response.h"
 
 #include <QVariantHash>
 #include <QStack>
@@ -32,19 +33,20 @@ class Stats;
 class ContextPrivate
 {
 public:
-    inline ContextPrivate(Application *_app, Engine *_engine, Dispatcher *_dispatcher, void *_requestPtr, Request *_request, const QList<Plugin *> &_plugins, Stats *_stats)
+    inline ContextPrivate(Context *c, Application *_app, Engine *_ngine, Dispatcher *_dispatcher, void *_reqPtr,
+                          Request *_request, const QList<Plugin *> &_plugins, Stats *_stats, const Headers &_headers)
         : app(_app)
-        , engine(_engine)
+        , engine(_ngine)
         , dispatcher(_dispatcher)
-        , requestPtr(_requestPtr)
+        , requestPtr(_reqPtr)
         , request(_request)
+        , response(new Response(c, _ngine, _headers))
         , plugins(_plugins)
         , stats(_stats)
     { }
 
     QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
-
 
     Application *app;
     Engine *engine;

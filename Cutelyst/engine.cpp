@@ -88,6 +88,9 @@ bool Engine::finalizeHeaders(Context *c)
     // Fix missing content length
     if (body && !response->contentLength()) {
         response->setContentLength(body->size());
+    } else {
+        const auto bodyByteArray = response->body();
+        response->setContentLength(bodyByteArray.length());
     }
 
     const QString protocol = c->request()->protocol();
@@ -364,6 +367,11 @@ void Engine::finalize(Context *c)
     QIODevice *body = response->bodyDevice();
     if (body) {
         finalizeBody(c, body);
+    } else {
+        const auto bodyByteArray = response->body();
+        if (!bodyByteArray.isNull()) {
+            doWrite(c, bodyByteArray.constData(), bodyByteArray.length(), c->engineData());
+        }
     }
 
     if (c->d_ptr->chunked && !c->d_ptr->chunked_done) {

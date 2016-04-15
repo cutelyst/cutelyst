@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -357,16 +357,14 @@ void Application::handleRequest(Request *req)
         stats = new Stats(this);
     }
 
-    ContextPrivate *priv = new ContextPrivate(this,
-                                              d->engine,
-                                              d->dispatcher,
-                                              req->d_ptr->requestPtr,
-                                              req,
-                                              d->plugins,
-                                              stats);
-
-    Context *c = new Context(priv);
-    priv->response = new Response(c, d->engine, d->headers);
+    Context *c = new Context(this,
+                             d->engine,
+                             d->dispatcher,
+                             req->d_ptr->requestPtr,
+                             req,
+                             d->plugins,
+                             stats,
+                             d->headers);
 
     // Process request
     bool skipMethod = false;
@@ -405,8 +403,8 @@ void Application::handleRequest(Request *req)
         }
         qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: %1s (%2/s)\n")
                                   .arg(QString::number(enlapsed, 'f'), average)
-                                  .toLatin1().constData() << priv->stats->report().constData();
-        delete priv->stats;
+                                  .toLatin1().constData() << stats->report().constData();
+        delete stats;
     }
 
     delete c;

@@ -24,6 +24,7 @@
 
 #include <QtCore/QUrl>
 #include <QtCore/QMap>
+#include <QtCore/QVariant>
 #include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {
@@ -36,7 +37,7 @@ public:
     inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
-    QIODevice *body = nullptr;
+    QVariant body;
     QUrl location;
     Context *context;
     Engine *engine;

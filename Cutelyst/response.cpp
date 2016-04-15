@@ -34,7 +34,6 @@ Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultH
 
 Response::~Response()
 {
-    delete d_ptr->body;
     delete d_ptr;
 }
 
@@ -53,28 +52,19 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return d->body;
+    return !d->body.isNull();
 }
 
-QByteArray &Response::body()
+QByteArray Response::body() const
 {
-    Q_D(Response);
-
-    QBuffer *buf = qobject_cast<QBuffer*>(d->body);
-    if (!buf) {
-        buf = new QBuffer;
-        if (!buf->open(QIODevice::ReadWrite)) {
-            qCCritical(CUTELYST_RESPONSE) << "Could not open QBuffer!";
-        }
-        d->body = buf;
-    }
-    return buf->buffer();
+    Q_D(const Response);
+    return d->body.value<QByteArray>();
 }
 
-QIODevice *Response::bodyDevice()
+QIODevice *Response::bodyDevice() const
 {
-    Q_D(Response);
-    return d->body;
+    Q_D(const Response);
+    return d->body.value<QIODevice*>();
 }
 
 void Response::setBody(QIODevice *body)
@@ -82,9 +72,20 @@ void Response::setBody(QIODevice *body)
     Q_D(Response);
     Q_ASSERT(body && body->isOpen() && body->isReadable());
 
-    if (d->body && d->body != d->body) {
-        delete d->body;
-    }
+    body->setParent(d->context);
+
+    d->body = QVariant::fromValue(body);
+}
+
+void Response::setBody(const QString &body)
+{
+    Q_D(Response);
+    d->body = body;
+}
+
+void Response::setBody(const QByteArray &body)
+{
+    Q_D(Response);
     d->body = body;
 }
 
@@ -155,23 +156,18 @@ void Response::redirect(const QUrl &url, quint16 status)
     Q_D(Response);
     d->location = url;
     setStatus(status);
-    if (url.isValid() && !d->body) {
-        QBuffer *buf = new QBuffer;
-        if (!buf->open(QIODevice::ReadWrite)) {
-            qCCritical(CUTELYST_RESPONSE) << "Could not open QBuffer to write redirect!" << url << status;
-            delete buf;
-            return;
-        }
-        buf->write(QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
-                                     "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-                                     "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                                     "  <head>\n"
-                                     "    <title>Moved</title>\n"
-                                     "  </head>\n"
-                                     "  <body>\n"
-                                     "     <p>This item has moved <a href="));
-        buf->write(url.toEncoded());
-        buf->write(QByteArrayLiteral(">here</a>.</p>\n"
+    if (url.isValid() && d->body.isNull()) {
+        QByteArray buf = QByteArrayLiteral(
+                    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
+                    "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                    "  <head>\n"
+                    "    <title>Moved</title>\n"
+                    "  </head>\n"
+                    "  <body>\n"
+                    "     <p>This item has moved <a href=");
+        buf.append(url.toEncoded());
+        buf.append(QByteArrayLiteral(">here</a>.</p>\n"
                                      "  </body>\n"
                                      "</html>\n"));
         d->body = buf;

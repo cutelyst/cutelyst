@@ -107,12 +107,12 @@ public:
      * device to a QBuffer, even if one was already
      * set.
      */
-    QByteArray &body();
+    QByteArray body() const Q_REQUIRED_RESULT;
 
     /**
      * Returns the body IO device (if any) of this response.
      */
-    QIODevice *bodyDevice();
+    QIODevice *bodyDevice() const;
 
     /**
      * Sets an IO device as the response body,
@@ -121,6 +121,17 @@ public:
      * deleting after the request has completed
      */
     void setBody(QIODevice *body);
+
+    /**
+     * Sets a QString as the response body,
+     * it will be output as UTF-8.
+     */
+    void setBody(const QString &body);
+
+    /**
+     * Sets a QByteArray as the response body.
+     */
+    void setBody(const QByteArray &body);
 
     /**
      * Short for headers().contentEncoding();
@@ -237,6 +248,7 @@ protected:
     ResponsePrivate *d_ptr;
     friend class Application;
     friend class Engine;
+    friend class ContextPrivate;
 };
 
 }

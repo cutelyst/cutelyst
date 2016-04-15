@@ -60,7 +60,7 @@ bool View::doExecute(Context *c)
     Response *response = c->response();
     if (response->hasBody() || !output.isNull()) {
         // Do not set a null body on an already null body
-        response->body() = output;
+        response->setBody(output);
     }
 
     return c->error();

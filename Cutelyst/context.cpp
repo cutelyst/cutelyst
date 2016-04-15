@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,19 +32,18 @@
 
 #include <QUrl>
 #include <QUrlQuery>
-#include <QStringBuilder>
 #include <QCoreApplication>
 
 using namespace Cutelyst;
 
-Context::Context(ContextPrivate *priv) :
-    d_ptr(priv)
+Context::Context(Cutelyst::Application *_app, Engine *_engine, Cutelyst::Dispatcher *_dispatcher, void *_reqPtr,
+                 Request *_request, const QList<Cutelyst::Plugin *> &_plugins, Stats *_stats, const Headers &_headers) :
+    d_ptr(new ContextPrivate(this, _app, _engine, _dispatcher, _reqPtr, _request, _plugins, _stats, _headers))
 {
 }
 
 Context::~Context()
 {
-    delete d_ptr->stats;
     delete d_ptr;
 }
 
@@ -341,7 +340,7 @@ bool Context::execute(Component *code)
     d->stack.push(code);
 
     if (d->stats) {
-        QString statsInfo = d->statsStartExecute(code);
+        const QString statsInfo = d->statsStartExecute(code);
 
         ret = code->execute(this);
 
@@ -371,28 +370,26 @@ QVariantMap Context::config() const
 
 QByteArray Context::welcomeMessage() const
 {
-    const QString name = QCoreApplication::applicationName();
+    const QByteArray name = QCoreApplication::applicationName().toUtf8();
     response()->setContentType(QLatin1String("text/html; charset=utf-8"));
-    QByteArray ret;
-    QTextStream out(&ret);
-    out << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
+
+    return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
            "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n"
            "    <head>\n"
            "        <meta http-equiv=\"Content-Language\" content=\"en\" />\n"
            "        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n"
-           "        <title>" << name << " on Cutelyst " << VERSION << "</title>\n"
+           "        <title>" + name + " on Cutelyst " + VERSION + "</title>\n"
            "    </head>\n"
            "    <body>\n"
            "        <div id=\"content\">\n"
            "            <div id=\"topbar\">\n"
-           "               <h1><span id=\"appname\">" << name << "</span> on <a href=\"http://cutelyst.org\">Cutelyst</a>\n"
-           "                   " << VERSION << "</h1>\n"
+           "               <h1><span id=\"appname\">" + name + "</span> on <a href=\"http://cutelyst.org\">Cutelyst</a>\n"
+           "                   " + VERSION + "</h1>\n"
            "             </div>\n"
            "         </div>\n"
            "    <body>\n"
            "</html>\n";
-    return ret;
 }
 
 void *Context::engineData()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,6 +39,7 @@ class Response;
 class Dispatcher;
 class Controller;
 class View;
+class Stats;
 class Plugin;
 class ContextPrivate;
 class CUTELYST_LIBRARY Context : public QObject
@@ -55,7 +56,6 @@ class CUTELYST_LIBRARY Context : public QObject
     Q_PROPERTY(QVariantMap config READ config)
     Q_PROPERTY(bool state READ state)
 public:
-    Context(ContextPrivate *priv);
     virtual ~Context();
 
     bool error() const;
@@ -393,6 +393,9 @@ public:
     void *engineData();
 
 protected:
+    Context(Application *_app, Engine *_engine, Dispatcher *_dispatcher, void *_reqPtr,
+            Request *_request, const QList<Plugin *> &_plugins, Stats *_stats, const Headers &_headers);
+
     friend class Application;
     friend class Action;
     friend class DispatchType;
