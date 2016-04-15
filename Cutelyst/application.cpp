@@ -368,8 +368,10 @@ void Application::handleRequest(Request *req)
     // Process request
     bool skipMethod = false;
     Q_EMIT beforePrepareAction(c, &skipMethod);
+
     if (!skipMethod) {
-        if (CUTELYST_REQUEST().isEnabled(QtDebugMsg)) {
+        static bool log = CUTELYST_REQUEST().isEnabled(QtDebugMsg);
+        if (log) {
             d->logRequest(req);
         }
 

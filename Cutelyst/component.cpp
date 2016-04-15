@@ -128,8 +128,7 @@ void Component::applyRoles(const QStack<Cutelyst::Component *> &roles)
 {
     Q_D(Component);
 
-    for (int i = 0; i < roles.size(); ++i) {
-        Component *code = roles.at(i);
+    Q_FOREACH (Component *code, roles) {
         if (code->modifiers() & BeforeExecute) {
             d->beforeRoles.push(code);
         }
@@ -150,8 +149,7 @@ bool Component::dispatcherReady(const Dispatcher *dispatch, Controller *controll
 {
     Q_D(Component);
 
-    for (int i = 0; i < d->roles.size(); ++i) {
-        Component *code = d->roles.at(i);
+    Q_FOREACH (Component *code, d->roles) {
         code->dispatcherReady(dispatch, controller);
     }
     return true;
