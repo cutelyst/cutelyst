@@ -23,7 +23,6 @@
 #include "utils.h"
 #include "context.h"
 
-#include <QtCore/QStringBuilder>
 #include <QtCore/QUrl>
 
 using namespace Cutelyst;
@@ -90,9 +89,9 @@ QByteArray DispatchTypeChained::list() const
         if (parent != QLatin1String("/")) {
             QStringList row;
             if (parents.isEmpty()) {
-                row.append(QLatin1Char('/') % endPoint->reverse());
+                row.append(QLatin1Char('/') + endPoint->reverse());
             } else {
-                row.append(QLatin1Char('/') % parents.first()->reverse());
+                row.append(QLatin1Char('/') + parents.first()->reverse());
             }
             row.append(parent);
             unattachedTable.append(row);
@@ -101,26 +100,26 @@ QByteArray DispatchTypeChained::list() const
 
         QList<QStringList> rows;
         Q_FOREACH (Action *p, parents) {
-            QString name = QLatin1Char('/') % p->reverse();
+            QString name = QLatin1Char('/') + p->reverse();
 
             QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
             if (!extra.isEmpty()) {
-                name.prepend(extra % QLatin1Char(' '));
+                name.prepend(extra + QLatin1Char(' '));
             }
 
             const auto attributes = p->attributes();
             auto it = attributes.constFind(QLatin1String("CaptureArgs"));
             if (it != attributes.constEnd()) {
-                name.append(QLatin1String(" (") % it.value() % QLatin1Char(')'));
+                name.append(QLatin1String(" (") + it.value() + QLatin1Char(')'));
             }
 
             QString ct = DispatchTypeChainedPrivate::listExtraConsumes(p);
             if (!ct.isEmpty()) {
-                name.append(QLatin1String(" :") % ct);
+                name.append(QLatin1String(" :") + ct);
             }
 
             if (p != parents[0]) {
-                name = QLatin1String("-> ") % name;
+                name = QLatin1String("-> ") + name;
             }
 
             rows.append({QString(), name});
@@ -131,15 +130,15 @@ QByteArray DispatchTypeChained::list() const
             line.append(QLatin1String("=> "));
         }
         if (!extra.isEmpty()) {
-            line.append(extra % QLatin1Char(' '));
+            line.append(extra + QLatin1Char(' '));
         }
-        line.append(QLatin1Char('/') % endPoint->reverse());
+        line.append(QLatin1Char('/') + endPoint->reverse());
         if (!consumes.isEmpty()) {
-            line.append(QLatin1String(" :") % consumes);
+            line.append(QLatin1String(" :") + consumes);
         }
         rows.append({QString(), line});
 
-        rows[0][0] = QLatin1Char('/') % parts.join(QLatin1Char('/'));
+        rows[0][0] = QLatin1Char('/') + parts.join(QLatin1Char('/'));
         paths.append(rows);
     }
 
@@ -184,7 +183,7 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &pa
     Request *request = c->request();
     request->setArguments(decodedArgs);
     request->setCaptures(captures);
-    request->setMatch(QLatin1Char('/') % action->reverse());
+    request->setMatch(QLatin1Char('/') + action->reverse());
     setupMatchedAction(c, action);
 
     return ExactMatch;
@@ -207,7 +206,7 @@ bool DispatchTypeChained::registerAction(Action *action)
     }
 
     const QString chainedTo = chainedList.first();
-    if (chainedTo == QLatin1Char('/') % action->name()) {
+    if (chainedTo == QLatin1Char('/') + action->name()) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Actions cannot chain to themselves registering /" << action->name();
         exit(1);
@@ -238,7 +237,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->childrenOf[chainedTo][part].prepend(action);
 
-    d->actions[QLatin1Char('/') % action->reverse()] = action;
+    d->actions[QLatin1Char('/') + action->reverse()] = action;
 
     d->checkArgsAttr(action, QLatin1String("Args"));
     d->checkArgsAttr(action, QLatin1String("CaptureArgs"));
@@ -306,7 +305,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
         return QString();
     }
 
-    return QLatin1Char('/') % parts.join(QLatin1Char('/'));
+    return QLatin1Char('/') + parts.join(QLatin1Char('/'));
 }
 
 Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
@@ -397,7 +396,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                 }
 
                 // try the remaining parts against children of this action
-                const QVariantHash ret = recurseMatch(c, QLatin1Char('/') % action->reverse(), localParts);
+                const QVariantHash ret = recurseMatch(c, QLatin1Char('/') + action->reverse(), localParts);
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)

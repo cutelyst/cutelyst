@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +24,6 @@
 #include "response.h"
 
 #include <QString>
-#include <QStringBuilder>
 #include <QFile>
 #include <QtCore/QLoggingCategory>
 
@@ -96,7 +95,7 @@ QByteArray ClearSilver::render(Context *c) const
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
         if (c->action() && !c->action()->reverse().isEmpty()) {
-            templateFile = c->action()->reverse() % d->extension;
+            templateFile = c->action()->reverse() + d->extension;
         }
 
         if (templateFile.isEmpty()) {
@@ -133,7 +132,7 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
     }
 
     Q_FOREACH (const QString &includePath, priv->includePaths) {
-        QFile file(includePath % QLatin1Char('/') % QString::fromLatin1(filename));
+        QFile file(includePath + QLatin1Char('/') + QString::fromLatin1(filename));
 
         if (file.exists()) {
             if (!file.open(QFile::ReadOnly)) {
@@ -161,7 +160,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to init ClearSilver:\n%1").arg(QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to init ClearSilver:\n+1").arg(QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         hdf_destroy(&hdf);
@@ -177,7 +176,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(msg);
         nerr_error_traceback(error, msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to parse template file: %1\n%2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to parse template file: +1\n+2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
         renderError(c, errorMsg);
 
         nerr_log_error(error);
@@ -210,7 +209,7 @@ HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) cons
     const QMetaObject *meta = c->metaObject();
     for (int i = 0; i < meta->propertyCount(); ++i) {
         QMetaProperty prop = meta->property(i);
-        QString name = QLatin1String("c.") % QString::fromLatin1(prop.name());
+        QString name = QLatin1String("c.") + QString::fromLatin1(prop.name());
         QVariant value = prop.read(c);
         serializeVariant(hdf, value, name);
     }
@@ -221,12 +220,12 @@ void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const
 {
     QString _prefix;
     if (!prefix.isNull()) {
-        _prefix = prefix % QLatin1Char('.');
+        _prefix = prefix + QLatin1Char('.');
     }
 
     auto it = hash.constBegin();
     while (it != hash.constEnd()) {
-        serializeVariant(hdf, it.value(), _prefix % it.key());
+        serializeVariant(hdf, it.value(), _prefix + it.key());
         ++it;
     }
 }
@@ -235,12 +234,12 @@ void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QS
 {
     QString _prefix;
     if (!prefix.isNull()) {
-        _prefix = prefix % QLatin1Char('.');
+        _prefix = prefix + QLatin1Char('.');
     }
 
     auto it = map.constBegin();
     while (it != map.constEnd()) {
-        serializeVariant(hdf, it.value(), _prefix % it.key());
+        serializeVariant(hdf, it.value(), _prefix + it.key());
         ++it;
     }
 }

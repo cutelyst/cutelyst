@@ -33,7 +33,6 @@
 
 #include <QUrl>
 #include <QMetaMethod>
-#include <QStringBuilder>
 
 using namespace Cutelyst;
 
@@ -78,7 +77,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                d->actions.insert(action->ns() % QLatin1Char('/') % action->name(), action);
+                d->actions.insert(action->ns() + QLatin1Char('/') + action->name(), action);
                 d->actionContainer[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
@@ -138,13 +137,13 @@ bool Dispatcher::dispatch(Context *c)
         if (controller) {
             return controller->_DISPATCH(c);
         }
-        return forward(c, QLatin1Char('/') % action->ns() % QLatin1String("/_DISPATCH"));
+        return forward(c, QLatin1Char('/') + action->ns() + QLatin1String("/_DISPATCH"));
     } else {
         const QString &path = c->req()->path();
         if (path.isEmpty()) {
             c->error(tr("No default action defined"));
         } else {
-            c->error(tr("Unknown resource \"%1\".").arg(path));
+            c->error(tr("Unknown resource \"+1\".").arg(path));
         }
     }
     return false;
@@ -233,11 +232,11 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     if (nameSpace.isEmpty()) {
-        return d->actions.value(QLatin1Char('/') % name);
+        return d->actions.value(QLatin1Char('/') + name);
     }
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return d->actions.value(ns % QLatin1Char('/') % name);
+    return d->actions.value(ns + QLatin1Char('/') + name);
 }
 
 Action *Dispatcher::getActionByPath(const QString &path) const
@@ -440,5 +439,5 @@ QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
     if (ns.isEmpty()) {
         return path;
     }
-    return ns % QLatin1Char('/') % path;
+    return ns + QLatin1Char('/') + path;
 }

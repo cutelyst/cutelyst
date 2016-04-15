@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,7 +25,6 @@
 #include "response.h"
 
 #include <QString>
-#include <QStringBuilder>
 #include <QDirIterator>
 #include <QtCore/QLoggingCategory>
 
@@ -150,7 +149,7 @@ QByteArray GrantleeView::render(Context *c) const
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
         if (c->action() && !c->action()->reverse().isEmpty()) {
-            templateFile = c->action()->reverse() % d->extension;
+            templateFile = c->action()->reverse() + d->extension;
             if (templateFile.startsWith(QLatin1Char('/'))) {
                 templateFile.remove(0, 1);
             }
@@ -172,7 +171,7 @@ QByteArray GrantleeView::render(Context *c) const
     QString content = tmpl->render(&gc);
     if (tmpl->error() != Grantlee::NoError) {
         c->res()->body() = tr("Internal server error.").toUtf8();
-        c->error(QLatin1String("Error while rendering template: ") % tmpl->errorString());
+        c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
         return QByteArray();
     }
 
@@ -184,7 +183,7 @@ QByteArray GrantleeView::render(Context *c) const
 
         if (wrapper->error() != Grantlee::NoError) {
             c->res()->body() = tr("Internal server error.").toUtf8();
-            c->error(QLatin1String("Error while rendering template: ") % tmpl->errorString());
+            c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
             return QByteArray();
         }
     }

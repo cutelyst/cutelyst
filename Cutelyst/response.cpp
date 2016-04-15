@@ -23,8 +23,6 @@
 #include "engine.h"
 #include "common.h"
 
-#include <QBuffer>
-
 using namespace Cutelyst;
 
 Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QObject(c)

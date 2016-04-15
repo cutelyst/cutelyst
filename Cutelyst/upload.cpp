@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +24,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTemporaryFile>
-#include <QStringBuilder>
 
 using namespace Cutelyst;
 
@@ -68,7 +67,7 @@ bool Upload::save(const QString &newName)
 
     if (error) {
         out.close();
-        setErrorString(QLatin1String("Failed to open file for saving: ") % out.errorString());
+        setErrorString(QLatin1String("Failed to open file for saving: ") + out.errorString());
         qCWarning(CUTELYST_UPLOAD) << errorString();
     } else {
         qint64 posOrig = d->pos;

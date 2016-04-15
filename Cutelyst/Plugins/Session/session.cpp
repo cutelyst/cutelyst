@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,6 @@
 
 #include "sessionstorefile.h"
 
-#include <QtCore/QStringBuilder>
 #include <QtCore/QSettings>
 #include <QtCore/QUuid>
 #include <QtCore/QDir>
@@ -61,7 +60,7 @@ Cutelyst::Session::~Session()
 bool Session::setup(Application *app)
 {
     Q_D(Session);
-    d->sessionName = QCoreApplication::applicationName() % QLatin1String("_session");
+    d->sessionName = QCoreApplication::applicationName() + QLatin1String("_session");
 
     const QVariantMap config = app->config(QLatin1String("Session_Plugin")).toMap();
     d->sessionExpires = config.value(QLatin1String("expires"), 7200).toULongLong();

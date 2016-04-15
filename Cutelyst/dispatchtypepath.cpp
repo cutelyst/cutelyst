@@ -23,7 +23,6 @@
 #include "controller.h"
 #include "utils.h"
 
-#include <QStringBuilder>
 #include <QBuffer>
 #include <QRegularExpression>
 #include <QDebug>
@@ -53,7 +52,7 @@ QByteArray DispatchTypePath::list() const
     keys.sort(Qt::CaseInsensitive);
     Q_FOREACH (const QString &path, keys) {
         Q_FOREACH (Action *action, d->paths.value(path)) {
-            QString _path = QLatin1Char('/') % path;
+            QString _path = QLatin1Char('/') + path;
             if (action->attributes().value(QLatin1String("Args")).isNull()) {
                 _path.append(QLatin1String("/..."));
             } else {
@@ -153,7 +152,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
             }
 
             if (!path.startsWith(QLatin1Char('/'))) {
-                return QLatin1Char('/') % path;
+                return QLatin1Char('/') + path;
             }
 
             return path;

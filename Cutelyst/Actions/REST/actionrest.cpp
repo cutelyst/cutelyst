@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
 #include "controller.h"
 #include "dispatcher.h"
 
-#include <QStringBuilder>
 #include <QUrl>
 #include <QDebug>
 
@@ -54,7 +53,7 @@ bool ActionREST::dispatch(Context *c)
 bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
 {
     Q_Q(const ActionREST);
-    const QString restMethod = q->name() % QLatin1Char('_') % httpMethod;
+    const QString restMethod = q->name() + QLatin1Char('_') + httpMethod;
 
     Controller *controller = c->controller();
     Action *action = controller->actionFor(restMethod);
@@ -116,7 +115,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, const QString &methodName) const
 {
     QStringList methods;
-    const QString name = methodName % QLatin1Char('_');
+    const QString name = methodName + QLatin1Char('_');
     const ActionList actions = controller->actions();
     Q_FOREACH (Action *action, actions) {
         const QString method = action->name();

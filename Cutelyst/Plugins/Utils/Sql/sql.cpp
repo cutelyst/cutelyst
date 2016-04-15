@@ -97,18 +97,18 @@ void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &pa
     if (htmlEscaped) {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query.bindValue(QLatin1Char(':') % it.key(), QVariant());
+                query.bindValue(QLatin1Char(':') + it.key(), QVariant());
             } else {
-                query.bindValue(QLatin1Char(':') % it.key(), it.value().toHtmlEscaped());
+                query.bindValue(QLatin1Char(':') + it.key(), it.value().toHtmlEscaped());
             }
             ++it;
         }
     } else {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query.bindValue(QLatin1Char(':') % it.key(), QVariant());
+                query.bindValue(QLatin1Char(':') + it.key(), QVariant());
             } else {
-                query.bindValue(QLatin1Char(':') % it.key(), it.value());
+                query.bindValue(QLatin1Char(':') + it.key(), it.value());
             }
             ++it;
         }

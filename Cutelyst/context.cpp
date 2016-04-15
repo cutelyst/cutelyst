@@ -221,11 +221,11 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         Q_FOREACH (const QString &arg, args) {
             encodedArgs.append(QString::fromLatin1(QUrl::toPercentEncoding(arg)));
         }
-        ret.setPath(QLatin1Char('/') % encodedArgs.join(QLatin1Char('/')));
+        ret.setPath(QLatin1Char('/') + encodedArgs.join(QLatin1Char('/')));
     } else if (_path.startsWith(QLatin1Char('/'))) {
         ret.setPath(_path);
     } else {
-        ret.setPath(QLatin1Char('/') % _path);
+        ret.setPath(QLatin1Char('/') + _path);
     }
 
     if (!queryValues.isEmpty()) {
@@ -408,11 +408,11 @@ QString ContextPrivate::statsStartExecute(Component *code)
     QString actionName = code->reverse();
 
     if (dynamic_cast<Action *>(code)) {
-        actionName = QLatin1Char('/') % actionName;
+        actionName = QLatin1Char('/') + actionName;
     }
 
     if (stack.size() > 2) {
-        actionName = QLatin1String("-> ") % actionName;
+        actionName = QLatin1String("-> ") + actionName;
         actionName = actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
     }
 

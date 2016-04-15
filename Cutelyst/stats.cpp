@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,6 @@
 #include "common.h"
 
 #include <QtCore/QStringList>
-#include <QtCore/QStringBuilder>
 
 using namespace Cutelyst;
 
@@ -75,7 +74,7 @@ QByteArray Stats::report()
     QList<QStringList> table;
     Q_FOREACH (const StatsAction &stat, d->actions) {
         table.append({ stat.action,
-                       QString::number((stat.end - stat.begin)/1000000.0, 'f') % QLatin1Char('s') });
+                       QString::number((stat.end - stat.begin)/1000000.0, 'f') + QLatin1Char('s') });
     }
 
     return Utils::buildTable(table, {

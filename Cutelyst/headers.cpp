@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,10 +21,7 @@
 
 #include "common.h"
 
-#include <QStringBuilder>
 #include <QStringList>
-
-#include <QDebug>
 
 using namespace Cutelyst;
 
@@ -69,7 +66,7 @@ void Headers::setContentTypeCharset(const QString &charset)
 {
     const auto it = constFind(QStringLiteral("content_type"));
     if (it == constEnd() || (it.value().isEmpty() && !charset.isEmpty())) {
-        insert(QStringLiteral("content_type"), QLatin1String("charset=") % charset);
+        insert(QStringLiteral("content_type"), QLatin1String("charset=") + charset);
         return;
     }
 
@@ -93,7 +90,7 @@ void Headers::setContentTypeCharset(const QString &charset)
             contentType.replace(pos + 8, endPos, charset);
         }
     } else if (!charset.isEmpty()) {
-        contentType.append(QLatin1String("; charset=") % charset);
+        contentType.append(QLatin1String("; charset=") + charset);
     }
     insert(QStringLiteral("content_type"), contentType);
 }
@@ -277,7 +274,7 @@ void Headers::setAuthorizationBasic(const QString &username, const QString &pass
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
         return;
     }
-    const QString result = username % QLatin1Char(':') % password;
+    const QString result = username + QLatin1Char(':') + password;
     insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64()));
 }
 
@@ -323,7 +320,7 @@ void Headers::pushHeader(const QString &field, const QString &value)
     if (old.isEmpty()) {
         insert(key, value);
     } else {
-        insert(key, old % QLatin1String(", ") % value);
+        insert(key, old + QLatin1String(", ") + value);
     }
 }
 

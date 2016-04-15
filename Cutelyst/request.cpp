@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
 #include "common.h"
 #include "multipartformdataparser.h"
 
-#include <QtCore/QStringBuilder>
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QNetworkCookie>
@@ -93,7 +92,7 @@ QUrl Request::uri() const
         uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
 
         // if the path does not start with a slash it cleans the uri
-        uri.setPath(QLatin1Char('/') % d->path);
+        uri.setPath(QLatin1Char('/') + d->path);
 
         if (!d->query.isEmpty()) {
             uri.setQuery(QString::fromLatin1(d->query));

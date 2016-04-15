@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QLoggingCategory>
-#include <QStringBuilder>
 
 #include "common.h"
 
@@ -43,7 +42,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     QString username = user.value(QStringLiteral("username"));
 
     QString fileName = property("_file").toString();
-    QTemporaryFile tmp(fileName % QLatin1String("-XXXXXXX"));
+    QTemporaryFile tmp(fileName + QLatin1String("-XXXXXXX"));
     tmp.setAutoRemove(false); // sort of a backup
     if (!tmp.open()) {
         qCWarning(CUTELYST_UTILS_AUTH) << "Failed to open temporary file for writting";

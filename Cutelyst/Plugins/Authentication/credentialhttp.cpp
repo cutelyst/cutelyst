@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,6 @@
 #include <Cutelyst/Response>
 
 #include <QUrl>
-#include <QStringBuilder>
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
@@ -261,6 +260,6 @@ QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QS
     if (parts.isEmpty()) {
         return type;
     } else {
-        return type % QLatin1Char(' ') % parts.join(QStringLiteral(", "));
+        return type + QLatin1Char(' ') + parts.join(QStringLiteral(", "));
     }
 }

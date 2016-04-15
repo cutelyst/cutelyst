@@ -92,7 +92,7 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     QString templateString = partHash.value(QStringLiteral("template")).toString();;
     // prefix with template_prefix if configured
     if (!d->templatePrefix.isEmpty()) {
-        templateString = d->templatePrefix % QLatin1Char('/') % templateString;
+        templateString = d->templatePrefix + QLatin1Char('/') + templateString;
     }
 
     // render the email part

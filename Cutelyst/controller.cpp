@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,8 +26,6 @@
 
 #include <QMetaClassInfo>
 #include <QRegularExpression>
-#include <QStringBuilder>
-#include <QDebug>
 
 using namespace Cutelyst;
 
@@ -180,7 +178,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
                 if (lastWasUpper) {
                     controlerNS.append(className.at(i).toLower());
                 } else {
-                    controlerNS.append(QLatin1Char('/') % className.at(i).toLower());
+                    controlerNS.append(QLatin1Char('/') + className.at(i).toLower());
                 }
                 lastWasUpper = true;
             }
@@ -321,7 +319,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
             if (controller->ns().isEmpty()) {
                 reverse = QString::fromLatin1(name);
             } else {
-                reverse = controller->ns() % QLatin1Char('/') % QString::fromLatin1(name);
+                reverse = controller->ns() + QLatin1Char('/') + QString::fromLatin1(name);
             }
 
             Action *action = createAction({
@@ -420,7 +418,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         QString value = pair.second;
         if (key == QLatin1String("Global")) {
             key = QStringLiteral("Path");
-            value = parsePathAttr(QLatin1Char('/') % QString::fromLatin1(name));
+            value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
         } else if (key == QLatin1String("Local")) {
             key = QStringLiteral("Path");
             value = parsePathAttr(QString::fromLatin1(name));
@@ -502,7 +500,7 @@ QString ControllerPrivate::parsePathAttr(const QString &_value)
     if (value.startsWith(QLatin1Char('/'))) {
         return value;
     } else if (value.length()) {
-        return pathPrefix % QLatin1Char('/') % value;
+        return pathPrefix + QLatin1Char('/') + value;
     }
     return pathPrefix;
 }
@@ -514,13 +512,13 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
     }
 
     if (attr == QLatin1String(".")) {
-        return QLatin1Char('/') % pathPrefix;
+        return QLatin1Char('/') + pathPrefix;
     } else if (!attr.startsWith(QLatin1Char('/'))) {
         if (!pathPrefix.isEmpty()) {
-            return QLatin1Char('/') % pathPrefix % QLatin1Char('/') % attr;
+            return QLatin1Char('/') + pathPrefix + QLatin1Char('/') + attr;
         } else {
             // special case namespace '' (root)
-            return QLatin1Char('/') % attr;
+            return QLatin1Char('/') + attr;
         }
     }
 
@@ -541,7 +539,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
 
             id = QMetaType::type(instanceName.toLatin1().data());
             if (!id && !instanceName.startsWith(QLatin1String("Cutelyst::"))) {
-                instanceName = QLatin1String("Cutelyst::") % instanceName;
+                instanceName = QLatin1String("Cutelyst::") + instanceName;
                 id = QMetaType::type(instanceName.toLatin1().data());
             }
         }

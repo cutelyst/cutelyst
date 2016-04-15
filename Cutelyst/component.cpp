@@ -21,8 +21,6 @@
 #include "common.h"
 #include "context.h"
 
-#include <QtCore/QStringBuilder>
-
 using namespace Cutelyst;
 
 Component::Component(QObject *parent) : QObject(parent)

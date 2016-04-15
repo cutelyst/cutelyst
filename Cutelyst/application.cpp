@@ -36,7 +36,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 #include <QtCore/QDataStream>
-#include <QtCore/QStringBuilder>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QPluginLoader>
 
@@ -314,7 +313,7 @@ bool Application::setup(Engine *engine)
 
         Q_FOREACH (View *view, d->views) {
             if (view->reverse().isNull()) {
-                const QString className = QString::fromLatin1(view->metaObject()->className()) % QLatin1String("->execute");
+                const QString className = QString::fromLatin1(view->metaObject()->className()) + QLatin1String("->execute");
                 view->setReverse(className);
             }
             table.append({ view->reverse(), QLatin1String("View")});
@@ -335,7 +334,7 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(controllers, d->dispatchers);
 
         if (zeroCore) {
-            qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
+            qCInfo(CUTELYST_CORE) << QString::fromLatin1("+1 powered by Cutelyst +2, Qt +3.")
                                      .arg(QCoreApplication::applicationName(), QStringLiteral(VERSION), QLatin1String(qVersion()))
                                      .toLatin1().constData();
         }
@@ -401,7 +400,7 @@ void Application::handleRequest(Request *req)
             average = QString::number(1.0 / enlapsed, 'f');
             average.truncate(average.size() - 3);
         }
-        qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: %1s (%2/s)\n")
+        qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: +1s (+2/s)\n")
                                   .arg(QString::number(enlapsed, 'f'), average)
                                   .toLatin1().constData() << stats->report().constData();
         delete stats;

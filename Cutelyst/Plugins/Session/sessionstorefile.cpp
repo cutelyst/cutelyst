@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +24,6 @@
 #include <QtCore/QSettings>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtCore/QStringBuilder>
 #include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
@@ -85,16 +84,16 @@ QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c
         }
     }
 
-    QString root = QDir::tempPath()
-            % QLatin1Char('/')
-            % QCoreApplication::applicationName()
-            % QLatin1String("/session/data");
+    const QString root = QDir::tempPath()
+            + QLatin1Char('/')
+            + QCoreApplication::applicationName()
+            + QLatin1String("/session/data");
     QDir dir;
     if (!dir.mkpath(root)) {
         qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;
     }
 
-    QSettings *settings = new QSettings(root % QLatin1Char('/') % sid, QSettings::IniFormat, c);
+    QSettings *settings = new QSettings(root + QLatin1Char('/') + sid, QSettings::IniFormat, c);
     settings->beginGroup(QStringLiteral("Session"));
     c->setProperty(SESSION_STORE_FILE, QVariant::fromValue(settings));
     return settings;
