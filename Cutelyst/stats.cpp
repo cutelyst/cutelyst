@@ -31,8 +31,7 @@
 
 using namespace Cutelyst;
 
-Stats::Stats(Application *app, QObject *parent) : QObject(parent)
-  , d_ptr(new StatsPrivate)
+Stats::Stats(Application *app) : d_ptr(new StatsPrivate)
 {
     Q_D(Stats);
     d->engine = app->engine();

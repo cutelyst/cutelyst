@@ -31,6 +31,7 @@ class QNetworkCookie;
 namespace Cutelyst {
 
 class Context;
+class Engine;
 class ResponsePrivate;
 class CUTELYST_LIBRARY Response : public QObject
 {
@@ -83,7 +84,6 @@ public:
     };
     Q_ENUM(HttpStatus)
 
-    explicit Response(Context *c);
     virtual ~Response();
 
     /**
@@ -232,6 +232,8 @@ public:
     qint64 write(const QByteArray &data);
 
 protected:
+    explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
+
     ResponsePrivate *d_ptr;
     friend class Application;
     friend class Engine;

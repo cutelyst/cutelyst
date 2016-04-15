@@ -27,10 +27,9 @@
 
 using namespace Cutelyst;
 
-Response::Response(Context *c) : QObject(c)
-  , d_ptr(new ResponsePrivate)
+Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QObject(c)
+  , d_ptr(new ResponsePrivate(c, engine, defaultHeaders))
 {
-    d_ptr->context = c;
 }
 
 Response::~Response()

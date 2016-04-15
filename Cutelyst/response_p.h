@@ -33,6 +33,7 @@ class Engine;
 class ResponsePrivate
 {
 public:
+    inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
     QIODevice *body = nullptr;

@@ -44,6 +44,7 @@ Context::Context(ContextPrivate *priv) :
 
 Context::~Context()
 {
+    delete d_ptr->stats;
     delete d_ptr;
 }
 

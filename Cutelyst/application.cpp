@@ -352,23 +352,21 @@ void Application::handleRequest(Request *req)
 {
     Q_D(Application);
 
-    ContextPrivate *priv = new ContextPrivate;
-    priv->app = this;
-    priv->engine = d->engine;
-    priv->dispatcher = d->dispatcher;
-    priv->request = req;
-    priv->plugins = d->plugins;
-    priv->requestPtr = req->d_ptr->requestPtr;
+    Stats *stats = nullptr;
+    if (d->useStats) {
+        stats = new Stats(this);
+    }
+
+    ContextPrivate *priv = new ContextPrivate(this,
+                                              d->engine,
+                                              d->dispatcher,
+                                              req->d_ptr->requestPtr,
+                                              req,
+                                              d->plugins,
+                                              stats);
 
     Context *c = new Context(priv);
-    priv->response = new Response(c);
-    ResponsePrivate *resPriv = priv->response->d_ptr;
-    resPriv->engine = d->engine;
-    resPriv->headers = d->headers;
-
-    if (d->useStats) {
-        priv->stats = new Stats(this, c);
-    }
+    priv->response = new Response(c, d->engine, d->headers);
 
     // Process request
     bool skipMethod = false;
@@ -389,7 +387,7 @@ void Application::handleRequest(Request *req)
 
     d->engine->finalize(c);
 
-    if (priv->stats) {
+    if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 c->response()->status(),
                 c->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),

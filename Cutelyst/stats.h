@@ -28,12 +28,11 @@ namespace Cutelyst {
 
 class Application;
 class StatsPrivate;
-class CUTELYST_LIBRARY Stats : public QObject
+class CUTELYST_LIBRARY Stats
 {
-    Q_OBJECT
     Q_DECLARE_PRIVATE(Stats)
 public:
-    explicit Stats(Application *app, QObject *parent = 0);
+    explicit Stats(Application *app);
     virtual ~Stats();
 
     virtual void profileStart(const QString &action);

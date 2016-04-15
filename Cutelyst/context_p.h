@@ -32,24 +32,36 @@ class Stats;
 class ContextPrivate
 {
 public:
+    inline ContextPrivate(Application *_app, Engine *_engine, Dispatcher *_dispatcher, void *_requestPtr, Request *_request, const QList<Plugin *> &_plugins, Stats *_stats)
+        : app(_app)
+        , engine(_engine)
+        , dispatcher(_dispatcher)
+        , requestPtr(_requestPtr)
+        , request(_request)
+        , plugins(_plugins)
+        , stats(_stats)
+    { }
+
     QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
 
-    // Pointer to Engine data
-    void *requestPtr = nullptr;
 
     Application *app;
     Engine *engine;
+    Dispatcher *dispatcher;
+
+    // Pointer to Engine data
+    void *requestPtr;
+
     Request *request;
-    Response *response = nullptr;
+    Response *response;
     Action *action = nullptr;
     View *view = nullptr;
     QStack<Component *> stack;
-    Dispatcher *dispatcher;
     QList<Plugin *> plugins;
     QStringList error;
     QVariantHash stash;
-    Stats *stats = nullptr;
+    Stats *stats;
     bool detached = false;
     bool state = false;
     bool chunked = false;
