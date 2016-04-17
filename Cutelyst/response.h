@@ -129,6 +129,13 @@ public:
     inline void setBody(const QString &body);
 
     /**
+     * Sets a QJsonDocument as the response body,
+     * using toJson(QJsonDocument::Compact) output and setting
+     * content-type to application/json.
+     */
+    void setJsonBody(const QJsonDocument &documment);
+
+    /**
      * Short for headers().contentEncoding();
      */
     QString contentEncoding() const;

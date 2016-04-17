@@ -23,6 +23,8 @@
 #include "engine.h"
 #include "common.h"
 
+#include <QtCore/QJsonDocument>
+
 using namespace Cutelyst;
 
 Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QObject(c)
@@ -79,6 +81,12 @@ void Response::setBody(QIODevice *body)
 
     d->bodyData = QByteArray();
     d->bodyIODevice = body;
+}
+
+void Response::setJsonBody(const QJsonDocument &documment)
+{
+    body() = documment.toJson(QJsonDocument::Compact);
+    setContentType(QStringLiteral("application/json"));
 }
 
 QString Response::contentEncoding() const
