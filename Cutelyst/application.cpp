@@ -334,7 +334,7 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(controllers, d->dispatchers);
 
         if (zeroCore) {
-            qCInfo(CUTELYST_CORE) << QString::fromLatin1("+1 powered by Cutelyst +2, Qt +3.")
+            qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
                                      .arg(QCoreApplication::applicationName(), QStringLiteral(VERSION), QLatin1String(qVersion()))
                                      .toLatin1().constData();
         }
