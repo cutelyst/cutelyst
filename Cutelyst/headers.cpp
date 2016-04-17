@@ -133,13 +133,14 @@ void Headers::setContentLength(qint64 value)
     insert(QStringLiteral("content_length"), QString::number(value));
 }
 
-void Headers::setDateWithDateTime(const QDateTime &date)
+QString Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const QString dt = QLocale::c().toString(date.toUTC(),
                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     insert(QStringLiteral("date"), dt);
+    return dt;
 }
 
 QDateTime Headers::date()
@@ -198,13 +199,14 @@ void Headers::setLastModified(const QString &value)
     insert(QStringLiteral("last_modified"), value);
 }
 
-void Headers::setLastModified(const QDateTime &lastModified)
+QString Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     const auto dt = QLocale::c().toString(lastModified.toUTC(),
                                           QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
+    return dt;
 }
 
 QString Headers::server() const
@@ -268,14 +270,16 @@ QPair<QString, QString> Headers::authorizationBasicPair() const
     return HeadersPrivate::decodeBasicAuthPair(authorization());
 }
 
-void Headers::setAuthorizationBasic(const QString &username, const QString &password)
+QString Headers::setAuthorizationBasic(const QString &username, const QString &password)
 {
     if (username.contains(QLatin1Char(':'))) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
-        return;
+        return QString();
     }
     const QString result = username + QLatin1Char(':') + password;
-    insert(QStringLiteral("authorization"), QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64()));
+    const QString value = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
+    insert(QStringLiteral("authorization"), value);
+    return value;
 }
 
 QString Headers::proxyAuthorization() const

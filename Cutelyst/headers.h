@@ -92,7 +92,7 @@ public:
     /**
      * Defines the header that represents the date and time at which the message was originated
      */
-    void setDateWithDateTime(const QDateTime &date);
+    QString setDateWithDateTime(const QDateTime &date);
 
     /**
      * Returns the date header as QDateTime
@@ -129,7 +129,7 @@ public:
      * Defines the date and time at which the resource was last modified.
      * This method takes a QDateTime and write it in RFC 822 and GMT timezone.
      */
-    void setLastModified(const QDateTime &lastModified);
+    QString setLastModified(const QDateTime &lastModified);
 
     /**
      * Returns the server header field contains information about the software
@@ -193,7 +193,7 @@ public:
      * "Basic Authentication Scheme".
      * It won't set the values if username contains a colon ':'.
      */
-    void setAuthorizationBasic(const QString &username, const QString &password);
+    QString setAuthorizationBasic(const QString &username, const QString &password);
 
     /**
      * This method is used to get all the fields that
