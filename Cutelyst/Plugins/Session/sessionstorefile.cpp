@@ -84,7 +84,7 @@ QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c
         }
     }
 
-    const QString root = QDir::tempPath()
+    const static QString root = QDir::tempPath()
             + QLatin1Char('/')
             + QCoreApplication::applicationName()
             + QLatin1String("/session/data");

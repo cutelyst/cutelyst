@@ -103,7 +103,7 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const ParamsMu
         return realmPtr->findUser(c, userinfo);
     }
 
-    qCWarning(C_AUTHENTICATION)   << "Could not find realm" << realm;
+    qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
     return AuthenticationUser();
 }
 
@@ -171,11 +171,7 @@ void Authentication::logout(Context *c)
 
 AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const
 {
-    QString name = realmName;
-    if (name.isNull()) {
-        name = defaultRealm;
-    }
-    return realms.value(name);
+    return realms.value(realmName.isNull() ? defaultRealm : realmName);
 }
 
 AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName)
