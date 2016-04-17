@@ -50,19 +50,24 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->body.isNull();
+    return !d->bodyData.isNull() || d->bodyIODevice;
 }
 
-QByteArray Response::body() const
+QByteArray &Response::body()
 {
-    Q_D(const Response);
-    return d->body.value<QByteArray>();
+    Q_D(Response);
+    if (d->bodyIODevice) {
+        delete d->bodyIODevice;
+        d->bodyIODevice = nullptr;
+    }
+
+    return d->bodyData;
 }
 
 QIODevice *Response::bodyDevice() const
 {
     Q_D(const Response);
-    return d->body.value<QIODevice*>();
+    return d->bodyIODevice;
 }
 
 void Response::setBody(QIODevice *body)
@@ -72,19 +77,8 @@ void Response::setBody(QIODevice *body)
 
     body->setParent(d->context);
 
-    d->body = QVariant::fromValue(body);
-}
-
-void Response::setBody(const QString &body)
-{
-    Q_D(Response);
-    d->body = body;
-}
-
-void Response::setBody(const QByteArray &body)
-{
-    Q_D(Response);
-    d->body = body;
+    d->bodyData = QByteArray();
+    d->bodyIODevice = body;
 }
 
 QString Response::contentEncoding() const
@@ -154,7 +148,7 @@ void Response::redirect(const QUrl &url, quint16 status)
     Q_D(Response);
     d->location = url;
     setStatus(status);
-    if (url.isValid() && d->body.isNull()) {
+    if (url.isValid() && !hasBody()) {
         QByteArray buf = QByteArrayLiteral(
                     "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
                     "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
@@ -168,7 +162,7 @@ void Response::redirect(const QUrl &url, quint16 status)
         buf.append(QByteArrayLiteral(">here</a>.</p>\n"
                                      "  </body>\n"
                                      "</html>\n"));
-        d->body = buf;
+        d->bodyData = buf;
         d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 }

@@ -107,7 +107,7 @@ public:
      * device to a QBuffer, even if one was already
      * set.
      */
-    QByteArray body() const Q_REQUIRED_RESULT;
+    QByteArray &body() Q_REQUIRED_RESULT;
 
     /**
      * Returns the body IO device (if any) of this response.
@@ -126,12 +126,7 @@ public:
      * Sets a QString as the response body,
      * it will be output as UTF-8.
      */
-    void setBody(const QString &body);
-
-    /**
-     * Sets a QByteArray as the response body.
-     */
-    void setBody(const QByteArray &body);
+    inline void setBody(const QString &body);
 
     /**
      * Short for headers().contentEncoding();
@@ -250,6 +245,10 @@ protected:
     friend class Engine;
     friend class ContextPrivate;
 };
+
+inline void Response::setBody(const QString &_body) {
+    body() = _body.toUtf8();
+}
 
 }
 

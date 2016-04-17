@@ -37,8 +37,9 @@ public:
     inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
-    QVariant body;
+    QByteArray bodyData;
     QUrl location;
+    QIODevice *bodyIODevice = nullptr;
     Context *context;
     Engine *engine;
     quint16 status = Response::OK;
