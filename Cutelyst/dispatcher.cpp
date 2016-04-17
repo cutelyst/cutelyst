@@ -139,11 +139,11 @@ bool Dispatcher::dispatch(Context *c)
         }
         return forward(c, QLatin1Char('/') + action->ns() + QLatin1String("/_DISPATCH"));
     } else {
-        const QString &path = c->req()->path();
+        const QString path = c->req()->path();
         if (path.isEmpty()) {
             c->error(tr("No default action defined"));
         } else {
-            c->error(tr("Unknown resource \"+1\".").arg(path));
+            c->error(tr("Unknown resource \"%1\".").arg(path));
         }
     }
     return false;
@@ -175,7 +175,7 @@ void Dispatcher::prepareAction(Context *c)
     Q_D(Dispatcher);
 
     Request *request = c->request();
-    const QString &path = request->path();
+    const QString path = request->path();
     QVector<QStringRef> pathParts = path.splitRef(QLatin1Char('/'));
     QStringList args;
 
@@ -188,7 +188,7 @@ void Dispatcher::prepareAction(Context *c)
     Q_FOREVER {
         // Check out the dispatch types to see if any
         // will handle the path at this level
-        const QString &actionPath = path.mid(0, pos);
+        const QString actionPath = path.mid(0, pos);
         Q_FOREACH (DispatchType *type, d->dispatchers) {
             if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
                 goto out;

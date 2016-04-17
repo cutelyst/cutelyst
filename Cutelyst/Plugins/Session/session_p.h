@@ -30,7 +30,7 @@ class SessionPrivate
 {
     Q_DECLARE_PUBLIC(Session)
 public:
-    Session *q_ptr;
+    inline SessionPrivate(Session *q) : q_ptr(q) { }
 
     static inline QString generateSessionId();
     static QString loadSessionId(Context *c, const QString &sessionName);
@@ -57,6 +57,8 @@ public:
     static inline QVariant getSessionCookie(Context *c, const QString &sessionName);
     static inline void extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
+
+    Session *q_ptr;
 
     quint64 sessionExpires;
     quint64 expiryThreshold;

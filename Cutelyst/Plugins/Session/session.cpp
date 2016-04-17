@@ -47,9 +47,8 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 #define SESSION_DELETE_REASON "__session_delete_reason"
 
 Session::Session(Application *parent) : Plugin(parent)
-  , d_ptr(new SessionPrivate)
+  , d_ptr(new SessionPrivate(this))
 {
-    d_ptr->q_ptr = this;
 }
 
 Cutelyst::Session::~Session()
