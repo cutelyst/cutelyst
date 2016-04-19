@@ -14,7 +14,7 @@ void %{CN}::index(Context *c)
     // FIXME: Implement me!
 }
 
-void %{CN}::defaultPage(Context *c)
+void %{CN}::defaultPage(Context *c, const QStringList &args)
 {
     // FIXME: Implement me!
 }
