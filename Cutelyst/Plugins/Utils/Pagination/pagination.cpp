@@ -1,10 +1,29 @@
 #include "pagination.h"
 
+#include <QtCore/QLoggingCategory>
+
 using namespace Cutelyst::Utils;
+
+Q_LOGGING_CATEGORY(C_PAGINATION, "cutelyst.utils.pagination")
 
 QVariantMap Pagination::page(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
 {
     QVariantMap ret;
+
+    if (itemsPerPage <= 0) {
+        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 10";
+        itemsPerPage = 10;
+    }
+
+    if (currentPage < 0) {
+        qCWarning(C_PAGINATION) << "Invalid current page:" << currentPage  << "failing back to 0";
+        currentPage = 0;
+    }
+
+    if (pageLinks < 0) {
+        qCWarning(C_PAGINATION) << "Invalid number of page links:" << pageLinks << "failing back to 10";
+        pageLinks = 10;
+    }
 
     ret.insert(QStringLiteral("limit"), itemsPerPage);
     ret.insert(QStringLiteral("current"), currentPage);
