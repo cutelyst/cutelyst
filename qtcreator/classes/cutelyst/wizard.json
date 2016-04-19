@@ -6,7 +6,6 @@
     "trDescription": "Creates a Cutelyst Controller.",
     "trDisplayName": "Cutelyst Controller",
     "trDisplayCategory": "Cutelyst",
-    "icon": "../../global/genericfilewizard.png",
     "enabled": "%{JS: [ %{Plugins} ].indexOf('CppEditor') >= 0}",
 
     "options":
@@ -62,7 +61,7 @@
                 },
                 {
                     "name": "BeginMethod",
-                    "trDisplayName": "Begind Action",
+                    "trDisplayName": "Begin Action",
                     "type": "CheckBox",
                     "data": {
                         "checkedValue": true,
