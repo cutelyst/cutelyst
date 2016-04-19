@@ -1,3 +1,4 @@
+%{Cpp:LicenseTemplate}\
 #include "%{AppHdrFileName}"
 
 #include <Cutelyst/Plugins/StaticSimple/staticsimple.h>

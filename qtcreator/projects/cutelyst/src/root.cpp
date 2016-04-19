@@ -1,3 +1,4 @@
+%{Cpp:LicenseTemplate}\
 #include "root.h"
 
 using namespace Cutelyst;

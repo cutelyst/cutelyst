@@ -1,5 +1,6 @@
-#ifndef %{ProjectNameUpper}_H
-#define %{ProjectNameUpper}_H
+%{Cpp:LicenseTemplate}\
+#ifndef %{GUARD}
+#define %{GUARD}
 
 #include <Cutelyst/Application>
 
@@ -15,5 +16,5 @@ public:
     bool init();
 };
 
-#endif //%{ProjectNameUpper}_H
+#endif // %{GUARD}\
 
