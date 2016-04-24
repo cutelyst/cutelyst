@@ -33,7 +33,7 @@ class CUTELYST_LIBRARY ClearSilver : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)
 public:
-    Q_INVOKABLE explicit ClearSilver(QObject *parent = 0);
+    Q_INVOKABLE explicit ClearSilver(QObject *parent = nullptr);
     ~ClearSilver();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)

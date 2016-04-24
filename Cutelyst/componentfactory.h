@@ -34,7 +34,7 @@ public:
      * Component plugins should reimplement this to get a new
      * instace of their component
      */
-    virtual Component *createComponent(QObject *parent = 0) = 0;
+    virtual Component *createComponent(QObject *parent = nullptr) = 0;
 };
 
 }

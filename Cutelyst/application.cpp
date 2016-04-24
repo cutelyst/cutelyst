@@ -150,8 +150,8 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
 
     QDir pluginsDir(QLatin1String(CUTELYST_PLUGINS_DIR));
     QPluginLoader loader;
-    Component *component = 0;
-    ComponentFactory *factory = 0;
+    Component *component = nullptr;
+    ComponentFactory *factory = nullptr;
     Q_FOREACH (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
         const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();

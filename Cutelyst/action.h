@@ -36,7 +36,7 @@ class CUTELYST_LIBRARY Action : public Component
 {
     Q_OBJECT
 public:
-    explicit Action(QObject *parent = 0);
+    explicit Action(QObject *parent = nullptr);
     virtual ~Action();
 
     virtual Modifiers modifiers() const Q_DECL_OVERRIDE;

@@ -57,7 +57,7 @@ class CUTELYST_LIBRARY RenderView : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)
 public:
-    explicit RenderView(QObject *parent = 0);
+    explicit RenderView(QObject *parent = nullptr);
     virtual ~RenderView();
 
     virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;

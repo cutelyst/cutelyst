@@ -39,7 +39,7 @@ public:
         Hashed,
         SelfCheck
     };
-    explicit CredentialPassword(QObject *parent = 0);
+    explicit CredentialPassword(QObject *parent = nullptr);
     virtual ~CredentialPassword();
 
     AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) Q_DECL_FINAL;

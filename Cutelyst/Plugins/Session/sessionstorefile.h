@@ -30,7 +30,7 @@ class CUTELYST_LIBRARY SessionStoreFile : public SessionStore
     Q_OBJECT
     Q_DECLARE_PRIVATE(SessionStoreFile)
 public:
-    explicit SessionStoreFile(QObject *parent = 0);
+    explicit SessionStoreFile(QObject *parent = nullptr);
 
     QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) Q_DECL_FINAL;
     bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) Q_DECL_FINAL;

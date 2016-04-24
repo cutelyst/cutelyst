@@ -29,7 +29,7 @@ class CUTELYST_LIBRARY StoreMinimal : public AuthenticationStore
 {
     Q_OBJECT
 public:
-    explicit StoreMinimal(QObject *parent = 0);
+    explicit StoreMinimal(QObject *parent = nullptr);
     virtual ~StoreMinimal();
 
     void addUser(const AuthenticationUser &user);

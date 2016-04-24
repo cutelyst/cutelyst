@@ -64,7 +64,7 @@ public:
      * use config(), do that in init()
      *
      */
-    explicit Application(QObject *parent = 0);
+    explicit Application(QObject *parent = nullptr);
     virtual ~Application();
 
     QList<Controller *> controllers() const;
@@ -92,7 +92,7 @@ public:
 
     Engine *engine() const;
 
-    Component *createComponentPlugin(const QString &name, QObject *parent = 0);
+    Component *createComponentPlugin(const QString &name, QObject *parent = nullptr);
 
 protected:
     /**

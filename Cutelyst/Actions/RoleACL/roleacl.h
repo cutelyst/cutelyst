@@ -35,7 +35,7 @@ class CUTELYST_LIBRARY RoleACL : public Component
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
 public:
-    explicit RoleACL(QObject *parent = 0);
+    explicit RoleACL(QObject *parent = nullptr);
     virtual ~RoleACL();
 
     virtual Modifiers modifiers() const Q_DECL_OVERRIDE;

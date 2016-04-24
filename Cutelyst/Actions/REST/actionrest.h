@@ -32,7 +32,7 @@ class CUTELYST_LIBRARY ActionREST : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionREST)
 public:
-    explicit ActionREST(QObject *parent = 0);
+    explicit ActionREST(QObject *parent = nullptr);
     virtual ~ActionREST();
 
 protected:

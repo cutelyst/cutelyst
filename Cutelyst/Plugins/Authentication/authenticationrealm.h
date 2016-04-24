@@ -33,7 +33,7 @@ class CUTELYST_LIBRARY AuthenticationRealm : public Component
 {
     Q_OBJECT
 public:
-    explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent = 0);
+    explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent = nullptr);
     virtual ~AuthenticationRealm();
 
     AuthenticationStore *store() const;

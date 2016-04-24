@@ -45,7 +45,7 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit Engine(const QVariantMap &opts, QObject *parent = 0);
+    explicit Engine(const QVariantMap &opts, QObject *parent = nullptr);
     virtual ~Engine();
 
     /**

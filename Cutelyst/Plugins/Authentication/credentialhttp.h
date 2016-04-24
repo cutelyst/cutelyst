@@ -45,7 +45,7 @@ public:
         Digest,
         Basic
     };
-    explicit CredentialHttp(QObject *parent = 0);
+    explicit CredentialHttp(QObject *parent = nullptr);
     virtual ~CredentialHttp();
 
     /**

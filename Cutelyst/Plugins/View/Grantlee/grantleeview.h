@@ -33,7 +33,7 @@ class CUTELYST_LIBRARY GrantleeView : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
 public:
-    explicit GrantleeView(QObject *parent = 0, const QString &name = QString());
+    explicit GrantleeView(QObject *parent = nullptr, const QString &name = QString());
     ~GrantleeView();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)

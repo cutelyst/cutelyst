@@ -47,7 +47,7 @@ public:
     Q_ENUM(Modifier)
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
-    explicit Component(QObject *parent = 0);
+    explicit Component(QObject *parent = nullptr);
     virtual ~Component();
 
     virtual Modifiers modifiers() const;

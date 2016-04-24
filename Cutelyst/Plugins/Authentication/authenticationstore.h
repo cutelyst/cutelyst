@@ -29,7 +29,7 @@ class CUTELYST_LIBRARY AuthenticationStore : public QObject
 {
     Q_OBJECT
 public:
-    explicit AuthenticationStore(QObject *parent = 0);
+    explicit AuthenticationStore(QObject *parent = nullptr);
     virtual ~AuthenticationStore();
 
 public:

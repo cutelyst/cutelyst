@@ -29,7 +29,7 @@ class CUTELYST_LIBRARY StoreHtpasswd : public AuthenticationStore
 {
     Q_OBJECT
 public:
-    explicit StoreHtpasswd(const QString &file, QObject *parent = 0);
+    explicit StoreHtpasswd(const QString &file, QObject *parent = nullptr);
     virtual ~StoreHtpasswd();
 
     void addUser(const ParamsMultiMap &user);

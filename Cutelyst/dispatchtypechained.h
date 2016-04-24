@@ -32,7 +32,7 @@ class CUTELYST_LIBRARY DispatchTypeChained : public DispatchType
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypeChained)
 public:
-    explicit DispatchTypeChained(QObject *parent = 0);
+    explicit DispatchTypeChained(QObject *parent = nullptr);
     ~DispatchTypeChained();
 
     virtual QByteArray list() const Q_DECL_OVERRIDE;

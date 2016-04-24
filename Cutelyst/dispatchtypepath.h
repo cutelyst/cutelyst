@@ -32,7 +32,7 @@ class CUTELYST_LIBRARY DispatchTypePath : public DispatchType
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)
 public:
-    explicit DispatchTypePath(QObject *parent = 0);
+    explicit DispatchTypePath(QObject *parent = nullptr);
     virtual ~DispatchTypePath();
 
     virtual QByteArray list() const Q_DECL_OVERRIDE;

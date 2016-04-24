@@ -31,7 +31,7 @@ class Context;
 class CUTELYST_LIBRARY SessionStore : public QObject {
     Q_OBJECT
 public:
-    explicit SessionStore(QObject *parent = 0);
+    explicit SessionStore(QObject *parent = nullptr);
 
     virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue = QVariant()) = 0;
     virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) = 0;

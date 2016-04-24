@@ -34,7 +34,7 @@ class CUTELYST_LIBRARY AuthenticationCredential : public QObject
 {
     Q_OBJECT
 public:
-    explicit AuthenticationCredential(QObject *parent = 0);
+    explicit AuthenticationCredential(QObject *parent = nullptr);
     virtual ~AuthenticationCredential();
 
     virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) = 0;

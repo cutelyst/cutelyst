@@ -39,7 +39,7 @@ public:
         PartialMatch,
         ExactMatch
     };
-    explicit DispatchType(QObject *parent = 0);
+    explicit DispatchType(QObject *parent = nullptr);
     virtual ~DispatchType();
 
     /**

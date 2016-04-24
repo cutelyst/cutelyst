@@ -33,7 +33,7 @@ class CUTELYST_LIBRARY ActionChain : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionChain)
 public:
-    explicit ActionChain(const ActionList &chain, QObject *parent = 0);
+    explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
     ~ActionChain();
 
     virtual qint8 numberOfCaptures() const Q_DECL_FINAL;

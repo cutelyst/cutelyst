@@ -311,7 +311,7 @@ public:
      * action when processing is finished.
      * When called with no arguments it escapes the processing chain entirely.
      */
-    void detach(Action *action = 0);
+    void detach(Action *action = nullptr);
 
     /**
      * This is one way of calling another action (method) in the same or
