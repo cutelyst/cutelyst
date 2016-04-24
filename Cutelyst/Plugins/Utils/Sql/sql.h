@@ -28,7 +28,7 @@
 
 namespace Cutelyst {
 
-namespace Sql {
+namespace Sql CUTELYST_LIBRARY {
 
     /**
      * Returns a QVariant hash for the first (if any) row

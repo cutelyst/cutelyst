@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
-class GrantleeView : public View
+class CUTELYST_LIBRARY GrantleeView : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)

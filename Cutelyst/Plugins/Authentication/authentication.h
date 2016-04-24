@@ -41,7 +41,7 @@ public:
 };
 
 class AuthenticationPrivate;
-class Authentication : public Plugin
+class CUTELYST_LIBRARY Authentication : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Authentication)

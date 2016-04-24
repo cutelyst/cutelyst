@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.8.12)
 if (POLICY CMP0043)
   cmake_policy(SET CMP0043 NEW)
 endif()
+if (POLICY CMP0063)
+  cmake_policy(SET CMP0063 NEW)
+endif()
 
 find_package(Qt5 5.5.0 COMPONENTS
     Core
@@ -24,6 +27,9 @@ set(CMAKE_AUTOMOC ON)
 
 # Include our cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 # As moc files are generated in the binary dir, tell CMake
 # to always look for includes there:

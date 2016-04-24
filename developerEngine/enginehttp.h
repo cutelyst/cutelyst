@@ -27,7 +27,7 @@
 namespace Cutelyst {
 
 class EngineHttpPrivate;
-class EngineHttp : public Engine
+class CUTELYST_LIBRARY EngineHttp : public Engine
 {
     Q_OBJECT
 public:

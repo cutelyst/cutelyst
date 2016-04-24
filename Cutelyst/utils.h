@@ -26,7 +26,7 @@
 
 namespace Cutelyst {
 
-namespace Utils {
+namespace Utils CUTELYST_LIBRARY {
     QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
 }
 
