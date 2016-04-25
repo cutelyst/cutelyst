@@ -15,6 +15,7 @@ env:
 
 compiler:
   - clang
+  - gcc
 
 before_install:
   - QT_VERSION_MM=55
