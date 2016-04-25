@@ -85,6 +85,12 @@ add_library(cutelyst-qt5 SHARED
 )
 add_library(CutelystQt5::Core ALIAS cutelyst-qt5)
 set_property(TARGET cutelyst-qt5 PROPERTY EXPORT_NAME Core)
+target_compile_features(cutelyst-qt5
+  PRIVATE
+    cxx_auto_type
+  PUBLIC
+    cxx_nullptr
+)
 
 set_target_properties(cutelyst-qt5 PROPERTIES
     VERSION ${CUTELYST_VERSION}
