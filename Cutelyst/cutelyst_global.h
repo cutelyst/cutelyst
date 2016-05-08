@@ -3,7 +3,8 @@
 
 #include <QtCore/QtGlobal>
 
-#if defined(CUTELYST_LIBRARY)
+// defined by cmake when building this library
+#if defined(cutelyst_qt5_EXPORTS)
 #  define CUTELYST_LIBRARY Q_DECL_EXPORT
 #else
 #  define CUTELYST_LIBRARY Q_DECL_IMPORT
