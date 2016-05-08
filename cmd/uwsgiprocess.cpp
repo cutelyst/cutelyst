@@ -54,7 +54,17 @@ uwsgiProcess::uwsgiProcess(QObject *parent) : QObject(parent)
 //    m_proc->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_proc->setProcessChannelMode(QProcess::ForwardedChannels);
 }
+#else
+uwsgiProcess::uwsgiProcess(QObject *parent) : QObject(parent)
+{
+    m_proc = new QProcess(this);
+    connect(m_proc, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
+//    m_proc->setInputChannelMode(QProcess::ForwardedInputChannel);
+    m_proc->setProcessChannelMode(QProcess::ForwardedChannels);
+}
+#endif
 
+#ifdef Q_OS_UNIX
 void uwsgiProcess::hupSignalHandler(int)
 {
     char a = 1;
