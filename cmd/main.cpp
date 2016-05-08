@@ -445,8 +445,7 @@ int main(int argc, char *argv[])
                                                    QStringLiteral("Starts a HTTP server (requires uWSGI)"));
     parser.addOption(server);
     QCommandLineOption appFile = QCommandLineOption(QStringLiteral("app-file"),
-                                                    QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so),"
-                                                    " if not set it will try to auto-detect"),
+                                                    QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so), if not set it will try to auto-detect"),
                                                     QStringLiteral("file_name"));
     parser.addOption(appFile);
     QCommandLineOption serverPort = QCommandLineOption(QStringList() << QStringLiteral("server-port"), QStringLiteral("p"),
