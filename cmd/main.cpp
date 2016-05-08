@@ -12,7 +12,10 @@
 #include <QDir>
 
 #include <ostream>
+
+#ifdef Q_OS_UNIX
 #include <utime.h>
+#endif
 
 #include "uwsgiprocess.h"
 
@@ -47,8 +50,10 @@ bool createController(const QString &controllerName)
         return false;
     }
 
+#ifdef Q_OS_UNIX
     // Change the modification time of CMakeLists.txt to force FILE_GLOB to be updated
     utime(projectDir.absoluteFilePath(QStringLiteral("CMakeLists.txt")).toLatin1().data(), NULL);
+#endif
 
     qDebug() << "Now, on your application class include and instantiate the controller.";
 
