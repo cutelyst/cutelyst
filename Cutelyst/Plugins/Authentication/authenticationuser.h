@@ -20,6 +20,8 @@
 #ifndef AUTHENTICATIONUSER_H
 #define AUTHENTICATIONUSER_H
 
+#include <QDataStream>
+
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/plugin.h>
