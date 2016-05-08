@@ -26,7 +26,7 @@
 namespace Cutelyst {
 
 class ViewEmailTemplatePrivate;
-class CUTELYST_LIBRARY ViewEmailTemplate : public ViewEmail
+class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
 {
     Q_OBJECT
     Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix)

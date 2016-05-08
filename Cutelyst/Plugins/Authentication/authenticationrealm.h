@@ -29,7 +29,7 @@ namespace Cutelyst {
 class Context;
 class AuthenticationStore;
 class AuthenticationCredential;
-class CUTELYST_LIBRARY AuthenticationRealm : public Component
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Component
 {
     Q_OBJECT
 public:

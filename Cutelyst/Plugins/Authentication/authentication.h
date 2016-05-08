@@ -30,7 +30,7 @@ namespace Cutelyst {
 class Context;
 class AuthenticationStore;
 class AuthenticationRealm;
-class CUTELYST_LIBRARY AuthenticationCredential : public QObject
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationCredential : public QObject
 {
     Q_OBJECT
 public:
@@ -41,7 +41,7 @@ public:
 };
 
 class AuthenticationPrivate;
-class CUTELYST_LIBRARY Authentication : public Plugin
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Authentication : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Authentication)

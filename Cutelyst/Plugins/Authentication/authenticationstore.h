@@ -25,7 +25,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY AuthenticationStore : public QObject
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationStore : public QObject
 {
     Q_OBJECT
 public:

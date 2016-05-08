@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class CredentialPasswordPrivate;
-class CUTELYST_LIBRARY CredentialPassword : public AuthenticationCredential
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialPassword : public AuthenticationCredential
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialPassword)

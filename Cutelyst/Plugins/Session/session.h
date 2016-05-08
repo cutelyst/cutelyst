@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class Context;
-class CUTELYST_LIBRARY SessionStore : public QObject {
+class CUTELYST_PLUGIN_SESSION_EXPORT SessionStore : public QObject {
     Q_OBJECT
 public:
     explicit SessionStore(QObject *parent = nullptr);
@@ -40,7 +40,7 @@ public:
 };
 
 class SessionPrivate;
-class CUTELYST_LIBRARY Session : public Plugin
+class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Session)

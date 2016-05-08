@@ -27,7 +27,7 @@
 namespace Cutelyst {
 
 class AuthenticationRealm;
-class CUTELYST_LIBRARY AuthenticationUser : public ParamsMultiMap
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public ParamsMultiMap
 {
 public:
     AuthenticationUser();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,7 +30,7 @@ class ViewJsonPrivate;
  * ViewJSON class is a Cutelyst View handler that returns stash
  * data in JSON format.
  */
-class CUTELYST_LIBRARY ViewJson : public Cutelyst::View
+class CUTELYST_VIEW_JSON_EXPORT ViewJson : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewJson)

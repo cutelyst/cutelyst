@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,7 +30,7 @@ class ViewEmailPrivate;
  * ViewEmail class is a Cutelyst View handler that returns stash
  * data in Email format.
  */
-class CUTELYST_LIBRARY ViewEmail : public Cutelyst::View
+class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey)

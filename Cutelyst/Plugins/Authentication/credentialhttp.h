@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class CredentialHttpPrivate;
-class CUTELYST_LIBRARY CredentialHttp : public AuthenticationCredential
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialHttp : public AuthenticationCredential
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialHttp)

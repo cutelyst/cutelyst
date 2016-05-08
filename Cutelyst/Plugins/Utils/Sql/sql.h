@@ -28,7 +28,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Sql
+class CUTELYST_PLUGIN_UTILS_SQL_EXPORT Sql
 {
 public:
     /**

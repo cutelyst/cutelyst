@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
-class CUTELYST_LIBRARY GrantleeView : public View
+class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)

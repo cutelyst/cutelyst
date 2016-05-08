@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class SessionStoreFilePrivate;
-class CUTELYST_LIBRARY SessionStoreFile : public SessionStore
+class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SessionStoreFile)

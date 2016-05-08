@@ -25,7 +25,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY StoreMinimal : public AuthenticationStore
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreMinimal : public AuthenticationStore
 {
     Q_OBJECT
 public:

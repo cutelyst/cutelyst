@@ -23,7 +23,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Pagination
+class CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Pagination
 {
 public:
     static QVariantMap page(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks = 10);

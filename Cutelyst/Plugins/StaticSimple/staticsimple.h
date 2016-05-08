@@ -26,7 +26,7 @@
 namespace Cutelyst {
 
 class StaticSimplePrivate;
-class CUTELYST_LIBRARY StaticSimple : public Plugin
+class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticSimple)
