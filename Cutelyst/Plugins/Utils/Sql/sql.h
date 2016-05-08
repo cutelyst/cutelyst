@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,28 +28,29 @@
 
 namespace Cutelyst {
 
-namespace Sql CUTELYST_LIBRARY {
-
+class CUTELYST_LIBRARY Sql
+{
+public:
     /**
      * Returns a QVariant hash for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    QVariantHash queryToHashObject(QSqlQuery &query);
+    static QVariantHash queryToHashObject(QSqlQuery &query);
 
     /**
      * Returns a variant list of QVariant hashes for all the rows
      * in the query object, it's useful for creating
      * stash objects for say a list of users
      */
-    QVariantList queryToHashList(QSqlQuery &query);
+    static QVariantList queryToHashList(QSqlQuery &query);
 
     /**
      * Returns a QVariant map for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    QVariantMap queryToMapObject(QSqlQuery &query);
+    static QVariantMap queryToMapObject(QSqlQuery &query);
 
     /**
      * Returns a variant list of QVariant maps for all the rows
@@ -57,14 +58,14 @@ namespace Sql CUTELYST_LIBRARY {
      * stash objects for say a list of users to be used by
      * JSON serializer
      */
-    QVariantList queryToMapList(QSqlQuery &query);
+    static QVariantList queryToMapList(QSqlQuery &query);
 
     /**
      * Bind params to the query, using the param name as
      * the placeholder prebended with ':', if htmlEscaped
      * is true the bound values will be the return of toHtmlEscaped()
      */
-    void bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
+    static void bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
 
     /**
      * Returns a QSqlQuery object prepared with \pa query using the \pa db database
@@ -81,9 +82,9 @@ namespace Sql CUTELYST_LIBRARY {
      * The returned object is set to forward only and you must use a different
      * database connection and thread_local on static objects to be thread-safe.
      */
-    QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
+    static QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
 
-}
+};
 
 }
 
