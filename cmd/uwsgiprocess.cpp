@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QDebug>
 
+#ifdef Q_OS_UNIX
 #include <sys/socket.h>
 #include <signal.h>
 #include <unistd.h>
@@ -77,6 +78,7 @@ void uwsgiProcess::intSignalHandler(int unused)
     char a = 1;
     ::write(sigintFd[0], &a, sizeof(a));
 }
+#endif
 
 bool uwsgiProcess::run(const QString &appFilename, int port, bool restart)
 {
@@ -129,6 +131,7 @@ bool uwsgiProcess::run(const QString &appFilename, int port, bool restart)
     return true;
 }
 
+#ifdef Q_OS_UNIX
 int uwsgiProcess::setup_unix_signal_handlers()
 {
     struct sigaction hup, term, inta, kill;
@@ -164,6 +167,7 @@ int uwsgiProcess::setup_unix_signal_handlers()
 
     return 0;
 }
+#endif
 
 bool uwsgiProcess::findProjectDir(const QDir &dir, QDir *projectDir)
 {
@@ -202,6 +206,7 @@ QString uwsgiProcess::findApplication(const QDir &projectDir)
     return QString();
 }
 
+#ifdef Q_OS_UNIX
 void uwsgiProcess::handleSigHup()
 {
     QSocketNotifier *socket = qobject_cast<QSocketNotifier*>(sender());
@@ -257,6 +262,7 @@ void uwsgiProcess::handleSigInt()
 
     socket->setEnabled(true);
 }
+#endif
 
 void uwsgiProcess::processFinished(int exitCode)
 {
