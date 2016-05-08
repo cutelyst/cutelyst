@@ -250,9 +250,3 @@ qint64 Upload::writeData(const char *data, qint64 maxSize)
 {
     return -1;
 }
-
-UploadPrivate::UploadPrivate(QIODevice *dev) :
-    device(dev)
-{
-
-}

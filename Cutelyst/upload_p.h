@@ -29,7 +29,11 @@ namespace Cutelyst {
 class UploadPrivate
 {
 public:
-    UploadPrivate(QIODevice *dev);
+    inline UploadPrivate(QIODevice *dev, const Headers &hdrs, qint64 startOffst, qint64 endOffst) : device(dev)
+      , headers(hdrs)
+      , startOffset(startOffst)
+      , endOffset(endOffst)
+    { }
 
     Headers headers;
     QString name;

@@ -163,12 +163,8 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
                 i += findBoundary(buffer + i, len - i, state, boundaryPos);
                 if (state == EndBoundaryCR) {
 //                    qCDebug(CUTELYST_MULTIPART) << "EndData" << body->pos() - len + i - boundaryLength - 1;
-                    UploadPrivate *priv = new UploadPrivate(body);
-                    priv->headers = headers;
-                    headers.clear();
-                    priv->startOffset = startOffset;
-                    priv->endOffset = body->pos() - len + i - boundaryLength - 1;
-                    ret << new Upload(priv);
+                    ret.append(new Upload(new UploadPrivate(body, headers, startOffset, body->pos() - len + i - boundaryLength - 1)));
+                    headers.clear();;
                 }
             }
             ++i;
