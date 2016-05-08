@@ -135,9 +135,9 @@ install(EXPORT CutelystQt5Targets
 
 add_subdirectory(Cutelyst)
 
-if (NOT APPLE)
+if (NOT APPLE AND NOT WIN32)
     add_subdirectory(developerEngine)
-endif (NOT APPLE)
+endif (NOT APPLE AND NOT WIN32)
 
 find_program(UWSGI_BIN NAMES uwsgi)
 if (UWSGI_EXEC_PATH)
