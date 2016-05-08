@@ -444,11 +444,11 @@ int main(int argc, char *argv[])
                                                     " if not set it will try to auto-detect"),
                                                     QStringLiteral("file_name"));
     parser.addOption(appFile);
-    QCommandLineOption serverPort = QCommandLineOption({ QStringLiteral("server-port"), QStringLiteral("p") },
+    QCommandLineOption serverPort = QCommandLineOption(QStringList() << QStringLiteral("server-port"), QStringLiteral("p"),
                                                        QStringLiteral("Development server port"),
                                                        QStringLiteral("port"));
     parser.addOption(serverPort);
-    QCommandLineOption restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
+    QCommandLineOption restart = QCommandLineOption(QStringList() << QStringLiteral("restart"), QStringLiteral("r"),
                                                     QStringLiteral("Restarts the development server when the application file changes"));
     parser.addOption(restart);
 

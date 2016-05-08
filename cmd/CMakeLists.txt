@@ -8,8 +8,6 @@ set(cutelyst_cmd_SRCS
     main.cpp
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 add_executable(cutelyst-skell ${cutelyst_cmd_SRCS})
 target_link_libraries(cutelyst-skell
     Qt5::Core
