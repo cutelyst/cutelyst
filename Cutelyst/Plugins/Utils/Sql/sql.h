@@ -28,29 +28,28 @@
 
 namespace Cutelyst {
 
-class CUTELYST_PLUGIN_UTILS_SQL_EXPORT Sql
+namespace Sql
 {
-public:
     /**
      * Returns a QVariant hash for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    static QVariantHash queryToHashObject(QSqlQuery &query);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToHashObject(QSqlQuery &query);
 
     /**
      * Returns a variant list of QVariant hashes for all the rows
      * in the query object, it's useful for creating
      * stash objects for say a list of users
      */
-    static QVariantList queryToHashList(QSqlQuery &query);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToHashList(QSqlQuery &query);
 
     /**
      * Returns a QVariant map for the first (if any) row
      * in the query object, it's useful for creating
      * stash objects for say an user
      */
-    static QVariantMap queryToMapObject(QSqlQuery &query);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantMap queryToMapObject(QSqlQuery &query);
 
     /**
      * Returns a variant list of QVariant maps for all the rows
@@ -58,14 +57,14 @@ public:
      * stash objects for say a list of users to be used by
      * JSON serializer
      */
-    static QVariantList queryToMapList(QSqlQuery &query);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToMapList(QSqlQuery &query);
 
     /**
      * Bind params to the query, using the param name as
      * the placeholder prebended with ':', if htmlEscaped
      * is true the bound values will be the return of toHtmlEscaped()
      */
-    static void bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT void bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
 
     /**
      * Returns a QSqlQuery object prepared with \pa query using the \pa db database
@@ -75,16 +74,15 @@ public:
      * QSqlQuery query = CPreparedSqlQuery("SELECT * FROM");
      *
      * For applications that do not use default QSqlDatabase(), the returned QSqlQuery
-     * is a static thread_local which glues QSqlQuery to the current thread but you must
+     * is a CUTELYST_PLUGIN_UTILS_SQL_EXPORT thread_local which glues QSqlQuery to the current thread but you must
      * have a per thread QSqlDatabase() connection for this to be completely safe:
      * QSqlQuery query = CPreparedSqlQueryForDatabase("SELECT * FROM", QSqlDatabase::data);
      *
      * The returned object is set to forward only and you must use a different
-     * database connection and thread_local on static objects to be thread-safe.
+     * database connection and thread_local on CUTELYST_PLUGIN_UTILS_SQL_EXPORT objects to be thread-safe.
      */
-    static QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
-
-};
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = true);
+}
 
 }
 
