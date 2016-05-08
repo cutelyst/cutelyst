@@ -13,6 +13,9 @@
 #include <signal.h>
 #include <unistd.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+
 static int sighupFd[2];
 static int sigtermFd[2];
 static int sigkillFd[2];
@@ -274,6 +277,9 @@ void uwsgiProcess::handleSigInt()
 
     socket->setEnabled(true);
 }
+
+#pragma GCC diagnostic pop
+
 #endif
 
 void uwsgiProcess::processFinished(int exitCode)
