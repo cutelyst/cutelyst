@@ -17,9 +17,4 @@ target_link_libraries(cutelyst-skell
 )
 
 set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst)
-target_compile_features(cutelyst-skell
-  PRIVATE
-    cxx_aggregate_default_initializers
-)
-
 install(TARGETS cutelyst-skell DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

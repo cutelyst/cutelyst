@@ -102,6 +102,10 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
 )
 
+add_definitions(
+    -std=c++11
+)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Cutelyst
