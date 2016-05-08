@@ -10,11 +10,12 @@ configure_file(cutelyst_paths.h.cmake ${PROJECT_BINARY_DIR}/cutelyst_paths.h)
 
 set (_rcc_file "${PROJECT_BINARY_DIR}/testresource.qrc")
 
-add_library(template_test_builtins STATIC coverageobject.cpp
+add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.cpp
   ${_testresource_rcc_src}
 )
-target_link_libraries(template_test_builtins Qt5::Test)
+target_link_libraries(coverage_test Qt5::Test)
+target_compile_definitions(coverage_test PUBLIC cxx_auto_type)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
   foreach(_testname ${ARGN})
@@ -22,7 +23,7 @@ macro(CUTELYST_TEMPLATES_UNIT_TESTS)
                   ${_testname}.cpp
     )
     add_test(${_testname} ${_testname}_exec )
-    target_link_libraries(${_testname}_exec CutelystQt5::Core template_test_builtins)
+    target_link_libraries(${_testname}_exec CutelystQt5::Core coverage_test)
 
     set_property(GLOBAL APPEND PROPERTY TEST_COVERAGE "${CMAKE_CURRENT_BINARY_DIR}/${_testname}_exec" )
   endforeach(_testname)
