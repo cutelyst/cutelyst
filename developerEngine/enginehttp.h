@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,7 @@
 namespace Cutelyst {
 
 class EngineHttpPrivate;
-class CUTELYST_LIBRARY EngineHttp : public Engine
+class CUTELYST_DEV_HTTP_EXPORT EngineHttp : public Engine
 {
     Q_OBJECT
 public:

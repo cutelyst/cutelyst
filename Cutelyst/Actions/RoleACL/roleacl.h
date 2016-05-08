@@ -30,7 +30,7 @@
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class CUTELYST_LIBRARY RoleACL : public Component
+class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)

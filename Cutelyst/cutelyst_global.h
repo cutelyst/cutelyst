@@ -9,6 +9,21 @@
 #else
 #  define CUTELYST_LIBRARY Q_DECL_IMPORT
 #endif
+#if defined(plugin_action_renderview_EXPORTS)
+#  define CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT Q_DECL_IMPORT
+#endif
+#if defined(plugin_action_rest_EXPORTS)
+#  define CUTELYST_PLUGIN_ACTION_REST_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_ACTION_REST_EXPORT Q_DECL_IMPORT
+#endif
+#if defined(plugin_action_roleacl_EXPORTS)
+#  define CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT Q_DECL_IMPORT
+#endif
 #if defined(cutelyst_qt5_plugin_authentication_EXPORTS)
 #  define CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Q_DECL_EXPORT
 #else
@@ -53,6 +68,11 @@
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_IMPORT
+#endif
+#if defined(cutelyst_dev_http_qt5_EXPORTS)
+#  define CUTELYST_DEV_HTTP_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_DEV_HTTP_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // CUTELYST_GLOBAL_H

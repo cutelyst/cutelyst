@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY RenderViewPrivate;
+class RenderViewPrivate;
 /**
  * The RenderView action allows to easily
  * call a renderer without including it's
@@ -52,7 +52,7 @@ class CUTELYST_LIBRARY RenderViewPrivate;
  * ...
  * \endcode
  */
-class CUTELYST_LIBRARY RenderView : public Action
+class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)

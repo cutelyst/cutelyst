@@ -27,7 +27,7 @@
 namespace Cutelyst {
 
 class ActionRESTPrivate;
-class CUTELYST_LIBRARY ActionREST : public Action
+class CUTELYST_PLUGIN_ACTION_REST_EXPORT ActionREST : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionREST)
