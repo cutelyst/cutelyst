@@ -38,6 +38,6 @@ examples are under MIT license.
 ## REQUIREMENTS
 
  * uWSGI - to receive and parse protocols requests (>= 1.8 recommended)
- * CMake - for the build system (>= 3.0)
+ * CMake - for the build system (>= 3.1)
  * Qt - the core library of this framework (>= 5.5)
  
