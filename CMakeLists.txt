@@ -102,9 +102,11 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
 )
 
+if (NOT WIN32)
 add_definitions(
     -std=c++11
 )
+endif (NOT WIN32)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
