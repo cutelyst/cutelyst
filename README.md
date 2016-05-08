@@ -1,4 +1,8 @@
-# Cutelyst [![Build Status](https://travis-ci.org/cutelyst/cutelyst.svg?branch=master)](https://travis-ci.org/cutelyst/cutelyst)
+# Cutelyst - The Qt Web Framework
+
+[![Build Status](https://travis-ci.org/cutelyst/cutelyst.svg?branch=master)](https://travis-ci.org/cutelyst/cutelyst)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/cutelyst/cutelyst?branch=master&svg=true)](https://ci.appveyor.com/project/cutelyst/cutelyst/branch/master)
+
 A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
 Qt's meta object system is what powers the core of Cutelyst, this allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Some features:
@@ -9,8 +13,8 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
   * uWSGI
  * REST with ActionREST
  * Plugin based views
-  * Grantlee
-  * Clearsilver
+  * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
+  * [Clearsilver](http://www.clearsilver.net)
   * JSON
   * Email
  * Dispatcher
