@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,11 +26,9 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Utils
-{
-public:
-    static QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
-};
+namespace Utils {
+    CUTELYST_LIBRARY QByteArray buildTable(const QList<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
+}
 
 }
 
