@@ -120,9 +120,11 @@ bool uwsgiProcess::run(const QString &appFilename, int port, bool restart)
         args.append(localFilename);
     }
 
+#ifdef Q_OS_UNIX
     if (setup_unix_signal_handlers()) {
         return false;
     }
+#endif
 
     qDebug() << "Running: uwsgi" << args.join(QStringLiteral(" ")).toLatin1().data();
 
