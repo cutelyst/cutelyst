@@ -448,11 +448,11 @@ int main(int argc, char *argv[])
                                                     QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so), if not set it will try to auto-detect"),
                                                     QStringLiteral("file_name"));
     parser.addOption(appFile);
-    QCommandLineOption serverPort = QCommandLineOption(QStringList() << QStringLiteral("server-port"), QStringLiteral("p"),
+    QCommandLineOption serverPort = QCommandLineOption(QStringList() << QStringLiteral("server-port") << QStringLiteral("p"),
                                                        QStringLiteral("Development server port"),
                                                        QStringLiteral("port"));
     parser.addOption(serverPort);
-    QCommandLineOption restart = QCommandLineOption(QStringList() << QStringLiteral("restart"), QStringLiteral("r"),
+    QCommandLineOption restart = QCommandLineOption(QStringList() << QStringLiteral("restart") << QStringLiteral("r"),
                                                     QStringLiteral("Restarts the development server when the application file changes"));
     parser.addOption(restart);
 
