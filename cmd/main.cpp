@@ -11,6 +11,8 @@
 #include <QStringBuilder>
 #include <QDir>
 
+#include <QMap>
+
 #include <ostream>
 
 #ifdef Q_OS_UNIX
@@ -24,6 +26,57 @@
 
 bool buildControllerHeader(const QString &filename, const QString &controllerName, bool helpers);
 bool buildControllerImplementation(const QString &filename, const QString &controllerName, bool helpers);
+
+bool processTemplate(const QString &filename,
+                     QTextStream &out,
+                     const QMap<QString,QString> vars) {
+
+    QFile fTemplate(filename);
+    if ( !fTemplate.open(QIODevice::ReadOnly | QIODevice::Text) ) {
+      qDebug() << "Error: Unable to open template " << filename;
+      return false;
+    }
+
+    QTextStream in(&fTemplate);
+    QString buffer;
+    bool condOut = true;
+
+    while ( !in.atEnd() ) {
+      buffer = in.readLine();
+
+      if ( buffer.startsWith(QStringLiteral("%%if ")) ) {
+        QStringList tokenList = buffer.split(QStringLiteral(" "));
+        if ( tokenList.size() == 2 &&
+             vars[tokenList.at(1)] == QStringLiteral("false") ) {
+          condOut = false;
+        } else {
+          condOut = true;
+        }
+        continue;
+      }
+      else
+      if ( buffer.startsWith(QStringLiteral("%%else")) ) {
+        condOut = !condOut;
+        continue;
+      }
+      else
+      if ( buffer.startsWith(QStringLiteral("%%endif")) ) {
+        condOut = true;
+        continue;
+      }
+
+      QStringList keys = vars.keys();
+      QStringList::iterator iter = keys.begin();
+      while( iter != keys.end() ) {
+        buffer = buffer.replace( QString::fromLocal8Bit("%%") % (*iter) % QString::fromLocal8Bit("%%"), vars[*iter]);
+        iter++;
+      }
+
+      if ( condOut ) out << buffer << "\n";
+    }
+
+    fTemplate.close();
+}
 
 bool createController(const QString &controllerName)
 {
@@ -148,6 +201,7 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
 
 bool buildControllerImplementation(const QString &filename, const QString &controllerName, bool helpers)
 {
+    QFileInfo fileInfo(filename);
     QFile data(filename);
     if (data.exists()) {
         qDebug() << OUT_EXISTS << filename;
@@ -156,40 +210,25 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
 
     if (data.open(QFile::WriteOnly | QFile::Truncate)) {
         QTextStream out(&data);
-        QFileInfo fileInfo(filename);
-        out << "#include \"" << fileInfo.baseName() << ".h\"" << "\n";
-        out << "\n";
-        out << "using namespace Cutelyst;" << "\n";
-        out << "\n";
-        out << controllerName << "::" << controllerName << "(QObject *parent) : Controller(parent)" << "\n";
-        out << "{" << "\n";
-        out << "}" << "\n";
-        out << "\n";
-        out << controllerName << "::~" << controllerName << "()" << "\n";
-        out << "{" << "\n";
-        out << "}" << "\n";
-        out << "\n";
-        out << "void " << controllerName << "::index" << "(Context *c)" << "\n";
-        out << "{" << "\n";
-        if (helpers) {
-            out << "    c->response()->body() = c->welcomeMessage();" << "\n";
+
+        QMap<QString,QString> vars = {
+          { QStringLiteral("fileBaseName"),   fileInfo.baseName() },
+          { QStringLiteral("controllerName"), controllerName },
+          { QStringLiteral("helpers"),
+            (helpers?QStringLiteral("true"):QStringLiteral("false")) }
+        };
+
+        if( processTemplate(
+              QStringLiteral(":/skel_controller_cpp.txt"),
+              out,
+              vars
+              ) ) {
+          qDebug() << OUT_CREATED << filename;
+          return true;
         } else {
-            out << "    c->response()->body() = \"Matched Controller::" << controllerName << " in " << controllerName << ".\";" << "\n";
+          qDebug() << "Template processor failed: " << filename;
+          return false;
         }
-        out << "}" << "\n";
-        out << "\n";
-        if (helpers) {
-            out << "void " << controllerName << "::defaultPage" << "(Context *c)" << "\n";
-            out << "{" << "\n";
-            out << "    c->response()->body() = \"Page not found!\";" << "\n";
-            out << "    c->response()->setStatus(404);" << "\n";
-            out << "}" << "\n";
-            out << "\n";
-        }
-
-        qDebug() << OUT_CREATED << filename;
-
-        return true;
     }
     qDebug() << "Error: failed to create file" << filename;
 

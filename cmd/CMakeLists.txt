@@ -8,7 +8,7 @@ set(cutelyst_cmd_SRCS
     main.cpp
 )
 
-add_executable(cutelyst-skell ${cutelyst_cmd_SRCS})
+add_executable(cutelyst-skell ${cutelyst_cmd_SRCS} main.qrc)
 target_link_libraries(cutelyst-skell
     Qt5::Core
     Qt5::Network
