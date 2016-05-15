@@ -12,7 +12,6 @@ add_executable(cutelyst-skell ${cutelyst_cmd_SRCS})
 target_link_libraries(cutelyst-skell
     Qt5::Core
     Qt5::Network
-    stdc++
 )
 
 set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst)
