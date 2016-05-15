@@ -23,7 +23,7 @@ macro(CUTELYST_TEMPLATES_UNIT_TESTS)
                   ${_testname}.cpp
     )
     add_test(${_testname} ${_testname}_exec )
-    target_link_libraries(${_testname}_exec CutelystQt5::Core coverage_test)
+    target_link_libraries(${_testname}_exec CutelystQt5::Core stdc++ coverage_test)
 
     set_property(GLOBAL APPEND PROPERTY TEST_COVERAGE "${CMAKE_CURRENT_BINARY_DIR}/${_testname}_exec" )
   endforeach(_testname)
