@@ -52,20 +52,15 @@ uwsgiProcess::uwsgiProcess(QObject *parent) : QObject(parent)
     socket = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
     connect(socket, &QSocketNotifier::activated, this, &uwsgiProcess::handleSigInt);
 
-    m_proc = new QProcess(this);
-    connect(m_proc, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
-//    m_proc->setInputChannelMode(QProcess::ForwardedInputChannel);
-    m_proc->setProcessChannelMode(QProcess::ForwardedChannels);
-}
 #else
 uwsgiProcess::uwsgiProcess(QObject *parent) : QObject(parent)
 {
+#endif
     m_proc = new QProcess(this);
     connect(m_proc, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
 //    m_proc->setInputChannelMode(QProcess::ForwardedInputChannel);
     m_proc->setProcessChannelMode(QProcess::ForwardedChannels);
 }
-#endif
 
 #ifdef Q_OS_UNIX
 void uwsgiProcess::hupSignalHandler(int)
@@ -140,6 +135,13 @@ bool uwsgiProcess::run(const QString &appFilename, int port, bool restart)
 #endif
 
     qDebug() << "Running: uwsgi" << args.join(QStringLiteral(" ")).toLatin1().data();
+
+    // Enable loggin if restart is set
+    if (restart && !qEnvironmentVariableIsSet("QT_LOGGING_RULES")) {
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert(QStringLiteral("QT_LOGGING_RULES"), QStringLiteral("cutelyst.*=true"));
+        m_proc->setProcessEnvironment(env);
+    }
 
     m_proc->start(QStringLiteral("uwsgi"), args);
 
