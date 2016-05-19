@@ -21,6 +21,7 @@
 #define AUTHENTICATIONUSER_H
 
 #include <QDataStream>
+#include <QVariantMap>
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/paramsmultimap.h>
@@ -29,7 +30,7 @@
 namespace Cutelyst {
 
 class AuthenticationRealm;
-class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public ParamsMultiMap
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public QVariantMap
 {
 public:
     AuthenticationUser();

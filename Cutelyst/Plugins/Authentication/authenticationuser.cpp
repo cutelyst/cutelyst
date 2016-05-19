@@ -71,16 +71,16 @@ bool AuthenticationUser::checkPassword(const QString &password) const
 
 QDataStream &operator<<(QDataStream &out, const AuthenticationUser &user)
 {
-    out << user.id() << static_cast<ParamsMultiMap>(user);
+    out << user.id() << static_cast<QVariantMap>(user);
     return out;
 }
 
 QDataStream &operator>>(QDataStream &in, AuthenticationUser &user)
 {
     QString id;
-    ParamsMultiMap hash;
-    in >> id >> hash;
+    QVariantMap map;
+    in >> id >> map;
     user.setId(id);
-    user.swap(hash);
+    user.swap(map);
     return in;
 }
