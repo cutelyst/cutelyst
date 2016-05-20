@@ -24,10 +24,13 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_PAGINATION, "cutelyst.utils.pagination")
 
-QVariantMap Pagination::page(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
+Pagination::Pagination()
 {
-    QVariantMap ret;
 
+}
+
+Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
+{
     if (itemsPerPage <= 0) {
         qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 10";
         itemsPerPage = 10;
@@ -43,9 +46,10 @@ QVariantMap Pagination::page(int numberOfItems, int itemsPerPage, int currentPag
         pageLinks = 10;
     }
 
-    ret.insert(QStringLiteral("limit"), itemsPerPage);
-    ret.insert(QStringLiteral("current"), currentPage);
-    ret.insert(QStringLiteral("sqlpage"), (currentPage - 1) * itemsPerPage);
+    insert(QStringLiteral("limit"), itemsPerPage);
+    insert(QStringLiteral("offset"), (currentPage - 1) * itemsPerPage);
+    insert(QStringLiteral("currentPage"), currentPage);
+    insert(QStringLiteral("current"), currentPage);
 
     int lastPage = (numberOfItems - 1) / itemsPerPage + 1;
     if (currentPage > lastPage) {
@@ -62,10 +66,39 @@ QVariantMap Pagination::page(int numberOfItems, int itemsPerPage, int currentPag
     for (int i = startPage; i <= endPage; ++i) {
         pages.append(i);
     }
-    ret.insert(QStringLiteral("enable_first"), currentPage > 1);
-    ret.insert(QStringLiteral("enable_last"), currentPage < lastPage);
-    ret.insert(QStringLiteral("pages"), QVariant::fromValue(pages));
-    ret.insert(QStringLiteral("last_page"), lastPage);
+    insert(QStringLiteral("enable_first"), currentPage > 1);
+    insert(QStringLiteral("enable_last"), currentPage < lastPage);
+    insert(QStringLiteral("pages"), QVariant::fromValue(pages));
+    insert(QStringLiteral("last_page"), lastPage);
+    insert(QStringLiteral("lastPage"), lastPage);
+}
 
-    return ret;
+Pagination::~Pagination()
+{
+
+}
+
+int Pagination::limit() const
+{
+    return value(QStringLiteral("limit")).value<int>();
+}
+
+int Pagination::offset() const
+{
+    return value(QStringLiteral("offset")).value<int>();
+}
+
+int Pagination::currentPage() const
+{
+    return value(QStringLiteral("currentPage")).value<int>();
+}
+
+int Pagination::lastPage() const
+{
+    return value(QStringLiteral("lastPage")).value<int>();
+}
+
+QList<int> Pagination::pages() const
+{
+    return value(QStringLiteral("pages")).value<QList<int> >();
 }
