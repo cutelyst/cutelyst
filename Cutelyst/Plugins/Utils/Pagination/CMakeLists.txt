@@ -27,6 +27,6 @@ target_link_libraries(cutelyst_qt5_plugin_utils_pagination
 install(TARGETS cutelyst_qt5_plugin_utils_pagination EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_pagination_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils/Pagination
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
         COMPONENT Utils::Pagination
 )

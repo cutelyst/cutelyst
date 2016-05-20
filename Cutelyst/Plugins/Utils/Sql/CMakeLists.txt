@@ -29,6 +29,6 @@ target_link_libraries(cutelyst_qt5_plugin_utils_sql
 install(TARGETS cutelyst_qt5_plugin_utils_sql EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(FILES ${plugin_sql_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils/Sql
+        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
         COMPONENT Utils::Sql
 )
