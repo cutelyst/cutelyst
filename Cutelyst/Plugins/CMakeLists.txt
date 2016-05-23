@@ -1,5 +1,6 @@
 add_subdirectory(Session)
 add_subdirectory(View)
 add_subdirectory(StaticSimple)
+add_subdirectory(StatusMessage)
 add_subdirectory(Authentication)
 add_subdirectory(Utils)
