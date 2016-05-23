@@ -113,14 +113,14 @@ void StatusMessage::load(Context *c)
     }
 
     const QString statusKey = sm->d_ptr->sessionPrefix + QLatin1String("status") + token;
-    const QString statusValue = Session::value(c, statusKey).value<QString>();
+    const QString statusValue = Session::value(c, statusKey).toString();
     if (!statusValue.isNull()) {
         Session::deleteValue(c, statusKey);
         c->setStash(sm->d_ptr->statusMsgStashKey, statusValue);
     }
 
     const QString errorKey = sm->d_ptr->sessionPrefix + QLatin1String("error") + token;
-    const QString errorValue = Session::value(c, errorKey).value<QString>();
+    const QString errorValue = Session::value(c, errorKey).toString();
     if (!errorValue.isNull()) {
         Session::deleteValue(c, errorKey);
         c->setStash(sm->d_ptr->errorMsgStashKey, errorValue);
@@ -129,7 +129,7 @@ void StatusMessage::load(Context *c)
 
 QString getSessionMessage(Context *c, const QString &key)
 {
-    const QString value = Session::value(c, key).value<QString>();
+    const QString value = Session::value(c, key).toString();
     if (!value.isNull()) {
         Session::deleteValue(c, key);
         c->setStash(QLatin1String("status_msg"), value);

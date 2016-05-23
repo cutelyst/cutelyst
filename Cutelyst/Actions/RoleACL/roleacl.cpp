@@ -100,7 +100,7 @@ bool RoleACL::canVisit(Context *c) const
 
     Authentication *auth = c->plugin<Authentication*>();
     if (auth) {
-        const QStringList user_has = auth->user(c).value(QStringLiteral("roles")).value<QStringList>();
+        const QStringList user_has = auth->user(c).value(QStringLiteral("roles")).toStringList();
 
         const QStringList required = d->requiresRole;
         const QStringList allowed = d->allowedRole;

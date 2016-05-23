@@ -80,22 +80,22 @@ Pagination::~Pagination()
 
 int Pagination::limit() const
 {
-    return value(QStringLiteral("limit")).value<int>();
+    return value(QStringLiteral("limit")).toInt();
 }
 
 int Pagination::offset() const
 {
-    return value(QStringLiteral("offset")).value<int>();
+    return value(QStringLiteral("offset")).toInt();
 }
 
 int Pagination::currentPage() const
 {
-    return value(QStringLiteral("currentPage")).value<int>();
+    return value(QStringLiteral("currentPage")).toInt();
 }
 
 int Pagination::lastPage() const
 {
-    return value(QStringLiteral("lastPage")).value<int>();
+    return value(QStringLiteral("lastPage")).toInt();
 }
 
 QList<int> Pagination::pages() const

@@ -243,8 +243,7 @@ bool Controller::_DISPATCH(Context *c)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    QMap<QString, QString> attributes;
-    attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
     const QString actionClass = attributes.value(QLatin1String("ActionClass"));
 
     QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");

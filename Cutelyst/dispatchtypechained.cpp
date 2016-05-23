@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -400,7 +400,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                 //    No best action currently
                 // OR The action has less parts
                 // OR The action has equal parts but less captured data (ergo more defined)
-                ActionList actions = ret.value(QStringLiteral("actions")).value<ActionList>();
+                auto actions = ret.value(QStringLiteral("actions")).value<ActionList>();
                 const QStringList actionCaptures = ret.value(QStringLiteral("captures")).toStringList();
                 const QStringList actionParts = ret.value(QStringLiteral("parts")).toStringList();
                 int n_pathparts = ret.value(QStringLiteral("n_pathparts")).toInt();

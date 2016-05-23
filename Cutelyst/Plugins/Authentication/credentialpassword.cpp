@@ -239,7 +239,7 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
     QString password = authinfo.value(passwordField);
-    const QString storedPassword = user.value(passwordField).value<QString>();
+    const QString storedPassword = user.value(passwordField).toString();
 
     if (passwordType == CredentialPassword::None) {
         qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
