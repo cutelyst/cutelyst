@@ -27,7 +27,7 @@ target_link_libraries(cutelyst_qt5_plugin_statusmessage
 
 install(TARGETS cutelyst_qt5_plugin_statusmessage EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-install(FILES ${plugin_pagination_HEADERS}
+install(FILES ${plugin_statusmessage_HEADERS}
     DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
     COMPONENT StatusMessage
 )
