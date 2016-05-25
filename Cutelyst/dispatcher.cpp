@@ -441,3 +441,5 @@ QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
     }
     return ns + QLatin1Char('/') + path;
 }
+
+#include "moc_dispatcher.cpp"

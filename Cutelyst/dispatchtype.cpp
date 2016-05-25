@@ -61,3 +61,5 @@ void DispatchType::setupMatchedAction(Context *c, Action *action) const
 {
     c->d_ptr->action = action;
 }
+
+#include "moc_dispatchtype.cpp"

@@ -129,3 +129,5 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
     qCWarning(C_STATICSIMPLE) << "File not found" << relPath;
     return false;
 }
+
+#include "moc_staticsimple.cpp"

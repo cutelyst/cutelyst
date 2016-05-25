@@ -83,3 +83,5 @@ bool ActionChain::dispatch(Context *c)
 
     return final->dispatch(c);
 }
+
+#include "moc_actionchain.cpp"

@@ -577,3 +577,5 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
     }
     return ret;
 }
+
+#include "moc_request.cpp"

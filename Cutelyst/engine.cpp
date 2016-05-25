@@ -503,3 +503,5 @@ void Engine::processRequest(const QString &method,
     d->app->handleRequest(request);
     delete request;
 }
+
+#include "moc_engine.cpp"

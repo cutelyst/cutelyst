@@ -114,3 +114,5 @@ AuthenticationUser StoreHtpasswd::fromSession(Context *c, const QVariant &frozen
                         {QStringLiteral("username"), frozenUser.toString()}
                     });
 }
+
+#include "moc_htpasswd.cpp"

@@ -154,3 +154,5 @@ bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller
 
     return true;
 }
+
+#include "moc_roleacl.cpp"

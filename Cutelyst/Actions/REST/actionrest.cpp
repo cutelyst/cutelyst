@@ -134,3 +134,5 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, c
 
     return methods.join(QStringLiteral(", "));
 }
+
+#include "moc_actionrest.cpp"

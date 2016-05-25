@@ -154,3 +154,5 @@ bool Component::dispatcherReady(const Dispatcher *dispatch, Controller *controll
     }
     return true;
 }
+
+#include "moc_component.cpp"

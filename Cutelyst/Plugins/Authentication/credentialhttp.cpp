@@ -263,3 +263,5 @@ QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QS
         return type + QLatin1Char(' ') + parts.join(QStringLiteral(", "));
     }
 }
+
+#include "moc_credentialhttp.cpp"

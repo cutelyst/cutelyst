@@ -421,8 +421,9 @@ QString ContextPrivate::statsStartExecute(Component *code)
     return actionName;
 }
 
-
 void ContextPrivate::statsFinishExecute(const QString &statsInfo)
 {
     stats->profileEnd(statsInfo);
 }
+
+#include "moc_context.cpp"

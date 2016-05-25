@@ -33,3 +33,5 @@ bool Plugin::setup(Application *app)
     Q_UNUSED(app)
     return true;
 }
+
+#include "moc_plugin.cpp"

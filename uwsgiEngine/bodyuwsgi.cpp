@@ -73,3 +73,5 @@ qint64 BodyUWSGI::writeData(const char *data, qint64 maxSize)
     Q_UNUSED(maxSize)
     return -1;
 }
+
+#include "moc_bodyuwsgi.cpp"

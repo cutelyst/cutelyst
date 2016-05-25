@@ -203,3 +203,5 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
     }
     return true;
 }
+
+#include "moc_dispatchtypepath.cpp"

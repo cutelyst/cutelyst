@@ -305,3 +305,5 @@ void ViewEmailPrivate::setupEncoding(MimePart *part, const QByteArray &encoding)
         qCCritical(CUTELYST_VIEW_EMAIL) << "Unknown encoding" << encoding;
     }
 }
+
+#include "moc_viewemail.cpp"

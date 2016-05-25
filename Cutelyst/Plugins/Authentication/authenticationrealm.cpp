@@ -122,3 +122,5 @@ QVariant AuthenticationRealm::userIsRestorable(Context *c)
     // as ::value will do that for us
     return Session::value(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
 }
+
+#include "moc_authenticationrealm.cpp"

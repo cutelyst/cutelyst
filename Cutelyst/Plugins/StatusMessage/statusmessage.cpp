@@ -168,4 +168,4 @@ QString StatusMessage::setStatus(Context *c, const QString &msg)
     return token;
 }
 
-
+#include "moc_statusmessage.cpp"

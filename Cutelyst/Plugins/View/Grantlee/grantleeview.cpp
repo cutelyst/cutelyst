@@ -190,3 +190,5 @@ QByteArray GrantleeView::render(Context *c) const
 
     return content.toUtf8();
 }
+
+#include "moc_grantleeview.cpp"

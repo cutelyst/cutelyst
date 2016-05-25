@@ -222,3 +222,5 @@ bool Action::doExecute(Context *c)
         return ret;
     }
 }
+
+#include "moc_action.cpp"

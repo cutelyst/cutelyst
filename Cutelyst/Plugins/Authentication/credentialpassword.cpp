@@ -337,3 +337,5 @@ int CredentialPasswordPrivate::cryptoStrToEnum(const QByteArray &hashMethod)
 
     return method;
 }
+
+#include "moc_credentialpassword.cpp"

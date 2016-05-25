@@ -269,3 +269,5 @@ Cutelyst::AuthenticationCredential::~AuthenticationCredential()
 {
 
 }
+
+#include "moc_authentication.cpp"

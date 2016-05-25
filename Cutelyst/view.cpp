@@ -65,3 +65,5 @@ bool View::doExecute(Context *c)
 
     return c->error();
 }
+
+#include "moc_view.cpp"

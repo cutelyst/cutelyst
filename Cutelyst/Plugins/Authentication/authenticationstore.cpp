@@ -64,3 +64,5 @@ AuthenticationUser AuthenticationStore::fromSession(Context *c, const QVariant &
     Q_UNUSED(c)
     return frozenUser.value<AuthenticationUser>();
 }
+
+#include "moc_authenticationstore.cpp"

@@ -250,3 +250,5 @@ qint64 Upload::writeData(const char *data, qint64 maxSize)
 {
     return -1;
 }
+
+#include "moc_upload.cpp"

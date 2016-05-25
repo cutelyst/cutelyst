@@ -220,3 +220,5 @@ qint64 Response::write(const QByteArray &data)
 {
     return write(data.data(), data.size());
 }
+
+#include "moc_response.cpp"

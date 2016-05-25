@@ -98,3 +98,5 @@ QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c
     c->setProperty(SESSION_STORE_FILE, QVariant::fromValue(settings));
     return settings;
 }
+
+#include "moc_sessionstorefile.cpp"

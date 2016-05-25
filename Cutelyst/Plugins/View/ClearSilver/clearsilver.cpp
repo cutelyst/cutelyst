@@ -268,3 +268,5 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
         break;
     }
 }
+
+#include "moc_clearsilver.cpp"

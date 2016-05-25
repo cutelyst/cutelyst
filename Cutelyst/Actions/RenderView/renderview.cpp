@@ -91,3 +91,5 @@ bool RenderView::doExecute(Cutelyst::Context *c)
     res->setStatus(500);
     return false;
 }
+
+#include "moc_renderview.cpp"

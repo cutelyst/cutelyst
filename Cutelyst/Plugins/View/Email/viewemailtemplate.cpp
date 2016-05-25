@@ -151,3 +151,5 @@ QByteArray ViewEmailTemplate::render(Context *c) const
 
     return ViewEmail::render(c);
 }
+
+#include "moc_viewemailtemplate.cpp"

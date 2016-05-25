@@ -95,3 +95,5 @@ void BodyBufferedUWSGI::fillBuffer()
     m_buf = buf;
     m_filled = true;
 }
+
+#include "moc_bodybuffereduwsgi.cpp"

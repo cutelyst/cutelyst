@@ -600,3 +600,5 @@ bool ControllerPrivate::superIsClassName(const QMetaObject *super, const QByteAr
     }
     return false;
 }
+
+#include "moc_controller.cpp"

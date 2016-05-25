@@ -535,3 +535,5 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelys
                                                    },
                                                    QStringLiteral("File Uploads are:")).constData();
 }
+
+#include "moc_application.cpp"

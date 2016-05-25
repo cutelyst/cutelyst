@@ -395,3 +395,5 @@ void uWSGI::forked()
         }
     }
 }
+
+#include "moc_engineuwsgi.cpp"

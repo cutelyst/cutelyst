@@ -147,3 +147,5 @@ QByteArray ViewJson::render(Context *c) const
 
     return QJsonDocument(obj).toJson(d->format);
 }
+
+#include "moc_viewjson.cpp"

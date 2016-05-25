@@ -500,3 +500,5 @@ QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
     }
     return QString();
 }
+
+#include "moc_dispatchtypechained.cpp"
