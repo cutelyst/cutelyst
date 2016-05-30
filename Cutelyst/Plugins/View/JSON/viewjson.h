@@ -42,6 +42,7 @@ public:
         Indented,
         Compact
     };
+    Q_ENUM(JsonFormat)
 
     /**
      * Returns the output format of JSON,
@@ -60,6 +61,8 @@ public:
         StringList,
         RegularExpression
     };
+    Q_ENUM(ExposeMode)
+
     /**
      * Returns the expose mode of the stash keys,
      * defaults to everything (All)

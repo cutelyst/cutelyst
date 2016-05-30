@@ -39,12 +39,14 @@ public:
         Hashed,
         SelfCheck
     };
+    Q_ENUM(PasswordType)
 
     enum AuthType {
         Any,
         Digest,
         Basic
     };
+    Q_ENUM(AuthType)
     explicit CredentialHttp(QObject *parent = nullptr);
     virtual ~CredentialHttp();
 

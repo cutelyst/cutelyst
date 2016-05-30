@@ -39,6 +39,7 @@ public:
         Hashed,
         SelfCheck
     };
+    Q_ENUM(Type)
     explicit CredentialPassword(QObject *parent = nullptr);
     virtual ~CredentialPassword();
 
