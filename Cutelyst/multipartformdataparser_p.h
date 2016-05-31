@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +26,7 @@ namespace Cutelyst {
 
 class MultiPartFormDataParserPrivate
 {
+    Q_GADGET
 public:
     enum ParserState {
         FindBoundary,
@@ -37,14 +38,10 @@ public:
         StartData,
         EndData
     };
+    Q_ENUM(ParserState)
 
-    Uploads execute(char *buffer, int bufferSize);
-    inline int findBoundary(char *buffer, int len, ParserState &state, int &boundaryPos);
-
-    QIODevice *body;
-    char *boundary;
-    int boundaryLength;
-
+    static Uploads execute(int bufferSize, QIODevice *body, const QByteArray &boundary);
+    static inline int findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, ParserState &state, int &boundaryPos);
 };
 
 }

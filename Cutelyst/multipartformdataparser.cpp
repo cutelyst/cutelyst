@@ -21,74 +21,65 @@
 #include "upload_p.h"
 #include "common.h"
 
+#include <QByteArrayMatcher>
+
 using namespace Cutelyst;
 
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
 {
-    MultiPartFormDataParserPrivate *d;
 
     int start = contentType.indexOf(QLatin1String("boundary="));
-    if (start != -1) {
-        start += 9;
-
-        QString boundary;
-        const int len = contentType.length();
-        boundary.reserve(contentType.length() - start + 2);
-        int quotes = 0;
-        for (int i = start; i < len; ++i) {
-            const QChar ch = contentType.at(i);
-            if (ch == QLatin1Char('\"')) {
-                if ((quotes == 0 && i > start) || ++quotes == 2) {
-                    break;
-                }
-            } else if (ch == QLatin1Char(';')) {
-                break;
-            } else {
-                boundary += ch;
-            }
-        }
-
-        if (boundary.isEmpty()) {
-            qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
-            return Uploads();
-        }
-        boundary.prepend(QLatin1String("--"));
-
-        d = new MultiPartFormDataParserPrivate;
-        d->boundary = qstrdup(boundary.toLatin1().data());
-        d->boundaryLength = boundary.size();
-    } else {
+    if (start == -1) {
         qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
         return Uploads();
     }
 
-    d->body = body;
-    int buffer_size = qMin(bufferSize, 1024);
-//    qCDebug(CUTELYST_MULTIPART) << "Boudary:" << d->boundary << d->boundaryLength;
+    start += 9;
+    QByteArray boundary;
+    const int len = contentType.length();
+    boundary.reserve(contentType.length() - start + 2);
 
-    Uploads ret;
-    char *buffer = new char[buffer_size];
+    for (int i = start, quotes = 0; i < len; ++i) {
+        const QChar ch = contentType.at(i);
+        if (ch == QLatin1Char('\"')) {
+            if ((quotes == 0 && i > start) || ++quotes == 2) {
+                break;
+            }
+        } else if (ch == QLatin1Char(';')) {
+            break;
+        } else {
+            boundary.append(ch.toLatin1());
+        }
+    }
 
-    qint64 origPos = d->body->pos();
-    d->body->seek(0);
-    ret = d->execute(buffer, buffer_size);
-    d->body->seek(origPos);
+    if (boundary.isEmpty()) {
+        qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
+        return Uploads();
+    }
+    boundary.prepend("--");
 
-    delete [] buffer;
-    delete [] d->boundary;
-    delete d;
+    qint64 origPos = body->pos();
+    body->seek(0);
+    Uploads ret = MultiPartFormDataParserPrivate::execute(bufferSize, body, boundary);
+    body->seek(origPos);
 
     return ret;
 }
 
-Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
+Uploads MultiPartFormDataParserPrivate::execute(int bufferSize, QIODevice *body, const QByteArray &boundary)
 {
     Uploads ret;
-    QByteArray header;
+    QByteArray headerLine;
     Headers headers;
     qint64 startOffset;
     int boundaryPos = 0;
+    int boundarySize = boundary.size();
+    if (bufferSize < 1024) {
+        bufferSize = 1024;
+    }
+    char buffer[bufferSize];
     ParserState state = FindBoundary;
+    QByteArrayMatcher matcher(boundary);
 
     while (!body->atEnd()) {
         qint64 len = body->read(buffer, bufferSize);
@@ -96,7 +87,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
         while (i < len) {
             switch (state) {
             case FindBoundary:
-                i += findBoundary(buffer + i, len - i, state, boundaryPos);
+                i += findBoundary(buffer + i, len - i, matcher, boundarySize, state, boundaryPos);
                 break;
             case EndBoundaryCR:
                 // TODO the "--" case
@@ -111,35 +102,30 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
 //                    qCDebug(CUTELYST_MULTIPART) << "EndBoundaryLF return!";
                     return ret;
                 }
-                header.clear();
                 state = StartHeaders;
                 break;
             case StartHeaders:
-//                qCDebug(CUTELYST_MULTIPART) << "StartHeaders" << body->pos() - len + i;
-                if (buffer[i] == '\r') {
+                if (headerLine.isNull() && buffer[i] == '\r') {
+                    // nothing was read
                     state = EndHeaders;
-                } else if (buffer[i] == '-') {
-//                    qCDebug(CUTELYST_MULTIPART) << "StartHeaders return!";
-                    return ret;
                 } else {
                     char *pch = strchr(buffer + i, '\r');
                     if (pch == NULL) {
-                        header.append(buffer + i, len - i);
+                        headerLine.append(buffer + i, len - i);
                         i = len;
                     } else {
-                        header.append(buffer + i, pch - buffer - i);
+                        headerLine.append(buffer + i, pch - buffer - i);
                         i = pch - buffer;
                         state = FinishHeader;
                     }
                 }
                 break;
             case FinishHeader:
-//                qCDebug(CUTELYST_MULTIPART) << "FinishHeader" << header;
                 if (buffer[i] == '\n') {
-                    int dotdot = header.indexOf(':');
-                    headers.setHeader(QString::fromLatin1(header.left(dotdot)),
-                                      QString::fromLatin1(header.mid(dotdot + 1).trimmed()));
-                    header.clear();
+                    int dotdot = headerLine.indexOf(':');
+                    headers.setHeader(QString::fromLatin1(headerLine.left(dotdot)),
+                                      QString::fromLatin1(headerLine.mid(dotdot + 1).trimmed()));
+                    headerLine = QByteArray();
                     state = StartHeaders;
                 } else {
 //                    qCDebug(CUTELYST_MULTIPART) << "FinishHeader return!";
@@ -147,7 +133,6 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
                 }
                 break;
             case EndHeaders:
-//                qCDebug(CUTELYST_MULTIPART) << "EndHeaders";
                 if (buffer[i] == '\n') {
                     state = StartData;
                 } else {
@@ -160,11 +145,20 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
                 startOffset = body->pos() - len + i;
                 state = EndData;
             case EndData:
-                i += findBoundary(buffer + i, len - i, state, boundaryPos);
+                i += findBoundary(buffer + i, len - i, matcher, boundarySize, state, boundaryPos);
                 if (state == EndBoundaryCR) {
 //                    qCDebug(CUTELYST_MULTIPART) << "EndData" << body->pos() - len + i - boundaryLength - 1;
-                    ret.append(new Upload(new UploadPrivate(body, headers, startOffset, body->pos() - len + i - boundaryLength - 1)));
-                    headers.clear();;
+                    ret.append(new Upload(new UploadPrivate(body, headers, startOffset, body->pos() - len + i - boundarySize - 1)));
+                    headers = Headers();
+                } else if (body->atEnd()) {
+                    // Boundary was not found and we are at the end
+                    return ret;
+                } else {
+                    // Boundary was not found so change our seek to be
+                    // sure we don't have the boundary in the middle of two chunks
+                    //                    qDebug() << "seek POS" << body->pos() << boundaryLength << body->pos() - boundaryLength << i;
+                    body->seek(body->pos() - boundarySize);
+                    break;
                 }
             }
             ++i;
@@ -174,21 +168,15 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize)
     return ret;
 }
 
-int MultiPartFormDataParserPrivate::findBoundary(char *buffer, int len, MultiPartFormDataParserPrivate::ParserState &state, int &boundaryPos)
+int MultiPartFormDataParserPrivate::findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, MultiPartFormDataParserPrivate::ParserState &state, int &boundaryPos)
 {
-    int i = 0;
-    while (i < len) {
-        if (buffer[i] == boundary[boundaryPos]) {
-            if (++boundaryPos == boundaryLength) {
-//                qCDebug(CUTELYST_MULTIPART) << "FindBoundary:" << body->pos() - len + i;
-                boundaryPos = 0;
-                state = EndBoundaryCR;
-                return i;
-            }
-        } else {
-            boundaryPos = 0;
-        }
-        ++i;
+    int i = matcher.indexIn(buffer, len);
+    //    qCDebug(CUTELYST_MULTIPART) << "findBoundary" << QByteArray(buffer, len);
+    if (i != -1) {
+        //        qCDebug(CUTELYST_MULTIPART) << "FindBoundary: found at" << i << body->pos() << len << body->pos() - len + i << i + boundaryLength;
+        boundaryPos = 0;
+        state = EndBoundaryCR;
+        return i + boundarySize - 1;
     }
-    return i;
+    return len;
 }
