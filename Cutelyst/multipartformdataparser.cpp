@@ -21,8 +21,6 @@
 #include "upload_p.h"
 #include "common.h"
 
-#include <QByteArrayMatcher>
-
 using namespace Cutelyst;
 
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)

@@ -22,6 +22,8 @@
 
 #include "multipartformdataparser.h"
 
+#include <QByteArrayMatcher>
+
 namespace Cutelyst {
 
 class MultiPartFormDataParserPrivate
