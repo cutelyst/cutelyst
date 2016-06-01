@@ -229,10 +229,11 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
     void *engineData = c->engineData();
     if (c->d_ptr->chunked) {
 
-        QByteArray chunk = QByteArray::number(len).toHex();
-        chunk.append("\r\n", 2);
-        chunk.append(data, len);
-        chunk.append("\r\n", 2);
+        const QByteArray chunkSize = QByteArray::number(len, 16);
+        QByteArray chunk;
+        chunk.reserve(len + chunkSize.size() + 4);
+        chunk.append(chunkSize).append("\r\n", 2)
+                .append(data, len).append("\r\n", 2);
 
         qint64 retWrite = doWrite(c, chunk.data(), chunk.size(), engineData);
 
