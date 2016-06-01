@@ -241,7 +241,7 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
             c->d_ptr->chunked_done = true;
         }
 
-        return retWrite;
+        return retWrite == chunk.size() ? len : -1;
     }
     return doWrite(c, data, len, engineData);
 }
