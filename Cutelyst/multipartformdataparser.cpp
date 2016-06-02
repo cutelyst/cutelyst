@@ -56,15 +56,22 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     }
     boundary.prepend("--");
 
+    if (bufferSize < 1024) {
+        bufferSize = 1024;
+    }
+    char *buffer = new char[bufferSize];
+
     qint64 origPos = body->pos();
     body->seek(0);
-    Uploads ret = MultiPartFormDataParserPrivate::execute(bufferSize, body, boundary);
+    Uploads ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
     body->seek(origPos);
+
+    delete [] buffer;
 
     return ret;
 }
 
-Uploads MultiPartFormDataParserPrivate::execute(int bufferSize, QIODevice *body, const QByteArray &boundary)
+Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QIODevice *body, const QByteArray &boundary)
 {
     Uploads ret;
     QByteArray headerLine;
@@ -72,10 +79,6 @@ Uploads MultiPartFormDataParserPrivate::execute(int bufferSize, QIODevice *body,
     qint64 startOffset;
     int boundaryPos = 0;
     int boundarySize = boundary.size();
-    if (bufferSize < 1024) {
-        bufferSize = 1024;
-    }
-    char buffer[bufferSize];
     ParserState state = FindBoundary;
     QByteArrayMatcher matcher(boundary);
 
