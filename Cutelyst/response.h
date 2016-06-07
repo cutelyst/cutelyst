@@ -122,8 +122,14 @@ public:
     void setBody(QIODevice *body);
 
     /**
+     * Sets a QByteArray as the response body,
+     * content length will be automatically set to it's size.
+     */
+    void setBody(const QByteArray &body);
+
+    /**
      * Sets a QString as the response body,
-     * it will be output as UTF-8.
+     * it will be output as UTF-8 and * content length will be automatically set to it's size.
      */
     inline void setBody(const QString &body);
 
@@ -250,7 +256,7 @@ protected:
 };
 
 inline void Response::setBody(const QString &_body) {
-    body() = _body.toUtf8();
+    setBody(_body.toUtf8());
 }
 
 }

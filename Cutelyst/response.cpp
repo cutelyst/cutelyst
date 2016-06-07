@@ -109,6 +109,17 @@ void Response::setBody(QIODevice *body)
     d->bodyIODevice = body;
 }
 
+void Response::setBody(const QByteArray &body)
+{
+    Q_D(Response);
+    if (d->bodyIODevice) {
+        delete d->bodyIODevice;
+        d->bodyIODevice = nullptr;
+    }
+    d->bodyData = body;
+    d->headers.setContentLength(body.size());
+}
+
 void Response::setJsonBody(const QJsonDocument &documment)
 {
     body() = documment.toJson(QJsonDocument::Compact);
