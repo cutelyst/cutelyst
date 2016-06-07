@@ -50,6 +50,12 @@ Component::Modifiers View::modifiers() const
 
 bool View::doExecute(Context *c)
 {
+    Response *response = c->response();
+    if (response->hasBody()) {
+        // Ignore if we already have a body
+        return true;
+    }
+
     const QByteArray output = render(c);
     if (c->error()) {
         Q_FOREACH (const QString &error, c->errors()) {
@@ -57,10 +63,9 @@ bool View::doExecute(Context *c)
         }
     }
 
-    Response *response = c->response();
-    if (response->hasBody() || !output.isNull()) {
+    if (!output.isNull()) {
         // Do not set a null body on an already null body
-        response->body() = output;
+        response->setBody(output);
     }
 
     return c->error();
