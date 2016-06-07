@@ -132,7 +132,7 @@ public:
     /**
      * Called by Response to manually write data
      */
-    qint64 write(Context *c, const char *data, qint64 len);
+    qint64 write(Context *c, const char *data, qint64 len, void *engineData);
 protected:
 
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
@@ -155,7 +155,7 @@ protected:
      * Engines must reimplement this to write the
      * response body back to the caller
      */
-    virtual void finalizeBody(Context *c, QIODevice *body);
+    virtual void finalizeBody(Context *c);
 
     /**
      * Engines should overwrite this if they

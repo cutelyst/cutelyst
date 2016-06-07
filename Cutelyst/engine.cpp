@@ -123,34 +123,35 @@ bool Engine::finalizeHeaders(Context *c)
     return true;
 }
 
-void Engine::finalizeBody(Context *c, QIODevice *body)
+void Engine::finalizeBody(Context *c)
 {
-    if (c->d_ptr->chunked) {
-        body->seek(0);
-        char block[64 * 1024];
-        while (!body->atEnd()) {
-            qint64 in = body->read(block, sizeof(block));
-            if (in <= 0)
-                break;
+    QIODevice *body = c->response()->bodyDevice();
+    void *engineData = c->engineData();
 
-            if (write(c, block, in) != in) {
-                qCWarning(CUTELYST_ENGINE) << "Failed to write body";
-                break;
+    if (!c->d_ptr->chunked || !c->d_ptr->chunked_done) {
+        if (body) {
+            body->seek(0);
+            char block[64 * 1024];
+            while (!body->atEnd()) {
+                qint64 in = body->read(block, sizeof(block));
+                if (in <= 0)
+                    break;
+
+                if (write(c, block, in, engineData) != in) {
+                    qCWarning(CUTELYST_ENGINE) << "Failed to write body";
+                    break;
+                }
+            }
+        } else {
+            const auto bodyByteArray = c->response()->body();
+            if (!bodyByteArray.isNull()) {
+                write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
             }
         }
-    } else  {
-        void *engineData = c->engineData();
-        body->seek(0);
-        char block[64 * 1024];
-        while (!body->atEnd()) {
-            qint64 in = body->read(block, sizeof(block));
-            if (in <= 0)
-                break;
 
-            if (doWrite(c, block, in, engineData) != in) {
-                qCWarning(CUTELYST_ENGINE) << "Failed to write body";
-                break;
-            }
+        if (!c->d_ptr->chunked_done) {
+            // Write the final '0' chunk
+            doWrite(c, "0\r\n\r\n", 5, engineData);
         }
     }
 }
@@ -224,12 +225,12 @@ quint64 Engine::time()
     return QDateTime::currentMSecsSinceEpoch();
 }
 
-qint64 Engine::write(Context *c, const char *data, qint64 len)
+qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
-    void *engineData = c->engineData();
-    if (c->d_ptr->chunked) {
-
-        const QByteArray chunkSize = QByteArray::number(len, 16);
+    if (!c->d_ptr->chunked) {
+        return doWrite(c, data, len, engineData);
+    } else if (!c->d_ptr->chunked_done) {
+        const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
         chunk.reserve(len + chunkSize.size() + 4);
         chunk.append(chunkSize).append("\r\n", 2)
@@ -244,7 +245,7 @@ qint64 Engine::write(Context *c, const char *data, qint64 len)
 
         return retWrite == chunk.size() ? len : -1;
     }
-    return doWrite(c, data, len, engineData);
+    return -1;
 }
 
 QByteArray Engine::statusCode(quint16 status)
@@ -361,20 +362,7 @@ void Engine::finalize(Context *c)
         finalizeHeaders(c);
     }
 
-    QIODevice *body = response->bodyDevice();
-    if (body) {
-        finalizeBody(c, body);
-    } else {
-        const auto bodyByteArray = response->body();
-        if (!bodyByteArray.isNull()) {
-            doWrite(c, bodyByteArray.constData(), bodyByteArray.length(), c->engineData());
-        }
-    }
-
-    if (c->d_ptr->chunked && !c->d_ptr->chunked_done) {
-        // Write the final '0' chunk
-        doWrite(c, "0\r\n\r\n", 5, c->engineData());
-    }
+    finalizeBody(c);
 }
 
 static const QByteArray cutelyst_header_order (
