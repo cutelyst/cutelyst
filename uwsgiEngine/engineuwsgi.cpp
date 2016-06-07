@@ -328,7 +328,13 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 
         QSocketNotifier *requestNotifier = new QSocketNotifier(wsgi_req->fd, QSocketNotifier::Read, this);
         QTimer *timeoutTimer = new QTimer(requestNotifier);
+
+#ifdef UWSGI_GO_CHEAP_CODE
         timeoutTimer->setInterval(uwsgi.socket_timeout * 1000);
+#else
+        timeoutTimer->setInterval(15 * 1000);
+#endif // UWSGI_GO_CHEAP_CODE
+
         connect(timeoutTimer, &QTimer::timeout,
                 [=]() {
             CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
