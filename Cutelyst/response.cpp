@@ -135,6 +135,9 @@ QString Response::contentEncoding() const
 void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
+    if (d->finalizedHeaders) {
+        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+    }
     d->headers.setContentEncoding(encoding);
 }
 
@@ -142,6 +145,15 @@ qint64 Response::contentLength() const
 {
     Q_D(const Response);
     return d->headers.contentLength();
+}
+
+void Response::setContentLength(qint64 length)
+{
+    Q_D(Response);
+    if (d->finalizedHeaders) {
+        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+    }
+    d->headers.setContentLength(length);
 }
 
 QString Response::contentType() const
@@ -232,6 +244,9 @@ QString Response::header(const QString &field) const
 void Response::setHeader(const QString &field, const QString &value)
 {
     Q_D(Response);
+    if (d->finalizedHeaders) {
+        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+    }
     d->headers.setHeader(field, value);
 }
 

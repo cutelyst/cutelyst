@@ -158,8 +158,7 @@ public:
     /**
      * Short for headers().setContentLength(length);
      */
-    void setContentLength(qint64 length)
-    { headers().setContentLength(length); }
+    void setContentLength(qint64 length);
 
     /**
      * Short for headers().contentType();
