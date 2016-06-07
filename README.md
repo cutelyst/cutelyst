@@ -16,7 +16,7 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
   * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
   * [Clearsilver](http://www.clearsilver.net)
   * JSON
-  * Email
+  * [Email](https://github.com/cutelyst/simple-mail)
  * Dispatcher
   * Chained
   * Path
@@ -27,8 +27,9 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
- * Chunked reponses
+ * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
+ * Asynchronous processing (optional and dependent on application code)
 
 ## LICENSE
 
@@ -37,7 +38,7 @@ examples are under MIT license.
 
 ## REQUIREMENTS
 
- * uWSGI - to receive and parse protocols requests (>= 1.8 recommended)
+ * uWSGI - to receive and parse protocols requests (>= 2.0 recommended)
  * CMake - for the build system (>= 3.1)
  * Qt - the core library of this framework (>= 5.5)
  
