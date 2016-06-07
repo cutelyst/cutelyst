@@ -84,7 +84,7 @@ bool Engine::finalizeHeaders(Context *c)
     }
 
     // Fix missing content length
-    if (response->hasBody() && !response->contentLength()) {
+    if (!response->contentLength() && response->hasBody()) {
         QIODevice *body = response->bodyDevice();
         if (body) {
             response->setContentLength(body->size());
