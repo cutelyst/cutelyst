@@ -39,7 +39,6 @@ qint64 Response::readData(char *data, qint64 maxlen)
     Q_UNUSED(maxlen)
     return -1;
 }
-#include <QBuffer>
 
 qint64 Response::writeData(const char *data, qint64 len)
 {
@@ -51,7 +50,6 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!d->finalizedHeaders) {
-        d->bodyIODevice = new QBuffer(d->context);
         d->engine->finalizeHeaders(d->context);
     }
 
