@@ -14,7 +14,7 @@ add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.cpp
   ${_testresource_rcc_src}
 )
-target_link_libraries(coverage_test Qt5::Test)
+target_link_libraries(coverage_test Qt5::Test Qt5::Network)
 target_compile_definitions(coverage_test PUBLIC cxx_auto_type)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
@@ -31,5 +31,6 @@ endmacro(CUTELYST_TEMPLATES_UNIT_TESTS)
 
 cutelyst_templates_unit_tests(
   testheaders
+  testdispatcher
 )
 
