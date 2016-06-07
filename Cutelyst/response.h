@@ -20,12 +20,11 @@
 #ifndef CUTELYST_RESPONSE_H
 #define CUTELYST_RESPONSE_H
 
-#include <QtCore/qobject.h>
+#include <QtCore/QIODevice>
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
 
-class QIODevice;
 class QNetworkCookie;
 
 namespace Cutelyst {
@@ -33,7 +32,7 @@ namespace Cutelyst {
 class Context;
 class Engine;
 class ResponsePrivate;
-class CUTELYST_LIBRARY Response : public QObject
+class CUTELYST_LIBRARY Response : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)
@@ -227,13 +226,12 @@ public:
     Headers &headers();
 
     /**
-     * Writes data to the response body, this will flush
-     * all response headers first and will enter in chunked
-     * mode if Transfer-Encoding header is set to chunked
-     * or if no content length is set and status is
-     * not 1xx or 204 (NoContent) or 304 (NotModified)
+     * Writting to user-agent is always sequential
      */
-    qint64 write(const char *data, qint64 len);
+    bool isSequential() const override;
+
+protected:
+    explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
 
     /**
      * Writes data to the response body, this will flush
@@ -242,10 +240,8 @@ public:
      * or if no content length is set and status is
      * not 1xx or 204 (NoContent) or 304 (NotModified)
      */
-    qint64 write(const QByteArray &data);
-
-protected:
-    explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
+    virtual qint64 writeData(const char *data, qint64 len) override;
+    virtual qint64 readData(char *data, qint64 maxlen) override;
 
     ResponsePrivate *d_ptr;
     friend class Application;

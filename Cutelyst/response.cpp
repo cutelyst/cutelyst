@@ -27,9 +27,35 @@
 
 using namespace Cutelyst;
 
-Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QObject(c)
+Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QIODevice(c)
   , d_ptr(new ResponsePrivate(c, engine, defaultHeaders))
 {
+    open(QIODevice::WriteOnly);
+}
+
+qint64 Response::readData(char *data, qint64 maxlen)
+{
+    Q_UNUSED(data)
+    Q_UNUSED(maxlen)
+    return -1;
+}
+#include <QBuffer>
+
+qint64 Response::writeData(const char *data, qint64 len)
+{
+    Q_D(Response);
+
+    if (len <= 0) {
+        return len;
+    }
+
+    // Finalize headers if someone manually writes output
+    if (!d->finalizedHeaders) {
+        d->bodyIODevice = new QBuffer(d->context);
+        d->engine->finalizeHeaders(d->context);
+    }
+
+    return d->engine->write(d->context, data, len, d->context->engineData());
 }
 
 Response::~Response()
@@ -204,21 +230,9 @@ Headers &Response::headers()
     return d->headers;
 }
 
-qint64 Response::write(const char *data, qint64 len)
+bool Response::isSequential() const
 {
-    Q_D(Response);
-
-    // Finalize headers if someone manually writes output
-    if (!d->finalizedHeaders) {
-        d->engine->finalizeHeaders(d->context);
-    }
-
-    return d->engine->write(d->context, data, len);
-}
-
-qint64 Response::write(const QByteArray &data)
-{
-    return write(data.data(), data.size());
+    return true;
 }
 
 #include "moc_response.cpp"
