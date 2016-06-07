@@ -126,10 +126,10 @@ bool Engine::finalizeHeaders(Context *c)
 void Engine::finalizeBody(Context *c)
 {
     Response *response = c->response();
+    void *engineData = c->engineData();
 
-    if (!response->d_ptr->chunked || !response->d_ptr->chunked_done) {
+    if (!response->d_ptr->chunked) {
         QIODevice *body = response->bodyDevice();
-        void *engineData = c->engineData();
 
         if (body) {
             body->seek(0);
@@ -150,11 +150,9 @@ void Engine::finalizeBody(Context *c)
                 write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
             }
         }
-
-        if (!response->d_ptr->chunked_done) {
-            // Write the final '0' chunk
-            doWrite(c, "0\r\n\r\n", 5, engineData);
-        }
+    } else if (!response->d_ptr->chunked_done) {
+        // Write the final '0' chunk
+        doWrite(c, "0\r\n\r\n", 5, engineData);
     }
 }
 
