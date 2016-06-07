@@ -21,6 +21,7 @@
 #define HEADERS_H
 
 #include <QtCore/qdatetime.h>
+#include <QtCore/qmetatype.h>
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -240,5 +241,7 @@ public:
 };
 
 }
+
+Q_DECLARE_METATYPE(Cutelyst::Headers);
 
 #endif // HEADERS_H
