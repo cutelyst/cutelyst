@@ -96,7 +96,9 @@ public:
     void setStatus(quint16 status);
 
     /**
-     * Returns true if a body device has been defined.
+     * Returns true if a body device has been defined
+     * as QByteArray or QIODevice or write() was called
+     * and it's on chunked mode
      */
     bool hasBody() const;
 

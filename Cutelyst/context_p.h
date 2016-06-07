@@ -66,8 +66,6 @@ public:
     Stats *stats;
     bool detached = false;
     bool state = false;
-    bool chunked = false;
-    bool chunked_done = false;
 };
 
 }

@@ -101,11 +101,11 @@ bool Engine::finalizeHeaders(Context *c)
             if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
                 qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
                 response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
-                c->d_ptr->chunked = true;
+                response->d_ptr->chunked = true;
             }
         } else if (response->header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
             qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
-            c->d_ptr->chunked = true;
+            response->d_ptr->chunked = true;
         }
     }
 
@@ -125,10 +125,12 @@ bool Engine::finalizeHeaders(Context *c)
 
 void Engine::finalizeBody(Context *c)
 {
-    QIODevice *body = c->response()->bodyDevice();
-    void *engineData = c->engineData();
+    Response *response = c->response();
 
-    if (!c->d_ptr->chunked || !c->d_ptr->chunked_done) {
+    if (!response->d_ptr->chunked || !response->d_ptr->chunked_done) {
+        QIODevice *body = response->bodyDevice();
+        void *engineData = c->engineData();
+
         if (body) {
             body->seek(0);
             char block[64 * 1024];
@@ -143,13 +145,13 @@ void Engine::finalizeBody(Context *c)
                 }
             }
         } else {
-            const auto bodyByteArray = c->response()->body();
+            const QByteArray bodyByteArray = response->body();
             if (!bodyByteArray.isNull()) {
                 write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
             }
         }
 
-        if (!c->d_ptr->chunked_done) {
+        if (!response->d_ptr->chunked_done) {
             // Write the final '0' chunk
             doWrite(c, "0\r\n\r\n", 5, engineData);
         }
@@ -227,9 +229,10 @@ quint64 Engine::time()
 
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
-    if (!c->d_ptr->chunked) {
+    Response *response = c->response();
+    if (!response->d_ptr->chunked) {
         return doWrite(c, data, len, engineData);
-    } else if (!c->d_ptr->chunked_done) {
+    } else if (!response->d_ptr->chunked_done) {
         const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
         chunk.reserve(len + chunkSize.size() + 4);
@@ -240,7 +243,7 @@ qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 
         // Flag if we wrote an empty chunk
         if (!len) {
-            c->d_ptr->chunked_done = true;
+            response->d_ptr->chunked_done = true;
         }
 
         return retWrite == chunk.size() ? len : -1;
@@ -356,9 +359,7 @@ void Engine::finalize(Context *c)
         finalizeError(c);
     }
 
-    Response *response = c->response();
-
-    if (!response->d_ptr->finalizedHeaders) {
+    if (!c->response()->d_ptr->finalizedHeaders) {
         finalizeHeaders(c);
     }
 
