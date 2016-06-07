@@ -120,7 +120,7 @@ void Response::setBody(const QByteArray &body)
 
 void Response::setJsonBody(const QJsonDocument &documment)
 {
-    body() = documment.toJson(QJsonDocument::Compact);
+    setBody(documment.toJson(QJsonDocument::Compact));
     setContentType(QStringLiteral("application/json"));
 }
 
