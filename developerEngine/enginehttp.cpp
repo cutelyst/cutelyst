@@ -223,14 +223,14 @@ bool EngineHttp::finalizeHeaders(Context *ctx)
     return true;
 }
 
-void EngineHttp::finalizeBody(Context *ctx, QIODevice *body)
+void EngineHttp::finalizeBody(Context *c)
 {
     Q_D(EngineHttp);
-    Q_UNUSED(ctx)
 
-    int *id = static_cast<int*>(ctx->engineData());
+    int *id = static_cast<int*>(c->engineData());
     EngineHttpRequest *req = d->requests.value(*id);
     QTcpSocket *socket = req->m_socket;
+    QIODevice *body = c->response()->bodyDevice();
 
     body->seek(0);
 
