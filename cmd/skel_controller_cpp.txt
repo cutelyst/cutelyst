@@ -1,0 +1,28 @@
+#include "%%fileBaseName%%.h"
+
+using namespace Cutelyst;
+
+%%controllerName%% :: %%controllerName%%(QObject *parent) : Controller(parent)
+{
+}
+
+%%controllerName%%::~%%controllerName%%()
+{
+}
+
+void %%controllerName%%::index(Context *c)
+{
+%%if helpers
+    c->response()->body() = c->welcomeMessage();
+%%else
+    c->response()->body() = "Matched Controller::%%controllerName%% in %%controllerName%%.";
+%%endif
+}
+
+%%if helpers
+void %%controllerName%%::defaultPage(Context *c)
+{
+    c->response()->body() = "Page not found!";
+    c->response()->setStatus(404);
+}
+%%endif

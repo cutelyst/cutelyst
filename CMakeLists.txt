@@ -24,6 +24,7 @@ set(CUTELYST_API_LEVEL "0")
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 # Include our cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -88,7 +89,7 @@ configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 #
 set (MAINTAINER_CFLAGS "-Werror -Wall -Wcast-align -Wno-uninitialized -Wempty-body -Wformat-security -Wformat -Winit-self")
 if (DISABLE_MAINTAINER_CFLAGS)
-	set (MAINTAINER_CFLAGS "")
+  set (MAINTAINER_CFLAGS "")
 endif (DISABLE_MAINTAINER_CFLAGS)
 add_definitions(${MAINTAINER_CFLAGS})
 
