@@ -54,7 +54,7 @@ QByteArray DispatchTypeChained::list() const
     QList<QStringList> unattachedTable;
     Q_FOREACH (Action *endPoint, endPoints) {
         QStringList parts;
-        if (endPoint->attributes().value(QLatin1String("Args")).isNull()) {
+        if (endPoint->numberOfArgs() == -1) {
             parts.append(QLatin1String("..."));
         } else {
             for (int i = 0; i < endPoint->numberOfArgs(); ++i) {
@@ -111,6 +111,8 @@ QByteArray DispatchTypeChained::list() const
             auto it = attributes.constFind(QLatin1String("CaptureArgs"));
             if (it != attributes.constEnd()) {
                 name.append(QLatin1String(" (") + it.value() + QLatin1Char(')'));
+            } else {
+                name.append(QLatin1String(" (0)"));
             }
 
             QString ct = DispatchTypeChainedPrivate::listExtraConsumes(p);
@@ -133,6 +135,12 @@ QByteArray DispatchTypeChained::list() const
             line.append(extra + QLatin1Char(' '));
         }
         line.append(QLatin1Char('/') + endPoint->reverse());
+        if (endPoint->numberOfArgs() == -1) {
+            line.append(QLatin1String(" (...)"));
+        } else {
+            line.append(QLatin1String(" (") + QString::number(endPoint->numberOfArgs()) + QLatin1Char(')'));
+        }
+
         if (!consumes.isEmpty()) {
             line.append(QLatin1String(" :") + consumes);
         }
