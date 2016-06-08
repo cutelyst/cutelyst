@@ -99,6 +99,7 @@ qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engin
     Q_UNUSED(c)
     Q_UNUSED(engineData)
     m_responseData.append(data, len);
+    return len;
 }
 
 bool TestEngine::init()
