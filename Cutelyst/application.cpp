@@ -331,7 +331,7 @@ bool Application::setup(Engine *engine)
             controller->d_ptr->init(this, d->dispatcher);
         }
 
-        d->dispatcher->setupActions(controllers, d->dispatchers);
+        d->dispatcher->setupActions(controllers, d->dispatchers, d->engine->workerCore() == 0);
 
         if (zeroCore) {
             qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")

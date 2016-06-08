@@ -36,11 +36,11 @@
 
 using namespace Cutelyst;
 
-Dispatcher::Dispatcher(Application *app) : QObject(app)
+Dispatcher::Dispatcher(QObject *parent) : QObject(parent)
   , d_ptr(new DispatcherPrivate(this))
 {
-    new DispatchTypePath(app);
-    new DispatchTypeChained(app);
+    new DispatchTypePath(parent);
+    new DispatchTypeChained(parent);
 }
 
 Dispatcher::~Dispatcher()
@@ -48,7 +48,7 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList<Cutelyst::DispatchType *> &dispatchers)
+void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList<Cutelyst::DispatchType *> &dispatchers, bool printActions)
 {
     Q_D(Dispatcher);
 
@@ -124,7 +124,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
         ++i;
     }
 
-    if (qobject_cast<Application*>(parent())->engine()->workerCore() == 0) {
+    if (printActions) {
         d->printActions();
     }
 }
@@ -328,10 +328,6 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
         }
     }
     return ret;
-}
-
-DispatcherPrivate::DispatcherPrivate(Dispatcher *q) : q_ptr(q)
-{
 }
 
 void DispatcherPrivate::printActions() const

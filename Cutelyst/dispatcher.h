@@ -37,7 +37,7 @@ class CUTELYST_LIBRARY Dispatcher : public QObject
 {
     Q_OBJECT
 public:
-    Dispatcher(Application *app);
+    Dispatcher(QObject *parent = nullptr);
     ~Dispatcher();
 
     /**
@@ -76,7 +76,7 @@ public:
     QList<DispatchType *> dispatchers() const;
 
 protected:
-    void setupActions(const QList<Controller *> &controllers, const QList<DispatchType *> &dispatchers);
+    void setupActions(const QList<Controller *> &controllers, const QList<DispatchType *> &dispatchers, bool printActions);
 
     /**
      * Delegate the dispatch to the action that matched the url, or return a

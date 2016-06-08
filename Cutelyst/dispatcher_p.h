@@ -28,7 +28,7 @@ class DispatcherPrivate
 {
     Q_DECLARE_PUBLIC(Dispatcher)
 public:
-    DispatcherPrivate(Dispatcher *q);
+    DispatcherPrivate(Dispatcher *q) : q_ptr(q) {}
 
     void printActions() const;
     inline ActionList getContainers(const QString &ns) const;
@@ -38,12 +38,12 @@ public:
     static inline QString actionRel2Abs(Context *c, const QString &path);
     static inline QString cleanNamespace(const QString &ns);
 
-    Dispatcher *q_ptr;
     QMap<QString, Action*> actions;
     QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
     QMap<QString, Controller *> controllers;
     QList<DispatchType*> dispatchers;
+    Dispatcher *q_ptr;
     bool showInternalActions = false;
 };
 
