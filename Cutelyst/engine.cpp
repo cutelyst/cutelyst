@@ -472,22 +472,22 @@ void Engine::processRequest(const QString &method,
 {
     Q_D(Engine);
 
-    RequestPrivate *prv = new RequestPrivate(this,
-                                             method,
-                                             path,
-                                             query,
-                                             protocol,
-                                             isSecure,
-                                             serverAddress,
-                                             remoteAddress,
-                                             remotePort,
-                                             remoteUser,
-                                             headers,
-                                             startOfRequest,
-                                             body,
-                                             requestPtr);
+    auto prv = new RequestPrivate(this,
+                                  method,
+                                  path,
+                                  query,
+                                  protocol,
+                                  isSecure,
+                                  serverAddress,
+                                  remoteAddress,
+                                  remotePort,
+                                  remoteUser,
+                                  headers,
+                                  startOfRequest,
+                                  body,
+                                  requestPtr);
 
-    Request *request = new Request(prv);
+    auto request = new Request(prv);
     d->app->handleRequest(request);
     delete request;
 }
