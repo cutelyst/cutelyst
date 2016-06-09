@@ -15,7 +15,10 @@ add_library(coverage_test STATIC coverageobject.cpp
   ${_testresource_rcc_src}
 )
 target_link_libraries(coverage_test Qt5::Test Qt5::Network)
-target_compile_definitions(coverage_test PUBLIC cxx_auto_type)
+target_compile_definitions(coverage_test PUBLIC
+    cxx_auto_type
+    cxx_nullptr
+)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
   foreach(_testname ${ARGN})
