@@ -157,7 +157,6 @@ public:
     void uriFor(Context *c, const QStringList &args) {
         auto query = c->request()->queryParameters();
         QString path = query.take(QStringLiteral("path"));
-        qDebug() << query;
         c->response()->setBody(c->uriFor(path, args, query).toString());
     }
 

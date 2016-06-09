@@ -93,7 +93,7 @@ void TestDispatcher::testController_data()
 
     query.clear();
     query.addQueryItem(QStringLiteral("path"), QStringLiteral("/root/"));
-    QTest::newRow("urifor-test03") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("http://127.0.0.1/root/a/b/c");
+    QTest::newRow("urifor-test03") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("http://127.0.0.1/root//a/b/c");
 
     query.clear();
     query.addQueryItem(QStringLiteral("path"), QStringLiteral("/new/path"));
@@ -102,10 +102,10 @@ void TestDispatcher::testController_data()
     QTest::newRow("urifor-test04") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("http://127.0.0.1/new/path/a/b/c?encoded=\xC3\xA7\xE2\x82\xAC\xC2\xA2&foo=bar");
 
     query.clear();
-    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/new/path//"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/new/path///"));
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("encoded"), QStringLiteral("ç€¢"));
-    QTest::newRow("urifor-test05") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("http://127.0.0.1/new/path/a/b/c?encoded=\xC3\xA7\xE2\x82\xAC\xC2\xA2&foo=bar");
+    QTest::newRow("urifor-test05") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("http://127.0.0.1/new/path////a/b/c?encoded=\xC3\xA7\xE2\x82\xAC\xC2\xA2&foo=bar");
 
     // UriForAction Path
     query.clear();
