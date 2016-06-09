@@ -209,9 +209,9 @@ void TestDispatcher::testController_data()
     QTest::newRow("path-test05") << QStringLiteral("/test/controller/many") << QByteArrayLiteral("path /test/controller/many args ");
     QTest::newRow("path-test06") << QStringLiteral("/test/controller/many/1/2/3/4/5/6/7/8/9/10/11/12") << QByteArrayLiteral("path /test/controller/many/1/2/3/4/5/6/7/8/9/10/11/12 args 1/2/3/4/5/6/7/8/9/10/11/12");
     QTest::newRow("path-test07") << QStringLiteral("/test/controller/one/1") << QByteArrayLiteral("path /test/controller/one/1 args 1");
-    QTest::newRow("path-test08") << QStringLiteral("/test/controller/one/1/") << QByteArrayLiteral("Unknown resource \"test/controller/one/1/\".");
+    QTest::newRow("path-test08") << QStringLiteral("/test/controller/one/1//") << QByteArrayLiteral("path /test/controller/one/1// args 1");
     QTest::newRow("path-test09") << QStringLiteral("/test/controller/two/1/2") << QByteArrayLiteral("path /test/controller/two/1/2 args 1/2");
-    QTest::newRow("path-test10") << QStringLiteral("/test/controller/two/1/2/") << QByteArrayLiteral("Unknown resource \"test/controller/two/1/2/\".");
+    QTest::newRow("path-test10") << QStringLiteral("/test/controller/two/1/2//") << QByteArrayLiteral("path /test/controller/two/1/2// args 1/2");
     QTest::newRow("path-test11") << QStringLiteral("/test/controller/manyOld/") << QByteArrayLiteral("path /test/controller/manyOld/ args ");
     QTest::newRow("path-test12") << QStringLiteral("/test/controller/manyOld") << QByteArrayLiteral("path /test/controller/manyOld args ");
     QTest::newRow("path-test13") << QStringLiteral("/test/controller/manyOld/1/2/3/4/5/6/7/8/9/10/11/12") << QByteArrayLiteral("path /test/controller/manyOld/1/2/3/4/5/6/7/8/9/10/11/12 args 1/2/3/4/5/6/7/8/9/10/11/12");
@@ -219,9 +219,9 @@ void TestDispatcher::testController_data()
     QTest::newRow("path-test15") << QStringLiteral("/test/controller/manyOldWithNoArgs") << QByteArrayLiteral("path /test/controller/manyOldWithNoArgs args ");
     QTest::newRow("path-test16") << QStringLiteral("/test/controller/manyOldWithNoArgs/1/2/3/4/5/6/7/8/9/10/11/12") << QByteArrayLiteral("path /test/controller/manyOldWithNoArgs/1/2/3/4/5/6/7/8/9/10/11/12 args 1/2/3/4/5/6/7/8/9/10/11/12");
     QTest::newRow("path-test17") << QStringLiteral("/test/controller/oneOld/1") << QByteArrayLiteral("path /test/controller/oneOld/1 args 1");
-    QTest::newRow("path-test18") << QStringLiteral("/test/controller/oneOld/1/") << QByteArrayLiteral("Unknown resource \"test/controller/oneOld/1/\".");
+    QTest::newRow("path-test18") << QStringLiteral("/test/controller/oneOld/1//") << QByteArrayLiteral("path /test/controller/oneOld/1// args 1");
     QTest::newRow("path-test19") << QStringLiteral("/test/controller/twoOld/1/2") << QByteArrayLiteral("path /test/controller/twoOld/1/2 args 1/2");
-    QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2/") << QByteArrayLiteral("Unknown resource \"test/controller/twoOld/1/2/\".");
+    QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2//") << QByteArrayLiteral("path /test/controller/twoOld/1/2// args 1/2");
 
     // Chained dispatcher
     QTest::newRow("chained-test00") << QStringLiteral("/root") << QByteArrayLiteral("/root");
@@ -231,7 +231,7 @@ void TestDispatcher::testController_data()
     QTest::newRow("chained-test04") << QStringLiteral("/root/item/") << QByteArrayLiteral("/root");
 
     QTest::newRow("chained-test05") << QStringLiteral("/chain/item") << QByteArrayLiteral("/chain/item[MANY]/");
-    QTest::newRow("chained-test06") << QStringLiteral("/chain/item/") << QByteArrayLiteral("/chain/item[ONE]/");
+    QTest::newRow("chained-test06") << QStringLiteral("/chain/item/") << QByteArrayLiteral("/chain/item[MANY]/");
     QTest::newRow("chained-test07") << QStringLiteral("/chain/item/foo") << QByteArrayLiteral("/chain/item[ONE]/foo");
     QTest::newRow("chained-test08") << QStringLiteral("/chain/item/foo/bar") << QByteArrayLiteral("/chain/item[MANY]/foo/bar");
 
