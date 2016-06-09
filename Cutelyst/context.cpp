@@ -239,6 +239,9 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
             }
         }
         ret.setQuery(query);
+    } else {
+        // Make sure there is no query part
+        ret.setQuery(QUrlQuery());
     }
 
     return ret;
