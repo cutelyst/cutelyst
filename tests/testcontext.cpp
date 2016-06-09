@@ -1,4 +1,4 @@
-#ifndef DISPATCHERTEST_H
+﻿#ifndef DISPATCHERTEST_H
 #define DISPATCHERTEST_H
 
 #include <QtTest/QTest>
