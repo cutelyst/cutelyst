@@ -273,6 +273,10 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     }
 
     const QString path = d->dispatcher->uriForAction(localAction, localCaptures);
+    if (path.isNull()) {
+        qCWarning(CUTELYST_CORE) << "Can not find action for" << localAction << localCaptures;
+        return QUrl();
+    }
 
     return uriFor(path, localArgs, queryValues);
 }
