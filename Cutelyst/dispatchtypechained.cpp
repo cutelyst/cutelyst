@@ -445,7 +445,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
 
                 if (bestAction.isEmpty() ||
                         parts.size() < bestAction.value(QStringLiteral("parts")).toInt() ||
-                        (!parts.isEmpty() && !argsAttr.isEmpty() && argsAttr == QLatin1String("0"))) {
+                        (parts.isEmpty() && !argsAttr.isNull() && action->numberOfArgs() == 0)) {
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(ActionList() << action) },
                         { QStringLiteral("captures"), QStringList() },

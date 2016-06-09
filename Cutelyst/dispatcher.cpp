@@ -175,8 +175,8 @@ void Dispatcher::prepareAction(Context *c)
     Q_D(Dispatcher);
 
     Request *request = c->request();
-    const QString path = request->path();
-    QVector<QStringRef> pathParts = path.splitRef(QLatin1Char('/'));
+    QStringList pathParts = request->path().split(QLatin1Char('/'), QString::SkipEmptyParts);
+    const QString path = pathParts.join(QLatin1Char('/'));
     QStringList args;
 
     int pos = path.size();
