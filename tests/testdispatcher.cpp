@@ -95,6 +95,55 @@ public:
     void twoOld(Context *c) {
         c->response()->setBody(QStringLiteral("path /%1 args %2").arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
+
+
+    C_ATTR(root, :Chained("/"))
+    void root(Context *c) {
+        c->response()->body().append(QByteArrayLiteral("/root"));
+    }
+
+    C_ATTR(rootItem, :Chained("root") :PathPart("item"))
+    void rootItem(Context *c) {
+        // Since root has no capture part this is never called
+        c->response()->body().append(QByteArrayLiteral("/root/item"));
+    }
+
+
+    C_ATTR(chain, :Chained("/") :PathPart("chain") :CaptureArgs(0))
+    void chain(Context *c) {
+        c->response()->body().append(QByteArrayLiteral("/chain"));
+    }
+
+    C_ATTR(item, :Chained("chain"))
+    void item(Context *c) {
+        c->response()->body().append(QByteArrayLiteral("/item[MANY]/"));
+        c->response()->body().append(c->request()->args().join(QLatin1Char('/')).toLatin1());
+    }
+
+    C_ATTR(itemOne, :Chained("chain") :PathPart("item") :AutoArgs)
+    void itemOne(Context *c, const QString &arg) {
+        c->response()->body().append(QByteArrayLiteral("/item[ONE]/"));
+        c->response()->body().append(arg.toLatin1());
+    }
+
+    C_ATTR(midle, :Chained("chain") :AutoCaptureArgs)
+    void midle(Context *c, const QString &first, const QString &second) {
+        c->response()->body().append(QByteArrayLiteral("/midle/"));
+        c->response()->body().append(first.toLatin1());
+        c->response()->body().append(QByteArrayLiteral("/"));
+        c->response()->body().append(second.toLatin1());
+    }
+
+    C_ATTR(midleEnd, :Chained("midle") :PathPart("end") :Args(0))
+    void midleEnd(Context *c) {
+        c->response()->body().append(QByteArrayLiteral("/end"));
+    }
+
+    C_ATTR(midleEndMany, :Chained("midle") :PathPart("end") :Args)
+    void midleEndMany(Context *c, const QStringList &args) {
+        c->response()->body().append(QByteArrayLiteral("/end/"));
+        c->response()->body().append(args.join(QLatin1Char('/')).toLatin1());
+    }
 };
 
 class TestApplication : public Application
@@ -151,6 +200,7 @@ void TestDispatcher::testController_data()
     QTest::addColumn<QString>("url");
     QTest::addColumn<QByteArray>("output");
 
+    // Path dispatcher
     QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource") << QByteArrayLiteral("Unknown resource \"test/unknown_resource\".");
     QTest::newRow("path-test01") << QStringLiteral("/test/controller") << QByteArrayLiteral("path /test/controller args ");
     QTest::newRow("path-test02") << QStringLiteral("/test/controller/hello") << QByteArrayLiteral("path /test/controller/hello args ");
@@ -172,6 +222,23 @@ void TestDispatcher::testController_data()
     QTest::newRow("path-test18") << QStringLiteral("/test/controller/oneOld/1/") << QByteArrayLiteral("Unknown resource \"test/controller/oneOld/1/\".");
     QTest::newRow("path-test19") << QStringLiteral("/test/controller/twoOld/1/2") << QByteArrayLiteral("path /test/controller/twoOld/1/2 args 1/2");
     QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2/") << QByteArrayLiteral("Unknown resource \"test/controller/twoOld/1/2/\".");
+
+    // Chained dispatcher
+    QTest::newRow("chained-test00") << QStringLiteral("/root") << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test01") << QStringLiteral("/root/") << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test02") << QStringLiteral("/root////") << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test03") << QStringLiteral("/root/item") << QByteArrayLiteral("/root");
+    QTest::newRow("chained-test04") << QStringLiteral("/root/item/") << QByteArrayLiteral("/root");
+
+    QTest::newRow("chained-test05") << QStringLiteral("/chain/item") << QByteArrayLiteral("/chain/item[MANY]/");
+    QTest::newRow("chained-test06") << QStringLiteral("/chain/item/") << QByteArrayLiteral("/chain/item[ONE]/");
+    QTest::newRow("chained-test07") << QStringLiteral("/chain/item/foo") << QByteArrayLiteral("/chain/item[ONE]/foo");
+    QTest::newRow("chained-test08") << QStringLiteral("/chain/item/foo/bar") << QByteArrayLiteral("/chain/item[MANY]/foo/bar");
+
+    QTest::newRow("chained-test09") << QStringLiteral("/chain/midle/one/two/end") << QByteArrayLiteral("/chain/midle/one/two/end");
+    QTest::newRow("chained-test10") << QStringLiteral("/chain/midle/TWO/ONE/end") << QByteArrayLiteral("/chain/midle/TWO/ONE/end");
+    QTest::newRow("chained-test11") << QStringLiteral("/chain/midle/one/two/end/") << QByteArrayLiteral("/chain/midle/one/two/end");
+    QTest::newRow("chained-test12") << QStringLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5") << QByteArrayLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5");
 }
 
 QTEST_MAIN(TestDispatcher)
