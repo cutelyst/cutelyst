@@ -18,6 +18,7 @@ target_link_libraries(coverage_test Qt5::Test Qt5::Network)
 target_compile_definitions(coverage_test PUBLIC
     cxx_auto_type
     cxx_nullptr
+    cxx_override
 )
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
