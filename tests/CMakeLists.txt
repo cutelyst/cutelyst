@@ -14,25 +14,29 @@ add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.cpp
   ${_testresource_rcc_src}
 )
-target_link_libraries(coverage_test Qt5::Test Qt5::Network)
-target_compile_definitions(coverage_test PUBLIC
+target_compile_features(coverage_test
+  PRIVATE
     cxx_auto_type
+  PUBLIC
     cxx_nullptr
     cxx_override
 )
+target_link_libraries(coverage_test Qt5::Test Qt5::Network)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname}_exec
                   ${_testname}.cpp
     )
-    add_test(${_testname} ${_testname}_exec )
-    target_link_libraries(${_testname}_exec CutelystQt5::Core coverage_test)
-    target_compile_definitions(${_testname}_exec PUBLIC
+    add_test(${_testname} ${_testname}_exec)
+    target_compile_features(${_testname}_exec
+      PRIVATE
         cxx_auto_type
+      PUBLIC
         cxx_nullptr
         cxx_override
     )
+    target_link_libraries(${_testname}_exec CutelystQt5::Core coverage_test)
 
     set_property(GLOBAL APPEND PROPERTY TEST_COVERAGE "${CMAKE_CURRENT_BINARY_DIR}/${_testname}_exec" )
   endforeach(_testname)
