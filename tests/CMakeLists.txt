@@ -39,7 +39,9 @@ macro(CUTELYST_TEMPLATES_UNIT_TESTS)
 endmacro(CUTELYST_TEMPLATES_UNIT_TESTS)
 
 cutelyst_templates_unit_tests(
-  testheaders
-  testdispatcher
+    testheaders
+    testcontext
+    testdispatcherpath
+    testdispatcherchained
 )
 
