@@ -121,10 +121,9 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
     QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
     QCOMPARE(headers.authorizationBasicPair().first, QStringLiteral("user"));
-
 }
 
-QTEST_MAIN( TestHeaders )
+QTEST_MAIN(TestHeaders)
 #include "testheaders.moc"
 
 #endif

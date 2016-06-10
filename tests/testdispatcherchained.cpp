@@ -13,7 +13,7 @@
 
 using namespace Cutelyst;
 
-class TestDispatcher : public CoverageObject
+class TestDispatcherChained : public CoverageObject
 {
     Q_OBJECT
 
@@ -36,13 +36,13 @@ private:
 
 };
 
-void TestDispatcher::initTestCase()
+void TestDispatcherChained::initTestCase()
 {
     m_engine = getEngine();
     QVERIFY(m_engine);
 }
 
-TestEngine* TestDispatcher::getEngine()
+TestEngine* TestDispatcherChained::getEngine()
 {
     TestEngine *engine = new TestEngine(QVariantMap(), this);
     if (!engine->initApplication(new TestApplication, true)) {
@@ -52,12 +52,12 @@ TestEngine* TestDispatcher::getEngine()
 }
 
 
-void TestDispatcher::cleanupTestCase()
+void TestDispatcherChained::cleanupTestCase()
 {
     delete m_engine;
 }
 
-void TestDispatcher::doTest()
+void TestDispatcherChained::doTest()
 {
     QFETCH(QString, url);
     QFETCH(QByteArray, output);
@@ -73,7 +73,7 @@ void TestDispatcher::doTest()
     QCOMPARE( result, output );
 }
 
-void TestDispatcher::testController_data()
+void TestDispatcherChained::testController_data()
 {
     QTest::addColumn<QString>("url");
     QTest::addColumn<QByteArray>("output");
@@ -96,7 +96,7 @@ void TestDispatcher::testController_data()
     QTest::newRow("chained-test12") << QStringLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5") << QByteArrayLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5");
 }
 
-QTEST_MAIN(TestDispatcher)
+QTEST_MAIN(TestDispatcherChained)
 
 #include "testdispatcherchained.moc"
 

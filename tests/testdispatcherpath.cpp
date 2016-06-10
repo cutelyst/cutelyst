@@ -13,7 +13,7 @@
 
 using namespace Cutelyst;
 
-class TestDispatcher : public CoverageObject
+class TestDispatcherPath : public CoverageObject
 {
     Q_OBJECT
 
@@ -35,13 +35,13 @@ private:
     void doTest();
 };
 
-void TestDispatcher::initTestCase()
+void TestDispatcherPath::initTestCase()
 {
     m_engine = getEngine();
     QVERIFY(m_engine);
 }
 
-TestEngine* TestDispatcher::getEngine()
+TestEngine* TestDispatcherPath::getEngine()
 {
     TestEngine *engine = new TestEngine(QVariantMap(), this);
     if (!engine->initApplication(new TestApplication, true)) {
@@ -51,12 +51,12 @@ TestEngine* TestDispatcher::getEngine()
 }
 
 
-void TestDispatcher::cleanupTestCase()
+void TestDispatcherPath::cleanupTestCase()
 {
     delete m_engine;
 }
 
-void TestDispatcher::doTest()
+void TestDispatcherPath::doTest()
 {
     QFETCH(QString, url);
     QFETCH(QByteArray, output);
@@ -72,7 +72,7 @@ void TestDispatcher::doTest()
     QCOMPARE( result, output );
 }
 
-void TestDispatcher::testController_data()
+void TestDispatcherPath::testController_data()
 {
     QTest::addColumn<QString>("url");
     QTest::addColumn<QByteArray>("output");
@@ -101,7 +101,7 @@ void TestDispatcher::testController_data()
     QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2//") << QByteArrayLiteral("path /test/controller/twoOld/1/2// args 1/2");
 }
 
-QTEST_MAIN(TestDispatcher)
+QTEST_MAIN(TestDispatcherPath)
 
 #include "testdispatcherpath.moc"
 
