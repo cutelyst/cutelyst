@@ -168,7 +168,7 @@ void Engine::finalizeError(Context *c)
 
     body.append(c->errors().join(QLatin1Char('\n')).toUtf8());
 
-    res->body() = body;
+    res->setBody(body);
 
     // Return 500
     res->setStatus(Response::InternalServerError);
