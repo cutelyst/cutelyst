@@ -92,6 +92,22 @@ target_compile_features(cutelyst-qt5
     cxx_nullptr
 )
 
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+  set_property(TARGET cutelyst-qt5 PROPERTY DEBUG_POSTFIX "d")
+  foreach(cfg ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${cfg} CFG)
+    set_target_properties(cutelyst-qt5
+      PROPERTIES
+      LIBRARY_OUTPUT_DIRECTORY_${CFG} "${CMAKE_CURRENT_BINARY_DIR}"
+      RUNTIME_OUTPUT_DIRECTORY_${CFG} "${CMAKE_CURRENT_BINARY_DIR}"
+      )
+  endforeach()
+endif()
+target_compile_definitions(cutelyst-qt5
+  PRIVATE
+    PLUGINS_PREFER_DEBUG_POSTFIX=$<CONFIG:Debug>
+)
+
 set_target_properties(cutelyst-qt5 PROPERTIES
     VERSION ${CUTELYST_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
