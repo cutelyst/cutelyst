@@ -105,7 +105,7 @@ private:
     void Begin(Context *) { }
 
     C_ATTR(Auto,)
-    bool Auto(Context *) { }
+    bool Auto(Context *) { return true; }
 
     C_ATTR(End,)
     void End(Context *) { }
