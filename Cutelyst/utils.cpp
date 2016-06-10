@@ -27,7 +27,6 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
 {
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
-    out << '\r';
     for (int i = 0; i < columnsSize.size(); ++i) {
         if (i) {
             out << '+';
@@ -36,7 +35,7 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
         }
         out << QByteArray().fill('-', columnsSize[i] + 2).data();
     }
-    out << '.' << endl;
+    out << '.';
 
     return buffer;
 }
@@ -83,7 +82,7 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     }
 
     // Top line
-    out << div;
+    out << div << endl;
 
     if (!headers.isEmpty()) {
         // header titles
@@ -99,7 +98,7 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
         out << '|' << endl;
 
         // header bottom line
-        out << div;
+        out << div << endl;
     }
 
     Q_FOREACH (const QStringList &row, table) {
