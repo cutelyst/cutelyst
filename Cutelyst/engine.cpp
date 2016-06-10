@@ -86,27 +86,25 @@ bool Engine::finalizeHeaders(Context *c)
     // Fix missing content length
     if (!response->contentLength() && response->hasBody()) {
         QIODevice *body = response->bodyDevice();
-        if (body) {
-            response->setContentLength(body->size());
-        } else {
+        if (!body) {
             response->setContentLength(response->body().size());
-        }
-    }
-
-    const QString protocol = c->request()->protocol();
-    if (protocol == QLatin1String("HTTP/1.1")) {
-        if (!response->contentLength()) {
-            quint16 status = response->status();
-            // if status is not 1xx or 204 NoContent or 304 NotModified
-            if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
-                qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
-                response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
-                response->d_ptr->chunked = true;
+        } else {
+            qint64 size = body->size();
+            if (size >= 0) {
+                response->setContentLength(body->size());
+            } else if (c->request()->protocol() == QLatin1String("HTTP/1.1")) {
+                quint16 status = response->status();
+                // if status is not 1xx or 204 NoContent or 304 NotModified
+                if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
+                    qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
+                    response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+                    response->d_ptr->chunked = true;
+                }
             }
-        } else if (response->header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
-            qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
-            response->d_ptr->chunked = true;
         }
+    } else if (response->header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
+        qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
+        response->d_ptr->chunked = true;
     }
 
     // Handle redirects
