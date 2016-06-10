@@ -21,7 +21,7 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt5::Test Qt5::Network)
+target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
   foreach(_testname ${ARGN})

@@ -106,3 +106,5 @@ bool TestEngine::init()
 {
     return true;
 }
+
+#include "moc_coverageobject.cpp"
