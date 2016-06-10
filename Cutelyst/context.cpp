@@ -344,6 +344,14 @@ bool Context::execute(Component *code)
     Q_D(Context);
     Q_ASSERT_X(code, "Context::execute", "trying to execute a null Cutelyst::Component");
 
+    static int recursion = qMax(qgetenv("RECURSION").toInt(), 1000);
+    if (d->stack.size() >= recursion) {
+        QString msg = QStringLiteral("Deep recursion detected calling %1, %2").arg(code->reverse(), code->name());
+        error(msg);
+        setState(false);
+        return false;
+    }
+
     bool ret;
     d->stack.push(code);
 

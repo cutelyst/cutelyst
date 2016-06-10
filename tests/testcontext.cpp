@@ -292,6 +292,10 @@ void TestContext::testController_data()
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("ns"));
     QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("context/test");
 
+    query.clear();
+    query.addQueryItem(QStringLiteral("action"), QStringLiteral("forwardToActionString"));
+    QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("Deep recursion detected calling context/test/forwardToActionString, forwardToActionString");
+
     // GetAction
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
