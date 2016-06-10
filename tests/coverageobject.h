@@ -11,20 +11,20 @@ using namespace Cutelyst;
 
 class CoverageObject : public QObject
 {
-  Q_OBJECT
-  public:
+    Q_OBJECT
+public:
     CoverageObject(QObject *parent = 0) : QObject(parent) {}
     virtual void initTest() {}
     virtual void cleanupTest() {}
-  protected Q_SLOTS:
+protected Q_SLOTS:
     void init() ;
     void cleanup();
-  private:
+private:
     void saveCoverageData();
     QString generateTestName() const;
 };
 
-class TestEngine : public Cutelyst::Engine
+class TestEngine : public Engine
 {
     Q_OBJECT
 public:
@@ -34,14 +34,37 @@ public:
 
     virtual int workerCore() const override;
 
-    QByteArray createRequest(const QString &method, const QString &path, const QByteArray &query, const Cutelyst::Headers &headers, QByteArray *body);
+    QByteArray createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
 
 protected:
-    virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData);
+    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
     virtual bool init();
 
 private:
     QByteArray m_responseData;
+};
+
+class RootController : public Controller
+{
+    Q_OBJECT
+    C_NAMESPACE("")
+public:
+    RootController(QObject *parent) : Controller(parent) {}
+
+    C_ATTR(rootActionOnControllerWithoutNamespace, :Local :AutoArgs)
+    void rootActionOnControllerWithoutNamespace(Context *c) {
+        c->response()->setBody(c->actionName());
+    }
+
+private:
+    C_ATTR(Begin,)
+    void Begin(Context *) { }
+
+    C_ATTR(Auto,)
+    bool Auto(Context *) { }
+
+    C_ATTR(End,)
+    void End(Context *) { }
 };
 
 class TestController : public Controller
@@ -182,6 +205,7 @@ public:
     TestApplication(QObject *parent = 0) : Application(parent) {}
     virtual bool init() {
         new TestController(this);
+        new RootController(this);
 
         return true;
     }
