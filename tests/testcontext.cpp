@@ -120,6 +120,7 @@ void TestContext::initTestCase()
 TestEngine* TestContext::getEngine()
 {
     TestEngine *engine = new TestEngine(QVariantMap(), this);
+    qputenv("RECURSION", QByteArrayLiteral("100"));
     auto app = new TestApplication;
     new ContextGetActionsTest(app);
     new ContextTest(app);
