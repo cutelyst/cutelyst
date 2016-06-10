@@ -295,7 +295,7 @@ void TestContext::testController_data()
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("forwardToActionString"));
-    QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("Deep recursion detected calling context/test/forwardToActionString, forwardToActionString");
+    QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("Deep recursion detected (stack size 100) calling context/test/forwardToActionString, forwardToActionString");
 
     // GetAction
     query.clear();
