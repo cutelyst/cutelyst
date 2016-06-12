@@ -110,24 +110,14 @@ void Response::setBody(QIODevice *body)
 void Response::setBody(const QByteArray &body)
 {
     Q_D(Response);
-    if (d->bodyIODevice) {
-        delete d->bodyIODevice;
-        d->bodyIODevice = nullptr;
-    }
-    d->bodyData = body;
-    d->headers.setContentLength(body.size());
+    d->setBodyData(body);
 }
 
 void Response::setJsonBody(const QJsonDocument &documment)
 {
     Q_D(Response);
-    if (d->bodyIODevice) {
-        delete d->bodyIODevice;
-        d->bodyIODevice = nullptr;
-    }
-    QByteArray body = documment.toJson(QJsonDocument::Compact);
-    d->bodyData = body;
-    d->headers.setContentLength(body.size());
+    const QByteArray body = documment.toJson(QJsonDocument::Compact);
+    d->setBodyData(body);
     d->headers.setContentType(QStringLiteral("application/json"));
 }
 
@@ -264,6 +254,16 @@ Headers &Response::headers()
 bool Response::isSequential() const
 {
     return true;
+}
+
+void ResponsePrivate::setBodyData(const QByteArray &body)
+{
+    if (bodyIODevice) {
+        delete bodyIODevice;
+        bodyIODevice = nullptr;
+    }
+    bodyData = body;
+    headers.setContentLength(body.size());
 }
 
 #include "moc_response.cpp"
