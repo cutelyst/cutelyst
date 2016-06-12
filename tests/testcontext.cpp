@@ -69,6 +69,16 @@ public:
         c->response()->setBody(c->controllerName());
     }
 
+    C_ATTR(controller, :Local :AutoArgs)
+    void controller(Context *c) {
+        Controller *controller = c->controller(c->request()->queryParam(QStringLiteral("name")));
+        if (!controller) {
+            c->response()->setBody(QStringLiteral("__NOT_FOUND__"));
+        } else {
+            c->response()->setBody(QByteArray(controller->metaObject()->className()));
+        }
+    }
+
     C_ATTR(forwardToActionString, :Local :AutoArgs)
     void forwardToActionString(Context *c) {
         c->forward(c->request()->queryParam(QStringLiteral("action")));
@@ -283,6 +293,15 @@ void TestContext::testController_data()
     QTest::newRow("context-test00") << QStringLiteral("/context/test/actionName") << QByteArrayLiteral("actionName");
     QTest::newRow("context-test01") << QStringLiteral("/context/test/ns") << QByteArrayLiteral("context/test");
     QTest::newRow("context-test02") << QStringLiteral("/context/test/controllerName") << QByteArrayLiteral("ContextTest");
+    QTest::newRow("context-test03") << QStringLiteral("/context/test/controller") << QByteArrayLiteral("__NOT_FOUND__");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("RootController"));
+    QTest::newRow("context-test04") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("RootController");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("ContextGetActionsTest"));
+    QTest::newRow("context-test04") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("ContextGetActionsTest");
 
     // Forward
     query.clear();
