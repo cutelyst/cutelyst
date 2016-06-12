@@ -301,7 +301,7 @@ void TestContext::testController_data()
 
     query.clear();
     query.addQueryItem(QStringLiteral("name"), QStringLiteral("ContextGetActionsTest"));
-    QTest::newRow("context-test04") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("ContextGetActionsTest");
+    QTest::newRow("context-test05") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded) << QByteArrayLiteral("ContextGetActionsTest");
 
     // Forward
     query.clear();
