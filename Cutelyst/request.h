@@ -49,7 +49,7 @@ class CUTELYST_LIBRARY Request : public QObject
     Q_PROPERTY(QString path READ path)
     Q_PROPERTY(QString match READ match)
     Q_PROPERTY(QStringList arguments READ arguments)
-    Q_PROPERTY(QStringList args READ args)
+    Q_PROPERTY(QStringList args READ arguments)
     Q_PROPERTY(bool secure READ secure)
     Q_PROPERTY(QVariant bodyData READ bodyData)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParams READ bodyParameters)
@@ -149,7 +149,7 @@ public:
     /**
      * Shortcut for arguments()
      */
-    QStringList args() const;
+    inline QStringList args() const;
 
     /**
      * Captures
@@ -437,6 +437,9 @@ private:
     friend class DispatchType;
     Q_DECLARE_PRIVATE(Request)
 };
+
+inline QStringList Request::args() const
+{ return arguments(); }
 
 inline QString Request::bodyParameter(const QString &key, const QString &defaultValue) const
 { return bodyParameters().value(key, defaultValue); }

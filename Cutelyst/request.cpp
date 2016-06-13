@@ -156,12 +156,6 @@ void Request::setArguments(const QStringList &arguments)
     d->args = arguments;
 }
 
-QStringList Request::args() const
-{
-    Q_D(const Request);
-    return d->args;
-}
-
 QStringList Request::captures() const
 {
     Q_D(const Request);
