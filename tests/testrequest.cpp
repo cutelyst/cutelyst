@@ -3,6 +3,7 @@
 
 #include <QtTest/QTest>
 #include <QtCore/QObject>
+#include <QHostInfo>
 
 #include "headers.h"
 #include "coverageobject.h"
@@ -154,10 +155,11 @@ void TestRequest::testController_data()
     QString get = QStringLiteral("GET");
     QString post = QStringLiteral("POST");
 
-    QUrlQuery query;
+//    QUrlQuery query;
     Headers headers;
     QTest::newRow("request-test00") << get << QStringLiteral("/request/test/address") << headers << QByteArrayLiteral("127.0.0.1");
-    QTest::newRow("request-test01") << get << QStringLiteral("/request/test/hostname") << headers << QByteArrayLiteral("localhost");
+    QTest::newRow("request-test01") << get << QStringLiteral("/request/test/hostname") << headers
+                                    << QHostInfo::fromName(QStringLiteral("127.0.0.1")).hostName().toLatin1();
     QTest::newRow("request-test02") << get << QStringLiteral("/request/test/port") << headers << QByteArrayLiteral("3000");
     QTest::newRow("request-test03") << get << QStringLiteral("/request/test/uri") << headers << QByteArrayLiteral("http://127.0.0.1/request/test/uri");
     QTest::newRow("request-test04") << get << QStringLiteral("/request/test/base") << headers << QByteArrayLiteral("http://127.0.0.1/");
