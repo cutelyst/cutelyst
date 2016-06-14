@@ -45,6 +45,7 @@ endmacro(CUTELYST_TEMPLATES_UNIT_TESTS)
 cutelyst_templates_unit_tests(
     testheaders
     testcontext
+    testrequest
     testdispatcherpath
     testdispatcherchained
 )
