@@ -138,6 +138,14 @@ public:
     void queryKeywords(Context *c) {
         c->response()->setBody(c->request()->queryKeywords());
     }
+
+    C_ATTR(uriWith, :Local :AutoArgs)
+    void uriWith(Context *c, const QString &append) {
+        c->response()->setBody(c->request()->uriWith(ParamsMultiMap{
+                                                         {QStringLiteral("foo"),QStringLiteral("baz")},
+                                                         {QStringLiteral("fooz"),QStringLiteral("bar")}
+                                                     }, QVariant(append).toBool()).toString(QUrl::FullyEncoded));
+    }
 };
 
 void TestRequest::initTestCase()
@@ -259,6 +267,16 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("and yet another is fine"), QString());
     QTest::newRow("request-test25") << get << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded) << headers
                                     << QByteArrayLiteral("some text to ask&another keyword&and yet another is fine");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    QTest::newRow("request-test26") << get << QStringLiteral("/request/test/uriWith/false?") + query.toString(QUrl::FullyEncoded) << headers
+                                    << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/false?foo=baz&fooz=bar");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    QTest::newRow("request-test26") << get << QStringLiteral("/request/test/uriWith/true?") + query.toString(QUrl::FullyEncoded) << headers
+                                    << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/true?foo=bar&foo=baz&fooz=bar");
 }
 
 QTEST_MAIN(TestRequest)
