@@ -28,7 +28,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Headers : public QMap<QString, QString>
+class CUTELYST_LIBRARY Headers
 {
 public:
     QString contentEncoding() const;
@@ -239,6 +239,17 @@ public:
     void pushHeader(const QString &field, const QStringList &values);
 
     void removeHeader(const QString &field);
+
+    void clear();
+    bool contains(const QString &field);
+
+    QString &operator[](const QString &key);
+    const QString operator[](const QString &key) const;
+
+    QMap<QString, QString>::const_iterator constBegin() const;
+    QMap<QString, QString>::const_iterator constEnd() const;
+private:
+    QMap<QString, QString> m_data;
 };
 
 }

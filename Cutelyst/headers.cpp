@@ -27,29 +27,29 @@ using namespace Cutelyst;
 
 QString Headers::contentEncoding() const
 {
-    return value(QStringLiteral("content_encoding"));
+    return m_data.value(QStringLiteral("content_encoding"));
 }
 
 void Headers::setContentEncoding(const QString &encoding)
 {
-    insert(QStringLiteral("content_encoding"), encoding);
+    m_data.insert(QStringLiteral("content_encoding"), encoding);
 }
 
 QString Headers::contentType() const
 {
-    const auto ct = value(QStringLiteral("content_type"));
+    const auto ct = m_data.value(QStringLiteral("content_type"));
     return ct.section(QLatin1Char(';'), 0, 0).toLower();
 }
 
 void Headers::setContentType(const QString &contentType)
 {
-    insert(QStringLiteral("content_type"), contentType);
+    m_data.insert(QStringLiteral("content_type"), contentType);
 }
 
 QString Headers::contentTypeCharset() const
 {
-    const auto it = constFind(QStringLiteral("content_type"));
-    if (it == constEnd()) {
+    const auto it = m_data.constFind(QStringLiteral("content_type"));
+    if (it == m_data.constEnd()) {
         return QString();
     }
 
@@ -64,9 +64,9 @@ QString Headers::contentTypeCharset() const
 
 void Headers::setContentTypeCharset(const QString &charset)
 {
-    const auto it = constFind(QStringLiteral("content_type"));
-    if (it == constEnd() || (it.value().isEmpty() && !charset.isEmpty())) {
-        insert(QStringLiteral("content_type"), QLatin1String("charset=") + charset);
+    const auto it = m_data.constFind(QStringLiteral("content_type"));
+    if (it == m_data.constEnd() || (it.value().isEmpty() && !charset.isEmpty())) {
+        m_data.insert(QStringLiteral("content_type"), QLatin1String("charset=") + charset);
         return;
     }
 
@@ -78,7 +78,7 @@ void Headers::setContentTypeCharset(const QString &charset)
             if (charset.isEmpty()) {
                 int lastPos = contentType.lastIndexOf(QLatin1Char(';'), pos);
                 if (lastPos == -1) {
-                    remove(QStringLiteral("content_type"));
+                    m_data.remove(QStringLiteral("content_type"));
                     return;
                 } else {
                     contentType.remove(lastPos, contentType.length() - lastPos);
@@ -92,12 +92,12 @@ void Headers::setContentTypeCharset(const QString &charset)
     } else if (!charset.isEmpty()) {
         contentType.append(QLatin1String("; charset=") + charset);
     }
-    insert(QStringLiteral("content_type"), contentType);
+    m_data.insert(QStringLiteral("content_type"), contentType);
 }
 
 bool Headers::contentIsText() const
 {
-    return value(QStringLiteral("content_type")).startsWith(QLatin1String("text/"));
+    return m_data.value(QStringLiteral("content_type")).startsWith(QLatin1String("text/"));
 }
 
 bool Headers::contentIsHtml() const
@@ -125,12 +125,12 @@ bool Headers::contentIsXml() const
 
 qint64 Headers::contentLength() const
 {
-    return value(QStringLiteral("content_length")).toLongLong();
+    return m_data.value(QStringLiteral("content_length")).toLongLong();
 }
 
 void Headers::setContentLength(qint64 value)
 {
-    insert(QStringLiteral("content_length"), QString::number(value));
+    m_data.insert(QStringLiteral("content_length"), QString::number(value));
 }
 
 QString Headers::setDateWithDateTime(const QDateTime &date)
@@ -139,14 +139,14 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
     // and follow RFC 822
     const QString dt = QLocale::c().toString(date.toUTC(),
                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
-    insert(QStringLiteral("date"), dt);
+    m_data.insert(QStringLiteral("date"), dt);
     return dt;
 }
 
 QDateTime Headers::date()
 {
-    auto it = constFind(QStringLiteral("date"));
-    if (it == constEnd()) {
+    auto it = m_data.constFind(QStringLiteral("date"));
+    if (it == m_data.constEnd()) {
         return QDateTime();
     }
 
@@ -171,8 +171,8 @@ QString Headers::ifModifiedSince() const
 
 QDateTime Headers::ifModifiedSinceDateTime() const
 {
-    auto it = constFind(QStringLiteral("if_modified_since"));
-    if (it == constEnd()) {
+    auto it = m_data.constFind(QStringLiteral("if_modified_since"));
+    if (it == m_data.constEnd()) {
         return QDateTime();
     }
 
@@ -191,12 +191,12 @@ QDateTime Headers::ifModifiedSinceDateTime() const
 
 QString Headers::lastModified() const
 {
-    return value(QStringLiteral("last_modified"));
+    return m_data.value(QStringLiteral("last_modified"));
 }
 
 void Headers::setLastModified(const QString &value)
 {
-    insert(QStringLiteral("last_modified"), value);
+    m_data.insert(QStringLiteral("last_modified"), value);
 }
 
 QString Headers::setLastModified(const QDateTime &lastModified)
@@ -211,27 +211,27 @@ QString Headers::setLastModified(const QDateTime &lastModified)
 
 QString Headers::server() const
 {
-    return value(QStringLiteral("server"));
+    return m_data.value(QStringLiteral("server"));
 }
 
 void Headers::setServer(const QString &value)
 {
-    insert(QStringLiteral("server"), value);
+    m_data.insert(QStringLiteral("server"), value);
 }
 
 QString Headers::userAgent() const
 {
-    return value(QStringLiteral("user_agent"));
+    return m_data.value(QStringLiteral("user_agent"));
 }
 
 void Headers::setUserAgent(const QString &value)
 {
-    insert(QStringLiteral("user_agent"), value);
+    m_data.insert(QStringLiteral("user_agent"), value);
 }
 
 QString Headers::referer() const
 {
-    return value(QStringLiteral("referer"));
+    return m_data.value(QStringLiteral("referer"));
 }
 
 void Headers::setReferer(const QString &uri)
@@ -239,25 +239,25 @@ void Headers::setReferer(const QString &uri)
     int fragmentPos = uri.indexOf(QLatin1Char('#'));
     if (fragmentPos != -1) {
         // Strip fragment per RFC 2616, section 14.36.
-        insert(QStringLiteral("referer"), uri.mid(0, fragmentPos));
+        m_data.insert(QStringLiteral("referer"), uri.mid(0, fragmentPos));
     } else {
-        insert(QStringLiteral("referer"), uri);
+        m_data.insert(QStringLiteral("referer"), uri);
     }
 }
 
 void Headers::setWwwAuthenticate(const QString &value)
 {
-    insert(QStringLiteral("www_authenticate"), value);
+    m_data.insert(QStringLiteral("www_authenticate"), value);
 }
 
 void Headers::setProxyAuthenticate(const QString &value)
 {
-    insert(QStringLiteral("proxy_authenticate"), value);
+    m_data.insert(QStringLiteral("proxy_authenticate"), value);
 }
 
 QString Headers::authorization() const
 {
-    return value(QStringLiteral("authorization"));
+    return m_data.value(QStringLiteral("authorization"));
 }
 
 QString Headers::authorizationBasic() const
@@ -278,13 +278,13 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
     }
     const QString result = username + QLatin1Char(':') + password;
     const QString value = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
-    insert(QStringLiteral("authorization"), value);
+    m_data.insert(QStringLiteral("authorization"), value);
     return value;
 }
 
 QString Headers::proxyAuthorization() const
 {
-    return value(QStringLiteral("proxy_authorization"));
+    return m_data.value(QStringLiteral("proxy_authorization"));
 }
 
 QString Headers::proxyAuthorizationBasic() const
@@ -299,17 +299,17 @@ QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
 
 QString Headers::header(const QString &field) const
 {
-    return value(HeadersPrivate::normalizeHeaderKey(field));
+    return m_data.value(HeadersPrivate::normalizeHeaderKey(field));
 }
 
 QString Headers::header(const QString &field, const QString &defaultValue) const
 {
-    return value(HeadersPrivate::normalizeHeaderKey(field), defaultValue);
+    return m_data.value(HeadersPrivate::normalizeHeaderKey(field), defaultValue);
 }
 
 void Headers::setHeader(const QString &field, const QString &value)
 {
-    insert(HeadersPrivate::normalizeHeaderKey(field), value);
+    m_data.insert(HeadersPrivate::normalizeHeaderKey(field), value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
@@ -320,11 +320,11 @@ void Headers::setHeader(const QString &field, const QStringList &values)
 void Headers::pushHeader(const QString &field, const QString &value)
 {
     const QString key = HeadersPrivate::normalizeHeaderKey(field);
-    const QString old = Headers::value(key);
+    const QString old = Headers::header(key);
     if (old.isEmpty()) {
-        insert(key, value);
+        m_data.insert(key, value);
     } else {
-        insert(key, old + QLatin1String(", ") + value);
+        m_data.insert(key, old + QLatin1String(", ") + value);
     }
 }
 
@@ -335,7 +335,37 @@ void Headers::pushHeader(const QString &field, const QStringList &values)
 
 void Headers::removeHeader(const QString &field)
 {
-    remove(HeadersPrivate::normalizeHeaderKey(field));
+    m_data.remove(HeadersPrivate::normalizeHeaderKey(field));
+}
+
+void Headers::clear()
+{
+    m_data.clear();
+}
+
+bool Headers::contains(const QString &field)
+{
+    return m_data.contains(HeadersPrivate::normalizeHeaderKey(field));
+}
+
+QString &Headers::operator[](const QString &key)
+{
+    return m_data[key];
+}
+
+const QString Headers::operator[](const QString &key) const
+{
+    return m_data[key];
+}
+
+QMap<QString, QString>::const_iterator Headers::constBegin() const
+{
+    return m_data.constBegin();
+}
+
+QMap<QString, QString>::const_iterator Headers::constEnd() const
+{
+    return m_data.constEnd();
 }
 
 QString HeadersPrivate::normalizeHeaderKey(const QString &field)
