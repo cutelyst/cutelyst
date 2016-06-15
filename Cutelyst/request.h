@@ -406,7 +406,7 @@ public:
      * parameter by passing in an undef value. Unmodified pairs will be
      * preserved.
      *
-     * You may also pass an optional second parameter that puts uriWit() into
+     * You may also pass an optional second parameter that puts uriWith() into
      * append mode:
      * \code{.cpp}
      * req->uriWith({ {"key", "value"} }, true);

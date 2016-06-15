@@ -130,8 +130,8 @@ public:
     void setBody(const QByteArray &body);
 
     /**
-     * Sets a QString as the response body,
-     * it will be output as UTF-8 and * content length will be automatically set to it's size.
+     * Sets a QString as the response body, the output will be UTF-8 and
+     * content length will be automatically set to it's size.
      */
     inline void setBody(const QString &body);
 
