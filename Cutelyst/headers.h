@@ -254,6 +254,6 @@ private:
 
 }
 
-Q_DECLARE_METATYPE(Cutelyst::Headers);
+Q_DECLARE_METATYPE(Cutelyst::Headers)
 
 #endif // HEADERS_H
