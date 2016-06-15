@@ -101,6 +101,43 @@ public:
     void remoteUser(Context *c) {
         c->response()->setBody(c->request()->remoteUser());
     }
+
+    C_ATTR(headers, :Local :AutoArgs)
+    void headers(Context *c) {
+        QUrlQuery ret;
+        Headers headers = c->request()->headers();
+        auto it = headers.constBegin();
+        while (it != headers.constEnd()) {
+            ret.addQueryItem(it.key(), it.value());
+            ++it;
+        }
+        c->response()->setBody(ret.toString(QUrl::FullyEncoded));
+    }
+
+    C_ATTR(userAgent, :Local :AutoArgs)
+    void userAgent(Context *c) {
+        c->response()->setBody(c->request()->userAgent());
+    }
+
+    C_ATTR(referer, :Local :AutoArgs)
+    void referer(Context *c) {
+        c->response()->setBody(c->request()->referer());
+    }
+
+    C_ATTR(contentEncoding, :Local :AutoArgs)
+    void contentEncoding(Context *c) {
+        c->response()->setBody(c->request()->contentEncoding());
+    }
+
+    C_ATTR(contentType, :Local :AutoArgs)
+    void contentType(Context *c) {
+        c->response()->setBody(c->request()->contentType());
+    }
+
+    C_ATTR(queryKeywords, :Local :AutoArgs)
+    void queryKeywords(Context *c) {
+        c->response()->setBody(c->request()->queryKeywords());
+    }
 };
 
 void TestRequest::initTestCase()
@@ -155,7 +192,7 @@ void TestRequest::testController_data()
     QString get = QStringLiteral("GET");
     QString post = QStringLiteral("POST");
 
-//    QUrlQuery query;
+    QUrlQuery query;
     Headers headers;
     QTest::newRow("request-test00") << get << QStringLiteral("/request/test/address") << headers << QByteArrayLiteral("127.0.0.1");
     QTest::newRow("request-test01") << get << QStringLiteral("/request/test/hostname") << headers
@@ -181,7 +218,47 @@ void TestRequest::testController_data()
     QTest::newRow("request-test16") << get << QStringLiteral("/request/test/protocol") << headers << QByteArrayLiteral("HTTP/1.1");
     QTest::newRow("request-test17") << get << QStringLiteral("/request/test/remoteUser") << headers << QByteArrayLiteral("");
 
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("bar"));
+    headers.setReferer(QStringLiteral("http://www.cutelyst.org"));
+    QTest::newRow("request-test18") << get << QStringLiteral("/request/test/headers") << headers
+                                    << QByteArrayLiteral("authorization=Basic%20Zm9vOmJhcg%3D%3D&referer=http://www.cutelyst.org");
 
+    headers.clear();
+    headers.setHeader(QStringLiteral("User-Agent"), QStringLiteral("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36"));
+    QTest::newRow("request-test19") << get << QStringLiteral("/request/test/userAgent") << headers
+                                    << QByteArrayLiteral("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36");
+
+    headers.clear();
+    headers.setHeader(QStringLiteral("Referer"), QStringLiteral("http://www.cutelyst.org"));
+    QTest::newRow("request-test20") << get << QStringLiteral("/request/test/referer") << headers
+                                    << QByteArrayLiteral("http://www.cutelyst.org");
+
+    headers.clear();
+    headers.setHeader(QStringLiteral("Content-Encoding"), QStringLiteral("gzip"));
+    QTest::newRow("request-test21") << get << QStringLiteral("/request/test/contentEncoding") << headers
+                                    << QByteArrayLiteral("gzip");
+
+    headers.clear();
+    headers.setHeader(QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=UTF-8"));
+    QTest::newRow("request-test22") << get << QStringLiteral("/request/test/contentType") << headers
+                                    << QByteArrayLiteral("text/html");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("some text to ask"), QString());
+    QTest::newRow("request-test23") << get << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded) << headers
+                                    << QByteArrayLiteral("some text to ask");
+    query.clear();
+    query.addQueryItem(QStringLiteral("some text to ask"), QStringLiteral("not"));
+    QTest::newRow("request-test24") << get << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded) << headers
+                                    << QByteArrayLiteral("");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("some text to ask"), QString());
+    query.addQueryItem(QStringLiteral("another keyword"), QString());
+    query.addQueryItem(QStringLiteral("and yet another is fine"), QString());
+    QTest::newRow("request-test25") << get << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded) << headers
+                                    << QByteArrayLiteral("some text to ask&another keyword&and yet another is fine");
 }
 
 QTEST_MAIN(TestRequest)
