@@ -20,6 +20,7 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
+#include <QtCore/qmap.h>
 #include <QtCore/qdatetime.h>
 #include <QtCore/qmetatype.h>
 
@@ -27,7 +28,7 @@
 
 namespace Cutelyst {
 
-class CUTELYST_LIBRARY Headers : public QHash<QString, QString>
+class CUTELYST_LIBRARY Headers : public QMap<QString, QString>
 {
 public:
     QString contentEncoding() const;
