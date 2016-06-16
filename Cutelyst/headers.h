@@ -147,8 +147,6 @@ public:
 
     QString userAgent() const;
 
-    void setUserAgent(const QString &value);
-
     QString referer() const;
 
     /**

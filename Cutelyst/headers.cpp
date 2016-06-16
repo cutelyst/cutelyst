@@ -224,11 +224,6 @@ QString Headers::userAgent() const
     return m_data.value(QStringLiteral("user_agent"));
 }
 
-void Headers::setUserAgent(const QString &value)
-{
-    m_data.insert(QStringLiteral("user_agent"), value);
-}
-
 QString Headers::referer() const
 {
     return m_data.value(QStringLiteral("referer"));
