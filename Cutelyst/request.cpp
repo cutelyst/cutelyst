@@ -372,9 +372,6 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    ParamsMultiMap params;
-    QVariant data;
-
     const QString contentType = headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
@@ -382,8 +379,8 @@ void RequestPrivate::parseBody() const
         qint64 posOrig = body->pos();
         body->seek(0);
 
-        params = parseUrlEncoded(body->readLine());
-        data = QVariant::fromValue(params);
+        bodyParam = parseUrlEncoded(body->readLine());
+        bodyData = QVariant::fromValue(bodyParam);
 
         body->seek(posOrig);
     } else if (contentType == QLatin1String("multipart/form-data")) {
@@ -393,18 +390,15 @@ void RequestPrivate::parseBody() const
             --it;
             uploads.insertMulti((*it)->name(), *it);
         }
+        bodyData = QVariant::fromValue(uploads);
     } else if (contentType == QLatin1String("application/json")) {
         qint64 posOrig = body->pos();
         body->seek(0);
 
-        data = QJsonDocument::fromJson(body->readAll());
+        bodyData = QJsonDocument::fromJson(body->readAll());
 
         body->seek(posOrig);
     }
-
-    // Asign it here so that we clean it in case no if matched
-    bodyParam = params;
-    bodyData = data;
 
     bodyParsed = true;
 }
