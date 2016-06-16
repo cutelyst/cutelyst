@@ -338,11 +338,6 @@ void Headers::removeHeader(const QString &field)
     m_data.remove(HeadersPrivate::normalizeHeaderKey(field));
 }
 
-void Headers::clear()
-{
-    m_data.clear();
-}
-
 bool Headers::contains(const QString &field)
 {
     return m_data.contains(HeadersPrivate::normalizeHeaderKey(field));
@@ -356,16 +351,6 @@ QString &Headers::operator[](const QString &key)
 const QString Headers::operator[](const QString &key) const
 {
     return m_data[key];
-}
-
-QMap<QString, QString>::const_iterator Headers::constBegin() const
-{
-    return m_data.constBegin();
-}
-
-QMap<QString, QString>::const_iterator Headers::constEnd() const
-{
-    return m_data.constEnd();
 }
 
 QString HeadersPrivate::normalizeHeaderKey(const QString &field)

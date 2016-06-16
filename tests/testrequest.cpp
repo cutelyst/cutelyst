@@ -105,7 +105,7 @@ public:
     C_ATTR(headers, :Local :AutoArgs)
     void headers(Context *c) {
         QUrlQuery ret;
-        Headers headers = c->request()->headers();
+        auto headers = c->request()->headers().map();
         auto it = headers.constBegin();
         while (it != headers.constEnd()) {
             ret.addQueryItem(it.key(), it.value());

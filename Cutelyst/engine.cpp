@@ -437,8 +437,9 @@ QList<HeaderValuePair> Engine::headersForResponse(const Headers &headers)
 {
     QList<HeaderValuePair> ret;
 
-    auto it = headers.constBegin();
-    while (it != headers.constEnd()) {
+    auto headersMap = headers.map();
+    auto it = headersMap.constBegin();
+    while (it != headersMap.constEnd()) {
         HeaderValuePair pair;
         pair.key = camelCaseHeader(it.key());
         pair.value = it.value();

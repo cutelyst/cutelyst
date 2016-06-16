@@ -445,7 +445,7 @@ bool uWSGI::finalizeHeaders(Context *ctx)
         return false;
     }
 
-    const Headers headers = res->headers();
+    const auto headers = res->headers().map();
     auto it = headers.constBegin();
     auto endIt = headers.constEnd();
     while (it != endIt) {

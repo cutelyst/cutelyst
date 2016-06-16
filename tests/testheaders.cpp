@@ -121,6 +121,15 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
     QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
     QCOMPARE(headers.authorizationBasicPair().first, QStringLiteral("user"));
+
+    Headers copy = headers;
+    QCOMPARE(copy, headers);
+
+    Headers copy2(headers);
+    QCOMPARE(copy2, headers);
+
+    Headers headersEmpty;
+    QVERIFY(headersEmpty != headers);
 }
 
 QTEST_MAIN(TestHeaders)

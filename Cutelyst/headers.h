@@ -240,14 +240,30 @@ public:
 
     void removeHeader(const QString &field);
 
-    void clear();
+    inline void clear() {
+        m_data.clear();
+    }
+
+    inline QMap<QString, QString> map() const {
+        return m_data;
+    }
+
     bool contains(const QString &field);
 
     QString &operator[](const QString &key);
     const QString operator[](const QString &key) const;
+    inline Headers &operator=(const Headers &other)
+    {
+        m_data = other.m_data;
+        return *this;
+    }
+    inline bool operator==(const Headers &other) const {
+        return m_data == other.m_data;
+    }
+    inline bool operator!=(const Headers &other) const {
+        return m_data != other.m_data;
+    }
 
-    QMap<QString, QString>::const_iterator constBegin() const;
-    QMap<QString, QString>::const_iterator constEnd() const;
 private:
     QMap<QString, QString> m_data;
 };
