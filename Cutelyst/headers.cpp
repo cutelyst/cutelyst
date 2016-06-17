@@ -41,7 +41,8 @@ QString Headers::contentType() const
     if (it == m_data.constEnd()) {
         return QString();
     }
-    return it.value().section(QLatin1Char(';'), 0, 0).toLower();
+    const QString ct = it.value();
+    return ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
 }
 
 void Headers::setContentType(const QString &contentType)
