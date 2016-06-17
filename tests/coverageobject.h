@@ -34,14 +34,17 @@ public:
 
     virtual int workerCore() const override;
 
-    QByteArray createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
+    QVariantMap createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
 
+    virtual bool finalizeHeaders(Context *ctx) override;
 protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
     virtual bool init();
 
 private:
     QByteArray m_responseData;
+    QByteArray m_status;
+    Headers m_headers;
 };
 
 class RootController : public Controller
@@ -202,7 +205,10 @@ class TestApplication : public Application
 {
     Q_OBJECT
 public:
-    TestApplication(QObject *parent = 0) : Application(parent) {}
+    TestApplication(QObject *parent = 0) : Application(parent)
+    {
+        defaultHeaders() = Headers();
+    }
     virtual bool init() {
         new TestController(this);
         new RootController(this);

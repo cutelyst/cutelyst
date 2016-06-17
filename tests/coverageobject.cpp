@@ -68,11 +68,12 @@ int TestEngine::workerCore() const
     return 0;
 }
 
-QByteArray TestEngine::createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body)
+QVariantMap TestEngine::createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body)
 {
     QBuffer buf(body);
     buf.open(QBuffer::ReadOnly);
 
+    QVariantMap ret;
     m_responseData = QByteArray();
     processRequest(method,
                    path,
@@ -88,7 +89,28 @@ QByteArray TestEngine::createRequest(const QString &method, const QString &path,
                    &buf,
                    0);
 
-    return m_responseData;
+    ret = {
+        {QStringLiteral("body"), m_responseData},
+        {QStringLiteral("status"), m_status},
+        {QStringLiteral("headers"), QVariant::fromValue(m_headers)}
+    };
+
+    return ret;
+}
+
+bool TestEngine::finalizeHeaders(Context *ctx)
+{
+    Response *res = ctx->res();
+
+    if (!Engine::finalizeHeaders(ctx)) {
+        return false;
+    }
+
+    m_status = statusCode(res->status());
+
+    m_headers = res->headers();
+
+    return true;
 }
 
 qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)

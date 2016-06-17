@@ -399,13 +399,13 @@ void TestRequest::doTest()
 
     QUrl urlAux(url.mid(1));
 
-    QByteArray result = m_engine->createRequest(method,
-                                                urlAux.path(),
-                                                urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                headers,
-                                                &body);
+    QVariantMap result = m_engine->createRequest(method,
+                                                 urlAux.path(),
+                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
+                                                 headers,
+                                                 &body);
 
-    QCOMPARE( result, output );
+    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
 
 void TestRequest::testController_data()

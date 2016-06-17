@@ -46,6 +46,7 @@ cutelyst_templates_unit_tests(
     testheaders
     testcontext
     testrequest
+    testresponse
     testdispatcherpath
     testdispatcherchained
 )

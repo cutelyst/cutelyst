@@ -63,13 +63,13 @@ void TestDispatcherPath::doTest()
 
     QUrl urlAux(url.mid(1));
 
-    QByteArray result = m_engine->createRequest(QStringLiteral("GET"),
-                                                urlAux.path(),
-                                                urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                Headers(),
-                                                nullptr);
+    QVariantMap result = m_engine->createRequest(QStringLiteral("GET"),
+                                                 urlAux.path(),
+                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
+                                                 Headers(),
+                                                 nullptr);
 
-    QCOMPARE( result, output );
+    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
 
 void TestDispatcherPath::testController_data()

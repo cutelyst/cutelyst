@@ -54,8 +54,12 @@ void TestHeaders::testCombining()
     headers.setContentType(QStringLiteral("TEXT/HTML"));
     QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
     QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML"));
-
     QCOMPARE(headers.contentTypeCharset(), QString());
+
+    headers.setContentType(QStringLiteral("TEXT/HTML; charset=utf-8"));
+    QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
+    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML; charset=utf-8"));
+
     headers.setContentTypeCharset(QStringLiteral("utf-8"));
     QCOMPARE(headers.contentTypeCharset(), QStringLiteral("UTF-8"));
     // Make sure content-type still fine
