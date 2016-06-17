@@ -31,6 +31,15 @@ namespace Cutelyst {
 class CUTELYST_LIBRARY Headers
 {
 public:
+    Headers();
+#ifdef Q_COMPILER_INITIALIZER_LISTS
+    inline Headers(std::initializer_list<std::pair<QString,QString> > list)
+    {
+        for (typename std::initializer_list<std::pair<QString,QString> >::const_iterator it = list.begin(); it != list.end(); ++it)
+            pushHeader(it->first, it->second);
+    }
+#endif
+
     QString contentEncoding() const;
 
     void setContentEncoding(const QString &encoding);

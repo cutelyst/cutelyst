@@ -25,6 +25,11 @@
 
 using namespace Cutelyst;
 
+Headers::Headers()
+{
+
+}
+
 QString Headers::contentEncoding() const
 {
     return m_data.value(QStringLiteral("content_encoding"));
