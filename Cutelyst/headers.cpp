@@ -37,8 +37,11 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
-    const auto ct = m_data.value(QStringLiteral("content_type"));
-    return ct.section(QLatin1Char(';'), 0, 0).toLower();
+    const auto it = m_data.constFind(QStringLiteral("content_type"));
+    if (it == m_data.constEnd()) {
+        return QString();
+    }
+    return it.value().section(QLatin1Char(';'), 0, 0).toLower();
 }
 
 void Headers::setContentType(const QString &contentType)
