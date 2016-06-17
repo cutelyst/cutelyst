@@ -214,7 +214,7 @@ void Response::redirect(const QUrl &url, quint16 status)
         buf.append(QByteArrayLiteral(">here</a>.</p>\n"
                                      "  </body>\n"
                                      "</html>\n"));
-        d->bodyData = buf;
+        d->setBodyData(buf);
         d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 }
