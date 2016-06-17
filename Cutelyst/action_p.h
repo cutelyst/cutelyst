@@ -31,11 +31,10 @@ public:
     QMetaMethod method;
     QMap<QString, QString> attributes;
     Controller *controller = nullptr;
-    QStringList emptyArgs = {
-        QString(), QString(), QString(),
-        QString(), QString(), QString(),
-        QString(), QString(), QString()
-    };
+    QStringList emptyArgs = QStringList()
+            << QString() << QString() << QString()
+            << QString() << QString() << QString()
+            << QString() << QString() << QString();
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;
     bool evaluateBool = false;
