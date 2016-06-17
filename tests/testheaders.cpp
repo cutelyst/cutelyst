@@ -130,6 +130,15 @@ void TestHeaders::testCombining()
 
     Headers headersEmpty;
     QVERIFY(headersEmpty != headers);
+
+    headers.clear();
+    QCOMPARE(headers.contentType().isEmpty(), true);
+    QCOMPARE(headers.contentType().isNull(), true);
+
+    headers.clear();
+    headers.setContentType(QStringLiteral(""));
+    QCOMPARE(headers.contentType().isEmpty(), true);
+    QCOMPARE(headers.contentType().isNull(), false);
 }
 
 QTEST_MAIN(TestHeaders)
