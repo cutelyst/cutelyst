@@ -24,12 +24,15 @@ Qt's meta object system is what powers the core of Cutelyst, this allows for int
   * Session
   * Authentication (with PBKDF2)
   * Authorization with RoleACL
+  * StatusMessage
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
  * Asynchronous processing (optional and dependent on application code)
+ * Unit tested
+ * QtCreator integration
 
 ## LICENSE
 
