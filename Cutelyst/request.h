@@ -29,7 +29,6 @@
 
 class QIODevice;
 class QHostAddress;
-class QNetworkCookie;
 
 namespace Cutelyst {
 
@@ -305,12 +304,12 @@ public:
     /**
      * Returns the cookie with the given name
      */
-    QNetworkCookie cookie(const QString &name) const;
+    QString cookie(const QString &name) const;
 
     /**
-     * Returns all the cookie from the request
+     * Returns all the cookies from the request
      */
-    QList<QNetworkCookie> cookies() const;
+    QMap<QString, QString> cookies() const;
 
     /**
      * Short for headers().header(key);

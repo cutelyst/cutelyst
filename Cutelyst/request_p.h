@@ -28,7 +28,6 @@
 #include <QtCore/QUrlQuery>
 #include <QtCore/QUrl>
 #include <QtNetwork/QHostAddress>
-#include <QtNetwork/QNetworkCookie>
 
 namespace Cutelyst {
 
@@ -83,7 +82,7 @@ public:
 
     mutable QUrl url;
     mutable QString base;
-    mutable QList<QNetworkCookie> cookies;
+    mutable QMap<QString, QString> cookies;
     mutable ParamsMultiMap queryParam;
     mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;

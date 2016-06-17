@@ -54,7 +54,6 @@ public:
 
     static inline void updateSessionCookie(Context *c, const QNetworkCookie &updated);
     static inline QNetworkCookie makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
-    static inline QVariant getSessionCookie(Context *c, const QString &sessionName);
     static inline void extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
 

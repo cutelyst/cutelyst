@@ -243,21 +243,20 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
 {
     bool deleted = !c->property(SESSION_DELETED_ID).isNull();
 
-    QString sessionId;
     if (!deleted) {
         const QVariant property = c->property(SESSION_ID);
         if (!property.isNull()) {
             return property.toString();
         }
 
-        const QVariant cookie = getSessionCookie(c, sessionName);
+        const QString cookie = c->request()->cookie(sessionName);
         if (!cookie.isNull()) {
-            sessionId = QString::fromLatin1(cookie.value<QNetworkCookie>().value());
-            qCDebug(C_SESSION) << "Found sessionid" << sessionId << "in cookie";
+            qCDebug(C_SESSION) << "Found sessionid" << cookie << "in cookie";
+            return cookie;
         }
     }
 
-    return sessionId;
+    return QString();
 }
 
 QString SessionPrivate::createSessionIdIfNeeded(Session *session, Context *c, quint64 expires)
@@ -539,17 +538,6 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, c
     cookie.setSecure(session->d_ptr->cookieSecure);
 
     return cookie;
-}
-
-QVariant SessionPrivate::getSessionCookie(Context *c, const QString &sessionName)
-{
-    const QByteArray name = sessionName.toLatin1();
-    Q_FOREACH (const QNetworkCookie &cookie, c->req()->cookies()) {
-        if (cookie.name() == name) {
-            return QVariant::fromValue(cookie);
-        }
-    }
-    return QVariant();
 }
 
 void SessionPrivate::extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires)

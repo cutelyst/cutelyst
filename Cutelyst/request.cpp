@@ -24,7 +24,6 @@
 
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHostInfo>
-#include <QtNetwork/QNetworkCookie>
 
 using namespace Cutelyst;
 
@@ -242,22 +241,17 @@ ParamsMultiMap Request::parameters() const
     return d->param;
 }
 
-QNetworkCookie Request::cookie(const QString &name) const
+QString Request::cookie(const QString &name) const
 {
     Q_D(const Request);
     if (!d->cookiesParsed) {
         d->parseCookies();
     }
 
-    Q_FOREACH (const QNetworkCookie &cookie, d->cookies) {
-        if (QString::fromLatin1(cookie.name()) == name) {
-            return cookie;
-        }
-    }
-    return QNetworkCookie();
+    return d->cookies.value(name);
 }
 
-QList<QNetworkCookie> Request::cookies() const
+QMap<QString, QString> Request::cookies() const
 {
     Q_D(const Request);
     if (!d->cookiesParsed) {
@@ -403,12 +397,12 @@ void RequestPrivate::parseBody() const
     bodyParsed = true;
 }
 
-static inline bool isSlit(char c)
+static inline bool isSlit(QChar c)
 {
-    return c == ';' || c == ',';
+    return c == QLatin1Char(';') || c == QLatin1Char(',');
 }
 
-int findNextSplit(const QByteArray &text, int from, int length)
+int findNextSplit(const QString &text, int from, int length)
 {
     while (from < length) {
         if (isSlit(text.at(from))) {
@@ -419,12 +413,12 @@ int findNextSplit(const QByteArray &text, int from, int length)
     return -1;
 }
 
-static inline bool isLWS(char c)
+static inline bool isLWS(QChar c)
 {
-    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+    return c == QLatin1Char(' ') || c == QLatin1Char('\t') || c == QLatin1Char('\r') || c == QLatin1Char('\n');
 }
 
-static int nextNonWhitespace(const QByteArray &text, int from, int length)
+static int nextNonWhitespace(const QString &text, int from, int length)
 {
     // RFC 2616 defines linear whitespace as:
     //  LWS = [CRLF] 1*( SP | HT )
@@ -441,7 +435,7 @@ static int nextNonWhitespace(const QByteArray &text, int from, int length)
     return text.length();
 }
 
-static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &position)
+static QPair<QString, QString> nextField(const QString &text, int &position)
 {
     // format is one of:
     //    (1)  token
@@ -454,13 +448,13 @@ static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &posi
     if (semiColonPosition < 0)
         semiColonPosition = length; //no ';' means take everything to end of string
 
-    int equalsPosition = text.indexOf('=', position);
+    int equalsPosition = text.indexOf(QLatin1Char('='), position);
     if (equalsPosition < 0 || equalsPosition > semiColonPosition) {
-        return qMakePair(QByteArray(), QByteArray()); //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
+        return qMakePair(QString(), QString()); //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    QByteArray first = text.mid(position, equalsPosition - position).trimmed();
-    QByteArray second;
+    QString first = text.mid(position, equalsPosition - position).trimmed();
+    QString second;
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0)
         second = text.mid(equalsPosition + 1, secondLength).trimmed();
@@ -471,12 +465,12 @@ static QPair<QByteArray, QByteArray> nextField(const QByteArray &text, int &posi
 
 void RequestPrivate::parseCookies() const
 {
-    QList<QNetworkCookie> ret;
-    const QByteArray cookieString = headers.header(QStringLiteral("Cookie")).toLatin1();
+    QList<QPair<QString, QString> > ret;
+    const QString cookieString = headers.header(QStringLiteral("Cookie"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {
-        QPair<QByteArray,QByteArray> field = nextField(cookieString, position);
+        QPair<QString,QString> field = nextField(cookieString, position);
         if (field.first.isEmpty()) {
             // parsing error
             break;
@@ -487,12 +481,16 @@ void RequestPrivate::parseCookies() const
             ++position;
             continue;
         }
-        ret.append(QNetworkCookie(field.first, field.second));
+        ret.append(field);
         ++position;
-
     }
 
-    cookies = ret;
+    auto it = ret.constEnd();
+    while (it != ret.constBegin()) {
+        --it;
+        cookies.insertMulti(it->first, it->second);
+    }
+
     cookiesParsed = true;
 }
 
