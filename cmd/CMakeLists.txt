@@ -9,6 +9,10 @@ set(cutelyst_cmd_SRCS
 )
 
 add_executable(cutelyst-skell ${cutelyst_cmd_SRCS})
+target_compile_features(cutelyst-skell
+  PUBLIC
+    cxx_generalized_initializers
+)
 target_link_libraries(cutelyst-skell
     Qt5::Core
     Qt5::Network
