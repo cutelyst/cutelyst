@@ -201,11 +201,6 @@ void TestResponse::testController_data()
                                           << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("1")} }
                                           << QByteArrayLiteral("5");
 
-    QTest::newRow("contentLength-test01") << get << QStringLiteral("/response/test/contentLength?data=HelloWithEncoded\xC3\xA7\xE2\x82\xAC\xC2\xA2") << headers << QByteArray()
-                                          << QByteArrayLiteral("200 OK")
-                                          << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("2")} }
-                                          << QByteArrayLiteral("30");
-
     query.clear();
     query.addQueryItem(QStringLiteral("data"), QStringLiteral("appplication/json"));
     QTest::newRow("contentType-test00") << get << QStringLiteral("/response/test/contentType?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
