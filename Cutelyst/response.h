@@ -205,7 +205,7 @@ public:
      * Removes all cookies that matches name, returning
      * the number of cookies removed
      */
-    int removeCookie(const QByteArray &name);
+    int removeCookies(const QByteArray &name);
 
     /**
      * Causes the response to redirect to the specified URL. The default status is 302.

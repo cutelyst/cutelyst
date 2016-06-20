@@ -189,7 +189,7 @@ void Response::setCookies(const QList<QNetworkCookie> &cookies)
     }
 }
 
-int Response::removeCookie(const QByteArray &name)
+int Response::removeCookies(const QByteArray &name)
 {
     Q_D(Response);
     return d->cookies.remove(name);
