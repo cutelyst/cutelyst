@@ -144,7 +144,7 @@ void Engine::finalizeBody(Context *c)
             }
         } else {
             const QByteArray bodyByteArray = response->body();
-            if (!bodyByteArray.isNull()) {
+            if (!bodyByteArray.isEmpty()) {
                 write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
             }
         }

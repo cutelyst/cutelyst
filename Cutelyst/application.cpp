@@ -263,7 +263,7 @@ bool Application::setup(Engine *engine)
 
         QList<QStringList> tablePlugins;
         Q_FOREACH (Plugin *plugin, d->plugins) {
-            if (plugin->objectName().isNull()) {
+            if (plugin->objectName().isEmpty()) {
                 plugin->setObjectName(QString::fromLatin1(plugin->metaObject()->className()));
             }
             tablePlugins.append({ plugin->objectName() });
@@ -312,7 +312,7 @@ bool Application::setup(Engine *engine)
         }
 
         Q_FOREACH (View *view, d->views) {
-            if (view->reverse().isNull()) {
+            if (view->reverse().isEmpty()) {
                 const QString className = QString::fromLatin1(view->metaObject()->className()) + QLatin1String("->execute");
                 view->setReverse(className);
             }

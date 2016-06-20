@@ -280,7 +280,7 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
 {
     Q_D(const Dispatcher);
     Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
-        QString uri = dispatch->uriForAction(action, captures);
+        const QString uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
             return uri.isEmpty() ? QStringLiteral("/") : uri;
         }

@@ -159,15 +159,17 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     const QString className = QString::fromLatin1(meta->className());
     q->setObjectName(className);
 
-    QString controlerNS;
+    bool namespaceFound = false;
     for (int i = 0; i < meta->classInfoCount(); ++i) {
         if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
-            controlerNS = QString::fromLatin1(meta->classInfo(i).value());
+            pathPrefix = QString::fromLatin1(meta->classInfo(i).value());
+            namespaceFound = true;
             break;
         }
     }
 
-    if (controlerNS.isNull()) {
+    if (!namespaceFound) {
+        QString controlerNS;
         bool lastWasUpper = true;
 
         for (int i = 0; i < className.length(); ++i) {
@@ -183,8 +185,8 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
                 lastWasUpper = true;
             }
         }
+        pathPrefix = controlerNS;
     }
-    pathPrefix = controlerNS;
 
     registerActionMethods(meta, q, app);
 }
@@ -489,16 +491,11 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
     return roles;
 }
 
-QString ControllerPrivate::parsePathAttr(const QString &_value)
+QString ControllerPrivate::parsePathAttr(const QString &value)
 {
-    QString value = _value;
-    if (value.isNull()) {
-        value = QStringLiteral("");
-    }
-
     if (value.startsWith(QLatin1Char('/'))) {
         return value;
-    } else if (value.length()) {
+    } else if (!value.isEmpty()) {
         return pathPrefix + QLatin1Char('/') + value;
     }
     return pathPrefix;

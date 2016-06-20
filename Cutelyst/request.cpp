@@ -53,7 +53,7 @@ QString Request::hostname() const
         return d->remoteHostname;
     } else {
         // We tried to get the client hostname but failed
-        if (!d->remoteHostname.isNull()) {
+        if (!d->remoteHostname.isEmpty()) {
             return QString();
         }
     }
@@ -82,7 +82,7 @@ QUrl Request::uri() const
         QUrl uri;
 
         // This is a hack just in case remote is not set
-        if (d->serverAddress.isNull()) {
+        if (d->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
             uri.setAuthority(d->serverAddress);
@@ -110,7 +110,7 @@ QString Request::base() const
         QString base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
-        if (d->serverAddress.isNull()) {
+        if (d->serverAddress.isEmpty()) {
             base.append(QHostInfo::localHostName());
         } else {
             base.append(d->serverAddress);

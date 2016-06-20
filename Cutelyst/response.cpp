@@ -76,7 +76,7 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->bodyData.isNull() || d->bodyIODevice || d->chunked;
+    return !d->bodyData.isEmpty() || d->bodyIODevice || d->chunked;
 }
 
 QByteArray &Response::body()

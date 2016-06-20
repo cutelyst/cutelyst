@@ -117,7 +117,7 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
 #ifndef QT_NO_TEMPORARYFILE
     Q_D(Upload);
     QTemporaryFile *ret;
-    if (templateName.isNull()) {
+    if (templateName.isEmpty()) {
         ret = new QTemporaryFile(this);
     } else {
         ret = new QTemporaryFile(templateName, this);

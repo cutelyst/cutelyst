@@ -39,7 +39,7 @@ public:
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
     QMap<QString, QString> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Component *> gatherActionRoles(const QVariantHash &args);
-    QString parsePathAttr(const QString &_value);
+    QString parsePathAttr(const QString &value);
     QString parseChainedAttr(const QString &attr);
 
     QObject *instantiateClass(const QByteArray &name, const QByteArray &super);

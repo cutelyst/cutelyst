@@ -106,7 +106,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
                 state = StartHeaders;
                 break;
             case StartHeaders:
-                if (headerLine.isNull() && buffer[i] == '\r') {
+                if (headerLine.isEmpty() && buffer[i] == '\r') {
                     // nothing was read
                     state = EndHeaders;
                 } else {

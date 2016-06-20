@@ -56,7 +56,7 @@ bool Context::error() const
 void Context::error(const QString &error)
 {
     Q_D(Context);
-    if (error.isNull()) {
+    if (error.isEmpty()) {
         d->error.clear();
     } else {
         d->error << error;
@@ -274,7 +274,7 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     }
 
     const QString path = d->dispatcher->uriForAction(localAction, localCaptures);
-    if (path.isNull()) {
+    if (path.isEmpty()) {
         qCWarning(CUTELYST_CORE) << "Can not find action for" << localAction << localCaptures;
         return QUrl();
     }
@@ -361,7 +361,7 @@ bool Context::execute(Component *code)
 
         ret = code->execute(this);
 
-        if (!statsInfo.isNull()) {
+        if (!statsInfo.isEmpty()) {
             d->statsFinishExecute(statsInfo);
         }
     } else {

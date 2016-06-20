@@ -224,7 +224,7 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     QString part = action->name();
 
-    if (pathPart.size() == 1 && !pathPart[0].isNull()) {
+    if (pathPart.size() == 1 && !pathPart[0].isEmpty()) {
         part = pathPart[0];
     } else if (pathPart.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
@@ -445,7 +445,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
 
                 if (bestAction.isEmpty() ||
                         parts.size() < bestAction.value(QStringLiteral("parts")).toInt() ||
-                        (parts.isEmpty() && !argsAttr.isNull() && action->numberOfArgs() == 0)) {
+                        (parts.isEmpty() && !argsAttr.isEmpty() && action->numberOfArgs() == 0)) {
                     bestAction = {
                         { QStringLiteral("actions"), QVariant::fromValue(ActionList() << action) },
                         { QStringLiteral("captures"), QStringList() },

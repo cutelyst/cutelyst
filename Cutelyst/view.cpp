@@ -63,7 +63,7 @@ bool View::doExecute(Context *c)
         }
     }
 
-    if (!output.isNull()) {
+    if (!output.isEmpty()) {
         // Do not set a null body on an already null body
         response->setBody(output);
     }
