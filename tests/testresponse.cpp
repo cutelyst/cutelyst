@@ -8,6 +8,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QNetworkCookie>
 #include <QCryptographicHash>
 
 #include "headers.h"
@@ -96,6 +97,69 @@ public:
         c->response()->redirect(c->request()->queryParam(QStringLiteral("url")));
     }
 
+    C_ATTR(redirectUrl, :Local :AutoArgs)
+    void redirectUrl(Context *c) {
+        c->response()->redirect(QUrl(c->request()->queryParam(QStringLiteral("url"))));
+    }
+
+    C_ATTR(setCookie, :Local :AutoArgs)
+    void setCookie(Context *c) {
+        ParamsMultiMap params = c->request()->queryParameters();
+        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(), params.value(QStringLiteral("value")).toLatin1());
+        cookie.setDomain(params.value(QStringLiteral("domain")));
+        cookie.setExpirationDate(QDateTime::fromString(params.value(QStringLiteral("expiration_date"))));
+        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
+        cookie.setPath(params.value(QStringLiteral("path")));
+        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+        c->response()->setCookie(cookie);
+        c->response()->setBody(cookie.toRawForm());
+    }
+
+    C_ATTR(setCookies, :Local :AutoArgs)
+    void setCookies(Context *c) {
+        ParamsMultiMap params = c->request()->queryParameters();
+        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(), params.value(QStringLiteral("value")).toLatin1());
+        cookie.setDomain(params.value(QStringLiteral("domain")));
+        cookie.setExpirationDate(QDateTime::fromString(params.value(QStringLiteral("expiration_date"))));
+        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
+        cookie.setPath(params.value(QStringLiteral("path")));
+        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+
+        ParamsMultiMap bodyParams = c->request()->bodyParameters();
+        QNetworkCookie cookie2(bodyParams.value(QStringLiteral("name")).toLatin1(), bodyParams.value(QStringLiteral("value")).toLatin1());
+        cookie2.setDomain(bodyParams.value(QStringLiteral("domain")));
+        cookie2.setExpirationDate(QDateTime::fromString(bodyParams.value(QStringLiteral("expiration_date"))));
+        cookie2.setHttpOnly(QVariant(bodyParams.value(QStringLiteral("http_only"))).toBool());
+        cookie2.setPath(bodyParams.value(QStringLiteral("path")));
+        cookie2.setSecure(QVariant(bodyParams.value(QStringLiteral("secure"))).toBool());
+
+        c->response()->setCookies({ cookie, cookie2 });
+        c->response()->setBody(cookie.toRawForm());
+    }
+
+    C_ATTR(removeCookies, :Local :AutoArgs)
+    void removeCookies(Context *c, const QString &cookieToBeRemoved) {
+        ParamsMultiMap params = c->request()->queryParameters();
+        QNetworkCookie cookie(params.value(QStringLiteral("name")).toLatin1(), params.value(QStringLiteral("value")).toLatin1());
+        cookie.setDomain(params.value(QStringLiteral("domain")));
+        cookie.setExpirationDate(QDateTime::fromString(params.value(QStringLiteral("expiration_date"))));
+        cookie.setHttpOnly(QVariant(params.value(QStringLiteral("http_only"))).toBool());
+        cookie.setPath(params.value(QStringLiteral("path")));
+        cookie.setSecure(QVariant(params.value(QStringLiteral("secure"))).toBool());
+
+        ParamsMultiMap bodyParams = c->request()->bodyParameters();
+        QNetworkCookie cookie2(bodyParams.value(QStringLiteral("name")).toLatin1(), bodyParams.value(QStringLiteral("value")).toLatin1());
+        cookie2.setDomain(bodyParams.value(QStringLiteral("domain")));
+        cookie2.setExpirationDate(QDateTime::fromString(bodyParams.value(QStringLiteral("expiration_date"))));
+        cookie2.setHttpOnly(QVariant(bodyParams.value(QStringLiteral("http_only"))).toBool());
+        cookie2.setPath(bodyParams.value(QStringLiteral("path")));
+        cookie2.setSecure(QVariant(bodyParams.value(QStringLiteral("secure"))).toBool());
+
+        c->response()->setCookies({ cookie, cookie2 });
+        c->response()->removeCookies(cookieToBeRemoved.toLatin1());
+        c->response()->setBody(cookie.toRawForm());
+    }
+
 };
 
 void TestResponse::initTestCase()
@@ -143,6 +207,7 @@ void TestResponse::doTest()
     QCOMPARE(result.value(QStringLiteral("status")).toByteArray(), responseStatus);
     auto resultHeaders = result.value(QStringLiteral("headers")).value<Headers>();
     if (responseHeaders != resultHeaders) {
+        qDebug() << resultHeaders.map() << responseHeaders.map();
         QCOMPARE(resultHeaders, responseHeaders);
     }
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
@@ -251,6 +316,159 @@ void TestResponse::testController_data()
                                      << QByteArrayLiteral("302 Found")
                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("308")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
                                      << QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=http://cutelyst.org/foo#something>here</a>.</p>\n  </body>\n</html>\n");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("url"), QStringLiteral("http://cutelyst.org/foo#something"));
+    QTest::newRow("redirecturl-test00") << get << QStringLiteral("/response/test/redirectUrl?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                        << QByteArrayLiteral("302 Found")
+                                        << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("308")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
+                                        << QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=http://cutelyst.org/foo#something>here</a>.</p>\n  </body>\n</html>\n");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    QTest::newRow("setCookie-test00") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("7")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar")} }
+                                      << QByteArrayLiteral("foo=bar");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    QTest::newRow("setCookie-test01") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("28")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; domain=cutelyst.org")} }
+                                      << QByteArrayLiteral("foo=bar; domain=cutelyst.org");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    QTest::newRow("setCookie-test02") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("67")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org")} }
+                                      << QByteArrayLiteral("foo=bar; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    QTest::newRow("setCookie-test03") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("77")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org")} }
+                                      << QByteArrayLiteral("foo=bar; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    QTest::newRow("setCookie-test04") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("89")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path")} }
+                                      << QByteArrayLiteral("foo=bar; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    QTest::newRow("setCookie-test05") << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+                                      << QByteArrayLiteral("200 OK")
+                                      << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("97")}, {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path")} }
+                                      << QByteArrayLiteral("foo=bar; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("setCookies-test00") << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded) << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                       << QByteArrayLiteral("200 OK")
+                                       << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("97")}, {QStringLiteral("Set-Cookie"), QStringLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path")} }
+                                       << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
+
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    QUrlQuery cookies;
+    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 16:37:23 2016"));
+    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("setCookies-test01") << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded) << headers << cookies.toString(QUrl::FullyEncoded).toLatin1()
+                                       << QByteArrayLiteral("200 OK")
+                                       << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("97")},
+    {QStringLiteral("Set-Cookie"), QStringLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path")},
+    {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; secure; expires=Mon, 20-Jun-2016 19:37:23 GMT; domain=cutelyst.org; path=/path")} }
+                                       << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
+
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    cookies.clear();
+    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 16:37:23 2016"));
+    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("removeCookies-test00") << post << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded) << headers << cookies.toString(QUrl::FullyEncoded).toLatin1()
+                                          << QByteArrayLiteral("200 OK")
+                                          << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("97")},
+    {QStringLiteral("Set-Cookie"), QStringLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path")} }
+                                          << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
+
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    query.addQueryItem(QStringLiteral("value"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    query.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 15:37:23 2016"));
+    query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    cookies.clear();
+    cookies.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
+    cookies.addQueryItem(QStringLiteral("value"), QStringLiteral("bar"));
+    cookies.addQueryItem(QStringLiteral("domain"), QStringLiteral("cutelyst.org"));
+    cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("Mon Jun 20 16:37:23 2016"));
+    cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
+    cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("removeCookies-test01") << post << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded) << headers << cookies.toString(QUrl::FullyEncoded).toLatin1()
+                                          << QByteArrayLiteral("200 OK")
+                                          << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("97")} }
+                                          << QByteArrayLiteral("foo=baz; secure; HttpOnly; expires=Mon, 20-Jun-2016 18:37:23 GMT; domain=cutelyst.org; path=/path");
 
 }
 
