@@ -228,9 +228,7 @@ void TestResponse::testController_data()
 
     QUrlQuery query;
     Headers headers;
-    QByteArray body;
 
-    Headers responseHeaders;
     QTest::newRow("status-test00") << get << QStringLiteral("/response/test/status?data=200") << headers << QByteArray()
                                    << QByteArrayLiteral("200 OK")
                                    << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("3")} }
