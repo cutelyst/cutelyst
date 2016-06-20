@@ -247,11 +247,11 @@ bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, co
     } else if (passwordType == CredentialPassword::Clear) {
         return storedPassword == password;
     } else if (passwordType == CredentialPassword::Hashed) {
-        if (!passwordPreSalt.isNull()) {
+        if (!passwordPreSalt.isEmpty()) {
             password.prepend(password);
         }
 
-        if (!passwordPostSalt.isNull()) {
+        if (!passwordPostSalt.isEmpty()) {
             password.append(password);
         }
 

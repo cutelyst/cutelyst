@@ -50,7 +50,7 @@ void AuthenticationUser::setId(const QString &id)
 
 bool AuthenticationUser::isNull() const
 {
-    return m_id.isNull();
+    return m_id.isEmpty();
 }
 
 AuthenticationRealm *AuthenticationUser::authRealm()

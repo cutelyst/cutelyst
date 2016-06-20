@@ -157,11 +157,11 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     } else if (passwordType == CredentialHttp::Clear) {
         return storedPassword == password;
     } else if (passwordType == CredentialHttp::Hashed) {
-        if (!passwordPreSalt.isNull()) {
+        if (!passwordPreSalt.isEmpty()) {
             password.prepend(password);
         }
 
-        if (!passwordPostSalt.isNull()) {
+        if (!passwordPostSalt.isEmpty()) {
             password.append(password);
         }
 
@@ -211,10 +211,10 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, Authe
     res->setStatus(Response::Unauthorized); // 401
     res->setContentType(QStringLiteral("text/plain; charset=UTF-8"));
 
-    if (authorizationRequiredMessage.isNull()) {
-        res->body() = QByteArrayLiteral("Authorization required.");
+    if (authorizationRequiredMessage.isEmpty()) {
+        res->setBody(QStringLiteral("Authorization required."));
     } else {
-        res->body() = authorizationRequiredMessage.toUtf8();
+        res->setBody(authorizationRequiredMessage);
     }
 
     // Create Digest response

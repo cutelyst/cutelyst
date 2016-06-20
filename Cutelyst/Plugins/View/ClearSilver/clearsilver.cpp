@@ -219,7 +219,7 @@ HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) cons
 void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix) const
 {
     QString _prefix;
-    if (!prefix.isNull()) {
+    if (!prefix.isEmpty()) {
         _prefix = prefix + QLatin1Char('.');
     }
 
@@ -233,7 +233,7 @@ void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const
 void ClearSilverPrivate::serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix) const
 {
     QString _prefix;
-    if (!prefix.isNull()) {
+    if (!prefix.isEmpty()) {
         _prefix = prefix + QLatin1Char('.');
     }
 

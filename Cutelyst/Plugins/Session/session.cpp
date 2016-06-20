@@ -230,7 +230,7 @@ QString SessionPrivate::loadSessionId(Context *c, const QString &sessionName)
     c->setProperty(SESSION_TRIED_LOADING_ID, true);
 
     const QString sid = getSessionId(c, sessionName);
-    if (!sid.isNull() && !validateSessionId(sid)) {
+    if (!sid.isEmpty() && !validateSessionId(sid)) {
         qCCritical(C_SESSION) << "Tried to set invalid session ID" << sid;
         return QString();
     }
@@ -250,7 +250,7 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
         }
 
         const QString cookie = c->request()->cookie(sessionName);
-        if (!cookie.isNull()) {
+        if (!cookie.isEmpty()) {
             qCDebug(C_SESSION) << "Found sessionid" << cookie << "in cookie";
             return cookie;
         }
