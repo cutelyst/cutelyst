@@ -178,11 +178,34 @@ public:
      */
     QString contentTypeCharset() const;
 
-    QNetworkCookie cookie(const QByteArray &name) const;
+    /**
+     * Returns the first QNetworkCookie matching the name
+     * or a null QVariant if not found
+     */
+    QVariant cookie(const QByteArray &name) const;
+
+    /**
+     * Returns a list of all cookies set
+     */
     QList<QNetworkCookie> cookies() const;
-    void addCookie(const QNetworkCookie &cookie);
+
+    /**
+     * Defines a QNetworkCookie to be sent to the user-agent,
+     * if a previous cookie->name() was set it will be replaced
+     */
     void setCookie(const QNetworkCookie &cookie);
+
+    /**
+     * Defines a list of QNetworkCookie to be sent to the user-agent,
+     * all previous matches to cookie->name() will be preserved.
+     */
     void setCookies(const QList<QNetworkCookie> &cookies);
+
+    /**
+     * Removes all cookies that matches name, returning
+     * the number of cookies removed
+     */
+    int removeCookie(const QByteArray &name);
 
     /**
      * Causes the response to redirect to the specified URL. The default status is 302.

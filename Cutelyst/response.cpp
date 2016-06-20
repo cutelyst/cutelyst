@@ -163,22 +163,16 @@ QString Response::contentTypeCharset() const
     return d->headers.contentTypeCharset();
 }
 
-QNetworkCookie Response::cookie(const QByteArray &name) const
+QVariant Response::cookie(const QByteArray &name) const
 {
     Q_D(const Response);
-    return d->cookies.value(name);
+    return QVariant::fromValue(d->cookies.value(name));
 }
 
 QList<QNetworkCookie> Response::cookies() const
 {
     Q_D(const Response);
     return d->cookies.values();
-}
-
-void Response::addCookie(const QNetworkCookie &cookie)
-{
-    Q_D(Response);
-    d->cookies.insertMulti(cookie.name(), cookie);
 }
 
 void Response::setCookie(const QNetworkCookie &cookie)
@@ -191,8 +185,14 @@ void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
     Q_D(Response);
     Q_FOREACH (const QNetworkCookie &cookie, cookies) {
-        d->cookies.insertMulti(cookie.name(), cookie);
+        d->cookies.insert(cookie.name(), cookie);
     }
+}
+
+int Response::removeCookie(const QByteArray &name)
+{
+    Q_D(Response);
+    return d->cookies.remove(name);
 }
 
 void Response::redirect(const QUrl &url, quint16 status)
