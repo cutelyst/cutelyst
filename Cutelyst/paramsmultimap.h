@@ -39,4 +39,6 @@ typedef QMap<QString, QString> ParamsMultiMap;
 
 }
 
+Q_DECLARE_METATYPE(Cutelyst::ParamsMultiMap)
+
 #endif // PARAMSMULTIMAP_H
