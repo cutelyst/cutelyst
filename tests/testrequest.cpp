@@ -776,19 +776,19 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test01") << get << QStringLiteral("/request/test/bodyData")
                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                     << QByteArrayLiteral("QMap<QString,QString>");
+                                     << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test02") << get << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
-                                     << QByteArrayLiteral("QMap<QString,QString>");
+                                     << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test03") << get << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
-                                     << QByteArrayLiteral("QMap<QString,QString>");
+                                     << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/json"));
