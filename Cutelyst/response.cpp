@@ -51,6 +51,7 @@ qint64 Response::writeData(const char *data, qint64 len)
     // Finalize headers if someone manually writes output
     if (!d->finalizedHeaders) {
         d->engine->finalizeHeaders(d->context);
+        d->iowrite = true;
     }
 
     return d->engine->write(d->context, data, len, d->context->engineData());
@@ -76,7 +77,7 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->bodyData.isEmpty() || d->bodyIODevice || d->chunked;
+    return !d->bodyData.isEmpty() || d->bodyIODevice || d->iowrite;
 }
 
 QByteArray &Response::body()

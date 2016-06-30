@@ -46,6 +46,7 @@ public:
     Engine *engine;
     quint16 status = Response::OK;
     bool finalizedHeaders = false;
+    bool iowrite = false;
     bool chunked = false;
     bool chunked_done = false;
 };
