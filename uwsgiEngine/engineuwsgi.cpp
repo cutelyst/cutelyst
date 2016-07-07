@@ -97,17 +97,17 @@ qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData
 
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
-    for(;;) {
+    Q_FOREVER {
         int ret = uwsgi_wait_read_req(wsgi_req);
         if (ret <= 0) {
             qCDebug(CUTELYST_UWSGI) << "Failed wait read.";
-            goto end;
+            return;
         }
 
         int status = wsgi_req->socket->proto(wsgi_req);
         if (status < 0) {
             qCDebug(CUTELYST_UWSGI) << "Failed broken socket.";
-            goto end;
+            return;
         } else if (status == 0) {
             break;
         }
@@ -116,20 +116,17 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
     // empty request ?
     if (!wsgi_req->uh->pktsize) {
         qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
-        goto end;
+        return;
     }
 
     // get uwsgi variables
     if (uwsgi_parse_vars(wsgi_req)) {
         // If static maps are set or there is some error
         // this returns -1 so we just close the request
-        goto end;
+        return;
     }
 
     processRequest(wsgi_req);
-
-end:
-    uwsgi_close_request(wsgi_req);
 }
 
 static inline uint16_t notSlash(char *str, uint16_t length) {
@@ -281,6 +278,7 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 
         CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
         readRequestUWSGI(wsgi_req);
+        uwsgi_close_request(wsgi_req);
         wsgi_req->async_environ = cache;
 
         m_unusedReq.append(wsgi_req);
