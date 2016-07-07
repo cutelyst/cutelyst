@@ -175,7 +175,23 @@ void Dispatcher::prepareAction(Context *c)
     Q_D(Dispatcher);
 
     Request *request = c->request();
-    QStringList pathParts = request->path().split(QLatin1Char('/'), QString::SkipEmptyParts);
+    d->prepareAction(c, request->path());
+
+    static const auto &log = CUTELYST_DISPATCHER();
+    if (log.isDebugEnabled()) {
+        if (!request->match().isEmpty()) {
+            qCDebug(log) << "Path is" << request->match();
+        }
+
+        if (!request->args().isEmpty()) {
+            qCDebug(log) << "Arguments are" << request->args().join(QLatin1Char('/'));
+        }
+    }
+}
+
+void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath)
+{
+    QStringList pathParts = requestPath.split(QLatin1Char('/'), QString::SkipEmptyParts);
     const QString path = pathParts.join(QLatin1Char('/'));
     QStringList args;
 
@@ -189,9 +205,9 @@ void Dispatcher::prepareAction(Context *c)
         // Check out the dispatch types to see if any
         // will handle the path at this level
         const QString actionPath = path.mid(0, pos);
-        Q_FOREACH (DispatchType *type, d->dispatchers) {
+        Q_FOREACH (DispatchType *type, dispatchers) {
             if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
-                goto out;
+                return;
             }
         }
 
@@ -211,15 +227,6 @@ void Dispatcher::prepareAction(Context *c)
         } else {
             args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
         }
-    }
-
-out:
-    if (!request->match().isEmpty()) {
-        qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
-    }
-
-    if (!request->args().isEmpty()) {
-        qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << request->args().join(QLatin1Char('/'));
     }
 }
 
