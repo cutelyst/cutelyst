@@ -91,6 +91,7 @@ Q_SIGNALS:
     void engineDisabled(uWSGI *engine);
 
 private:
+    inline void validateAndExecuteRequest(wsgi_request *wsgi_req, int status);
     void forked();
 
     Cutelyst::Application *m_app;

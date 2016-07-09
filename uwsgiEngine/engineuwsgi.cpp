@@ -113,20 +113,7 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
         }
     }
 
-    // empty request ?
-    if (!wsgi_req->uh->pktsize) {
-        qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
-        return;
-    }
-
-    // get uwsgi variables
-    if (uwsgi_parse_vars(wsgi_req)) {
-        // If static maps are set or there is some error
-        // this returns -1 so we just close the request
-        return;
-    }
-
-    processRequest(wsgi_req);
+    validateAndExecuteRequest(wsgi_req, 0);
 }
 
 static inline uint16_t notSlash(char *str, uint16_t length) {
@@ -287,6 +274,29 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
     return uwsgi_sock->next;
 }
 
+void uWSGI::validateAndExecuteRequest(wsgi_request *wsgi_req, int status)
+{
+    if (status < 0) {
+        qCDebug(CUTELYST_UWSGI) << "Failed broken socket.";
+        return;
+    }
+
+    // empty request ?
+    if (!wsgi_req->uh->pktsize) {
+        qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
+        return;
+    }
+
+    // get uwsgi variables
+    if (uwsgi_parse_vars(wsgi_req)) {
+        // If static maps are set or there is some error
+        // this returns -1 so we just close the request
+        return;
+    }
+
+    processRequest(wsgi_req);
+}
+
 uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 {
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
@@ -345,53 +355,27 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         });
 
         connect(requestNotifier, &QSocketNotifier::activated,
-                [=](int fd) {
-            Q_UNUSED(fd)
+                [=]() {
             int status = wsgi_req->socket->proto(wsgi_req);
             if (status > 0) {
                 // still need to read
                 timeoutTimer->start();
                 return;
-            } else if (status < 0) {
-                qCDebug(CUTELYST_UWSGI) << "Failed broken socket.";
-                goto end;
             }
 
-            // empty request ?
-            if (!wsgi_req->uh->pktsize) {
-                qCDebug(CUTELYST_UWSGI) << "Empty request. skip.";
-                goto end;
-            }
-
-            // get uwsgi variables
-            if (uwsgi_parse_vars(wsgi_req)) {
-                // If static maps are set or there is some error
-                // this returns -1 so we just close the request
-                goto end;
-            }
-
-            // We must disable the socket because the next
-            // request is likely to happen before deleteLater
-            // is processed.
+            // Disable the notifier because we are in async
+            // mode and more data would break things
             requestNotifier->setEnabled(false);
             delete timeoutTimer;
-            processRequest(wsgi_req);
-            goto endDisabledNotifier;
 
-end:
-            // We must disable the socket because the next
-            // request is likely to happen before deleteLater
-            // is processed.
-            requestNotifier->setEnabled(false);
+            validateAndExecuteRequest(wsgi_req, status);
 
-endDisabledNotifier:
             CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
-
             uwsgi_close_request(wsgi_req);
-            requestNotifier->deleteLater();
+            wsgi_req->async_environ = cache;
             m_unusedReq.append(wsgi_req);
 
-            wsgi_req->async_environ = cache;
+            requestNotifier->deleteLater();
         });
 
         timeoutTimer->start();
