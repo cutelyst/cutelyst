@@ -153,16 +153,17 @@ void ControllerPrivate::setupFinished()
 {
     Q_Q(Controller);
 
-    const ActionList beginList = dispatcher->getActions(QLatin1String("Begin"), pathPrefix);
+    const ActionList beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
     if (!beginList.isEmpty()) {
         controllerBegin = beginList.last()->controller();
     }
 
-    Q_FOREACH (Action *action, dispatcher->getActions(QLatin1String("Auto"), pathPrefix)) {
+    const ActionList autoActions = dispatcher->getActions(QStringLiteral("Auto"), pathPrefix);
+    Q_FOREACH (Action *action, autoActions) {
         controllerAutoList.append(action->controller());
     }
 
-    const ActionList endList = dispatcher->getActions(QLatin1String("End"), pathPrefix);
+    const ActionList endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
     if (!endList.isEmpty()) {
         controllerEnd = endList.last()->controller();
     }
@@ -208,8 +209,8 @@ bool Controller::_DISPATCH(Context *c)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
-    const QString actionClass = attributes.value(QLatin1String("ActionClass"));
+    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
     QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");
     if (object) {
@@ -242,8 +243,8 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
     action->applyRoles(roles);
     action->setMethod(method);
     action->setController(controller);
-    action->setName(args.value(QLatin1String("name")).toString());
-    action->setReverse(args.value(QLatin1String("reverse")).toString());
+    action->setName(args.value(QStringLiteral("name")).toString());
+    action->setReverse(args.value(QStringLiteral("reverse")).toString());
     action->setupAction(args, app);
 
     return action;
@@ -385,11 +386,11 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         } else if (key == QLatin1String("Args")) {
             QString args = value;
             if (!args.isEmpty()) {
-                value = args.remove(QRegularExpression(QLatin1String("\\D")));
+                value = args.remove(QRegularExpression(QStringLiteral("\\D")));
             }
         } else if (key == QLatin1String("CaptureArgs")) {
             QString captureArgs = value;
-            value = captureArgs.remove(QRegularExpression(QLatin1String("\\D")));
+            value = captureArgs.remove(QRegularExpression(QStringLiteral("\\D")));
         } else if (key == QLatin1String("Chained")) {
             value = parseChainedAttr(value);
         }
@@ -398,18 +399,18 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     }
 
     // Handle special AutoArgs and AutoCaptureArgs case
-    if (!ret.contains(QLatin1String("Args")) && !ret.contains(QLatin1String("CaptureArgs")) &&
-            (ret.contains(QLatin1String("AutoArgs")) || ret.contains(QLatin1String("AutoCaptureArgs")))) {
-        if (ret.contains(QLatin1String("AutoArgs")) && ret.contains(QLatin1String("AutoCaptureArgs"))) {
+    if (!ret.contains(QStringLiteral("Args")) && !ret.contains(QStringLiteral("CaptureArgs")) &&
+            (ret.contains(QStringLiteral("AutoArgs")) || ret.contains(QStringLiteral("AutoCaptureArgs")))) {
+        if (ret.contains(QStringLiteral("AutoArgs")) && ret.contains(QStringLiteral("AutoCaptureArgs"))) {
             qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed", name.data());
         } else {
             QString parameterName;
-            if (ret.contains(QLatin1String("AutoArgs"))) {
-                ret.remove(QLatin1String("AutoArgs"));
-                parameterName = QLatin1String("Args");
+            if (ret.contains(QStringLiteral("AutoArgs"))) {
+                ret.remove(QStringLiteral("AutoArgs"));
+                parameterName = QStringLiteral("Args");
             } else {
-                ret.remove(QLatin1String("AutoCaptureArgs"));
-                parameterName = QLatin1String("CaptureArgs");
+                ret.remove(QStringLiteral("AutoCaptureArgs"));
+                parameterName = QStringLiteral("CaptureArgs");
             }
 
             // If the signature is not QStringList we count them
@@ -428,7 +429,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     }
 
     // If the method is private add a Private attribute
-    if (!ret.contains(QLatin1String("Private")) && method.access() == QMetaMethod::Private) {
+    if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
         ret.insert(QStringLiteral("Private"), QString());
     }
 
@@ -438,9 +439,10 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QByteArray, QByteArray> >();
-    Q_FOREACH (const QByteArray &role, attributes.values("Does")) {
-        QObject *object = instantiateClass(role, "Cutelyst::Component");
+    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
+    const QByteArrayList does = attributes.values(QByteArrayLiteral("Does"));
+    Q_FOREACH (const QByteArray &role, does) {
+        QObject *object = instantiateClass(role, QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }
@@ -464,7 +466,7 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
         return QStringLiteral("/");
     }
 
-    if (attr == QLatin1String(".")) {
+    if (attr == QStringLiteral(".")) {
         return QLatin1Char('/') + pathPrefix;
     } else if (!attr.startsWith(QLatin1Char('/'))) {
         if (!pathPrefix.isEmpty()) {
@@ -482,7 +484,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
 {
     QString instanceName = QString::fromLatin1(name);
     if (!instanceName.isEmpty()) {
-        instanceName.remove(QRegularExpression(QLatin1String("\\W")));
+        instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
 
         int id = QMetaType::type(instanceName.toLatin1().data());
         if (!id) {
@@ -491,7 +493,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
             }
 
             id = QMetaType::type(instanceName.toLatin1().data());
-            if (!id && !instanceName.startsWith(QLatin1String("Cutelyst::"))) {
+            if (!id && !instanceName.startsWith(QStringLiteral("Cutelyst::"))) {
                 instanceName = QLatin1String("Cutelyst::") + instanceName;
                 id = QMetaType::type(instanceName.toLatin1().data());
             }
