@@ -81,23 +81,12 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
                 d->actionContainer[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
-            } else if (action->name() != QLatin1String("_DISPATCH") &&
-                       action->name() != QLatin1String("_BEGIN") &&
-                       action->name() != QLatin1String("_AUTO") &&
-                       action->name() != QLatin1String("_ACTION") &&
-                       action->name() != QLatin1String("_END")) {
+            } else {
                 qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
                                              << action->controller()->objectName()
                                              << "controller was not registered in any dispatcher."
                                                 " If you still want to access it internally (via actionFor())"
                                                 " you may make it's method private.";
-            } else if (d->showInternalActions) {
-                qCCritical(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
-                                                << action->controller()->objectName()
-                                                << "controller was alread registered by the"
-                                                << d->actions.value(action->reverse())->controller()->objectName()
-                                                << "controller.";
-                exit(1);
             }
         }
 
@@ -133,11 +122,7 @@ bool Dispatcher::dispatch(Context *c)
 {
     Action *action = c->action();
     if (action) {
-        Controller *controller = action->controller();
-        if (controller) {
-            return controller->_DISPATCH(c);
-        }
-        return forward(c, QLatin1Char('/') + action->ns() + QLatin1String("/_DISPATCH"));
+        return action->controller()->_DISPATCH(c);
     } else {
         const QString path = c->req()->path();
         if (path.isEmpty()) {
@@ -345,18 +330,16 @@ void DispatcherPrivate::printActions() const
     keys.sort(Qt::CaseInsensitive);
     Q_FOREACH (const QString &key, keys) {
         Action *action = actions.value(key);
-        if (showInternalActions || !action->name().startsWith(QLatin1Char('_'))) {
-            QString path = key;
-            if (!path.startsWith(QLatin1Char('/'))) {
-                path.prepend(QLatin1Char('/'));
-            }
-
-            QStringList row;
-            row.append(path);
-            row.append(action->className());
-            row.append(action->name());
-            table.append(row);
+        QString path = key;
+        if (!path.startsWith(QLatin1Char('/'))) {
+            path.prepend(QLatin1Char('/'));
         }
+
+        QStringList row;
+        row.append(path);
+        row.append(action->className());
+        row.append(action->name());
+        table.append(row);
     }
 
     qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -144,10 +144,14 @@ protected:
      */
     virtual bool postFork(Application *app);
 
-    ControllerPrivate *d_ptr;
-
-private Q_SLOTS:
+    /**
+     * This is called by the dispatch engine to do the contextual action dispatching.
+     * Transversing each namespace's Begin(), nearest Auto(), the Action method of
+     * this controller and nearest End().
+     */
     bool _DISPATCH(Context *c);
+
+    ControllerPrivate *d_ptr;
 
 private:
     Q_DECLARE_PRIVATE(Controller)

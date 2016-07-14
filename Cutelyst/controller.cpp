@@ -180,11 +180,12 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
+    // Dispatch Begin
     if (d->controllerBegin && !d->controllerBegin->Begin(c)) {
         return false;
     }
 
-    // Dispatch to _BEGIN and _AUTO
+    // Dispatch to Auto
     Q_FOREACH (Controller *controller, d->controllerAutoList) {
         if (!controller->Auto(c)) {
             ret = false;
@@ -192,12 +193,12 @@ bool Controller::_DISPATCH(Context *c)
         }
     }
 
-    // Dispatch to _ACTION
+    // Dispatch to Action
     if (ret && !c->action()->dispatch(c)) {
         ret = false;
     }
 
-    // Dispatch to _END
+    // Dispatch to End
     if (d->controllerEnd && !d->controllerEnd->End(c)) {
         ret = false;
     }
