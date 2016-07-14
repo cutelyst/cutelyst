@@ -233,19 +233,13 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
         return 0;
     }
 
-    const QString name = args.value(QLatin1String("name")).toString();
-    QRegularExpression regex(QLatin1String("^_(DISPATCH|BEGIN|AUTO|ACTION|END)$"));
-    QRegularExpressionMatch match = regex.match(name);
-    if (!match.hasMatch()) {
-        QStack<Component *> roles = gatherActionRoles(args);
-        for (int i = 0; i < roles.size(); ++i) {
-            Component *code = roles.at(i);
-            code->init(app, args);
-            code->setParent(action);
-        }
-        action->applyRoles(roles);
+    QStack<Component *> roles = gatherActionRoles(args);
+    for (int i = 0; i < roles.size(); ++i) {
+        Component *code = roles.at(i);
+        code->init(app, args);
+        code->setParent(action);
     }
-
+    action->applyRoles(roles);
     action->setMethod(method);
     action->setController(controller);
     action->setName(args.value(QLatin1String("name")).toString());
