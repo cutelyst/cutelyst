@@ -61,13 +61,13 @@ public:
 
 private:
     C_ATTR(Begin,)
-    void Begin(Context *) { }
+    bool Begin(Context *) { return true; }
 
     C_ATTR(Auto,)
     bool Auto(Context *) { return true; }
 
     C_ATTR(End,)
-    void End(Context *) { }
+    bool End(Context *) { return true; }
 };
 
 class TestController : public Controller

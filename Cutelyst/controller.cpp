@@ -68,9 +68,10 @@ bool Controller::operator==(const char *className)
     return !qstrcmp(metaObject()->className(), className);
 }
 
-void Controller::Begin(Context *c)
+bool Controller::Begin(Context *c)
 {
     Q_UNUSED(c)
+    return true;
 }
 
 bool Controller::Auto(Context *c)
@@ -79,9 +80,10 @@ bool Controller::Auto(Context *c)
     return true;
 }
 
-void Controller::End(Context *c)
+bool Controller::End(Context *c)
 {
     Q_UNUSED(c)
+    return true;
 }
 
 bool Controller::preFork(Application *app)
@@ -95,50 +97,6 @@ bool Controller::postFork(Application *app)
     Q_UNUSED(app)
     return true;
 }
-
-bool Controller::_BEGIN(Context *c)
-{
-//    qDebug() << Q_FUNC_INFO;
-    Q_D(Controller);
-    if (d->begin) {
-        d->begin->dispatch(c);
-        return !c->error();
-    }
-    return true;
-}
-
-bool Controller::_AUTO(Context *c)
-{
-//    qDebug() << Q_FUNC_INFO;
-    Q_D(Controller);
-    Q_FOREACH (Action *autoAction, d->autoList) {
-        if (!autoAction->dispatch(c)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool Controller::_ACTION(Context *c)
-{
-//    qDebug() << Q_FUNC_INFO;
-    if (c->action()) {
-        return c->action()->dispatch(c);
-    }
-    return !c->error();
-}
-
-bool Controller::_END(Context *c)
-{
-//    qDebug() << Q_FUNC_INFO;
-    Q_D(Controller);
-    if (d->end) {
-        d->end->dispatch(c);
-        return !c->error();
-    }
-    return true;
-}
-
 
 ControllerPrivate::ControllerPrivate(Controller *parent) :
     q_ptr(parent)
@@ -197,16 +155,16 @@ void ControllerPrivate::setupFinished()
 
     const ActionList beginList = dispatcher->getActions(QLatin1String("Begin"), pathPrefix);
     if (!beginList.isEmpty()) {
-        begin = beginList.last();
-        actionSteps.append(begin);
+        controllerBegin = beginList.last()->controller();
     }
 
-    autoList = dispatcher->getActions(QLatin1String("Auto"), pathPrefix);
-    actionSteps.append(autoList);
+    Q_FOREACH (Action *action, dispatcher->getActions(QLatin1String("Auto"), pathPrefix)) {
+        controllerAutoList.append(action->controller());
+    }
 
     const ActionList endList = dispatcher->getActions(QLatin1String("End"), pathPrefix);
     if (!endList.isEmpty()) {
-        end = endList.last();
+        controllerEnd = endList.last()->controller();
     }
 
     Q_FOREACH (Action *action, actions.values()) {
@@ -220,27 +178,31 @@ bool Controller::_DISPATCH(Context *c)
 {
     Q_D(Controller);
 
-    bool failedState = false;
+    bool ret = true;
+
+    if (d->controllerBegin && !d->controllerBegin->Begin(c)) {
+        return false;
+    }
 
     // Dispatch to _BEGIN and _AUTO
-    Q_FOREACH (Action *action, d->actionSteps) {
-        if (!action->dispatch(c)) {
-            failedState = true;
+    Q_FOREACH (Controller *controller, d->controllerAutoList) {
+        if (!controller->Auto(c)) {
+            ret = false;
             break;
         }
     }
 
     // Dispatch to _ACTION
-    if (!failedState) {
-        c->action()->dispatch(c);
+    if (ret && !c->action()->dispatch(c)) {
+        ret = false;
     }
 
     // Dispatch to _END
-    if (d->end) {
-        d->end->dispatch(c);
+    if (d->controllerEnd && !d->controllerEnd->End(c)) {
+        ret = false;
     }
 
-    return c->state();
+    return ret;
 }
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)

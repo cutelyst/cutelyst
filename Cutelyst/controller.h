@@ -120,9 +120,9 @@ public:
     bool operator==(const char *className);
 
 protected:
-    virtual void Begin(Context *c);
+    virtual bool Begin(Context *c);
     virtual bool Auto(Context *c);
-    virtual void End(Context *c);
+    virtual bool End(Context *c);
 
     /**
      * This method is called after the application
@@ -148,10 +148,6 @@ protected:
 
 private Q_SLOTS:
     bool _DISPATCH(Context *c);
-    bool _BEGIN(Context *c);
-    bool _AUTO(Context *c);
-    bool _ACTION(Context *c);
-    bool _END(Context *c);
 
 private:
     Q_DECLARE_PRIVATE(Controller)
