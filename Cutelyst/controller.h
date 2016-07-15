@@ -81,6 +81,20 @@ class ControllerPrivate;
  * \n The number is computed by counting the arguments the method expects.
  * \n However if no Args value is set, assumed to 'slurp' all
  *    remaining path parts under this namespace.
+ *
+ * There are also three special methods that can be implemented
+ * that will be automatically dispatched, they are Begin(),
+ * Auto() and End().
+ *
+ * Begin(Context*) and End(Context*) are both called on the closest
+ * namespace match. If the Controller implements Begin it's that action
+ * that will be called otherwise it will try to match looking at the
+ * namespace.
+ *
+ * Auto(Context*) is called in namespace order, so if
+ * you have a Foo and a FooBar controller with 'foo' and 'foo/bar'
+ * namespaces respectively and both implement Auto(), you get
+ * Foo->Auto() and FooBar->Auto() called.
  */
 class CUTELYST_LIBRARY Controller : public QObject
 {
@@ -120,10 +134,6 @@ public:
     bool operator==(const char *className);
 
 protected:
-    virtual bool Begin(Context *c);
-    virtual bool Auto(Context *c);
-    virtual bool End(Context *c);
-
     /**
      * This method is called after the application
      * has registered all controllers.

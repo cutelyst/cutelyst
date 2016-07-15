@@ -68,24 +68,6 @@ bool Controller::operator==(const char *className)
     return !qstrcmp(metaObject()->className(), className);
 }
 
-bool Controller::Begin(Context *c)
-{
-    Q_UNUSED(c)
-    return true;
-}
-
-bool Controller::Auto(Context *c)
-{
-    Q_UNUSED(c)
-    return true;
-}
-
-bool Controller::End(Context *c)
-{
-    Q_UNUSED(c)
-    return true;
-}
-
 bool Controller::preFork(Application *app)
 {
     Q_UNUSED(app)
