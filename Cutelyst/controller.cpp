@@ -155,17 +155,14 @@ void ControllerPrivate::setupFinished()
 
     const ActionList beginList = dispatcher->getActions(QStringLiteral("Begin"), pathPrefix);
     if (!beginList.isEmpty()) {
-        controllerBegin = beginList.last()->controller();
+        beginAutoList.append(beginList.last());
     }
 
-    const ActionList autoActions = dispatcher->getActions(QStringLiteral("Auto"), pathPrefix);
-    Q_FOREACH (Action *action, autoActions) {
-        controllerAutoList.append(action->controller());
-    }
+    beginAutoList.append(dispatcher->getActions(QStringLiteral("Auto"), pathPrefix));
 
     const ActionList endList = dispatcher->getActions(QStringLiteral("End"), pathPrefix);
     if (!endList.isEmpty()) {
-        controllerEnd = endList.last()->controller();
+        end = endList.last();
     }
 
     Q_FOREACH (Action *action, actions.values()) {
@@ -181,14 +178,9 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-    // Dispatch Begin
-    if (d->controllerBegin && !d->controllerBegin->Begin(c)) {
-        return false;
-    }
-
-    // Dispatch to Auto
-    Q_FOREACH (Controller *controller, d->controllerAutoList) {
-        if (!controller->Auto(c)) {
+    // Dispatch to Begin and Auto
+    Q_FOREACH (Action *action, d->beginAutoList) {
+        if (!action->dispatch(c)) {
             ret = false;
             break;
         }
@@ -200,7 +192,7 @@ bool Controller::_DISPATCH(Context *c)
     }
 
     // Dispatch to End
-    if (d->controllerEnd && !d->controllerEnd->End(c)) {
+    if (d->end && !d->end->dispatch(c)) {
         ret = false;
     }
 

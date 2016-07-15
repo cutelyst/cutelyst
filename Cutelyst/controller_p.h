@@ -45,12 +45,11 @@ public:
     QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
-    Controller *q_ptr;
-    Application *application;
     QString pathPrefix;
-    Controller *controllerBegin = nullptr;
-    QList<Controller *> controllerAutoList;
-    Controller *controllerEnd = nullptr;
+    ActionList beginAutoList;
+    Action *end = nullptr;
+    Application *application;
+    Controller *q_ptr;
     Dispatcher *dispatcher;
     QMap<QString, Action *> actions;
     bool parsedActions = false;
