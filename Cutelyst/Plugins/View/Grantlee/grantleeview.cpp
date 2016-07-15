@@ -116,9 +116,20 @@ void GrantleeView::setCache(bool enable)
         d->cache.clear();
         d->engine->addTemplateLoader(d->loader);
     }
+}
+
+void GrantleeView::preloadTemplates()
+{
+    Q_D(GrantleeView);
+
+    if (!isCaching()) {
+        setCache(true);
+    }
 
     Q_FOREACH (const QString &includePath, d->includePaths) {
-        QDirIterator it(includePath,
+        QDirIterator it(includePath, {
+                            QLatin1Char('*') + d->extension
+                        },
                         QDir::Files | QDir::NoDotAndDotDot,
                         QDirIterator::Subdirectories);
         while (it.hasNext()) {

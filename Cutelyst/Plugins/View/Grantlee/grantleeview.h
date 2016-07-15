@@ -52,6 +52,8 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
+    void preloadTemplates();
+
     QByteArray render(Context *c) const Q_DECL_FINAL;
 
 protected:
