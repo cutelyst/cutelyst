@@ -58,7 +58,7 @@ qint8 ActionChain::numberOfCaptures() const
     return d->captures;
 }
 
-bool ActionChain::dispatch(Context *c)
+bool ActionChain::doExecute(Context *c)
 {
     Q_D(ActionChain);
 

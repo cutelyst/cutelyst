@@ -104,11 +104,6 @@ Controller *Action::controller() const
     return d->controller;
 }
 
-bool Action::dispatch(Context *c)
-{
-    return c->execute(this);
-}
-
 bool Action::match(int numberOfArgs) const
 {
     Q_D(const Action);

@@ -38,12 +38,11 @@ ActionREST::~ActionREST()
     delete d_ptr;
 }
 
-bool ActionREST::dispatch(Context *c)
+bool ActionREST::doExecute(Context *c)
 {
     Q_D(const ActionREST);
 
-    bool ret = Action::dispatch(c);
-    if (!ret) {
+    if (!Action::doExecute(c)) {
         return false;
     }
 

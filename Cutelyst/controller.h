@@ -165,7 +165,6 @@ protected:
 
 private:
     Q_DECLARE_PRIVATE(Controller)
-    friend class Action;
     friend class Application;
     friend class Dispatcher;
 };

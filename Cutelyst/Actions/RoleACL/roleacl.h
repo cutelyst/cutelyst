@@ -38,16 +38,16 @@ public:
     explicit RoleACL(QObject *parent = nullptr);
     virtual ~RoleACL();
 
-    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
+    virtual Modifiers modifiers() const override;
 
-    virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
+    virtual bool init(Application *application, const QVariantHash &args) override;
 
-    virtual bool aroundExecute(Context *c, QStack<Component *> stack) Q_DECL_OVERRIDE;
+    virtual bool aroundExecute(Context *c, QStack<Component *> stack) override;
 
     bool canVisit(Context *c) const;
 
 protected:
-    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) Q_DECL_OVERRIDE;
+    virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 
     RoleACLPrivate *d_ptr;
 };

@@ -60,10 +60,10 @@ public:
     explicit RenderView(QObject *parent = nullptr);
     virtual ~RenderView();
 
-    virtual bool init(Application *application, const QVariantHash &args) Q_DECL_OVERRIDE;
+    virtual bool init(Application *application, const QVariantHash &args) override;
 
 protected:
-    virtual bool doExecute(Cutelyst::Context *c) Q_DECL_FINAL;
+    virtual bool doExecute(Cutelyst::Context *c) override;
 
     RenderViewPrivate *d_ptr;
 };

@@ -36,11 +36,11 @@ public:
     explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
     ~ActionChain();
 
-    virtual qint8 numberOfCaptures() const Q_DECL_FINAL;
-
-    bool dispatch(Context *c) Q_DECL_FINAL;
+    virtual qint8 numberOfCaptures() const override;
 
 protected:
+    virtual bool doExecute(Context *c) override;
+
     ActionChainPrivate *d_ptr;
 };
 

@@ -38,7 +38,7 @@ public:
 protected:
     ActionRESTPrivate *d_ptr;
 
-    bool dispatch(Context *c) Q_DECL_FINAL;
+    bool doExecute(Context *c) override;
 };
 
 class ActionRESTFactory : public QObject, public ComponentFactory

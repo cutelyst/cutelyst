@@ -25,10 +25,10 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/component.h>
+#include <Cutelyst/context.h>
 
 namespace Cutelyst {
 
-class Context;
 class Controller;
 class Dispatcher;
 class ActionPrivate;
@@ -63,7 +63,7 @@ public:
     /**
      * Dispatch this action against a context
      */
-    virtual bool dispatch(Context *c);
+    inline bool dispatch(Context *c) { return c->execute(this); }
 
     /**
      * @brief Check Args attribute, and makes sure number of
@@ -111,7 +111,7 @@ protected:
     /**
      * Execute this action against
      */
-    virtual bool doExecute(Context *c) Q_DECL_OVERRIDE;
+    virtual bool doExecute(Context *c) override;
 
     /**
      * The method to be invoked by this Action
