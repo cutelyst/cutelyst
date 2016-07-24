@@ -52,7 +52,7 @@ QByteArray DispatchTypeChained::list() const
 
     QList<QStringList> paths;
     QList<QStringList> unattachedTable;
-    Q_FOREACH (Action *endPoint, endPoints) {
+    for (Action *endPoint : endPoints) {
         QStringList parts;
         if (endPoint->numberOfArgs() == -1) {
             parts.append(QLatin1String("..."));
@@ -73,7 +73,7 @@ QByteArray DispatchTypeChained::list() const
             }
 
             const QStringList pathParts = current->attributes().values(QLatin1String("PathPart"));
-            Q_FOREACH (const QString &part, pathParts) {
+            for (const QString &part : pathParts) {
                 if (!part.isEmpty()) {
                     parts.prepend(part);
                 }
@@ -181,9 +181,9 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &pa
     }
 
     QStringList captures = ret.value(QStringLiteral("captures")).toStringList();
-    QStringList parts = ret.value(QStringLiteral("parts")).toStringList();
+    const QStringList parts = ret.value(QStringLiteral("parts")).toStringList();
     QStringList decodedArgs;
-    Q_FOREACH (const QString &arg, parts) {
+    for (const QString &arg : parts) {
         decodedArgs.append(QUrl::fromPercentEncoding(arg.toLatin1()));
     }
 
@@ -363,15 +363,16 @@ bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
 
 QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const
 {
+    QVariantHash bestAction;
     auto it = childrenOf.constFind(parent);
     if (it == childrenOf.constEnd()) {
-        return QVariantHash();
+        return bestAction;
     }
 
     const StringActionsMap children = it.value();
     QStringList keys = children.keys();
     qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
-    QVariantHash bestAction;
+
     Q_FOREACH (const QString &tryPart, keys) {
         QStringList parts = pathParts;
         if (!tryPart.isEmpty()) {

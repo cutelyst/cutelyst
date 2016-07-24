@@ -417,15 +417,16 @@ void *Context::engineData()
 
 QString ContextPrivate::statsStartExecute(Component *code)
 {
+    QString actionName;
     // Skip internal actions
     if (code->name().startsWith(QLatin1Char('_'))) {
-        return QString();
+        return actionName;
     }
 
-    QString actionName = code->reverse();
+    actionName = code->reverse();
 
     if (dynamic_cast<Action *>(code)) {
-        actionName = QLatin1Char('/') + actionName;
+        actionName.prepend(QLatin1Char('/'));
     }
 
     if (stack.size() > 2) {
