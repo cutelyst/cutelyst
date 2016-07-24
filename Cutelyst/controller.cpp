@@ -414,12 +414,13 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
 {
     QStack<Component *> roles;
     const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
-    const QByteArrayList does = attributes.values(QByteArrayLiteral("Does"));
-    for (const QByteArray &role : does) {
-        QObject *object = instantiateClass(role, QByteArrayLiteral("Cutelyst::Component"));
+    auto doesIt = attributes.constFind(QByteArrayLiteral("Does"));
+    while (doesIt != attributes.constEnd()) {
+        QObject *object = instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }
+        ++doesIt;
     }
     return roles;
 }
