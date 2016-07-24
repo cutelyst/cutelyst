@@ -24,10 +24,10 @@
 
 namespace Cutelyst {
 
-typedef QMap<QString, Action *> StringActionMap;
+typedef QHash<QString, Action *> StringActionMap;
 typedef QVector<Action *> Actions;
-typedef QMap<QString, Actions> StringActionsMap;
-typedef QMap<QString, StringActionsMap> StringStringActionsMap;
+typedef QHash<QString, Actions> StringActionsMap;
+typedef QHash<QString, StringActionsMap> StringStringActionsMap;
 
 class DispatchTypeChainedPrivate
 {

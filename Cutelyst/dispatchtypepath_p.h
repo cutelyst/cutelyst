@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 typedef QVector<Action *> Actions;
-typedef QMap<QString, Actions> StringActionsMap;
+typedef QHash<QString, Actions> StringActionsMap;
 
 class DispatchTypePathPrivate
 {
