@@ -223,7 +223,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         QStringList encodedArgs;
         encodedArgs.append(_path);
 
-        Q_FOREACH (const QString &arg, args) {
+        for (const QString &arg : args) {
             encodedArgs.append(QString::fromLatin1(QUrl::toPercentEncoding(arg)));
         }
         _path = encodedArgs.join(QLatin1Char('/'));

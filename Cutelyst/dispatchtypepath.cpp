@@ -50,8 +50,9 @@ QByteArray DispatchTypePath::list() const
 
     QStringList keys = d->paths.keys();
     keys.sort(Qt::CaseInsensitive);
-    Q_FOREACH (const QString &path, keys) {
-        Q_FOREACH (Action *action, d->paths.value(path)) {
+    for (const QString &path : keys) {
+        const auto paths = d->paths.value(path);
+        Q_FOREACH (Action *action, paths) {
             QString _path = QLatin1Char('/') + path;
             if (action->attributes().value(QLatin1String("Args")).isEmpty()) {
                 _path.append(QLatin1String("/..."));
@@ -84,14 +85,14 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
         _path = QStringLiteral("/");
     }
 
-    auto it = d->paths.constFind(_path);
+    const auto it = d->paths.constFind(_path);
     if (it == d->paths.constEnd()) {
         return NoMatch;
     }
 
     MatchType ret = NoMatch;
     int numberOfArgs = args.size();
-    Q_FOREACH (Action *action, it.value()) {
+    for (Action *action : it.value()) {
         // If the number of args is -1 (not defined)
         // it will slurp all args so we don't care
         // about how many args was passed

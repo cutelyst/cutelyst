@@ -59,12 +59,12 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
         return false;
     } else {
         const QStringList required = attributes.values(QLatin1String("RequiresRole"));
-        Q_FOREACH (const QString &role, required) {
+        for (const QString &role : required) {
             d->requiresRole.append(role);
         }
 
         const QStringList allowed = attributes.values(QLatin1String("AllowedRole"));
-        Q_FOREACH (const QString &role, allowed) {
+        for (const QString &role : allowed) {
             d->allowedRole.append(role);
         }
     }
@@ -106,26 +106,26 @@ bool RoleACL::canVisit(Context *c) const
         const QStringList allowed = d->allowedRole;
 
         if (!required.isEmpty() && !allowed.isEmpty()) {
-            Q_FOREACH (const QString &role, required) {
+            for (const QString &role : required) {
                 if (!user_has.contains(role)) {
                     return false;
                 }
             }
-            Q_FOREACH (const QString &role, allowed) {
+            for (const QString &role : allowed) {
                 if (user_has.contains(role)) {
                     return true;
                 }
             }
             return false;
         }  else if (!required.isEmpty()) {
-            Q_FOREACH (const QString &role, required) {
+            for (const QString &role : required) {
                 if (!user_has.contains(role)) {
                     return false;
                 }
             }
             return true;
         } else if (!allowed.isEmpty()) {
-            Q_FOREACH (const QString &role, allowed) {
+            for (const QString &role : allowed) {
                 if (user_has.contains(role)) {
                     return true;
                 }

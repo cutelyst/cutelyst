@@ -45,13 +45,13 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     QList<int> columnsSize;
 
     if (!headers.isEmpty()) {
-        Q_FOREACH (const QString &header, headers) {
+        for (const QString &header : headers) {
             columnsSize.append(header.size());
         }
     } else {
-        Q_FOREACH (const QStringList &rows, table) {
+        for (const QStringList &rows : table) {
             if (columnsSize.isEmpty()) {
-                Q_FOREACH (const QString &row, rows) {
+                for (const QString &row : rows) {
                     columnsSize.append(row.size());
                 }
             } else if (rows.size() != columnsSize.size()) {
@@ -60,7 +60,7 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
         }
     }
 
-    Q_FOREACH (const QStringList &row, table) {
+    for (const QStringList &row : table) {
         if (row.size() > columnsSize.size()) {
             qFatal("Incomplete table");
             break;
@@ -101,7 +101,7 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
         out << div << endl;
     }
 
-    Q_FOREACH (const QStringList &row, table) {
+    for (const QStringList &row : table) {
         // content table
         for (int i = 0; i < row.size(); ++i) {
             out << "| ";

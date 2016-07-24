@@ -55,14 +55,14 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
     d->dispatchers = dispatchers;
 
     ActionList registeredActions;
-    Q_FOREACH (Controller *controller, controllers) {
+    for (Controller *controller : controllers) {
         bool instanceUsed = false;
         Q_FOREACH (Action *action, controller->actions()) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
                 if (!action->attributes().contains(QLatin1String("Private"))) {
                     // Register the action with each dispatcher
-                    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
+                    for (DispatchType *dispatch : dispatchers) {
                         if (dispatch->registerAction(action)) {
                             registered = true;
                         }
@@ -98,7 +98,7 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
     // Cache root actions, BEFORE the controllers set them
     d->rootActions = d->actionContainer.value(QLatin1String(""));
 
-    Q_FOREACH (Controller *controller, controllers) {
+    for (Controller *controller : controllers) {
         controller->d_ptr->setupFinished();
     }
 
@@ -190,7 +190,7 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath)
         // Check out the dispatch types to see if any
         // will handle the path at this level
         const QString actionPath = path.mid(0, pos);
-        Q_FOREACH (DispatchType *type, dispatchers) {
+        for (DispatchType *type : dispatchers) {
             if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
                 return;
             }
@@ -255,7 +255,7 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
     const ActionList containers = d->getContainers(ns);
 
-    Q_FOREACH (Action *action, containers) {
+    for (Action *action : containers) {
         if (action->name() == name) {
             ret.prepend(action);
         }
@@ -272,7 +272,7 @@ QMap<QString, Controller *> Dispatcher::controllers() const
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_D(const Dispatcher);
-    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
+    for (DispatchType *dispatch : d->dispatchers) {
         const QString uri = dispatch->uriForAction(action, captures);
         if (!uri.isNull()) {
             return uri.isEmpty() ? QStringLiteral("/") : uri;
@@ -284,7 +284,7 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
 Action *Dispatcher::expandAction(Context *c, Action *action) const
 {
     Q_D(const Dispatcher);
-    Q_FOREACH (DispatchType *dispatch, d->dispatchers) {
+    for (DispatchType *dispatch : d->dispatchers) {
         Action *expandedAction = dispatch->expandAction(c, action);
         if (expandedAction) {
             return expandedAction;
@@ -329,7 +329,7 @@ void DispatcherPrivate::printActions() const
 
     QStringList keys = actions.keys();
     keys.sort(Qt::CaseInsensitive);
-    Q_FOREACH (const QString &key, keys) {
+    for (const QString &key : keys) {
         Action *action = actions.value(key);
         QString path = key;
         if (!path.startsWith(QLatin1Char('/'))) {
@@ -351,7 +351,7 @@ void DispatcherPrivate::printActions() const
                                                        QLatin1String("Loaded Private actions:")).constData();
 
     // List all public actions
-    Q_FOREACH (DispatchType *dispatch, dispatchers) {
+    for (DispatchType *dispatch : dispatchers) {
         qCDebug(CUTELYST_DISPATCHER) << dispatch->list().constData();
     }
 }

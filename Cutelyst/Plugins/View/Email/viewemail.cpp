@@ -183,7 +183,7 @@ QByteArray ViewEmail::render(Context *c) const
 
     if (!parts.isNull()) {
         const QVariantList partsVariant = parts.toList();
-        Q_FOREACH (const QVariant &part, partsVariant) {
+        for (const QVariant &part : partsVariant) {
             MimePart *mime = part.value<MimePart*>();
             if (mime) {
                 message.addPart(mime);

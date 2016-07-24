@@ -30,7 +30,9 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
     Q_D(ActionChain);
     d->chain = chain;
 
-    Action *final = chain.last();
+    Action *final = d->chain.takeLast();
+    d->final = final;
+
     QVariantHash args;
     args.insert(QStringLiteral("namespace"), final->ns());
     setupAction(args, 0);
@@ -40,7 +42,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
     setAttributes(final->attributes());
     setController(final->controller());
 
-    Q_FOREACH (Action *action, chain) {
+    for (Action *action : chain) {
         if (action->numberOfCaptures() > 0) {
             d->captures += action->numberOfCaptures();
         }
@@ -65,13 +67,14 @@ bool ActionChain::doExecute(Context *c)
     Request *request =  c->request();
     QStringList captures = request->captures();
     const QStringList currentArgs = request->args();
-    ActionList chain = d->chain;
-    Action *final = chain.takeLast();
+    const ActionList chain = d->chain;
+    Action *final = d->final;
 
-    Q_FOREACH (Action *action, chain) {
+    int captured = 0;
+    for (Action *action : chain) {
         QStringList args;
-        while (args.size() < action->numberOfCaptures() && !captures.isEmpty()) {
-            args.append(captures.takeFirst());
+        while (args.size() < action->numberOfCaptures() && captured < captures.size()) {
+            args.append(captures.at(captured++));
         }
 
         request->setArguments(args);

@@ -49,7 +49,7 @@ void StaticSimple::setIncludePaths(const QStringList &paths)
 {
     Q_D(StaticSimple);
     d->includePaths.clear();
-    Q_FOREACH (const QString &path, paths) {
+    for (const QString &path : paths) {
         d->includePaths.append(QDir(path));
     }
 }
@@ -87,7 +87,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
 {
     Q_D(const StaticSimple);
 
-    Q_FOREACH (const QDir &includePath, d->includePaths) {
+    for (const QDir &includePath : d->includePaths) {
         QString path = includePath.absoluteFilePath(relPath);
         QFileInfo fileInfo(path);
         if (fileInfo.exists()) {

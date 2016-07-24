@@ -126,12 +126,12 @@ QByteArray ClearSilver::render(Context *c) const
 
 NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
 {
-    ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(c);
+    const ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(c);
     if (!priv) {
         return nerr_raise(NERR_NOMEM, "Cound not cast ClearSilverPrivate");
     }
 
-    Q_FOREACH (const QString &includePath, priv->includePaths) {
+    for (const QString &includePath : priv->includePaths) {
         QFile file(includePath + QLatin1Char('/') + QString::fromLatin1(filename));
 
         if (file.exists()) {

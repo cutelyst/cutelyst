@@ -111,7 +111,7 @@ int uwsgi_cutelyst_init()
 
 void uwsgi_cutelyst_post_fork()
 {
-    Q_FOREACH (uWSGI *engine, *coreEngines) {
+    for (uWSGI *engine : *coreEngines) {
         engine->setWorkerId(uwsgi.mywid - 1);
         if (engine->thread() != qApp->thread()) {
             engine->thread()->start();
@@ -147,7 +147,7 @@ void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
-    Q_FOREACH (uWSGI *engine, *coreEngines) {
+    for (uWSGI *engine : *coreEngines) {
         engine->stop();
     }
     qDeleteAll(*coreEngines);

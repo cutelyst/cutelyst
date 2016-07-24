@@ -59,7 +59,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     if (!action) {
         // Look for non registered actions in this controller
         const ActionList actions = controller->actions();
-        Q_FOREACH (Action *controllerAction, actions) {
+        for (Action *controllerAction : actions) {
             if (controllerAction->name() == restMethod) {
                 action = controllerAction;
                 break;
@@ -116,7 +116,7 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, c
     QStringList methods;
     const QString name = methodName + QLatin1Char('_');
     const ActionList actions = controller->actions();
-    Q_FOREACH (Action *action, actions) {
+    for (Action *action : actions) {
         const QString method = action->name();
         if (method.startsWith(name)) {
             methods.append(method.mid(name.size()));

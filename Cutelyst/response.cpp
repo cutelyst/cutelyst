@@ -185,7 +185,7 @@ void Response::setCookie(const QNetworkCookie &cookie)
 void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
     Q_D(Response);
-    Q_FOREACH (const QNetworkCookie &cookie, cookies) {
+    for (const QNetworkCookie &cookie : cookies) {
         d->cookies.insert(cookie.name(), cookie);
     }
 }

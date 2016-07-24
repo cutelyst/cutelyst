@@ -62,7 +62,7 @@ bool Component::execute(Context *c)
     Q_D(Component);
 
     if (d->proccessRoles) {
-        Q_FOREACH (Component *code, d->beforeRoles) {
+        for (Component *code : d->beforeRoles) {
             if (!code->beforeExecute(c)) {
                 return false;
             }
@@ -75,7 +75,7 @@ bool Component::execute(Context *c)
             return false;
         }
 
-        Q_FOREACH (Component *code, d->afterRoles) {
+        for (Component *code : d->afterRoles) {
             if (!code->afterExecute(c)) {
                 return false;
             }
@@ -128,7 +128,7 @@ void Component::applyRoles(const QStack<Cutelyst::Component *> &roles)
 {
     Q_D(Component);
 
-    Q_FOREACH (Component *code, roles) {
+    for (Component *code : roles) {
         if (code->modifiers() & BeforeExecute) {
             d->beforeRoles.push(code);
         }
@@ -149,7 +149,8 @@ bool Component::dispatcherReady(const Dispatcher *dispatch, Controller *controll
 {
     Q_D(Component);
 
-    Q_FOREACH (Component *code, d->roles) {
+    const auto roles = d->roles;
+    for (Component *code : roles) {
         code->dispatcherReady(dispatch, controller);
     }
     return true;

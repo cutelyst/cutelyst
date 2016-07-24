@@ -161,7 +161,7 @@ bool Controller::_DISPATCH(Context *c)
     bool ret = true;
 
     // Dispatch to Begin and Auto
-    Q_FOREACH (Action *action, d->beginAutoList) {
+    for (Action *action : d->beginAutoList) {
         if (!action->dispatch(c)) {
             ret = false;
             break;
@@ -415,7 +415,7 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
     QStack<Component *> roles;
     const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
     const QByteArrayList does = attributes.values(QByteArrayLiteral("Does"));
-    Q_FOREACH (const QByteArray &role, does) {
+    for (const QByteArray &role : does) {
         QObject *object = instantiateClass(role, QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));

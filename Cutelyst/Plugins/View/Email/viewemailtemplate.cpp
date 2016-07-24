@@ -127,7 +127,7 @@ QByteArray ViewEmailTemplate::render(Context *c) const
     QVariantList parts = email.value(QStringLiteral("parts")).toList();
     if (!templateList.isEmpty() && templateList.first().type() == QVariant::Hash) {
         // multipart API
-        Q_FOREACH (const QVariant &part, templateList) {
+        for (const QVariant &part : templateList) {
             const QVariantHash partHash = part.toHash();
             MimePart *partObj = generatePart(c, d, partHash);
             parts.append(QVariant::fromValue(partObj));

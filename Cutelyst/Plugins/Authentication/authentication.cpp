@@ -212,7 +212,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c
         }
     } else {
         // we have no choice but to ask each realm whether it has a persisted user.
-        Q_FOREACH (const QString &realmName, realmsOrder) {
+        for (const QString &realmName : realmsOrder) {
             AuthenticationRealm *realm = realms.value(realmName);
             if (realm && !realm->userIsRestorable(c).isNull()) {
                 return realm;

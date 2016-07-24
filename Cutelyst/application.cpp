@@ -152,7 +152,8 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
     QPluginLoader loader;
     Component *component = nullptr;
     ComponentFactory *factory = nullptr;
-    Q_FOREACH (const QString &fileName, pluginsDir.entryList(QDir::Files)) {
+    const auto plugins = pluginsDir.entryList(QDir::Files);
+    for (const QString &fileName : plugins) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
         const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();
         if (json[QLatin1String("name")].toString() == name) {
@@ -262,7 +263,8 @@ bool Application::setup(Engine *engine)
         bool zeroCore = engine->workerCore() == 0;
 
         QList<QStringList> tablePlugins;
-        Q_FOREACH (Plugin *plugin, d->plugins) {
+        const auto plugins = d->plugins;
+        for (Plugin *plugin : plugins) {
             if (plugin->objectName().isEmpty()) {
                 plugin->setObjectName(QString::fromLatin1(plugin->metaObject()->className()));
             }
@@ -307,11 +309,13 @@ bool Application::setup(Engine *engine)
         }
 
         QList<QStringList> table;
-        Q_FOREACH (const QString controller, d->controllers.keys()) {
+        const auto controllerNames = d->controllers.keys();
+        for (const QString controller : controllerNames) {
             table.append({ controller, QLatin1String("Controller")});
         }
 
-        Q_FOREACH (View *view, d->views) {
+        const auto views = d->views;
+        for (View *view : views) {
             if (view->reverse().isEmpty()) {
                 const QString className = QString::fromLatin1(view->metaObject()->className()) + QLatin1String("->execute");
                 view->setReverse(className);
@@ -326,8 +330,8 @@ bool Application::setup(Engine *engine)
                                                         QLatin1String("Loaded components:")).constData();
         }
 
-        auto controllers = d->controllers.values();
-        Q_FOREACH (Controller *controller, controllers) {
+        const auto controllers = d->controllers.values();
+        for (Controller *controller : controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
@@ -419,7 +423,7 @@ bool Application::enginePostFork()
         return false;
     }
 
-    Q_FOREACH (Controller *controller, d->controllers) {
+    for (Controller *controller : d->controllers) {
         if (!controller->postFork(this)) {
             return false;
         }
@@ -447,7 +451,7 @@ void Cutelyst::ApplicationPrivate::setupHome()
 void ApplicationPrivate::setupChildren(const QObjectList &children)
 {
     Q_Q(Application);
-    Q_FOREACH (QObject *child, children) {
+    for (QObject *child : children) {
         Controller *controller = qobject_cast<Controller *>(child);
         if (controller) {
             q->registerController(controller);
