@@ -52,6 +52,7 @@ public:
     Controller *q_ptr;
     Dispatcher *dispatcher;
     QMap<QString, Action *> actions;
+    ActionList actionList;
     bool parsedActions = false;
 };
 

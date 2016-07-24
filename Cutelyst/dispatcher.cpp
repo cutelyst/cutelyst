@@ -57,7 +57,8 @@ void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList
     ActionList registeredActions;
     for (Controller *controller : controllers) {
         bool instanceUsed = false;
-        Q_FOREACH (Action *action, controller->actions()) {
+        const auto actions = controller->actions();
+        for (Action *action : actions) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
                 if (!action->attributes().contains(QLatin1String("Private"))) {

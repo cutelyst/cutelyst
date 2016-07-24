@@ -99,7 +99,7 @@ QByteArray DispatchTypeChained::list() const
         }
 
         QList<QStringList> rows;
-        Q_FOREACH (Action *p, parents) {
+        for (Action *p : parents) {
             QString name = QLatin1Char('/') + p->reverse();
 
             QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
@@ -374,7 +374,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
     QStringList keys = children.keys();
     qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
 
-    Q_FOREACH (const QString &tryPart, keys) {
+    for (const QString &tryPart : keys) {
         QStringList parts = pathParts;
         if (!tryPart.isEmpty()) {
             // We want to count the number of parts a split would give
@@ -388,7 +388,7 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
         }
 
         const Actions tryActions = children.value(tryPart);
-        Q_FOREACH (Action *action, tryActions) {
+        for (Action *action : tryActions) {
             if (action->attributes().contains(QStringLiteral("CaptureArgs"))) {
                 int captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts

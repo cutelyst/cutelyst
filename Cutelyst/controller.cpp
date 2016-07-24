@@ -37,7 +37,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
 Controller::~Controller()
 {
     Q_D(Controller);
-    qDeleteAll(d->actions);
+    qDeleteAll(d->actionList);
     delete d_ptr;
 }
 
@@ -60,7 +60,7 @@ Action *Controller::actionFor(const QString &name) const
 ActionList Controller::actions() const
 {
     Q_D(const Controller);
-    return d->actions.values();
+    return d->actionList;
 }
 
 bool Controller::operator==(const char *className)
@@ -147,7 +147,7 @@ void ControllerPrivate::setupFinished()
         end = endList.last();
     }
 
-    Q_FOREACH (Action *action, actions.values()) {
+    for (Action *action : actionList) {
         action->dispatcherReady(dispatcher, q);
     }
 
@@ -266,6 +266,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                           app);
 
             actions.insertMulti(action->reverse(), action);
+            actionList.append(action);
         }
     }
 }

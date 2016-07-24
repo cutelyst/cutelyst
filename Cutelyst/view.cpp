@@ -58,7 +58,8 @@ bool View::doExecute(Context *c)
 
     const QByteArray output = render(c);
     if (c->error()) {
-        Q_FOREACH (const QString &error, c->errors()) {
+        const auto errors = c->errors();
+        for (const QString &error : errors) {
             qCCritical(CUTELYST_VIEW) << error;
         }
     }

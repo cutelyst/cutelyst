@@ -47,9 +47,11 @@ Engine::Engine(const QVariantMap &opts, QObject *parent) :
         const QByteArray config = qgetenv("CUTELYST_CONFIG");
         qCDebug(CUTELYST_CORE) << "Reading config file:" << config;
         QSettings settings(QString::fromLatin1(config), QSettings::IniFormat);
-        Q_FOREACH (const QString &group, settings.childGroups()) {
+        const auto groups = settings.childGroups();
+        for (const QString &group : groups) {
             settings.beginGroup(group);
-            Q_FOREACH (const QString &key, settings.childKeys()) {
+            const auto child = settings.childKeys();
+            for (const QString &key : child) {
                 d->config[group].insert(key, settings.value(key));
             }
             settings.endGroup();
@@ -69,7 +71,8 @@ void Engine::finalizeCookies(Context *c)
 {
     Response *res = c->response();
     Headers &headers = res->headers();
-    Q_FOREACH (const QNetworkCookie &cookie, res->cookies()) {
+    const auto cookies = res->cookies();
+    for (const QNetworkCookie &cookie : cookies) {
         headers.pushHeader(QStringLiteral("Set-Cookie"), QString::fromLatin1(cookie.toRawForm()));
     }
 }
