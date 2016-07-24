@@ -21,11 +21,12 @@
 #define DISPATCHTYPECHAINED_P_H
 
 #include "dispatchtypechained.h"
+#include <vector>
 
 namespace Cutelyst {
 
 typedef QHash<QString, Action *> StringActionMap;
-typedef QVector<Action *> Actions;
+typedef std::vector<Action *> Actions;
 typedef QHash<QString, Actions> StringActionsMap;
 typedef QHash<QString, StringActionsMap> StringStringActionsMap;
 

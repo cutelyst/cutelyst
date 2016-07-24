@@ -243,7 +243,8 @@ bool DispatchTypeChained::registerAction(Action *action)
     attributes.insert(QStringLiteral("PathPart"), part);
     action->setAttributes(attributes);
 
-    d->childrenOf[chainedTo][part].prepend(action);
+    auto &childrenOf = d->childrenOf[chainedTo][part];
+    childrenOf.insert(childrenOf.begin(), action);
 
     d->actions[QLatin1Char('/') + action->reverse()] = action;
 
