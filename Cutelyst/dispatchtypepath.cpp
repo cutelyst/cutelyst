@@ -52,7 +52,7 @@ QByteArray DispatchTypePath::list() const
     keys.sort(Qt::CaseInsensitive);
     for (const QString &path : keys) {
         const auto paths = d->paths.value(path);
-        Q_FOREACH (Action *action, paths) {
+        for (Action *action : paths) {
             QString _path = QLatin1Char('/') + path;
             if (action->attributes().value(QLatin1String("Args")).isEmpty()) {
                 _path.append(QLatin1String("/..."));
@@ -182,9 +182,8 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 
     auto it = paths.find(_path);
     if (it != paths.end()) {
-        Actions actions = it.value();
         int actionNumberOfArgs = action->numberOfArgs();
-        Q_FOREACH (const Action *regAction, actions) {
+        for (const Action *regAction : it.value()) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
                 qCCritical(CUTELYST_DISPATCHER) << "Not registering Action"
                                                 << action->name()
@@ -196,9 +195,8 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
             }
         }
 
-        actions.append(action);
-        qSort(actions.begin(), actions.end(), actionLessThan);
-        it.value() = actions;
+        it.value().push_back(action);
+        qSort(it.value().begin(), it.value().end(), actionLessThan);
     } else {
         paths.insert(_path, { action });
     }

@@ -22,7 +22,7 @@
 
 #include "stats.h"
 
-#include <QtCore/QVector>
+#include <vector>
 
 namespace Cutelyst {
 
@@ -36,7 +36,7 @@ class Engine;
 class StatsPrivate
 {
 public:
-    QVector<StatsAction> actions;
+    std::vector<StatsAction> actions;
     Engine *engine;
 };
 

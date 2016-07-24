@@ -21,10 +21,11 @@
 #define DISPATCHTYPEPATH_P_H
 
 #include "dispatchtypepath.h"
+#include <vector>
 
 namespace Cutelyst {
 
-typedef QVector<Action *> Actions;
+typedef std::vector<Action *> Actions;
 typedef QHash<QString, Actions> StringActionsMap;
 
 class DispatchTypePathPrivate
