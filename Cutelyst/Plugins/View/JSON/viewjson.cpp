@@ -94,6 +94,7 @@ QByteArray ViewJson::render(Context *c) const
 {
     Q_D(const ViewJson);
 
+    QByteArray ret;
     QJsonObject obj;
 
     const QVariantHash stash = c->stash();
@@ -145,7 +146,8 @@ QByteArray ViewJson::render(Context *c) const
 
     c->response()->setContentType(QStringLiteral("application/json"));
 
-    return QJsonDocument(obj).toJson(d->format);
+    ret = QJsonDocument(obj).toJson(d->format);
+    return ret;
 }
 
 #include "moc_viewjson.cpp"

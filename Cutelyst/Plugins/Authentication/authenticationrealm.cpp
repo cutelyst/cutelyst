@@ -95,16 +95,17 @@ AuthenticationUser AuthenticationRealm::persistUser(Context *c, const Authentica
 
 AuthenticationUser AuthenticationRealm::restoreUser(Context *c, const QVariant &frozenUser)
 {
+    AuthenticationUser user;
     QVariant _frozenUser = frozenUser;
     if (_frozenUser.isNull()) {
         _frozenUser = userIsRestorable(c);
     }
 
     if (_frozenUser.isNull()) {
-        return AuthenticationUser();
+        return user;
     }
 
-    AuthenticationUser user = m_store->fromSession(c, _frozenUser);
+    user = m_store->fromSession(c, _frozenUser);
 
     if (!user.isNull()) {
         // Sets the realm the user originated in

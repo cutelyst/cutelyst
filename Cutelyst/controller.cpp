@@ -273,6 +273,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 
 QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
+    QMap<QString, QString> ret;
     QList<QPair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
@@ -343,7 +344,6 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         ++pos;
     }
 
-    QMap<QString, QString> ret;
     // Add the attributes to the hash in the reverse order so
     // that values() return them in the right order
     for (int i = attributes.size() - 1; i >= 0; --i) {
@@ -428,32 +428,36 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
 
 QString ControllerPrivate::parsePathAttr(const QString &value)
 {
+    QString ret = pathPrefix;
     if (value.startsWith(QLatin1Char('/'))) {
-        return value;
+        ret = value;
     } else if (!value.isEmpty()) {
-        return pathPrefix + QLatin1Char('/') + value;
+        ret = pathPrefix + QLatin1Char('/') + value;
     }
-    return pathPrefix;
+    return ret;
 }
 
 QString ControllerPrivate::parseChainedAttr(const QString &attr)
 {
+    QString ret = QStringLiteral("/");
     if (attr.isEmpty()) {
-        return QStringLiteral("/");
+        return ret;
     }
 
     if (attr == QStringLiteral(".")) {
-        return QLatin1Char('/') + pathPrefix;
+        ret.append(pathPrefix);
     } else if (!attr.startsWith(QLatin1Char('/'))) {
         if (!pathPrefix.isEmpty()) {
-            return QLatin1Char('/') + pathPrefix + QLatin1Char('/') + attr;
+            ret.append(pathPrefix + QLatin1Char('/') + attr);
         } else {
             // special case namespace '' (root)
-            return QLatin1Char('/') + attr;
+            ret.append(attr);
         }
+    } else {
+        ret = attr;
     }
 
-    return attr;
+    return ret;
 }
 
 QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByteArray &super)

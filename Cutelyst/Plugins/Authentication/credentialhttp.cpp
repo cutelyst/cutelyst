@@ -126,7 +126,8 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
 
     AuthenticationUser ret;
     if (d->requireSsl && !c->request()->secure()) {
-        return d->authenticationFailed(c, realm, authinfo);
+        ret = d->authenticationFailed(c, realm, authinfo);
+        return ret;
     }
 
     if (d->isAuthTypeDigest()) {
@@ -143,7 +144,8 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
         }
     }
 
-    return d->authenticationFailed(c, realm, authinfo);
+    ret = d->authenticationFailed(c, realm, authinfo);
+    return ret;
 }
 
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
@@ -183,16 +185,17 @@ AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *c, Authent
 AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
     Q_UNUSED(authinfo)
+    AuthenticationUser user;
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
     const QPair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
-        return AuthenticationUser();
+        return user;
     }
 
     ParamsMultiMap auth;
     auth.insert(usernameField, userPass.first);
-    AuthenticationUser user = realm->findUser(c, auth);
+    user = realm->findUser(c, auth);
     if (!user.isNull()) {
         auth.insert(passwordField, userPass.second);
         if (checkPassword(user, auth)) {
@@ -202,7 +205,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     } else {
         qCDebug(C_CREDENTIALHTTP) << "Unable to locate a user matching user info provided in realm";
     }
-    return AuthenticationUser();
+    return user;
 }
 
 AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
@@ -257,11 +260,11 @@ QStringList CredentialHttpPrivate::buildAuthHeaderCommon() const
 
 QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QStringList &parts) const
 {
-    if (parts.isEmpty()) {
-        return type;
-    } else {
-        return type + QLatin1Char(' ') + parts.join(QStringLiteral(", "));
+    QString ret = type;
+    if (!parts.isEmpty()) {
+        ret.append(QLatin1Char(' ') + parts.join(QStringLiteral(", ")));
     }
+    return ret;
 }
 
 #include "moc_credentialhttp.cpp"

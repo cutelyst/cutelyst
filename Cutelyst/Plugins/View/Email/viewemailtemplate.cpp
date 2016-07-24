@@ -117,11 +117,13 @@ QByteArray ViewEmailTemplate::render(Context *c) const
 {
     Q_D(const ViewEmailTemplate);
 
+    QByteArray ret;
     QVariantHash email = c->stash(d->stashKey).toHash();
     const QString templateName = email.value(QStringLiteral("template")).toString();
     const QVariantList templateList = email.value(QStringLiteral("templates")).toList();
     if (templateName.isEmpty() && templateList.isEmpty()) {
-        return ViewEmail::render(c);
+        ret = ViewEmail::render(c);
+        return ret;
     }
 
     QVariantList parts = email.value(QStringLiteral("parts")).toList();
@@ -149,7 +151,8 @@ QByteArray ViewEmailTemplate::render(Context *c) const
     email.insert(QStringLiteral("parts"), parts);
     c->setStash(d->stashKey, email);
 
-    return ViewEmail::render(c);
+    ret = ViewEmail::render(c);
+    return ret;
 }
 
 #include "moc_viewemailtemplate.cpp"

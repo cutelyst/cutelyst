@@ -43,13 +43,14 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 
 QVariantList Sql::queryToHashList(QSqlQuery &query)
 {
+    QVariantList ret;
+
     int columns = query.record().count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(query.record().fieldName(i));
     }
 
-    QVariantList ret;
     while (query.next()) {
         QVariantHash line;
         for (int i = 0; i < columns; ++i) {
@@ -74,13 +75,14 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 
 QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
+    QVariantList ret;
+
     int columns = query.record().count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(query.record().fieldName(i));
     }
 
-    QVariantList ret;
     while (query.next()) {
         QVariantMap line;
         for (int i = 0; i < columns; ++i) {

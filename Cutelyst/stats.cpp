@@ -65,8 +65,9 @@ QByteArray Stats::report()
 {
     Q_D(const Stats);
 
+    QByteArray ret;
     if (d->actions.size() == 0) {
-        return QByteArray();
+        return ret;
     }
 
     QList<QStringList> table;
@@ -75,7 +76,8 @@ QByteArray Stats::report()
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') + QLatin1Char('s') });
     }
 
-    return Utils::buildTable(table, {
-                                 QStringLiteral("Action"), QStringLiteral("Time")
-                             });
+    ret = Utils::buildTable(table, {
+                                QStringLiteral("Action"), QStringLiteral("Time")
+                            });
+    return ret;
 }

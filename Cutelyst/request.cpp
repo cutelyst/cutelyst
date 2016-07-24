@@ -47,26 +47,29 @@ QHostAddress Request::address() const
 QString Request::hostname() const
 {
     Q_D(const Request);
+    QString ret;
 
     // We have the client hostname
     if (!d->remoteHostname.isEmpty()) {
-        return d->remoteHostname;
+        ret = d->remoteHostname;
+        return ret;
     } else {
         // We tried to get the client hostname but failed
         if (!d->remoteHostname.isEmpty()) {
-            return QString();
+            return ret;
         }
     }
 
     const QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
         qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
-        d->remoteHostname = QLatin1String("");
-        return QString();
+        d->remoteHostname = QStringLiteral("");
+        return ret;
     }
 
     d->remoteHostname = ptr.hostName();
-    return d->remoteHostname;
+    ret = d->remoteHostname;
+    return ret;
 }
 
 quint16 Request::port() const
@@ -78,9 +81,9 @@ quint16 Request::port() const
 QUrl Request::uri() const
 {
     Q_D(const Request);
-    if (!d->urlParsed) {
-        QUrl uri;
 
+    QUrl uri = d->url;
+    if (!d->urlParsed) {
         // This is a hack just in case remote is not set
         if (d->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
@@ -100,14 +103,15 @@ QUrl Request::uri() const
         d->url = uri;
         d->urlParsed = true;
     }
-    return d->url;
+    return uri;
 }
 
 QString Request::base() const
 {
     Q_D(const Request);
+    QString base = d->base;
     if (!d->baseParsed) {
-        QString base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
+        base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
         if (d->serverAddress.isEmpty()) {
@@ -122,7 +126,7 @@ QString Request::base() const
         d->base = base;
         d->baseParsed = true;
     }
-    return d->base;
+    return base;
 }
 
 QString Request::path() const
@@ -437,6 +441,7 @@ static int nextNonWhitespace(const QString &text, int from, int length)
 
 static QPair<QString, QString> nextField(const QString &text, int &position)
 {
+    QPair<QString, QString> ret;
     // format is one of:
     //    (1)  token
     //    (2)  token = token
@@ -450,17 +455,17 @@ static QPair<QString, QString> nextField(const QString &text, int &position)
 
     int equalsPosition = text.indexOf(QLatin1Char('='), position);
     if (equalsPosition < 0 || equalsPosition > semiColonPosition) {
-        return qMakePair(QString(), QString()); //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
+        return ret; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    QString first = text.mid(position, equalsPosition - position).trimmed();
-    QString second;
+    ret.first = text.mid(position, equalsPosition - position).trimmed();
     int secondLength = semiColonPosition - equalsPosition - 1;
-    if (secondLength > 0)
-        second = text.mid(equalsPosition + 1, secondLength).trimmed();
+    if (secondLength > 0) {
+        ret.second = text.mid(equalsPosition + 1, secondLength).trimmed();
+    }
 
     position = semiColonPosition;
-    return qMakePair(first, second);
+    return ret;
 }
 
 void RequestPrivate::parseCookies() const

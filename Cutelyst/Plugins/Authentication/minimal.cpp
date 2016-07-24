@@ -42,6 +42,7 @@ void StoreMinimal::addUser(const AuthenticationUser &user)
 AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
     Q_UNUSED(c)
+    AuthenticationUser ret;
     QString id = userInfo[QStringLiteral("id")];
     if (id.isEmpty()) {
         id = userInfo[QStringLiteral("username")];
@@ -49,11 +50,12 @@ AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &user
 
     for (const AuthenticationUser &user : m_users) {
         if (user.id() == id) {
-            return user;
+            ret = user;
+            break;
         }
     }
 
-    return AuthenticationUser();
+    return ret;
 }
 
 QVariant StoreMinimal::forSession(Context *c, const AuthenticationUser &user)

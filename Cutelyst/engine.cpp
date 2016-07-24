@@ -252,92 +252,136 @@ qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 
 QByteArray Engine::statusCode(quint16 status)
 {
+    QByteArray ret;
     switch (status) {
     case Response::OK:
-        return QByteArrayLiteral("200 OK");
+        ret = QByteArrayLiteral("200 OK");
+        break;
     case Response::Found:
-        return QByteArrayLiteral("302 Found");
+        ret = QByteArrayLiteral("302 Found");
+        break;
     case Response::NotFound:
-        return QByteArrayLiteral("404 Not Found");
+        ret = QByteArrayLiteral("404 Not Found");
+        break;
     case Response::InternalServerError:
-        return QByteArrayLiteral("500 Internal Server Error");
+        ret = QByteArrayLiteral("500 Internal Server Error");
+        break;
     case Response::MovedPermanently:
-        return QByteArrayLiteral("301 Moved Permanently");
+        ret = QByteArrayLiteral("301 Moved Permanently");
+        break;
     case Response::NotModified:
-        return QByteArrayLiteral("304 Not Modified");
+        ret = QByteArrayLiteral("304 Not Modified");
+        break;
     case Response::SeeOther:
-        return QByteArrayLiteral("303 See Other");
+        ret = QByteArrayLiteral("303 See Other");
+        break;
     case Response::Forbidden:
-        return QByteArrayLiteral("403 Forbidden");
+        ret = QByteArrayLiteral("403 Forbidden");
+        break;
     case Response::TemporaryRedirect:
-        return QByteArrayLiteral("307 Temporary Redirect");
+        ret = QByteArrayLiteral("307 Temporary Redirect");
+        break;
     case Response::Unauthorized:
-        return QByteArrayLiteral("401 Unauthorized");
+        ret = QByteArrayLiteral("401 Unauthorized");
+        break;
     case Response::BadRequest:
-        return QByteArrayLiteral("400 Bad Request");
+        ret = QByteArrayLiteral("400 Bad Request");
+        break;
     case Response::MethodNotAllowed:
-        return QByteArrayLiteral("405 Method Not Allowed");
+        ret = QByteArrayLiteral("405 Method Not Allowed");
+        break;
     case Response::RequestTimeout:
-        return QByteArrayLiteral("408 Request Timeout");
+        ret = QByteArrayLiteral("408 Request Timeout");
+        break;
     case Response::Continue:
-        return QByteArrayLiteral("100 Continue");
+        ret = QByteArrayLiteral("100 Continue");
+        break;
     case Response::SwitchingProtocols:
-        return QByteArrayLiteral("101 Switching Protocols");
+        ret = QByteArrayLiteral("101 Switching Protocols");
+        break;
     case Response::Created:
-        return QByteArrayLiteral("201 Created");
+        ret = QByteArrayLiteral("201 Created");
+        break;
     case Response::Accepted:
-        return QByteArrayLiteral("202 Accepted");
+        ret = QByteArrayLiteral("202 Accepted");
+        break;
     case Response::NonAuthoritativeInformation:
-        return QByteArrayLiteral("203 Non-Authoritative Information");
+        ret = QByteArrayLiteral("203 Non-Authoritative Information");
+        break;
     case Response::NoContent:
-        return QByteArrayLiteral("204 No Content");
+        ret = QByteArrayLiteral("204 No Content");
+        break;
     case Response::ResetContent:
-        return QByteArrayLiteral("205 Reset Content");
+        ret = QByteArrayLiteral("205 Reset Content");
+        break;
     case Response::PartialContent:
-        return QByteArrayLiteral("206 Partial Content");
+        ret = QByteArrayLiteral("206 Partial Content");
+        break;
     case Response::MultipleChoices:
-        return QByteArrayLiteral("300 Multiple Choices");
+        ret = QByteArrayLiteral("300 Multiple Choices");
+        break;
     case Response::UseProxy:
-        return QByteArrayLiteral("305 Use Proxy");
+        ret = QByteArrayLiteral("305 Use Proxy");
+        break;
     case Response::PaymentRequired:
-        return QByteArrayLiteral("402 Payment Required");
+        ret = QByteArrayLiteral("402 Payment Required");
+        break;
     case Response::NotAcceptable:
-        return QByteArrayLiteral("406 Not Acceptable");
+        ret = QByteArrayLiteral("406 Not Acceptable");
+        break;
     case Response::ProxyAuthenticationRequired:
-        return QByteArrayLiteral("407 Proxy Authentication Required");
+        ret = QByteArrayLiteral("407 Proxy Authentication Required");
+        break;
     case Response::Conflict:
-        return QByteArrayLiteral("409 Conflict");
+        ret = QByteArrayLiteral("409 Conflict");
+        break;
     case Response::Gone:
-        return QByteArrayLiteral("410 Gone");
+        ret = QByteArrayLiteral("410 Gone");
+        break;
     case Response::LengthRequired:
-        return QByteArrayLiteral("411 Length Required");
+        ret = QByteArrayLiteral("411 Length Required");
+        break;
     case Response::PreconditionFailed:
-        return QByteArrayLiteral("412 Precondition Failed");
+        ret = QByteArrayLiteral("412 Precondition Failed");
+        break;
     case Response::RequestEntityTooLarge:
-        return QByteArrayLiteral("413 Request Entity Too Large");
+        ret = QByteArrayLiteral("413 Request Entity Too Large");
+        break;
     case Response::RequestURITooLong:
-        return QByteArrayLiteral("414 Request-URI Too Long");
+        ret = QByteArrayLiteral("414 Request-URI Too Long");
+        break;
     case Response::UnsupportedMediaType:
-        return QByteArrayLiteral("415 Unsupported Media Type");
+        ret = QByteArrayLiteral("415 Unsupported Media Type");
+        break;
     case Response::RequestedRangeNotSatisfiable:
-        return QByteArrayLiteral("416 Requested Range Not Satisfiable");
+        ret = QByteArrayLiteral("416 Requested Range Not Satisfiable");
+        break;
     case Response::ExpectationFailed:
-        return QByteArrayLiteral("417 Expectation Failed");
+        ret = QByteArrayLiteral("417 Expectation Failed");
+        break;
     case Response::NotImplemented:
-        return QByteArrayLiteral("501 Not Implemented");
+        ret = QByteArrayLiteral("501 Not Implemented");
+        break;
     case Response::BadGateway:
-        return QByteArrayLiteral("502 Bad Gateway");
+        ret = QByteArrayLiteral("502 Bad Gateway");
+        break;
     case Response::ServiceUnavailable:
-        return QByteArrayLiteral("503 Service Unavailable");
+        ret = QByteArrayLiteral("503 Service Unavailable");
+        break;
     case Response::GatewayTimeout:
-        return QByteArrayLiteral("504 Gateway Timeout");
+        ret = QByteArrayLiteral("504 Gateway Timeout");
+        break;
     case Response::HTTPVersionNotSupported:
-        return QByteArrayLiteral("505 HTTP Version Not Supported");
+        ret = QByteArrayLiteral("505 HTTP Version Not Supported");
+        break;
     case Response::BandwidthLimitExceeded:
-        return QByteArrayLiteral("509 Bandwidth Limit Exceeded");
+        ret = QByteArrayLiteral("509 Bandwidth Limit Exceeded");
+        break;
     default:
-        return QByteArray::number(status);
+        ret = QByteArray::number(status);
+        break;
     }
+    return ret;
 }
 
 QVariantMap Engine::opts() const

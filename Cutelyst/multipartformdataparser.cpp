@@ -25,11 +25,11 @@ using namespace Cutelyst;
 
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
 {
-
+    Uploads ret;
     int start = contentType.indexOf(QLatin1String("boundary="));
     if (start == -1) {
         qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
-        return Uploads();
+        return ret;
     }
 
     start += 9;
@@ -52,7 +52,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 
     if (boundary.isEmpty()) {
         qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
-        return Uploads();
+        return ret;
     }
     boundary.prepend("--");
 
@@ -63,7 +63,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 
     qint64 origPos = body->pos();
     body->seek(0);
-    Uploads ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
+    ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
     body->seek(origPos);
 
     delete [] buffer;

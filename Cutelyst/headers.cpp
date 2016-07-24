@@ -42,12 +42,13 @@ void Headers::setContentEncoding(const QString &encoding)
 
 QString Headers::contentType() const
 {
+    QString ret;
     const auto it = m_data.constFind(QStringLiteral("content_type"));
-    if (it == m_data.constEnd()) {
-        return QString();
+    if (it != m_data.constEnd()) {
+        const QString ct = it.value();
+        ret = ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
     }
-    const QString ct = it.value();
-    return ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
+    return ret;
 }
 
 void Headers::setContentType(const QString &contentType)
@@ -57,18 +58,18 @@ void Headers::setContentType(const QString &contentType)
 
 QString Headers::contentTypeCharset() const
 {
+    QString ret;
     const auto it = m_data.constFind(QStringLiteral("content_type"));
-    if (it == m_data.constEnd()) {
-        return QString();
+    if (it != m_data.constEnd()) {
+        const QString contentType = it.value();
+        int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+        if (pos != -1) {
+            int endPos = contentType.indexOf(QLatin1Char(';'), pos);
+            ret = contentType.mid(pos + 8, endPos).trimmed().toUpper();
+        }
     }
 
-    const QString contentType = it.value();
-    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
-    if (pos != -1) {
-        int endPos = contentType.indexOf(QLatin1Char(';'), pos);
-        return contentType.mid(pos + 8, endPos).trimmed().toUpper();
-    }
-    return QString();
+    return ret;
 }
 
 void Headers::setContentTypeCharset(const QString &charset)
@@ -154,23 +155,24 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
 
 QDateTime Headers::date()
 {
+    QDateTime ret;
     auto it = m_data.constFind(QStringLiteral("date"));
-    if (it == m_data.constEnd()) {
-        return QDateTime();
+    if (it != m_data.constEnd()) {
+        const QString date = it.value();
+
+        QDateTime localDT;
+        if (date.endsWith(QLatin1String(" GMT"))) {
+            localDT = QLocale::c().toDateTime(date.left(date.size() - 4),
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        } else {
+            localDT = QLocale::c().toDateTime(date,
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        }
+
+        ret = QDateTime(localDT.date(), localDT.time(), Qt::UTC);
     }
 
-    const QString date = it.value();
-
-    QDateTime localDT;
-    if (date.endsWith(QLatin1String(" GMT"))) {
-        localDT = QLocale::c().toDateTime(date.left(date.size() - 4),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
-    } else {
-        localDT = QLocale::c().toDateTime(date,
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
-    }
-
-    return QDateTime(localDT.date(), localDT.time(), Qt::UTC);
+    return ret;
 }
 
 QString Headers::ifModifiedSince() const
@@ -180,22 +182,23 @@ QString Headers::ifModifiedSince() const
 
 QDateTime Headers::ifModifiedSinceDateTime() const
 {
+    QDateTime ret;
     auto it = m_data.constFind(QStringLiteral("if_modified_since"));
-    if (it == m_data.constEnd()) {
-        return QDateTime();
+    if (it != m_data.constEnd()) {
+        const QString ifModifiedStr = it.value();
+
+        QDateTime localDT;
+        if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
+            localDT = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        } else {
+            localDT = QLocale::c().toDateTime(ifModifiedStr,
+                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+        }
+        ret = QDateTime(localDT.date(), localDT.time(), Qt::UTC);
     }
 
-    const QString ifModifiedStr = it.value();
-
-    QDateTime localDT;
-    if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
-        localDT = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
-    } else {
-        localDT = QLocale::c().toDateTime(ifModifiedStr,
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
-    }
-    return QDateTime(localDT.date(), localDT.time(), Qt::UTC);
+    return ret;
 }
 
 QString Headers::lastModified() const
@@ -276,14 +279,16 @@ QPair<QString, QString> Headers::authorizationBasicPair() const
 
 QString Headers::setAuthorizationBasic(const QString &username, const QString &password)
 {
+    QString ret;
     if (username.contains(QLatin1Char(':'))) {
         qCWarning(CUTELYST_CORE) << "Headers::Basic authorization user name can't contain ':'";
-        return QString();
+        return ret;
     }
+
     const QString result = username + QLatin1Char(':') + password;
-    const QString value = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
-    m_data.insert(QStringLiteral("authorization"), value);
-    return value;
+    ret = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
+    m_data.insert(QStringLiteral("authorization"), ret);
+    return ret;
 }
 
 QString Headers::proxyAuthorization() const
@@ -372,26 +377,28 @@ QString HeadersPrivate::normalizeHeaderKey(const QString &field)
 
 QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
 {
+    QByteArray ret;
     if (!auth.isEmpty() && auth.startsWith(QLatin1String("Basic "))) {
         int pos = auth.lastIndexOf(QLatin1Char(' '));
         if (pos != -1) {
-            return QByteArray::fromBase64(auth.mid(pos).toLatin1());
+            ret = QByteArray::fromBase64(auth.mid(pos).toLatin1());
         }
     }
-    return QByteArray();
+    return ret;
 }
 
 QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QString &auth)
 {
+    QPair<QString, QString> ret;
     const QByteArray authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {
-            return qMakePair(QString::fromLatin1(authorization), QString());
+            ret.first = QString::fromLatin1(authorization);
         } else {
-            return qMakePair(QString::fromLatin1(authorization.left(pos)),
-                             QString::fromLatin1(authorization.mid(pos + 1)));
+            ret = qMakePair(QString::fromLatin1(authorization.left(pos)),
+                            QString::fromLatin1(authorization.mid(pos + 1)));
         }
     }
-    return qMakePair(QString(), QString());
+    return ret;
 }

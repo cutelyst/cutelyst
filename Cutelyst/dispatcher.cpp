@@ -273,13 +273,17 @@ QMap<QString, Controller *> Dispatcher::controllers() const
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures) const
 {
     Q_D(const Dispatcher);
+    QString ret;
     for (DispatchType *dispatch : d->dispatchers) {
-        const QString uri = dispatch->uriForAction(action, captures);
-        if (!uri.isNull()) {
-            return uri.isEmpty() ? QStringLiteral("/") : uri;
+        ret = dispatch->uriForAction(action, captures);
+        if (!ret.isNull()) {
+            if (ret.isEmpty()) {
+                ret = QStringLiteral("/");
+            }
+            break;
         }
     }
-    return QString();
+    return ret;
 }
 
 Action *Dispatcher::expandAction(Context *c, Action *action) const
@@ -419,15 +423,19 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
 
 QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
 {
+    QString ret;
     if (path.startsWith(QLatin1Char('/'))) {
-        return path.mid(1);
+        ret = path.mid(1);
+        return ret;
     }
 
     const QString ns = qobject_cast<Action *>(c->stack().last())->ns();
     if (ns.isEmpty()) {
-        return path;
+        ret = path;
+    } else {
+        ret = ns + QLatin1Char('/') + path;
     }
-    return ns + QLatin1Char('/') + path;
+    return ret;
 }
 
 #include "moc_dispatcher.cpp"

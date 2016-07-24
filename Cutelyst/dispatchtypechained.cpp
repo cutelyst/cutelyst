@@ -47,6 +47,7 @@ QByteArray DispatchTypeChained::list() const
 {
     Q_D(const DispatchTypeChained);
 
+    QByteArray buffer;
     ActionList endPoints = d->endPoints;
     qSort(endPoints.begin(), endPoints.end(), actionReverseLessThan);
 
@@ -150,7 +151,6 @@ QByteArray DispatchTypeChained::list() const
         paths.append(rows);
     }
 
-    QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
 
     if (!paths.isEmpty()) {
@@ -269,11 +269,12 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
 {
     Q_D(const DispatchTypeChained);
 
+    QString ret;
     const QMap<QString, QString> attributes = action->attributes();
     if (!(attributes.contains(QStringLiteral("Chained")) &&
             !attributes.contains(QStringLiteral("CaptureArgs")))) {
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: action is not an end point" << action;
-        return QString();
+        return ret;
     }
 
     QString parent;
@@ -286,7 +287,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
                 qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures" << curr->numberOfCaptures() << captures.size();
-                return QString();
+                return ret;
             }
 
             parts = localCaptures.mid(localCaptures.size() - curr->numberOfCaptures()) + parts;
@@ -305,16 +306,17 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     if (parent != QLatin1String("/")) {
         // fail for dangling action
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: dangling action" << parent;
-        return QString();
+        return ret;
     }
 
     if (!localCaptures.isEmpty()) {
         // fail for too many captures
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: too many captures" << localCaptures;
-        return QString();
+        return ret;
     }
 
-    return QLatin1Char('/') + parts.join(QLatin1Char('/'));
+    ret = QLatin1Char('/') + parts.join(QLatin1Char('/'));
+    return ret;
 }
 
 Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
@@ -493,22 +495,24 @@ void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
 
 QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
 {
+    QString ret;
     const auto attributes = action->attributes();
     if (attributes.contains(QLatin1String("HTTP_METHODS"))) {
-        QStringList extra = attributes.values(QLatin1String("HTTP_METHODS"));
-        return extra.join(QLatin1String(", "));
+        const QStringList extra = attributes.values(QLatin1String("HTTP_METHODS"));
+        ret = extra.join(QLatin1String(", "));
     }
-    return QString();
+    return ret;
 }
 
 QString DispatchTypeChainedPrivate::listExtraConsumes(Action *action)
 {
+    QString ret;
     const auto attributes = action->attributes();
     if (attributes.contains(QLatin1String("CONSUMES"))) {
-        QStringList extra = attributes.values(QLatin1String("CONSUMES"));
-        return extra.join(QLatin1String(", "));
+        const QStringList extra = attributes.values(QLatin1String("CONSUMES"));
+        ret = extra.join(QLatin1String(", "));
     }
-    return QString();
+    return ret;
 }
 
 #include "moc_dispatchtypechained.cpp"

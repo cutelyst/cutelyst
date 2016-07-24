@@ -144,26 +144,28 @@ QString createToken()
 
 QString StatusMessage::setError(Context *c, const QString &msg)
 {
+    QString token;
     auto sm = c->plugin<StatusMessage*>();
     if (!sm) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
-        return QString();
+        return token;
     }
 
-    const QString token = createToken();
+    token = createToken();
     Session::setValue(c, sm->d_ptr->sessionPrefix + QLatin1String("error") + token, msg);
     return token;
 }
 
 QString StatusMessage::setStatus(Context *c, const QString &msg)
 {
+    QString token;
     auto sm = c->plugin<StatusMessage*>();
     if (!sm) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
-        return QString();
+        return token;
     }
 
-    const QString token = createToken();
+    token = createToken();
     Session::setValue(c, sm->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
     return token;
 }

@@ -207,6 +207,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
 {
     Q_D(const Context);
 
+    QUrl uri;
     QUrl requestUri = d->request->uri();
 
     QString _path = path;
@@ -218,7 +219,6 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         _path.prepend(QLatin1Char('/'));
     }
 
-    QUrl uri;
     if (!args.isEmpty()) {
         QStringList encodedArgs;
         encodedArgs.append(_path);
@@ -252,6 +252,7 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
 {
     Q_D(const Context);
 
+    QUrl uri;
     Action *localAction = action;
     if (!localAction) {
         localAction = d->action;
@@ -276,22 +277,26 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     const QString path = d->dispatcher->uriForAction(localAction, localCaptures);
     if (path.isEmpty()) {
         qCWarning(CUTELYST_CORE) << "Can not find action for" << localAction << localCaptures;
-        return QUrl();
+        return uri;
     }
 
-    return uriFor(path, localArgs, queryValues);
+    uri = uriFor(path, localArgs, queryValues);
+    return uri;
 }
 
 QUrl Context::uriForAction(const QString &path, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
+    QUrl uri;
     Action *action = d->dispatcher->getActionByPath(path);
     if (!action) {
         qCWarning(CUTELYST_CORE) << "Can not find action for" << path;
-        return QUrl();
+        return uri;
     }
-    return uriFor(action, captures, args, queryValues);
+
+    uri = uriFor(action, captures, args, queryValues);
+    return uri;
 }
 
 bool Context::detached() const

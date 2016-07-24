@@ -52,7 +52,7 @@ AuthenticationUser CredentialPassword::authenticate(Context *c, AuthenticationRe
     } else {
         qCDebug(C_CREDENTIALPASSWORD) << "Unable to locate a user matching user info provided in realm";
     }
-    return AuthenticationUser();
+    return user;
 }
 
 QString CredentialPassword::passwordField() const
@@ -174,11 +174,11 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
 
     if (rounds <= 0 || keyLength <= 0) {
         qCCritical(C_CREDENTIALPASSWORD, "PBKDF2 ERROR: Invalid parameters.");
-        return QByteArray();
+        return key;
     }
 
     if (salt.size() == 0 || salt.size() > std::numeric_limits<int>::max() - 4) {
-        return QByteArray();
+        return key;
     }
 
     QByteArray asalt = salt;
@@ -207,14 +207,17 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
 
     asalt.fill('\0');
 
-    return key.mid(0, keyLength);
+    key = key.mid(0, keyLength);
+    return key;
 }
 
 QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteArray key, const QByteArray &message)
 {
+    QByteArray ret;
     const int blocksize = 64;
     if (key.length() > blocksize) {
-        return QCryptographicHash::hash(key, method);
+        ret = QCryptographicHash::hash(key, method);
+        return ret;
     }
 
     while (key.length() < blocksize) {
@@ -232,8 +235,9 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
         i_key_pad[i] = i_key_pad[i] ^ key[i];
     }
 
-    return QCryptographicHash::hash(o_key_pad + QCryptographicHash::hash(i_key_pad + message, method),
-                                    method);
+    ret = QCryptographicHash::hash(o_key_pad + QCryptographicHash::hash(i_key_pad + message, method),
+                                   method);
+    return ret;
 }
 
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)

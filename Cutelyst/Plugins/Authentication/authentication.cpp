@@ -92,28 +92,33 @@ bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &us
 
 AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const ParamsMultiMap &userinfo, const QString &realm)
 {
+    AuthenticationUser ret;
     static Authentication *auth = c->plugin<Authentication*>();
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
-        return AuthenticationUser();
+        return ret;
     }
 
     AuthenticationRealm *realmPtr = auth->d_ptr->realm(realm);
-    if (realmPtr) {
-        return realmPtr->findUser(c, userinfo);
+    if (!realmPtr) {
+        qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
+        return ret;
     }
 
-    qCWarning(C_AUTHENTICATION) << "Could not find realm" << realm;
-    return AuthenticationUser();
+    ret = realmPtr->findUser(c, userinfo);
+    return ret;
 }
 
 Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
 {
+    AuthenticationUser ret;
     QVariant user = c->property(AUTHENTICATION_USER);
     if (user.isNull()) {        
-        return AuthenticationPrivate::restoreUser(c, QVariant(), QString());
+        ret = AuthenticationPrivate::restoreUser(c, QVariant(), QString());
+    } else {
+        ret = user.value<AuthenticationUser>();
     }
-    return user.value<AuthenticationUser>();
+    return ret;
 }
 
 bool Authentication::userExists(Cutelyst::Context *c)
@@ -176,10 +181,11 @@ AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) cons
 
 AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName)
 {
+    AuthenticationUser ret;
     static Authentication *auth = c->plugin<Authentication*>();
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
-        return AuthenticationUser();
+        return ret;
     }
 
     AuthenticationRealm *realmPtr = auth->d_ptr->realm(realmName);
@@ -188,16 +194,16 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant
     }
 
     if (!realmPtr) {
-        return AuthenticationUser();
+        return ret;
     }
 
-    AuthenticationUser user = realmPtr->restoreUser(c, frozenUser);
+    ret = realmPtr->restoreUser(c, frozenUser);
 
-    AuthenticationPrivate::setUser(c, user);
+    AuthenticationPrivate::setUser(c, ret);
     // TODO
     // $user->auth_realm($realm->name) if $user;
 
-    return user;
+    return ret;
 }
 
 AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c, const QMap<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder)

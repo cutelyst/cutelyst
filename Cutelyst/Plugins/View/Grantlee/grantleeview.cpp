@@ -156,6 +156,7 @@ QByteArray GrantleeView::render(Context *c) const
 {
     Q_D(const GrantleeView);
 
+    QByteArray ret;
     QVariantHash stash = c->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
@@ -168,7 +169,7 @@ QByteArray GrantleeView::render(Context *c) const
 
         if (templateFile.isEmpty()) {
             c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
-            return QByteArray();
+            return ret;
         }
     }
 
@@ -183,7 +184,7 @@ QByteArray GrantleeView::render(Context *c) const
     if (tmpl->error() != Grantlee::NoError) {
         c->res()->body() = tr("Internal server error.").toUtf8();
         c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
-        return QByteArray();
+        return ret;
     }
 
     if (!d->wrapper.isEmpty()) {
@@ -195,11 +196,12 @@ QByteArray GrantleeView::render(Context *c) const
         if (wrapper->error() != Grantlee::NoError) {
             c->res()->body() = tr("Internal server error.").toUtf8();
             c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
-            return QByteArray();
+            return ret;
         }
     }
 
-    return content.toUtf8();
+    ret = content.toUtf8();
+    return ret;
 }
 
 #include "moc_grantleeview.cpp"

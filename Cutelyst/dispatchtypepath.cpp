@@ -143,23 +143,22 @@ bool DispatchTypePath::inUse()
 
 QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringList &captures) const
 {
+    QString ret;
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
         auto it = attributes.constFind(QStringLiteral("Path"));
         if (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
             const QString path = it.value();
             if (path.isEmpty()) {
-                return QStringLiteral("/");
+                ret = QStringLiteral("/");
+            } else if (!path.startsWith(QLatin1Char('/'))) {
+                ret = QLatin1Char('/') + path;
+            } else {
+                ret = path;
             }
-
-            if (!path.startsWith(QLatin1Char('/'))) {
-                return QLatin1Char('/') + path;
-            }
-
-            return path;
         }
     }
-    return QString();
+    return ret;
 }
 
 bool actionLessThan(Action *a1, Action *a2)

@@ -81,6 +81,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 
 AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
+    AuthenticationUser ret;
     QString username = userInfo.value(QStringLiteral("username"));
 
     QString fileName = property("_file").toString();
@@ -90,17 +91,16 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
             QByteArray line = file.readLine();
             QList<QByteArray> parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username.toLatin1()) {
-                AuthenticationUser ret;
                 ret.insert(QStringLiteral("username"), username);
                 ret.setId(username);
                 QByteArray password = parts.at(1);
                 ret.insert(QStringLiteral("password"), QString::fromLatin1(password.replace(',', ':')));
-                return ret;
+                break;
                 // TODO maybe support additional fields
             }
         }
     }
-    return AuthenticationUser();
+    return ret;
 }
 
 QVariant StoreHtpasswd::forSession(Context *c, const AuthenticationUser &user)

@@ -42,6 +42,7 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
 
 QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList &headers, const QString &title)
 {
+    QByteArray buffer;
     QList<int> columnsSize;
 
     if (!headers.isEmpty()) {
@@ -72,7 +73,6 @@ QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList 
     }
 
     // printing
-    QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
     out.setFieldAlignment(QTextStream::AlignLeft);
     QByteArray div = buildTableDivision(columnsSize);
