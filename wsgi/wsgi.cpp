@@ -47,7 +47,7 @@ bool WSGI::listenTcp(const QString &line)
 
     bool ok;
     int port = parts.last().toInt(&ok);
-    if (!ok || port < 1 && port > 35554) {
+    if (!ok || (port < 1 && port > 35554)) {
         port = 80;
     }
 

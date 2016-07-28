@@ -52,7 +52,6 @@ private:
 
     QVector<QTcpServer *> m_sockets;
     QVector<Cutelyst::Engine *> m_engines;
-    Protocol *m_proto;
     CuteEngine *m_engine;
 
     QString m_application;
