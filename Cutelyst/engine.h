@@ -199,13 +199,30 @@ protected:
         return key;
     }
 
+    static inline void camelCaseByteArrayHeader(QByteArray &key) {
+        // The RFC 2616 and 7230 states keys are not case
+        // case sensitive, however several tools fail
+        // if the headers are not on camel case form.
+        bool lastWasDash = true;
+        for (int i = 0 ; i < key.size() ; ++i) {
+            QByteRef c = key[i];
+            if (c == '_') {
+                c = '-';
+                lastWasDash = true;
+            } else if (lastWasDash) {
+                lastWasDash = false;
+                c = QChar::toUpper(c);
+            }
+        }
+    }
+
     void processRequest(const QString &method,
                         const QString &path,
                         const QByteArray &query,
                         const QString &protocol,
                         bool https,
                         const QString &serverAddress,
-                        const QString &remoteAddress,
+                        const QHostAddress &remoteAddress,
                         quint16 remotePort,
                         const QString &remoteUser,
                         const Headers &headers,

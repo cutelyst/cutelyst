@@ -81,7 +81,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
                    QStringLiteral("HTTP/1.1"),
                    false,
                    QStringLiteral("127.0.0.1"),
-                   QStringLiteral("127.0.0.1"),
+                   QHostAddress(QStringLiteral("127.0.0.1")),
                    3000,
                    QString(), // RemoteUser
                    headers,

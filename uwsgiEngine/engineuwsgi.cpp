@@ -140,7 +140,7 @@ void uWSGI::processRequest(wsgi_request *req)
 
     const QString method = QString::fromLatin1(req->method, req->method_len);
     const QString protocol = QString::fromLatin1(req->protocol, req->protocol_len);
-    const QString remoteAddress = QString::fromLatin1(req->remote_addr, req->remote_addr_len);
+    const QHostAddress remoteAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
     const QString remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
 
     quint16 remotePort = 0;
