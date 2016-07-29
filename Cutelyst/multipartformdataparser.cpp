@@ -61,10 +61,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     }
     char *buffer = new char[bufferSize];
 
-    qint64 origPos = body->pos();
-    body->seek(0);
     ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
-    body->seek(origPos);
 
     delete [] buffer;
 

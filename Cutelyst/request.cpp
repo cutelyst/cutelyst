@@ -370,18 +370,29 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
+    bool sequencial = body->isSequential();
+    qint64 posOrig = body->pos();
+    if (sequencial && posOrig) {
+        qCWarning(CUTELYST_REQUEST) << "Can not parse sequential post body out of beginning";
+        bodyParsed = true;
+        return;
+    }
+
     const QString contentType = headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
-        qint64 posOrig = body->pos();
-        body->seek(0);
+        if (posOrig) {
+            body->seek(0);
+        }
 
         bodyParam = parseUrlEncoded(body->readLine());
         bodyData = QVariant::fromValue(bodyParam);
-
-        body->seek(posOrig);
     } else if (contentType == QLatin1String("multipart/form-data")) {
+        if (posOrig) {
+            body->seek(0);
+        }
+
         Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")));
         auto it = uploadList.constEnd();
         while (it != uploadList.constBegin()) {
@@ -390,11 +401,14 @@ void RequestPrivate::parseBody() const
         }
         bodyData = QVariant::fromValue(uploads);
     } else if (contentType == QLatin1String("application/json")) {
-        qint64 posOrig = body->pos();
-        body->seek(0);
+        if (posOrig) {
+            body->seek(0);
+        }
 
         bodyData = QJsonDocument::fromJson(body->readAll());
+    }
 
+    if (!sequencial) {
         body->seek(posOrig);
     }
 
