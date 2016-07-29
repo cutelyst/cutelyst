@@ -118,10 +118,11 @@ bool CuteEngine::finalizeHeaders(Context *ctx)
 
 qint64 CuteEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
-    QIODevice *conn = static_cast<QIODevice*>(engineData);
+    auto conn = static_cast<QIODevice*>(engineData);
     //    qDebug() << Q_FUNC_INFO << QByteArray(data,len);
-    conn->write(data, len);
+    qint64 ret = conn->write(data, len);
     //    conn->waitForBytesWritten(200);
+    return ret;
 }
 
 bool CuteEngine::init()
