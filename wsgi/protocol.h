@@ -5,6 +5,8 @@
 
 #include "cuteengine.h"
 
+namespace CWSGI {
+
 class Protocol : public QObject
 {
     Q_OBJECT
@@ -13,5 +15,7 @@ public:
 
     virtual void readyRead() = 0;
 };
+
+}
 
 #endif // PROTOCOL_H

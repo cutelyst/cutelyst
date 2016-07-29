@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     parser.process(app);
 
 
-    WSGI wsgi;
+    CWSGI::WSGI wsgi;
     if (parser.isSet(ini)) {
         wsgi.setIni(parser.value(ini));
     }

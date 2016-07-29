@@ -5,8 +5,11 @@
 #include <QHostAddress>
 #include <Cutelyst/Headers>
 
-class CuteEngine;
 class QIODevice;
+
+namespace CWSGI {
+
+class CuteEngine;
 class Socket
 {
 public:
@@ -38,5 +41,7 @@ public:
 Q_SIGNALS:
     void readyRead();
 };
+
+}
 
 #endif // SOCKET_H

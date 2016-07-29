@@ -12,9 +12,12 @@
 #  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
 #endif
 
+class QIODevice;
+
+namespace CWSGI {
+
 class Protocol;
 class CuteEngine;
-class QIODevice;
 class CUTELYST_WSGI_EXPORT WSGI : public QObject
 {
     Q_OBJECT
@@ -67,5 +70,7 @@ private:
     int m_threads = 0;
 
 };
+
+}
 
 #endif // WSGI_H

@@ -6,6 +6,8 @@
 #include "protocol.h"
 #include "socket.h"
 
+namespace CWSGI {
+
 class CuteEngine;
 class TcpServer : public QTcpServer
 {
@@ -20,5 +22,7 @@ public:
 
     QVector<TcpSocket *> m_socks;
 };
+
+}
 
 #endif // TCPSERVER_H

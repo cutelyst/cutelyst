@@ -5,6 +5,8 @@
 
 #include "protocol.h"
 
+namespace CWSGI {
+
 class Socket;
 class ProtocolHttp : public Protocol
 {
@@ -19,5 +21,7 @@ private:
     inline void processHeader(const char *ptr, int len, Socket *sock);
 
 };
+
+}
 
 #endif // PROTOCOLHTTP_H

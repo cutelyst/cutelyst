@@ -1,5 +1,7 @@
 #include "socket.h"
 
+using namespace CWSGI;
+
 TcpSocket::TcpSocket(QObject *parent) : QTcpSocket(parent)
 {
 

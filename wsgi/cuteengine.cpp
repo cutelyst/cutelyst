@@ -13,6 +13,8 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 
+using namespace CWSGI;
+
 CuteEngine::CuteEngine(const QVariantMap &opts, QObject *parent) : Engine(opts)
 {
     m_proto = new ProtocolHttp(this);
@@ -72,7 +74,7 @@ bool CuteEngine::finalizeHeaders(Context *ctx)
     //    qDebug() << ctx->request()->engineData();
     //    qDebug() << static_cast<QObject*>(ctx->request()->engineData());
 
-    QIODevice *conn = static_cast<QIODevice*>(ctx->request()->engineData());
+    auto conn = static_cast<QIODevice*>(ctx->request()->engineData());
     Response *res = ctx->res();
 
     QByteArray status = QByteArrayLiteral("HTTP/1.1 ");

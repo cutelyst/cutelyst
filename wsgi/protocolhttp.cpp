@@ -8,6 +8,8 @@
 #include <QByteArrayMatcher>
 #include <QDebug>
 
+using namespace CWSGI;
+
 ProtocolHttp::ProtocolHttp(QObject *parent) : Protocol(parent)
 {
 

@@ -5,6 +5,8 @@
 #include <Cutelyst/Engine>
 #include <QDateTime>
 
+using namespace CWSGI;
+
 TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 {
     m_proto = new ProtocolHttp(this);

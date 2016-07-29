@@ -25,6 +25,8 @@
 
 Q_LOGGING_CATEGORY(CUTELYST_WSGI, "cutelyst.wsgi")
 
+using namespace CWSGI;
+
 WSGI::WSGI(QObject *parent) : QObject(parent)
 {
     std::cout << "WSGI starting" << std::endl;

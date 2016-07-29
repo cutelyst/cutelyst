@@ -9,6 +9,9 @@
 using namespace Cutelyst;
 
 class QTcpServer;
+
+namespace CWSGI {
+
 class Protocol;
 class CuteEngine : public Engine
 {
@@ -60,5 +63,7 @@ private:
     QVector<QTcpServer *> m_sockets;
 
 };
+
+}
 
 #endif // CUTEENGINE_H
