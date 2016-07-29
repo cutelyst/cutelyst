@@ -422,8 +422,8 @@ QVariantHash DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString 
                         (bestAction.isEmpty() ||
                          actionParts.size() < bestActionParts ||
                          (actionParts.size() == bestActionParts &&
-                          actionCaptures.size() < bestAction[QStringLiteral("captures")].toStringList().size() &&
-                          n_pathparts > bestAction[QStringLiteral("n_pathparts")].toInt()))) {
+                          actionCaptures.size() < bestAction.value(QStringLiteral("captures")).toStringList().size() &&
+                          n_pathparts > bestAction.value(QStringLiteral("n_pathparts")).toInt()))) {
                     actions.prepend(action);
                     QVector<QStringRef> pathparts = action->attributes().value(QStringLiteral("PathPart")).splitRef(QLatin1Char('/'));
                     bestAction = {
