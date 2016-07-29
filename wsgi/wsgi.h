@@ -6,10 +6,16 @@
 #include <Cutelyst/Engine>
 #include <Cutelyst/Application>
 
+#if defined(cutelyst_wsgi_qt5_EXPORTS)
+#  define CUTELYST_WSGI_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
+#endif
+
 class Protocol;
 class CuteEngine;
 class QIODevice;
-class WSGI : public QObject
+class CUTELYST_WSGI_EXPORT WSGI : public QObject
 {
     Q_OBJECT
 public:
