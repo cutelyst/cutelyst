@@ -9,7 +9,7 @@ class QIODevice;
 
 namespace CWSGI {
 
-class CuteEngine;
+class CWsgiEngine;
 class Socket
 {
 public:
@@ -24,7 +24,7 @@ public:
     QString protocol;
     QByteArray buffer;
     quint64 start;
-    CuteEngine *engine;
+    CWsgiEngine *engine;
     char *buf;
     int buf_size = 0;
     int connState = 0;//

@@ -10,7 +10,7 @@ using namespace CWSGI;
 TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 {
     m_proto = new ProtocolHttp(this);
-    m_engine = qobject_cast<CuteEngine*>(parent);
+    m_engine = qobject_cast<CWsgiEngine*>(parent);
 }
 
 void TcpServer::incomingConnection(qintptr handle)

@@ -1,4 +1,4 @@
-#include "cuteengine.h"
+#include "cwsgiengine.h"
 
 #include "protocolhttp.h"
 #include "tcpserver.h"
@@ -15,28 +15,28 @@
 
 using namespace CWSGI;
 
-CuteEngine::CuteEngine(const QVariantMap &opts, QObject *parent) : Engine(opts)
+CWsgiEngine::CWsgiEngine(const QVariantMap &opts, QObject *parent) : Engine(opts)
 {
     m_proto = new ProtocolHttp(this);
     m_app = qobject_cast<Application*>(parent);
 }
 
-int CuteEngine::workerId() const
+int CWsgiEngine::workerId() const
 {
     return m_workerId;
 }
 
-int CuteEngine::workerCore() const
+int CWsgiEngine::workerCore() const
 {
     return m_workerCore;
 }
 
-void CuteEngine::setTcpSockets(const QVector<QTcpServer *> sockets)
+void CWsgiEngine::setTcpSockets(const QVector<QTcpServer *> sockets)
 {
     m_sockets = sockets;
 }
 
-void CuteEngine::forked()
+void CWsgiEngine::forked()
 {
     if (workerCore() > 0) {
         m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
@@ -64,11 +64,11 @@ void CuteEngine::forked()
     for (QTcpServer *socket : m_sockets) {
         auto server = new TcpServer(this);
         server->setSocketDescriptor(socket->socketDescriptor());
-        connect(server, &TcpServer::newConnection, this, &CuteEngine::newconnectionTcp);
+        connect(server, &TcpServer::newConnection, this, &CWsgiEngine::newconnectionTcp);
     }
 }
 
-bool CuteEngine::finalizeHeaders(Context *ctx)
+bool CWsgiEngine::finalizeHeaders(Context *ctx)
 {
     //    qDebug() << Q_FUNC_INFO;
     //    qDebug() << ctx->request()->engineData();
@@ -118,7 +118,7 @@ bool CuteEngine::finalizeHeaders(Context *ctx)
     return true;
 }
 
-qint64 CuteEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
+qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     auto conn = static_cast<QIODevice*>(engineData);
     //    qDebug() << Q_FUNC_INFO << QByteArray(data,len);
@@ -127,12 +127,12 @@ qint64 CuteEngine::doWrite(Context *c, const char *data, qint64 len, void *engin
     return ret;
 }
 
-bool CuteEngine::init()
+bool CWsgiEngine::init()
 {
     return true;
 }
 
-void CuteEngine::newconnectionTcp()
+void CWsgiEngine::newconnectionTcp()
 {
     auto server = qobject_cast<QTcpServer*>(sender());
     QTcpSocket *conn = server->nextPendingConnection();
@@ -146,7 +146,7 @@ void CuteEngine::newconnectionTcp()
     }
 }
 
-void CuteEngine::newconnectionLocalSocket()
+void CWsgiEngine::newconnectionLocalSocket()
 {
 //    auto server = qobject_cast<QLocalServer*>(sender());
 //    QLocalSocket *conn = server->nextPendingConnection();

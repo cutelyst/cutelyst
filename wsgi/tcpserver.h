@@ -8,7 +8,7 @@
 
 namespace CWSGI {
 
-class CuteEngine;
+class CWsgiEngine;
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
@@ -18,7 +18,7 @@ public:
     virtual void incomingConnection(qintptr handle);
 
     Protocol *m_proto;
-    CuteEngine *m_engine;
+    CWsgiEngine *m_engine;
 
     QVector<TcpSocket *> m_socks;
 };

@@ -13,11 +13,11 @@ class QTcpServer;
 namespace CWSGI {
 
 class Protocol;
-class CuteEngine : public Engine
+class CWsgiEngine : public Engine
 {
     Q_OBJECT
 public:
-    explicit CuteEngine(const QVariantMap &opts, QObject *parent = 0);
+    explicit CWsgiEngine(const QVariantMap &opts, QObject *parent = 0);
 
     virtual int workerId() const;
 

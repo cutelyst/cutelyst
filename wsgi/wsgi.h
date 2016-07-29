@@ -17,7 +17,7 @@ class QIODevice;
 namespace CWSGI {
 
 class Protocol;
-class CuteEngine;
+class CWsgiEngine;
 class CUTELYST_WSGI_EXPORT WSGI : public QObject
 {
     Q_OBJECT
@@ -55,13 +55,13 @@ public:
     QString ini() const;
 
 private:
-    CuteEngine *createEngine(Cutelyst::Application *app, int core);
+    CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
     bool loadConfig();
 
     QVector<QTcpServer *> m_sockets;
     QVector<Cutelyst::Engine *> m_engines;
-    CuteEngine *m_engine;
+    CWsgiEngine *m_engine;
 
     QString m_application;
     QString m_chdir;

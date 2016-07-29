@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "cuteengine.h"
+#include "cwsgiengine.h"
 
 namespace CWSGI {
 

@@ -2,7 +2,7 @@
 
 #include "protocol.h"
 #include "protocolhttp.h"
-#include "cuteengine.h"
+#include "cwsgiengine.h"
 #include "tcpserver.h"
 #include "socket.h"
 
@@ -208,9 +208,9 @@ QString WSGI::ini() const
     return m_ini;
 }
 
-CuteEngine *WSGI::createEngine(Application *app, int core)
+CWsgiEngine *WSGI::createEngine(Application *app, int core)
 {
-    auto engine = new CuteEngine(QVariantMap(), app);
+    auto engine = new CWsgiEngine(QVariantMap(), app);
     engine->m_workerCore = core;
     engine->setTcpSockets(m_sockets);
     m_engines.push_back(engine);
@@ -218,7 +218,7 @@ CuteEngine *WSGI::createEngine(Application *app, int core)
     if (m_threads) {
         auto t1 = new QThread(this);
         engine->moveToThread(t1);
-        connect(t1, &QThread::started, engine, &CuteEngine::forked);
+        connect(t1, &QThread::started, engine, &CWsgiEngine::forked);
         t1->start();
     }
     return engine;
