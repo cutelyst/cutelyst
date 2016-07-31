@@ -567,6 +567,7 @@ RequestPrivate::RequestPrivate(Engine *_engine,
     , requestPtr(_requestPtr)
     , remotePort(_remotePort)
     , https(_isSecure)
+    , bodyParsed(!_body)
 {
 
 }
