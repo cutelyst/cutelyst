@@ -154,6 +154,10 @@ public:
      */
     void setServer(const QString &value);
 
+    QString connection() const;
+
+    QString host() const;
+
     QString userAgent() const;
 
     QString referer() const;

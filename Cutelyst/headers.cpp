@@ -231,6 +231,16 @@ void Headers::setServer(const QString &value)
     m_data.insert(QStringLiteral("server"), value);
 }
 
+QString Headers::connection() const
+{
+    return m_data.value(QStringLiteral("connection"));
+}
+
+QString Headers::host() const
+{
+    return m_data.value(QStringLiteral("host"));
+}
+
 QString Headers::userAgent() const
 {
     return m_data.value(QStringLiteral("user_agent"));
