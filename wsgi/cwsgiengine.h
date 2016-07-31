@@ -57,9 +57,6 @@ protected:
 private:
     virtual bool init();
 
-    void newconnectionTcp();
-    void newconnectionLocalSocket();
-
     QVector<QTcpServer *> m_sockets;
 
 };

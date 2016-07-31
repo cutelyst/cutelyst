@@ -42,6 +42,7 @@ target_compile_features(cutelyst-wsgi
 target_link_libraries(cutelyst-wsgi
     cutelyst-qt5
     cutelyst_wsgi_qt5
+#    eventdispatcher_epoll
 )
 
 install(TARGETS cutelyst-wsgi DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

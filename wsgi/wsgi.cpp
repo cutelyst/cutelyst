@@ -215,7 +215,7 @@ CWsgiEngine *WSGI::createEngine(Application *app, int core)
     engine->setTcpSockets(m_sockets);
     m_engines.push_back(engine);
 
-    if (m_threads) {
+    if (m_threads && core) {
         auto t1 = new QThread(this);
         engine->moveToThread(t1);
         connect(t1, &QThread::started, engine, &CWsgiEngine::forked);

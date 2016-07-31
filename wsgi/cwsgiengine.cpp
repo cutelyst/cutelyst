@@ -64,7 +64,6 @@ void CWsgiEngine::forked()
     for (QTcpServer *socket : m_sockets) {
         auto server = new TcpServer(this);
         server->setSocketDescriptor(socket->socketDescriptor());
-        connect(server, &TcpServer::newConnection, this, &CWsgiEngine::newconnectionTcp);
     }
 }
 
@@ -77,41 +76,49 @@ bool CWsgiEngine::finalizeHeaders(Context *ctx)
     auto conn = static_cast<QIODevice*>(ctx->request()->engineData());
     Response *res = ctx->res();
 
-    QByteArray status = QByteArrayLiteral("HTTP/1.1 ");
-    QByteArray code = statusCode(res->status());
-    status.reserve(code.size() + 9);
-    status.append(code);
-    if (conn->write(status) != status.size()) {
-        return false;
-    }
+//     status = QByteArrayLiteral("HTTP/1.1 ");
+//    QByteArray code = statusCode(res->status());
+//    status.reserve(code.size() + 9);
+//    status.append(code);
+    conn->write("HTTP/1.1 ", 9);
+//    qDebug() << ret << 9;
+
+    conn->write(statusCode(res->status()));
+//        return false;
+//    }
 
     if (!Engine::finalizeHeaders(ctx)) {
         return false;
     }
 
+    auto sock = qobject_cast<TcpSocket*>(conn);
     const auto headers = res->headers().map();
+    if (sock->headerClose == 1) {
+        sock->headerClose = 0;
+    }
+
     auto it = headers.constBegin();
     auto endIt = headers.constEnd();
     while (it != endIt) {
-        QByteArray key = it.key().toLatin1();
-        camelCaseByteArrayHeader(key);
-        QByteArray value = it.value().toLatin1();
-        QByteArray buf;
-        buf.reserve(key.size() + 2 + value.size() + 2);
-        buf.append("\r\n", 2);
-        buf.append(key);
-        buf.append(": ", 2);
-        buf.append(value);
-
-//        conn->write("\r\n", 2);
-//        conn->write(key);
-//        conn->write(": ", 2);
-//        conn->write(value);
-
-        conn->write(buf);
+        const QString key = it.key();
+        const QString value = it.value();
+        if (sock->headerClose == 0 && key == QLatin1String("connection")) {
+            if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+                sock->headerClose = 2;
+            } else {
+                sock->headerClose = 1;
+            }
+        }
+        QString ret(QLatin1String("\r\n") + camelCaseHeader(key) + QLatin1String(": ") + value);
+        conn->write(ret.toLatin1());
 
         ++it;
     }
+
+//    if (QString::compare(sock->headers.connection(), QLatin1String("close"), Qt::CaseInsensitive) == 0 ||
+//            QString::compare(headers.value(QStringLiteral("connection")), QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+//        sock->headerClose = true;
+//    }
 
     conn->write("\r\n\r\n", 4);
 
@@ -130,27 +137,4 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 bool CWsgiEngine::init()
 {
     return true;
-}
-
-void CWsgiEngine::newconnectionTcp()
-{
-    auto server = qobject_cast<QTcpServer*>(sender());
-    QTcpSocket *conn = server->nextPendingConnection();
-    if (conn) {
-        connect(conn, &QTcpSocket::disconnected, conn, &QTcpSocket::deleteLater);
-        TcpSocket *sock = qobject_cast<TcpSocket*>(conn);
-        sock->engine = this;
-        static QString serverAddress = server->serverAddress().toString();
-        sock->serverAddress = serverAddress;
-        connect(conn, &QIODevice::readyRead, m_proto, &Protocol::readyRead);
-    }
-}
-
-void CWsgiEngine::newconnectionLocalSocket()
-{
-//    auto server = qobject_cast<QLocalServer*>(sender());
-//    QLocalSocket *conn = server->nextPendingConnection();
-//    if (conn) {
-
-//    }
 }

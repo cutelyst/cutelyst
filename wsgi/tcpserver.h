@@ -17,6 +17,8 @@ public:
 
     virtual void incomingConnection(qintptr handle);
 
+    void enqueue();
+
     Protocol *m_proto;
     CWsgiEngine *m_engine;
 

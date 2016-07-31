@@ -6,6 +6,8 @@
 #include <QVariant>
 #include <QIODevice>
 #include <QByteArrayMatcher>
+#include <QEventLoop>
+#include <QTimer>
 #include <QDebug>
 
 using namespace CWSGI;
@@ -40,13 +42,24 @@ void ProtocolHttp::readyRead()
                 if (len) {
                     processHeader(ptr, len, sock);
                 } else {
+//                    qDebug() << sock->headers.map();
+                    sock->processing = true;
                     sock->engine->processSocket(sock);
+                    sock->processing = false;
+
+//                    qDebug() << sock->headers.connection() << QString::compare(sock->headers.connection(), QLatin1String("close"), Qt::CaseInsensitive);
+                    if (sock->headerClose == 2) {
+                        sock->disconnectFromHost();
+                    }
+
+                    sock->headerClose = 0;
                     sock->buf_size = 0;
                     sock->beginLine = 0;
                     sock->last = 0;
                     sock->headers = Headers();
                     sock->connState = 0;
                     sock->start = sock->engine->time();
+
                     break;
                 }
             }
@@ -136,5 +149,12 @@ void ProtocolHttp::processHeader(const char *ptr, int len, Socket *sock)
     const char *data = findNotSpace(db, len + (ptr - db));
     QString value = QString::fromLatin1(data, len + (ptr - data));
 
+    if (sock->headerClose == 0 && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
+        if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+            sock->headerClose = 2;
+        } else {
+            sock->headerClose = 1;
+        }
+    }
     sock->headers.pushHeader(key, value);
 }
