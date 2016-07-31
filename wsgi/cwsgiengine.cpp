@@ -67,38 +67,21 @@ void CWsgiEngine::forked()
     }
 }
 
-bool CWsgiEngine::finalizeHeaders(Context *ctx)
+bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
-    //    qDebug() << Q_FUNC_INFO;
-    //    qDebug() << ctx->request()->engineData();
-    //    qDebug() << static_cast<QObject*>(ctx->request()->engineData());
+    auto conn = static_cast<QIODevice*>(engineData);
 
-    auto conn = static_cast<QIODevice*>(ctx->request()->engineData());
-    Response *res = ctx->res();
-
-//     status = QByteArrayLiteral("HTTP/1.1 ");
-//    QByteArray code = statusCode(res->status());
-//    status.reserve(code.size() + 9);
-//    status.append(code);
     conn->write("HTTP/1.1 ", 9);
-//    qDebug() << ret << 9;
-
-    conn->write(statusCode(res->status()));
-//        return false;
-//    }
-
-    if (!Engine::finalizeHeaders(ctx)) {
-        return false;
-    }
+    conn->write(statusCode(status));
 
     auto sock = qobject_cast<TcpSocket*>(conn);
-    const auto headers = res->headers().map();
+    const auto headersMap = headers.map();
     if (sock->headerClose == 1) {
         sock->headerClose = 0;
     }
 
-    auto it = headers.constBegin();
-    auto endIt = headers.constEnd();
+    auto it = headersMap.constBegin();
+    auto endIt = headersMap.constEnd();
     while (it != endIt) {
         const QString key = it.key();
         const QString value = it.value();
@@ -115,14 +98,7 @@ bool CWsgiEngine::finalizeHeaders(Context *ctx)
         ++it;
     }
 
-//    if (QString::compare(sock->headers.connection(), QLatin1String("close"), Qt::CaseInsensitive) == 0 ||
-//            QString::compare(headers.value(QStringLiteral("connection")), QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-//        sock->headerClose = true;
-//    }
-
-    conn->write("\r\n\r\n", 4);
-
-    return true;
+    return conn->write("\r\n\r\n", 4) == 4;
 }
 
 qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)

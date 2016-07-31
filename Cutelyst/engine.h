@@ -151,6 +151,8 @@ protected:
      */
     virtual bool finalizeHeaders(Context *c);
 
+    virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData) = 0;
+
     /**
      * Engines must reimplement this to write the
      * response body back to the caller

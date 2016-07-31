@@ -52,12 +52,12 @@ void ProtocolHttp::readyRead()
                         sock->disconnectFromHost();
                     }
 
-                    sock->headerClose = 0;
-                    sock->buf_size = 0;
-                    sock->beginLine = 0;
-                    sock->last = 0;
                     sock->headers = Headers();
+                    sock->headerClose = 0;
                     sock->connState = 0;
+                    sock->beginLine = 0;
+                    sock->buf_size = 0;
+                    sock->last = 0;
                     sock->start = sock->engine->time();
 
                     break;

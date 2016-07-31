@@ -113,6 +113,14 @@ bool TestEngine::finalizeHeaders(Context *ctx)
     return true;
 }
 
+bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
+{
+    m_status = statusCode(status);
+    m_headers = headers;
+
+    return true;
+}
+
 qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(c)

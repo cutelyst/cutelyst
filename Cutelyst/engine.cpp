@@ -80,11 +80,8 @@ void Engine::finalizeCookies(Context *c)
 bool Engine::finalizeHeaders(Context *c)
 {
     Response *response = c->response();
-
-    // Check if we already finalized headers
-    if (response->d_ptr->finalizedHeaders) {
-        return true;
-    }
+    quint16 status = response->status();
+    Headers &headers = response->headers();
 
     // Fix missing content length
     if (!response->contentLength() && response->hasBody()) {
@@ -96,16 +93,15 @@ bool Engine::finalizeHeaders(Context *c)
             if (size >= 0) {
                 response->setContentLength(body->size());
             } else if (c->request()->protocol() == QLatin1String("HTTP/1.1")) {
-                quint16 status = response->status();
                 // if status is not 1xx or 204 NoContent or 304 NotModified
                 if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
                     qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
-                    response->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+                    headers.setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
                     response->d_ptr->chunked = true;
                 }
             }
         }
-    } else if (response->header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
+    } else if (headers.header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
         qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
         response->d_ptr->chunked = true;
     }
@@ -114,14 +110,14 @@ bool Engine::finalizeHeaders(Context *c)
     const QUrl &location = response->location();
     if (!location.isEmpty()) {
         qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().constData());
-        response->headers().setHeader(QStringLiteral("Location"), QString::fromLatin1(location.toEncoded()));
+        headers.setHeader(QStringLiteral("Location"), QString::fromLatin1(location.toEncoded()));
     }
 
     finalizeCookies(c);
 
     // Done
     response->d_ptr->finalizedHeaders = true;
-    return true;
+    return finalizeHeadersWrite(c, status, headers, c->request()->engineData());
 }
 
 void Engine::finalizeBody(Context *c)
@@ -137,8 +133,9 @@ void Engine::finalizeBody(Context *c)
             char block[64 * 1024];
             while (!body->atEnd()) {
                 qint64 in = body->read(block, sizeof(block));
-                if (in <= 0)
+                if (in <= 0) {
                     break;
+                }
 
                 if (write(c, block, in, engineData) != in) {
                     qCWarning(CUTELYST_ENGINE) << "Failed to write body";
@@ -147,9 +144,7 @@ void Engine::finalizeBody(Context *c)
             }
         } else {
             const QByteArray bodyByteArray = response->body();
-            if (!bodyByteArray.isEmpty()) {
-                write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
-            }
+            write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
         }
     } else if (!response->d_ptr->chunked_done) {
         // Write the final '0' chunk
@@ -402,8 +397,8 @@ void Engine::finalize(Context *c)
         finalizeError(c);
     }
 
-    if (!c->response()->d_ptr->finalizedHeaders) {
-        finalizeHeaders(c);
+    if (!c->response()->d_ptr->finalizedHeaders && !finalizeHeaders(c)) {
+        return;
     }
 
     finalizeBody(c);

@@ -21,7 +21,7 @@ Socket::~Socket()
 
 void TcpSocket::socketDisconnected()
 {
-    qDebug() << Q_FUNC_INFO << processing;
+//    qDebug() << Q_FUNC_INFO << processing;
     if (!processing) {
         Q_EMIT finished();
     }

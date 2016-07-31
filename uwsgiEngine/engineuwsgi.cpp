@@ -411,25 +411,20 @@ quint64 uWSGI::time()
     return uwsgi_micros();
 }
 
-bool uWSGI::finalizeHeaders(Context *ctx)
+bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
-    struct wsgi_request *wsgi_req = static_cast<wsgi_request*>(ctx->request()->engineData());
-    Response *res = ctx->res();
+    auto wsgi_req = static_cast<wsgi_request*>(engineData);
 
-    QByteArray status = statusCode(res->status());
+    QByteArray statusString = statusCode(status);
     if (uwsgi_response_prepare_headers(wsgi_req,
-                                       status.data(),
-                                       status.size())) {
+                                       statusString.data(),
+                                       statusString.size())) {
         return false;
     }
 
-    if (!Engine::finalizeHeaders(ctx)) {
-        return false;
-    }
-
-    const auto headers = res->headers().map();
-    auto it = headers.constBegin();
-    auto endIt = headers.constEnd();
+    const auto headersMap = headers.map();
+    auto it = headersMap.constBegin();
+    auto endIt = headersMap.constEnd();
     while (it != endIt) {
         QByteArray key = camelCaseHeader(it.key()).toLatin1();
         QByteArray value = it.value().toLatin1();

@@ -50,7 +50,7 @@ public:
     Application *m_app;
 
 protected:
-    virtual bool finalizeHeaders(Context *ctx);
+    virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);
 
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 

@@ -16,7 +16,7 @@ TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 
 void TcpServer::incomingConnection(qintptr handle)
 {
-    qDebug() << Q_FUNC_INFO << handle << thread();
+//    qDebug() << Q_FUNC_INFO << handle << thread();
     TcpSocket *sock;
     if (m_socks.size()) {
         sock = m_socks.takeLast();
