@@ -7,6 +7,7 @@
 #include <QIODevice>
 #include <QByteArrayMatcher>
 #include <QEventLoop>
+#include <QCoreApplication>
 #include <QTimer>
 #include <QDebug>
 
@@ -28,126 +29,121 @@ void ProtocolHttp::readyRead()
 
     sock->buf_size += len;
 
+//    qDebug() << Q_FUNC_INFO << len;
+//    qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
+
     while (sock->last < sock->buf_size) {
+//        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
         int ix = matcher.indexIn(sock->buf, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
             char *ptr = sock->buf + sock->beginLine;
             sock->beginLine = ix + 2;
             sock->last = sock->beginLine;
+
             if (sock->connState == 0) {
-                processRequest(ptr, len, sock);
+                processRequest(ptr, ptr + len, sock);
                 sock->connState = 1;
+                sock->headers = Cutelyst::Headers();
+//                qDebug() << "--------" << sock->method << sock->path << sock->query << sock->protocol;
+
             } else if (sock->connState == 1) {
                 if (len) {
-                    processHeader(ptr, len, sock);
+                    processHeader(ptr, ptr + len, sock);
                 } else {
 //                    qDebug() << sock->headers.map();
                     sock->processing = true;
                     sock->engine->processSocket(sock);
                     sock->processing = false;
 
-//                    qDebug() << sock->headers.connection() << QString::compare(sock->headers.connection(), QLatin1String("close"), Qt::CaseInsensitive);
                     if (sock->headerClose == 2) {
+//                        qDebug() << "disconnectFromHost";
                         sock->disconnectFromHost();
+                        break;
+                    } else if (sock->last < sock->buf_size) {
+                        // move pipelined request to 0
+                        int remaining = sock->buf_size - sock->last;
+                        memmove(sock->buf, sock->buf + sock->last, remaining);
+                        sock->resetSocket();
+                        sock->buf_size = remaining;
+
+                        QCoreApplication::processEvents();
+                    } else {
+                        sock->resetSocket();
                     }
-
-                    sock->headers = Headers();
-                    sock->headerClose = 0;
-                    sock->connState = 0;
-                    sock->beginLine = 0;
-                    sock->buf_size = 0;
-                    sock->last = 0;
                     sock->start = sock->engine->time();
-
-                    break;
                 }
             }
-
         } else {
             sock->last = sock->buf_size;
         }
     }
 
-
-}
-
-static inline const char * findSpace(const char *str, int len) {
-    const char *space = str;
-    while (space < str + len) {
-        if (*space == ' ') {
-            break;
-        }
-        ++space;
+    if (sock->buf_size == 4096) {
+        // 414 Request-URI Too Long
     }
-    return space;
 }
 
-static inline const char * findQuestionMarkOrSpace(const char *str, int len) {
-    const char *qm = str;
-    while (qm < str + len) {
-        if (*qm == '?' || *qm == ' ') {
-            break;
-        }
-        ++qm;
-    }
-    return qm;
-}
-
-static inline const char * findNotSpace(const char *str, int len) {
-    const char *notSpace = str;
-    while (notSpace < str + len) {
-        if (*notSpace != ' ') {
-            break;
-        }
-        ++notSpace;
-    }
-    return notSpace;
-}
-
-void ProtocolHttp::processRequest(const char *ptr, int len, Socket *sock)
+void ProtocolHttp::processRequest(const char *ptr, const char *end, Socket *sock)
 {
-    const char *space = findSpace(ptr, len);
+    const char *word_boundary = ptr;
+    while (*word_boundary != ' ' && word_boundary < end) {
+        ++word_boundary;
+    }
+    sock->method = QString::fromLatin1(ptr, word_boundary - ptr);
 
-    sock->method = QString::fromLatin1(ptr, space - ptr);
+    // skip spaces
+    while (*word_boundary == ' ' && word_boundary < end) {
+        ++word_boundary;
+    }
+    ptr = word_boundary;
 
-    const char *data = findNotSpace(space, len + (ptr - space));
+    // skip leading slashes
+    while (*ptr == '/' && ptr <= end) {
+        ++ptr;
+    }
 
-    space = findQuestionMarkOrSpace(data, len + (ptr - data - 1));
-    ++data;// skip slash
-    sock->path = QString::fromLatin1(data, space - data);
+    // find path end
+    while (*word_boundary != ' ' && *word_boundary != '?' && word_boundary < end) {
+        ++word_boundary;
+    }
+    sock->path = QString::fromLatin1(ptr, word_boundary - ptr);
 
-    if (*space == '?') {
-        data = ++space;
-        space = findSpace(space, len - (ptr - space));
-        sock->query = QByteArray(data, space - data);
+    if (*word_boundary == '?') {
+        ptr = word_boundary;
+        while (*word_boundary != ' ' && word_boundary < end) {
+            ++word_boundary;
+        }
+        sock->query = QByteArray(ptr, word_boundary - ptr);
     } else {
         sock->query = QByteArray();
     }
 
-    data = findNotSpace(space, len - (ptr - space));
-    sock->protocol = QString::fromLatin1(data, len + (ptr - data));
-}
-
-static inline const char * findDouble(const char *str, int len) {
-    const char *ret = str;
-    while (ret < str + len) {
-        if (*ret == ':') {
-            break;
-        }
-        ++ret;
+    // skip spaces
+    while (*word_boundary == ' ' && word_boundary < end) {
+        ++word_boundary;
     }
-    return ret;
+    ptr = word_boundary;
+
+    ptr = word_boundary;
+    while (*word_boundary != ' ' && word_boundary < end) {
+        ++word_boundary;
+    }
+    sock->protocol = QString::fromLatin1(ptr, word_boundary - ptr);
 }
 
-void ProtocolHttp::processHeader(const char *ptr, int len, Socket *sock)
+void ProtocolHttp::processHeader(const char *ptr, const char *end, Socket *sock)
 {
-    const char *db = findDouble(ptr, len);
-    QString key = QString::fromLatin1(ptr, db - ptr);
+    const char *word_boundary = ptr;
+    while (*word_boundary != ':' && word_boundary < end) {
+        ++word_boundary;
+    }
+    const QString key = QString::fromLatin1(ptr, word_boundary - ptr);
 
-    ++db;// skip
-    const char *data = findNotSpace(db, len + (ptr - db));
-    QString value = QString::fromLatin1(data, len + (ptr - data));
+    while ((*word_boundary == ':' || *word_boundary == ' ') && word_boundary < end) {
+        ++word_boundary;
+    }
+    const QString value = QString::fromLatin1(word_boundary, end - word_boundary);
 
     if (sock->headerClose == 0 && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
         if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {

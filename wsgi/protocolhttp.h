@@ -17,8 +17,8 @@ public:
     virtual void readyRead();
 
 private:
-    inline void processRequest(const char *ptr, int len, Socket *sock);
-    inline void processHeader(const char *ptr, int len, Socket *sock);
+    inline void processRequest(const char *ptr, const char *end, Socket *sock);
+    inline void processHeader(const char *ptr, const char *end, Socket *sock);
 
 };
 

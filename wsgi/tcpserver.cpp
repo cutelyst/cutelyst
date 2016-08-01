@@ -20,6 +20,7 @@ void TcpServer::incomingConnection(qintptr handle)
     TcpSocket *sock;
     if (m_socks.size()) {
         sock = m_socks.takeLast();
+        sock->resetSocket();
     } else {
         sock = new TcpSocket(this);
         sock->engine = m_engine;

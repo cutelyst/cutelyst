@@ -16,6 +16,17 @@ public:
     Socket();
     virtual ~Socket();
 
+    inline void resetSocket() {
+        buffer = QByteArray();
+
+        buf_size = 0;
+        connState = 0;
+        beginLine = 0;
+        last = 0;
+        headerClose = 0;
+        processing = false;
+    }
+
     Cutelyst::Headers headers;
     QString serverAddress;
     QString method;
@@ -27,10 +38,9 @@ public:
     CWsgiEngine *engine;
     char *buf;
     int buf_size = 0;
-    int connState = 0;//
+    int connState = 0;
     int beginLine = 0;
     int last = 0;
-    int fd;
     int headerClose = 0;
     bool processing = false;
 };
