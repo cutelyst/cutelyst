@@ -28,20 +28,23 @@ class BodyUWSGI : public QIODevice
 {
     Q_OBJECT
 public:
-    explicit BodyUWSGI(struct wsgi_request *request, QObject *parent = 0);
+    explicit BodyUWSGI(struct wsgi_request *request, bool sequential, QObject *parent = 0);
 
-    virtual qint64 pos() const;
-    virtual qint64 size() const;
-    virtual bool seek(qint64 off);
+    virtual bool isSequential() const override;
 
-    virtual void close();
+    virtual qint64 pos() const override;
+    virtual qint64 size() const override;
+    virtual bool seek(qint64 off) override;
+
+    virtual void close() override;
 
 protected:
-    virtual qint64 readData(char *data, qint64 maxlen);
-    virtual qint64 writeData(const char * data, qint64 maxSize);
+    virtual qint64 readData(char *data, qint64 maxlen) override;
+    virtual qint64 writeData(const char * data, qint64 maxSize) override;
 
 private:
     wsgi_request *m_request;
+    bool m_sequential;
 };
 
 #endif // BODYUWSGI_H

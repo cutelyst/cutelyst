@@ -6,7 +6,6 @@ pkg_check_modules(UUID REQUIRED uuid)
 find_package(CAP REQUIRED)
 
 set(uswgi_engine_SRC
-    bodybuffereduwsgi.cpp
     bodyuwsgi.cpp
     engineuwsgi.cpp
     plugin.cpp

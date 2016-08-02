@@ -20,7 +20,6 @@
 #include "engineuwsgi.h"
 
 #include "bodyuwsgi.h"
-#include "bodybuffereduwsgi.h"
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QCoreApplication>
@@ -39,7 +38,6 @@ using namespace Cutelyst;
 typedef struct {
     QFile *bodyFile;
     BodyUWSGI *bodyUWSGI;
-    BodyBufferedUWSGI *bodyBufferedUWSGI;
 } CachedRequest;
 
 uWSGI::uWSGI(const QVariantMap &opts, Application *app, QObject *parent) : Engine(opts, parent)
@@ -168,28 +166,23 @@ void uWSGI::processRequest(wsgi_request *req)
         headers.setContentEncoding(QString::fromLatin1(req->encoding, req->encoding_len));
     }
 
-    QIODevice *body;
-    if (req->post_file) {
-//        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
-        QFile *upload = cache->bodyFile;
-        if (upload->open(req->post_file, QIODevice::ReadOnly)) {
-            body = upload;
+    QIODevice *body = nullptr;
+    if (req->post_cl) {
+        if (req->post_file) {
+            //        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
+            QFile *upload = cache->bodyFile;
+            if (upload->open(req->post_file, QIODevice::ReadOnly)) {
+                body = upload;
+            } else {
+                //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
+                body = cache->bodyUWSGI;
+                body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+            }
         } else {
-//            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
-            body = cache->bodyBufferedUWSGI;
-            body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+            //        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
+            body = cache->bodyUWSGI;
+            body->reset();
         }
-    } else if (uwsgi.post_buffering) {
-//        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
-        body = cache->bodyUWSGI;
-        body->reset();
-    } else {
-        // BodyBufferedUWSGI is an IO device which will
-        // only consume the body when some of it's functions
-        // is called, this is because here we can't seek
-        // the body.
-        body = cache->bodyBufferedUWSGI;
-        body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
     }
 
     Engine::processRequest(method,
@@ -218,8 +211,7 @@ void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
     }
     cache = new CachedRequest;
     cache->bodyFile = new QFile(this);
-    cache->bodyUWSGI = new BodyUWSGI(wsgi_req, this);
-    cache->bodyBufferedUWSGI = new BodyBufferedUWSGI(wsgi_req, this);
+    cache->bodyUWSGI = new BodyUWSGI(wsgi_req, !uwsgi.post_buffering, this);
 
     wsgi_req->async_environ = cache;
 

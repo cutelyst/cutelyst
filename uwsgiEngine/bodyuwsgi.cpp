@@ -21,11 +21,16 @@
 
 #include "engineuwsgi.h"
 
-BodyUWSGI::BodyUWSGI(wsgi_request *request, QObject *parent) :
-    QIODevice(parent),
-    m_request(request)
+BodyUWSGI::BodyUWSGI(wsgi_request *request, bool sequential, QObject *parent) : QIODevice(parent)
+  , m_request(request)
+  , m_sequential(sequential)
 {
     open(QIODevice::ReadOnly | QIODevice::Unbuffered);
+}
+
+bool BodyUWSGI::isSequential() const
+{
+    return m_sequential;
 }
 
 qint64 BodyUWSGI::pos() const
