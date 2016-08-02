@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QTcpServer>
+#include <QProcess>
+
 #include <Cutelyst/Engine>
 #include <Cutelyst/Application>
 
@@ -54,7 +56,15 @@ public:
     void setIni(const QString &ini);
     QString ini() const;
 
+    Q_PROPERTY(bool master READ master WRITE setMaster)
+    void setMaster(bool enable);
+    bool master() const;
+
+    void proc();
+
 private:
+    void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
     bool loadConfig();
@@ -68,6 +78,7 @@ private:
     QString m_chdir2;
     QString m_ini;
     int m_threads = 0;
+    bool m_master = false;
 
 };
 

@@ -56,6 +56,10 @@ int main(int argc, char *argv[])
                                       QStringLiteral("threads"));
     parser.addOption(threads);
 
+    auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
+                                      QStringLiteral("Enable master process"));
+    parser.addOption(master);
+
     auto bufferSize = QCommandLineOption({ QStringLiteral("buffer-size"), QStringLiteral("b") },
                                          QStringLiteral("set internal buffer size"),
                                          QStringLiteral("bytes"));
@@ -95,7 +99,10 @@ int main(int argc, char *argv[])
         wsgi.setApplication(parser.value(application));
     }
 
-    if (parser.isSet(httpSocket)) {
+    bool masterSet = parser.isSet(master);
+    wsgi.setMaster(masterSet);
+
+    if (!masterSet && parser.isSet(httpSocket)) {
         for (const QString &http : parser.values(httpSocket)) {
             wsgi.setHttpSocket(http);
         }

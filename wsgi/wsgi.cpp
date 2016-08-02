@@ -62,7 +62,8 @@ bool WSGI::listenTcp(const QString &line)
         std::cout << "Listening on: "
                   << server->serverAddress().toString().toLatin1().constData() << ':' << server->serverPort() << std::endl;
     } else {
-        std::cout << "Failed to listen on" << line.toLatin1().constData() << std::endl;
+        std::cout << "Failed to listen on: " << line.toLatin1().constData() << std::endl;
+        exit(1);
     }
 
     return ret;
@@ -77,6 +78,11 @@ bool WSGI::listenSocket(const QString &address)
 
 bool WSGI::loadApplication()
 {
+    if (m_master) {
+        proc();
+        return true;
+    }
+
     if (!m_chdir.isEmpty()) {
         std::cout << "Changing directory to: " << m_chdir.toLatin1().constData() << std::endl;;
         if (!QDir().cd(m_chdir)) {
@@ -206,6 +212,45 @@ void WSGI::setIni(const QString &ini)
 QString WSGI::ini() const
 {
     return m_ini;
+}
+
+void WSGI::setMaster(bool enable)
+{
+    m_master = enable;
+}
+
+bool WSGI::master() const
+{
+    return m_master;
+}
+
+void WSGI::proc()
+{
+    static QProcess *process = nullptr;
+    if (!process) {
+        process = new QProcess(this);
+        connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                this, &WSGI::childFinished);
+    }
+
+    const QString app = QCoreApplication::applicationFilePath();
+    QStringList args = QCoreApplication::arguments();
+    args.takeFirst();
+    args.removeOne(QStringLiteral("-M"));
+    args.removeOne(QStringLiteral("--master"));
+
+    process->setProcessChannelMode(QProcess::ForwardedChannels);
+
+    process->start(app, args);
+}
+
+void WSGI::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    if (exitStatus == QProcess::CrashExit) {
+        proc();
+    } else {
+        qApp->exit(exitCode);
+    }
 }
 
 CWsgiEngine *WSGI::createEngine(Application *app, int core)
