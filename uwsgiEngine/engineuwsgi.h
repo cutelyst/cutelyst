@@ -93,7 +93,6 @@ private:
 
     QVector<struct wsgi_request *> m_unusedReq;
     int m_workerId = 0;
-    int m_workerCore = 0;
 };
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_UWSGI)
