@@ -430,14 +430,14 @@ bool uWSGI::init()
     return true;
 }
 
-void uWSGI::forked()
+bool uWSGI::forked()
 {
     if (workerCore() > 0) {
         // init and postfork
         if (!initApplication()) {
             qCCritical(CUTELYST_UWSGI) << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
             Q_EMIT engineDisabled(this);
-            return;
+            return false;
         }
     }
 
@@ -463,6 +463,8 @@ void uWSGI::forked()
             }
         }
     }
+
+    return true;
 }
 
 #include "moc_engineuwsgi.cpp"

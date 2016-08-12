@@ -8,6 +8,7 @@
 #include <Cutelyst/Request>
 #include <Cutelyst/Application>
 
+#include <QCoreApplication>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QLocalServer>
@@ -47,6 +48,14 @@ void CWsgiEngine::listen()
     }
 
     Q_EMIT listening();
+}
+
+void CWsgiEngine::postFork()
+{
+    if (!postForkApplication()) {
+        // CHEAP
+        QCoreApplication::exit(15);
+    }
 }
 
 bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)

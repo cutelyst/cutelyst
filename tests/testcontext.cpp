@@ -134,7 +134,7 @@ TestEngine* TestContext::getEngine()
     auto engine = new TestEngine(app, QVariantMap());
     new ContextGetActionsTest(app);
     new ContextTest(app);
-    if (!engine->initApplication()  || !engine->postForkApplication()) {
+    if (!engine->initEngine()) {
         return nullptr;
     }
     return engine;

@@ -27,8 +27,24 @@ class UnixFork : public QObject
     Q_OBJECT
 public:
     explicit UnixFork(QObject *parent = 0);
+    ~UnixFork();
 
-    bool createProcess(int process);
+    void createProcess(int process);
+
+    // Unix signal handlers.
+    static void hupSignalHandler(int unused);
+    static void termSignalHandler(int unused);
+    static void killSignalHandler(int unused);
+    static void intSignalHandler(int unused);
+    static void chldSignalHandler(int unused);
+
+    void handleSigHup();
+    void handleSigTerm();
+    void handleSigKill();
+    void handleSigInt();
+    void handleSigChld();
+
+    int setupUnixSignalHandlers();
 
 Q_SIGNALS:
     void forked();
@@ -36,6 +52,7 @@ Q_SIGNALS:
 private:
     bool createChild();
 
+    bool m_child = false;
     QVector<qint64> m_childs;
 };
 

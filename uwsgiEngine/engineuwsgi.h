@@ -78,6 +78,8 @@ public:
 
     virtual quint64 time();
 
+    bool forked();
+
 Q_SIGNALS:
     void postFork();
     void enableSockets(bool enable);
@@ -89,7 +91,6 @@ Q_SIGNALS:
 
 private:
     inline void validateAndExecuteRequest(wsgi_request *wsgi_req, int status);
-    void forked();
 
     QVector<struct wsgi_request *> m_unusedReq;
     int m_workerId = 0;

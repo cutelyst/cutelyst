@@ -43,6 +43,8 @@ public:
 
     void listen();
 
+    void postFork();
+
     int m_workerId = 0;
 
 Q_SIGNALS:

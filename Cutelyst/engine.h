@@ -112,16 +112,6 @@ public:
     bool initApplication();
 
     /**
-     * @brief postForkApplication
-     *
-     * Should be called after the engine forks
-     *
-     * @return true if the engine should use this
-     * process
-     */
-    bool postForkApplication();
-
-    /**
      * Returns a time to be used for stats,
      * the default implementation returns
      * MSecsSinceEpoch, but if the engine
@@ -135,6 +125,16 @@ public:
      */
     qint64 write(Context *c, const char *data, qint64 len, void *engineData);
 protected:
+
+    /**
+     * @brief postForkApplication
+     *
+     * Should be called after the engine forks
+     *
+     * @return true if the engine should use this
+     * process
+     */
+    bool postForkApplication();
 
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
 

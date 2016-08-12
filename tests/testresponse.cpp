@@ -174,7 +174,7 @@ TestEngine* TestResponse::getEngine()
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new ResponseTest(app);
-    if (!engine->initApplication() || !engine->postForkApplication()) {
+    if (!engine->initEngine()) {
         return nullptr;
     }
     return engine;

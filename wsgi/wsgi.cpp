@@ -283,9 +283,7 @@ void WSGI::engineListening()
         if (m_process) {
             auto uFork = new UnixFork(this);
             connect(uFork, &UnixFork::forked, this, &WSGI::forked);
-            if (!uFork->createProcess(m_process)) {
-                delete uFork;
-            }
+            uFork->createProcess(m_process);
         } else {
             Q_EMIT forked();
         }
@@ -299,7 +297,7 @@ CWsgiEngine *WSGI::createEngine(Application *app, int core)
 {
     auto engine = new CWsgiEngine(app, core, QVariantMap());
     connect(engine, &CWsgiEngine::listening, this, &WSGI::engineListening, Qt::QueuedConnection);
-    connect(this, &WSGI::forked, engine, &CWsgiEngine::postForkApplication, Qt::QueuedConnection);
+    connect(this, &WSGI::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     engine->setTcpSockets(m_sockets);
     m_engines.push_back(engine);
 
