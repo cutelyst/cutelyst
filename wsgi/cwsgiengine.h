@@ -17,11 +17,9 @@ class CWsgiEngine : public Engine
 {
     Q_OBJECT
 public:
-    explicit CWsgiEngine(const QVariantMap &opts, QObject *parent = 0);
+    explicit CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts);
 
     virtual int workerId() const;
-
-    virtual int workerCore() const;
 
     inline void processSocket(TcpSocket *sock) {
         processRequest(sock->method,
@@ -43,11 +41,12 @@ public:
 
     void setTcpSockets(const QVector<QTcpServer *> sockets);
 
-    void forked();
+    void listen();
 
     int m_workerId = 0;
-    int m_workerCore = 0;
-    Application *m_app;
+
+Q_SIGNALS:
+    void listening();
 
 protected:
     virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);

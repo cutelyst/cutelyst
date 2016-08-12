@@ -40,11 +40,9 @@ typedef struct {
     BodyUWSGI *bodyUWSGI;
 } CachedRequest;
 
-uWSGI::uWSGI(const QVariantMap &opts, Application *app, QObject *parent) : Engine(opts, parent)
-  , m_app(app)
+uWSGI::uWSGI(Application *app, int workerCore, const QVariantMap &opts) : Engine(app, workerCore, opts)
 {
-    connect(this, &uWSGI::postFork,
-            this, &uWSGI::forked);
+    connect(this, &uWSGI::postFork, this, &uWSGI::forked);
 }
 
 uWSGI::~uWSGI()
@@ -56,19 +54,9 @@ int uWSGI::workerId() const
     return m_workerId;
 }
 
-int uWSGI::workerCore() const
-{
-    return m_workerCore;
-}
-
 void uWSGI::setWorkerId(int id)
 {
     m_workerId = id;
-}
-
-void uWSGI::setWorkerCore(int core)
-{
-    m_workerCore = core;
 }
 
 void uWSGI::setThread(QThread *thread)
@@ -199,7 +187,9 @@ void uWSGI::processRequest(wsgi_request *req)
                            body,
                            req);
 
-    body->close();
+    if (body) {
+        body->close();
+    }
 }
 
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
@@ -443,27 +433,15 @@ bool uWSGI::init()
 void uWSGI::forked()
 {
     if (workerCore() > 0) {
-        m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
-        if (!m_app) {
-            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
-                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.\n");
-            Q_EMIT engineDisabled(this);
-            return;
-        }
-
-        // Move the application and it's children to this thread
-        m_app->moveToThread(thread());
-
-        // We can now set a parent
-        m_app->setParent(this);
-
         // init and postfork
-        if (!initApplication(m_app, true)) {
+        if (!initApplication()) {
             qCCritical(CUTELYST_UWSGI) << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
             Q_EMIT engineDisabled(this);
             return;
         }
-    } else if (!postForkApplication()) {
+    }
+
+    if (!postForkApplication()) {
 #ifdef UWSGI_GO_CHEAP_CODE
         // We need to tell the master process that the
         // application failed to setup and that it shouldn't

@@ -194,8 +194,8 @@ void uwsgi_cutelyst_init_apps()
 
     QVariantMap opts = qApp->property("UWSGI_OPTS").toMap();
 
-    uWSGI *mainEngine = new uWSGI(opts, app);
-    if (!mainEngine->initApplication(app, false)) {
+    auto mainEngine = new uWSGI(app, 0, opts);
+    if (!mainEngine->initApplication() || !mainEngine->postForkApplication()) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }
@@ -210,13 +210,13 @@ void uwsgi_cutelyst_init_apps()
         // Create the desired threads
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1) {
-            QThread *thread = new QThread(qApp);
+            auto thread = new QThread(qApp);
 
             // reuse the main engine
             if (i != 0) {
                 // The engine can't have a parent otherwise
                 // we can't move it
-                engine = new uWSGI(opts, app);
+                engine = new uWSGI(app, i, opts);
             }
 
             // the request must be added before moving threads
@@ -234,7 +234,6 @@ void uwsgi_cutelyst_init_apps()
         } else {
             engine->addUnusedRequest(wsgi_req);
         }
-        engine->setWorkerCore(i);
 
         if (!coreEngines->contains(engine)) {
             coreEngines->append(engine);
@@ -254,7 +253,7 @@ void uwsgi_cutelyst_init_apps()
 
 void uwsgi_cutelyst_watch_signal(int signalFD)
 {
-    QSocketNotifier *socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
+    auto socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
     QObject::connect(socketNotifier, &QSocketNotifier::activated,
                      [=](int fd) {
         socketNotifier->setEnabled(false);

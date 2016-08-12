@@ -129,12 +129,12 @@ void TestContext::initTestCase()
 
 TestEngine* TestContext::getEngine()
 {
-    TestEngine *engine = new TestEngine(QVariantMap(), this);
     qputenv("RECURSION", QByteArrayLiteral("100"));
     auto app = new TestApplication;
+    auto engine = new TestEngine(app, QVariantMap());
     new ContextGetActionsTest(app);
     new ContextTest(app);
-    if (!engine->initApplication(app, true)) {
+    if (!engine->initApplication()  || !engine->postForkApplication()) {
         return nullptr;
     }
     return engine;

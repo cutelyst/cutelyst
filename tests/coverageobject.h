@@ -28,11 +28,9 @@ class TestEngine : public Engine
 {
     Q_OBJECT
 public:
-    explicit TestEngine(const QVariantMap &opts, QObject *parent = 0);
+    explicit TestEngine(Application *app, const QVariantMap &opts);
 
     virtual int workerId() const override;
-
-    virtual int workerCore() const override;
 
     QVariantMap createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
 

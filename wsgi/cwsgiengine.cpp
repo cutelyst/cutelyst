@@ -15,10 +15,9 @@
 
 using namespace CWSGI;
 
-CWsgiEngine::CWsgiEngine(const QVariantMap &opts, QObject *parent) : Engine(opts)
+CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts) : Engine(app, workerCore, opts)
 {
     m_proto = new ProtocolHttp(this);
-    m_app = qobject_cast<Application*>(parent);
 }
 
 int CWsgiEngine::workerId() const
@@ -26,45 +25,28 @@ int CWsgiEngine::workerId() const
     return m_workerId;
 }
 
-int CWsgiEngine::workerCore() const
-{
-    return m_workerCore;
-}
-
 void CWsgiEngine::setTcpSockets(const QVector<QTcpServer *> sockets)
 {
     m_sockets = sockets;
 }
 
-void CWsgiEngine::forked()
+void CWsgiEngine::listen()
 {
     if (workerCore() > 0) {
-        m_app = qobject_cast<Application *>(m_app->metaObject()->newInstance());
-        if (!m_app) {
-            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
-                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.\n");
-            return;
-        }
-
-        // Move the application and it's children to this thread
-        m_app->moveToThread(thread());
-
-        // We can now set a parent
-        m_app->setParent(this);
-
         // init and postfork
-        if (!initApplication(m_app, true)) {
+        if (!initApplication()) {
             qCritical() << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
             return;
         }
-    } else {
-        postForkApplication();
+
     }
 
     for (QTcpServer *socket : m_sockets) {
         auto server = new TcpServer(this);
         server->setSocketDescriptor(socket->socketDescriptor());
     }
+
+    Q_EMIT listening();
 }
 
 bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)

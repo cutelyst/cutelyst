@@ -28,14 +28,14 @@
 #include <QUrl>
 #include <QSettings>
 #include <QDir>
-#include <QtCore/QByteArray>
+#include <QThread>
+#include <QByteArray>
 #include <QDebug>
 
 using namespace Cutelyst;
 
-Engine::Engine(const QVariantMap &opts, QObject *parent) :
-    QObject(parent),
-    d_ptr(new EnginePrivate)
+Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &opts)
+    : d_ptr(new EnginePrivate)
 {
     Q_D(Engine);
 
@@ -60,6 +60,23 @@ Engine::Engine(const QVariantMap &opts, QObject *parent) :
     }
 
     d->opts = opts;
+    d->workerCore = workerCore;
+
+    // If workerCore is greater than 0 we need a new application instance
+    if (workerCore) {
+        auto newApp = qobject_cast<Application *>(app->metaObject()->newInstance());
+        if (!newApp) {
+            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
+                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.");
+        }
+        d->app = newApp;
+    } else {
+        d->app = app;
+    }
+
+    // To make easier for engines to clean up
+    // the app must be a child of it
+    d->app->setParent(this);
 }
 
 Engine::~Engine()
@@ -179,16 +196,22 @@ Application *Engine::app() const
     return d->app;
 }
 
-bool Engine::initApplication(Application *app, bool postFork)
+int Engine::workerCore() const
+{
+    Q_D(const Engine);
+    return d->workerCore;
+}
+
+bool Engine::initApplication()
 {
     Q_D(Engine);
-    d->app = app;
 
-    // To make easier for engines to clean up
-    // the app must be a child of it
-    app->setParent(this);
+    if (thread() != QThread::currentThread()) {
+        qCCritical(CUTELYST_ENGINE) << "Cannot init application on a different thread";
+        return false;
+    }
 
-    if (!app->setup(this)) {
+    if (!d->app->setup(this)) {
         qCCritical(CUTELYST_ENGINE) << "Failed to setup application";
         return false;
     }
@@ -196,10 +219,6 @@ bool Engine::initApplication(Application *app, bool postFork)
     if (!init()) {
         qCCritical(CUTELYST_ENGINE) << "Failed to setup engine";
         return false;
-    }
-
-    if (postFork) {
-        return postForkApplication();
     }
 
     return true;

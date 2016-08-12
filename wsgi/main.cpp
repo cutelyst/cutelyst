@@ -56,6 +56,13 @@ int main(int argc, char *argv[])
                                       QStringLiteral("threads"));
     parser.addOption(threads);
 
+#ifdef Q_OS_UNIX
+    auto process = QCommandLineOption({ QStringLiteral("process"), QStringLiteral("p") },
+                                      QStringLiteral("spawn the specified number of processes"),
+                                      QStringLiteral("processes"));
+    parser.addOption(process);
+#endif // Q_OS_UNIX
+
     auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
                                       QStringLiteral("Enable master process"));
     parser.addOption(master);
@@ -94,6 +101,12 @@ int main(int argc, char *argv[])
     if (parser.isSet(threads)) {
         wsgi.setThreads(parser.value(threads).toInt());
     }
+
+#ifdef Q_OS_UNIX
+    if (parser.isSet(process)) {
+        wsgi.setProcess(parser.value(process).toInt());
+    }
+#endif // Q_OS_UNIX
 
     if (parser.isSet(application)) {
         wsgi.setApplication(parser.value(application));

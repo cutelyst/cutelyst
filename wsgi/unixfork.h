@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,23 +16,27 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef UNIXFORK_H
+#define UNIXFORK_H
 
-#ifndef CUTELYST_ENGINE_P_H
-#define CUTELYST_ENGINE_P_H
+#include <QObject>
+#include <QVector>
 
-#include "engine.h"
-
-namespace Cutelyst {
-
-class EnginePrivate
+class UnixFork : public QObject
 {
+    Q_OBJECT
 public:
-    QVariantMap opts;
-    QMap<QString, QVariantMap> config;
-    Application *app;
-    int workerCore;
+    explicit UnixFork(QObject *parent = 0);
+
+    bool createProcess(int process);
+
+Q_SIGNALS:
+    void forked();
+
+private:
+    bool createChild();
+
+    QVector<qint64> m_childs;
 };
 
-}
-
-#endif // CUTELYST_ENGINE_P_H
+#endif // UNIXFORK_H

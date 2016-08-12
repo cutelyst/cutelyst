@@ -40,6 +40,10 @@ public:
     void setThreads(int threads);
     int threads() const;
 
+    Q_PROPERTY(int process READ process WRITE setProcess)
+    void setProcess(int process);
+    int process() const;
+
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir)
     void setChdir(const QString &chdir);
     QString chdir() const;
@@ -62,8 +66,13 @@ public:
 
     void proc();
 
+Q_SIGNALS:
+    void forked();
+
 private:
+    bool setupApplication();
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void engineListening();
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
@@ -77,7 +86,9 @@ private:
     QString m_chdir;
     QString m_chdir2;
     QString m_ini;
+    int m_listening = 1;
     int m_threads = 0;
+    int m_process = 0;
     bool m_master = false;
 
 };

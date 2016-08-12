@@ -373,11 +373,11 @@ void TestRequest::initTestCase()
 
 TestEngine* TestRequest::getEngine()
 {
-    TestEngine *engine = new TestEngine(QVariantMap(), this);
     qputenv("RECURSION", QByteArrayLiteral("100"));
     auto app = new TestApplication;
+    auto engine = new TestEngine(app, QVariantMap());
     new RequestTest(app);
-    if (!engine->initApplication(app, true)) {
+    if (!engine->initApplication() || !engine->postForkApplication()) {
         return nullptr;
     }
     return engine;

@@ -45,7 +45,7 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
-    explicit Engine(const QVariantMap &opts, QObject *parent = nullptr);
+    explicit Engine(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~Engine();
 
     /**
@@ -57,7 +57,7 @@ public:
     /**
      * Returns the worker id (process)
      *
-     * The id is the number of the spwaned engine process,
+     * The id is the number of the spawned engine process,
      * a single process workerId = 0, two process 0 for the first
      * 1 for the second.
      *
@@ -73,7 +73,7 @@ public:
      * a single process with two worker threads will return 0 and 1 for
      * each of the thread respectively.
      */
-    virtual int workerCore() const = 0;
+    int workerCore() const;
 
     /**
      * Returns true if this is the Zero worker,
@@ -102,13 +102,14 @@ public:
      * @brief initApplication
      *
      * This method inits the application and
-     * calls init on the engine.
+     * calls init on the engine. It must be called on the
+     * engine's thread
      *
      * @param app the Application to init
      * @param postFork when true it will call postFork on the application
      * @return true if succeded
      */
-    bool initApplication(Application *app, bool postFork);
+    bool initApplication();
 
     /**
      * @brief postForkApplication

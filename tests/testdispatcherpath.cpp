@@ -43,8 +43,9 @@ void TestDispatcherPath::initTestCase()
 
 TestEngine* TestDispatcherPath::getEngine()
 {
-    TestEngine *engine = new TestEngine(QVariantMap(), this);
-    if (!engine->initApplication(new TestApplication, true)) {
+    auto app = new TestApplication;
+    auto engine = new TestEngine(app, QVariantMap());
+    if (!engine->initApplication() || !engine->postForkApplication()) {
         return nullptr;
     }
     return engine;

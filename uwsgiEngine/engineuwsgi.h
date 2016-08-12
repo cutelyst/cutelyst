@@ -40,15 +40,12 @@ class uWSGI : public Engine
 {
     Q_OBJECT
 public:
-    explicit uWSGI(const QVariantMap &opts, Application *app, QObject *parent = 0);
+    explicit uWSGI(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~uWSGI();
 
     virtual int workerId() const;
 
-    virtual int workerCore() const;
-
     void setWorkerId(int id);
-    void setWorkerCore(int core);
 
     void setThread(QThread *thread);
 
@@ -94,7 +91,6 @@ private:
     inline void validateAndExecuteRequest(wsgi_request *wsgi_req, int status);
     void forked();
 
-    Cutelyst::Application *m_app;
     QVector<struct wsgi_request *> m_unusedReq;
     int m_workerId = 0;
     int m_workerCore = 0;

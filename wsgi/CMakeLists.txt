@@ -7,6 +7,13 @@ set(httpEngine_SRC
     tcpserver.cpp
 )
 
+if (UNIX)
+    set(httpEngine_SRC
+        ${httpEngine_SRC}
+        unixfork.cpp
+        )
+endif (UNIX)
+
 add_library(cutelyst_wsgi_qt5 SHARED ${httpEngine_SRC})
 
 add_library(CutelystQt5::WSGI ALIAS cutelyst_wsgi_qt5)

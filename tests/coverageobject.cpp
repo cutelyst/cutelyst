@@ -53,17 +53,12 @@ void CoverageObject::cleanup()
     saveCoverageData();
 }
 
-TestEngine::TestEngine(const QVariantMap &opts, QObject *parent) : Engine(opts, parent)
+TestEngine::TestEngine(Application *app, const QVariantMap &opts) : Engine(app, 0, opts)
 {
 
 }
 
 int TestEngine::workerId() const
-{
-    return 0;
-}
-
-int TestEngine::workerCore() const
 {
     return 0;
 }
