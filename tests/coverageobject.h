@@ -34,7 +34,6 @@ public:
 
     QVariantMap createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
 
-    virtual bool finalizeHeaders(Context *ctx) override;
     virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
 
     virtual bool init();

@@ -222,7 +222,7 @@ protected:
         }
     }
 
-    static QByteArray statusCode(quint16 status);
+    static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
     void processRequest(const QString &method,
                         const QString &path,

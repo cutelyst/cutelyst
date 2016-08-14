@@ -93,24 +93,9 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     return ret;
 }
 
-bool TestEngine::finalizeHeaders(Context *ctx)
-{
-    Response *res = ctx->res();
-
-    if (!Engine::finalizeHeaders(ctx)) {
-        return false;
-    }
-
-    m_status = statusCode(res->status());
-
-    m_headers = res->headers();
-
-    return true;
-}
-
 bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
-    m_status = statusCode(status);
+    m_status = httpStatusMessage(status);
     m_headers = headers;
 
     return true;

@@ -397,10 +397,7 @@ bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &head
 {
     auto wsgi_req = static_cast<wsgi_request*>(engineData);
 
-    QByteArray statusString = statusCode(status);
-    if (uwsgi_response_prepare_headers(wsgi_req,
-                                       statusString.data(),
-                                       statusString.size())) {
+    if (uwsgi_response_prepare_headers_int(wsgi_req, status)) {
         return false;
     }
 

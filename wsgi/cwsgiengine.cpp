@@ -63,7 +63,9 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
     auto conn = static_cast<QIODevice*>(engineData);
 
     conn->write("HTTP/1.1 ", 9);
-    conn->write(statusCode(status));
+    int msgLen;
+    const char *msg = httpStatusMessage(status, &msgLen);
+    conn->write(msg, msgLen);
 
     auto sock = qobject_cast<TcpSocket*>(conn);
     const auto headersMap = headers.map();
