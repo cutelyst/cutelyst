@@ -162,7 +162,7 @@ bool Action::doExecute(Context *c)
         } else {
             QStringList args = c->request()->args();
             // Fill the missing arguments
-            args += d->emptyArgs;
+            args.append(d->emptyArgs);
 
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
@@ -198,7 +198,7 @@ bool Action::doExecute(Context *c)
         } else {
             QStringList args = c->request()->args();
             // Fill the missing arguments
-            args += d->emptyArgs;
+            args.append(d->emptyArgs);
 
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
