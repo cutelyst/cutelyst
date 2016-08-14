@@ -47,6 +47,8 @@ public:
 
     int m_workerId = 0;
 
+    virtual bool init();
+
 Q_SIGNALS:
     void listening();
 
@@ -56,7 +58,6 @@ protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 
 private:
-    virtual bool init();
 
     QVector<QTcpServer *> m_sockets;
 

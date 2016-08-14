@@ -37,11 +37,10 @@ public:
     virtual bool finalizeHeaders(Context *ctx) override;
     virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
 
-    bool initEngine();
+    virtual bool init();
 
 protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
-    virtual bool init();
 
 private:
     QByteArray m_responseData;

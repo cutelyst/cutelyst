@@ -175,7 +175,7 @@ void Dispatcher::prepareAction(Context *c)
     }
 }
 
-void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath)
+void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) const
 {
     QStringList pathParts = requestPath.split(QLatin1Char('/'), QString::SkipEmptyParts);
     const QString path = pathParts.join(QLatin1Char('/'));

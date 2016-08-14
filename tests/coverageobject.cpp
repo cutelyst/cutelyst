@@ -116,11 +116,6 @@ bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers 
     return true;
 }
 
-bool TestEngine::initEngine()
-{
-    return initApplication() && postForkApplication();
-}
-
 qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(c)
@@ -131,7 +126,7 @@ qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engin
 
 bool TestEngine::init()
 {
-    return true;
+    return initApplication() && postForkApplication();
 }
 
 #include "moc_coverageobject.cpp"

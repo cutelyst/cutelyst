@@ -30,7 +30,7 @@ class DispatcherPrivate
 public:
     DispatcherPrivate(Dispatcher *q) : q_ptr(q) {}
 
-    inline void prepareAction(Context *c, const QString &requestPath);
+    inline void prepareAction(Context *c, const QString &requestPath) const;
 
     void printActions() const;
     inline ActionList getContainers(const QString &ns) const;

@@ -216,11 +216,6 @@ bool Engine::initApplication()
         return false;
     }
 
-    if (!init()) {
-        qCCritical(CUTELYST_ENGINE) << "Failed to setup engine";
-        return false;
-    }
-
     return true;
 }
 

@@ -19,7 +19,8 @@ void TcpServer::incomingConnection(qintptr handle)
 //    qDebug() << Q_FUNC_INFO << handle << thread();
     TcpSocket *sock;
     if (m_socks.size()) {
-        sock = m_socks.takeLast();
+        sock = m_socks.back();
+        m_socks.pop_back();
         sock->resetSocket();
     } else {
         sock = new TcpSocket(this);

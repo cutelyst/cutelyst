@@ -240,7 +240,7 @@ bool WSGI::setupApplication()
     qDebug() << "Loaded application: " << QCoreApplication::applicationName();
 
     m_engine = createEngine(app, 0);
-    if (!m_engine->initApplication()) {
+    if (!m_engine->init()) {
         qCritical() << "Failed to init application.";
         exit(1);
     }

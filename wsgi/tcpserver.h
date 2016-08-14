@@ -22,7 +22,7 @@ public:
     Protocol *m_proto;
     CWsgiEngine *m_engine;
 
-    QVector<TcpSocket *> m_socks;
+    std::vector<TcpSocket *> m_socks;
 };
 
 }

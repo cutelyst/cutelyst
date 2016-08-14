@@ -103,5 +103,5 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 
 bool CWsgiEngine::init()
 {
-    return true;
+    return initApplication();
 }

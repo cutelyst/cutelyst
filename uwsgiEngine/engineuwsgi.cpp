@@ -427,7 +427,7 @@ bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &head
 
 bool uWSGI::init()
 {
-    return true;
+    return initApplication();
 }
 
 bool uWSGI::forked()

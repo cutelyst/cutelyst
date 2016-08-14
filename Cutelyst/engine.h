@@ -45,6 +45,23 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * @brief The Cutelyst Engine
+     *
+     * This class is responsible receiving the request
+     * and sending the response. It must be reimplemented
+     * by real HTTP engines due some pure virtual methods.
+     *
+     * The subclass must create an Engine per thread (worker core),
+     * if the Application passed to the constructor has a worker core
+     * greater than 0 it will issue a new Application instance, failing
+     * to do so a fatal error is generated (usually indicating that
+     * the Application does not have a Q_INVOKABLE constructor).
+     *
+     * @param app The application loaded
+     * @param workerCore The thread number
+     * @param opts The configuation options
+     */
     explicit Engine(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~Engine();
 
@@ -96,8 +113,16 @@ public:
      */
     QVariantMap config(const QString &entity) const;
 
-    static QByteArray statusCode(quint16 status);
+    /**
+     * Returns a time to be used for stats,
+     * the default implementation returns
+     * MSecsSinceEpoch, but if the engine
+     * supports a more precise value it
+     * can reimplement this method
+     */
+    virtual quint64 time();
 
+protected:
     /**
      * @brief initApplication
      *
@@ -112,21 +137,6 @@ public:
     bool initApplication();
 
     /**
-     * Returns a time to be used for stats,
-     * the default implementation returns
-     * MSecsSinceEpoch, but if the engine
-     * supports a more precise value it
-     * can reimplement this method
-     */
-    virtual quint64 time();
-
-    /**
-     * Called by Response to manually write data
-     */
-    qint64 write(Context *c, const char *data, qint64 len, void *engineData);
-protected:
-
-    /**
      * @brief postForkApplication
      *
      * Should be called after the engine forks
@@ -135,6 +145,11 @@ protected:
      * process
      */
     bool postForkApplication();
+
+    /**
+     * Called by Response to manually write data
+     */
+    qint64 write(Context *c, const char *data, qint64 len, void *engineData);
 
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
 
@@ -218,6 +233,8 @@ protected:
             }
         }
     }
+
+    static QByteArray statusCode(quint16 status);
 
     void processRequest(const QString &method,
                         const QString &path,

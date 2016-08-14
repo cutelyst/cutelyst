@@ -195,7 +195,7 @@ void uwsgi_cutelyst_init_apps()
     QVariantMap opts = qApp->property("UWSGI_OPTS").toMap();
 
     auto mainEngine = new uWSGI(app, 0, opts);
-    if (!mainEngine->initApplication() || !mainEngine->forked()) {
+    if (!mainEngine->init() || !mainEngine->forked()) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
     }

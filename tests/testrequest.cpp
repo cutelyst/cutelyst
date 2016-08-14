@@ -377,7 +377,7 @@ TestEngine* TestRequest::getEngine()
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new RequestTest(app);
-    if (!engine->initEngine()) {
+    if (!engine->init()) {
         return nullptr;
     }
     return engine;
