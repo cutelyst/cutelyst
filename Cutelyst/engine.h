@@ -29,12 +29,6 @@
 
 namespace Cutelyst {
 
-typedef struct {
-    int weight;
-    QString key;
-    QString value;
-} HeaderValuePair;
-
 class Application;
 class Context;
 class Request;
@@ -188,12 +182,6 @@ protected:
      * with finalizing cookies, headers and body
      */
     void finalize(Context *c);
-
-    /**
-     * Returns the hearder in the order suggested by HTTP RFC's
-     * "good pratices", this function is mainly used by the Engine class
-     */
-    static QList<HeaderValuePair> headersForResponse(const Headers &headers);
 
     /**
      * Returns the header key in camel case form
