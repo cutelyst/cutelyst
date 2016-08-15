@@ -393,7 +393,7 @@ void RequestPrivate::parseBody() const
             body->seek(0);
         }
 
-        Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")));
+        Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
         auto it = uploadList.constEnd();
         while (it != uploadList.constBegin()) {
             --it;

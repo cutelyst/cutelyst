@@ -23,7 +23,7 @@
 
 using namespace Cutelyst;
 
-Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
+Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, qint64 contentLength, int bufferSize)
 {
     Uploads ret;
     int start = contentType.indexOf(QLatin1String("boundary="));
@@ -61,27 +61,34 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     }
     char *buffer = new char[bufferSize];
 
-    ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
+    ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, contentLength, body, boundary);
 
     delete [] buffer;
 
     return ret;
 }
 
-Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QIODevice *body, const QByteArray &boundary)
+Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qint64 contentLength, QIODevice *body, const QByteArray &boundary)
 {
     Uploads ret;
     QByteArray headerLine;
     Headers headers;
     qint64 startOffset;
+    qint64 pos = 0;
     int bufferSkip = 0;
     int boundaryPos = 0;
     int boundarySize = boundary.size();
     ParserState state = FindBoundary;
     QByteArrayMatcher matcher(boundary);
 
-    while (!body->atEnd()) {
-        qint64 len = body->read(buffer + bufferSkip, bufferSize - bufferSkip) + bufferSkip;
+    while (pos < contentLength) {
+        qint64 len = body->read(buffer + bufferSkip, bufferSize - bufferSkip);
+        if (len < 0) {
+            return ret;
+        }
+
+        pos += len;
+        len += bufferSkip;
         bufferSkip = 0;
         int i = 0;
         while (i < len) {
@@ -142,15 +149,15 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
                 break;
             case StartData:
 //                qCDebug(CUTELYST_MULTIPART) << "StartData" << body->pos() - len + i;
-                startOffset = body->pos() - len + i;
+                startOffset = pos - len + i;
                 state = EndData;
             case EndData:
                 i += findBoundary(buffer + i, len - i, matcher, boundarySize, state, boundaryPos);
                 if (state == EndBoundaryCR) {
 //                    qCDebug(CUTELYST_MULTIPART) << "EndData" << body->pos() - len + i - boundaryLength - 1;
-                    ret.append(new Upload(new UploadPrivate(body, headers, startOffset, body->pos() - len + i - boundarySize - 1)));
+                    ret.append(new Upload(new UploadPrivate(body, headers, startOffset, pos - len + i - boundarySize - 1)));
                     headers = Headers();
-                } else if (body->atEnd()) {
+                } else if (pos >= contentLength) {
                     // Boundary was not found and we are at the end
                     return ret;
                 } else {

@@ -34,7 +34,7 @@ public:
      * header or just it's value
      * @param body
      */
-    static Uploads parse(QIODevice *body, const QString &contentType, int bufferSize = 4096);
+    static Uploads parse(QIODevice *body, const QString &contentType, qint64 contentLength, int bufferSize = 4096);
 };
 
 }

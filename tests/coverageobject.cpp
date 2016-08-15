@@ -67,6 +67,10 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
 {
     QBuffer buf(body);
     buf.open(QBuffer::ReadOnly);
+    Headers headersCL = headers;
+    if (buf.size()) {
+        headersCL.setContentLength(buf.size());
+    }
 
     QVariantMap ret;
     m_responseData = QByteArray();
@@ -79,7 +83,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
                    QHostAddress(QStringLiteral("127.0.0.1")),
                    3000,
                    QString(), // RemoteUser
-                   headers,
+                   headersCL,
                    QDateTime::currentMSecsSinceEpoch(),
                    &buf,
                    0);
