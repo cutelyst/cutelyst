@@ -24,6 +24,7 @@
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimer>
+#include <QtCore/QFile>
 
 #include <Cutelyst/common.h>
 #include <Cutelyst/application.h>

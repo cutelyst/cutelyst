@@ -1,14 +1,15 @@
 #ifndef DISPATCHERTEST_H
 #define DISPATCHERTEST_H
 
-#include <QtTest/QTest>
-#include <QtCore/QObject>
+#include <QTest>
+#include <QObject>
 #include <QHostInfo>
 #include <QUuid>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QCryptographicHash>
+#include <QUrlQuery>
 
 #include "headers.h"
 #include "coverageobject.h"

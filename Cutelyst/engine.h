@@ -22,8 +22,6 @@
 
 #include <QObject>
 #include <QHostAddress>
-#include <QUrlQuery>
-#include <QFile>
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -31,10 +29,8 @@ namespace Cutelyst {
 
 class Application;
 class Context;
-class Request;
 class Headers;
 class EnginePrivate;
-class RequestPrivate;
 class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT

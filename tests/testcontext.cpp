@@ -1,8 +1,9 @@
 ﻿#ifndef DISPATCHERTEST_H
 #define DISPATCHERTEST_H
 
-#include <QtTest/QTest>
-#include <QtCore/QObject>
+#include <QTest>
+#include <QObject>
+#include <QUrlQuery>
 
 #include "headers.h"
 #include "coverageobject.h"
