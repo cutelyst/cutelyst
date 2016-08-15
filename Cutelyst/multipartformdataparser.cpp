@@ -74,13 +74,15 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
     QByteArray headerLine;
     Headers headers;
     qint64 startOffset;
+    int bufferSkip = 0;
     int boundaryPos = 0;
     int boundarySize = boundary.size();
     ParserState state = FindBoundary;
     QByteArrayMatcher matcher(boundary);
 
     while (!body->atEnd()) {
-        qint64 len = body->read(buffer, bufferSize);
+        qint64 len = body->read(buffer + bufferSkip, bufferSize - bufferSkip) + bufferSkip;
+        bufferSkip = 0;
         int i = 0;
         while (i < len) {
             switch (state) {
@@ -152,10 +154,10 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
                     // Boundary was not found and we are at the end
                     return ret;
                 } else {
-                    // Boundary was not found so change our seek to be
-                    // sure we don't have the boundary in the middle of two chunks
-                    //                    qDebug() << "seek POS" << body->pos() << boundaryLength << body->pos() - boundaryLength << i;
-                    body->seek(body->pos() - boundarySize);
+                    // Boundary was not found so move the boundary size at end of the buffer
+                    // to be sure we don't have the boundary in the middle of two chunks
+                    bufferSkip = boundarySize - 1;
+                    memmove(buffer, buffer + len - bufferSkip, bufferSkip);
                     break;
                 }
             }
