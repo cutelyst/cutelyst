@@ -35,11 +35,6 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
 
 using namespace Cutelyst;
 
-typedef struct {
-    QFile *bodyFile;
-    BodyUWSGI *bodyUWSGI;
-} CachedRequest;
-
 uWSGI::uWSGI(Application *app, int workerCore, const QVariantMap &opts) : Engine(app, workerCore, opts)
 {
     connect(this, &uWSGI::postFork, this, &uWSGI::forked);
@@ -113,8 +108,6 @@ static inline uint16_t notSlash(char *str, uint16_t length) {
 
 void uWSGI::processRequest(wsgi_request *req)
 {
-    CachedRequest *cache = static_cast<CachedRequest *>(req->async_environ);
-
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
@@ -158,18 +151,18 @@ void uWSGI::processRequest(wsgi_request *req)
     if (req->post_cl) {
         if (req->post_file) {
             //        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
-            QFile *upload = cache->bodyFile;
+            auto upload = new QFile;
             if (upload->open(req->post_file, QIODevice::ReadOnly)) {
                 body = upload;
             } else {
                 //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
-                body = cache->bodyUWSGI;
+                body = new BodyUWSGI(req, !uwsgi.post_buffering);
                 body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
             }
         } else {
             //        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
-            body = cache->bodyUWSGI;
-            body->reset();
+            body = new BodyUWSGI(req, !uwsgi.post_buffering);
+            body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
         }
     }
 
@@ -187,25 +180,12 @@ void uWSGI::processRequest(wsgi_request *req)
                            body,
                            req);
 
-    if (body) {
-        body->close();
-    }
+    delete body;
 }
 
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
 {
-    CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
-    if (cache) {
-        // TODO move to a class
-        delete cache;
-    }
-    cache = new CachedRequest;
-    cache->bodyFile = new QFile(this);
-    cache->bodyUWSGI = new BodyUWSGI(wsgi_req, !uwsgi.post_buffering, this);
-
-    wsgi_req->async_environ = cache;
-
-    m_unusedReq.append(wsgi_req);
+    m_unusedReq.push_back(wsgi_req);
 }
 
 uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
@@ -215,12 +195,12 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
-        if (m_unusedReq.isEmpty()) {
+        if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
         }
 
-        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
+        struct wsgi_request *wsgi_req = m_unusedReq.back();
 
         // fill wsgi_request structure
         wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
@@ -231,9 +211,10 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
         // accept the connection
         if (wsgi_req_simple_accept(wsgi_req, fd) != 0) {
             uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
-            m_unusedReq.append(wsgi_req);
+            m_unusedReq.push_back(wsgi_req);
             return;
         }
+        m_unusedReq.pop_back();
 
         wsgi_req->start_of_request = uwsgi_micros();
         wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
@@ -245,12 +226,10 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
         }
 #endif // UWSGI_GO_CHEAP_CODE
 
-        CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
         readRequestUWSGI(wsgi_req);
         uwsgi_close_request(wsgi_req);
-        wsgi_req->async_environ = cache;
 
-        m_unusedReq.append(wsgi_req);
+        m_unusedReq.push_back(wsgi_req);
     });
 
     return uwsgi_sock->next;
@@ -286,12 +265,12 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated,
             [=](int fd) {
-        if (m_unusedReq.isEmpty()) {
+        if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
         }
 
-        struct wsgi_request *wsgi_req = m_unusedReq.takeLast();
+        struct wsgi_request *wsgi_req = m_unusedReq.back();
 
         // fill wsgi_request structure
         wsgi_req_setup(wsgi_req, wsgi_req->async_id, uwsgi_sock);
@@ -302,9 +281,10 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         // accept the connection (since uWSGI 1.5 all of the sockets are non-blocking)
         if (wsgi_req_simple_accept(wsgi_req, fd) != 0) {
             uwsgi.workers[uwsgi.mywid].cores[wsgi_req->async_id].in_request = 0;
-            m_unusedReq.append(wsgi_req);
+            m_unusedReq.push_back(wsgi_req);
             return;
         }
+        m_unusedReq.pop_back();
 
         wsgi_req->start_of_request = uwsgi_micros();
         wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
@@ -327,13 +307,10 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 
         connect(timeoutTimer, &QTimer::timeout,
                 [=]() {
-            CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
             requestNotifier->setEnabled(false);
             uwsgi_close_request(wsgi_req);
             requestNotifier->deleteLater();
-            m_unusedReq.append(wsgi_req);
-
-            wsgi_req->async_environ = cache;
+            m_unusedReq.push_back(wsgi_req);
         });
 
         connect(requestNotifier, &QSocketNotifier::activated,
@@ -352,10 +329,8 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 
             validateAndExecuteRequest(wsgi_req, status);
 
-            CachedRequest *cache = static_cast<CachedRequest *>(wsgi_req->async_environ);
             uwsgi_close_request(wsgi_req);
-            wsgi_req->async_environ = cache;
-            m_unusedReq.append(wsgi_req);
+            m_unusedReq.push_back(wsgi_req);
 
             requestNotifier->deleteLater();
         });
@@ -367,13 +342,6 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
     return uwsgi_sock->next;
 }
 
-void uWSGI::reuseEngineRequests(uWSGI *engine)
-{
-    Q_FOREACH (struct wsgi_request *req, engine->unusedRequestQueue()) {
-        addUnusedRequest(req);
-    }
-}
-
 void uWSGI::stop()
 {
     Q_EMIT enableSockets(false);
@@ -381,11 +349,6 @@ void uWSGI::stop()
     if (thread() != qApp->thread()) {
         thread()->quit();
     }
-}
-
-QVector<wsgi_request *> uWSGI::unusedRequestQueue() const
-{
-    return m_unusedReq;
 }
 
 quint64 uWSGI::time()
@@ -432,8 +395,7 @@ bool uWSGI::forked()
     if (workerCore() > 0) {
         // init and postfork
         if (!initApplication()) {
-            qCCritical(CUTELYST_UWSGI) << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
-            Q_EMIT engineDisabled(this);
+            qFatal("Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?");
             return false;
         }
     }
@@ -447,7 +409,7 @@ bool uWSGI::forked()
 #endif // UWSGI_GO_CHEAP_CODE
     }
 
-    if (!m_unusedReq.isEmpty()) {
+    if (!m_unusedReq.empty()) {
         // Start Monitoring Sockets
         struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
         if (m_unusedReq.size() > 1) {

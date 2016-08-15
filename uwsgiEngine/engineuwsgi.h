@@ -65,16 +65,7 @@ public:
 
     uwsgi_socket *watchSocketAsync(struct uwsgi_socket *uwsgi_sock);
 
-    /**
-     * This method is called when an engine
-     * fails to start on a thread so that we (main thread)
-     * can reuse it's core requests
-     */
-    void reuseEngineRequests(uWSGI *engine);
-
     void stop();
-
-    QVector<wsgi_request *> unusedRequestQueue() const;
 
     virtual quint64 time();
 
@@ -84,15 +75,10 @@ Q_SIGNALS:
     void postFork();
     void enableSockets(bool enable);
 
-    /**
-     * emitted when forked() fails
-     */
-    void engineDisabled(uWSGI *engine);
-
 private:
     inline void validateAndExecuteRequest(wsgi_request *wsgi_req, int status);
 
-    QVector<struct wsgi_request *> m_unusedReq;
+    std::vector<struct wsgi_request *> m_unusedReq;
     int m_workerId = 0;
 };
 

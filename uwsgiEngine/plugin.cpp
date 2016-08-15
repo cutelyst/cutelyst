@@ -224,13 +224,6 @@ void uwsgi_cutelyst_init_apps()
 
             // Move to the new thread
             engine->setThread(thread);
-
-            if (i != 0) {
-                // Post fork might fail when on threaded mode
-                QObject::connect(engine, &uWSGI::engineDisabled,
-                                 mainEngine, &uWSGI::reuseEngineRequests, Qt::QueuedConnection);
-            }
-
         } else {
             engine->addUnusedRequest(wsgi_req);
         }
