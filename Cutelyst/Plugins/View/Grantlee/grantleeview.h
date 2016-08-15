@@ -28,6 +28,10 @@
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
+/**
+ * GrantleeView is a Cutelyst::View handler that renders templates
+ * using Grantlee engine.
+ */
 class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
 {
     Q_OBJECT

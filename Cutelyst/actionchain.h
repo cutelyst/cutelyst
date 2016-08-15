@@ -28,6 +28,13 @@
 namespace Cutelyst {
 
 class ActionChainPrivate;
+/**
+ * @brief Cutelyst::ActionChain - Chain of Cutelyst Actions
+ *
+ * This class represents a chain of Cutelyst Actions.
+ * It behaves exactly like the action at the *end* of the chain
+ * except on dispatch it will execute all the actions in the chain in order.
+ */
 class CUTELYST_LIBRARY ActionChain : public Action
 {
     Q_OBJECT
@@ -35,6 +42,12 @@ class CUTELYST_LIBRARY ActionChain : public Action
 public:
     explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
     ~ActionChain();
+
+    /**
+     * @brief the action chain
+     * @return a list of the Cutelyst::Action objects encapsulated by this chain.
+     */
+    ActionList chain() const;
 
     virtual qint8 numberOfCaptures() const override;
 

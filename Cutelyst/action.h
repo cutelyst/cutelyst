@@ -32,6 +32,15 @@ namespace Cutelyst {
 class Controller;
 class Dispatcher;
 class ActionPrivate;
+/**
+ * \brief Cutelyst Action
+ *
+ * This class represents a Cutelyst Action.
+ * You can access the object for the currently dispatched
+ * action via c->action(). See the Cutelyst::Dispatcher for
+ * more information on how actions are dispatched.
+ * Actions are defined in Cutelyst::Controller subclasses.
+ */
 class CUTELYST_LIBRARY Action : public Component
 {
     Q_OBJECT

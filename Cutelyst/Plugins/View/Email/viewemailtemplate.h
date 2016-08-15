@@ -26,6 +26,10 @@
 namespace Cutelyst {
 
 class ViewEmailTemplatePrivate;
+/**
+ * ViewEmailTemplate is a Cutelyst::View handler that renders stash
+ * data using another view and send the result via e-mail.
+ */
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
 {
     Q_OBJECT

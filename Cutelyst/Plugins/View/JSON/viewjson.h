@@ -27,7 +27,7 @@ namespace Cutelyst {
 
 class ViewJsonPrivate;
 /**
- * ViewJSON class is a Cutelyst View handler that returns stash
+ * ViewJson is a Cutelyst::View handler that renders stash
  * data in JSON format.
  */
 class CUTELYST_VIEW_JSON_EXPORT ViewJson : public View

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,6 +34,26 @@
 
 using namespace Cutelyst;
 
+/*!
+ \class Cutelyst::Engine
+ \brief The Cutelyst Engine
+
+ This class is responsible receiving the request
+ and sending the response. It must be reimplemented
+ by real HTTP engines due some pure virtual methods.
+
+ The subclass must create an Engine per thread (worker core),
+ if the Application passed to the constructor has a worker core
+ greater than 0 it will issue a new Application instance, failing
+ to do so a fatal error is generated (usually indicating that
+ the Application does not have a Q_INVOKABLE constructor).
+*/
+
+/*!
+ @param app The application loaded
+ @param workerCore The thread number
+ @param opts The configuation options
+ */
 Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &opts)
     : d_ptr(new EnginePrivate)
 {
@@ -189,6 +209,10 @@ void Engine::finalizeError(Context *c)
     res->setStatus(Response::InternalServerError);
 }
 
+/**
+ * @brief application
+ * @return the Application object we are dealing with
+ */
 Application *Engine::app() const
 {
     Q_D(const Engine);
@@ -196,6 +220,25 @@ Application *Engine::app() const
     return d->app;
 }
 
+/*! \fn virtual int Engine::workerId() const = 0
+
+ The id is the number of the spawned engine process,
+ a single process workerId = 0, two process 0 for the first
+ 1 for the second.
+
+ \note the value returned from this function is
+ only valid when postFork() is issued.
+
+ \returns the worker id (process)
+*/
+
+/*!
+ Each worker process migth have a number of worker cores (threads),
+ a single process with two worker threads will return 0 and 1 for
+ each of the thread respectively.
+
+ \returns the worker core (thread)
+*/
 int Engine::workerCore() const
 {
     Q_D(const Engine);
@@ -230,6 +273,11 @@ bool Engine::postForkApplication()
     return d->app->enginePostFork();
 }
 
+/*!
+ \returns a time to be used for stats, the default implementation returns
+ QDateTime::currentMSecsSinceEpoch(), but if the engine
+ supports a more precise value it can reimplement this method
+*/
 quint64 Engine::time()
 {
     return QDateTime::currentMSecsSinceEpoch();

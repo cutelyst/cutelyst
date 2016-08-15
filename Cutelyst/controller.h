@@ -45,7 +45,12 @@ namespace  Cutelyst {
 
 class ControllerPrivate;
 /**
- * \class Controller
+ * @brief Cutelyst::Controller - Cutelyst Controller base class
+ *
+ * Controllers are where the actions in the Cutelyst framework reside.
+ * Each action is represented by a function with an attribute to identify
+ * what kind of action it is. See the Cutelyst::Dispatcher for more info
+ * about how Cutelyst dispatches to actions.
  *
  * Use C_ATTR to give hints about methods
  * build like methodName_option

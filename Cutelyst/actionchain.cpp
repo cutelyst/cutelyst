@@ -54,6 +54,12 @@ ActionChain::~ActionChain()
     delete d_ptr;
 }
 
+ActionList ActionChain::chain() const
+{
+    Q_D(const ActionChain);
+    return d->chain;
+}
+
 qint8 ActionChain::numberOfCaptures() const
 {
     Q_D(const ActionChain);

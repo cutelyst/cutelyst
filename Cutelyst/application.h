@@ -43,14 +43,19 @@ class Engine;
 class Plugin;
 class Headers;
 class ApplicationPrivate;
+
+/**
+ * @brief Cutelyst::Application - The Cutelyst Application
+ *
+ * This is the main class of a Cutelyst appplication
+ */
 class CUTELYST_LIBRARY Application : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Application)
 public:
     /**
-     * This is the main class of a Cutelyst appplication, the
-     * constructor is used to setup the class configuration,
+     * The constructor is used to setup the class configuration,
      * subclasses should only use this for objects that do
      * not require configuration to be ready.
      *
@@ -62,7 +67,6 @@ public:
      * \warning DO NOT register your controllers,
      * plugins or anything that might want to
      * use config(), do that in init()
-     *
      */
     explicit Application(QObject *parent = nullptr);
     virtual ~Application();

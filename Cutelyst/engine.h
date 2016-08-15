@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,51 +39,13 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
-    /**
-     * @brief The Cutelyst Engine
-     *
-     * This class is responsible receiving the request
-     * and sending the response. It must be reimplemented
-     * by real HTTP engines due some pure virtual methods.
-     *
-     * The subclass must create an Engine per thread (worker core),
-     * if the Application passed to the constructor has a worker core
-     * greater than 0 it will issue a new Application instance, failing
-     * to do so a fatal error is generated (usually indicating that
-     * the Application does not have a Q_INVOKABLE constructor).
-     *
-     * @param app The application loaded
-     * @param workerCore The thread number
-     * @param opts The configuation options
-     */
     explicit Engine(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~Engine();
 
-    /**
-     * @brief app
-     * @return the Application object we are dealing with
-     */
     Application *app() const;
 
-    /**
-     * Returns the worker id (process)
-     *
-     * The id is the number of the spawned engine process,
-     * a single process workerId = 0, two process 0 for the first
-     * 1 for the second.
-     *
-     * \note the value returned from this function is
-     * only valid when postFork() is issued.
-     */
     virtual int workerId() const = 0;
 
-    /**
-     * Returns the worker core (thread)
-     *
-     * Each worker process migth have a number of worker cores (threads),
-     * a single process with two worker threads will return 0 and 1 for
-     * each of the thread respectively.
-     */
     int workerCore() const;
 
     /**
@@ -107,13 +69,6 @@ public:
      */
     QVariantMap config(const QString &entity) const;
 
-    /**
-     * Returns a time to be used for stats,
-     * the default implementation returns
-     * MSecsSinceEpoch, but if the engine
-     * supports a more precise value it
-     * can reimplement this method
-     */
     virtual quint64 time();
 
 protected:

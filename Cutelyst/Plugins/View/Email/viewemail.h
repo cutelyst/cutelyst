@@ -27,8 +27,8 @@ namespace Cutelyst {
 
 class ViewEmailPrivate;
 /**
- * ViewEmail class is a Cutelyst View handler that returns stash
- * data in Email format.
+ * ViewEmail is a Cutelyst::View handler that sends stash
+ * data via e-mail.
  */
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
