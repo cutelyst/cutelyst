@@ -2,6 +2,7 @@
 #define _TEST_COVERAGE_OBJECT_H
 
 #include <QObject>
+#include <QBuffer>
 #include <Cutelyst/Engine>
 #include <Cutelyst/Application>
 #include <Cutelyst/Controller>
@@ -45,6 +46,23 @@ private:
     QByteArray m_responseData;
     QByteArray m_status;
     Headers m_headers;
+};
+
+class SequentialBuffer : public QIODevice
+{
+    Q_OBJECT
+public:
+    SequentialBuffer(QByteArray *buffer);
+    virtual bool isSequential() const override;
+
+    virtual qint64 bytesAvailable() const;
+
+protected:
+    qint64 readData(char *data, qint64 maxlen) Q_DECL_OVERRIDE;
+    qint64 writeData(const char *data, qint64 len) Q_DECL_OVERRIDE;
+
+private:
+    QByteArray *buf;
 };
 
 class RootController : public Controller

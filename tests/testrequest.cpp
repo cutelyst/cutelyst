@@ -190,7 +190,9 @@ public:
 
     C_ATTR(body, :Local :AutoArgs)
     void body(Context *c) {
-        c->response()->setBody(c->request()->body()->readAll());
+        if (c->request()->body()) {
+            c->response()->setBody(c->request()->body()->readAll());
+        }
     }
 
     C_ATTR(queryParameters, :Local :AutoArgs)
@@ -538,14 +540,14 @@ void TestRequest::testController_data()
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("mangleParams-test00") << get << QStringLiteral("/request/test/mangleParams/false?foo=bar&x=y")
+    QTest::newRow("mangleParams-test00") << post << QStringLiteral("/request/test/mangleParams/false?foo=bar&x=y")
                                          << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                          << QByteArrayLiteral("foo=baz&x=y");
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("mangleParams-test01") << get << QStringLiteral("/request/test/mangleParams/true?foo=bar&x=y")
+    QTest::newRow("mangleParams-test01") << post << QStringLiteral("/request/test/mangleParams/true?foo=bar&x=y")
                                          << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                          << QByteArrayLiteral("foo=bar&foo=baz&x=y");
 
@@ -748,7 +750,7 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("x"), QString());
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKeyDefaultValue-test00") << get << QStringLiteral("/request/test/paramsKeyDefaultValue/foo/bar?param=y&defaultValue=SomeDefaultValue")
+    QTest::newRow("paramsKeyDefaultValue-test00") << post << QStringLiteral("/request/test/paramsKeyDefaultValue/foo/bar?param=y&defaultValue=SomeDefaultValue")
                                                   << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                                   << QByteArrayLiteral("Cutelyst");
 
@@ -757,7 +759,7 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("x"), QString());
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKeyDefaultValue-test01") << get << QStringLiteral("/request/test/paramsKeyDefaultValue/x/gotDefault?param=y&defaultValue=SomeDefaultValue")
+    QTest::newRow("paramsKeyDefaultValue-test01") << post << QStringLiteral("/request/test/paramsKeyDefaultValue/x/gotDefault?param=y&defaultValue=SomeDefaultValue")
                                                   << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                                   << QByteArrayLiteral("");
 
@@ -775,31 +777,31 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("x"), QString());
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("bodyData-test01") << get << QStringLiteral("/request/test/bodyData")
+    QTest::newRow("bodyData-test01") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("bodyData-test02") << get << QStringLiteral("/request/test/bodyData")
+    QTest::newRow("bodyData-test02") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("bodyData-test03") << get << QStringLiteral("/request/test/bodyData")
+    QTest::newRow("bodyData-test03") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
 
     query.clear();
     headers.setContentType(QStringLiteral("application/json"));
-    QTest::newRow("bodyData-test04") << get << QStringLiteral("/request/test/bodyData")
+    QTest::newRow("bodyData-test04") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
                                      << QByteArrayLiteral("QJsonDocument");
 
     query.clear();
     headers.setContentType(QStringLiteral("multipart/form-data"));
-    QTest::newRow("bodyData-test05") << get << QStringLiteral("/request/test/bodyData")
+    QTest::newRow("bodyData-test05") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
                                      << QByteArrayLiteral("QMap<QString,Cutelyst::Upload*>");
 
@@ -809,27 +811,65 @@ void TestRequest::testController_data()
     QJsonArray array;
     array.append(obj);
     headers.setContentType(QStringLiteral("application/json"));
-    QTest::newRow("bodyDataJson-test00") << get << QStringLiteral("/request/test/bodyDataJson")
+    QTest::newRow("bodyDataJson-test00") << post << QStringLiteral("/request/test/bodyDataJson")
                                          << headers << QJsonDocument(array).toJson(QJsonDocument::Compact)
                                          << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
 
     query.clear();
-    headers.setContentType(QStringLiteral("multipart/form-data; boundary=WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    obj = QJsonObject();
+    array = QJsonArray();
+    obj.insert(QStringLiteral("foo"), QStringLiteral("bar"));
+    array.append(obj);
+    headers.setHeader(QStringLiteral("sequential"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("application/json"));
+    QTest::newRow("bodyDataJson-test01") << post << QStringLiteral("/request/test/bodyDataJson")
+                                         << headers << QJsonDocument(array).toJson(QJsonDocument::Compact)
+                                         << QByteArrayLiteral("[{\"foo\":\"bar\"}]");
+
+    query.clear();
+    headers.clear();
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
     QTest::newRow("uploads-test00") << get << QStringLiteral("/request/test/uploads")
                                     << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
-                                    << QByteArrayLiteral("file1=file1&file1=wifi&file1=application/octet-stream&file1=27&file1=WJuOfAGaYV4qdMH4goQ3/DvHCjoJVLeQv52++NESsfo%3D&file1=file1&file1=example.txt&file1=application/octet-stream&file1=31&file1=3LPlbWl4PsPXNDXvOfTNkTewkm6vhtNrMGjXz3H433Q%3D&path=path&path&path&path=13&path=JhOwXPadgbn3jGlWnq/lmbEZ1HiI4WjarTZ1YKoeXfI%3D");
+                                    << QByteArrayLiteral("file1=file1&file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D&file1=file1&file1=example.txt&file1=application/octet-stream&file1=27&file1=NOs3g3ULsweum7JyvzfRteIeDOucGIqevQr7vs3uErw%3D&path=path&path&path&path=9&path=MM8LdQ9wbgiodipIWVkMtiYmUqojibHoUTcIlzrBZys%3D");
 
     query.clear();
-    headers.setContentType(QStringLiteral("multipart/form-data; boundary=WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    headers.clear();
+    headers.setHeader(QStringLiteral("sequential"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("uploads-test01") << post << QStringLiteral("/request/test/uploads")
+                                    << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
+                                    << QByteArrayLiteral("file1=file1&file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D&file1=file1&file1=example.txt&file1=application/octet-stream&file1=27&file1=NOs3g3ULsweum7JyvzfRteIeDOucGIqevQr7vs3uErw%3D&path=path&path&path&path=9&path=MM8LdQ9wbgiodipIWVkMtiYmUqojibHoUTcIlzrBZys%3D");
+
+    query.clear();
+    headers.clear();
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
     QTest::newRow("uploadsName-test00") << get << QStringLiteral("/request/test/uploadsName/file1")
                                         << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
-                                        << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=27&file1=WJuOfAGaYV4qdMH4goQ3/DvHCjoJVLeQv52++NESsfo%3D&file1=example.txt&file1=application/octet-stream&file1=31&file1=3LPlbWl4PsPXNDXvOfTNkTewkm6vhtNrMGjXz3H433Q%3D");
+                                        << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D&file1=example.txt&file1=application/octet-stream&file1=27&file1=NOs3g3ULsweum7JyvzfRteIeDOucGIqevQr7vs3uErw%3D");
 
     query.clear();
-    headers.setContentType(QStringLiteral("multipart/form-data; boundary=WebKitFormBoundaryoPPQLwBBssFnOTVH"));
-    QTest::newRow("upload-test00") << get << QStringLiteral("/request/test/upload/file1")
+    headers.clear();
+    headers.setHeader(QStringLiteral("sequential"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("uploadsName-test01") << post << QStringLiteral("/request/test/uploadsName/file1")
+                                        << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
+                                        << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D&file1=example.txt&file1=application/octet-stream&file1=27&file1=NOs3g3ULsweum7JyvzfRteIeDOucGIqevQr7vs3uErw%3D");
+
+    query.clear();
+    headers.clear();
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("upload-test00") << post << QStringLiteral("/request/test/upload/file1")
                                    << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
-                                   << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=27&file1=WJuOfAGaYV4qdMH4goQ3/DvHCjoJVLeQv52++NESsfo%3D");
+                                   << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D");
+
+    query.clear();
+    headers.clear();
+    headers.setHeader(QStringLiteral("sequential"), QStringLiteral("true"));
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("upload-test01") << post << QStringLiteral("/request/test/upload/file1")
+                                   << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
+                                   << QByteArrayLiteral("file1=wifi&file1=application/octet-stream&file1=23&file1=Nt4GUs/5oyPkWSe8ld+DZQWUTanILvYIjmZduHHNoFQ%3D");
 }
 
 QTEST_MAIN(TestRequest)

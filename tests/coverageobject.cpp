@@ -4,7 +4,6 @@
 #include <QString>
 #include <QDebug>
 #include <QLibrary>
-#include <QtCore/QBuffer>
 
 #include <Cutelyst/context.h>
 
@@ -65,11 +64,17 @@ int TestEngine::workerId() const
 
 QVariantMap TestEngine::createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body)
 {
-    QBuffer buf(body);
-    buf.open(QBuffer::ReadOnly);
+    QIODevice *bodyDevice = nullptr;
+    if (headers.header(QStringLiteral("sequential")).isEmpty()) {
+        bodyDevice = new QBuffer(body);
+    } else {
+        bodyDevice = new SequentialBuffer(body);
+    }
+    bodyDevice->open(QIODevice::ReadOnly);
+
     Headers headersCL = headers;
-    if (buf.size()) {
-        headersCL.setContentLength(buf.size());
+    if (bodyDevice->size()) {
+        headersCL.setContentLength(bodyDevice->size());
     }
 
     QVariantMap ret;
@@ -85,7 +90,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
                    QString(), // RemoteUser
                    headersCL,
                    QDateTime::currentMSecsSinceEpoch(),
-                   &buf,
+                   bodyDevice,
                    0);
 
     ret = {
@@ -93,6 +98,8 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
         {QStringLiteral("status"), m_status},
         {QStringLiteral("headers"), QVariant::fromValue(m_headers)}
     };
+
+    delete bodyDevice;
 
     return ret;
 }
@@ -118,4 +125,33 @@ bool TestEngine::init()
     return initApplication() && postForkApplication();
 }
 
+SequentialBuffer::SequentialBuffer(QByteArray *buffer) : buf(buffer)
+{
+}
+
+bool SequentialBuffer::isSequential() const
+{
+    return true;
+}
+
+qint64 SequentialBuffer::bytesAvailable() const
+{
+    return buf->size() + QIODevice::bytesAvailable();
+}
+
+qint64 SequentialBuffer::readData(char *data, qint64 maxlen)
+{
+    QByteArray mid = buf->mid(pos(), maxlen);
+    memcpy(data, mid.data(), mid.size());
+    // Sequential devices consume the body
+    buf->remove(0, mid.size());
+    return mid.size();
+}
+
+qint64 SequentialBuffer::writeData(const char *data, qint64 len)
+{
+    return -1;
+}
+
 #include "moc_coverageobject.cpp"
+

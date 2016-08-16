@@ -43,7 +43,7 @@ public:
     Q_ENUM(ParserState)
 
     static Uploads execute(char *buffer, int bufferSize, qint64 contentLength, QIODevice *body, const QByteArray &boundary);
-    static inline int findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, ParserState &state, int &boundaryPos);
+    static inline int findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, ParserState &state);
 };
 
 }
