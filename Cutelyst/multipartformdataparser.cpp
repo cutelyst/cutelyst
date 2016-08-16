@@ -21,13 +21,16 @@
 #include "upload_p.h"
 #include "common.h"
 
-#include <QTemporaryFile>
-
 using namespace Cutelyst;
 
 Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, qint64 contentLength, int bufferSize)
 {
     Uploads ret;
+    if (body->isSequential()) {
+        qCWarning(CUTELYST_MULTIPART) << "Parsing sequential body is not supported" << body;
+        return ret;
+    }
+
     int start = contentType.indexOf(QLatin1String("boundary="));
     if (start == -1) {
         qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
@@ -56,7 +59,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
         qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
         return ret;
     }
-    boundary.prepend("--");
+    boundary.prepend("--", 2);
 
     if (bufferSize < 1024) {
         bufferSize = 1024;
@@ -78,10 +81,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qi
     qint64 startOffset;
     qint64 pos = 0;
     int bufferSkip = 0;
-    int boundaryPos = 0;
     int boundarySize = boundary.size();
-    bool sequential = body->isSequential();
-    QTemporaryFile *temp = nullptr;
     ParserState state = FindBoundary;
     QByteArrayMatcher matcher(boundary);
 
@@ -155,45 +155,24 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qi
 //                qCDebug(CUTELYST_MULTIPART) << "StartData" << body->pos() - len + i;
                 startOffset = pos - len + i;
                 state = EndData;
-
-                if (sequential) {
-                    temp = new QTemporaryFile(body);
-                    if (!temp->open()) {
-                        qCCritical(CUTELYST_MULTIPART) << "Failed to open temporary file" << temp->errorString();
-                        delete temp;
-                        return ret;
-                    }
-                }
             case EndData:
-                boundaryPos = findBoundary(buffer + i, len - i, matcher, boundarySize, state) + i;
+                i += findBoundary(buffer + i, len - i, matcher, boundarySize, state);
 
                 if (state == EndBoundaryCR) {
 //                    qCDebug(CUTELYST_MULTIPART) << "EndData" << body->pos() - len + i - boundaryLength - 1;
-                    Upload *upload;
-                    if (temp) {
-                        temp->write(buffer + i, boundaryPos - i - boundarySize - 1);
-
-                        upload = new Upload(new UploadPrivate(temp, headers, 0, temp->size()));
-                    } else {
-                        int endOffset = pos - len + boundaryPos - boundarySize - 1;
-                        upload = new Upload(new UploadPrivate(body, headers, startOffset, endOffset));
-                    }
+                    int endOffset = pos - len + i - boundarySize - 1;
+                    auto upload = new Upload(new UploadPrivate(body, headers, startOffset, endOffset));
                     ret.append(upload);
 
                     headers = Headers();
                 } else {
-                    if (temp) {
-                        temp->write(buffer + i, boundaryPos - i);
-                    }
-
                     // Boundary was not found so move the boundary size at end of the buffer
                     // to be sure we don't have the boundary in the middle of two chunks
                     bufferSkip = boundarySize - 1;
                     memmove(buffer, buffer + len - bufferSkip, bufferSkip);
-                    break;
                 }
 
-                i = boundaryPos;
+                break;
             }
             ++i;
         }
