@@ -415,10 +415,11 @@ void RequestPrivate::parseBody() const
         }
 
         uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
-        auto it = uploads.constEnd();
-        while (it != uploads.constBegin()) {
-            --it;
-            uploadsMap.insertMulti((*it)->name(), *it);
+        auto it = uploads.rbegin();
+        while (it != uploads.rend()) {
+            Upload *upload = *it;
+            uploadsMap.insertMulti(upload->name(), upload);
+            ++it;
         }
         bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
