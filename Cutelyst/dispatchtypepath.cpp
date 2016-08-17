@@ -122,13 +122,11 @@ bool DispatchTypePath::registerAction(Action *action)
 
     bool ret = false;
     const auto attributes = action->attributes();
-    auto it = attributes.constFind(QLatin1String("Path"));
-    while (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
-        if (d->registerPath(it.value(), action)) {
+    const auto range = attributes.equal_range(QLatin1String("Path"));
+    for (auto i = range.first; i != range.second; ++i) {
+        if (d->registerPath(*i, action)) {
             ret = true;
         }
-
-        ++it;
     }
 
     // We always register valid actions
@@ -147,7 +145,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
         auto it = attributes.constFind(QStringLiteral("Path"));
-        if (it != attributes.constEnd() && it.key() == QLatin1String("Path")) {
+        if (it != attributes.constEnd()) {
             const QString path = it.value();
             if (path.isEmpty()) {
                 ret = QStringLiteral("/");

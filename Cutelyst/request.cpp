@@ -321,11 +321,10 @@ QMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
 Uploads Request::uploads(const QString &name) const
 {
     Uploads ret;
-    auto map = uploadsMap();
-    auto it = map.constFind(name);
-    while (it != map.constEnd() && it.key() == name) {
-        ret.push_back(*it);
-        ++it;
+    const auto map = uploadsMap();
+    const auto range = map.equal_range(name);
+    for (auto i = range.first; i != range.second; ++i) {
+        ret.push_back(*i);
     }
     return ret;
 }
