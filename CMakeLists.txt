@@ -8,7 +8,7 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-find_package(Qt5 5.5.0 COMPONENTS
+find_package(Qt5 5.6.0 COMPONENTS
     Core
     Network
     Sql

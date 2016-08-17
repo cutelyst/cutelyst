@@ -1,6 +1,6 @@
 project(cutelyst_tests)
 
-find_package(Qt5Test 5.5.0 REQUIRED)
+find_package(Qt5Test 5.6.0 REQUIRED)
 
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 

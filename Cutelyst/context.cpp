@@ -207,15 +207,13 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
 {
     Q_D(const Context);
 
-    QUrl uri;
-    QUrl requestUri = d->request->uri();
+    QUrl uri = d->request->uri();
 
     QString _path = path;
     if (_path.isEmpty()) {
-        _path = d->action->controller()->ns();
-    }
-
-    if (!_path.startsWith(QLatin1Char('/'))) {
+        // ns must NOT return a leading slash
+        _path = QLatin1Char('/') + d->action->controller()->ns();
+    } else if (!_path.startsWith(QLatin1Char('/'))) {
         _path.prepend(QLatin1Char('/'));
     }
 
@@ -228,13 +226,11 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         }
         _path = encodedArgs.join(QLatin1Char('/'));
     }
-    // On Qt 5.5 setPath turns a path like "/foo///bar" into "/foo/bar",
-    // it's fixed on Qt 5.6, but we can work around this manually building the URI
-    uri = QUrl(requestUri.scheme() + QLatin1String("://") + requestUri.authority(QUrl::FullyEncoded) + _path);
+    uri.setPath(_path);
 
+    QUrlQuery query;
     if (!queryValues.isEmpty()) {
         // Avoid a trailing '?'
-        QUrlQuery query;
         if (queryValues.size()) {
             auto it = queryValues.constBegin();
             while (it != queryValues.constEnd()) {
@@ -242,8 +238,8 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
                 ++it;
             }
         }
-        uri.setQuery(query);
     }
+    uri.setQuery(query);
 
     return uri;
 }

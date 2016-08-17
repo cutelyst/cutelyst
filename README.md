@@ -43,5 +43,5 @@ examples are under MIT license.
 
  * uWSGI - to receive and parse protocols requests (>= 2.0 recommended)
  * CMake - for the build system (>= 3.1)
- * Qt - the core library of this framework (>= 5.5)
+ * Qt - the core library of this framework (>= 5.6)
  

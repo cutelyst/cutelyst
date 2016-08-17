@@ -91,6 +91,7 @@ private:
 class TestController : public Controller
 {
     Q_OBJECT
+    C_NAMESPACE("///test/controller")
 public:
     TestController(QObject *parent) : Controller(parent) {}
 

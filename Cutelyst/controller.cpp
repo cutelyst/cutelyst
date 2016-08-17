@@ -103,6 +103,9 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     for (int i = 0; i < meta->classInfoCount(); ++i) {
         if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
             pathPrefix = QString::fromLatin1(meta->classInfo(i).value());
+            while (pathPrefix.startsWith(QLatin1Char('/'))) {
+                pathPrefix.remove(0, 1);
+            }
             namespaceFound = true;
             break;
         }
@@ -113,7 +116,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
         bool lastWasUpper = true;
 
         for (int i = 0; i < className.length(); ++i) {
-            if (className.at(i).toLower() == className.at(i)) {
+            if (className.at(i).isLower()) {
                 controlerNS.append(className.at(i));
                 lastWasUpper = false;
             } else {

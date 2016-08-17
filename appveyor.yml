@@ -15,11 +15,11 @@ clone_folder: c:\dev\cutelyst
 environment:
   matrix:
   - CMAKE_GENERATOR: "Ninja"
-    QT5: C:\Qt\5.5\msvc2013
+    QT5: C:\Qt\5.7\msvc2013
     PLATFORM: X86
     VSVER: 12
   - CMAKE_GENERATOR: "Ninja"
-    QT5: C:\Qt\5.5\msvc2013_64
+    QT5: C:\Qt\5.7\msvc2013_64
     PLATFORM: X64
     VSVER: 12
   - CMAKE_GENERATOR: "Ninja"
@@ -31,11 +31,11 @@ environment:
     PLATFORM: X64
     VSVER: 14
   - CMAKE_GENERATOR: "Visual Studio 12"
-    QT5: C:\Qt\5.5\msvc2013
+    QT5: C:\Qt\5.7\msvc2013
     PLATFORM: X86
     VSVER: 12
   - CMAKE_GENERATOR: "Visual Studio 12 Win64"
-    QT5: C:\Qt\5.5\msvc2013_64
+    QT5: C:\Qt\5.7\msvc2013_64
     PLATFORM: X64
     VSVER: 12
   - CMAKE_GENERATOR: "Visual Studio 14"
@@ -47,11 +47,11 @@ environment:
     PLATFORM: X64
     VSVER: 14
   - CMAKE_GENERATOR: "NMake Makefiles JOM"
-    QT5: C:\Qt\5.5\msvc2013
+    QT5: C:\Qt\5.7\msvc2013
     PLATFORM: X86
     VSVER: 12
   - CMAKE_GENERATOR: "NMake Makefiles JOM"
-    QT5: C:\Qt\5.5\msvc2013_64
+    QT5: C:\Qt\5.7\msvc2013_64
     PLATFORM: X64
     VSVER: 12
   - CMAKE_GENERATOR: "NMake Makefiles JOM"
@@ -63,7 +63,7 @@ environment:
     PLATFORM: X64
     VSVER: 14
   - CMAKE_GENERATOR: "MinGW Makefiles"
-    QT5: C:\Qt\5.5\mingw492_32
+    QT5: C:\Qt\5.7\mingw492_32
     MINGW_PATH: C:\Qt\Tools\mingw492_32
   - CMAKE_GENERATOR: "MinGW Makefiles"
     QT5: C:\Qt\5.6\mingw49_32
