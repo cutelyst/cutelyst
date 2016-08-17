@@ -29,7 +29,7 @@ namespace Cutelyst {
 class StaticSimplePrivate
 {
 public:
-    QList<QDir> includePaths;
+    QVector<QDir> includePaths;
     QStringList dirs;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
 };

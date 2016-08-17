@@ -141,7 +141,7 @@ private:
     Q_DECLARE_PRIVATE(Action)
 };
 
-typedef QList<Action*> ActionList;
+typedef QVector<Action*> ActionList;
 
 }
 

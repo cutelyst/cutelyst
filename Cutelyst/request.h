@@ -35,7 +35,7 @@ namespace Cutelyst {
 class Engine;
 class Upload;
 
-typedef QList<Upload *> Uploads;
+typedef QVector<Upload *> Uploads;
 
 class RequestPrivate;
 class CUTELYST_LIBRARY Request : public QObject
@@ -357,15 +357,20 @@ public:
     QString remoteUser() const;
 
     /**
+     * Returns a vector containing uploads
+     */
+    QVector<Upload *> uploads() const;
+
+    /**
      * Returns a map containing uploads, where their key is
      * the field name.
      */
-    QMap<QString, Upload *> uploads() const;
+    QMap<QString, Upload *> uploadsMap() const;
 
     /**
      * Returns all (if any) Upload objects for the given field.
      */
-    inline Uploads uploads(const QString &name) const;
+    Uploads uploads(const QString &name) const;
 
     /**
      * Returns the first Upload object for the given field,
@@ -494,11 +499,8 @@ inline QString Request::userAgent() const
 inline QString Request::referer() const
 { return headers().referer(); }
 
-inline Uploads Request::uploads(const QString &name) const
-{ return uploads().values(name); }
-
 inline Upload *Request::upload(const QString &name) const
-{ return uploads().value(name); }
+{ return uploadsMap().value(name); }
 
 }
 

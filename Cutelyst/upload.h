@@ -82,7 +82,7 @@ protected:
     UploadPrivate *d_ptr;
 };
 
-typedef QList<Upload *> Uploads;
+typedef QVector<Upload *> Uploads;
 
 }
 

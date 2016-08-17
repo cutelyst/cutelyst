@@ -44,7 +44,7 @@ public:
     QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
     QMap<QString, Controller *> controllers;
-    QList<DispatchType*> dispatchers;
+    QVector<DispatchType*> dispatchers;
     Dispatcher *q_ptr;
 };
 

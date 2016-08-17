@@ -46,7 +46,7 @@ QByteArray DispatchTypePath::list() const
 
     QRegularExpression multipleSlashes(QLatin1String("/{1,}"));
 
-    QList<QStringList> table;
+    QVector<QStringList> table;
 
     QStringList keys = d->paths.keys();
     keys.sort(Qt::CaseInsensitive);

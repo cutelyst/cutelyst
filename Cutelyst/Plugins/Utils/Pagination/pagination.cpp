@@ -62,7 +62,7 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
         endPage = lastPage;
     }
 
-    QList<int> pages;
+    QVector<int> pages;
     for (int i = startPage; i <= endPage; ++i) {
         pages.append(i);
     }
@@ -98,7 +98,7 @@ int Pagination::lastPage() const
     return value(QStringLiteral("lastPage")).toInt();
 }
 
-QList<int> Pagination::pages() const
+QVector<int> Pagination::pages() const
 {
-    return value(QStringLiteral("pages")).value<QList<int> >();
+    return value(QStringLiteral("pages")).value<QVector<int> >();
 }

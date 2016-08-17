@@ -361,9 +361,9 @@ public:
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QList<Action*> getActions(const QString &action, const QString &ns = QString());
+    QVector<Action *> getActions(const QString &action, const QString &ns = QString());
 
-    QList<Plugin *> plugins();
+    QVector<Plugin *> plugins();
 
     template <typename T>
     T plugin()
@@ -394,7 +394,7 @@ public:
 
 protected:
     Context(Application *_app, Engine *_engine, Dispatcher *_dispatcher, void *_reqPtr,
-            Request *_request, const QList<Plugin *> &_plugins, Stats *_stats, const Headers &_headers);
+            Request *_request, const QVector<Plugin *> &_plugins, Stats *_stats, const Headers &_headers);
 
     friend class Application;
     friend class Action;

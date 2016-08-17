@@ -48,7 +48,7 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions(const QList<Controller*> &controllers, const QList<Cutelyst::DispatchType *> &dispatchers, bool printActions)
+void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVector<Cutelyst::DispatchType *> &dispatchers, bool printActions)
 {
     Q_D(Dispatcher);
 
@@ -298,7 +298,7 @@ Action *Dispatcher::expandAction(Context *c, Action *action) const
     return action;
 }
 
-QList<DispatchType *> Dispatcher::dispatchers() const
+QVector<DispatchType *> Dispatcher::dispatchers() const
 {
     Q_D(const Dispatcher);
     return d->dispatchers;
@@ -330,7 +330,7 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
 
 void DispatcherPrivate::printActions() const
 {
-    QList<QStringList> table;
+    QVector<QStringList> table;
 
     QStringList keys = actions.keys();
     keys.sort(Qt::CaseInsensitive);

@@ -51,8 +51,8 @@ QByteArray DispatchTypeChained::list() const
     ActionList endPoints = d->endPoints;
     qSort(endPoints.begin(), endPoints.end(), actionReverseLessThan);
 
-    QList<QStringList> paths;
-    QList<QStringList> unattachedTable;
+    QVector<QStringList> paths;
+    QVector<QStringList> unattachedTable;
     for (Action *endPoint : endPoints) {
         QStringList parts;
         if (endPoint->numberOfArgs() == -1) {
@@ -99,7 +99,7 @@ QByteArray DispatchTypeChained::list() const
             continue;
         }
 
-        QList<QStringList> rows;
+        QVector<QStringList> rows;
         for (Action *p : parents) {
             QString name = QLatin1Char('/') + p->reverse();
 

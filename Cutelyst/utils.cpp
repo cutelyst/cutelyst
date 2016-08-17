@@ -20,10 +20,11 @@
 #include "utils.h"
 
 #include <QTextStream>
+#include <QVector>
 
 using namespace Cutelyst;
 
-QByteArray buildTableDivision(const QList<int> &columnsSize)
+QByteArray buildTableDivision(const QVector<int> &columnsSize)
 {
     QByteArray buffer;
     QTextStream out(&buffer, QIODevice::WriteOnly);
@@ -40,20 +41,20 @@ QByteArray buildTableDivision(const QList<int> &columnsSize)
     return buffer;
 }
 
-QByteArray Utils::buildTable(const QList<QStringList> &table, const QStringList &headers, const QString &title)
+QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringList &headers, const QString &title)
 {
     QByteArray buffer;
-    QList<int> columnsSize;
+    QVector<int> columnsSize;
 
     if (!headers.isEmpty()) {
         for (const QString &header : headers) {
-            columnsSize.append(header.size());
+            columnsSize.push_back(header.size());
         }
     } else {
         for (const QStringList &rows : table) {
-            if (columnsSize.isEmpty()) {
+            if (columnsSize.empty()) {
                 for (const QString &row : rows) {
-                    columnsSize.append(row.size());
+                    columnsSize.push_back(row.size());
                 }
             } else if (rows.size() != columnsSize.size()) {
                 qFatal("Incomplete table");

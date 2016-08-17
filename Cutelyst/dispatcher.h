@@ -73,10 +73,10 @@ public:
 
     Action *expandAction(Context *c, Action *action) const;
 
-    QList<DispatchType *> dispatchers() const;
+    QVector<DispatchType *> dispatchers() const;
 
 protected:
-    void setupActions(const QList<Controller *> &controllers, const QList<DispatchType *> &dispatchers, bool printActions);
+    void setupActions(const QVector<Controller *> &controllers, const QVector<DispatchType *> &dispatchers, bool printActions);
 
     /**
      * Delegate the dispatch to the action that matched the url, or return a

@@ -329,7 +329,7 @@ public:
     C_ATTR(uploads, :Local :AutoArgs)
     void uploads(Context *c) {
         QUrlQuery ret;
-        QMap<QString, Upload *> uploads = c->request()->uploads();
+        QMap<QString, Upload *> uploads = c->request()->uploadsMap();
         auto it = uploads.constBegin();
         while (it != uploads.constEnd()) {
             Upload *upload = it.value();

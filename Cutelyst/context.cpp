@@ -37,7 +37,7 @@
 using namespace Cutelyst;
 
 Context::Context(Cutelyst::Application *_app, Engine *_engine, Cutelyst::Dispatcher *_dispatcher, void *_reqPtr,
-                 Request *_request, const QList<Cutelyst::Plugin *> &_plugins, Stats *_stats, const Headers &_headers) :
+                 Request *_request, const QVector<Cutelyst::Plugin *> &_plugins, Stats *_stats, const Headers &_headers) :
     d_ptr(new ContextPrivate(this, _app, _engine, _dispatcher, _reqPtr, _request, _plugins, _stats, _headers))
 {
 }
@@ -332,13 +332,13 @@ Action *Context::getAction(const QString &action, const QString &ns)
     return d->dispatcher->getAction(action, ns);
 }
 
-QList<Action *> Context::getActions(const QString &action, const QString &ns)
+QVector<Action *> Context::getActions(const QString &action, const QString &ns)
 {
     Q_D(Context);
     return d->dispatcher->getActions(action, ns);
 }
 
-QList<Cutelyst::Plugin *> Context::plugins()
+QVector<Cutelyst::Plugin *> Context::plugins()
 {
     Q_D(Context);
     return d->plugins;

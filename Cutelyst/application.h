@@ -71,7 +71,7 @@ public:
     explicit Application(QObject *parent = nullptr);
     virtual ~Application();
 
-    QList<Controller *> controllers() const;
+    QVector<Controller *> controllers() const;
 
     View *view(const QString &name = QString()) const;
 
@@ -79,7 +79,7 @@ public:
 
     Dispatcher *dispatcher() const;
 
-    QList<DispatchType *> dispatchers() const;
+    QVector<DispatchType *> dispatchers() const;
 
     /**
      * User configuration for the application

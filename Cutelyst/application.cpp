@@ -106,10 +106,11 @@ bool Application::registerController(Controller *controller)
 {
     Q_D(Application);
     auto name = QString::fromLatin1(controller->metaObject()->className());
-    if (d->controllers.contains(name)) {
+    if (d->controllersHash.contains(name)) {
         return false;
     }
-    d->controllers.insert(name, controller);
+    d->controllersHash.insert(name, controller);
+    d->controllers.append(controller);
     return true;
 }
 
@@ -176,10 +177,10 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
     return component;
 }
 
-QList<Controller *> Application::controllers() const
+QVector<Cutelyst::Controller *> Application::controllers() const
 {
     Q_D(const Application);
-    return d->controllers.values();
+    return d->controllers;
 }
 
 View *Application::view(const QString &name) const
@@ -204,7 +205,7 @@ Dispatcher *Application::dispatcher() const
     return d->dispatcher;
 }
 
-QList<DispatchType *> Application::dispatchers() const
+QVector<Cutelyst::DispatchType *> Application::dispatchers() const
 {
     Q_D(const Application);
     return d->dispatcher->dispatchers();
@@ -262,7 +263,7 @@ bool Application::setup(Engine *engine)
 
         bool zeroCore = engine->workerCore() == 0;
 
-        QList<QStringList> tablePlugins;
+        QVector<QStringList> tablePlugins;
         const auto plugins = d->plugins;
         for (Plugin *plugin : plugins) {
             if (plugin->objectName().isEmpty()) {
@@ -279,7 +280,7 @@ bool Application::setup(Engine *engine)
         }
 
         if (zeroCore) {
-            QList<QStringList> tableDataHandlers;
+            QVector<QStringList> tableDataHandlers;
             tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
             tableDataHandlers.append({ QLatin1String("application/json") });
             tableDataHandlers.append({ QLatin1String("multipart/form-data") });
@@ -308,8 +309,9 @@ bool Application::setup(Engine *engine)
             }
         }
 
-        QList<QStringList> table;
-        const auto controllerNames = d->controllers.keys();
+        QVector<QStringList> table;
+        QStringList controllerNames = d->controllersHash.keys();
+        controllerNames.sort();
         for (const QString controller : controllerNames) {
             table.append({ controller, QLatin1String("Controller")});
         }
@@ -330,12 +332,11 @@ bool Application::setup(Engine *engine)
                                                         QLatin1String("Loaded components:")).constData();
         }
 
-        const auto controllers = d->controllers.values();
-        for (Controller *controller : controllers) {
+        for (Controller *controller : d->controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
-        d->dispatcher->setupActions(controllers, d->dispatchers, d->engine->workerCore() == 0);
+        d->dispatcher->setupActions(d->controllers, d->dispatchers, d->engine->workerCore() == 0);
 
         if (zeroCore) {
             qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
@@ -504,8 +505,7 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
 void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &params, const QString &title)
 {
-
-    QList<QStringList> table;
+    QVector<QStringList> table;
     auto it = params.constBegin();
     while (it != params.constEnd()) {
         table.append({ it.key(), it.value() });
@@ -518,18 +518,15 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
                                                    title).constData();
 }
 
-void Cutelyst::ApplicationPrivate::logRequestUploads(const QMap<QString, Cutelyst::Upload *> &uploads)
+void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upload *> &uploads)
 {
-    QList<QStringList> table;
-    auto it = uploads.constBegin();
-    while (it != uploads.constEnd()) {
-        Upload *upload = it.value();
-        table.append({ it.key(),
+    QVector<QStringList> table;
+    for (Upload *upload : uploads) {
+        table.append({ upload->name(),
                        upload->filename(),
                        upload->contentType(),
                        QString::number(upload->size())
                      });
-        ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
                                                        QStringLiteral("Parameter"),

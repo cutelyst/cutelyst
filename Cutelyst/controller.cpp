@@ -274,7 +274,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
     QMap<QString, QString> ret;
-    QList<QPair<QString, QString> > attributes;
+    QVector<QPair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
     // :Args:Local('fo"')o'):ActionClass('foo')
@@ -338,7 +338,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             }
 
             // store the key/value pair found
-            attributes.append(qMakePair(key, value));
+            attributes.push_back(qMakePair(key, value));
             continue;
         }
         ++pos;

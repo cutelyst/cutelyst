@@ -70,7 +70,7 @@ QByteArray Stats::report()
         return ret;
     }
 
-    QList<QStringList> table;
+    QVector<QStringList> table;
     for (const auto &stat : d->actions) {
         table.append({ stat.action,
                        QString::number((stat.end - stat.begin)/1000000.0, 'f') + QLatin1Char('s') });

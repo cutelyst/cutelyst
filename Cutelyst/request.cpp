@@ -300,13 +300,34 @@ QString Request::remoteUser() const
     return d->remoteUser;
 }
 
-QMap<QString, Cutelyst::Upload *> Request::uploads() const
+QVector<Upload *> Request::uploads() const
 {
     Q_D(const Request);
     if (!d->bodyParsed) {
         d->parseBody();
     }
     return d->uploads;
+}
+
+QMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
+{
+    Q_D(const Request);
+    if (!d->bodyParsed) {
+        d->parseBody();
+    }
+    return d->uploadsMap;
+}
+
+Uploads Request::uploads(const QString &name) const
+{
+    Uploads ret;
+    auto map = uploadsMap();
+    auto it = map.constFind(name);
+    while (it != map.constEnd() && it.key() == name) {
+        ret.push_back(*it);
+        ++it;
+    }
+    return ret;
 }
 
 ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) const
@@ -393,13 +414,13 @@ void RequestPrivate::parseBody() const
             body->seek(0);
         }
 
-        Uploads uploadList = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
-        auto it = uploadList.constEnd();
-        while (it != uploadList.constBegin()) {
+        uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
+        auto it = uploads.constEnd();
+        while (it != uploads.constBegin()) {
             --it;
-            uploads.insertMulti((*it)->name(), *it);
+            uploadsMap.insertMulti((*it)->name(), *it);
         }
-        bodyData = QVariant::fromValue(uploads);
+        bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
         if (posOrig) {
             body->seek(0);
@@ -484,7 +505,7 @@ static QPair<QString, QString> nextField(const QString &text, int &position)
 
 void RequestPrivate::parseCookies() const
 {
-    QList<QPair<QString, QString> > ret;
+    QVector<QPair<QString, QString> > ret;
     const QString cookieString = headers.header(QStringLiteral("Cookie"));
     int position = 0;
     const int length = cookieString.length();

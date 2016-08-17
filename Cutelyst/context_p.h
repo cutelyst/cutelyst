@@ -34,7 +34,7 @@ class ContextPrivate
 {
 public:
     inline ContextPrivate(Context *c, Application *_app, Engine *_ngine, Dispatcher *_dispatcher, void *_reqPtr,
-                          Request *_request, const QList<Plugin *> &_plugins, Stats *_stats, const Headers &_headers)
+                          Request *_request, const QVector<Plugin *> &_plugins, Stats *_stats, const Headers &_headers)
         : app(_app)
         , engine(_ngine)
         , dispatcher(_dispatcher)
@@ -60,7 +60,7 @@ public:
     Action *action = nullptr;
     View *view = nullptr;
     QStack<Component *> stack;
-    QList<Plugin *> plugins;
+    QVector<Plugin *> plugins;
     QStringList error;
     QVariantHash stash;
     Stats *stats;

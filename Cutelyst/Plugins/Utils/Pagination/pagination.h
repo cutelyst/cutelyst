@@ -61,7 +61,7 @@ public:
     /**
      * Returns the list of pages, with each page number as the integer
      */
-    QList<int> pages() const;
+    QVector<int> pages() const;
 };
 
 }

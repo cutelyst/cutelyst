@@ -88,7 +88,8 @@ public:
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable ParamsMultiMap param;
-    mutable QMap<QString, Upload *> uploads;
+    mutable QMap<QString, Upload *> uploadsMap;
+    mutable QVector<Upload *> uploads;
 
     quint16 remotePort;
     bool https = false;

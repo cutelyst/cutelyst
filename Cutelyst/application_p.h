@@ -38,14 +38,15 @@ public:
 
     void logRequest(Request *req);
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
-    void logRequestUploads(const QMap<QString, Upload *> &uploads);
+    void logRequestUploads(const QVector<Upload *> &uploads);
 
     Application *q_ptr;
     Dispatcher *dispatcher;
-    QList<Plugin *> plugins;
-    QMap<QString, Controller *> controllers;
-    QMap<QString, View *> views;
-    QList<DispatchType *> dispatchers;
+    QVector<Plugin *> plugins;
+    QHash<QString, Controller *> controllersHash;
+    QVector<Controller *> controllers;
+    QHash<QString, View *> views;
+    QVector<DispatchType *> dispatchers;
     QMap<QString, ComponentFactory *> factories;
     Headers headers;
     QVariantMap config;
