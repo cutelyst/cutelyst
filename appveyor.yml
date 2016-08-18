@@ -63,8 +63,8 @@ environment:
     PLATFORM: X64
     VSVER: 14
   - CMAKE_GENERATOR: "MinGW Makefiles"
-    QT5: C:\Qt\5.7\mingw492_32
-    MINGW_PATH: C:\Qt\Tools\mingw492_32
+    QT5: C:\Qt\5.7\mingw53_32
+    MINGW_PATH: C:\Qt\Tools\mingw530_32
   - CMAKE_GENERATOR: "MinGW Makefiles"
     QT5: C:\Qt\5.6\mingw49_32
     MINGW_PATH: C:\Qt\Tools\mingw492_32
