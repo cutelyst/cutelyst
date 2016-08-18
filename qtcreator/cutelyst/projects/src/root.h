@@ -1,6 +1,6 @@
 %{Cpp:LicenseTemplate}\
-#ifndef %{GUARD}
-#define %{GUARD}
+#ifndef ROOT_H
+#define ROOT_H
 
 #include <Cutelyst/Controller>
 
@@ -25,5 +25,4 @@ private:
     void End(Context *c) { Q_UNUSED(c); }
 };
 
-#endif //%{GUARD}\
-
+#endif //ROOT_H

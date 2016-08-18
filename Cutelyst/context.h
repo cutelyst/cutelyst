@@ -385,11 +385,6 @@ public:
 
     QVariantMap config() const;
 
-    /**
-     * Returns the Cutelyst welcome HTML page.
-     */
-    QByteArray welcomeMessage() const;
-
     void *engineData();
 
 protected:

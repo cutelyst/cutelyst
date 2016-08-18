@@ -16,6 +16,7 @@
         { "key": "ProjectNameUpper", "value": "%{JS: '%{ProjectName}'.toUpperCase()}" },
         { "key": "AppSrcFileName", "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++src')}" },
         { "key": "AppHdrFileName", "value": "%{JS: '%{ProjectName}.'.toLowerCase() + Util.preferredSuffix('text/x-c++hdr')}" },
+        { "key": "GUARD", "value": "%{JS: Cpp.headerGuard('%{AppHdrFileName}')}" },
         { "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" }
     ],
 
@@ -89,29 +90,25 @@
                     "condition": "%{JS: '%{BuildSystem}' === 'qbs'}"
                 },
                 {
-                    "source": "src/CMakeLists.txt",
-                    "openInEditor": true
+                    "source": "src/CMakeLists.txt"
                 },
                 {
                     "source": "src/application.h",
-                    "target": "src/%{AppHdrFileName}",
-                    "openInEditor": true
+                    "target": "src/%{AppHdrFileName}"
                 },
                 {
                     "source": "src/application.cpp",
-                    "target": "src/%{AppSrcFileName}",
-                    "openInEditor": true
+                    "target": "src/%{AppSrcFileName}"
                 },
                 {
                     "source": "src/root.h",
                     "openInEditor": true
                 },
                 {
-                    "source": "src/root.cpp",
-                    "openInEditor": true
+                    "source": "src/root.cpp"
                 },
                 {
-                    "source": "../git.ignore",
+                    "source": "git.ignore",
                     "target": "%{ProjectDirectory}/.gitignore",
                     "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
                 }
