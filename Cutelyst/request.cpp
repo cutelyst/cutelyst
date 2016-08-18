@@ -414,8 +414,8 @@ void RequestPrivate::parseBody() const
         }
 
         uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
-        auto it = uploads.rbegin();
-        while (it != uploads.rend()) {
+        auto it = uploads.crbegin();
+        while (it != uploads.crend()) {
             Upload *upload = *it;
             uploadsMap.insertMulti(upload->name(), upload);
             ++it;
