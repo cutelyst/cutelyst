@@ -98,6 +98,8 @@ public:
 
     Component *createComponentPlugin(const QString &name, QObject *parent = nullptr);
 
+    static const char *cutelystVersion();
+
 protected:
     /**
      * Do your application initialization here, if your

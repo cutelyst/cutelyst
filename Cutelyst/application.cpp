@@ -177,6 +177,11 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
     return component;
 }
 
+const char *Application::cutelystVersion()
+{
+    return VERSION;
+}
+
 QVector<Cutelyst::Controller *> Application::controllers() const
 {
     Q_D(const Application);
@@ -340,7 +345,7 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore) {
             qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
-                                     .arg(QCoreApplication::applicationName(), QStringLiteral(VERSION), QLatin1String(qVersion()))
+                                     .arg(QCoreApplication::applicationName(), QLatin1String(Application::cutelystVersion()), QLatin1String(qVersion()))
                                      .toLatin1().constData();
         }
 
