@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -55,6 +55,7 @@ class CUTELYST_LIBRARY Request : public QObject
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap parameters READ parameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap params READ parameters)
+    Q_PROPERTY(QVariant headers READ headers())
     Q_PROPERTY(QString contentEncoding READ contentEncoding)
     Q_PROPERTY(QString contentType READ contentType)
     Q_PROPERTY(QString method READ method)

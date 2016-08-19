@@ -16,10 +16,10 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef HEADERS_H
 #define HEADERS_H
 
+#include <QtCore/QVariant>
 #include <QtCore/QDateTime>
 #include <QtCore/QMetaType>
 
@@ -107,7 +107,7 @@ public:
     /**
      * Returns the date header as QDateTime
      */
-    QDateTime date();
+    QDateTime date() const;
 
     /**
      * This header fields is used to make a request conditional. If the requested resource has
@@ -272,6 +272,10 @@ public:
     }
     inline bool operator!=(const Headers &other) const {
         return m_data != other.m_data;
+    }
+
+    inline operator QVariant() const {
+        return QVariant::fromValue(m_data);
     }
 
 private:

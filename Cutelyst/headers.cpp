@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "headers_p.h"
 
 #include "common.h"
@@ -153,7 +152,7 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
     return dt;
 }
 
-QDateTime Headers::date()
+QDateTime Headers::date() const
 {
     QDateTime ret;
     auto it = m_data.constFind(QStringLiteral("date"));
