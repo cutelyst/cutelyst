@@ -117,11 +117,15 @@ public:
     C_ATTR(headers, :Local :AutoArgs)
     void headers(Context *c) {
         QUrlQuery ret;
-        auto headers = c->request()->headers().map();
-        auto it = headers.constBegin();
-        while (it != headers.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
+        auto headers = c->request()->headers().data();
+        QStringList keys = headers.keys();
+        keys.sort(); // QHash has random order
+        for (const QString &key : keys) {
+            QStringList values = headers.values(key);
+            values.sort(); // QHash has random order
+            for (const QString &value : values) {
+                ret.addQueryItem(key, value);
+            }
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }

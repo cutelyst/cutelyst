@@ -68,13 +68,13 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
     conn->write(msg, msgLen);
 
     auto sock = qobject_cast<TcpSocket*>(conn);
-    const auto headersMap = headers.map();
+    const auto headersData = headers.data();
     if (sock->headerClose == 1) {
         sock->headerClose = 0;
     }
 
-    auto it = headersMap.constBegin();
-    auto endIt = headersMap.constEnd();
+    auto it = headersData.constBegin();
+    const auto endIt = headersData.constEnd();
     while (it != endIt) {
         const QString key = it.key();
         const QString value = it.value();

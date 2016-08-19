@@ -365,9 +365,9 @@ bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &head
         return false;
     }
 
-    const auto headersMap = headers.map();
-    auto it = headersMap.constBegin();
-    auto endIt = headersMap.constEnd();
+    const auto headersData = headers.data();
+    auto it = headersData.constBegin();
+    const auto endIt = headersData.constEnd();
     while (it != endIt) {
         QByteArray key = camelCaseHeader(it.key()).toLatin1();
         QByteArray value = it.value().toLatin1();

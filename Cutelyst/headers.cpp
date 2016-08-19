@@ -301,6 +301,13 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
     return ret;
 }
 
+QHash<QString, QString> Headers::authorizationDigest() const
+{
+    QHash<QString, QString> ret;
+    qCWarning(CUTELYST_CORE) << "Headers::authorizationDigest not implemented";
+    return ret;
+}
+
 QString Headers::proxyAuthorization() const
 {
     return m_data.value(QStringLiteral("proxy_authorization"));

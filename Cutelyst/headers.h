@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,9 +20,8 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
-#include <QtCore/qmap.h>
-#include <QtCore/qdatetime.h>
-#include <QtCore/qmetatype.h>
+#include <QtCore/QDateTime>
+#include <QtCore/QMetaType>
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -255,7 +254,7 @@ public:
         m_data.clear();
     }
 
-    inline QMap<QString, QString> map() const {
+    inline QHash<QString, QString> data() const {
         return m_data;
     }
 
@@ -276,7 +275,7 @@ public:
     }
 
 private:
-    QMap<QString, QString> m_data;
+    QHash<QString, QString> m_data;
 };
 
 }
