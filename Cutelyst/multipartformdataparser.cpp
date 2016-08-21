@@ -120,7 +120,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qi
                     // nothing was read
                     state = EndHeaders;
                 } else {
-                    char *pch = strchr(buffer + i, '\r');
+                    char *pch = static_cast<char *>(memchr(buffer + i, '\r', len - i));
                     if (pch == NULL) {
                         headerLine.append(buffer + i, len - i);
                         i = len;
