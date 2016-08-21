@@ -338,7 +338,8 @@ ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) co
     } else {
         ret = queryParams();
         auto it = args.constBegin();
-        while (it != args.constEnd()) {
+        const auto end = args.constEnd();
+        while (it != end) {
             ret.insert(it.key(), it.value());
             ++it;
         }
@@ -353,7 +354,8 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
     QUrlQuery urlQuery;
     ParamsMultiMap query = mangleParams(args, append);
     auto it = query.constBegin();
-    while (it != query.constEnd()) {
+    const auto end = query.constEnd();
+    while (it != end) {
         urlQuery.addQueryItem(it.key(), it.value());
         ++it;
     }
@@ -415,7 +417,8 @@ void RequestPrivate::parseBody() const
 
         uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
         auto it = uploads.crbegin();
-        while (it != uploads.crend()) {
+        const auto crend = uploads.crend();
+        while (it != crend) {
             Upload *upload = *it;
             uploadsMap.insertMulti(upload->name(), upload);
             ++it;
@@ -525,10 +528,11 @@ void RequestPrivate::parseCookies() const
         ++position;
     }
 
-    auto it = ret.constEnd();
-    while (it != ret.constBegin()) {
-        --it;
-        cookies.insertMulti(it->first, it->second);
+    auto i = ret.crbegin();
+    const auto end = ret.crend();
+    while (i != end) {
+        cookies.insertMulti(i->first, i->second);
+        ++i;
     }
 
     cookiesParsed = true;
