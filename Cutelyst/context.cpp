@@ -233,7 +233,8 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
         // Avoid a trailing '?'
         if (queryValues.size()) {
             auto it = queryValues.constBegin();
-            while (it != queryValues.constEnd()) {
+            const auto end = queryValues.constEnd();
+            while (it != end) {
                 query.addQueryItem(it.key(), it.value());
                 ++it;
             }
