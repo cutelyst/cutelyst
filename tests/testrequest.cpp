@@ -607,6 +607,22 @@ void TestRequest::testController_data()
                                         << headers << QByteArray()
                                         << QByteArrayLiteral("and%20yet%20another%20is%20fine&another%20keyword&bar=baz&some%20text%20to%20ask");
 
+    QTest::newRow("queryParams-test02") << get << QStringLiteral("/request/test/queryParams?&=&=&foo&&&=ooo&=bar")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("=ooo&=bar&foo");
+
+    QTest::newRow("queryParams-test03") << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+
+    QTest::newRow("queryParams-test04") << get << QStringLiteral("/request/test/queryParams?foo=bar&=&something&&&=ooo&=bar&")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+
+    QTest::newRow("queryParams-test05") << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar&")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+
     query.clear();
     query.addQueryItem(QStringLiteral("some text to ask"), QString());
     query.addQueryItem(QStringLiteral("another keyword"), QString());

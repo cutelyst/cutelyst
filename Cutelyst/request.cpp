@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "request_p.h"
 #include "engine.h"
 #include "common.h"
@@ -541,26 +540,35 @@ void RequestPrivate::parseCookies() const
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
-    const QList<QByteArray> items = line.split('&');
-    for (int i = items.size() - 1; i >= 0; --i) {
-        const QByteArray parameter = items.at(i);
-        if (parameter.isEmpty()) {
+    int from = line.length();
+    int pos = from;
+
+    while (pos > 0) {
+        from = pos - 1;
+        pos = line.lastIndexOf('&', from);
+
+        int len = from - pos;
+        if (len == 0) {
+            // Skip empty strings
+            --from;
             continue;
         }
 
-        const QList<QByteArray> &parts = parameter.split('=');
-        if (parts.size() == 2) {
-            QByteArray value = parts.at(1);
-            if (value.length()) {
-                ret.insertMulti(QUrl::fromPercentEncoding(parts.at(0)),
-                                QUrl::fromPercentEncoding(value.replace('+', ' ')));
-                continue;
-            }
-        }
-        ret.insertMulti(QUrl::fromPercentEncoding(parts.first()),
-                        QString());
+        const QByteArray data = line.mid(pos + 1, len);
 
+        int equal = data.indexOf('=');
+        if (equal != -1) {
+            QByteArray value = data.mid(equal + 1).replace('+', ' ');
+            if (value.length()) {
+                ret.insertMulti(QUrl::fromPercentEncoding(data.mid(0, equal)),
+                                QUrl::fromPercentEncoding(value));
+            }
+        } else {
+            ret.insertMulti(QUrl::fromPercentEncoding(data),
+                            QString());
+        }
     }
+
     return ret;
 }
 
