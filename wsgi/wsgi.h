@@ -82,6 +82,10 @@ public:
     void setMaster(bool enable);
     bool master() const;
 
+    Q_PROPERTY(qint64 postBuffering READ postBuffering WRITE setPostBuffering)
+    void setPostBuffering(qint64 size);
+    qint64 postBuffering() const;
+
     void proc();
 
 Q_SIGNALS:
@@ -104,6 +108,7 @@ private:
     QString m_chdir;
     QString m_chdir2;
     QString m_ini;
+    qint64 m_postBuffering = -1;
     int m_listening = 1;
     int m_threads = 0;
     int m_process = 0;

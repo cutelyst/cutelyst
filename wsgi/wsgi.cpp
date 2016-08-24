@@ -189,6 +189,16 @@ bool WSGI::master() const
     return m_master;
 }
 
+void WSGI::setPostBuffering(qint64 size)
+{
+    m_postBuffering = size;
+}
+
+qint64 WSGI::postBuffering() const
+{
+    return m_postBuffering;
+}
+
 void WSGI::proc()
 {
     static QProcess *process = nullptr;

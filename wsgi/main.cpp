@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
                                          QStringLiteral("bytes"));
     parser.addOption(bufferSize);
 
+    auto postBuffering = QCommandLineOption({ QStringLiteral("post-buffering") },
+                                            QStringLiteral("enable post buffering"),
+                                            QStringLiteral("bytes"));
+    parser.addOption(postBuffering);
+
     auto httpSocket = QCommandLineOption({ QStringLiteral("http-socket"), QStringLiteral("h1") },
                                          QStringLiteral("bind to the specified TCP socket using HTTP protocol"),
                                          QStringLiteral("address"));
@@ -125,6 +130,15 @@ int main(int argc, char *argv[])
         wsgi.setProcess(parser.value(process).toInt());
     }
 #endif // Q_OS_UNIX
+
+    if (parser.isSet(postBuffering)) {
+        bool ok;
+        auto size = parser.value(postBuffering).toLongLong(&ok);
+        wsgi.setPostBuffering(size);
+        if (!ok || parser.value(postBuffering).toLongLong(&ok) < 1) {
+            parser.showHelp(1);
+        }
+    }
 
     if (parser.isSet(application)) {
         wsgi.setApplication(parser.value(application));

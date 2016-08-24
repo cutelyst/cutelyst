@@ -76,7 +76,6 @@ protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 
 private:
-
     QVector<QTcpServer *> m_sockets;
 
 };

@@ -2,6 +2,7 @@ set(httpEngine_SRC
     wsgi.cpp
     protocol.cpp
     protocolhttp.cpp
+    postunbuffered.cpp
     cwsgiengine.cpp
     socket.cpp
     tcpserver.cpp

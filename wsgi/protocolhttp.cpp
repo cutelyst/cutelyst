@@ -62,14 +62,16 @@ void ProtocolHttp::readyRead()
             if (sock->connState == 0) {
                 processRequest(ptr, ptr + len, sock);
                 sock->connState = 1;
+                sock->contentLength = -1;
                 sock->headers = Cutelyst::Headers();
 //                qDebug() << "--------" << sock->method << sock->path << sock->query << sock->protocol;
 
             } else if (sock->connState == 1) {
                 if (len) {
                     processHeader(ptr, ptr + len, sock);
+//                } else if (sock->contentLength != -1) {
+
                 } else {
-//                    qDebug() << sock->headers.map();
                     sock->processing = true;
                     sock->engine->processSocket(sock);
                     sock->processing = false;
@@ -167,6 +169,12 @@ void ProtocolHttp::processHeader(const char *ptr, const char *end, Socket *sock)
             sock->headerClose = 2;
         } else {
             sock->headerClose = 1;
+        }
+    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
+        bool ok;
+        qint64 cl = value.toLongLong(&ok);
+        if (ok && cl >= 0) {
+            sock->contentLength = cl;
         }
     }
     sock->headers.pushHeader(key, value);

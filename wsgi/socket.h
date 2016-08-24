@@ -55,6 +55,7 @@ public:
     quint64 start;
     CWsgiEngine *engine;
     char *buf;
+    qint64 contentLength;
     int buf_size = 0;
     int connState = 0;
     int beginLine = 0;
