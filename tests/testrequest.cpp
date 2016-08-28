@@ -623,6 +623,10 @@ void TestRequest::testController_data()
                                         << headers << QByteArray()
                                         << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
 
+    QTest::newRow("queryParams-test06") << get << QStringLiteral("/request/test/queryParams?a=1&a=2&b=0&a=0&a=1&a=3&a=2")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("a=1&a=2&a=0&a=1&a=3&a=2&b=0");
+
     query.clear();
     query.addQueryItem(QStringLiteral("some text to ask"), QString());
     query.addQueryItem(QStringLiteral("another keyword"), QString());
