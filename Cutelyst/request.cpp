@@ -558,9 +558,10 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 
         int equal = data.indexOf('=');
         if (equal != -1) {
-            QByteArray value = data.mid(equal + 1).replace('+', ' ');
+            const QByteArray value = data.mid(equal + 1);
             if (value.length()) {
-                ret.insertMulti(QUrl::fromPercentEncoding(data.mid(0, equal)),
+                const QByteArray key = data.mid(0, equal);
+                ret.insertMulti(QUrl::fromPercentEncoding(key),
                                 QUrl::fromPercentEncoding(value));
             }
         } else {
