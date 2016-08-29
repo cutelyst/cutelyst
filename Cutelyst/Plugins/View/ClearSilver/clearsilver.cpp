@@ -156,13 +156,14 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
 
     error = cs_init(&cs, hdf);
     if (error) {
-        STRING *msg = new STRING;
-        string_init(msg);
-        nerr_error_traceback(error, msg);
+        STRING msg;
+        string_init(&msg);
+        nerr_error_traceback(error, &msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to init ClearSilver:\n+1").arg(QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to init ClearSilver:\n+1").arg(QString::fromLatin1(msg.buf, msg.len));
         renderError(c, errorMsg);
 
+        string_clear(&msg);
         hdf_destroy(&hdf);
         nerr_ignore(&error);
         return false;
@@ -172,14 +173,15 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
 
     error = cs_parse_file(cs, filename.toLatin1().data());
     if (error) {
-        STRING *msg = new STRING;
-        string_init(msg);
-        nerr_error_traceback(error, msg);
+        STRING msg;
+        string_init(&msg);
+        nerr_error_traceback(error, &msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to parse template file: +1\n+2").arg(filename, QString::fromLatin1(msg->buf, msg->len));
+        errorMsg = QStringLiteral("Failed to parse template file: +1\n+2").arg(filename, QString::fromLatin1(msg.buf, msg.len));
         renderError(c, errorMsg);
-
         nerr_log_error(error);
+
+        string_clear(&msg);
         hdf_destroy(&hdf);
         nerr_ignore(&error);
         return false;
