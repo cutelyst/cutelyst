@@ -317,7 +317,7 @@ bool Application::setup(Engine *engine)
         QVector<QStringList> table;
         QStringList controllerNames = d->controllersHash.keys();
         controllerNames.sort();
-        for (const QString controller : controllerNames) {
+        for (const QString &controller : controllerNames) {
             table.append({ controller, QLatin1String("Controller")});
         }
 

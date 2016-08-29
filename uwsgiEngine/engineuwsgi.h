@@ -43,7 +43,7 @@ public:
     explicit uWSGI(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~uWSGI();
 
-    virtual int workerId() const;
+    virtual int workerId() const override;
 
     void setWorkerId(int id);
 
@@ -67,7 +67,7 @@ public:
 
     void stop();
 
-    virtual quint64 time();
+    virtual quint64 time() override;
 
     bool forked();
 

@@ -429,7 +429,7 @@ QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
         return ret;
     }
 
-    const QString ns = qobject_cast<Action *>(c->stack().last())->ns();
+    const QString ns = qobject_cast<Action *>(c->stack().constLast())->ns();
     if (ns.isEmpty()) {
         ret = path;
     } else {

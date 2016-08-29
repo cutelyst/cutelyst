@@ -18,7 +18,7 @@ public:
     virtual void initTest() {}
     virtual void cleanupTest() {}
 protected Q_SLOTS:
-    void init() ;
+    void init();
     void cleanup();
 private:
     void saveCoverageData();
@@ -37,10 +37,10 @@ public:
 
     virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
 
-    virtual bool init();
+    virtual bool init() override;
 
 protected:
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
+    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) override;
 
 private:
     QByteArray m_responseData;
@@ -55,11 +55,11 @@ public:
     SequentialBuffer(QByteArray *buffer);
     virtual bool isSequential() const override;
 
-    virtual qint64 bytesAvailable() const;
+    virtual qint64 bytesAvailable() const override;
 
 protected:
-    qint64 readData(char *data, qint64 maxlen) Q_DECL_OVERRIDE;
-    qint64 writeData(const char *data, qint64 len) Q_DECL_OVERRIDE;
+    qint64 readData(char *data, qint64 maxlen) override;
+    qint64 writeData(const char *data, qint64 len) override;
 
 private:
     QByteArray *buf;
