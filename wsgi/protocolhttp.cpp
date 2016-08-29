@@ -125,7 +125,6 @@ void ProtocolHttp::processRequest(const char *ptr, const char *end, Socket *sock
     }
     ptr = word_boundary;
 
-    ptr = word_boundary;
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
     }
