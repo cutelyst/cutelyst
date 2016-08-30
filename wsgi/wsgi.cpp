@@ -233,21 +233,21 @@ bool WSGI::setupApplication()
     }
 
     std::cout << "Loading application: " << m_application.toLatin1().constData() << std::endl;;
-    QPluginLoader *loader = new QPluginLoader(m_application);
-    if (!loader->load()) {
-        qCritical() << "Could not load application:" << loader->errorString();
+    QPluginLoader loader(m_application);
+    if (!loader.load()) {
+        qCritical() << "Could not load application:" << loader.errorString();
         return false;
     }
 
-    QObject *instance = loader->instance();
+    QObject *instance = loader.instance();
     if (!instance) {
-        qCritical() << "Could not get a QObject instance: %s\n" << loader->errorString();
+        qCritical() << "Could not get a QObject instance: %s\n" << loader.errorString();
         exit(1);
     }
 
     Cutelyst::Application *app = qobject_cast<Cutelyst::Application *>(instance);
     if (!app) {
-        qCritical() << "Could not cast Cutelyst::Application from instance: %s\n" << loader->errorString();
+        qCritical() << "Could not cast Cutelyst::Application from instance: %s\n" << loader.errorString();
         exit(1);
     }
 
