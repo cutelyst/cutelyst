@@ -42,7 +42,8 @@ void CWsgiEngine::listen()
 
     }
 
-    for (QTcpServer *socket : m_sockets) {
+    const auto sockets = m_sockets;
+    for (QTcpServer *socket : sockets) {
         auto server = new TcpServer(this);
         server->setSocketDescriptor(socket->socketDescriptor());
     }

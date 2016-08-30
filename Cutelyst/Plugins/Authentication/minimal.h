@@ -22,6 +22,7 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
+#include <QVector>
 
 namespace Cutelyst {
 
@@ -41,7 +42,7 @@ public:
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) Q_DECL_FINAL;
 
 private:
-    QList<AuthenticationUser> m_users;
+    QVector<AuthenticationUser> m_users;
 };
 
 } // namespace CutelystPlugin

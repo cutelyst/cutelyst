@@ -48,7 +48,8 @@ AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &user
         id = userInfo[QStringLiteral("username")];
     }
 
-    for (const AuthenticationUser &user : m_users) {
+    const auto users = m_users;
+    for (const AuthenticationUser &user : users) {
         if (user.id() == id) {
             ret = user;
             break;

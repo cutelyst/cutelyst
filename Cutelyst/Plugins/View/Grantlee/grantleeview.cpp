@@ -126,7 +126,8 @@ void GrantleeView::preloadTemplates()
         setCache(true);
     }
 
-    for (const QString &includePath : d->includePaths) {
+    const auto includePaths = d->includePaths;
+    for (const QString &includePath : includePaths) {
         QDirIterator it(includePath, {
                             QLatin1Char('*') + d->extension
                         },

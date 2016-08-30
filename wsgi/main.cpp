@@ -116,7 +116,8 @@ int main(int argc, char *argv[])
     wsgi.setMaster(masterSet);
 
     if (!masterSet && parser.isSet(httpSocket)) {
-        for (const QString &http : parser.values(httpSocket)) {
+        const auto socks = parser.values(httpSocket);
+        for (const QString &http : socks) {
             wsgi.setHttpSocket(http);
         }
     }

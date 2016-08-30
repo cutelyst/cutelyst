@@ -35,7 +35,7 @@ struct uwsgi_cutelyst {
     char *app;
 } options;
 
-static QList<uWSGI *> *coreEngines = nullptr;
+static QVector<uWSGI *> *coreEngines = nullptr;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -104,14 +104,15 @@ int uwsgi_cutelyst_init()
 
     uwsgi.loop = (char *) "CutelystQtLoop";
 
-    coreEngines = new QList<uWSGI *>();
+    coreEngines = new QVector<uWSGI *>();
 
     return 0;
 }
 
 void uwsgi_cutelyst_post_fork()
 {
-    for (uWSGI *engine : *coreEngines) {
+    const auto engines = *coreEngines;
+    for (uWSGI *engine : engines) {
         engine->setWorkerId(uwsgi.mywid - 1);
         if (engine->thread() != qApp->thread()) {
             engine->thread()->start();
@@ -147,7 +148,8 @@ void uwsgi_cutelyst_atexit()
 {
     qCDebug(CUTELYST_UWSGI) << "Child process finishing:" << QCoreApplication::applicationPid();
 
-    for (uWSGI *engine : *coreEngines) {
+    const auto engines = *coreEngines;
+    for (uWSGI *engine : engines) {
         engine->stop();
     }
     qDeleteAll(*coreEngines);

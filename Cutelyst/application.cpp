@@ -337,7 +337,8 @@ bool Application::setup(Engine *engine)
                                                         QLatin1String("Loaded components:")).constData();
         }
 
-        for (Controller *controller : d->controllers) {
+        const auto controllers = d->controllers;
+        for (Controller *controller : controllers) {
             controller->d_ptr->init(this, d->dispatcher);
         }
 
@@ -429,7 +430,8 @@ bool Application::enginePostFork()
         return false;
     }
 
-    for (Controller *controller : d->controllers) {
+    const auto controllers = d->controllers;
+    for (Controller *controller : controllers) {
         if (!controller->postFork(this)) {
             return false;
         }

@@ -150,7 +150,8 @@ void ControllerPrivate::setupFinished()
         end = endList.last();
     }
 
-    for (Action *action : actionList) {
+    const auto actions = actionList;
+    for (Action *action : actions) {
         action->dispatcherReady(dispatcher, q);
     }
 
@@ -164,7 +165,8 @@ bool Controller::_DISPATCH(Context *c)
     bool ret = true;
 
     // Dispatch to Begin and Auto
-    for (Action *action : d->beginAutoList) {
+    const auto beginAutoList = d->beginAutoList;
+    for (Action *action : beginAutoList) {
         if (!action->dispatch(c)) {
             ret = false;
             break;

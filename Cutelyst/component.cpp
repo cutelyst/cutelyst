@@ -62,7 +62,8 @@ bool Component::execute(Context *c)
     Q_D(Component);
 
     if (d->proccessRoles) {
-        for (Component *code : d->beforeRoles) {
+        const auto beforeRoles = d->beforeRoles;
+        for (Component *code : beforeRoles) {
             if (!code->beforeExecute(c)) {
                 return false;
             }
@@ -75,7 +76,8 @@ bool Component::execute(Context *c)
             return false;
         }
 
-        for (Component *code : d->afterRoles) {
+        const auto afterRoles = d->afterRoles;
+        for (Component *code : afterRoles) {
             if (!code->afterExecute(c)) {
                 return false;
             }
