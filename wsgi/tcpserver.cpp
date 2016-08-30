@@ -34,9 +34,8 @@ TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
 
 void TcpServer::incomingConnection(qintptr handle)
 {
-//    qDebug() << Q_FUNC_INFO << handle << thread();
     TcpSocket *sock;
-    if (m_socks.size()) {
+    if (!m_socks.empty()) {
         sock = m_socks.back();
         m_socks.pop_back();
         sock->resetSocket();
@@ -49,31 +48,8 @@ void TcpServer::incomingConnection(qintptr handle)
         connect(sock, &TcpSocket::finished, this, &TcpServer::enqueue);
     }
 
-//    auto requestNotifier = new QSocketNotifier(handle, QSocketNotifier::Read, sock);
-//    connect(requestNotifier, &QSocketNotifier::activated, sock, &QIODevice::readyRead);
-//sock->fd = handle;
-//    connect(requestNotifier, &QSocketNotifier::activated,
-//            [=]() {
-//        sock->readyRead();
-//    });
-
-//    qDebug() << Q_FUNC_INFO << handle << sock;
-
     sock->setSocketDescriptor(handle);
     sock->start = QDateTime::currentMSecsSinceEpoch();
-
-//    auto server = qobject_cast<QTcpServer*>(sender());
-//    QTcpSocket *conn = server->nextPendingConnection();
-//    if (conn) {
-//    connect(sock, &QTcpSocket::disconnected, sock, &QTcpSocket::deleteLater);
-//    connect(sock, &QTcpSocket::disconnected, this, &TcpServer::enqueue);
-//        TcpSocket *sock = qobject_cast<TcpSocket*>(conn);
-//        sock->engine = m_engine;
-//        static QString serverAddr = serverAddress().toString();
-//        sock->serverAddress = serverAddr;
-//        connect(sock, &QIODevice::readyRead, m_proto, &Protocol::readyRead);
-//    }
-        //    addPendingConnection(sock);
 }
 
 void TcpServer::enqueue()
