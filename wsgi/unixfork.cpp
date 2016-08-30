@@ -275,3 +275,5 @@ bool UnixFork::createChild()
 
     return false;
 }
+
+#include "moc_unixfork.cpp"
