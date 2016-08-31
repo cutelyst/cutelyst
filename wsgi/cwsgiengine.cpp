@@ -20,6 +20,7 @@
 
 #include "protocolhttp.h"
 #include "tcpserver.h"
+#include "config.h"
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
@@ -29,6 +30,7 @@
 #include <QCoreApplication>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QElapsedTimer>
 #include <QLocalServer>
 #include <QLocalSocket>
 
@@ -77,6 +79,28 @@ void CWsgiEngine::postFork()
     }
 }
 
+QElapsedTimer timerSetup()
+{
+    QElapsedTimer timer;
+    timer.start();
+    return timer;
+}
+
+QByteArray dateHeader()
+{
+    QString ret;
+    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    return ret.toLatin1();
+}
+
+QByteArray serverHeader()
+{
+    QString ret;
+    ret = QLatin1String("\r\nServer: cutelyst/") + QLatin1String(VERSION);
+    return ret.toLatin1();
+}
+
 bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
     auto conn = static_cast<QIODevice*>(engineData);
@@ -92,6 +116,7 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
         sock->headerClose = 0;
     }
 
+    bool hasDate = false;
     auto it = headersData.constBegin();
     const auto endIt = headersData.constEnd();
     while (it != endIt) {
@@ -103,12 +128,28 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
             } else {
                 sock->headerClose = 1;
             }
+        } else if (!hasDate && key == QLatin1String("date")) {
+            hasDate = true;
         }
+
         QString ret(QLatin1String("\r\n") + camelCaseHeader(key) + QLatin1String(": ") + value);
         conn->write(ret.toLatin1());
 
         ++it;
     }
+
+    if (!hasDate) {
+        static QByteArray lastDate = dateHeader();
+        static QElapsedTimer timer = timerSetup();
+        if (timer.hasExpired(1000)) {
+            lastDate = dateHeader();
+            timer.restart();
+        }
+        conn->write(lastDate);
+    }
+
+    static QByteArray server = serverHeader();
+    conn->write(server);
 
     return conn->write("\r\n\r\n", 4) == 4;
 }

@@ -39,8 +39,6 @@ ProtocolHttp::ProtocolHttp(QObject *parent) : Protocol(parent)
 
 void ProtocolHttp::readyRead()
 {
-    static QByteArrayMatcher matcher("\r\n");
-
     auto conn = sender();
     auto sock = qobject_cast<TcpSocket*>(conn);
 
@@ -69,6 +67,7 @@ void ProtocolHttp::readyRead()
 
     while (sock->last < sock->buf_size) {
 //        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
+        static QByteArrayMatcher matcher("\r\n");
         int ix = matcher.indexIn(sock->buf, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
