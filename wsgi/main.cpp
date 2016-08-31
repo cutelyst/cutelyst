@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                                          QStringLiteral("bytes"));
     parser.addOption(bufferSize);
 
-    auto postBuffering = QCommandLineOption({ QStringLiteral("post-buffering") },
+    auto postBuffering = QCommandLineOption(QStringLiteral("post-buffering"),
                                             QStringLiteral("enable post buffering"),
                                             QStringLiteral("bytes"));
     parser.addOption(postBuffering);
