@@ -35,8 +35,9 @@ public:
     virtual void readyRead();
 
 private:
-    inline void processRequest(const char *ptr, const char *end, Socket *sock);
-    inline void processHeader(const char *ptr, const char *end, Socket *sock);
+    inline bool processRequest(TcpSocket *sock);
+    inline void parseMethod(const char *ptr, const char *end, Socket *sock);
+    inline void parseHeader(const char *ptr, const char *end, Socket *sock);
 
 };
 

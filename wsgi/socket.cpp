@@ -18,6 +18,9 @@
  */
 #include "socket.h"
 
+#include "cwsgiengine.h"
+
+#include <QCoreApplication>
 #include <QDebug>
 
 using namespace CWSGI;

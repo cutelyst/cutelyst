@@ -30,19 +30,27 @@ namespace CWSGI {
 class CWsgiEngine;
 class Socket
 {
+    Q_GADGET
 public:
     Socket();
     virtual ~Socket();
 
-    inline void resetSocket() {
-        buffer = QByteArray();
+    enum ParserState {
+        MethodLine = 0,
+        HeaderLine,
+        ContentBody
+    };
+    Q_ENUM(ParserState)
 
+    inline void resetSocket() {
         buf_size = 0;
-        connState = 0;
+        connState = MethodLine;
         beginLine = 0;
         last = 0;
         headerClose = 0;
         processing = false;
+        delete body;
+        body = nullptr;
     }
 
     Cutelyst::Headers headers;
@@ -51,13 +59,13 @@ public:
     QString path;
     QByteArray query;
     QString protocol;
-    QByteArray buffer;
     quint64 start;
+    QIODevice *body = nullptr;
     CWsgiEngine *engine;
     char *buf;
     qint64 contentLength;
     int buf_size = 0;
-    int connState = 0;
+    ParserState connState = MethodLine;
     int beginLine = 0;
     int last = 0;
     int headerClose = 0;

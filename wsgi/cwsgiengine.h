@@ -51,7 +51,7 @@ public:
                        QString(),
                        sock->headers,
                        sock->start,
-                       0,
+                       sock->body,
                        sock);
     }
 

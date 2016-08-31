@@ -26,6 +26,7 @@
 #include <QByteArrayMatcher>
 #include <QEventLoop>
 #include <QCoreApplication>
+#include <QBuffer>
 #include <QTimer>
 #include <QDebug>
 
@@ -43,12 +44,28 @@ void ProtocolHttp::readyRead()
     auto conn = sender();
     auto sock = qobject_cast<TcpSocket*>(conn);
 
+    // Post buffering
+    if (sock->connState == Socket::ContentBody) {
+        qint64 bytesAvailable = sock->bytesAvailable();
+        int len;
+        qint64 remaining;
+        do {
+            remaining = sock->contentLength - sock->body->size();
+            len = sock->read(sock->buf, qMin(static_cast<qint64>(4096), remaining));
+            bytesAvailable -= len;
+//            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
+            sock->body->write(sock->buf, len);
+        } while (bytesAvailable);
+
+        if (remaining == len) {
+            processRequest(sock);
+        }
+
+        return;
+    }
+
     int len = sock->read(sock->buf + sock->buf_size, 4096 - sock->buf_size);
-
     sock->buf_size += len;
-
-//    qDebug() << Q_FUNC_INFO << len;
-//    qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
 
     while (sock->last < sock->buf_size) {
 //        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
@@ -59,39 +76,42 @@ void ProtocolHttp::readyRead()
             sock->beginLine = ix + 2;
             sock->last = sock->beginLine;
 
-            if (sock->connState == 0) {
-                processRequest(ptr, ptr + len, sock);
-                sock->connState = 1;
+            if (sock->connState == Socket::MethodLine) {
+                parseMethod(ptr, ptr + len, sock);
+                sock->connState = Socket::HeaderLine;
                 sock->contentLength = -1;
                 sock->headers = Cutelyst::Headers();
 //                qDebug() << "--------" << sock->method << sock->path << sock->query << sock->protocol;
 
-            } else if (sock->connState == 1) {
+            } else if (sock->connState == Socket::HeaderLine) {
                 if (len) {
-                    processHeader(ptr, ptr + len, sock);
-//                } else if (sock->contentLength != -1) {
-
+                    parseHeader(ptr, ptr + len, sock);
                 } else {
-                    sock->processing = true;
-                    sock->engine->processSocket(sock);
-                    sock->processing = false;
+                    if (sock->contentLength != -1) {
+                        sock->connState = Socket::ContentBody;
+                        auto buffer = new QBuffer(sock);
+                        buffer->open(QIODevice::ReadWrite);
+                        buffer->buffer().reserve(sock->contentLength);
+                        sock->body = buffer;
 
-                    if (sock->headerClose == 2) {
-//                        qDebug() << "disconnectFromHost";
-                        sock->disconnectFromHost();
-                        break;
-                    } else if (sock->last < sock->buf_size) {
-                        // move pipelined request to 0
-                        int remaining = sock->buf_size - sock->last;
-                        memmove(sock->buf, sock->buf + sock->last, remaining);
-                        sock->resetSocket();
-                        sock->buf_size = remaining;
+                        ptr += 2;
+                        len = qMin(sock->contentLength, static_cast<qint64>(sock->buf_size - sock->last));
+//                        qDebug() << "WRITE" << sock->contentLength << len;
+                        if (len) {
+                            sock->body->write(ptr, len);
+                        }
+                        sock->last += len;
 
-                        QCoreApplication::processEvents();
-                    } else {
-                        sock->resetSocket();
+                        if (sock->contentLength > len) {
+//                            qDebug() << "WRITE more..." << sock->contentLength << len;
+                            // need to wait for more data
+                            return;
+                        }
                     }
-                    sock->start = sock->engine->time();
+
+                    if (!processRequest(sock)) {
+                        break;
+                    }
                 }
             }
         } else {
@@ -104,7 +124,37 @@ void ProtocolHttp::readyRead()
     }
 }
 
-void ProtocolHttp::processRequest(const char *ptr, const char *end, Socket *sock)
+bool ProtocolHttp::processRequest(TcpSocket *sock)
+{
+//    qDebug() << "processRequest" << sock->contentLength;
+    sock->processing = true;
+    if (sock->body) {
+        sock->body->seek(0);
+    }
+    sock->engine->processSocket(sock);
+    sock->processing = false;
+
+    if (sock->headerClose == 2) {
+//                        qDebug() << "disconnectFromHost";
+        sock->disconnectFromHost();
+        return false;
+    } else if (sock->last < sock->buf_size) {
+        // move pipelined request to 0
+        int remaining = sock->buf_size - sock->last;
+        memmove(sock->buf, sock->buf + sock->last, remaining);
+        sock->resetSocket();
+        sock->buf_size = remaining;
+
+        QCoreApplication::processEvents();
+    } else {
+        sock->resetSocket();
+    }
+    sock->start = sock->engine->time();
+
+    return true;
+}
+
+void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock)
 {
     const char *word_boundary = ptr;
     while (*word_boundary != ' ' && word_boundary < end) {
@@ -151,7 +201,7 @@ void ProtocolHttp::processRequest(const char *ptr, const char *end, Socket *sock
     sock->protocol = QString::fromLatin1(ptr, word_boundary - ptr);
 }
 
-void ProtocolHttp::processHeader(const char *ptr, const char *end, Socket *sock)
+void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock)
 {
     const char *word_boundary = ptr;
     while (*word_boundary != ':' && word_boundary < end) {
@@ -170,7 +220,7 @@ void ProtocolHttp::processHeader(const char *ptr, const char *end, Socket *sock)
         } else {
             sock->headerClose = 1;
         }
-    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
+    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Content-Length"), Qt::CaseInsensitive) == 0) {
         bool ok;
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
