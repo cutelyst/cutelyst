@@ -270,6 +270,9 @@ bool Engine::postForkApplication()
         qCCritical(CUTELYST_ENGINE) << "Failed to postForkApplication on a null application";
         return false;
     }
+
+    QThread::currentThread()->setObjectName(QString::number(d->workerCore));
+
     return d->app->enginePostFork();
 }
 

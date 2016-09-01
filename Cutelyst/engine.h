@@ -84,10 +84,14 @@ protected:
     /**
      * @brief postForkApplication
      *
-     * Should be called after the engine forks
+     * Subclasses must be call after the engine forks by the worker thread,
+     * if no forking is involved it must be called once the worker thread has
+     * started.
      *
-     * @return true if the engine should use this
-     * process
+     * For convenience QThread::currentThread() has it's object name set with
+     * the worker core number.
+     *
+     * @return true if the engine should use this process
      */
     bool postForkApplication();
 
