@@ -25,12 +25,13 @@
 
 namespace CWSGI {
 
+class WSGI;
 class Socket;
 class ProtocolHttp : public Protocol
 {
     Q_OBJECT
 public:
-    explicit ProtocolHttp(QObject *parent = 0);
+    explicit ProtocolHttp(WSGI *wsgi, QObject *parent = 0);
 
     virtual void readyRead();
 

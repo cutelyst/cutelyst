@@ -31,7 +31,7 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(QObject *parent = 0);
+    explicit TcpServer(Protocol *proto, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle);
 

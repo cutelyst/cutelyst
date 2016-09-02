@@ -26,9 +26,9 @@
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(QObject *parent) : QTcpServer(parent)
+TcpServer::TcpServer(Protocol *proto, QObject *parent) : QTcpServer(parent)
+  , m_proto(proto)
 {
-    m_proto = new ProtocolHttp(this);
     m_engine = qobject_cast<CWsgiEngine*>(parent);
 }
 

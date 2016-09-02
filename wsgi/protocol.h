@@ -25,13 +25,16 @@
 
 namespace CWSGI {
 
+class WSGI;
 class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    explicit Protocol(QObject *parent = 0);
+    explicit Protocol(WSGI *wsgi, QObject *parent = 0);
 
     virtual void readyRead() = 0;
+
+    WSGI *m_wsgi;
 };
 
 }

@@ -32,7 +32,7 @@
 
 using namespace CWSGI;
 
-ProtocolHttp::ProtocolHttp(QObject *parent) : Protocol(parent)
+ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
 {
 
 }

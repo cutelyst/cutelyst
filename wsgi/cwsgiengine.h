@@ -30,12 +30,13 @@ class QTcpServer;
 
 namespace CWSGI {
 
+class WSGI;
 class Protocol;
 class CWsgiEngine : public Engine
 {
     Q_OBJECT
 public:
-    explicit CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts);
+    explicit CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi);
 
     virtual int workerId() const;
 
@@ -78,7 +79,7 @@ protected:
 
 private:
     QVector<QTcpServer *> m_sockets;
-
+    WSGI *m_wsgi;
 };
 
 }

@@ -21,6 +21,7 @@
 #include "protocolhttp.h"
 #include "tcpserver.h"
 #include "config.h"
+#include "wsgi.h"
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
@@ -36,9 +37,10 @@
 
 using namespace CWSGI;
 
-CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts) : Engine(app, workerCore, opts)
+CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
+  , m_wsgi(wsgi)
 {
-    m_proto = new ProtocolHttp(this);
+    m_proto = new ProtocolHttp(wsgi, this);
 }
 
 int CWsgiEngine::workerId() const
@@ -64,7 +66,7 @@ void CWsgiEngine::listen()
 
     const auto sockets = m_sockets;
     for (QTcpServer *socket : sockets) {
-        auto server = new TcpServer(this);
+        auto server = new TcpServer(m_proto, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
         connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);

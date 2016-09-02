@@ -20,7 +20,8 @@
 
 using namespace CWSGI;
 
-Protocol::Protocol(QObject *parent) : QObject(parent)
+Protocol::Protocol(WSGI *wsgi, QObject *parent) : QObject(parent)
+  , m_wsgi(wsgi)
 {
 
 }

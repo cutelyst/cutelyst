@@ -323,7 +323,7 @@ void WSGI::engineInitted()
 
 CWsgiEngine *WSGI::createEngine(Application *app, int core)
 {
-    auto engine = new CWsgiEngine(app, core, QVariantMap());
+    auto engine = new CWsgiEngine(app, core, QVariantMap(), this);
     connect(engine, &CWsgiEngine::initted, this, &WSGI::engineInitted, Qt::QueuedConnection);
     connect(this, &WSGI::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     engine->setTcpSockets(m_sockets);
