@@ -179,7 +179,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock)
     sock->path = QString::fromLatin1(ptr, word_boundary - ptr);
 
     if (*word_boundary == '?') {
-        ptr = word_boundary;
+        ptr = word_boundary + 1;
         while (*word_boundary != ' ' && word_boundary < end) {
             ++word_boundary;
         }
