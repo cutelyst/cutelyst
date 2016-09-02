@@ -275,7 +275,7 @@ bool WSGI::setupApplication()
 
     std::cout << "Threads:" << m_threads << std::endl;
     if (m_threads) {
-        m_listening = m_threads;
+        m_enginesInitted = m_threads;
         for (int i = 1; i < m_threads; ++i) {
             createEngine(app, i);
         }
@@ -303,10 +303,10 @@ void WSGI::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
     }
 }
 
-void WSGI::engineListening()
+void WSGI::engineInitted()
 {
-    // All engines are listening
-    if (--m_listening == 0) {
+    // All engines are initted
+    if (--m_enginesInitted == 0) {
 #ifdef Q_OS_UNIX
         if (m_process) {
             auto uFork = new UnixFork(this);
@@ -324,7 +324,7 @@ void WSGI::engineListening()
 CWsgiEngine *WSGI::createEngine(Application *app, int core)
 {
     auto engine = new CWsgiEngine(app, core, QVariantMap());
-    connect(engine, &CWsgiEngine::listening, this, &WSGI::engineListening, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::initted, this, &WSGI::engineInitted, Qt::QueuedConnection);
     connect(this, &WSGI::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     engine->setTcpSockets(m_sockets);
     m_engines.push_back(engine);

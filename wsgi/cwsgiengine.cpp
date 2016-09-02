@@ -66,9 +66,11 @@ void CWsgiEngine::listen()
     for (QTcpServer *socket : sockets) {
         auto server = new TcpServer(this);
         server->setSocketDescriptor(socket->socketDescriptor());
+        server->pauseAccepting();
+        connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
     }
 
-    Q_EMIT listening();
+    Q_EMIT initted();
 }
 
 void CWsgiEngine::postFork()
@@ -77,6 +79,8 @@ void CWsgiEngine::postFork()
         // CHEAP
         QCoreApplication::exit(15);
     }
+
+    Q_EMIT resumeAccepting();
 }
 
 QElapsedTimer timerSetup()
