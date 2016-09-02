@@ -94,7 +94,7 @@ Q_SIGNALS:
 private:
     bool setupApplication();
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void engineListening();
+    void engineInitted();
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
@@ -109,7 +109,7 @@ private:
     QString m_chdir2;
     QString m_ini;
     qint64 m_postBuffering = -1;
-    int m_listening = 1;
+    int m_enginesInitted = 1;
     int m_threads = 0;
     int m_process = 0;
     bool m_master = false;
