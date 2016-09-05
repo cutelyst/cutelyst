@@ -20,11 +20,8 @@
 #define WSGI_H
 
 #include <QObject>
-#include <QTcpServer>
+#include <QVector>
 #include <QProcess>
-
-#include <Cutelyst/Engine>
-#include <Cutelyst/Application>
 
 #if defined(cutelyst_wsgi_qt5_EXPORTS)
 #  define CUTELYST_WSGI_EXPORT Q_DECL_EXPORT
@@ -32,7 +29,13 @@
 #  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
 #endif
 
-class QIODevice;
+class QTcpServer;
+class QCoreApplication;
+
+namespace Cutelyst {
+class Application;
+class Engine;
+}
 
 namespace CWSGI {
 
@@ -44,11 +47,7 @@ class CUTELYST_WSGI_EXPORT WSGI : public QObject
 public:
     explicit WSGI(QObject *parent = 0);
 
-    bool listenTcp(const QString &line);
-
-    bool listenSocket(const QString &address);
-
-    bool loadApplication();
+    int load(const QCoreApplication &app);
 
     Q_PROPERTY(QString application READ application WRITE setApplication)
     void setApplication(const QString &application);
@@ -66,7 +65,7 @@ public:
     void setChdir(const QString &chdir);
     QString chdir() const;
 
-    Q_PROPERTY(QString httpSocket READ httpSocket WRITE setHttpSocket)
+    Q_PROPERTY(QString http_socket READ httpSocket WRITE setHttpSocket)
     void setHttpSocket(const QString &httpSocket);
     QString httpSocket() const;
 
@@ -82,17 +81,27 @@ public:
     void setMaster(bool enable);
     bool master() const;
 
-    Q_PROPERTY(qint64 postBuffering READ postBuffering WRITE setPostBuffering)
+    Q_PROPERTY(qint64 buffer_size READ bufferSize WRITE setBufferSize)
+    void setBufferSize(qint64 size);
+    int bufferSize() const;
+
+    Q_PROPERTY(qint64 post_buffering READ postBuffering WRITE setPostBuffering)
     void setPostBuffering(qint64 size);
     qint64 postBuffering() const;
 
-    void proc();
+    Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize)
+    void setPostBufferingBufsize(qint64 size);
+    qint64 postBufferingBufsize() const;
 
 Q_SIGNALS:
     void forked();
 
 private:
-    bool setupApplication();
+    bool listenTcp(const QString &line);
+    bool listenSocket(const QString &address);
+    void proc();
+    int parseCommandLine(const QCoreApplication &app);
+    int setupApplication();
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void engineInitted();
 
@@ -108,7 +117,9 @@ private:
     QString m_chdir;
     QString m_chdir2;
     QString m_ini;
+    int m_bufferSize = -1;
     qint64 m_postBuffering = -1;
+    qint64 m_postBufferingBufsize = -1;
     int m_enginesInitted = 1;
     int m_threads = 0;
     int m_process = 0;

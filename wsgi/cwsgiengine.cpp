@@ -66,7 +66,7 @@ void CWsgiEngine::listen()
 
     const auto sockets = m_sockets;
     for (QTcpServer *socket : sockets) {
-        auto server = new TcpServer(m_proto, this);
+        auto server = new TcpServer(m_wsgi, m_proto, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
         connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);

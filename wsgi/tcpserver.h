@@ -26,12 +26,13 @@
 
 namespace CWSGI {
 
+class WSGI;
 class CWsgiEngine;
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(Protocol *proto, QObject *parent = 0);
+    explicit TcpServer(WSGI *wsgi, Protocol *proto, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle);
 
@@ -39,6 +40,7 @@ public:
 
     Protocol *m_proto;
     CWsgiEngine *m_engine;
+    WSGI *m_wsgi;
 
     std::vector<TcpSocket *> m_socks;
 };

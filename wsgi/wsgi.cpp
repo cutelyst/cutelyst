@@ -28,10 +28,10 @@
 #include "unixfork.h"
 #endif
 
-
 #include <Cutelyst/Application>
 
 #include <QCoreApplication>
+#include <QCommandLineParser>
 #include <QUrl>
 #include <QHostAddress>
 #include <QTcpServer>
@@ -53,6 +53,22 @@ using namespace CWSGI;
 WSGI::WSGI(QObject *parent) : QObject(parent)
 {
     std::cout << "WSGI starting" << std::endl;
+}
+
+
+int WSGI::load(const QCoreApplication &app)
+{
+    int ret = parseCommandLine(app);
+    if (ret) {
+        return ret;
+    }
+
+    if (m_master) {
+        proc();
+        return 0;
+    }
+
+    return setupApplication();
 }
 
 bool WSGI::listenTcp(const QString &line)
@@ -97,16 +113,6 @@ bool WSGI::listenSocket(const QString &address)
     auto server = new QLocalServer(this);
     //    connect(server, &QLocalServer::newConnection, this, &WSGI::newconnectionLocalSocket);
     return server->listen(address);
-}
-
-bool WSGI::loadApplication()
-{
-    if (m_master) {
-        proc();
-        return true;
-    }
-
-    return setupApplication();
 }
 
 void WSGI::setApplication(const QString &application)
@@ -189,6 +195,16 @@ bool WSGI::master() const
     return m_master;
 }
 
+void WSGI::setBufferSize(qint64 size)
+{
+    m_bufferSize = size;
+}
+
+int WSGI::bufferSize() const
+{
+    return m_bufferSize;
+}
+
 void WSGI::setPostBuffering(qint64 size)
 {
     m_postBuffering = size;
@@ -197,6 +213,16 @@ void WSGI::setPostBuffering(qint64 size)
 qint64 WSGI::postBuffering() const
 {
     return m_postBuffering;
+}
+
+void WSGI::setPostBufferingBufsize(qint64 size)
+{
+    m_postBufferingBufsize = size;
+}
+
+qint64 WSGI::postBufferingBufsize() const
+{
+    return m_postBufferingBufsize;
 }
 
 void WSGI::proc()
@@ -219,13 +245,154 @@ void WSGI::proc()
     process->start(app, args);
 }
 
-bool WSGI::setupApplication()
+int WSGI::parseCommandLine(const QCoreApplication &app)
+{
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    auto ini = QCommandLineOption(QStringLiteral("ini"),
+                                  QCoreApplication::translate("main", "load config from ini file"),
+                                  QCoreApplication::translate("main", "file"));
+    parser.addOption(ini);
+
+    auto chdir = QCommandLineOption(QStringLiteral("chdir"),
+                                    QCoreApplication::translate("main", "chdir to specified directory before apps loading"),
+                                    QCoreApplication::translate("main", "directory"));
+    parser.addOption(chdir);
+
+    auto chdir2 = QCommandLineOption(QStringLiteral("chdir2"),
+                                     QCoreApplication::translate("main", "chdir to specified directory afterapps loading"),
+                                     QCoreApplication::translate("main", "directory"));
+    parser.addOption(chdir2);
+
+    auto application = QCommandLineOption({ QStringLiteral("application"), QStringLiteral("a") },
+                                          QCoreApplication::translate("main", "Application to load"),
+                                          QCoreApplication::translate("main", "file"));
+    parser.addOption(application);
+
+    auto threads = QCommandLineOption({ QStringLiteral("threads"), QStringLiteral("t") },
+                                      QCoreApplication::translate("main", "Number of thread to use"),
+                                      QCoreApplication::translate("main", "threads"));
+    parser.addOption(threads);
+
+#ifdef Q_OS_UNIX
+    auto process = QCommandLineOption({ QStringLiteral("process"), QStringLiteral("p") },
+                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
+                                      QCoreApplication::translate("main", "processes"));
+    parser.addOption(process);
+#endif // Q_OS_UNIX
+
+    auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
+                                      QCoreApplication::translate("main", "Enable master process"));
+    parser.addOption(master);
+
+    auto bufferSize = QCommandLineOption({ QStringLiteral("buffer-size"), QStringLiteral("b") },
+                                         QCoreApplication::translate("main", "set internal buffer size"),
+                                         QCoreApplication::translate("main", "bytes"));
+    parser.addOption(bufferSize);
+
+    auto postBuffering = QCommandLineOption(QStringLiteral("post-buffering"),
+                                            QCoreApplication::translate("main", "set size after which will buffer to disk instead of memory"),
+                                            QCoreApplication::translate("main", "bytes"));
+    parser.addOption(postBuffering);
+
+    auto postBufferingBufsize = QCommandLineOption(QStringLiteral("post-buffering-bufsize"),
+                                            QCoreApplication::translate("main", "set buffer size for read() in post buffering mode"),
+                                            QCoreApplication::translate("main", "bytes"));
+    parser.addOption(postBufferingBufsize);
+
+    auto httpSocket = QCommandLineOption({ QStringLiteral("http-socket"), QStringLiteral("h1") },
+                                         QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
+                                         QCoreApplication::translate("main", "address"));
+    parser.addOption(httpSocket);
+
+    QCommandLineOption restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
+                                                    QStringLiteral("Restarts when the application file changes"));
+    parser.addOption(restart);
+
+    // Process the actual command line arguments given by the user
+    parser.process(app);
+
+    if (parser.isSet(ini)) {
+        setIni(parser.value(ini));
+    }
+
+    if (parser.isSet(chdir)) {
+        setChdir(parser.value(chdir));
+    }
+
+    if (parser.isSet(chdir2)) {
+        setChdir(parser.value(chdir2));
+    }
+
+    if (parser.isSet(threads)) {
+        setThreads(parser.value(threads).toInt());
+    }
+
+#ifdef Q_OS_UNIX
+    if (parser.isSet(process)) {
+        setProcess(parser.value(process).toInt());
+    }
+#endif // Q_OS_UNIX
+
+    if (parser.isSet(bufferSize)) {
+        bool ok;
+        auto size = parser.value(bufferSize).toLongLong(&ok);
+        setBufferSize(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(postBuffering)) {
+        bool ok;
+        auto size = parser.value(postBuffering).toLongLong(&ok);
+        setPostBuffering(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(postBufferingBufsize)) {
+        bool ok;
+        auto size = parser.value(postBufferingBufsize).toLongLong(&ok);
+        setPostBufferingBufsize(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(application)) {
+        setApplication(parser.value(application));
+    }
+
+    bool masterSet = parser.isSet(master);
+    setMaster(masterSet);
+
+    if (!masterSet && parser.isSet(httpSocket)) {
+        const auto socks = parser.values(httpSocket);
+        for (const QString &http : socks) {
+            setHttpSocket(http);
+        }
+    }
+
+    if (this->application().isEmpty()) {
+        std::cout << "Application is not defined" << std::endl;
+        parser.showHelp(2);
+    }
+
+    return 0;
+}
+
+int WSGI::setupApplication()
 {
     if (!m_chdir.isEmpty()) {
         std::cout << "Changing directory to: " << m_chdir.toLatin1().constData() << std::endl;;
         if (!QDir().cd(m_chdir)) {
             qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << m_chdir;
-            return false;
+            return 1;
         }
     }
 
@@ -233,7 +400,7 @@ bool WSGI::setupApplication()
         std::cout << "Loading configuration: " << m_ini.toLatin1().constData() << std::endl;;
         if (!loadConfig()) {
             qCCritical(CUTELYST_WSGI) << "Failed to load config " << m_ini;
-            return false;
+            return 1;
         }
     }
 
@@ -246,7 +413,7 @@ bool WSGI::setupApplication()
     QPluginLoader loader(m_application);
     if (!loader.load()) {
         qCritical() << "Could not load application:" << loader.errorString();
-        return false;
+        return 1;
     }
 
     QObject *instance = loader.instance();
@@ -285,13 +452,13 @@ bool WSGI::setupApplication()
         std::cout << "Changing directory2 to" << m_chdir2.toLatin1().constData()  << std::endl;;
         if (!QDir().cd(m_chdir2)) {
             qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << m_chdir2;
-            return false;
+            return 1;
         }
     }
 
 // TODO create a listening timer
 
-    return true;
+    return 0;
 }
 
 void WSGI::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -347,10 +514,17 @@ bool WSGI::loadConfig()
         return false;
     }
 
+    qputenv("CUTELYST_CONFIG", m_ini.toUtf8());
+    if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
+        qputenv("QT_LOGGING_CONF", m_ini.toUtf8());
+    }
+
     settings.beginGroup(QStringLiteral("wsgi"));
     const auto keys = settings.allKeys();
     for (const QString &key : keys) {
-        setProperty(key.toLatin1().constData(), settings.value(key));
+        QString prop = key;
+        prop.replace(QLatin1Char('-'), QLatin1Char('_'));
+        setProperty(prop.toLatin1().constData(), settings.value(key));
     }
 
     return true;

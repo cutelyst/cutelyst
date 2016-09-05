@@ -19,20 +19,22 @@
 #include "socket.h"
 
 #include "cwsgiengine.h"
+#include "wsgi.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 
 using namespace CWSGI;
 
-TcpSocket::TcpSocket(QObject *parent) : QTcpSocket(parent)
+TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(wsgi)
 {
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 
-Socket::Socket()
+Socket::Socket(WSGI *wsgi)
 {
-    buf = new char[4096];
+    static int bufferSize = qMax(4096, wsgi->bufferSize());
+    buf = new char[bufferSize];
 }
 
 Socket::~Socket()

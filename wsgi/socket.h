@@ -27,12 +27,13 @@ class QIODevice;
 
 namespace CWSGI {
 
+class WSGI;
 class CWsgiEngine;
 class Socket
 {
     Q_GADGET
 public:
-    Socket();
+    Socket(WSGI *wsgi);
     virtual ~Socket();
 
     enum ParserState {
@@ -76,7 +77,7 @@ class TcpSocket : public QTcpSocket, public Socket
 {
     Q_OBJECT
 public:
-    explicit TcpSocket(QObject *parent = 0);
+    explicit TcpSocket(WSGI *wsgi, QObject *parent = 0);
 
     void socketDisconnected();
 

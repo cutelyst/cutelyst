@@ -26,8 +26,9 @@
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(Protocol *proto, QObject *parent) : QTcpServer(parent)
+TcpServer::TcpServer(WSGI *wsgi, Protocol *proto, QObject *parent) : QTcpServer(parent)
   , m_proto(proto)
+  , m_wsgi(wsgi)
 {
     m_engine = qobject_cast<CWsgiEngine*>(parent);
 }
@@ -40,7 +41,7 @@ void TcpServer::incomingConnection(qintptr handle)
         m_socks.pop_back();
         sock->resetSocket();
     } else {
-        sock = new TcpSocket(this);
+        sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
         static QString serverAddr = serverAddress().toString();
         sock->serverAddress = serverAddr;
