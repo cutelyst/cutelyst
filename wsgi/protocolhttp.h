@@ -32,6 +32,7 @@ class ProtocolHttp : public Protocol
     Q_OBJECT
 public:
     explicit ProtocolHttp(WSGI *wsgi, QObject *parent = 0);
+    ~ProtocolHttp();
 
     virtual void readyRead();
 
@@ -40,6 +41,7 @@ private:
     inline void parseMethod(const char *ptr, const char *end, Socket *sock);
     inline void parseHeader(const char *ptr, const char *end, Socket *sock);
 
+    char *postBuffer;
 };
 
 }

@@ -33,7 +33,7 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
 
 Socket::Socket(WSGI *wsgi)
 {
-    static int bufferSize = qMax(4096, wsgi->bufferSize());
+    static int bufferSize = wsgi->bufferSize();
     buf = new char[bufferSize];
 }
 

@@ -36,7 +36,12 @@ using namespace CWSGI;
 
 ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
 {
+    postBuffer = new char[m_wsgi->postBufferingBufsize()];
+}
 
+ProtocolHttp::~ProtocolHttp()
+{
+    delete [] postBuffer;
 }
 
 void ProtocolHttp::readyRead()
@@ -44,19 +49,19 @@ void ProtocolHttp::readyRead()
     auto conn = sender();
     auto sock = qobject_cast<TcpSocket*>(conn);
 
-    static qint64 bufferSize = qMax(4096, m_wsgi->bufferSize());
-
     // Post buffering
     if (sock->connState == Socket::ContentBody) {
         qint64 bytesAvailable = sock->bytesAvailable();
         int len;
         qint64 remaining;
+
+        static qint64 postBufferSize = m_wsgi->postBufferingBufsize();
         do {
             remaining = sock->contentLength - sock->body->size();
-            len = sock->read(sock->buf, qMin(bufferSize, remaining));
+            len = sock->read(postBuffer, qMin(postBufferSize, remaining));
             bytesAvailable -= len;
 //            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
-            sock->body->write(sock->buf, len);
+            sock->body->write(postBuffer, len);
         } while (bytesAvailable);
 
         if (remaining == len) {
@@ -66,6 +71,7 @@ void ProtocolHttp::readyRead()
         return;
     }
 
+    static qint64 bufferSize = m_wsgi->bufferSize();
     int len = sock->read(sock->buf + sock->buf_size, bufferSize - sock->buf_size);
     sock->buf_size += len;
 

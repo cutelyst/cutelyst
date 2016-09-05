@@ -117,9 +117,9 @@ private:
     QString m_chdir;
     QString m_chdir2;
     QString m_ini;
-    int m_bufferSize = -1;
+    int m_bufferSize = 4096;
     qint64 m_postBuffering = -1;
-    qint64 m_postBufferingBufsize = -1;
+    qint64 m_postBufferingBufsize = 4096;
     int m_enginesInitted = 1;
     int m_threads = 0;
     int m_process = 0;

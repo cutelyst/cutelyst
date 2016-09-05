@@ -197,6 +197,10 @@ bool WSGI::master() const
 
 void WSGI::setBufferSize(qint64 size)
 {
+    if (size < 4096) {
+        qWarning() << "Buffer size must be at least 4096 bytes, ignoring";
+        return;
+    }
     m_bufferSize = size;
 }
 
@@ -217,6 +221,10 @@ qint64 WSGI::postBuffering() const
 
 void WSGI::setPostBufferingBufsize(qint64 size)
 {
+    if (size < 4096) {
+        qWarning() << "Post buffer size must be at least 4096 bytes, ignoring";
+        return;
+    }
     m_postBufferingBufsize = size;
 }
 
