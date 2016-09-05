@@ -46,6 +46,7 @@ class CUTELYST_WSGI_EXPORT WSGI : public QObject
     Q_OBJECT
 public:
     explicit WSGI(QObject *parent = 0);
+    virtual ~WSGI();
 
     int load(const QCoreApplication &app);
 

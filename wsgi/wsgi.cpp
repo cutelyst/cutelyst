@@ -52,9 +52,27 @@ using namespace CWSGI;
 
 WSGI::WSGI(QObject *parent) : QObject(parent)
 {
-    std::cout << "WSGI starting" << std::endl;
+    std::cout << "Cutelyst WSGI starting" << std::endl;
 }
 
+WSGI::~WSGI()
+{
+    std::cout << "Cutelyst WSGI stopping" << std::endl;
+    const auto engines = m_engines;
+    for (auto engine : engines) {
+        engine->thread()->quit();
+    }
+
+    for (auto engine : engines) {
+        engine->thread()->wait(30 * 1000);
+    }
+
+    for (auto engine : engines) {
+        if (engine->thread()->isFinished()) {
+            delete engine;
+        }
+    }
+}
 
 int WSGI::load(const QCoreApplication &app)
 {
