@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,9 +49,9 @@ qint64 Response::writeData(const char *data, qint64 len)
     }
 
     // Finalize headers if someone manually writes output
-    if (!d->finalizedHeaders) {
+    if (d->flags ^ ResponsePrivate::FinalizedHeaders) {
         d->engine->finalizeHeaders(d->context);
-        d->iowrite = true;
+        d->flags |= ResponsePrivate::IOWrite;
     }
 
     return d->engine->write(d->context, data, len, d->context->engineData());
@@ -77,7 +77,7 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->bodyData.isEmpty() || d->bodyIODevice || d->iowrite;
+    return !d->bodyData.isEmpty() || d->bodyIODevice || (d->flags & ResponsePrivate::IOWrite);
 }
 
 QByteArray &Response::body()
@@ -131,7 +131,7 @@ QString Response::contentEncoding() const
 void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
-    if (d->finalizedHeaders) {
+    if (d->flags & ResponsePrivate::FinalizedHeaders) {
         qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
     }
     d->headers.setContentEncoding(encoding);
@@ -146,7 +146,7 @@ qint64 Response::contentLength() const
 void Response::setContentLength(qint64 length)
 {
     Q_D(Response);
-    if (d->finalizedHeaders) {
+    if (d->flags & ResponsePrivate::FinalizedHeaders) {
         qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
     }
     d->headers.setContentLength(length);
@@ -240,7 +240,7 @@ QString Response::header(const QString &field) const
 void Response::setHeader(const QString &field, const QString &value)
 {
     Q_D(Response);
-    if (d->finalizedHeaders) {
+    if (d->flags & ResponsePrivate::FinalizedHeaders) {
         qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
     }
     d->headers.setHeader(field, value);

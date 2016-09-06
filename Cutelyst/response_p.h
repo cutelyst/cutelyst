@@ -34,6 +34,15 @@ class Engine;
 class ResponsePrivate
 {
 public:
+    enum ResponseStatusFlag {
+        InitialState = 0x00,
+        FinalizedHeaders = 0x01,
+        IOWrite = 0x02,
+        Chunked = 0x04,
+        ChunkedDone = 0x08,
+    };
+    Q_DECLARE_FLAGS(ResponseStatus, ResponseStatusFlag)
+
     inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
     inline void setBodyData(const QByteArray &body);
 
@@ -44,11 +53,8 @@ public:
     QIODevice *bodyIODevice = nullptr;
     Context *context;
     Engine *engine;
+    ResponseStatus flags = InitialState;
     quint16 status = Response::OK;
-    bool finalizedHeaders = false;
-    bool iowrite = false;
-    bool chunked = false;
-    bool chunked_done = false;
 };
 
 }

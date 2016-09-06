@@ -82,7 +82,7 @@ QUrl Request::uri() const
     Q_D(const Request);
 
     QUrl uri = d->url;
-    if (!d->urlParsed) {
+    if (d->parserStatus ^ RequestPrivate::UrlParsed) {
         // This is a hack just in case remote is not set
         if (d->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
@@ -100,7 +100,7 @@ QUrl Request::uri() const
         }
 
         d->url = uri;
-        d->urlParsed = true;
+        d->parserStatus |= RequestPrivate::UrlParsed;
     }
     return uri;
 }
@@ -109,7 +109,7 @@ QString Request::base() const
 {
     Q_D(const Request);
     QString base = d->base;
-    if (!d->baseParsed) {
+    if (d->parserStatus ^ RequestPrivate::BaseParsed) {
         base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
@@ -123,7 +123,7 @@ QString Request::base() const
         base.append(QLatin1Char('/'));
 
         d->base = base;
-        d->baseParsed = true;
+        d->parserStatus |= RequestPrivate::BaseParsed;
     }
     return base;
 }
@@ -185,7 +185,7 @@ QIODevice *Request::body() const
 QVariant Request::bodyData() const
 {
     Q_D(const Request);
-    if (!d->bodyParsed) {
+    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
         d->parseBody();
     }
     return d->bodyData;
@@ -199,7 +199,7 @@ QVariantMap Request::bodyParametersVariant() const
 ParamsMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
-    if (!d->bodyParsed) {
+    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
         d->parseBody();
     }
     return d->bodyParam;
@@ -208,7 +208,7 @@ ParamsMultiMap Request::bodyParameters() const
 QString Request::queryKeywords() const
 {
     Q_D(const Request);
-    if (!d->queryParamParsed) {
+    if (d->parserStatus ^ RequestPrivate::QueryParsed) {
         d->parseUrlQuery();
     }
     return d->queryKeywords;
@@ -222,7 +222,7 @@ QVariantMap Request::queryParametersVariant() const
 ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
-    if (!d->queryParamParsed) {
+    if (d->parserStatus ^ RequestPrivate::QueryParsed) {
         d->parseUrlQuery();
     }
     return d->queryParam;
@@ -236,10 +236,10 @@ QVariantMap Request::parametersVariant() const
 ParamsMultiMap Request::parameters() const
 {
     Q_D(const Request);
-    if (!d->paramParsed) {
+    if (d->parserStatus ^ RequestPrivate::ParamParsed) {
         d->param = queryParameters();
         d->param.unite(bodyParameters());
-        d->paramParsed = true;
+        d->parserStatus |= RequestPrivate::ParamParsed;
     }
     return d->param;
 }
@@ -247,7 +247,7 @@ ParamsMultiMap Request::parameters() const
 QString Request::cookie(const QString &name) const
 {
     Q_D(const Request);
-    if (!d->cookiesParsed) {
+    if (d->parserStatus ^ RequestPrivate::CookiesParsed) {
         d->parseCookies();
     }
 
@@ -257,7 +257,7 @@ QString Request::cookie(const QString &name) const
 QMap<QString, QString> Request::cookies() const
 {
     Q_D(const Request);
-    if (!d->cookiesParsed) {
+    if (d->parserStatus ^ RequestPrivate::CookiesParsed) {
         d->parseCookies();
     }
     return d->cookies;
@@ -302,7 +302,7 @@ QString Request::remoteUser() const
 QVector<Upload *> Request::uploads() const
 {
     Q_D(const Request);
-    if (!d->bodyParsed) {
+    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
         d->parseBody();
     }
     return d->uploads;
@@ -311,7 +311,7 @@ QVector<Upload *> Request::uploads() const
 QMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
 {
     Q_D(const Request);
-    if (!d->bodyParsed) {
+    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
         d->parseBody();
     }
     return d->uploadsMap;
@@ -386,16 +386,21 @@ void RequestPrivate::parseUrlQuery() const
             queryParam = parseUrlEncoded(query);
         }
     }
-    queryParamParsed = true;
+    parserStatus |= RequestPrivate::QueryParsed;
 }
 
 void RequestPrivate::parseBody() const
 {
+    if (!body) {
+        parserStatus |= RequestPrivate::BodyParsed;
+        return;
+    }
+
     bool sequencial = body->isSequential();
     qint64 posOrig = body->pos();
     if (sequencial && posOrig) {
         qCWarning(CUTELYST_REQUEST) << "Can not parse sequential post body out of beginning";
-        bodyParsed = true;
+        parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
@@ -435,7 +440,7 @@ void RequestPrivate::parseBody() const
         body->seek(posOrig);
     }
 
-    bodyParsed = true;
+    parserStatus |= RequestPrivate::BodyParsed;
 }
 
 static inline bool isSlit(QChar c)
@@ -534,7 +539,7 @@ void RequestPrivate::parseCookies() const
         ++i;
     }
 
-    cookiesParsed = true;
+    parserStatus |= RequestPrivate::CookiesParsed;
 }
 
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
@@ -601,7 +606,6 @@ RequestPrivate::RequestPrivate(Engine *_engine,
     , requestPtr(_requestPtr)
     , remotePort(_remotePort)
     , https(_isSecure)
-    , bodyParsed(!_body)
 {
 
 }

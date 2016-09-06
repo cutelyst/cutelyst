@@ -35,6 +35,17 @@ class Engine;
 class RequestPrivate
 {
 public:
+    enum ParserStatusFlag {
+        NotParsed = 0x00,
+        UrlParsed = 0x01,
+        BaseParsed = 0x02,
+        CookiesParsed = 0x04,
+        QueryParsed = 0x08,
+        BodyParsed = 0x10,
+        ParamParsed = 0x20,
+    };
+    Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
+
     RequestPrivate(Engine *_engine,
                    const QString &_method,
                    const QString &_path,
@@ -90,16 +101,10 @@ public:
     mutable ParamsMultiMap param;
     mutable QMap<QString, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
+    mutable ParserStatus parserStatus = NotParsed;
 
     quint16 remotePort;
     bool https = false;
-
-    mutable bool urlParsed = false;
-    mutable bool baseParsed = false;
-    mutable bool cookiesParsed = false;
-    mutable bool queryParamParsed = false;
-    mutable bool bodyParsed = false;
-    mutable bool paramParsed = false;
 };
 
 }
