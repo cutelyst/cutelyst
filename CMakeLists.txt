@@ -143,9 +143,6 @@ if (UWSGI_EXEC_PATH)
     add_subdirectory(uwsgiEngine)
 endif (UWSGI_EXEC_PATH)
 
-# TODO rename to examples
-#add_subdirectory(server)
-
 add_subdirectory(cmd)
 
 if (BUILD_TESTS)
