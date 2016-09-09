@@ -54,13 +54,13 @@ public:
     void setApplication(const QString &application);
     QString application() const;
 
-    Q_PROPERTY(int threads READ threads WRITE setThreads)
-    void setThreads(int threads);
-    int threads() const;
+    Q_PROPERTY(QString threads READ threads WRITE setThreads)
+    void setThreads(const QString &threads);
+    QString threads() const;
 
-    Q_PROPERTY(int process READ process WRITE setProcess)
-    void setProcess(int process);
-    int process() const;
+    Q_PROPERTY(QString process READ process WRITE setProcess)
+    void setProcess(const QString &process);
+    QString process() const;
 
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir)
     void setChdir(const QString &chdir);

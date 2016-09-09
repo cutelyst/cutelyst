@@ -143,24 +143,32 @@ QString WSGI::application() const
     return m_application;
 }
 
-void WSGI::setThreads(int threads)
+void WSGI::setThreads(const QString &threads)
 {
-    m_threads = threads;
+    if (threads.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+        m_threads = QThread::idealThreadCount();
+    } else {
+        m_threads = threads.toInt();
+    }
 }
 
-int WSGI::threads() const
+QString WSGI::threads() const
 {
-    return m_threads;
+    return QString::number(m_threads);
 }
 
-void WSGI::setProcess(int process)
+void WSGI::setProcess(const QString &process)
 {
-    m_process = process;
+    if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+        m_process = QThread::idealThreadCount();
+    } else {
+        m_process = process.toInt();
+    }
 }
 
-int WSGI::process() const
+QString WSGI::process() const
 {
-    return m_process;
+    return QString::number(m_process);
 }
 
 void WSGI::setChdir(const QString &chdir)
@@ -354,12 +362,12 @@ int WSGI::parseCommandLine(const QCoreApplication &app)
     }
 
     if (parser.isSet(threads)) {
-        setThreads(parser.value(threads).toInt());
+        setThreads(parser.value(threads));
     }
 
 #ifdef Q_OS_UNIX
     if (parser.isSet(process)) {
-        setProcess(parser.value(process).toInt());
+        setProcess(parser.value(process));
     }
 #endif // Q_OS_UNIX
 
