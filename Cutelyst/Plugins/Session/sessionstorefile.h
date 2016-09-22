@@ -32,10 +32,10 @@ class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 public:
     explicit SessionStoreFile(QObject *parent = nullptr);
 
-    QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) Q_DECL_FINAL;
-    bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) Q_DECL_FINAL;
-    bool deleteSessionData(Context *c, const QString &sid, const QString &key) Q_DECL_FINAL;
-    bool deleteExpiredSessions(Context *c, quint64 expires) Q_DECL_FINAL;
+    QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
+    bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
+    bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
+    bool deleteExpiredSessions(Context *c, quint64 expires) final;
 
 protected:
     SessionStoreFilePrivate *d_ptr;

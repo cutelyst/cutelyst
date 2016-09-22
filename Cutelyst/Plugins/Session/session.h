@@ -54,7 +54,7 @@ public:
      * expires = 1234
      * it will change de default expires which is 7200 (two hours)
      */
-    virtual bool setup(Application *app) Q_DECL_FINAL;
+    virtual bool setup(Application *app) final;
 
     void setStorage(SessionStore *store);
 

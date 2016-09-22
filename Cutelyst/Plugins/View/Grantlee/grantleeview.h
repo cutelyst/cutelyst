@@ -58,7 +58,7 @@ public:
 
     void preloadTemplates();
 
-    QByteArray render(Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const final;
 
 protected:
     GrantleeViewPrivate *d_ptr;

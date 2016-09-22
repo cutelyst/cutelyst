@@ -48,7 +48,7 @@ public:
     QString wrapper() const;
     void setWrapper(const QString &name);
 
-    QByteArray render(Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const final;
 
 protected:
     ClearSilverPrivate *d_ptr;

@@ -87,7 +87,7 @@ public:
      */
     void setExposeStashRegularExpression(const QRegularExpression &re);
 
-    QByteArray render(Context *c) const Q_DECL_FINAL;
+    QByteArray render(Context *c) const final;
 
 protected:
     ViewJsonPrivate *d_ptr;

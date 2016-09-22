@@ -49,11 +49,11 @@ public:
 
     void setThread(QThread *thread);
 
-    virtual bool init() Q_DECL_FINAL;
+    virtual bool init() final;
 
     virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
 
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) Q_DECL_FINAL;
+    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) final;
 
     void readRequestUWSGI(wsgi_request *req);
 

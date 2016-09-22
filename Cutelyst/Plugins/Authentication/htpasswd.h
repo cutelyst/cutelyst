@@ -34,11 +34,11 @@ public:
 
     void addUser(const ParamsMultiMap &user);
 
-    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) Q_DECL_FINAL;
+    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) final;
 
-    virtual QVariant forSession(Context *c, const AuthenticationUser &user) Q_DECL_FINAL;
+    virtual QVariant forSession(Context *c, const AuthenticationUser &user) final;
 
-    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) Q_DECL_FINAL;
+    virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
 };
 
 }
