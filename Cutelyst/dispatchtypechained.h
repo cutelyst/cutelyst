@@ -35,17 +35,17 @@ public:
     explicit DispatchTypeChained(QObject *parent = nullptr);
     ~DispatchTypeChained();
 
-    virtual QByteArray list() const Q_DECL_OVERRIDE;
+    virtual QByteArray list() const override;
 
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_OVERRIDE;
+    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const override;
 
-    virtual bool registerAction(Action *action) Q_DECL_OVERRIDE;
+    virtual bool registerAction(Action *action) override;
 
-    virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_OVERRIDE;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const override;
 
     Action *expandAction(Context *c, Action *action) const Q_DECL_FINAL;
 
-    virtual bool inUse() Q_DECL_OVERRIDE;
+    virtual bool inUse() override;
 
 private:
     DispatchTypeChainedPrivate *d_ptr;

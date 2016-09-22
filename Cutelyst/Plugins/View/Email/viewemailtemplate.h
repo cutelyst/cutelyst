@@ -64,7 +64,7 @@ public:
      */
     void setDefaultView(const QString &view);
 
-    QByteArray render(Context *c) const Q_DECL_OVERRIDE;
+    QByteArray render(Context *c) const override;
 
 protected:
     Q_DECLARE_PRIVATE(ViewEmailTemplate)

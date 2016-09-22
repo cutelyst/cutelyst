@@ -48,7 +48,7 @@ public:
     explicit Action(QObject *parent = nullptr);
     virtual ~Action();
 
-    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
+    virtual Modifiers modifiers() const override;
 
     /**
      * Returns the attributes that are set for this action,

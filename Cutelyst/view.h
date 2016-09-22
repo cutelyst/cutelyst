@@ -40,7 +40,7 @@ public:
     /**
      * The default implementation returns Component::OnlyExecute
      */
-    virtual Modifiers modifiers() const Q_DECL_OVERRIDE;
+    virtual Modifiers modifiers() const override;
 
     /**
      * All subclasses must reimplement this when doing it's rendering.

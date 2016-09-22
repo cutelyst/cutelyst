@@ -85,7 +85,7 @@ public:
     QString senderPassword() const;
     void setSenderPassword(const QString &password);
 
-    QByteArray render(Context *c) const Q_DECL_OVERRIDE;
+    QByteArray render(Context *c) const override;
 
 protected:
     ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
