@@ -74,10 +74,10 @@
 #else
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_dev_http_qt5_EXPORTS)
-#  define CUTELYST_DEV_HTTP_EXPORT Q_DECL_EXPORT
+#if defined(cutelyst_wsgi_qt5_EXPORTS)
+#  define CUTELYST_WSGI_EXPORT Q_DECL_EXPORT
 #else
-#  define CUTELYST_DEV_HTTP_EXPORT Q_DECL_IMPORT
+#  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
 #endif
 
 #endif // CUTELYST_GLOBAL_H

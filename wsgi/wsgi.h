@@ -23,11 +23,7 @@
 #include <QVector>
 #include <QProcess>
 
-#if defined(cutelyst_wsgi_qt5_EXPORTS)
-#  define CUTELYST_WSGI_EXPORT Q_DECL_EXPORT
-#else
-#  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
-#endif
+#include <Cutelyst/cutelyst_global.h>
 
 class QTcpServer;
 class QCoreApplication;
