@@ -8,13 +8,9 @@ A Web Framework built on top of Qt, using the simple and elegant approach of Cat
 Qt's meta object system is what powers the core of Cutelyst, it allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Main features:
 
  * Cross-platform
- * Pluggable Engines:
-  * uWSGI - Multiple protocols support
-   * HTTP 1.0
-   * FastCGI
-   * uWSGI
-  * Cutelyst-WSGI - A cross-platform and fast WSGI engine
-   * HTTP 1.1 (Pipelining, Keep-Alive)
+ * Pluggable Engines
+  * uWSGI - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
+  * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 with Pipelining and Keep-Alive)
  * REST with ActionREST
  * Plugin based views
   * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
