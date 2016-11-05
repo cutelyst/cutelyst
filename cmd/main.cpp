@@ -172,7 +172,7 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
         out << "void " << controllerName << "::index" << "(Context *c)" << "\n";
         out << "{" << "\n";
         if (helpers) {
-            out << "    c->response()->body() = c->welcomeMessage();" << "\n";
+            out << "    c->response()->body() = \"Welcome to Cutelyst!\";" << "\n";
         } else {
             out << "    c->response()->body() = \"Matched Controller::" << controllerName << " in " << controllerName << ".\";" << "\n";
         }
