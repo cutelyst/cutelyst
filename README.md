@@ -5,12 +5,16 @@
 
 A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
-Qt's meta object system is what powers the core of Cutelyst, this allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Some features:
+Qt's meta object system is what powers the core of Cutelyst, it allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Main features:
 
- * Multiple protocols support when using uWSGI engine
-  * HTTP 1.1
-  * FastCGI
-  * uWSGI
+ * Cross-platform
+ * Pluggable Engines:
+  * uWSGI - Multiple protocols support
+   * HTTP 1.0
+   * FastCGI
+   * uWSGI
+  * Cutelyst-WSGI - A cross-platform and fast WSGI engine
+   * HTTP 1.1 (Pipelining, Keep-Alive)
  * REST with ActionREST
  * Plugin based views
   * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
@@ -41,7 +45,9 @@ examples are under MIT license.
 
 ## REQUIREMENTS
 
- * uWSGI - to receive and parse protocols requests (>= 2.0 recommended)
  * CMake - for the build system (>= 3.1)
  * Qt - the core library of this framework (>= 5.6)
- 
+
+## OPTIONAL
+
+  * uWSGI - to receive and parse protocols requests (>= 1.9 recommended)
