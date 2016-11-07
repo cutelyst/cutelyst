@@ -20,6 +20,7 @@
 #define CUTEENGINE_H
 
 #include <QObject>
+#include <QElapsedTimer>
 #include <Cutelyst/Engine>
 
 #include "socket.h"
@@ -79,6 +80,8 @@ protected:
 
 private:
     QVector<QTcpServer *> m_sockets;
+    QByteArray m_lastDate;
+    QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;
 };
 

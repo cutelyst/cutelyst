@@ -37,9 +37,14 @@
 
 using namespace CWSGI;
 
+QByteArray dateHeader();
+
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
+    m_lastDate = dateHeader();
+    m_lastDateTimer.start();
+
     m_proto = new ProtocolHttp(wsgi, this);
 }
 
@@ -83,13 +88,6 @@ void CWsgiEngine::postFork()
     }
 
     Q_EMIT resumeAccepting();
-}
-
-QElapsedTimer timerSetup()
-{
-    QElapsedTimer timer;
-    timer.start();
-    return timer;
 }
 
 QByteArray dateHeader()
@@ -145,13 +143,11 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
     }
 
     if (!hasDate) {
-        static QByteArray lastDate = dateHeader();
-        static QElapsedTimer timer = timerSetup();
-        if (timer.hasExpired(1000)) {
-            lastDate = dateHeader();
-            timer.restart();
+        if (m_lastDateTimer.hasExpired(1000)) {
+            m_lastDate = dateHeader();
+            m_lastDateTimer.restart();
         }
-        conn->write(lastDate);
+        conn->write(m_lastDate);
     }
 
     static QByteArray server = serverHeader();
