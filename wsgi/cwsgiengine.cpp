@@ -98,10 +98,11 @@ QByteArray dateHeader()
     return ret.toLatin1();
 }
 
-QByteArray serverHeader()
+QByteArray serverHeaderCrLfCrLf()
 {
     QString ret;
-    ret = QLatin1String("\r\nServer: cutelyst/") + QLatin1String(VERSION);
+    ret = QLatin1String("\r\nServer: cutelyst/") + QLatin1String(VERSION)
+            + QLatin1String("\r\n\r\n");
     return ret.toLatin1();
 }
 
@@ -150,10 +151,9 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
         conn->write(m_lastDate);
     }
 
-    static QByteArray server = serverHeader();
-    conn->write(server);
+    static QByteArray server = serverHeaderCrLfCrLf();
 
-    return conn->write("\r\n\r\n", 4) == 4;
+    return conn->write(server) == server.size();
 }
 
 qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
