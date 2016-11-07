@@ -5,6 +5,7 @@ branches:
   only:
     - master
 
+osx_image: xcode8
 os:
   - linux
   - osx
