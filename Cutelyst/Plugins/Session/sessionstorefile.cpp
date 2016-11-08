@@ -18,19 +18,22 @@
  */
 #include "sessionstorefile_p.h"
 
-#include <context.h>
+#include <Cutelyst/Context>
 
-#include <QtCore/QCoreApplication>
-#include <QtCore/QSettings>
-#include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtCore/QLoggingCategory>
+#include <QDir>
+#include <QFile>
+#include <QLockFile>
+#include <QDataStream>
+#include <QLoggingCategory>
+#include <QCoreApplication>
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
 
 #define SESSION_STORE_FILE "__session_store_file"
+#define SESSION_STORE_FILE_DATA "__session_store_file_data"
+#define SESSION_STORE_FILE_TRYLOCK_TIMEOUT 3
 
 SessionStoreFile::SessionStoreFile(QObject *parent) : SessionStore(parent)
   , d_ptr(new SessionStoreFilePrivate)
@@ -38,33 +41,111 @@ SessionStoreFile::SessionStoreFile(QObject *parent) : SessionStore(parent)
 
 }
 
-QVariant SessionStoreFile::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue = QVariant())
+QVariant SessionStoreFile::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
 {
     Q_D(const SessionStoreFile);
-    QSettings *settings = d->checkSessionFileStorage(c, sid);
-    return settings->value(key, defaultValue);
+    QVariantHash data;
+    QVariant session = c->property(SESSION_STORE_FILE_DATA);
+
+    if (!session.isNull()) {
+        data = session.toHash();
+    } else {
+        QFile *file = d->checkSessionFileStorage(c, sid);
+        if (!file) {
+            return defaultValue;
+        }
+
+        QLockFile lock(file->fileName() + QLatin1String(".lock"));
+        if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
+            file->seek(0);
+            QDataStream in(file);
+            in >> data;
+            c->setProperty(SESSION_STORE_FILE_DATA, data);
+            lock.unlock();
+        }
+    }
+
+    return data.value(key, defaultValue);
 }
 
 bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value)
 {
     Q_D(const SessionStoreFile);
-    QSettings *settings = d->checkSessionFileStorage(c, sid);
-    settings->setValue(key, value);
-    settings->sync();
-    return true;
+
+    QFile *file = d->checkSessionFileStorage(c, sid);
+    if (!file) {
+        return false;
+    }
+
+    QLockFile lock(file->fileName() + QLatin1String(".lock"));
+    if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
+        QDataStream in(file);
+        QVariantHash data;
+        QVariant session = c->property(SESSION_STORE_FILE_DATA);
+
+        if (!session.isNull()) {
+            data = session.toHash();
+        } else {
+            file->seek(0);
+            in >> data;
+            in.resetStatus();
+        }
+
+        data.insert(key, value);
+        c->setProperty(SESSION_STORE_FILE_DATA, data);
+
+        file->seek(0);
+        in << data;
+        file->flush();
+        lock.unlock();
+
+        return !file->error();
+    }
+
+    return false;
 }
 
 bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const QString &key)
 {
     Q_D(const SessionStoreFile);
-    QSettings *settings = d->checkSessionFileStorage(c, sid);
-    settings->remove(key);
-    if (settings->allKeys().isEmpty()) {
-        QFile::remove(settings->fileName());
-        delete settings;
-        c->setProperty(SESSION_STORE_FILE, QVariant());
+    QFile *file = d->checkSessionFileStorage(c, sid);
+    if (!file) {
+        return false;
     }
-    return true;
+
+    QLockFile lock(file->fileName() + QLatin1String(".lock"));
+    if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
+        QDataStream in(file);
+        QVariantHash data;
+        QVariant session = c->property(SESSION_STORE_FILE_DATA);
+
+        if (!session.isNull()) {
+            data = session.toHash();
+        } else {
+            file->seek(0);
+            in >> data;
+            in.resetStatus();
+        }
+
+        data.remove(key);
+        c->setProperty(SESSION_STORE_FILE_DATA, data);
+
+        if (data.isEmpty()) {
+            QFile::remove(file->fileName());
+            delete file;
+            c->setProperty(SESSION_STORE_FILE, QVariant());
+            return true;
+        }
+
+        file->seek(0);
+        in << data;
+        file->flush();
+        lock.unlock();
+
+        return !file->error();
+    }
+
+    return false;
 }
 
 bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
@@ -74,13 +155,13 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
-QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c, const QString &sid) const
+QFile *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c, const QString &sid) const
 {
-    QVariant sessionVariant = c->property(SESSION_STORE_FILE);
+    const QVariant sessionVariant = c->property(SESSION_STORE_FILE);
     if (!sessionVariant.isNull()) {
-        QSettings *settings = sessionVariant.value<QSettings*>();
-        if (settings) {
-            return settings;
+        const auto file = sessionVariant.value<QFile*>();
+        if (file) {
+            return file;
         }
     }
 
@@ -88,15 +169,21 @@ QSettings *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c
             + QLatin1Char('/')
             + QCoreApplication::applicationName()
             + QLatin1String("/session/data");
-    QDir dir;
-    if (!dir.mkpath(root)) {
-        qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;
+
+    auto file = new QFile(root + QLatin1Char('/') + sid, c);
+    if (!file->open(QIODevice::ReadWrite)) {
+        if (!QDir().mkpath(root)) {
+            qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;
+            return nullptr;
+        }
+
+        if (!file->open(QIODevice::ReadWrite)) {
+            return nullptr;
+        }
     }
 
-    QSettings *settings = new QSettings(root + QLatin1Char('/') + sid, QSettings::IniFormat, c);
-    settings->beginGroup(QStringLiteral("Session"));
-    c->setProperty(SESSION_STORE_FILE, QVariant::fromValue(settings));
-    return settings;
+    c->setProperty(SESSION_STORE_FILE, QVariant::fromValue(file));
+    return file;
 }
 
 #include "moc_sessionstorefile.cpp"

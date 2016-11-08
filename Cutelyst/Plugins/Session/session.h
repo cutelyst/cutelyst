@@ -57,6 +57,7 @@ public:
     virtual bool setup(Application *app) final;
 
     void setStorage(SessionStore *store);
+    SessionStore *storage() const;
 
     /**
      * Returns the current session id or null if

@@ -26,11 +26,9 @@
 
 #include "sessionstorefile.h"
 
-#include <QtCore/QSettings>
-#include <QtCore/QUuid>
-#include <QtCore/QDir>
-#include <QtCore/QLoggingCategory>
-#include <QtCore/QCoreApplication>
+#include <QUuid>
+#include <QLoggingCategory>
+#include <QCoreApplication>
 
 using namespace Cutelyst;
 
@@ -46,9 +44,12 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 #define SESSION_DELETED_ID "__session_deleted_id"
 #define SESSION_DELETE_REASON "__session_delete_reason"
 
+static thread_local Session *m_instance = nullptr;
+
 Session::Session(Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate(this))
 {
+    m_instance = this;
 }
 
 Cutelyst::Session::~Session()
@@ -70,7 +71,7 @@ bool Session::setup(Application *app)
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
 
     if (!d->store) {
-        d->store = new SessionStoreFile;
+        d->store = new SessionStoreFile(this);
     }
 
     return true;
@@ -82,7 +83,14 @@ void Session::setStorage(SessionStore *store)
     if (d->store) {
         qFatal("Session Storage is alread defined");
     }
+    store->setParent(this);
     d->store = store;
+}
+
+SessionStore *Session::storage() const
+{
+    Q_D(const Session);
+    return d->store;
 }
 
 QString Session::id(Cutelyst::Context *c)
@@ -90,13 +98,12 @@ QString Session::id(Cutelyst::Context *c)
     QString ret;
     const QVariant sid = c->property(SESSION_ID);
     if (sid.isNull()) {
-        static Session *session = c->plugin<Session*>();
-        if (!session) {
+        if (!m_instance) {
             qCCritical(C_SESSION) << "Session plugin not registered";
             return ret;
         }
 
-        ret = SessionPrivate::loadSessionId(c, session->d_ptr->sessionName);
+        ret = SessionPrivate::loadSessionId(c, m_instance->d_ptr->sessionName);
     } else {
         ret = sid.toString();
     }
@@ -111,15 +118,14 @@ quint64 Session::expires(Context *c)
         return expires.toULongLong();
     }
 
-    static Session *session = c->plugin<Session*>();
-    if (!session) {
+    if (!m_instance) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return 0;
     }
 
-    expires = SessionPrivate::loadSessionExpires(session, c, id(c));
+    expires = SessionPrivate::loadSessionExpires(m_instance, c, id(c));
     if (!expires.isNull()) {
-        return SessionPrivate::extendSessionExpires(session, c, expires.toULongLong());
+        return SessionPrivate::extendSessionExpires(m_instance, c, expires.toULongLong());
     }
 
     return 0;
@@ -130,23 +136,21 @@ void Session::changeExpires(Context *c, quint64 expires)
     const QString sid = Session::id(c);
     const quint64 timeExp = (QDateTime::currentMSecsSinceEpoch() / 1000) + expires;
 
-    static Session *session = c->plugin<Session*>();
-    if (!session) {
+    if (!m_instance) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
     }
 
-    session->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), timeExp);
+    m_instance->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), timeExp);
 }
 
 void Session::deleteSession(Context *c, const QString &reason)
 {
-    static Session *session = c->plugin<Session*>();
-    if (!session) {
+    if (!m_instance) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
     }
-    SessionPrivate::deleteSession(session, c, reason);
+    SessionPrivate::deleteSession(m_instance, c, reason);
 }
 
 QString Session::deleteReason(Context *c)
@@ -173,14 +177,13 @@ void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant 
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
-            static Session *plugin = c->plugin<Session*>();
-            if (!plugin) {
+            if (!m_instance) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
             }
 
-            SessionPrivate::createSessionIdIfNeeded(plugin, c, plugin->d_ptr->sessionExpires);
-            session = SessionPrivate::initializeSessionData(plugin, c);
+            SessionPrivate::createSessionIdIfNeeded(m_instance, c, m_instance->d_ptr->sessionExpires);
+            session = SessionPrivate::initializeSessionData(m_instance, c);
         }
     }
 
@@ -197,14 +200,13 @@ void Session::deleteValue(Context *c, const QString &key)
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
-            static Session *plugin = c->plugin<Session*>();
-            if (!plugin) {
+            if (!m_instance) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
             }
 
-            SessionPrivate::createSessionIdIfNeeded(plugin, c, plugin->d_ptr->sessionExpires);
-            session = SessionPrivate::initializeSessionData(plugin, c);
+            SessionPrivate::createSessionIdIfNeeded(m_instance, c, m_instance->d_ptr->sessionExpires);
+            session = SessionPrivate::initializeSessionData(m_instance, c);
         }
     }
 
@@ -302,8 +304,7 @@ void SessionPrivate::_q_saveSession(Context *c)
     Session::expires(c);
 
     // Persist data
-    static Session *session = c->plugin<Session*>();
-    if (!session) {
+    if (!m_instance) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return;
     }
@@ -312,7 +313,7 @@ void SessionPrivate::_q_saveSession(Context *c)
     if (!c->property(SESSION_UPDATED).toBool()) {
         return;
     }
-    SessionStore *store = session->d_ptr->store;
+    SessionStore *store = m_instance->d_ptr->store;
     QVariantHash sessionData = c->property(SESSION_VALUES).toHash();
     sessionData.insert(QStringLiteral("__updated"), QDateTime::currentMSecsSinceEpoch() / 1000);
 
@@ -358,38 +359,37 @@ QVariant SessionPrivate::loadSession(Context *c)
         return ret;
     }
 
-    static Session *session = c->plugin<Session*>();
-    if (!session) {
+    if (!m_instance) {
         qCCritical(C_SESSION) << "Session plugin not registered";
         return ret;
     }
 
     const QString sid = Session::id(c);
-    if (!loadSessionExpires(session, c, sid).isNull()) {
+    if (!loadSessionExpires(m_instance, c, sid).isNull()) {
         if (SessionPrivate::validateSessionId(sid)) {
 
-            const QVariantHash sessionData = session->d_ptr->store->getSessionData(c, sid, QStringLiteral("session")).toHash();
+            const QVariantHash sessionData = m_instance->d_ptr->store->getSessionData(c, sid, QStringLiteral("session")).toHash();
             c->setProperty(SESSION_VALUES, sessionData);
 
-            if (session->d_ptr->verifyAddress &&
+            if (m_instance->d_ptr->verifyAddress &&
                     sessionData.contains(QStringLiteral("__address")) &&
                     sessionData.value(QStringLiteral("__address")).toString() != c->request()->address().toString()) {
                 qCWarning(C_SESSION) << "Deleting session" << sid << "due to address mismatch:"
                                      << sessionData.value(QStringLiteral("__address")).toString()
                                      << "!="
                                      << c->request()->address().toString();
-                deleteSession(session, c, QStringLiteral("address mismatch"));
+                deleteSession(m_instance, c, QStringLiteral("address mismatch"));
                 return ret;
             }
 
-            if (session->d_ptr->verifyUserAgent &&
+            if (m_instance->d_ptr->verifyUserAgent &&
                     sessionData.contains(QStringLiteral("__user_agent")) &&
                     sessionData.value(QStringLiteral("__user_agent")).toString() != c->request()->userAgent()) {
                 qCWarning(C_SESSION) << "Deleting session" << sid << "due to user agent mismatch:"
                                      << sessionData.value(QStringLiteral("__user_agent")).toString()
                                      << "!="
                                      << c->request()->userAgent();
-                deleteSession(session, c, QStringLiteral("user agent mismatch"));
+                deleteSession(m_instance, c, QStringLiteral("user agent mismatch"));
                 return ret;
             }
 
@@ -472,16 +472,15 @@ void SessionPrivate::saveSessionExpires(Context *c)
     if (!expires.isNull()) {
         const QString sid = Session::id(c);
         if (!sid.isEmpty()) {
-            static Session *session = c->plugin<Session*>();
-            if (!session) {
+            if (!m_instance) {
                 qCCritical(C_SESSION) << "Session plugin not registered";
                 return;
             }
 
-            const quint64 current = getStoredSessionExpires(session, c, sid);
+            const quint64 current = getStoredSessionExpires(m_instance, c, sid);
             const quint64 extended = Session::expires(c);
             if (extended > current) {
-                session->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), extended);
+                m_instance->d_ptr->store->storeSessionData(c, sid, QStringLiteral("expires"), extended);
             }
         }
     }
