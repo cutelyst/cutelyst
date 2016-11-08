@@ -41,9 +41,12 @@ public:
 
 }
 
+static thread_local StatusMessage *m_instance = nullptr;
+
 StatusMessage::StatusMessage(Application *parent) : Plugin(parent), d_ptr(new StatusMessagePrivate)
 {
     qsrand(QDateTime::currentMSecsSinceEpoch());
+    m_instance = this;
 }
 
 StatusMessage::~StatusMessage()
@@ -101,29 +104,28 @@ void StatusMessage::setErrorMgStashKey(const QString &errorMgStashKey)
 
 void StatusMessage::load(Context *c)
 {
-    auto sm = c->plugin<StatusMessage*>();
-    if (!sm) {
+    if (!m_instance) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return;
     }
 
-    const QString token = c->request()->queryParam(sm->d_ptr->tokenParam);
+    const QString token = c->request()->queryParam(m_instance->d_ptr->tokenParam);
     if (token.isEmpty()) {
         return;
     }
 
-    const QString statusKey = sm->d_ptr->sessionPrefix + QLatin1String("status") + token;
+    const QString statusKey = m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token;
     const QVariant statusValue = Session::value(c, statusKey);
     if (!statusValue.isNull()) {
         Session::deleteValue(c, statusKey);
-        c->setStash(sm->d_ptr->statusMsgStashKey, statusValue);
+        c->setStash(m_instance->d_ptr->statusMsgStashKey, statusValue);
     }
 
-    const QString errorKey = sm->d_ptr->sessionPrefix + QLatin1String("error") + token;
+    const QString errorKey = m_instance->d_ptr->sessionPrefix + QLatin1String("error") + token;
     const QVariant errorValue = Session::value(c, errorKey);
     if (!errorValue.isNull()) {
         Session::deleteValue(c, errorKey);
-        c->setStash(sm->d_ptr->errorMsgStashKey, errorValue);
+        c->setStash(m_instance->d_ptr->errorMsgStashKey, errorValue);
     }
 }
 
@@ -145,28 +147,26 @@ QString createToken()
 QString StatusMessage::setError(Context *c, const QString &msg)
 {
     QString token;
-    auto sm = c->plugin<StatusMessage*>();
-    if (!sm) {
+    if (!m_instance) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return token;
     }
 
     token = createToken();
-    Session::setValue(c, sm->d_ptr->sessionPrefix + QLatin1String("error") + token, msg);
+    Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("error") + token, msg);
     return token;
 }
 
 QString StatusMessage::setStatus(Context *c, const QString &msg)
 {
     QString token;
-    auto sm = c->plugin<StatusMessage*>();
-    if (!sm) {
+    if (!m_instance) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return token;
     }
 
     token = createToken();
-    Session::setValue(c, sm->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
+    Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
     return token;
 }
 
