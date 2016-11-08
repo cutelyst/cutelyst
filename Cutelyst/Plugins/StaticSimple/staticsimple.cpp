@@ -106,7 +106,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
                 // set our open file
                 res->setBody(file);
 
-                QMimeDatabase db;
+                static QMimeDatabase db;
                 // use the extension to match to be faster
                 QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
                 if (mimeType.isValid()) {
