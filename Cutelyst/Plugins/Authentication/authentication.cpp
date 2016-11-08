@@ -34,6 +34,8 @@ using namespace Cutelyst;
 
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 
+static thread_local Authentication *auth = nullptr;
+
 #define AUTHENTICATION_USER "__authentication_user"
 #define AUTHENTICATION_USER_REALM "__authentication_user_realm"
 
@@ -42,6 +44,8 @@ Authentication::Authentication(Application *parent) : Plugin(parent)
 {
     qRegisterMetaType<AuthenticationUser>();
     qRegisterMetaTypeStreamOperators<AuthenticationUser>();
+
+    auth = this;
 }
 
 Authentication::~Authentication()
@@ -70,7 +74,6 @@ AuthenticationRealm *Authentication::realm(const QString &name) const
 
 bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &userinfo, const QString &realm)
 {
-    static thread_local auto auth = c->plugin<Authentication*>();
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
         return false;
@@ -93,7 +96,6 @@ bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &us
 AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const ParamsMultiMap &userinfo, const QString &realm)
 {
     AuthenticationUser ret;
-    static thread_local auto auth = c->plugin<Authentication*>();
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
         return ret;
@@ -126,7 +128,6 @@ bool Authentication::userExists(Cutelyst::Context *c)
     if (!c->property(AUTHENTICATION_USER).isNull()) {
         return true;
     } else {
-        static thread_local auto auth = c->plugin<Authentication*>();
         if (auth) {
             if (AuthenticationPrivate::findRealmForPersistedUser(c, auth->d_ptr->realms, auth->d_ptr->realmsOrder)) {
                 return true;
@@ -144,7 +145,6 @@ bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
     if (!user.isNull()) {
         return user.value<AuthenticationUser>().authRealm()->name() == realmName;
     } else {
-        static thread_local auto auth = c->plugin<Authentication*>();
         if (!auth) {
             qCCritical(C_AUTHENTICATION, "Authentication plugin not registered!");
             return false;
@@ -163,7 +163,6 @@ void Authentication::logout(Context *c)
 {
     AuthenticationPrivate::setUser(c, AuthenticationUser());
 
-    static thread_local auto auth = c->plugin<Authentication*>();
     if (auth) {
         AuthenticationRealm *realm = AuthenticationPrivate::findRealmForPersistedUser(c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
         if (realm) {
@@ -182,7 +181,6 @@ AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) cons
 AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName)
 {
     AuthenticationUser ret;
-    static thread_local auto auth = c->plugin<Authentication*>();
     if (!auth) {
         qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
         return ret;
