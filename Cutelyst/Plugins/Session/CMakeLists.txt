@@ -1,6 +1,5 @@
 set(plugin_session_SRC
     sessionstorefile.cpp
-    sessionstorefile_p.h
     session.cpp
     session_p.h
 )

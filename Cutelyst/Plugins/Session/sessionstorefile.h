@@ -28,7 +28,6 @@ class SessionStoreFilePrivate;
 class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(SessionStoreFile)
 public:
     explicit SessionStoreFile(QObject *parent = nullptr);
     ~SessionStoreFile();
@@ -37,9 +36,6 @@ public:
     bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
     bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
     bool deleteExpiredSessions(Context *c, quint64 expires) final;
-
-protected:
-    SessionStoreFilePrivate *d_ptr;
 };
 
 }

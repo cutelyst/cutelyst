@@ -16,7 +16,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include "sessionstorefile_p.h"
+#include "sessionstorefile.h"
 
 #include <Cutelyst/Context>
 
@@ -34,31 +34,27 @@ Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
 #define SESSION_STORE_FILE_SAVE "__session_store_file_save"
 #define SESSION_STORE_FILE_DATA "__session_store_file_data"
 
+static QVariantHash loadSessionData(Context *c, const QString &sid);
+
 SessionStoreFile::SessionStoreFile(QObject *parent) : SessionStore(parent)
-  , d_ptr(new SessionStoreFilePrivate)
 {
 
 }
 
 SessionStoreFile::~SessionStoreFile()
 {
-    delete d_ptr;
 }
 
 QVariant SessionStoreFile::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
 {
-    Q_D(const SessionStoreFile);
-
-    const QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
+    const QVariantHash data = loadSessionData(c, sid);
 
     return data.value(key, defaultValue);
 }
 
 bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value)
 {
-    Q_D(const SessionStoreFile);
-
-    QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
+    QVariantHash data = loadSessionData(c, sid);
 
     data.insert(key, value);
     c->setProperty(SESSION_STORE_FILE_DATA, data);
@@ -69,9 +65,7 @@ bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QS
 
 bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const QString &key)
 {
-    Q_D(const SessionStoreFile);
-
-    QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
+    QVariantHash data = loadSessionData(c, sid);
 
     data.remove(key);
     c->setProperty(SESSION_STORE_FILE_DATA, data);
@@ -87,7 +81,7 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
-QVariantHash Cutelyst::SessionStoreFilePrivate::loadSessionData(Context *c, const QString &sid)
+QVariantHash loadSessionData(Context *c, const QString &sid)
 {
     QVariantHash data;
     const QVariant sessionVariant = c->property(SESSION_STORE_FILE_DATA);
