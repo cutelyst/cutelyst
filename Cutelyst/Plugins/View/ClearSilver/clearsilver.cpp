@@ -91,6 +91,7 @@ QByteArray ClearSilver::render(Context *c) const
 {
     Q_D(const ClearSilver);
 
+    QByteArray output;
     const QVariantHash &stash = c->stash();
     QString templateFile = stash.value(QStringLiteral("template")).toString();
     if (templateFile.isEmpty()) {
@@ -100,26 +101,28 @@ QByteArray ClearSilver::render(Context *c) const
 
         if (templateFile.isEmpty()) {
             c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
-            return QByteArray();
+            return output;
         }
     }
 
     qCDebug(CUTELYST_CLEARSILVER) << "Rendering template" <<templateFile;
-    QByteArray output;
-    if (!d->render(c, templateFile, stash, output)) {
-        return QByteArray();
+    QByteArray body;
+    if (!d->render(c, templateFile, stash, body)) {
+        return output;
     }
 
     if (!d->wrapper.isEmpty()) {
         QString wrapperFile = d->wrapper;
 
         QVariantHash data = stash;
-        data.insert(QStringLiteral("content"), output);
+        data.insert(QStringLiteral("content"), body);
+        body.clear();
 
-        if (!d->render(c, wrapperFile, data, output)) {
-            return QByteArray();
+        if (!d->render(c, wrapperFile, data, body)) {
+            return output;
         }
     }
+    output = body;
 
     return output;
 }

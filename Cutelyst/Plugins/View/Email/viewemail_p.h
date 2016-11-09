@@ -36,7 +36,7 @@ public:
     void setupEncoding(MimePart *part, const QByteArray &encoding) const;
 
     QString stashKey = QStringLiteral("email");
-    QByteArray defaultContentType = "text/plain";
+    QByteArray defaultContentType = QByteArrayLiteral("text/plain");
     QByteArray defaultCharset;
     QByteArray defaultEncoding;
     QStringList exposeKeys;

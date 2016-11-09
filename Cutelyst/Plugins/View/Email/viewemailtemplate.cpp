@@ -35,7 +35,7 @@ ViewEmailTemplate::ViewEmailTemplate(QObject *parent, const QString &name) : Vie
 {
     Q_D(ViewEmailTemplate);
 
-    d->defaultContentType = "text/html";
+    d->defaultContentType = QByteArrayLiteral("text/html");
 }
 
 QString ViewEmailTemplate::templatePrefix() const

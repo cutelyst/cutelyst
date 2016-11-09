@@ -404,18 +404,18 @@ QVariant SessionPrivate::loadSession(Context *c)
 
 bool SessionPrivate::validateSessionId(const QString &id)
 {
-    int i = 0;
-    const int size = id.size();
-    while (i < size) {
-        QChar c = id[i];
+    auto it = id.constBegin();
+    auto end = id.constEnd();
+    while (it != end) {
+        QChar c = *it;
         if ((c >= QLatin1Char('a') && c <= QLatin1Char('f')) || (c >= QLatin1Char('0') && c <= QLatin1Char('9'))) {
-            ++i;
+            ++it;
             continue;
         }
         return false;
     }
 
-    return size;
+    return id.size();
 }
 
 quint64 SessionPrivate::extendSessionExpires(Session *session, Context *c, quint64 expires)

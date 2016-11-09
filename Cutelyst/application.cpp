@@ -105,7 +105,7 @@ bool Application::registerPlugin(Plugin *plugin)
 bool Application::registerController(Controller *controller)
 {
     Q_D(Application);
-    auto name = QString::fromLatin1(controller->metaObject()->className());
+    const auto name = QString::fromLatin1(controller->metaObject()->className());
     if (d->controllersHash.contains(name)) {
         return false;
     }
@@ -460,25 +460,25 @@ void ApplicationPrivate::setupChildren(const QObjectList &children)
 {
     Q_Q(Application);
     for (QObject *child : children) {
-        Controller *controller = qobject_cast<Controller *>(child);
+        auto controller = qobject_cast<Controller *>(child);
         if (controller) {
             q->registerController(controller);
             continue;
         }
 
-        Plugin *plugin = qobject_cast<Plugin *>(child);
+        auto plugin = qobject_cast<Plugin *>(child);
         if (plugin) {
             q->registerPlugin(plugin);
             continue;
         }
 
-        View *view = qobject_cast<View *>(child);
+        auto view = qobject_cast<View *>(child);
         if (view) {
             q->registerView(view);
             continue;
         }
 
-        DispatchType *dispatchType = qobject_cast<DispatchType *>(child);
+        auto dispatchType = qobject_cast<DispatchType *>(child);
         if (dispatchType) {
             q->registerDispatcher(dispatchType);
             continue;

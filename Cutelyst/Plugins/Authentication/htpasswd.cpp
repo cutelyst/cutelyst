@@ -54,7 +54,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     if (file.exists() && file.open(QFile::ReadWrite | QFile::Text)) {
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
-            QList<QByteArray> parts = line.split(':');
+            QByteArrayList parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
                 line = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
@@ -89,7 +89,7 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
-            QList<QByteArray> parts = line.trimmed().split(':');
+            QByteArrayList parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username.toLatin1()) {
                 ret.insert(QStringLiteral("username"), username);
                 ret.setId(username);

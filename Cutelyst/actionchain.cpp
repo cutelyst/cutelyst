@@ -71,7 +71,7 @@ bool ActionChain::doExecute(Context *c)
     Q_D(ActionChain);
 
     Request *request =  c->request();
-    QStringList captures = request->captures();
+    const QStringList captures = request->captures();
     const QStringList currentArgs = request->args();
     const ActionList chain = d->chain;
     Action *final = d->final;

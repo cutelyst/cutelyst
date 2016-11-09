@@ -230,7 +230,7 @@ void ViewEmail::initSender()
     d->sender = new Sender(this);
 
     QVariantHash config;
-    Application *app = qobject_cast<Application *>(parent());
+    const auto app = qobject_cast<Application *>(parent());
     if (app) {
         config = app->config(QStringLiteral("VIEW_EMAIL")).toHash();
     }
