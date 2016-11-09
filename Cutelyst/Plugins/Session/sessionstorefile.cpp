@@ -31,9 +31,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
 
-#define SESSION_STORE_FILE "__session_store_file"
+#define SESSION_STORE_FILE_SAVE "__session_store_file_save"
 #define SESSION_STORE_FILE_DATA "__session_store_file_data"
-#define SESSION_STORE_FILE_TRYLOCK_TIMEOUT 3
 
 SessionStoreFile::SessionStoreFile(QObject *parent) : SessionStore(parent)
   , d_ptr(new SessionStoreFilePrivate)
@@ -41,29 +40,16 @@ SessionStoreFile::SessionStoreFile(QObject *parent) : SessionStore(parent)
 
 }
 
+SessionStoreFile::~SessionStoreFile()
+{
+    delete d_ptr;
+}
+
 QVariant SessionStoreFile::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
 {
     Q_D(const SessionStoreFile);
-    QVariantHash data;
-    QVariant session = c->property(SESSION_STORE_FILE_DATA);
 
-    if (!session.isNull()) {
-        data = session.toHash();
-    } else {
-        QFile *file = d->checkSessionFileStorage(c, sid);
-        if (!file) {
-            return defaultValue;
-        }
-
-        QLockFile lock(file->fileName() + QLatin1String(".lock"));
-        if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
-            file->seek(0);
-            QDataStream in(file);
-            in >> data;
-            c->setProperty(SESSION_STORE_FILE_DATA, data);
-            lock.unlock();
-        }
-    }
+    const QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
 
     return data.value(key, defaultValue);
 }
@@ -72,80 +58,26 @@ bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QS
 {
     Q_D(const SessionStoreFile);
 
-    QFile *file = d->checkSessionFileStorage(c, sid);
-    if (!file) {
-        return false;
-    }
+    QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
 
-    QLockFile lock(file->fileName() + QLatin1String(".lock"));
-    if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
-        QDataStream in(file);
-        QVariantHash data;
-        QVariant session = c->property(SESSION_STORE_FILE_DATA);
+    data.insert(key, value);
+    c->setProperty(SESSION_STORE_FILE_DATA, data);
+    c->setProperty(SESSION_STORE_FILE_SAVE, true);
 
-        if (!session.isNull()) {
-            data = session.toHash();
-        } else {
-            file->seek(0);
-            in >> data;
-            in.resetStatus();
-        }
-
-        data.insert(key, value);
-        c->setProperty(SESSION_STORE_FILE_DATA, data);
-
-        file->seek(0);
-        in << data;
-        file->flush();
-        lock.unlock();
-
-        return !file->error();
-    }
-
-    return false;
+    return true;
 }
 
 bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const QString &key)
 {
     Q_D(const SessionStoreFile);
-    QFile *file = d->checkSessionFileStorage(c, sid);
-    if (!file) {
-        return false;
-    }
 
-    QLockFile lock(file->fileName() + QLatin1String(".lock"));
-    if (lock.tryLock(SESSION_STORE_FILE_TRYLOCK_TIMEOUT)) {
-        QDataStream in(file);
-        QVariantHash data;
-        QVariant session = c->property(SESSION_STORE_FILE_DATA);
+    QVariantHash data = SessionStoreFilePrivate::loadSessionData(c, sid);
 
-        if (!session.isNull()) {
-            data = session.toHash();
-        } else {
-            file->seek(0);
-            in >> data;
-            in.resetStatus();
-        }
+    data.remove(key);
+    c->setProperty(SESSION_STORE_FILE_DATA, data);
+    c->setProperty(SESSION_STORE_FILE_SAVE, true);
 
-        data.remove(key);
-        c->setProperty(SESSION_STORE_FILE_DATA, data);
-
-        if (data.isEmpty()) {
-            QFile::remove(file->fileName());
-            delete file;
-            c->setProperty(SESSION_STORE_FILE, QVariant());
-            return true;
-        }
-
-        file->seek(0);
-        in << data;
-        file->flush();
-        lock.unlock();
-
-        return !file->error();
-    }
-
-    return false;
+    return true;
 }
 
 bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
@@ -155,14 +87,13 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
-QFile *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c, const QString &sid) const
+QVariantHash Cutelyst::SessionStoreFilePrivate::loadSessionData(Context *c, const QString &sid)
 {
-    const QVariant sessionVariant = c->property(SESSION_STORE_FILE);
+    QVariantHash data;
+    const QVariant sessionVariant = c->property(SESSION_STORE_FILE_DATA);
     if (!sessionVariant.isNull()) {
-        const auto file = sessionVariant.value<QFile*>();
-        if (file) {
-            return file;
-        }
+        data = sessionVariant.toHash();
+        return data;
     }
 
     const static QString root = QDir::tempPath()
@@ -174,16 +105,56 @@ QFile *Cutelyst::SessionStoreFilePrivate::checkSessionFileStorage(Context *c, co
     if (!file->open(QIODevice::ReadWrite)) {
         if (!QDir().mkpath(root)) {
             qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;
-            return nullptr;
+            return data;
         }
 
         if (!file->open(QIODevice::ReadWrite)) {
-            return nullptr;
+            return data;
         }
     }
 
-    c->setProperty(SESSION_STORE_FILE, QVariant::fromValue(file));
-    return file;
+    // Commit data when Context gets deleted
+    QObject::connect(c, &Context::destroyed, [=] () {
+        if (!c->property(SESSION_STORE_FILE_SAVE).toBool()) {
+            return;
+        }
+
+        QVariantHash data = c->property(SESSION_STORE_FILE_DATA).toHash();
+
+        if (data.isEmpty()) {
+            QFile::remove(file->fileName());
+        } else {
+            QLockFile lock(file->fileName() + QLatin1String(".lock"));
+            if (lock.lock()) {
+                QDataStream in(file);
+
+                if (file->pos()) {
+                    file->seek(0);
+                }
+
+                in << data;
+
+                if (file->pos() < file->size()) {
+                    file->resize(file->pos());
+                }
+
+                file->flush();
+                lock.unlock();
+            }
+        }
+    });
+
+    // Load data
+    QLockFile lock(file->fileName() + QLatin1String(".lock"));
+    if (lock.lock()) {
+        QDataStream in(file);
+        in >> data;
+        lock.unlock();
+    }
+
+    c->setProperty(SESSION_STORE_FILE_DATA, data);
+
+    return data;
 }
 
 #include "moc_sessionstorefile.cpp"

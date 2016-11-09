@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@ class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
     Q_DECLARE_PRIVATE(SessionStoreFile)
 public:
     explicit SessionStoreFile(QObject *parent = nullptr);
+    ~SessionStoreFile();
 
     QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
     bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;

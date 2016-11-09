@@ -28,11 +28,7 @@ namespace Cutelyst {
 class SessionStoreFilePrivate
 {
 public:
-    QFile *checkSessionFileStorage(Context *c, const QString &sid) const;
-
-    quint64 expiryThreshold;
-    bool verifyAddress;
-    bool verifyUserAgent;
+    static QVariantHash loadSessionData(Context *c, const QString &sid);
 };
 
 }

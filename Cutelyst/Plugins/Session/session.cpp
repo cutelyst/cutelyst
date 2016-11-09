@@ -18,15 +18,15 @@
  */
 
 #include "session_p.h"
-#include "application.h"
-#include "request.h"
-#include "response.h"
-#include "context.h"
-#include "engine.h"
 
 #include "sessionstorefile.h"
 
+#include <Cutelyst/Application>
+#include <Cutelyst/Context>
+#include <Cutelyst/Response>
+
 #include <QUuid>
+#include <QHostAddress>
 #include <QLoggingCategory>
 #include <QCoreApplication>
 
@@ -46,7 +46,7 @@ Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
 static thread_local Session *m_instance = nullptr;
 
-Session::Session(Application *parent) : Plugin(parent)
+Session::Session(Cutelyst::Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate(this))
 {
     m_instance = this;
