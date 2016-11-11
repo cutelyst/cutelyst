@@ -15,14 +15,6 @@ clone_folder: c:\dev\cutelyst
 environment:
   matrix:
   - CMAKE_GENERATOR: "Ninja"
-    QT5: C:\Qt\5.7\msvc2013
-    PLATFORM: X86
-    VSVER: 12
-  - CMAKE_GENERATOR: "Ninja"
-    QT5: C:\Qt\5.7\msvc2013_64
-    PLATFORM: X64
-    VSVER: 12
-  - CMAKE_GENERATOR: "Ninja"
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
     VSVER: 14
@@ -30,14 +22,6 @@ environment:
     QT5: C:\Qt\5.6\msvc2015_64
     PLATFORM: X64
     VSVER: 14
-  - CMAKE_GENERATOR: "Visual Studio 12"
-    QT5: C:\Qt\5.7\msvc2013
-    PLATFORM: X86
-    VSVER: 12
-  - CMAKE_GENERATOR: "Visual Studio 12 Win64"
-    QT5: C:\Qt\5.7\msvc2013_64
-    PLATFORM: X64
-    VSVER: 12
   - CMAKE_GENERATOR: "Visual Studio 14"
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
@@ -46,14 +30,6 @@ environment:
     QT5: C:\Qt\5.6\msvc2015_64
     PLATFORM: X64
     VSVER: 14
-  - CMAKE_GENERATOR: "NMake Makefiles JOM"
-    QT5: C:\Qt\5.7\msvc2013
-    PLATFORM: X86
-    VSVER: 12
-  - CMAKE_GENERATOR: "NMake Makefiles JOM"
-    QT5: C:\Qt\5.7\msvc2013_64
-    PLATFORM: X64
-    VSVER: 12
   - CMAKE_GENERATOR: "NMake Makefiles JOM"
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
