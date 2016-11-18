@@ -80,6 +80,8 @@ protected:
 
 private:
     QVector<QTcpServer *> m_sockets;
+    QByteArray m_lastDate;
+    QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;
 };
 
