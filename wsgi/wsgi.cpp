@@ -507,7 +507,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
     if (threads) {
         enginesInitted = threads;
         for (int i = 1; i < threads; ++i) {
-            createEngine(app, i);
+            createEngine(localApp, i);
         }
     }
 
