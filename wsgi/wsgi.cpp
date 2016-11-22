@@ -16,7 +16,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include "wsgi.h"
+#include "wsgi_p.h"
 
 #include "protocol.h"
 #include "protocolhttp.h"
@@ -27,8 +27,6 @@
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
 #endif
-
-#include <Cutelyst/Application>
 
 #include <QCoreApplication>
 #include <QCommandLineParser>
@@ -50,15 +48,18 @@ Q_LOGGING_CATEGORY(CUTELYST_WSGI, "cutelyst.wsgi")
 
 using namespace CWSGI;
 
-WSGI::WSGI(QObject *parent) : QObject(parent)
+WSGI::WSGI(QObject *parent) : QObject(parent),
+    d_ptr(new WSGIPrivate(this))
 {
     std::cout << "Cutelyst WSGI starting" << std::endl;
 }
 
 WSGI::~WSGI()
 {
+    Q_D(WSGI);
+
     std::cout << "Cutelyst WSGI stopping" << std::endl;
-    const auto engines = m_engines;
+    const auto engines = d->engines;
     for (auto engine : engines) {
         engine->thread()->quit();
     }
@@ -74,22 +75,24 @@ WSGI::~WSGI()
     }
 }
 
-int WSGI::load(const QCoreApplication &app)
+int WSGI::load(Cutelyst::Application *app)
 {
-    int ret = parseCommandLine(app);
+    Q_D(WSGI);
+
+    int ret = d->parseCommandLine(app);
     if (ret) {
         return ret;
     }
 
-    if (m_master) {
-        proc();
+    if (d->master) {
+        d->proc();
         return 0;
     }
 
-    return setupApplication();
+    return d->setupApplication(app);
 }
 
-bool WSGI::listenTcp(const QString &line)
+bool WSGIPrivate::listenTcp(const QString &line)
 {
     QStringList parts = line.split(QLatin1Char(':'));
     if (parts.size() != 2) {
@@ -113,7 +116,7 @@ bool WSGI::listenTcp(const QString &line)
     auto server = new QTcpServer(this);
     bool ret = server->listen(address, port);
     server->pauseAccepting();
-    m_sockets.append(server);
+    sockets.push_back(server);
 
     if (ret) {
         std::cout << "Listening on: "
@@ -126,7 +129,7 @@ bool WSGI::listenTcp(const QString &line)
     return ret;
 }
 
-bool WSGI::listenSocket(const QString &address)
+bool WSGIPrivate::listenSocket(const QString &address)
 {
     auto server = new QLocalServer(this);
     //    connect(server, &QLocalServer::newConnection, this, &WSGI::newconnectionLocalSocket);
@@ -135,55 +138,64 @@ bool WSGI::listenSocket(const QString &address)
 
 void WSGI::setApplication(const QString &application)
 {
-    m_application = application;
+    Q_D(WSGI);
+    d->application = application;
 }
 
 QString WSGI::application() const
 {
-    return m_application;
+    Q_D(const WSGI);
+    return d->application;
 }
 
 void WSGI::setThreads(const QString &threads)
 {
+    Q_D(WSGI);
     if (threads.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        m_threads = QThread::idealThreadCount();
+        d->threads = QThread::idealThreadCount();
     } else {
-        m_threads = threads.toInt();
+        d->threads = threads.toInt();
     }
 }
 
 QString WSGI::threads() const
 {
-    return QString::number(m_threads);
+    Q_D(const WSGI);
+    return QString::number(d->threads);
 }
 
 void WSGI::setProcess(const QString &process)
 {
+    Q_D(WSGI);
     if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        m_process = QThread::idealThreadCount();
+        d->process = QThread::idealThreadCount();
     } else {
-        m_process = process.toInt();
+        d->process = process.toInt();
     }
 }
 
 QString WSGI::process() const
 {
-    return QString::number(m_process);
+    Q_D(const WSGI);
+    return QString::number(d->process);
 }
 
 void WSGI::setChdir(const QString &chdir)
 {
-    m_chdir = chdir;
+    Q_D(WSGI);
+    d->chdir = chdir;
 }
 
 QString WSGI::chdir() const
 {
-    return m_chdir;
+    Q_D(const WSGI);
+    return d->chdir;
 }
 
 void WSGI::setHttpSocket(const QString &httpSocket)
 {
-    listenTcp(httpSocket);
+    Q_D(WSGI);
+    d->listenTcp(httpSocket);
 }
 
 QString WSGI::httpSocket() const
@@ -193,79 +205,91 @@ QString WSGI::httpSocket() const
 
 void WSGI::setChdir2(const QString &chdir2)
 {
-    m_chdir = chdir2;
+    Q_D(WSGI);
+    d->chdir = chdir2;
 }
 
 QString WSGI::chdir2() const
 {
-    return m_chdir2;
+    Q_D(const WSGI);
+    return d->chdir2;
 }
 
 void WSGI::setIni(const QString &ini)
 {
-    m_ini = ini;
+    Q_D(WSGI);
+    d->ini = ini;
 }
 
 QString WSGI::ini() const
 {
-    return m_ini;
+    Q_D(const WSGI);
+    return d->ini;
 }
 
 void WSGI::setMaster(bool enable)
 {
-    m_master = enable;
+    Q_D(WSGI);
+    d->master = enable;
 }
 
 bool WSGI::master() const
 {
-    return m_master;
+    Q_D(const WSGI);
+    return d->master;
 }
 
 void WSGI::setBufferSize(qint64 size)
 {
+    Q_D(WSGI);
     if (size < 4096) {
         qWarning() << "Buffer size must be at least 4096 bytes, ignoring";
         return;
     }
-    m_bufferSize = size;
+    d->bufferSize = size;
 }
 
 int WSGI::bufferSize() const
 {
-    return m_bufferSize;
+    Q_D(const WSGI);
+    return d->bufferSize;
 }
 
 void WSGI::setPostBuffering(qint64 size)
 {
-    m_postBuffering = size;
+    Q_D(WSGI);
+    d->postBuffering = size;
 }
 
 qint64 WSGI::postBuffering() const
 {
-    return m_postBuffering;
+    Q_D(const WSGI);
+    return d->postBuffering;
 }
 
 void WSGI::setPostBufferingBufsize(qint64 size)
 {
+    Q_D(WSGI);
     if (size < 4096) {
         qWarning() << "Post buffer size must be at least 4096 bytes, ignoring";
         return;
     }
-    m_postBufferingBufsize = size;
+    d->postBufferingBufsize = size;
 }
 
 qint64 WSGI::postBufferingBufsize() const
 {
-    return m_postBufferingBufsize;
+    Q_D(const WSGI);
+    return d->postBufferingBufsize;
 }
 
-void WSGI::proc()
+void WSGIPrivate::proc()
 {
     static QProcess *process = nullptr;
     if (!process) {
         process = new QProcess(this);
-        connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                this, &WSGI::childFinished);
+        QObject::connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+                this, &WSGIPrivate::childFinished);
     }
 
     const QString app = QCoreApplication::applicationFilePath();
@@ -279,8 +303,10 @@ void WSGI::proc()
     process->start(app, args);
 }
 
-int WSGI::parseCommandLine(const QCoreApplication &app)
+int WSGIPrivate::parseCommandLine(Cutelyst::Application *app)
 {
+    Q_Q(WSGI);
+
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
     parser.addHelpOption();
@@ -347,34 +373,34 @@ int WSGI::parseCommandLine(const QCoreApplication &app)
     parser.addOption(restart);
 
     // Process the actual command line arguments given by the user
-    parser.process(app);
+    parser.process(*qApp);
 
     if (parser.isSet(ini)) {
-        setIni(parser.value(ini));
+        q->setIni(parser.value(ini));
     }
 
     if (parser.isSet(chdir)) {
-        setChdir(parser.value(chdir));
+        q->setChdir(parser.value(chdir));
     }
 
     if (parser.isSet(chdir2)) {
-        setChdir(parser.value(chdir2));
+        q->setChdir(parser.value(chdir2));
     }
 
     if (parser.isSet(threads)) {
-        setThreads(parser.value(threads));
+        q->setThreads(parser.value(threads));
     }
 
 #ifdef Q_OS_UNIX
     if (parser.isSet(process)) {
-        setProcess(parser.value(process));
+        q->setProcess(parser.value(process));
     }
 #endif // Q_OS_UNIX
 
     if (parser.isSet(bufferSize)) {
         bool ok;
         auto size = parser.value(bufferSize).toLongLong(&ok);
-        setBufferSize(size);
+        q->setBufferSize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
@@ -383,7 +409,7 @@ int WSGI::parseCommandLine(const QCoreApplication &app)
     if (parser.isSet(postBuffering)) {
         bool ok;
         auto size = parser.value(postBuffering).toLongLong(&ok);
-        setPostBuffering(size);
+        q->setPostBuffering(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
@@ -392,27 +418,27 @@ int WSGI::parseCommandLine(const QCoreApplication &app)
     if (parser.isSet(postBufferingBufsize)) {
         bool ok;
         auto size = parser.value(postBufferingBufsize).toLongLong(&ok);
-        setPostBufferingBufsize(size);
+        q->setPostBufferingBufsize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
     }
 
     if (parser.isSet(application)) {
-        setApplication(parser.value(application));
+        q->setApplication(parser.value(application));
     }
 
     bool masterSet = parser.isSet(master);
-    setMaster(masterSet);
+    q->setMaster(masterSet);
 
     if (!masterSet && parser.isSet(httpSocket)) {
         const auto socks = parser.values(httpSocket);
         for (const QString &http : socks) {
-            setHttpSocket(http);
+            q->setHttpSocket(http);
         }
     }
 
-    if (this->application().isEmpty()) {
+    if (q->application().isEmpty()) {
         std::cout << "Application is not defined" << std::endl;
         parser.showHelp(2);
     }
@@ -420,72 +446,75 @@ int WSGI::parseCommandLine(const QCoreApplication &app)
     return 0;
 }
 
-int WSGI::setupApplication()
+int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 {
-    if (!m_chdir.isEmpty()) {
-        std::cout << "Changing directory to: " << m_chdir.toLatin1().constData() << std::endl;;
-        if (!QDir().cd(m_chdir)) {
-            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << m_chdir;
+    if (!chdir.isEmpty()) {
+        std::cout << "Changing directory to: " << chdir.toLatin1().constData() << std::endl;;
+        if (!QDir().cd(chdir)) {
+            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir;
             return 1;
         }
     }
 
-    if (!m_ini.isEmpty()) {
-        std::cout << "Loading configuration: " << m_ini.toLatin1().constData() << std::endl;;
+    if (!ini.isEmpty()) {
+        std::cout << "Loading configuration: " << ini.toLatin1().constData() << std::endl;;
         if (!loadConfig()) {
-            qCCritical(CUTELYST_WSGI) << "Failed to load config " << m_ini;
+            qCCritical(CUTELYST_WSGI) << "Failed to load config " << ini;
             return 1;
         }
     }
 
-    if (!m_sockets.size()) {
+    if (!sockets.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
         return false;
     }
 
-    std::cout << "Loading application: " << m_application.toLatin1().constData() << std::endl;;
-    QPluginLoader loader(m_application);
-    if (!loader.load()) {
-        qCritical() << "Could not load application:" << loader.errorString();
-        return 1;
+    Cutelyst::Application *localApp = app;
+    if (!localApp) {
+        std::cout << "Loading application: " << application.toLatin1().constData() << std::endl;;
+        QPluginLoader loader(application);
+        if (!loader.load()) {
+            qCCritical(CUTELYST_WSGI) << "Could not load application:" << loader.errorString();
+            return 1;
+        }
+
+        QObject *instance = loader.instance();
+        if (!instance) {
+            qCCritical(CUTELYST_WSGI) << "Could not get a QObject instance: %s\n" << loader.errorString();
+            exit(1);
+        }
+
+        localApp = qobject_cast<Cutelyst::Application *>(instance);
+        if (!localApp) {
+            qCCritical(CUTELYST_WSGI) << "Could not cast Cutelyst::Application from instance: %s\n" << loader.errorString();
+            exit(1);
+        }
+
+        // Sets the application name with the name from our library
+        //    if (QCoreApplication::applicationName() == applicationName) {
+        //        QCoreApplication::setApplicationName(QString::fromLatin1(app->metaObject()->className()));
+        //    }
+        qCDebug(CUTELYST_WSGI) << "Loaded application: " << QCoreApplication::applicationName();
     }
 
-    QObject *instance = loader.instance();
-    if (!instance) {
-        qCritical() << "Could not get a QObject instance: %s\n" << loader.errorString();
+    engine = createEngine(localApp, 0);
+    if (!engine->init()) {
+        qCCritical(CUTELYST_WSGI) << "Failed to init application.";
         exit(1);
     }
 
-    Cutelyst::Application *app = qobject_cast<Cutelyst::Application *>(instance);
-    if (!app) {
-        qCritical() << "Could not cast Cutelyst::Application from instance: %s\n" << loader.errorString();
-        exit(1);
-    }
-
-    // Sets the application name with the name from our library
-    //    if (QCoreApplication::applicationName() == applicationName) {
-    //        QCoreApplication::setApplicationName(QString::fromLatin1(app->metaObject()->className()));
-    //    }
-    qDebug() << "Loaded application: " << QCoreApplication::applicationName();
-
-    m_engine = createEngine(app, 0);
-    if (!m_engine->init()) {
-        qCritical() << "Failed to init application.";
-        exit(1);
-    }
-
-    std::cout << "Threads:" << m_threads << std::endl;
-    if (m_threads) {
-        m_enginesInitted = m_threads;
-        for (int i = 1; i < m_threads; ++i) {
+    std::cout << "Threads:" << threads << std::endl;
+    if (threads) {
+        enginesInitted = threads;
+        for (int i = 1; i < threads; ++i) {
             createEngine(app, i);
         }
     }
 
-    if (!m_chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to" << m_chdir2.toLatin1().constData()  << std::endl;;
-        if (!QDir().cd(m_chdir2)) {
-            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << m_chdir2;
+    if (!chdir2.isEmpty()) {
+        std::cout << "Changing directory2 to" << chdir2.toLatin1().constData()  << std::endl;;
+        if (!QDir().cd(chdir2)) {
+            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir2;
             return 1;
         }
     }
@@ -495,7 +524,7 @@ int WSGI::setupApplication()
     return 0;
 }
 
-void WSGI::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void WSGIPrivate::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (exitStatus == QProcess::CrashExit) {
         proc();
@@ -504,15 +533,17 @@ void WSGI::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
     }
 }
 
-void WSGI::engineInitted()
+void WSGIPrivate::engineInitted()
 {
+    Q_Q(WSGI);
+
     // All engines are initted
-    if (--m_enginesInitted == 0) {
+    if (--enginesInitted == 0) {
 #ifdef Q_OS_UNIX
-        if (m_process) {
+        if (process) {
             auto uFork = new UnixFork(this);
-            connect(uFork, &UnixFork::forked, this, &WSGI::forked);
-            uFork->createProcess(m_process);
+            connect(uFork, &UnixFork::forked, this, &WSGIPrivate::forked);
+            uFork->createProcess(process);
         } else {
             Q_EMIT forked();
         }
@@ -522,15 +553,17 @@ void WSGI::engineInitted()
     }
 }
 
-CWsgiEngine *WSGI::createEngine(Application *app, int core)
+CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 {
-    auto engine = new CWsgiEngine(app, core, QVariantMap(), this);
-    connect(engine, &CWsgiEngine::initted, this, &WSGI::engineInitted, Qt::QueuedConnection);
-    connect(this, &WSGI::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
-    engine->setTcpSockets(m_sockets);
-    m_engines.push_back(engine);
+    Q_Q(WSGI);
 
-    if (m_threads && core) {
+    auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
+    connect(engine, &CWsgiEngine::initted, this, &WSGIPrivate::engineInitted, Qt::QueuedConnection);
+    connect(this, &WSGIPrivate::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
+    engine->setTcpSockets(sockets);
+    engines.push_back(engine);
+
+    if (threads && core) {
         auto thread = new QThread(this);
         engine->moveToThread(thread);
         connect(thread, &QThread::started, engine, &CWsgiEngine::listen, Qt::DirectConnection);
@@ -541,16 +574,16 @@ CWsgiEngine *WSGI::createEngine(Application *app, int core)
     return engine;
 }
 
-bool WSGI::loadConfig()
+bool WSGIPrivate::loadConfig()
 {
-    QSettings settings(m_ini, QSettings::IniFormat);
+    QSettings settings(ini, QSettings::IniFormat);
     if (settings.status() != QSettings::NoError) {
         return false;
     }
 
-    qputenv("CUTELYST_CONFIG", m_ini.toUtf8());
+    qputenv("CUTELYST_CONFIG", ini.toUtf8());
     if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
-        qputenv("QT_LOGGING_CONF", m_ini.toUtf8());
+        qputenv("QT_LOGGING_CONF", ini.toUtf8());
     }
 
     settings.beginGroup(QStringLiteral("wsgi"));

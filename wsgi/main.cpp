@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
     CWSGI::WSGI wsgi;
 
-    int ret = wsgi.load(app);
+    int ret = wsgi.load();
     if (ret) {
         return ret;
     }

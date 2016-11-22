@@ -20,31 +20,38 @@
 #define WSGI_H
 
 #include <QObject>
-#include <QVector>
-#include <QProcess>
 
 #include <Cutelyst/cutelyst_global.h>
 
-class QTcpServer;
 class QCoreApplication;
 
 namespace Cutelyst {
 class Application;
-class Engine;
 }
 
 namespace CWSGI {
 
-class Protocol;
-class CWsgiEngine;
+class WSGIPrivate;
 class CUTELYST_WSGI_EXPORT WSGI : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(WSGI)
 public:
-    explicit WSGI(QObject *parent = 0);
+    explicit WSGI(QObject *parent = nullptr);
     virtual ~WSGI();
 
-    int load(const QCoreApplication &app);
+    /**
+     * This function will start the WSGI server.
+     *
+     * If an application is provided it will ignore the value of
+     * setApplication and/or the Application configuration in case
+     * Ini is set, meaning it won't dynamically load an Application
+     * but use this to create new instances (if the app constructor is
+     * marked as Q_INVOKABLE).
+     *
+     * It will return 0 in case of sucess.
+     */
+    int load(Cutelyst::Application *app = nullptr);
 
     Q_PROPERTY(QString application READ application WRITE setApplication)
     void setApplication(const QString &application);
@@ -90,38 +97,8 @@ public:
     void setPostBufferingBufsize(qint64 size);
     qint64 postBufferingBufsize() const;
 
-Q_SIGNALS:
-    void forked();
-
-private:
-    bool listenTcp(const QString &line);
-    bool listenSocket(const QString &address);
-    void proc();
-    int parseCommandLine(const QCoreApplication &app);
-    int setupApplication();
-    void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void engineInitted();
-
-    CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
-
-    bool loadConfig();
-
-    QVector<QTcpServer *> m_sockets;
-    QVector<Cutelyst::Engine *> m_engines;
-    CWsgiEngine *m_engine;
-
-    QString m_application;
-    QString m_chdir;
-    QString m_chdir2;
-    QString m_ini;
-    int m_bufferSize = 4096;
-    qint64 m_postBuffering = -1;
-    qint64 m_postBufferingBufsize = 4096;
-    int m_enginesInitted = 1;
-    int m_threads = 0;
-    int m_process = 0;
-    bool m_master = false;
-
+protected:
+    WSGIPrivate *d_ptr;
 };
 
 }

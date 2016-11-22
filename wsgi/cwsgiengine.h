@@ -59,7 +59,7 @@ public:
 
     Protocol *m_proto;
 
-    void setTcpSockets(const QVector<QTcpServer *> sockets);
+    void setTcpSockets(const std::vector<QTcpServer *> &sockets);
 
     void listen();
 
@@ -79,7 +79,7 @@ protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 
 private:
-    QVector<QTcpServer *> m_sockets;
+    std::vector<QTcpServer *> m_sockets;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;

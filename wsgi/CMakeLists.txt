@@ -1,5 +1,6 @@
 set(httpEngine_SRC
     wsgi.cpp
+    wsgi_p.h
     protocol.cpp
     protocolhttp.cpp
     postunbuffered.cpp

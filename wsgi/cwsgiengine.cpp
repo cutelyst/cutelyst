@@ -53,7 +53,7 @@ int CWsgiEngine::workerId() const
     return m_workerId;
 }
 
-void CWsgiEngine::setTcpSockets(const QVector<QTcpServer *> sockets)
+void CWsgiEngine::setTcpSockets(const std::vector<QTcpServer *> &sockets)
 {
     m_sockets = sockets;
 }
