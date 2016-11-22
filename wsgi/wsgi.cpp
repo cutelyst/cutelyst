@@ -535,8 +535,6 @@ void WSGIPrivate::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void WSGIPrivate::engineInitted()
 {
-    Q_Q(WSGI);
-
     // All engines are initted
     if (--enginesInitted == 0) {
 #ifdef Q_OS_UNIX
