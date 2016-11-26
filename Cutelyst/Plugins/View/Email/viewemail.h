@@ -45,6 +45,13 @@ public:
         TlsConnection
     };
 
+    enum AuthMethod
+    {
+        AuthNone,
+        AuthPlain,
+        AuthLogin
+    };
+
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
 
@@ -88,6 +95,9 @@ public:
 
     ConnectionType senderConnectionType() const;
     void setSenderConnectionType(ConnectionType ct);
+
+    AuthMethod senderAuthMethod() const;
+    void setSenderAuthMethod(AuthMethod method);
 
     QString senderUser() const;
     void setSenderUser(const QString &user);
