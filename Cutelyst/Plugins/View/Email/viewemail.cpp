@@ -129,6 +129,18 @@ void ViewEmail::setSenderConnectionType(ViewEmail::ConnectionType ct)
     d->sender->setConnectionType(static_cast<Sender::ConnectionType>(ct));
 }
 
+ViewEmail::AuthMethod ViewEmail::senderAuthMethod() const
+{
+    Q_D(const ViewEmail);
+    return static_cast<ViewEmail::AuthMethod>(d->sender->authMethod());
+}
+
+void ViewEmail::setSenderAuthMethod(ViewEmail::AuthMethod method)
+{
+    Q_D(ViewEmail);
+    d->sender->setAuthMethod(static_cast<Sender::AuthMethod>(method));
+}
+
 QString ViewEmail::senderUser() const
 {
     Q_D(const ViewEmail);
