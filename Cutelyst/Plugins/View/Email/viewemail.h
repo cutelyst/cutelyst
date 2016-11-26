@@ -38,6 +38,13 @@ class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset)
     Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding)
 public:
+    enum ConnectionType
+    {
+        TcpConnection,
+        SslConnection,
+        TlsConnection
+    };
+
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
 
@@ -78,6 +85,9 @@ public:
 
     int senderPort() const;
     void setSenderPort(int port);
+
+    ConnectionType senderConnectionType() const;
+    void setSenderConnectionType(ConnectionType ct);
 
     QString senderUser() const;
     void setSenderUser(const QString &user);

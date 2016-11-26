@@ -117,6 +117,18 @@ void ViewEmail::setSenderPort(int port)
     d->sender->setPort(port);
 }
 
+ViewEmail::ConnectionType ViewEmail::senderConnectionType() const
+{
+    Q_D(const ViewEmail);
+    return static_cast<ViewEmail::ConnectionType>(d->sender->connectionType());
+}
+
+void ViewEmail::setSenderConnectionType(ViewEmail::ConnectionType ct)
+{
+    Q_D(ViewEmail);
+    d->sender->setConnectionType(static_cast<Sender::ConnectionType>(ct));
+}
+
 QString ViewEmail::senderUser() const
 {
     Q_D(const ViewEmail);
