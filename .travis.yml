@@ -24,7 +24,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
     sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL
       && sudo apt-get update -qq
-      && sudo apt-get install -y uwsgi uuid-dev libcap-dev libzmq3-dev libpcre3-dev zlib1g-dev
+      && sudo apt-get install -y uwsgi uuid-dev libcap-dev libzmq3-dev libpcre3-dev zlib1g-dev libssl-dev
       && sudo apt-get install -y clearsilver-dev 
       && sudo apt-get install -qq qt${QT_VERSION_MM}base qt${QT_VERSION_MM}tools
       && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
