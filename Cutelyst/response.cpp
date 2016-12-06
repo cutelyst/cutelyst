@@ -49,7 +49,7 @@ qint64 Response::writeData(const char *data, qint64 len)
     }
 
     // Finalize headers if someone manually writes output
-    if (d->flags ^ ResponsePrivate::FinalizedHeaders) {
+    if (!(d->flags & ResponsePrivate::FinalizedHeaders)) {
         d->engine->finalizeHeaders(d->context);
         d->flags |= ResponsePrivate::IOWrite;
     }

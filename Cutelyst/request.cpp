@@ -82,7 +82,7 @@ QUrl Request::uri() const
     Q_D(const Request);
 
     QUrl uri = d->url;
-    if (d->parserStatus ^ RequestPrivate::UrlParsed) {
+    if (!(d->parserStatus & RequestPrivate::UrlParsed)) {
         // This is a hack just in case remote is not set
         if (d->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
@@ -109,7 +109,7 @@ QString Request::base() const
 {
     Q_D(const Request);
     QString base = d->base;
-    if (d->parserStatus ^ RequestPrivate::BaseParsed) {
+    if (!(d->parserStatus & RequestPrivate::BaseParsed)) {
         base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
@@ -185,7 +185,7 @@ QIODevice *Request::body() const
 QVariant Request::bodyData() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
+    if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
         d->parseBody();
     }
     return d->bodyData;
@@ -199,7 +199,7 @@ QVariantMap Request::bodyParametersVariant() const
 ParamsMultiMap Request::bodyParameters() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
+    if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
         d->parseBody();
     }
     return d->bodyParam;
@@ -208,7 +208,7 @@ ParamsMultiMap Request::bodyParameters() const
 QString Request::queryKeywords() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::QueryParsed) {
+    if (!(d->parserStatus & RequestPrivate::QueryParsed)) {
         d->parseUrlQuery();
     }
     return d->queryKeywords;
@@ -222,7 +222,7 @@ QVariantMap Request::queryParametersVariant() const
 ParamsMultiMap Request::queryParameters() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::QueryParsed) {
+    if (!(d->parserStatus & RequestPrivate::QueryParsed)) {
         d->parseUrlQuery();
     }
     return d->queryParam;
@@ -236,7 +236,7 @@ QVariantMap Request::parametersVariant() const
 ParamsMultiMap Request::parameters() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::ParamParsed) {
+    if (!(d->parserStatus & RequestPrivate::ParamParsed)) {
         d->param = queryParameters();
         d->param.unite(bodyParameters());
         d->parserStatus |= RequestPrivate::ParamParsed;
@@ -247,7 +247,7 @@ ParamsMultiMap Request::parameters() const
 QString Request::cookie(const QString &name) const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::CookiesParsed) {
+    if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
         d->parseCookies();
     }
 
@@ -257,7 +257,7 @@ QString Request::cookie(const QString &name) const
 QMap<QString, QString> Request::cookies() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::CookiesParsed) {
+    if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
         d->parseCookies();
     }
     return d->cookies;
@@ -302,7 +302,7 @@ QString Request::remoteUser() const
 QVector<Upload *> Request::uploads() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
+    if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
         d->parseBody();
     }
     return d->uploads;
@@ -311,7 +311,7 @@ QVector<Upload *> Request::uploads() const
 QMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
 {
     Q_D(const Request);
-    if (d->parserStatus ^ RequestPrivate::BodyParsed) {
+    if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
         d->parseBody();
     }
     return d->uploadsMap;

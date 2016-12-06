@@ -162,7 +162,7 @@ void Engine::finalizeBody(Context *c)
     Response *response = c->response();
     void *engineData = c->engineData();
 
-    if (response->d_ptr->flags ^ ResponsePrivate::Chunked) {
+    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
         QIODevice *body = response->bodyDevice();
 
         if (body) {
@@ -183,7 +183,7 @@ void Engine::finalizeBody(Context *c)
             const QByteArray bodyByteArray = response->body();
             write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
         }
-    } else if (response->d_ptr->flags ^ ResponsePrivate::ChunkedDone) {
+    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
         // Write the final '0' chunk
         doWrite(c, "0\r\n\r\n", 5, engineData);
     }
@@ -289,9 +289,9 @@ quint64 Engine::time()
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
     Response *response = c->response();
-    if (response->d_ptr->flags ^ ResponsePrivate::Chunked) {
+    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
         return doWrite(c, data, len, engineData);
-    } else if (response->d_ptr->flags ^ ResponsePrivate::ChunkedDone) {
+    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
         const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
         chunk.reserve(len + chunkSize.size() + 4);
@@ -466,7 +466,7 @@ void Engine::finalize(Context *c)
         finalizeError(c);
     }
 
-    if (c->response()->d_ptr->flags ^ ResponsePrivate::FinalizedHeaders && !finalizeHeaders(c)) {
+    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !finalizeHeaders(c)) {
         return;
     }
 
