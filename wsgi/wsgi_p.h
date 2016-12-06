@@ -41,7 +41,7 @@ public:
     bool listenTcp(const QString &line);
     bool listenSocket(const QString &address);
     void proc();
-    int parseCommandLine(Cutelyst::Application *app);
+    void parseCommandLine();
     int setupApplication(Cutelyst::Application *app);
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void engineInitted();

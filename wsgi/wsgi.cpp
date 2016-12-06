@@ -79,10 +79,7 @@ int WSGI::load(Cutelyst::Application *app)
 {
     Q_D(WSGI);
 
-    int ret = d->parseCommandLine(app);
-    if (ret) {
-        return ret;
-    }
+    d->parseCommandLine();
 
     if (d->master) {
         d->proc();
@@ -303,7 +300,7 @@ void WSGIPrivate::proc()
     process->start(app, args);
 }
 
-int WSGIPrivate::parseCommandLine(Cutelyst::Application *app)
+void WSGIPrivate::parseCommandLine()
 {
     Q_Q(WSGI);
 
@@ -437,13 +434,6 @@ int WSGIPrivate::parseCommandLine(Cutelyst::Application *app)
             q->setHttpSocket(http);
         }
     }
-
-    if (q->application().isEmpty()) {
-        std::cout << "Application is not defined" << std::endl;
-        parser.showHelp(2);
-    }
-
-    return 0;
 }
 
 int WSGIPrivate::setupApplication(Cutelyst::Application *app)
