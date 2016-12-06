@@ -456,7 +456,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 
     if (!sockets.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
-        return false;
+        return 1;
     }
 
     Cutelyst::Application *localApp = app;
