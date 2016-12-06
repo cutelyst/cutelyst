@@ -564,6 +564,8 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
 bool WSGIPrivate::loadConfig()
 {
+    Q_Q(WSGI);
+
     QSettings settings(ini, QSettings::IniFormat);
     if (settings.status() != QSettings::NoError) {
         return false;
@@ -579,7 +581,7 @@ bool WSGIPrivate::loadConfig()
     for (const QString &key : keys) {
         QString prop = key;
         prop.replace(QLatin1Char('-'), QLatin1Char('_'));
-        setProperty(prop.toLatin1().constData(), settings.value(key));
+        q->setProperty(prop.toLatin1().constData(), settings.value(key));
     }
 
     return true;
