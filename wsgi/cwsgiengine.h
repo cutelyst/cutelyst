@@ -81,6 +81,7 @@ protected:
 private:
     std::vector<QTcpServer *> m_sockets;
     QByteArray m_lastDate;
+    QByteArray m_serverHeader;
     QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;
 };

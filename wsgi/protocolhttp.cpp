@@ -24,7 +24,6 @@
 
 #include <QVariant>
 #include <QIODevice>
-#include <QByteArrayMatcher>
 #include <QEventLoop>
 #include <QCoreApplication>
 #include <QTemporaryFile>
@@ -36,12 +35,15 @@ using namespace CWSGI;
 
 ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
 {
-    postBuffer = new char[m_wsgi->postBufferingBufsize()];
+    m_postBufferSize = m_wsgi->postBufferingBufsize();
+    m_bufferSize = m_wsgi->bufferSize();
+    m_postBuffering = m_wsgi->postBuffering();
+    m_postBuffer = new char[m_wsgi->postBufferingBufsize()];
 }
 
 ProtocolHttp::~ProtocolHttp()
 {
-    delete [] postBuffer;
+    delete [] m_postBuffer;
 }
 
 void ProtocolHttp::readyRead()
@@ -55,13 +57,12 @@ void ProtocolHttp::readyRead()
         int len;
         qint64 remaining;
 
-        static qint64 postBufferSize = m_wsgi->postBufferingBufsize();
         do {
             remaining = sock->contentLength - sock->body->size();
-            len = sock->read(postBuffer, qMin(postBufferSize, remaining));
+            len = sock->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             bytesAvailable -= len;
 //            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
-            sock->body->write(postBuffer, len);
+            sock->body->write(m_postBuffer, len);
         } while (bytesAvailable);
 
         if (remaining == len) {
@@ -71,14 +72,12 @@ void ProtocolHttp::readyRead()
         return;
     }
 
-    static qint64 bufferSize = m_wsgi->bufferSize();
-    int len = sock->read(sock->buf + sock->buf_size, bufferSize - sock->buf_size);
+    int len = sock->read(sock->buf + sock->buf_size, m_bufferSize - sock->buf_size);
     sock->buf_size += len;
 
     while (sock->last < sock->buf_size) {
 //        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
-        static QByteArrayMatcher matcher("\r\n");
-        int ix = matcher.indexIn(sock->buf, sock->buf_size, sock->last);
+        int ix = m_matcher.indexIn(sock->buf, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
             char *ptr = sock->buf + sock->beginLine;
@@ -98,8 +97,7 @@ void ProtocolHttp::readyRead()
                 } else {
                     if (sock->contentLength != -1) {
                         sock->connState = Socket::ContentBody;
-                        static qint64 postBuffering = m_wsgi->postBuffering();
-                        if (postBuffering && sock->contentLength > postBuffering) {
+                        if (m_postBuffering && sock->contentLength > m_postBuffering) {
                             auto temp = new QTemporaryFile(sock);
                             if (!temp->open()) {
                                 qWarning() << "Failed to open temporary file to store post" << temp->errorString();
@@ -107,7 +105,7 @@ void ProtocolHttp::readyRead()
                                 return;
                             }
                             sock->body = temp;
-                        } else if (postBuffering && sock->contentLength <= postBuffering) {
+                        } else if (m_postBuffering && sock->contentLength <= m_postBuffering) {
                             auto buffer = new QBuffer(sock);
                             buffer->open(QIODevice::ReadWrite);
                             buffer->buffer().reserve(sock->contentLength);
@@ -145,7 +143,7 @@ void ProtocolHttp::readyRead()
         }
     }
 
-    if (sock->buf_size == bufferSize) {
+    if (sock->buf_size == m_bufferSize) {
         // 414 Request-URI Too Long
     }
 }

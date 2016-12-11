@@ -37,11 +37,13 @@
 
 using namespace CWSGI;
 
+QByteArray serverHeaderCrLfCrLf();
 QByteArray dateHeader();
 
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
+    m_serverHeader = serverHeaderCrLfCrLf();
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
 
@@ -71,7 +73,8 @@ void CWsgiEngine::listen()
 
     const auto sockets = m_sockets;
     for (QTcpServer *socket : sockets) {
-        auto server = new TcpServer(m_wsgi, m_proto, this);
+        const auto serverAddress = socket->serverAddress().toString();
+        auto server = new TcpServer(serverAddress, m_wsgi, m_proto, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
         connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
@@ -151,9 +154,7 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
         conn->write(m_lastDate);
     }
 
-    static QByteArray server = serverHeaderCrLfCrLf();
-
-    return conn->write(server) == server.size();
+    return conn->write(m_serverHeader) == m_serverHeader.size();
 }
 
 qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
