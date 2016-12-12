@@ -69,8 +69,7 @@ inline int CrLfIndexIn(const char *str, int len, int from)
 
 void ProtocolHttp::readyRead()
 {
-//    auto conn = sender();
-    auto sock = m_sock;//qobject_cast<TcpSocket*>(conn);
+    const auto sock = m_sock;
 
     // Post buffering
     if (sock->connState == Socket::ContentBody) {
