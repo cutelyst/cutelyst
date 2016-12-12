@@ -32,7 +32,7 @@ class ProtocolHttp : public Protocol
 {
     Q_OBJECT
 public:
-    explicit ProtocolHttp(WSGI *wsgi, QObject *parent = 0);
+    explicit ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
     ~ProtocolHttp();
 
     virtual void readyRead();

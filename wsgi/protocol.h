@@ -30,11 +30,12 @@ class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    explicit Protocol(WSGI *wsgi, QObject *parent = 0);
+    explicit Protocol(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
 
     virtual void readyRead() = 0;
 
     WSGI *m_wsgi;
+    TcpSocket *m_sock;
 };
 
 }

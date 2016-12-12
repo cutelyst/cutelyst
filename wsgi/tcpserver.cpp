@@ -26,8 +26,7 @@
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(const QString &serverAddress, WSGI *wsgi, Protocol *proto, QObject *parent) : QTcpServer(parent)
-  , m_proto(proto)
+TcpServer::TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
   , m_wsgi(wsgi)
 {
     m_serverAddress = serverAddress;
@@ -45,7 +44,8 @@ void TcpServer::incomingConnection(qintptr handle)
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
         sock->serverAddress = m_serverAddress;
-        connect(sock, &QIODevice::readyRead, m_proto, &Protocol::readyRead);
+        auto proto = new ProtocolHttp(sock, m_wsgi, sock);
+        connect(sock, &QIODevice::readyRead, proto, &Protocol::readyRead);
         connect(sock, &TcpSocket::finished, this, &TcpServer::enqueue);
     }
 

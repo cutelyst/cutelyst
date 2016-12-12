@@ -46,8 +46,6 @@ CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &op
     m_serverHeader = serverHeaderCrLfCrLf();
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
-
-    m_proto = new ProtocolHttp(wsgi, this);
 }
 
 int CWsgiEngine::workerId() const
@@ -74,7 +72,7 @@ void CWsgiEngine::listen()
     const auto sockets = m_sockets;
     for (QTcpServer *socket : sockets) {
         const auto serverAddress = socket->serverAddress().toString();
-        auto server = new TcpServer(serverAddress, m_wsgi, m_proto, this);
+        auto server = new TcpServer(serverAddress, m_wsgi, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
         connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);

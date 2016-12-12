@@ -33,7 +33,7 @@
 
 using namespace CWSGI;
 
-ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
+ProtocolHttp::ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent) : Protocol(sock, wsgi, parent)
 {
     m_postBufferSize = m_wsgi->postBufferingBufsize();
     m_bufferSize = m_wsgi->bufferSize();
@@ -48,8 +48,8 @@ ProtocolHttp::~ProtocolHttp()
 
 void ProtocolHttp::readyRead()
 {
-    auto conn = sender();
-    auto sock = qobject_cast<TcpSocket*>(conn);
+//    auto conn = sender();
+    auto sock = m_sock;//qobject_cast<TcpSocket*>(conn);
 
     // Post buffering
     if (sock->connState == Socket::ContentBody) {

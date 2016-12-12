@@ -32,14 +32,13 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, WSGI *wsgi, Protocol *proto, QObject *parent = 0);
+    explicit TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle);
 
     void enqueue();
 
     QString m_serverAddress;
-    Protocol *m_proto;
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
 

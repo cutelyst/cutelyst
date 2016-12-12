@@ -57,8 +57,6 @@ public:
                        sock);
     }
 
-    Protocol *m_proto;
-
     void setTcpSockets(const std::vector<QTcpServer *> &sockets);
 
     void listen();
