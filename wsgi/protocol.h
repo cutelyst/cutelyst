@@ -34,8 +34,8 @@ public:
 
     virtual void readyRead() = 0;
 
-    WSGI *m_wsgi;
     TcpSocket *m_sock;
+    WSGI *m_wsgi;
 };
 
 }
