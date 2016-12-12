@@ -46,6 +46,27 @@ ProtocolHttp::~ProtocolHttp()
     delete [] m_postBuffer;
 }
 
+inline int CrLfIndexIn(const char *str, int len, int from)
+{
+    do {
+        const char *pch = static_cast<const char *>(memchr(str + from, '\r', len - from));
+        if (pch != NULL) {
+            int pos = pch - str;
+            if ((pos + 1) < len) {
+                if (*++pch == '\n') {
+                    return pos;
+                } else {
+                    from = ++pos;
+                    continue;
+                }
+            }
+        }
+        break;
+    } while (true);
+
+    return -1;
+}
+
 void ProtocolHttp::readyRead()
 {
 //    auto conn = sender();
@@ -77,7 +98,7 @@ void ProtocolHttp::readyRead()
 
     while (sock->last < sock->buf_size) {
 //        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
-        int ix = m_matcher.indexIn(sock->buf, sock->buf_size, sock->last);
+        int ix = CrLfIndexIn(sock->buf, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
             char *ptr = sock->buf + sock->beginLine;

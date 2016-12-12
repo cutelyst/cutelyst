@@ -20,7 +20,6 @@
 #define PROTOCOLHTTP_H
 
 #include <QObject>
-#include <QByteArrayMatcher>
 
 #include "protocol.h"
 
@@ -42,7 +41,6 @@ private:
     inline void parseMethod(const char *ptr, const char *end, Socket *sock);
     inline void parseHeader(const char *ptr, const char *end, Socket *sock);
 
-    QByteArrayMatcher m_matcher = QByteArrayMatcher("\r\n");
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
     qint64 m_postBuffering;
