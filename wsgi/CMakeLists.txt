@@ -28,6 +28,7 @@ set_target_properties(cutelyst_wsgi_qt5 PROPERTIES
 
 target_link_libraries(cutelyst_wsgi_qt5
     PRIVATE cutelyst-qt5
+    PRIVATE CutelystQt5::EventLoopEPoll
 )
 
 install(TARGETS cutelyst_wsgi_qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -27,6 +27,10 @@
 #include <QFileInfo>
 #include <QDir>
 
+#ifdef Q_OS_LINUX
+#include "../EventLoopEPoll/eventdispatcher_epoll.h"
+#endif
+
 #define CUTELYST_MODIFIER1 0
 
 using namespace Cutelyst;
@@ -72,6 +76,13 @@ void uwsgi_cutelyst_on_load()
             qputenv("QT_LOGGING_CONF", config.toUtf8());
         }
     }
+
+#ifdef Q_OS_LINUX
+    if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+        uwsgi_log("Installing EPoll event loop");
+        QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
+    }
+#endif
 
     QCoreApplication *app = new QCoreApplication(uwsgi.argc, uwsgi.argv);
     app->setProperty("UWSGI_OPTS", opts);
@@ -213,6 +224,11 @@ void uwsgi_cutelyst_init_apps()
         // i > 0 the main thread counts as one thread
         if (uwsgi.threads > 1) {
             auto thread = new QThread(qApp);
+#ifdef Q_OS_LINUX
+            if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+                thread->setEventDispatcher(new EventDispatcherEPoll);
+            }
+#endif
 
             // reuse the main engine
             if (i != 0) {

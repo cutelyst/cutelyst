@@ -136,6 +136,15 @@ install(EXPORT CutelystQt5Targets
 
 
 add_subdirectory(Cutelyst)
+
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
+if (LINUX)
+add_subdirectory(EventLoopEPoll)
+endif (LINUX)
+
 add_subdirectory(wsgi)
 
 find_program(UWSGI_BIN NAMES uwsgi)

@@ -24,24 +24,21 @@
 
 #include "wsgi.h"
 #include "config.h"
-//#include <eventdispatcher_epoll.h>
 
 int main(int argc, char *argv[])
 {
-    //    QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
-
-    QCoreApplication app(argc, argv);
     QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
     QCoreApplication::setApplicationName(QStringLiteral("cutelyst-wsgi"));
     QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
 
+    CWSGI::WSGI wsgi;
+
+    QCoreApplication app(argc, argv);
     QTranslator qtTranslator;
     qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     QCoreApplication::installTranslator(&qtTranslator);
-
-    CWSGI::WSGI wsgi;
 
     int ret = wsgi.load();
     if (ret) {

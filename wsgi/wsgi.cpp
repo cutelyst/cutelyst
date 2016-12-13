@@ -28,6 +28,10 @@
 #include "unixfork.h"
 #endif
 
+#ifdef Q_OS_LINUX
+#include "../EventLoopEPoll/eventdispatcher_epoll.h"
+#endif
+
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QUrl>
@@ -52,6 +56,13 @@ WSGI::WSGI(QObject *parent) : QObject(parent),
     d_ptr(new WSGIPrivate(this))
 {
     std::cout << "Cutelyst WSGI starting" << std::endl;
+
+#ifdef Q_OS_LINUX
+    if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+        std::cout << "Installing EPoll event loop" << std::endl;
+        QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
+    }
+#endif
 }
 
 WSGI::~WSGI()
@@ -553,6 +564,11 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
     if (threads && core) {
         auto thread = new QThread(this);
+#ifdef Q_OS_LINUX
+        if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+            thread->setEventDispatcher(new EventDispatcherEPoll);
+        }
+#endif
         engine->moveToThread(thread);
         connect(thread, &QThread::started, engine, &CWsgiEngine::listen, Qt::DirectConnection);
         thread->start();

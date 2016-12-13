@@ -22,10 +22,16 @@ add_definitions(${UWSGI_CFLAGS})
 
 add_library(cutelyst SHARED ${uswgi_engine_SRC})
 target_link_libraries(cutelyst
-    cutelyst-qt5
-    Qt5::Core
-    Qt5::Network
+    PRIVATE CutelystQt5::Core
+    PRIVATE Qt5::Core
+    PRIVATE Qt5::Network
 )
+
+if (LINUX)
+target_link_libraries(cutelyst
+    PRIVATE CutelystQt5::EventLoopEPoll
+)
+endif (LINUX)
 
 SET_TARGET_PROPERTIES(cutelyst
     PROPERTIES
