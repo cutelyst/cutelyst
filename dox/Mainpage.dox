@@ -1,0 +1,40 @@
+
+// Put this in the Cutelyst namespace so that autolinks to classes work without needing a Cutelyst:: prefix.
+
+/**
+  @brief The Cutelyst namespace holds all public %Cutelyst API.
+*/
+namespace Cutelyst
+{
+
+/** @mainpage Cutelyst the C++ Web Framework
+
+  @section overview Overview
+
+  %Cutelyst is a Free Software, Open Source web framework build on top of Qt libraries.
+
+  %Cutelyst is covered by the GNU Lesser General Public Licence version 2.1 or, at your option, any later version.
+
+  <table class="main_api" >
+    <tr><th class="library" colspan="3">%Cutelyst</th></tr>
+    <tr><th class="section" >Application API</th><th class="section">%Plugin API</th></tr>
+    <tr><td>
+      - Context
+      - Engine
+      - Controller
+      - View
+    </td><td>
+      - Session
+      - Authentication
+    </tr>
+  </table>
+
+  @section start_community Community
+
+  The %Cutelyst project IRC channel is <a href="http://webchat.freenode.net?channels=%23cutelyst">#cutelyst</a> on freenode.
+
+  The source repository is located at https://github.com/cutelyst/cutelyst
+
+*/
+
+}
