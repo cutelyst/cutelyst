@@ -66,6 +66,7 @@ public:
     int threads = 0;
     int process = 0;
     bool master = false;
+    bool tcpNodelay = false;
 
 Q_SIGNALS:
     void forked();

@@ -97,6 +97,10 @@ public:
     void setPostBufferingBufsize(qint64 size);
     qint64 postBufferingBufsize() const;
 
+    Q_PROPERTY(bool tcpNodelay READ tcpNodelay WRITE setTcpNodelay)
+    void setTcpNodelay(bool enable);
+    bool tcpNodelay() const;
+
 protected:
     WSGIPrivate *d_ptr;
 };

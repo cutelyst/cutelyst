@@ -291,6 +291,18 @@ qint64 WSGI::postBufferingBufsize() const
     return d->postBufferingBufsize;
 }
 
+void WSGI::setTcpNodelay(bool enable)
+{
+    Q_D(WSGI);
+    d->tcpNodelay = enable;
+}
+
+bool WSGI::tcpNodelay() const
+{
+    Q_D(const WSGI);
+    return d->tcpNodelay;
+}
+
 void WSGIPrivate::proc()
 {
     static QProcess *process = nullptr;
@@ -376,9 +388,13 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocket);
 
-    QCommandLineOption restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
-                                                    QStringLiteral("Restarts when the application file changes"));
+    auto restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
+                                      QCoreApplication::translate("main", "restarts when the application file changes"));
     parser.addOption(restart);
+
+    auto tcpNoDelay = QCommandLineOption(QStringLiteral("tcp-nodelay"),
+                                         QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
+    parser.addOption(tcpNoDelay);
 
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
@@ -438,6 +454,8 @@ void WSGIPrivate::parseCommandLine()
 
     bool masterSet = parser.isSet(master);
     q->setMaster(masterSet);
+
+    q->setTcpNodelay(parser.isSet(tcpNoDelay));
 
     if (!masterSet && parser.isSet(httpSocket)) {
         const auto socks = parser.values(httpSocket);

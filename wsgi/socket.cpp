@@ -28,6 +28,9 @@ using namespace CWSGI;
 
 TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(wsgi)
 {
+    if (wsgi->tcpNodelay()) {
+        setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    }
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 
