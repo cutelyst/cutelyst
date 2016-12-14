@@ -71,14 +71,33 @@ public:
     explicit Application(QObject *parent = nullptr);
     virtual ~Application();
 
+    /**
+     * Returns a list with all registered controllers.
+     *
+     * The list might only be complete after application has been setup.
+     */
     QVector<Controller *> controllers() const;
 
+    /**
+     * Returns the view specified by \p name, if no view is found nullptr is returned.
+     */
     View *view(const QString &name = QString()) const;
 
+    /**
+     * Returns application config specified by \p key, with a possible default value.
+     */
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
+    /**
+     * Returns the dispatcher class.
+     */
     Dispatcher *dispatcher() const;
 
+    /**
+     * Returns a list with all registered dispachers.
+     *
+     * The list might only be complete after application has been setup.
+     */
     QVector<DispatchType *> dispatchers() const;
 
     /**
@@ -92,12 +111,25 @@ public:
      */
     QString pathTo(const QStringList &path) const;
 
+    /**
+     * Returns true if the application has been inited.
+     */
     bool inited() const;
 
+    /**
+     * Returns current engine that is generating requests.
+     */
     Engine *engine() const;
 
+    /**
+     * Tries to load a plugin in Cutelyst default plugin directory with \p parent as it's parent.
+     * A nullptr is returned in case of failure.
+     */
     Component *createComponentPlugin(const QString &name, QObject *parent = nullptr);
 
+    /**
+     * Returns cutelyst version.
+     */
     static const char *cutelystVersion();
 
 protected:
@@ -163,6 +195,13 @@ protected:
      */
     bool registerController(Controller *controller);
 
+    /**
+     * This method registers a View class which
+     * is responsible for rendering requests.
+     *
+     * @param view the View class
+     * @return True if succeeded
+     */
     bool registerView(View *view);
 
     /**
@@ -195,8 +234,15 @@ Q_SIGNALS:
      */
     void afterDispatch(Context *c);
 
+    /**
+     * This signal is emitted right after application has been setup
+     * and before application forks and \sa postFork() is called.
+     */
     void preForked(Application *app);
 
+    /**
+     * This signal is emitted after before \sa postFork() is called.
+     */
     void postForked(Application *app);
 
 protected:
