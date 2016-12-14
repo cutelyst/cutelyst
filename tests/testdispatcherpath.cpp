@@ -100,6 +100,7 @@ void TestDispatcherPath::testController_data()
     QTest::newRow("path-test18") << QStringLiteral("/test/controller/oneOld/1//") << QByteArrayLiteral("path /test/controller/oneOld/1// args 1");
     QTest::newRow("path-test19") << QStringLiteral("/test/controller/twoOld/1/2") << QByteArrayLiteral("path /test/controller/twoOld/1/2 args 1/2");
     QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2//") << QByteArrayLiteral("path /test/controller/twoOld/1/2// args 1/2");
+    QTest::newRow("path-test21") << QStringLiteral("/") << QByteArrayLiteral("rootAction");
 }
 
 QTEST_MAIN(TestDispatcherPath)

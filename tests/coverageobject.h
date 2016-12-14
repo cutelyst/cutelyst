@@ -72,6 +72,11 @@ class RootController : public Controller
 public:
     RootController(QObject *parent) : Controller(parent) {}
 
+    C_ATTR(rootAction, :Path :AutoArgs)
+    void rootAction(Context *c) {
+        c->response()->setBody(c->actionName());
+    }
+
     C_ATTR(rootActionOnControllerWithoutNamespace, :Local :AutoArgs)
     void rootActionOnControllerWithoutNamespace(Context *c) {
         c->response()->setBody(c->actionName());

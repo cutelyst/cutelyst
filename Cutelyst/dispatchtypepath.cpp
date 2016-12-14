@@ -167,13 +167,10 @@ bool actionLessThan(Action *a1, Action *a2)
 bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
-    if (_path.startsWith(QLatin1Char('/'))) {
+    if (_path.startsWith(QLatin1Char('/')) && !_path.isEmpty()) {
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {
-        // TODO when we try to match a path
-        // it comes without a leading / so
-        // when would this be used?
         _path = QStringLiteral("/");
     }
 
