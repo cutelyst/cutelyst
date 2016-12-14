@@ -37,13 +37,12 @@
 
 using namespace CWSGI;
 
-QByteArray serverHeaderCrLfCrLf();
 QByteArray dateHeader();
 
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
-    m_serverHeader = serverHeaderCrLfCrLf();
+    m_serverHeader.append("\r\nServer: cutelyst/").append(VERSION).append("\r\n\r\n");
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
 }
@@ -96,14 +95,6 @@ QByteArray dateHeader()
     QString ret;
     ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
                                                               QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
-    return ret.toLatin1();
-}
-
-QByteArray serverHeaderCrLfCrLf()
-{
-    QString ret;
-    ret = QLatin1String("\r\nServer: cutelyst/") + QLatin1String(VERSION)
-            + QLatin1String("\r\n\r\n");
     return ret.toLatin1();
 }
 
