@@ -448,6 +448,12 @@ const char *Engine::httpStatusMessage(quint16 status, int *len)
     return ret;
 }
 
+Headers &Engine::defaultHeaders()
+{
+    Q_D(Engine);
+    return d->app->defaultHeaders();
+}
+
 QVariantMap Engine::opts() const
 {
     Q_D(const Engine);

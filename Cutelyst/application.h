@@ -136,7 +136,7 @@ protected:
     virtual bool postFork();
 
     /**
-     * This is the HTTP default headers appended to each request
+     * This is the HTTP default response headers that each request gets
      *
      * Do not change it after the application has started.
      */

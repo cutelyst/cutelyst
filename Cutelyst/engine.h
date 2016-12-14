@@ -179,6 +179,11 @@ protected:
 
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
+    /**
+     * This is the HTTP default response headers that each request gets
+     */
+    Headers &defaultHeaders();
+
     void processRequest(const QString &method,
                         const QString &path,
                         const QByteArray &query,
