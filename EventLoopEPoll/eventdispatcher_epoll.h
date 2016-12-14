@@ -12,36 +12,36 @@ class EventDispatcherEPollPrivate;
 #endif
 
 class CUTELYST_EVENTLOOP_EPOLL_EXPORT EventDispatcherEPoll : public QAbstractEventDispatcher {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit EventDispatcherEPoll(QObject* parent = 0);
-	virtual ~EventDispatcherEPoll(void);
+    explicit EventDispatcherEPoll(QObject* parent = 0);
+    virtual ~EventDispatcherEPoll(void);
 
-	virtual bool processEvents(QEventLoop::ProcessEventsFlags flags);
-	virtual bool hasPendingEvents(void);
+    virtual bool processEvents(QEventLoop::ProcessEventsFlags flags);
+    virtual bool hasPendingEvents(void);
 
-	virtual void registerSocketNotifier(QSocketNotifier* notifier);
-	virtual void unregisterSocketNotifier(QSocketNotifier* notifier);
+    virtual void registerSocketNotifier(QSocketNotifier* notifier);
+    virtual void unregisterSocketNotifier(QSocketNotifier* notifier);
 
-	virtual void registerTimer(
-		int timerId,
-		int interval,
-		Qt::TimerType timerType,
-		QObject* object
-	);
+    virtual void registerTimer(
+            int timerId,
+            int interval,
+            Qt::TimerType timerType,
+            QObject* object
+            );
 
-	virtual bool unregisterTimer(int timerId);
-	virtual bool unregisterTimers(QObject* object);
-	virtual QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const;
-	virtual int remainingTime(int timerId);
+    virtual bool unregisterTimer(int timerId);
+    virtual bool unregisterTimers(QObject* object);
+    virtual QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const;
+    virtual int remainingTime(int timerId);
 
-	virtual void wakeUp(void);
-	virtual void interrupt(void);
-	virtual void flush(void);
+    virtual void wakeUp(void);
+    virtual void interrupt(void);
+    virtual void flush(void);
 
 private:
-	Q_DISABLE_COPY(EventDispatcherEPoll)
-	Q_DECLARE_PRIVATE(EventDispatcherEPoll)
+    Q_DISABLE_COPY(EventDispatcherEPoll)
+    Q_DECLARE_PRIVATE(EventDispatcherEPoll)
 
     EventDispatcherEPollPrivate *d_ptr;
 };
