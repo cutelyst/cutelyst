@@ -31,6 +31,9 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
     if (wsgi->tcpNodelay()) {
         setSocketOption(QAbstractSocket::LowDelayOption, 1);
     }
+    if (wsgi->soKeepalive()) {
+        setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    }
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 

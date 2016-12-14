@@ -101,6 +101,10 @@ public:
     void setTcpNodelay(bool enable);
     bool tcpNodelay() const;
 
+    Q_PROPERTY(bool soKeepalive READ soKeepalive WRITE setSoKeepalive)
+    void setSoKeepalive(bool enable);
+    bool soKeepalive() const;
+
 protected:
     WSGIPrivate *d_ptr;
 };

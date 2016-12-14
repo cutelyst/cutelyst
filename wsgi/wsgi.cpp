@@ -303,6 +303,18 @@ bool WSGI::tcpNodelay() const
     return d->tcpNodelay;
 }
 
+void WSGI::setSoKeepalive(bool enable)
+{
+    Q_D(WSGI);
+    d->soKeepalive = enable;
+}
+
+bool WSGI::soKeepalive() const
+{
+    Q_D(const WSGI);
+    return d->soKeepalive;
+}
+
 void WSGIPrivate::proc()
 {
     static QProcess *process = nullptr;
@@ -396,6 +408,10 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
     parser.addOption(tcpNoDelay);
 
+    auto soKeepAlive = QCommandLineOption(QStringLiteral("so-keepalive"),
+                                          QCoreApplication::translate("main", "enable TCP KEEPALIVEs"));
+    parser.addOption(soKeepAlive);
+
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
 
@@ -456,6 +472,8 @@ void WSGIPrivate::parseCommandLine()
     q->setMaster(masterSet);
 
     q->setTcpNodelay(parser.isSet(tcpNoDelay));
+
+    q->setSoKeepalive(parser.isSet(soKeepAlive));
 
     if (!masterSet && parser.isSet(httpSocket)) {
         const auto socks = parser.values(httpSocket);
