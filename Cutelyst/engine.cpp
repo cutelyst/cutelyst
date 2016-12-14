@@ -315,130 +315,130 @@ const char *Engine::httpStatusMessage(quint16 status, int *len)
     const char *ret;
     switch (status) {
     case Response::OK:
-        ret = "200 OK";
+        ret = "HTTP/1.1 200 OK";
         break;
     case Response::Found:
-        ret = "302 Found";
+        ret = "HTTP/1.1 302 Found";
         break;
     case Response::NotFound:
-        ret = "404 Not Found";
+        ret = "HTTP/1.1 404 Not Found";
         break;
     case Response::InternalServerError:
-        ret = "500 Internal Server Error";
+        ret = "HTTP/1.1 500 Internal Server Error";
         break;
     case Response::MovedPermanently:
-        ret = "301 Moved Permanently";
+        ret = "HTTP/1.1 301 Moved Permanently";
         break;
     case Response::NotModified:
-        ret = "304 Not Modified";
+        ret = "HTTP/1.1 304 Not Modified";
         break;
     case Response::SeeOther:
-        ret = "303 See Other";
+        ret = "HTTP/1.1 303 See Other";
         break;
     case Response::Forbidden:
-        ret = "403 Forbidden";
+        ret = "HTTP/1.1 403 Forbidden";
         break;
     case Response::TemporaryRedirect:
-        ret = "307 Temporary Redirect";
+        ret = "HTTP/1.1 307 Temporary Redirect";
         break;
     case Response::Unauthorized:
-        ret = "401 Unauthorized";
+        ret = "HTTP/1.1 401 Unauthorized";
         break;
     case Response::BadRequest:
-        ret = "400 Bad Request";
+        ret = "HTTP/1.1 400 Bad Request";
         break;
     case Response::MethodNotAllowed:
-        ret = "405 Method Not Allowed";
+        ret = "HTTP/1.1 405 Method Not Allowed";
         break;
     case Response::RequestTimeout:
-        ret = "408 Request Timeout";
+        ret = "HTTP/1.1 408 Request Timeout";
         break;
     case Response::Continue:
-        ret = "100 Continue";
+        ret = "HTTP/1.1 100 Continue";
         break;
     case Response::SwitchingProtocols:
-        ret = "101 Switching Protocols";
+        ret = "HTTP/1.1 101 Switching Protocols";
         break;
     case Response::Created:
-        ret = "201 Created";
+        ret = "HTTP/1.1 201 Created";
         break;
     case Response::Accepted:
-        ret = "202 Accepted";
+        ret = "HTTP/1.1 202 Accepted";
         break;
     case Response::NonAuthoritativeInformation:
-        ret = "203 Non-Authoritative Information";
+        ret = "HTTP/1.1 203 Non-Authoritative Information";
         break;
     case Response::NoContent:
-        ret = "204 No Content";
+        ret = "HTTP/1.1 204 No Content";
         break;
     case Response::ResetContent:
-        ret = "205 Reset Content";
+        ret = "HTTP/1.1 205 Reset Content";
         break;
     case Response::PartialContent:
-        ret = "206 Partial Content";
+        ret = "HTTP/1.1 206 Partial Content";
         break;
     case Response::MultipleChoices:
-        ret = "300 Multiple Choices";
+        ret = "HTTP/1.1 300 Multiple Choices";
         break;
     case Response::UseProxy:
-        ret = "305 Use Proxy";
+        ret = "HTTP/1.1 305 Use Proxy";
         break;
     case Response::PaymentRequired:
-        ret = "402 Payment Required";
+        ret = "HTTP/1.1 402 Payment Required";
         break;
     case Response::NotAcceptable:
-        ret = "406 Not Acceptable";
+        ret = "HTTP/1.1 406 Not Acceptable";
         break;
     case Response::ProxyAuthenticationRequired:
-        ret = "407 Proxy Authentication Required";
+        ret = "HTTP/1.1 407 Proxy Authentication Required";
         break;
     case Response::Conflict:
-        ret = "409 Conflict";
+        ret = "HTTP/1.1 409 Conflict";
         break;
     case Response::Gone:
-        ret = "410 Gone";
+        ret = "HTTP/1.1 410 Gone";
         break;
     case Response::LengthRequired:
-        ret = "411 Length Required";
+        ret = "HTTP/1.1 411 Length Required";
         break;
     case Response::PreconditionFailed:
-        ret = "412 Precondition Failed";
+        ret = "HTTP/1.1 412 Precondition Failed";
         break;
     case Response::RequestEntityTooLarge:
-        ret = "413 Request Entity Too Large";
+        ret = "HTTP/1.1 413 Request Entity Too Large";
         break;
     case Response::RequestURITooLong:
-        ret = "414 Request-URI Too Long";
+        ret = "HTTP/1.1 414 Request-URI Too Long";
         break;
     case Response::UnsupportedMediaType:
-        ret = "415 Unsupported Media Type";
+        ret = "HTTP/1.1 415 Unsupported Media Type";
         break;
     case Response::RequestedRangeNotSatisfiable:
-        ret = "416 Requested Range Not Satisfiable";
+        ret = "HTTP/1.1 416 Requested Range Not Satisfiable";
         break;
     case Response::ExpectationFailed:
-        ret = "417 Expectation Failed";
+        ret = "HTTP/1.1 417 Expectation Failed";
         break;
     case Response::NotImplemented:
-        ret = "501 Not Implemented";
+        ret = "HTTP/1.1 501 Not Implemented";
         break;
     case Response::BadGateway:
-        ret = "502 Bad Gateway";
+        ret = "HTTP/1.1 502 Bad Gateway";
         break;
     case Response::ServiceUnavailable:
-        ret = "503 Service Unavailable";
+        ret = "HTTP/1.1 503 Service Unavailable";
         break;
     case Response::GatewayTimeout:
-        ret = "504 Gateway Timeout";
+        ret = "HTTP/1.1 504 Gateway Timeout";
         break;
     case Response::HTTPVersionNotSupported:
-        ret = "505 HTTP Version Not Supported";
+        ret = "HTTP/1.1 505 HTTP Version Not Supported";
         break;
     case Response::BandwidthLimitExceeded:
-        ret = "509 Bandwidth Limit Exceeded";
+        ret = "HTTP/1.1 509 Bandwidth Limit Exceeded";
         break;
     default:
-        ret = QByteArray::number(status).constData();
+        ret = QByteArrayLiteral("HTTP/1.1 ").append(QByteArray::number(status)).constData();
         break;
     }
 
