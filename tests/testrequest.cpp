@@ -743,6 +743,22 @@ void TestRequest::testController_data()
                                       << QByteArrayLiteral("");
 
     query.clear();
+    body = QUuid::createUuid().toByteArray();
+    query.addQueryItem(QStringLiteral("x"), QStringLiteral("foo baz"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("bodyParam-test02") << get << QStringLiteral("/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue")
+                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                      << QByteArrayLiteral("foo baz");
+
+    query.clear();
+    body = QUuid::createUuid().toByteArray();
+    query.addQueryItem(QStringLiteral("x+y"), QStringLiteral("foo+baz"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("bodyParam-test03") << get << QStringLiteral("/request/test/bodyParam?param=x+y&defaultValue=SomeDefaultValue")
+                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                      << QByteArrayLiteral("foo baz");
+
+    query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("x"), QString());
@@ -774,7 +790,7 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
     query.addQueryItem(QStringLiteral("x"), QString());
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKey-test00") << get << QStringLiteral("/request/test/paramsKey/x?param=y&defaultValue=SomeDefaultValue")
+    QTest::newRow("paramsKey-test01") << get << QStringLiteral("/request/test/paramsKey/x?param=y&defaultValue=SomeDefaultValue")
                                       << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                       << QByteArrayLiteral("");
 
@@ -957,13 +973,6 @@ void TestRequest::testUploads_data()
     headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
     QTest::newRow("uploads-100") << post << QStringLiteral("/request/test/uploads")
                                  << headers << body << result;
-
-    query.clear();
-    headers.clear();
-    body = createBody(result, 10000);
-    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
-    QTest::newRow("uploads-10000") << post << QStringLiteral("/request/test/uploads")
-                                   << headers << body << result;
 
 }
 QTEST_MAIN(TestRequest)

@@ -559,7 +559,7 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
             continue;
         }
 
-        const QByteArray data = line.mid(pos + 1, len);
+        const QByteArray data = line.mid(pos + 1, len).replace('+', ' ');
 
         int equal = data.indexOf('=');
         if (equal != -1) {
