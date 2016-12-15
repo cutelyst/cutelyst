@@ -50,6 +50,7 @@ public:
         last = 0;
         headerClose = 0;
         processing = false;
+        headerHost = false;
         delete body;
         body = nullptr;
     }
@@ -70,6 +71,7 @@ public:
     int beginLine = 0;
     int last = 0;
     int headerClose = 0;
+    bool headerHost = false;
     bool processing = false;
 };
 

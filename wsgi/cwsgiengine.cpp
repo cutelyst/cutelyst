@@ -70,7 +70,7 @@ void CWsgiEngine::listen()
 
     const auto sockets = m_sockets;
     for (QTcpServer *socket : sockets) {
-        const auto serverAddress = socket->serverAddress().toString();
+        const QString serverAddress = socket->serverAddress().toString() + QLatin1Char(':') + QString::number(socket->serverPort());
         auto server = new TcpServer(serverAddress, m_wsgi, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
