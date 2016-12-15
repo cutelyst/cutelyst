@@ -19,6 +19,7 @@
 #include "tcpserver.h"
 #include "socket.h"
 #include "protocolhttp.h"
+#include "wsgi.h"
 
 #include <Cutelyst/Engine>
 #include <QDateTime>
@@ -50,6 +51,19 @@ void TcpServer::incomingConnection(qintptr handle)
     }
 
     sock->setSocketDescriptor(handle);
+    if (m_wsgi->tcpNodelay()) {
+        sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    }
+    if (m_wsgi->soKeepalive()) {
+        sock->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    }
+    if (m_wsgi->socketSndbuf() != -1) {
+        sock->setSocketOption(QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf());
+    }
+    if (m_wsgi->socketRcvbuf() != -1) {
+        sock->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf());
+    }
+
     sock->start = QDateTime::currentMSecsSinceEpoch();
 }
 

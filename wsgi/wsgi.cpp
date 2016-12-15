@@ -318,7 +318,7 @@ bool WSGI::soKeepalive() const
 void WSGI::setSocketSndbuf(int value)
 {
     Q_D(WSGI);
-    d->soKeepalive = value;
+    d->socketSendBuf = value;
 }
 
 int WSGI::socketSndbuf() const

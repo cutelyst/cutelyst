@@ -28,18 +28,6 @@ using namespace CWSGI;
 
 TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(wsgi)
 {
-    if (wsgi->tcpNodelay()) {
-        setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    }
-    if (wsgi->soKeepalive()) {
-        setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-    }
-    if (wsgi->socketSndbuf() != -1) {
-        setSocketOption(QAbstractSocket::SendBufferSizeSocketOption, wsgi->socketSndbuf());
-    }
-    if (wsgi->socketRcvbuf() != -1) {
-        setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, wsgi->socketRcvbuf());
-    }
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 
