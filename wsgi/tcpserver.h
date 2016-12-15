@@ -42,6 +42,7 @@ public:
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
 
+    std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
     std::vector<TcpSocket *> m_socks;
 };
 

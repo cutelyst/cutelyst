@@ -32,6 +32,19 @@ TcpServer::TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent) 
 {
     m_serverAddress = serverAddress;
     m_engine = qobject_cast<CWsgiEngine*>(parent);
+
+    if (m_wsgi->tcpNodelay()) {
+        m_socketOptions.push_back({ QAbstractSocket::LowDelayOption, 1 });
+    }
+    if (m_wsgi->soKeepalive()) {
+        m_socketOptions.push_back({ QAbstractSocket::KeepAliveOption, 1 });
+    }
+    if (m_wsgi->socketSndbuf() != -1) {
+        m_socketOptions.push_back({ QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf() });
+    }
+    if (m_wsgi->socketRcvbuf() != -1) {
+        m_socketOptions.push_back({ QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf() });
+    }
 }
 
 void TcpServer::incomingConnection(qintptr handle)
@@ -51,17 +64,8 @@ void TcpServer::incomingConnection(qintptr handle)
     }
 
     sock->setSocketDescriptor(handle);
-    if (m_wsgi->tcpNodelay()) {
-        sock->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    }
-    if (m_wsgi->soKeepalive()) {
-        sock->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-    }
-    if (m_wsgi->socketSndbuf() != -1) {
-        sock->setSocketOption(QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf());
-    }
-    if (m_wsgi->socketRcvbuf() != -1) {
-        sock->setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf());
+    for (auto opt : m_socketOptions) {
+        sock->setSocketOption(opt.first, opt.second);
     }
 
     sock->start = QDateTime::currentMSecsSinceEpoch();
