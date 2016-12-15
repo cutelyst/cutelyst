@@ -412,8 +412,8 @@ QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QString &auth)
         if (pos == -1) {
             ret.first = QString::fromLatin1(authorization);
         } else {
-            ret = qMakePair(QString::fromLatin1(authorization.left(pos)),
-                            QString::fromLatin1(authorization.mid(pos + 1)));
+            ret = { QString::fromLatin1(authorization.left(pos)),
+                    QString::fromLatin1(authorization.mid(pos + 1)) };
         }
     }
     return ret;
