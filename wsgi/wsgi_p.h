@@ -55,6 +55,7 @@ public:
     std::vector<Cutelyst::Engine *> engines;
     CWsgiEngine *engine;
 
+    QStringList httpSockets;
     QString application;
     QString chdir;
     QString chdir2;

@@ -92,6 +92,14 @@ int WSGI::load(Cutelyst::Application *app)
 
     d->parseCommandLine();
 
+    if (!d->ini.isEmpty()) {
+        std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;;
+        if (!d->loadConfig()) {
+            qCCritical(CUTELYST_WSGI) << "Failed to load config " << d->ini;
+            return 1;
+        }
+    }
+
     if (d->master) {
         d->proc();
         return 0;
@@ -203,12 +211,13 @@ QString WSGI::chdir() const
 void WSGI::setHttpSocket(const QString &httpSocket)
 {
     Q_D(WSGI);
-    d->listenTcp(httpSocket);
+    d->httpSockets.append(httpSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
 }
 
 QString WSGI::httpSocket() const
 {
-    return QString();
+    Q_D(const WSGI);
+    return d->httpSockets.join(QLatin1Char(' '));
 }
 
 void WSGI::setChdir2(const QString &chdir2)
@@ -238,7 +247,9 @@ QString WSGI::ini() const
 void WSGI::setMaster(bool enable)
 {
     Q_D(WSGI);
-    d->master = enable;
+    if (!qEnvironmentVariableIsSet("CUTELYST_WSGI_IGNORE_MASTER")) {
+        d->master = enable;
+    }
 }
 
 bool WSGI::master() const
@@ -353,6 +364,10 @@ void WSGIPrivate::proc()
     args.takeFirst();
     args.removeOne(QStringLiteral("-M"));
     args.removeOne(QStringLiteral("--master"));
+
+    QProcessEnvironment env = process->processEnvironment();
+    env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
+    process->setProcessEnvironment(env);
 
     process->setProcessChannelMode(QProcess::ForwardedChannels);
 
@@ -545,12 +560,8 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         }
     }
 
-    if (!ini.isEmpty()) {
-        std::cout << "Loading configuration: " << ini.toLatin1().constData() << std::endl;;
-        if (!loadConfig()) {
-            qCCritical(CUTELYST_WSGI) << "Failed to load config " << ini;
-            return 1;
-        }
+    for (const auto &httpSocket : httpSockets) {
+        listenTcp(httpSocket);
     }
 
     if (!sockets.size()) {
