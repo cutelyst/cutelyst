@@ -21,7 +21,6 @@
 #include "protocol.h"
 #include "protocolhttp.h"
 #include "cwsgiengine.h"
-#include "tcpserver.h"
 #include "socket.h"
 
 #ifdef Q_OS_UNIX
@@ -365,7 +364,7 @@ void WSGIPrivate::proc()
     args.removeOne(QStringLiteral("-M"));
     args.removeOne(QStringLiteral("--master"));
 
-    QProcessEnvironment env = process->processEnvironment();
+    auto env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
     process->setProcessEnvironment(env);
 
