@@ -105,6 +105,10 @@ public:
     void setSoKeepalive(bool enable);
     bool soKeepalive() const;
 
+    Q_PROPERTY(int socketSndbuf READ socketSndbuf WRITE setSocketSndbuf)
+    void setSocketSndbuf(int value);
+    int socketSndbuf() const;
+
 protected:
     WSGIPrivate *d_ptr;
 };

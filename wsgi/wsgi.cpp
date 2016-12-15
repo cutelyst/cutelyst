@@ -315,6 +315,18 @@ bool WSGI::soKeepalive() const
     return d->soKeepalive;
 }
 
+void WSGI::setSocketSndbuf(int value)
+{
+    Q_D(WSGI);
+    d->soKeepalive = value;
+}
+
+int WSGI::socketSndbuf() const
+{
+    Q_D(const WSGI);
+    return d->socketSendBuf;
+}
+
 void WSGIPrivate::proc()
 {
     static QProcess *process = nullptr;
@@ -412,6 +424,11 @@ void WSGIPrivate::parseCommandLine()
                                           QCoreApplication::translate("main", "enable TCP KEEPALIVEs"));
     parser.addOption(soKeepAlive);
 
+    auto socketSndbuf = QCommandLineOption(QStringLiteral("socket-sndbuf"),
+                                           QCoreApplication::translate("main", "set SO_SNDBUF"),
+                                           QCoreApplication::translate("main", "bytes"));
+    parser.addOption(socketSndbuf);
+
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
 
@@ -474,6 +491,15 @@ void WSGIPrivate::parseCommandLine()
     q->setTcpNodelay(parser.isSet(tcpNoDelay));
 
     q->setSoKeepalive(parser.isSet(soKeepAlive));
+
+    if (parser.isSet(socketSndbuf)) {
+        bool ok;
+        auto size = parser.value(socketSndbuf).toInt(&ok);
+        q->setSocketSndbuf(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
 
     if (!masterSet && parser.isSet(httpSocket)) {
         const auto socks = parser.values(httpSocket);
