@@ -553,7 +553,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 {
     if (!chdir.isEmpty()) {
         std::cout << "Changing directory to: " << chdir.toLatin1().constData() << std::endl;;
-        if (!QDir().cd(chdir)) {
+        if (!QDir::setCurrent(chdir)) {
             qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir;
             return 1;
         }
@@ -612,7 +612,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 
     if (!chdir2.isEmpty()) {
         std::cout << "Changing directory2 to" << chdir2.toLatin1().constData()  << std::endl;;
-        if (!QDir().cd(chdir2)) {
+        if (!QDir::setCurrent(chdir2)) {
             qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir2;
             return 1;
         }
