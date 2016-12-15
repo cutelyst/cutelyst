@@ -270,6 +270,8 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock)
         if (ok && cl >= 0) {
             sock->contentLength = cl;
         }
+    } else if (!sock->headerHost && key.compare(QLatin1String("Host"), Qt::CaseInsensitive) == 0) {
+        sock->serverAddress = value;
     }
     sock->headers.pushHeader(key, value);
 }

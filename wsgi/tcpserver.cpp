@@ -57,12 +57,12 @@ void TcpServer::incomingConnection(qintptr handle)
     } else {
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
-        sock->serverAddress = m_serverAddress;
         auto proto = new ProtocolHttp(sock, m_wsgi, sock);
         connect(sock, &QIODevice::readyRead, proto, &Protocol::readyRead);
         connect(sock, &TcpSocket::finished, this, &TcpServer::enqueue);
     }
 
+    sock->serverAddress = m_serverAddress;
     sock->setSocketDescriptor(handle);
     for (auto opt : m_socketOptions) {
         sock->setSocketOption(opt.first, opt.second);
