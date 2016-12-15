@@ -481,9 +481,9 @@ static int nextNonWhitespace(const QString &text, int from, int length)
     return text.length();
 }
 
-static QPair<QString, QString> nextField(const QString &text, int &position)
+static std::pair<QString, QString> nextField(const QString &text, int &position)
 {
-    QPair<QString, QString> ret;
+    std::pair<QString, QString> ret;
     // format is one of:
     //    (1)  token
     //    (2)  token = token
@@ -512,12 +512,12 @@ static QPair<QString, QString> nextField(const QString &text, int &position)
 
 void RequestPrivate::parseCookies() const
 {
-    QVector<QPair<QString, QString> > ret;
+    std::vector<std::pair<QString, QString> > ret;
     const QString cookieString = headers.header(QStringLiteral("Cookie"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {
-        QPair<QString,QString> field = nextField(cookieString, position);
+        const auto field = nextField(cookieString, position);
         if (field.first.isEmpty()) {
             // parsing error
             break;
@@ -528,7 +528,7 @@ void RequestPrivate::parseCookies() const
             ++position;
             continue;
         }
-        ret.append(field);
+        ret.push_back(field);
         ++position;
     }
 

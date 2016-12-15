@@ -279,12 +279,12 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
     QMap<QString, QString> ret;
-    QVector<QPair<QString, QString> > attributes;
+    std::vector<std::pair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
     // :Args:Local('fo"')o'):ActionClass('foo')
     // into
-    // (QPair("Args",""), QPair("Local","'fo"')o'"), QPair("ActionClass","'foo'"))
+    // (("Args",""), ("Local","'fo"')o'"), ("ActionClass","'foo'"))
 
     int size = str.size();
     int pos = 0;
@@ -343,18 +343,19 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             }
 
             // store the key/value pair found
-            attributes.push_back(qMakePair(key, value));
+            attributes.push_back({ key, value });
             continue;
         }
         ++pos;
     }
 
-    // Add the attributes to the hash in the reverse order so
+    // Add the attributes to the map in the reverse order so
     // that values() return them in the right order
-    for (int i = attributes.size() - 1; i >= 0; --i) {
-        const QPair<QString, QString> pair = attributes.at(i);
-        QString key = pair.first;
-        QString value = pair.second;
+    auto i = attributes.crbegin();
+    const auto end = attributes.crend();
+    while (i != end) {
+        QString key = i->first;
+        QString value = i->second;
         if (key == QLatin1String("Global")) {
             key = QStringLiteral("Path");
             value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
@@ -376,6 +377,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
         }
 
         ret.insertMulti(key, value);
+        ++i;
     }
 
     // Handle special AutoArgs and AutoCaptureArgs case
