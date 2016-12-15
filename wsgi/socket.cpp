@@ -37,6 +37,9 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
     if (wsgi->socketSndbuf() != -1) {
         setSocketOption(QAbstractSocket::SendBufferSizeSocketOption, wsgi->socketSndbuf());
     }
+    if (wsgi->socketRcvbuf() != -1) {
+        setSocketOption(QAbstractSocket::ReceiveBufferSizeSocketOption, wsgi->socketRcvbuf());
+    }
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 

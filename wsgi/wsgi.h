@@ -109,6 +109,10 @@ public:
     void setSocketSndbuf(int value);
     int socketSndbuf() const;
 
+    Q_PROPERTY(int socketRcvbuf READ socketRcvbuf WRITE setSocketRcvbuf)
+    void setSocketRcvbuf(int value);
+    int socketRcvbuf() const;
+
 protected:
     WSGIPrivate *d_ptr;
 };

@@ -66,6 +66,7 @@ public:
     int threads = 0;
     int process = 0;
     int socketSendBuf = -1;
+    int socketReceiveBuf = -1;
     bool master = false;
     bool tcpNodelay = false;
     bool soKeepalive = false;

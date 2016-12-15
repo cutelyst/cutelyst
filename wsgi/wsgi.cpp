@@ -327,6 +327,18 @@ int WSGI::socketSndbuf() const
     return d->socketSendBuf;
 }
 
+void WSGI::setSocketRcvbuf(int value)
+{
+    Q_D(WSGI);
+    d->socketReceiveBuf = value;
+}
+
+int WSGI::socketRcvbuf() const
+{
+    Q_D(const WSGI);
+    return d->socketReceiveBuf;
+}
+
 void WSGIPrivate::proc()
 {
     static QProcess *process = nullptr;
@@ -429,6 +441,11 @@ void WSGIPrivate::parseCommandLine()
                                            QCoreApplication::translate("main", "bytes"));
     parser.addOption(socketSndbuf);
 
+    auto socketRcvbuf = QCommandLineOption(QStringLiteral("socket-rcvbuf"),
+                                           QCoreApplication::translate("main", "set SO_RCVBUF"),
+                                           QCoreApplication::translate("main", "bytes"));
+    parser.addOption(socketRcvbuf);
+
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
 
@@ -496,6 +513,15 @@ void WSGIPrivate::parseCommandLine()
         bool ok;
         auto size = parser.value(socketSndbuf).toInt(&ok);
         q->setSocketSndbuf(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(socketRcvbuf)) {
+        bool ok;
+        auto size = parser.value(socketRcvbuf).toInt(&ok);
+        q->setSocketRcvbuf(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
