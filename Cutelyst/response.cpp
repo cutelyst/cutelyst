@@ -200,23 +200,32 @@ void Response::redirect(const QUrl &url, quint16 status)
 {
     Q_D(Response);
     d->location = url;
-    setStatus(status);
-    if (url.isValid() && !hasBody()) {
-        QByteArray buf = QByteArrayLiteral(
-                    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
-                    "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                    "  <head>\n"
-                    "    <title>Moved</title>\n"
-                    "  </head>\n"
-                    "  <body>\n"
-                    "     <p>This item has moved <a href=");
-        buf.append(url.toEncoded());
-        buf.append(QByteArrayLiteral(">here</a>.</p>\n"
-                                     "  </body>\n"
-                                     "</html>\n"));
-        d->setBodyData(buf);
-        d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
+    d->status = status;
+
+    if (url.isValid()) {
+        const QString location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
+        d->headers.setHeader(QStringLiteral("location"), location);
+        qCDebug(CUTELYST_ENGINE) << "Redirecting to" << location;
+
+        if (!hasBody()) {
+            QString buf = QStringLiteral(
+                        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0"
+                        "Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+                        "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                        "  <head>\n"
+                        "    <title>Moved</title>\n"
+                        "  </head>\n"
+                        "  <body>\n"
+                        "     <p>This item has moved <a href=") + location +
+                    QStringLiteral(">here</a>.</p>\n"
+                                   "  </body>\n"
+                                   "</html>\n");
+            setBody(buf);
+            d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
+        }
+    } else {
+        d->headers.removeHeader(QStringLiteral("location"));
+        qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url;
     }
 }
 

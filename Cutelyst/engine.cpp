@@ -143,14 +143,6 @@ bool Engine::finalizeHeaders(Context *c)
         response->d_ptr->flags |= ResponsePrivate::Chunked;
     }
 
-    // Handle redirects
-    const QUrl location = response->location();
-    if (!location.isEmpty()) {
-        const QString locationEncoded = QString::fromLatin1(location.toEncoded(QUrl::FullyEncoded));
-        headers.setHeader(QStringLiteral("location"), locationEncoded);
-        qCDebug(CUTELYST_ENGINE) << "Redirecting to" << locationEncoded;
-    }
-
     finalizeCookies(c);
 
     // Done
