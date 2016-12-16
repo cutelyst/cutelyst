@@ -144,10 +144,11 @@ bool Engine::finalizeHeaders(Context *c)
     }
 
     // Handle redirects
-    const QUrl &location = response->location();
+    const QUrl location = response->location();
     if (!location.isEmpty()) {
-        qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().constData());
-        headers.setHeader(QStringLiteral("location"), QString::fromLatin1(location.toEncoded()));
+        const QString locationEncoded = QString::fromLatin1(location.toEncoded(QUrl::FullyEncoded));
+        headers.setHeader(QStringLiteral("location"), locationEncoded);
+        qCDebug(CUTELYST_ENGINE) << "Redirecting to" << locationEncoded;
     }
 
     finalizeCookies(c);
