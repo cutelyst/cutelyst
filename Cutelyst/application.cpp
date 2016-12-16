@@ -61,7 +61,7 @@ Application::Application(QObject *parent) :
     Q_D(Application);
 
     d->q_ptr = this;
-    d->headers.setHeader(QStringLiteral("X-Cutelyst"), QStringLiteral(VERSION));
+    d->headers.setHeader(QStringLiteral("x_cutelyst"), QStringLiteral(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
@@ -400,8 +400,8 @@ void Application::handleRequest(Request *req)
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 c->response()->status(),
-                c->response()->headers().header(QStringLiteral("Content-Type"), QStringLiteral("unknown")).toLatin1().data(),
-                c->response()->headers().header(QStringLiteral("Content-Length"), QStringLiteral("unknown")).toLatin1().data());
+                c->response()->headers().header(QStringLiteral("content_type"), QStringLiteral("unknown")).toLatin1().data(),
+                c->response()->headers().header(QStringLiteral("content_length"), QStringLiteral("unknown")).toLatin1().data());
 
         RequestPrivate *reqPriv = req->d_ptr;
         reqPriv->endOfRequest = d->engine->time();

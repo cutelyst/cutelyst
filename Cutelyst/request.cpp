@@ -513,7 +513,7 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 void RequestPrivate::parseCookies() const
 {
     std::vector<std::pair<QString, QString> > ret;
-    const QString cookieString = headers.header(QStringLiteral("Cookie"));
+    const QString cookieString = headers.header(QStringLiteral("cookie"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {

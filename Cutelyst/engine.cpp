@@ -110,7 +110,7 @@ void Engine::finalizeCookies(Context *c)
     Headers &headers = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader(QStringLiteral("Set-Cookie"), QString::fromLatin1(cookie.toRawForm()));
+        headers.pushHeader(QStringLiteral("set_cookie"), QString::fromLatin1(cookie.toRawForm()));
     }
 }
 
@@ -133,12 +133,12 @@ bool Engine::finalizeHeaders(Context *c)
                 // if status is not 1xx or 204 NoContent or 304 NotModified
                 if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
                     qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
-                    headers.setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+                    headers.setHeader(QStringLiteral("transfer_encoding"), QStringLiteral("chunked"));
                     response->d_ptr->flags |= ResponsePrivate::Chunked;
                 }
             }
         }
-    } else if (headers.header(QStringLiteral("Transfer-Encoding")) == QLatin1String("chunked")) {
+    } else if (headers.header(QStringLiteral("transfer_encoding")) == QLatin1String("chunked")) {
         qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
         response->d_ptr->flags |= ResponsePrivate::Chunked;
     }
@@ -147,7 +147,7 @@ bool Engine::finalizeHeaders(Context *c)
     const QUrl &location = response->location();
     if (!location.isEmpty()) {
         qCDebug(CUTELYST_ENGINE, "Redirecting to \"%s\"", location.toEncoded().constData());
-        headers.setHeader(QStringLiteral("Location"), QString::fromLatin1(location.toEncoded()));
+        headers.setHeader(QStringLiteral("location"), QString::fromLatin1(location.toEncoded()));
     }
 
     finalizeCookies(c);
