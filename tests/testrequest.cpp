@@ -743,20 +743,25 @@ void TestRequest::testController_data()
                                       << QByteArrayLiteral("");
 
     query.clear();
-    body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("x"), QStringLiteral("foo baz"));
+    query.addQueryItem(QStringLiteral("x"), QStringLiteral("foo bar"));
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyParam-test02") << get << QStringLiteral("/request/test/bodyParam?param=x&defaultValue=SomeDefaultValue")
                                       << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                      << QByteArrayLiteral("foo baz");
+                                      << QByteArrayLiteral("foo bar");
 
     query.clear();
-    body = QUuid::createUuid().toByteArray();
-    query.addQueryItem(QStringLiteral("x+y"), QStringLiteral("foo+baz"));
+    query.addQueryItem(QStringLiteral("x+y"), QStringLiteral("foo+bar"));
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyParam-test03") << get << QStringLiteral("/request/test/bodyParam?param=x+y&defaultValue=SomeDefaultValue")
                                       << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                      << QByteArrayLiteral("foo baz");
+                                      << QByteArrayLiteral("foo bar");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("x%2By"), QStringLiteral("foo%2Bbar"));
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("bodyParam-test04") << get << QStringLiteral("/request/test/bodyParam?param=x%2By&defaultValue=SomeDefaultValue")
+                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                      << QByteArrayLiteral("foo+bar");
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
