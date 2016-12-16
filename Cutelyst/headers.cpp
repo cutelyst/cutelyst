@@ -134,7 +134,11 @@ bool Headers::contentIsXml() const
 
 qint64 Headers::contentLength() const
 {
-    return m_data.value(QStringLiteral("content_length")).toLongLong();
+    auto it = m_data.constFind(QStringLiteral("content_length"));
+    if (it != m_data.constEnd()) {
+        return it.value().toLongLong();
+    }
+    return -1;
 }
 
 void Headers::setContentLength(qint64 value)
