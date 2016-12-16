@@ -93,7 +93,7 @@ bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) con
     Response *response = c->response();
     response->setContentType(QStringLiteral("text/plain"));
     response->setStatus(Response::OK); // 200
-    response->setHeader(QStringLiteral("Allow"),
+    response->setHeader(QStringLiteral("allow"),
                         getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
@@ -103,7 +103,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 {
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->setHeader(QStringLiteral("Allow"),
+    response->setHeader(QStringLiteral("allow"),
                         getAllowedMethods(c->controller(), methodName));
     const QString body = QLatin1String("Method ") + c->req()->method()
             + QLatin1String(" not implemented for ") + c->uriFor(methodName).toString();
