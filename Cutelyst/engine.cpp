@@ -121,14 +121,14 @@ bool Engine::finalizeHeaders(Context *c)
     Headers &headers = response->headers();
 
     // Fix missing content length
-    if (!response->contentLength() && response->hasBody()) {
+    if (headers.contentLength() < 0 && response->hasBody()) {
         QIODevice *body = response->bodyDevice();
         if (!body) {
-            response->setContentLength(response->body().size());
+            headers.setContentLength(response->body().size());
         } else {
             qint64 size = body->size();
             if (size >= 0) {
-                response->setContentLength(body->size());
+                headers.setContentLength(body->size());
             } else if (c->request()->protocol() == QLatin1String("HTTP/1.1")) {
                 // if status is not 1xx or 204 NoContent or 304 NotModified
                 if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {

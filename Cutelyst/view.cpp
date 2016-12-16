@@ -57,17 +57,13 @@ bool View::doExecute(Context *c)
     }
 
     const QByteArray output = render(c);
-    if (c->error()) {
+    if (Q_UNLIKELY(c->error())) {
         const auto errors = c->errors();
         for (const QString &error : errors) {
             qCCritical(CUTELYST_VIEW) << error;
         }
     }
-
-    if (!output.isEmpty()) {
-        // Do not set a null body on an already null body
-        response->setBody(output);
-    }
+    response->setBody(output);
 
     return c->error();
 }
