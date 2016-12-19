@@ -116,15 +116,18 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
         bool lastWasUpper = true;
 
         for (int i = 0; i < className.length(); ++i) {
-            if (className.at(i).isLower()) {
-                controlerNS.append(className.at(i));
+            const QChar c = className.at(i);
+            if (c.isLower()) {
+                controlerNS.append(c);
                 lastWasUpper = false;
+            } else if (c == QLatin1Char('_')) {
+                controlerNS.append(c);
+                lastWasUpper = true;
             } else {
-                if (lastWasUpper) {
-                    controlerNS.append(className.at(i).toLower());
-                } else {
-                    controlerNS.append(QLatin1Char('/') + className.at(i).toLower());
+                if (!lastWasUpper) {
+                    controlerNS.append(QLatin1Char('/'));
                 }
+                controlerNS.append(c.toLower());
                 lastWasUpper = true;
             }
         }

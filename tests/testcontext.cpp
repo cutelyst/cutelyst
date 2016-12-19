@@ -49,11 +49,11 @@ public:
     }
 };
 
-class ContextTest : public Controller
+class ContextTest_NS : public Controller
 {
     Q_OBJECT
 public:
-    ContextTest(QObject *parent) : Controller(parent) {}
+    ContextTest_NS(QObject *parent) : Controller(parent) {}
 
     C_ATTR(actionName, :Local :AutoArgs)
     void actionName(Context *c) {
@@ -134,7 +134,7 @@ TestEngine* TestContext::getEngine()
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new ContextGetActionsTest(app);
-    new ContextTest(app);
+    new ContextTest_NS(app);
     if (!engine->init()) {
         return nullptr;
     }
@@ -329,131 +329,131 @@ void TestContext::testController_data()
     QTest::newRow("uriforaction-test18") << QStringLiteral("/uriForAction/a/b/c?") + query.toString(QUrl::FullyEncoded)
                                          << QByteArrayLiteral("uriForAction not found");
 
-    QTest::newRow("context-test00") << QStringLiteral("/context/test/actionName") << QByteArrayLiteral("actionName");
-    QTest::newRow("context-test01") << QStringLiteral("/context/test/ns") << QByteArrayLiteral("context/test");
-    QTest::newRow("context-test02") << QStringLiteral("/context/test/controllerName") << QByteArrayLiteral("ContextTest");
-    QTest::newRow("context-test03") << QStringLiteral("/context/test/controller") << QByteArrayLiteral("__NOT_FOUND__");
+    QTest::newRow("context-test00") << QStringLiteral("/context/test_ns/actionName") << QByteArrayLiteral("actionName");
+    QTest::newRow("context-test01") << QStringLiteral("/context/test_ns/ns") << QByteArrayLiteral("context/test_ns");
+    QTest::newRow("context-test02") << QStringLiteral("/context/test_ns/controllerName") << QByteArrayLiteral("ContextTest_NS");
+    QTest::newRow("context-test03") << QStringLiteral("/context/test_ns/controller") << QByteArrayLiteral("__NOT_FOUND__");
 
     query.clear();
     query.addQueryItem(QStringLiteral("name"), QStringLiteral("RootController"));
-    QTest::newRow("context-test04") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("context-test04") << QStringLiteral("/context/test_ns/controller?") + query.toString(QUrl::FullyEncoded)
                                     << QByteArrayLiteral("RootController");
 
     query.clear();
     query.addQueryItem(QStringLiteral("name"), QStringLiteral("ContextGetActionsTest"));
-    QTest::newRow("context-test05") << QStringLiteral("/context/test/controller?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("context-test05") << QStringLiteral("/context/test_ns/controller?") + query.toString(QUrl::FullyEncoded)
                                     << QByteArrayLiteral("ContextGetActionsTest");
 
     // Forward
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
-    QTest::newRow("forward-test00") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("forward-test00") << QStringLiteral("/context/test_ns/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
                                     << QByteArrayLiteral("forwardToActionString");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("ns"));
-    QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
-                                    << QByteArrayLiteral("context/test");
+    QTest::newRow("forward-test01") << QStringLiteral("/context/test_ns/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
+                                    << QByteArrayLiteral("context/test_ns");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("forwardToActionString"));
-    QTest::newRow("forward-test01") << QStringLiteral("/context/test/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
-                                    << QByteArrayLiteral("Deep recursion detected (stack size 100) calling context/test/forwardToActionString, forwardToActionString");
+    QTest::newRow("forward-test01") << QStringLiteral("/context/test_ns/forwardToActionString?") + query.toString(QUrl::FullyEncoded)
+                                    << QByteArrayLiteral("Deep recursion detected (stack size 100) calling context/test_ns/forwardToActionString, forwardToActionString");
 
     // GetAction
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
-    QTest::newRow("getaction-test00") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test00") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("__NOT_FOUND__");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getaction-test01") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
-                                      << QByteArrayLiteral("context/test/actionName");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getaction-test01") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
+                                      << QByteArrayLiteral("context/test_ns/actionName");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("chain"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral("test/controller"));
-    QTest::newRow("getaction-test02") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test02") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("test/controller/chain");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("global"));
-    QTest::newRow("getaction-test03") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test03") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("__NOT_FOUND__");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("global"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral("test/controller"));
-    QTest::newRow("getaction-test04") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test04") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("test/controller/global");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("rootActionOnControllerWithoutNamespace"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral(""));
-    QTest::newRow("getaction-test05") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test05") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("rootActionOnControllerWithoutNamespace");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("rootActionOnControllerWithoutNamespace"));
-    QTest::newRow("getaction-test06") << QStringLiteral("/context/test/getAction?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getaction-test06") << QStringLiteral("/context/test_ns/getAction?") + query.toString(QUrl::FullyEncoded)
                                       << QByteArrayLiteral("rootActionOnControllerWithoutNamespace");
 
     // GetActions
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("ns"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getactions-test00") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("context/test/ns;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getactions-test00") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("context/test_ns/ns;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getactions-test01") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("context/actionName;context/test/actionName;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getactions-test01") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("context/actionName;context/test_ns/actionName;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("chain"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral("test/controller"));
-    QTest::newRow("getactions-test02") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getactions-test02") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
                                        << QByteArrayLiteral("test/controller/chain;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("Begin"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getactions-test03") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("Begin;context/test/Begin;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getactions-test03") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("Begin;context/test_ns/Begin;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("Auto"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getactions-test04") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("Auto;context/test/Auto;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getactions-test04") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("Auto;context/test_ns/Auto;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("End"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test"));
-    QTest::newRow("getactions-test05") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("End;context/test/End;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns"));
+    QTest::newRow("getactions-test05") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("End;context/test_ns/End;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("rootActionOnControllerWithoutNamespace"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral("any/name/space/will/give/a/match"));
-    QTest::newRow("getactions-test06") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getactions-test06") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
                                        << QByteArrayLiteral("rootActionOnControllerWithoutNamespace;");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("actionName"));
     query.addQueryItem(QStringLiteral("ns"), QStringLiteral("any/name/space/will/NOT/give/a/match"));
-    QTest::newRow("getactions-test06") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
+    QTest::newRow("getactions-test06") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
                                        << QByteArrayLiteral("__NOT_FOUND__");
 
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("ns"));
-    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test/with/this/extra/invalid/namespace/will/match"));
-    QTest::newRow("getactions-test00") << QStringLiteral("/context/test/getActions?") + query.toString(QUrl::FullyEncoded)
-                                       << QByteArrayLiteral("context/test/ns;");
+    query.addQueryItem(QStringLiteral("ns"), QStringLiteral("context/test_ns/with/this/extra/invalid/namespace/will/match"));
+    QTest::newRow("getactions-test00") << QStringLiteral("/context/test_ns/getActions?") + query.toString(QUrl::FullyEncoded)
+                                       << QByteArrayLiteral("context/test_ns/ns;");
 }
 
 QTEST_MAIN(TestContext)
