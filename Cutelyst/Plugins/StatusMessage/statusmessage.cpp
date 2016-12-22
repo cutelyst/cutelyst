@@ -104,50 +104,41 @@ void StatusMessage::setErrorMgStashKey(const QString &errorMgStashKey)
 
 void StatusMessage::load(Context *c)
 {
-    if (!m_instance) {
+    if (Q_UNLIKELY(!m_instance)) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return;
     }
+    StatusMessagePrivate *priv = m_instance->d_ptr;
 
-    const QString token = c->request()->queryParam(m_instance->d_ptr->tokenParam);
+    const QString token = c->request()->queryParam(priv->tokenParam);
     if (token.isEmpty()) {
         return;
     }
 
-    const QString statusKey = m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token;
+    const QString statusKey = priv->sessionPrefix + QLatin1String("status") + token;
     const QVariant statusValue = Session::value(c, statusKey);
     if (!statusValue.isNull()) {
         Session::deleteValue(c, statusKey);
-        c->setStash(m_instance->d_ptr->statusMsgStashKey, statusValue);
+        c->setStash(priv->statusMsgStashKey, statusValue);
     }
 
-    const QString errorKey = m_instance->d_ptr->sessionPrefix + QLatin1String("error") + token;
+    const QString errorKey = priv->sessionPrefix + QLatin1String("error") + token;
     const QVariant errorValue = Session::value(c, errorKey);
     if (!errorValue.isNull()) {
         Session::deleteValue(c, errorKey);
-        c->setStash(m_instance->d_ptr->errorMsgStashKey, errorValue);
+        c->setStash(priv->errorMsgStashKey, errorValue);
     }
 }
 
-QString getSessionMessage(Context *c, const QString &key)
-{
-    const QVariant value = Session::value(c, key);
-    if (!value.isNull()) {
-        Session::deleteValue(c, key);
-        c->setStash(QLatin1String("status_msg"), value);
-    }
-    return value.toString();
-}
-
-QString createToken()
+inline QString createToken()
 {
     return QString::number(qrand() % 99999999).rightJustified(8, QLatin1Char('0'), true);
 }
 
-QString StatusMessage::setError(Context *c, const QString &msg)
+QString StatusMessage::error(Context *c, const QString &msg)
 {
     QString token;
-    if (!m_instance) {
+    if (Q_UNLIKELY(!m_instance)) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return token;
     }
@@ -157,10 +148,10 @@ QString StatusMessage::setError(Context *c, const QString &msg)
     return token;
 }
 
-QString StatusMessage::setStatus(Context *c, const QString &msg)
+QString StatusMessage::status(Context *c, const QString &msg)
 {
     QString token;
-    if (!m_instance) {
+    if (Q_UNLIKELY(!m_instance)) {
         qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
         return token;
     }
@@ -168,6 +159,16 @@ QString StatusMessage::setStatus(Context *c, const QString &msg)
     token = createToken();
     Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
     return token;
+}
+
+QString StatusMessage::setError(Context *c, const QString &msg)
+{
+    return error(c, msg);
+}
+
+QString StatusMessage::setStatus(Context *c, const QString &msg)
+{
+    return status(c, msg);
 }
 
 #include "moc_statusmessage.cpp"

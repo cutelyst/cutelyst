@@ -66,12 +66,22 @@ public:
     /**
      * Saves an error message returning the generated message id (mid)
      */
-    static QString setError(Context *c, const QString &msg);
+    static QString error(Context *c, const QString &msg);
 
     /**
      * Saves a status message returning the generated message id (mid)
      */
-    static QString setStatus(Context *c, const QString &msg);
+    static QString status(Context *c, const QString &msg);
+
+    /**
+     * DEPRECATED \sa error Saves an error message returning the generated message id (mid)
+     */
+    static Q_DECL_DEPRECATED QString setError(Context *c, const QString &msg);
+
+    /**
+     * DEPRECATED \sa status Saves a status message returning the generated message id (mid)
+     */
+    static Q_DECL_DEPRECATED QString setStatus(Context *c, const QString &msg);
 
 protected:
     StatusMessagePrivate *d_ptr;
