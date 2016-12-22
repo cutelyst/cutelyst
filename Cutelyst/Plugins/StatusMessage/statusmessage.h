@@ -69,9 +69,19 @@ public:
     static QString error(Context *c, const QString &msg);
 
     /**
+     * Saves an error message returning query parameters with the generated message id (mid) and it's token
+     */
+    static ParamsMultiMap errorQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
+
+    /**
      * Saves a status message returning the generated message id (mid)
      */
     static QString status(Context *c, const QString &msg);
+
+    /**
+     * Saves an status message returning query parameters with the generated message id (mid) and it's token
+     */
+    static ParamsMultiMap statusQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
 
     /**
      * DEPRECATED \sa error Saves an error message returning the generated message id (mid)

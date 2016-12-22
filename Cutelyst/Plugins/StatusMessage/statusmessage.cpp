@@ -148,6 +148,21 @@ QString StatusMessage::error(Context *c, const QString &msg)
     return token;
 }
 
+ParamsMultiMap StatusMessage::errorQuery(Context *c, const QString &msg, ParamsMultiMap query)
+{
+    ParamsMultiMap map(query);
+    if (Q_UNLIKELY(!m_instance)) {
+        qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
+        return map;
+    }
+    StatusMessagePrivate *priv = m_instance->d_ptr;
+
+    const QString token = createToken();
+    Session::setValue(c, priv->sessionPrefix + QLatin1String("error") + token, msg);
+    map.insert(priv->tokenParam, token);
+    return map;
+}
+
 QString StatusMessage::status(Context *c, const QString &msg)
 {
     QString token;
@@ -159,6 +174,21 @@ QString StatusMessage::status(Context *c, const QString &msg)
     token = createToken();
     Session::setValue(c, m_instance->d_ptr->sessionPrefix + QLatin1String("status") + token, msg);
     return token;
+}
+
+ParamsMultiMap StatusMessage::statusQuery(Context *c, const QString &msg, ParamsMultiMap query)
+{
+    ParamsMultiMap map(query);
+    if (Q_UNLIKELY(!m_instance)) {
+        qCCritical(C_STATUSMESSAGE, "StatusMessage plugin not registered");
+        return map;
+    }
+    StatusMessagePrivate *priv = m_instance->d_ptr;
+
+    const QString token = createToken();
+    Session::setValue(c, priv->sessionPrefix + QLatin1String("status") + token, msg);
+    map.insert(priv->tokenParam, token);
+    return map;
 }
 
 QString StatusMessage::setError(Context *c, const QString &msg)
