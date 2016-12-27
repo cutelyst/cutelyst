@@ -36,9 +36,7 @@
 
 using namespace Cutelyst;
 
-Context::Context(Cutelyst::Application *_app, Engine *_engine, Cutelyst::Dispatcher *_dispatcher, void *_reqPtr,
-                 Request *_request, const QVector<Cutelyst::Plugin *> &_plugins, Stats *_stats, const Headers &_headers) :
-    d_ptr(new ContextPrivate(this, _app, _engine, _dispatcher, _reqPtr, _request, _plugins, _stats, _headers))
+Context::Context(ContextPrivate *priv) : d_ptr(priv)
 {
 }
 

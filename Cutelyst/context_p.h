@@ -23,6 +23,7 @@
 #include "context.h"
 #include "plugin.h"
 #include "response.h"
+#include "request_p.h"
 
 #include <QVariantHash>
 #include <QStack>
@@ -33,20 +34,20 @@ class Stats;
 class ContextPrivate
 {
 public:
-    inline ContextPrivate(Context *c, Application *_app, Engine *_ngine, Dispatcher *_dispatcher, void *_reqPtr,
-                          Request *_request, const QVector<Plugin *> &_plugins, Stats *_stats, const Headers &_headers)
+    inline ContextPrivate(Application *_app, Engine *_ngine, Dispatcher *_dispatcher, const QVector<Plugin *> &_plugins)
         : app(_app)
         , engine(_ngine)
         , dispatcher(_dispatcher)
-        , requestPtr(_reqPtr)
-        , request(_request)
-        , response(new Response(c, _ngine, _headers))
         , plugins(_plugins)
-        , stats(_stats)
     { }
 
     QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
+
+    QStringList error;
+    QVariantHash stash;
+    QStack<Component *> stack;
+    QVector<Plugin *> plugins;
 
     Application *app;
     Engine *engine;
@@ -59,11 +60,7 @@ public:
     Response *response;
     Action *action = nullptr;
     View *view = nullptr;
-    QStack<Component *> stack;
-    QVector<Plugin *> plugins;
-    QStringList error;
-    QVariantHash stash;
-    Stats *stats;
+    Stats *stats = nullptr;
     bool detached = false;
     bool state = false;
 };

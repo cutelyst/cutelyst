@@ -362,19 +362,18 @@ void Application::handleRequest(Request *req)
 {
     Q_D(Application);
 
+    Engine *engine = d->engine;
+    auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
+    auto c = new Context(priv);
+    priv->response = new Response(c, engine, d->headers);
+    priv->request = req;
+    priv->requestPtr = req->d_ptr->requestPtr;
+
     Stats *stats = nullptr;
     if (d->useStats) {
         stats = new Stats(this);
+        priv->stats = stats;
     }
-
-    Context *c = new Context(this,
-                             d->engine,
-                             d->dispatcher,
-                             req->d_ptr->requestPtr,
-                             req,
-                             d->plugins,
-                             stats,
-                             d->headers);
 
     // Process request
     bool skipMethod = false;
@@ -395,7 +394,7 @@ void Application::handleRequest(Request *req)
         Q_EMIT afterDispatch(c);
     }
 
-    d->engine->finalize(c);
+    engine->finalize(c);
 
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
@@ -404,7 +403,7 @@ void Application::handleRequest(Request *req)
                 c->response()->headers().header(QStringLiteral("content_length"), QStringLiteral("unknown")).toLatin1().data());
 
         RequestPrivate *reqPriv = req->d_ptr;
-        reqPriv->endOfRequest = d->engine->time();
+        reqPriv->endOfRequest = engine->time();
         double enlapsed = (reqPriv->endOfRequest - reqPriv->startOfRequest) / 1000000.0;
         QString average;
         if (enlapsed == 0.0) {

@@ -388,8 +388,7 @@ public:
     void *engineData();
 
 protected:
-    Context(Application *_app, Engine *_engine, Dispatcher *_dispatcher, void *_reqPtr,
-            Request *_request, const QVector<Plugin *> &_plugins, Stats *_stats, const Headers &_headers);
+    Context(ContextPrivate *priv);
 
     friend class Application;
     friend class Action;
