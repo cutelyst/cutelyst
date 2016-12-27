@@ -159,11 +159,6 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     return ret;
 }
 
-bool actionLessThan(Action *a1, Action *a2)
-{
-    return a1->numberOfArgs() < a2->numberOfArgs();
-}
-
 bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
@@ -190,7 +185,9 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         }
 
         it.value().push_back(action);
-        qSort(it.value().begin(), it.value().end(), actionLessThan);
+        qSort(it.value().begin(), it.value().end(), [](Action *a, Action *b) -> bool {
+            return a->numberOfArgs() < b->numberOfArgs();
+        });
     } else {
         paths.insert(_path, { action });
     }

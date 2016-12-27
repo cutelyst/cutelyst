@@ -355,12 +355,6 @@ bool DispatchTypeChained::inUse()
     return true;
 }
 
-bool actionNameLengthMoreThan(const QString &action1, const QString &action2)
-{
-    // action2 then action1 to try the longest part first
-    return action2.size() < action1.size();
-}
-
 BestActionMatch DispatchTypeChainedPrivate::recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const
 {
     BestActionMatch bestAction;
@@ -371,7 +365,10 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(Context *c, const QStri
 
     const StringActionsMap children = it.value();
     QStringList keys = children.keys();
-    qSort(keys.begin(), keys.end(), actionNameLengthMoreThan);
+    qSort(keys.begin(), keys.end(), [](const QString &a, const QString &b) -> bool {
+        // action2 then action1 to try the longest part first
+        return b.size() < a.size();
+    });
 
     for (const QString &tryPart : keys) {
         QStringList parts = pathParts;
