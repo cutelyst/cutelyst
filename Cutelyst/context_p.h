@@ -35,10 +35,10 @@ class ContextPrivate
 {
 public:
     inline ContextPrivate(Application *_app, Engine *_ngine, Dispatcher *_dispatcher, const QVector<Plugin *> &_plugins)
-        : app(_app)
+        : plugins(_plugins)
+        , app(_app)
         , engine(_ngine)
         , dispatcher(_dispatcher)
-        , plugins(_plugins)
     { }
 
     QString statsStartExecute(Component *code);
