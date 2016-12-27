@@ -38,18 +38,15 @@ DispatchTypeChained::~DispatchTypeChained()
 
 }
 
-bool actionReverseLessThan(Action *action1, Action *action2)
-{
-    return action1->reverse() < action2->reverse();
-}
-
 QByteArray DispatchTypeChained::list() const
 {
     Q_D(const DispatchTypeChained);
 
     QByteArray buffer;
-    ActionList endPoints = d->endPoints;
-    qSort(endPoints.begin(), endPoints.end(), actionReverseLessThan);
+    Actions endPoints = d->endPoints;
+    qSort(endPoints.begin(), endPoints.end(), [](Action *a, Action *b) -> bool {
+        return a->reverse() < b->reverse();
+    });
 
     QVector<QStringList> paths;
     QVector<QStringList> unattachedTable;
@@ -259,7 +256,7 @@ bool DispatchTypeChained::registerAction(Action *action)
     }
 
     if (!attributes.contains(QLatin1String("CaptureArgs"))) {
-        d->endPoints.prepend(action);
+        d->endPoints.push_back(action);
     }
 
     return true;

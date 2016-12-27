@@ -46,7 +46,7 @@ public:
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);
 
-    ActionList endPoints;
+    Actions endPoints;
     StringActionMap actions;
     StringStringActionsMap childrenOf;
 };
