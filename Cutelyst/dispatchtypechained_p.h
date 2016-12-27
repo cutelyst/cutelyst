@@ -30,10 +30,18 @@ typedef std::vector<Action *> Actions;
 typedef QHash<QString, Actions> StringActionsMap;
 typedef QHash<QString, StringActionsMap> StringStringActionsMap;
 
+struct BestActionMatch {
+    ActionList actions;
+    QStringList captures;
+    QStringList parts;
+    int n_pathParts = 0;
+    bool isNull = true;
+};
+
 class DispatchTypeChainedPrivate
 {
 public:
-    QVariantHash recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const;
+    BestActionMatch recurseMatch(Context *c, const QString &parent, const QStringList &pathParts) const;
     void checkArgsAttr(Action *action, const QString &name);
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);
