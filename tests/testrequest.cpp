@@ -539,6 +539,12 @@ void TestRequest::testController_data()
                                           << QByteArrayLiteral("some text to ask&another keyword&and yet another is fine");
 
     query.clear();
+    query.addQueryItem(QStringLiteral("some+text+to+ask"), QString());
+    QTest::newRow("queryKeywords-test03") << get << QStringLiteral("/request/test/queryKeywords?") + query.toString(QUrl::FullyEncoded)
+                                          << headers << QByteArray()
+                                          << QByteArrayLiteral("some text to ask");
+
+    query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
     QTest::newRow("uriWith-test00") << get << QStringLiteral("/request/test/uriWith/false?") + query.toString(QUrl::FullyEncoded)
                                     << headers << QByteArray()

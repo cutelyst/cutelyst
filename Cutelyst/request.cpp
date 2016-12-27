@@ -381,7 +381,8 @@ void RequestPrivate::parseUrlQuery() const
     if (query.size()) {
         // Check for keywords (no = signs)
         if (query.indexOf('=') < 0) {
-            queryKeywords = QUrl::fromPercentEncoding(query);
+            QByteArray aux = query;
+            queryKeywords = QUrl::fromPercentEncoding(aux.replace('+', ' '));
         } else {
             queryParam = parseUrlEncoded(query);
         }
