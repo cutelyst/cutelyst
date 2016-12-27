@@ -70,7 +70,7 @@ build_script:
   - cd c:\dev\cutelyst
   - md build
   - cd build
-  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%"
+  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%" "-DDISABLE_MAINTAINER_CFLAGS=off"
   - cmake --build . --config Debug
   - cmake --build . --config Release
 
