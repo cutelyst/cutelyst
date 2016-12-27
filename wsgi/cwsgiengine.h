@@ -42,20 +42,7 @@ public:
     virtual int workerId() const;
 
     inline void processSocket(TcpSocket *sock) {
-        EngineRequest req;
-        req.method = sock->method;
-        req.path = sock->path;
-        req.query = sock->query;
-        req.protocol = sock->protocol;
-        req.isSecure = false;
-        req.serverAddress = sock->serverAddress;
-        req.remoteAddress = sock->peerAddress();
-        req.remotePort = sock->peerPort();
-        req.headers = sock->headers;
-        req.startOfRequest = sock->start;
-        req.body = sock->body;
-        req.requestPtr = sock;
-        processRequest(req);
+        processRequest(*sock);
     }
 
     void setTcpSockets(const std::vector<QTcpServer *> &sockets);

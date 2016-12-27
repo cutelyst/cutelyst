@@ -68,7 +68,7 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->setSocketOption(opt.first, opt.second);
     }
 
-    sock->start = QDateTime::currentMSecsSinceEpoch();
+    sock->startOfRequest = QDateTime::currentMSecsSinceEpoch();
 }
 
 void TcpServer::enqueue()

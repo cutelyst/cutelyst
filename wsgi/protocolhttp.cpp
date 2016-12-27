@@ -77,12 +77,13 @@ void ProtocolHttp::readyRead()
         int len;
         qint64 remaining;
 
+        QIODevice *body = sock->body;
         do {
-            remaining = sock->contentLength - sock->body->size();
+            remaining = sock->contentLength - body->size();
             len = sock->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             bytesAvailable -= len;
 //            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
-            sock->body->write(m_postBuffer, len);
+            body->write(m_postBuffer, len);
         } while (bytesAvailable);
 
         if (remaining == len) {
@@ -193,7 +194,7 @@ bool ProtocolHttp::processRequest(TcpSocket *sock)
     } else {
         sock->resetSocket();
     }
-    sock->start = sock->engine->time();
+    sock->startOfRequest = sock->engine->time();
 
     return true;
 }

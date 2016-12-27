@@ -22,6 +22,7 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 #include <Cutelyst/Headers>
+#include <Cutelyst/Engine>
 
 class QIODevice;
 
@@ -29,7 +30,7 @@ namespace CWSGI {
 
 class WSGI;
 class CWsgiEngine;
-class Socket
+class Socket : public Cutelyst::EngineRequest
 {
     Q_GADGET
 public:
@@ -44,8 +45,8 @@ public:
     Q_ENUM(ParserState)
 
     inline void resetSocket() {
-        buf_size = 0;
         connState = MethodLine;
+        buf_size = 0;
         beginLine = 0;
         last = 0;
         headerClose = 0;
@@ -55,19 +56,11 @@ public:
         body = nullptr;
     }
 
-    Cutelyst::Headers headers;
-    QString serverAddress;
-    QString method;
-    QString path;
-    QByteArray query;
-    QString protocol;
-    quint64 start;
-    QIODevice *body = nullptr;
+    qint64 contentLength;
     CWsgiEngine *engine;
     char *buf;
-    qint64 contentLength;
-    int buf_size = 0;
     ParserState connState = MethodLine;
+    int buf_size = 0;
     int beginLine = 0;
     int last = 0;
     int headerClose = 0;

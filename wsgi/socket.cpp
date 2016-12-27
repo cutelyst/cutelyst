@@ -28,11 +28,14 @@ using namespace CWSGI;
 
 TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(wsgi)
 {
+    isSecure = false;
+    requestPtr = this;
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 
 Socket::Socket(WSGI *wsgi)
 {
+    body = nullptr;
     buf = new char[wsgi->bufferSize()];
 }
 

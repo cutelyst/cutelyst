@@ -38,7 +38,7 @@ struct EngineRequest {
     QString remoteUser;
     Headers headers;
     quint64 startOfRequest;
-    QIODevice *body = nullptr;
+    QIODevice *body;
     void *requestPtr;
     quint16 remotePort;
     bool isSecure;
