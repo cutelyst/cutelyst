@@ -579,36 +579,22 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
     return ret;
 }
 
-RequestPrivate::RequestPrivate(Engine *_engine,
-                               const QString &_method,
-                               const QString &_path,
-                               const QByteArray &_query,
-                               const QString &_protocol,
-                               bool _isSecure,
-                               const QString &_serverAddress,
-                               const QHostAddress &_remoteAddress,
-                               quint16 _remotePort,
-                               const QString &_remoteUser,
-                               const Headers &_headers,
-                               quint64 _startOfRequest,
-                               QIODevice *_body,
-                               void *_requestPtr)
+RequestPrivate::RequestPrivate(const EngineRequest &req, Engine *_engine)
     : engine(_engine)
-    , method(_method)
-    , path(_path)
-    , query(_query)
-    , protocol(_protocol)
-    , serverAddress(_serverAddress)
-    , remoteAddress(_remoteAddress)
-    , remoteUser(_remoteUser)
-    , headers(_headers)
-    , body(_body)
-    , startOfRequest(_startOfRequest)
-    , requestPtr(_requestPtr)
-    , remotePort(_remotePort)
-    , https(_isSecure)
+    , method(req.method)
+    , path(req.path)
+    , query(req.query)
+    , protocol(req.protocol)
+    , serverAddress(req.serverAddress)
+    , remoteAddress(req.remoteAddress)
+    , remoteUser(req.remoteUser)
+    , headers(req.headers)
+    , body(req.body)
+    , startOfRequest(req.startOfRequest)
+    , requestPtr(req.requestPtr)
+    , remotePort(req.remotePort)
+    , https(req.isSecure)
 {
-
 }
 
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)

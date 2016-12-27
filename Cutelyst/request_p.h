@@ -21,13 +21,14 @@
 #define CUTELYST_REQUEST_P_H
 
 #include "request.h"
-
+#include "engine.h"
 #include "upload.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QUrlQuery>
 #include <QtCore/QUrl>
 #include <QtNetwork/QHostAddress>
+
 
 namespace Cutelyst {
 
@@ -46,20 +47,7 @@ public:
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
-    RequestPrivate(Engine *_engine,
-                   const QString &_method,
-                   const QString &_path,
-                   const QByteArray &_query,
-                   const QString &_protocol,
-                   bool _isSecure,
-                   const QString &_serverAddress,
-                   const QHostAddress &_remoteAddress,
-                   quint16 _remotePort,
-                   const QString &_remoteUser,
-                   const Headers &_headers,
-                   quint64 _startOfRequest,
-                   QIODevice *_body,
-                   void *_requestPtr);
+    RequestPrivate(const EngineRequest &req, Engine *_engine);
 
     inline void parseUrlQuery() const;
     inline void parseBody() const;

@@ -24,12 +24,28 @@
 #include <QHostAddress>
 
 #include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/Headers>
 
 namespace Cutelyst {
 
+struct EngineRequest {
+    QString method;
+    QString path;
+    QByteArray query;
+    QString protocol;
+    QString serverAddress;
+    QHostAddress remoteAddress;
+    QString remoteUser;
+    Headers headers;
+    quint64 startOfRequest;
+    QIODevice *body = nullptr;
+    void *requestPtr;
+    quint16 remotePort;
+    bool isSecure;
+};
+
 class Application;
 class Context;
-class Headers;
 class EnginePrivate;
 class CUTELYST_LIBRARY Engine : public QObject
 {
@@ -183,6 +199,8 @@ protected:
      * This is the HTTP default response headers that each request gets
      */
     Headers &defaultHeaders();
+
+    void processRequest(const EngineRequest &req);
 
     void processRequest(const QString &method,
                         const QString &path,

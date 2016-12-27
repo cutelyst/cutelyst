@@ -112,19 +112,24 @@ void uWSGI::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
+    EngineRequest request;
+
     uint16_t pos = notSlash(req->path_info, req->path_info_len);
-    const QString path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
+    request.path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
 
-    const QString serverAddress = QString::fromLatin1(req->host, req->host_len);
-    const QByteArray query = QByteArray::fromRawData(req->query_string, req->query_string_len);
+    request.serverAddress = QString::fromLatin1(req->host, req->host_len);
+    request.query = QByteArray::fromRawData(req->query_string, req->query_string_len);
 
-    const QString method = QString::fromLatin1(req->method, req->method_len);
-    const QString protocol = QString::fromLatin1(req->protocol, req->protocol_len);
-    const QHostAddress remoteAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
-    const QString remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
+    request.method = QString::fromLatin1(req->method, req->method_len);
+    request.protocol = QString::fromLatin1(req->protocol, req->protocol_len);
+    request.remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
+    request.remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
+    request.isSecure = req->https_len;
+    request.startOfRequest = req->start_of_request;
+    request.requestPtr = req;
 
-    quint16 remotePort = 0;
-    Headers headers;
+    request.remotePort = 0;
+    Headers &headers = request.headers;
     // we scan the table in reverse, as updated values are at the end
     for (int i = req->var_cnt - 1; i > 0; i -= 2) {
         struct iovec &name = req->hvec[i - 1];
@@ -133,10 +138,10 @@ void uWSGI::processRequest(wsgi_request *req)
                               const_cast<char *>("HTTP_"), 5)) {
             headers.pushHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
                               QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
-        } else if (!remotePort &&
+        } else if (!request.remotePort &&
                    !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
                                   static_cast<char *>(name.iov_base), name.iov_len)) {
-            remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len).toUInt();
+            request.remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len).toUInt();
         }
     }
 
@@ -166,20 +171,9 @@ void uWSGI::processRequest(wsgi_request *req)
             body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
         }
     }
+    request.body = body;
 
-    Engine::processRequest(method,
-                           path,
-                           query,
-                           protocol,
-                           req->https_len,
-                           serverAddress,
-                           remoteAddress,
-                           remotePort,
-                           remoteUser,
-                           headers,
-                           req->start_of_request,
-                           body,
-                           req);
+    Engine::processRequest(request);
 
     delete body;
 }

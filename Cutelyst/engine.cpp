@@ -447,6 +447,15 @@ Headers &Engine::defaultHeaders()
     return d->app->defaultHeaders();
 }
 
+void Engine::processRequest(const EngineRequest &req)
+{
+    Q_D(Engine);
+
+    auto request = new Request(new RequestPrivate(req, this));
+    d->app->handleRequest(request);
+    delete request;
+}
+
 QVariantMap Engine::opts() const
 {
     Q_D(const Engine);
@@ -488,22 +497,22 @@ void Engine::processRequest(const QString &method,
 {
     Q_D(Engine);
 
-    auto prv = new RequestPrivate(this,
-                                  method,
-                                  path,
-                                  query,
-                                  protocol,
-                                  isSecure,
-                                  serverAddress,
-                                  remoteAddress,
-                                  remotePort,
-                                  remoteUser,
-                                  headers,
-                                  startOfRequest,
-                                  body,
-                                  requestPtr);
+    EngineRequest req;
+    req.method = method;
+    req.path = path;
+    req.query = query;
+    req.protocol = protocol;
+    req.isSecure = isSecure;
+    req.serverAddress = serverAddress;
+    req.remoteAddress = remoteAddress;
+    req.remotePort = remotePort;
+    req.remoteUser = remoteUser;
+    req.headers = headers;
+    req.startOfRequest = startOfRequest;
+    req.body = body;
+    req.requestPtr = requestPtr;
 
-    auto request = new Request(prv);
+    auto request = new Request(new RequestPrivate(req, this));
     d->app->handleRequest(request);
     delete request;
 }
