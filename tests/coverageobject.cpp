@@ -79,19 +79,22 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
 
     QVariantMap ret;
     m_responseData = QByteArray();
-    processRequest(method,
-                   path,
-                   query,
-                   QStringLiteral("HTTP/1.1"),
-                   false,
-                   QStringLiteral("127.0.0.1"),
-                   QHostAddress(QStringLiteral("127.0.0.1")),
-                   3000,
-                   QString(), // RemoteUser
-                   headersCL,
-                   QDateTime::currentMSecsSinceEpoch(),
-                   bodyDevice,
-                   0);
+
+    EngineRequest req;
+    req.method = method;
+    req.path = path;
+    req.query = query;
+    req.protocol = QStringLiteral("HTTP/1.1");
+    req.isSecure = false;
+    req.serverAddress = QStringLiteral("127.0.0.1");
+    req.remoteAddress = QHostAddress(QStringLiteral("127.0.0.1"));
+    req.remotePort = 3000;
+    req.remoteUser = QString();
+    req.headers = headersCL;
+    req.startOfRequest = QDateTime::currentMSecsSinceEpoch();
+    req.body = bodyDevice;
+
+    processRequest(req);
 
     ret = {
         {QStringLiteral("body"), m_responseData},

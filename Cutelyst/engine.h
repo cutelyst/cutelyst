@@ -202,6 +202,7 @@ protected:
 
     void processRequest(const EngineRequest &req);
 
+    Q_DECL_DEPRECATED
     void processRequest(const QString &method,
                         const QString &path,
                         const QByteArray &query,
