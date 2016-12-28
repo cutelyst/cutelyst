@@ -57,6 +57,12 @@ public:
      */
     QMap<QString, QString> attributes() const;
 
+    /**
+     * Returns the value attribute by it's name, if not found
+     * dafault value is returned
+     */
+    QString attribute(const QString &name, const QString &defaultValue = QString()) const;
+
     void setAttributes(const QMap<QString, QString> &attributes);
 
     /**
