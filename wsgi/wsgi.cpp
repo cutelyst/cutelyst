@@ -243,6 +243,30 @@ QString WSGI::ini() const
     return d->ini;
 }
 
+void WSGI::setStaticMap(const QString &staticMap)
+{
+    Q_D(WSGI);
+    d->staticMaps.append(staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts));
+}
+
+QString WSGI::staticMap() const
+{
+    Q_D(const WSGI);
+    return d->staticMaps.join(QLatin1Char(';'));
+}
+
+void WSGI::setStaticMap2(const QString &staticMap)
+{
+    Q_D(WSGI);
+    d->staticMaps2.append(staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts));
+}
+
+QString WSGI::staticMap2() const
+{
+    Q_D(const WSGI);
+    return d->staticMaps2.join(QLatin1Char(';'));
+}
+
 void WSGI::setMaster(bool enable)
 {
     Q_D(WSGI);
@@ -261,7 +285,7 @@ void WSGI::setBufferSize(qint64 size)
 {
     Q_D(WSGI);
     if (size < 4096) {
-        qWarning() << "Buffer size must be at least 4096 bytes, ignoring";
+        qCWarning(CUTELYST_WSGI) << "Buffer size must be at least 4096 bytes, ignoring";
         return;
     }
     d->bufferSize = size;
@@ -438,6 +462,16 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocket);
 
+    auto staticMap = QCommandLineOption(QStringLiteral("static-map"),
+                                        QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
+                                        QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMap);
+
+    auto staticMap2 = QCommandLineOption(QStringLiteral("static-map2"),
+                                         QCoreApplication::translate("main", "like static-map but completely appending the requested resource to the docroot"),
+                                         QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMap2);
+
     auto restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
                                       QCoreApplication::translate("main", "restarts when the application file changes"));
     parser.addOption(restart);
@@ -545,6 +579,20 @@ void WSGIPrivate::parseCommandLine()
         const auto socks = parser.values(httpSocket);
         for (const QString &http : socks) {
             q->setHttpSocket(http);
+        }
+    }
+
+    if (parser.isSet(staticMap)) {
+        const auto maps = parser.values(staticMap);
+        for (const QString &map : maps) {
+            q->setStaticMap(map);
+        }
+    }
+
+    if (parser.isSet(staticMap2)) {
+        const auto maps = parser.values(staticMap2);
+        for (const QString &map : maps) {
+            q->setStaticMap2(map);
         }
     }
 }
@@ -695,7 +743,15 @@ bool WSGIPrivate::loadConfig()
     for (const QString &key : keys) {
         QString prop = key;
         prop.replace(QLatin1Char('-'), QLatin1Char('_'));
-        q->setProperty(prop.toLatin1().constData(), settings.value(key));
+        const QVariant value = settings.value(key);
+        if (value.type() == QVariant::StringList) {
+            const auto values = value.toStringList();
+            for (const auto &str : values) {
+                q->setProperty(prop.toLatin1().constData(), str);
+            }
+        } else {
+            q->setProperty(prop.toLatin1().constData(), value);
+        }
     }
 
     return true;

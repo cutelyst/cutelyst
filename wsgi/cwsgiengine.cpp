@@ -22,6 +22,7 @@
 #include "tcpserver.h"
 #include "config.h"
 #include "wsgi.h"
+#include "staticmap.h"
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
@@ -45,6 +46,15 @@ CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &op
     m_serverHeader.append("\r\nServer: cutelyst/").append(VERSION).append("\r\n\r\n");
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
+
+    const QString staticMap = wsgi->staticMap();
+    if (!staticMap.isEmpty()) {
+        auto staticMapPlugin = new StaticMap(app);
+        const auto parts = staticMap.split(QLatin1Char(';'));
+        for (const QString &part : parts) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+        }
+    }
 }
 
 int CWsgiEngine::workerId() const

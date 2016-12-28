@@ -81,6 +81,14 @@ public:
     void setIni(const QString &ini);
     QString ini() const;
 
+    Q_PROPERTY(QString static_map READ staticMap WRITE setStaticMap)
+    void setStaticMap(const QString &staticMap);
+    QString staticMap() const;
+
+    Q_PROPERTY(QString static_map2 READ staticMap2 WRITE setStaticMap2)
+    void setStaticMap2(const QString &staticMap);
+    QString staticMap2() const;
+
     Q_PROPERTY(bool master READ master WRITE setMaster)
     void setMaster(bool enable);
     bool master() const;

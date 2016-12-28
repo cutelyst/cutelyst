@@ -56,6 +56,8 @@ public:
     CWsgiEngine *engine;
 
     QStringList httpSockets;
+    QStringList staticMaps;
+    QStringList staticMaps2;
     QString application;
     QString chdir;
     QString chdir2;

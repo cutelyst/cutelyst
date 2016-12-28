@@ -7,6 +7,7 @@ set(httpEngine_SRC
     cwsgiengine.cpp
     socket.cpp
     tcpserver.cpp
+    staticmap.cpp
 )
 
 if (UNIX)
