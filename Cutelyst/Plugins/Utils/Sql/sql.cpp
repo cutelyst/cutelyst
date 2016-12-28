@@ -20,6 +20,7 @@
 #include "sql.h"
 
 #include <QtCore/QLoggingCategory>
+#include <QThread>
 
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
@@ -125,4 +126,19 @@ QSqlQuery Sql::preparedQuery(const QString &query, QSqlDatabase db, bool forward
         qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
     }
     return sqlQuery;
+}
+
+QSqlQuery Sql::preparedQueryThread(const QString &query, const QString &dbName, bool forwardOnly)
+{
+    QSqlQuery sqlQuery(QSqlDatabase::database(databaseNameThread(dbName)));
+    sqlQuery.setForwardOnly(forwardOnly);
+    if (!sqlQuery.prepare(query)) {
+        qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
+    }
+    return sqlQuery;
+}
+
+QString Sql::databaseNameThread(const QString &dbName)
+{
+    return dbName + QLatin1Char('-') + QThread::currentThread()->objectName();
 }
