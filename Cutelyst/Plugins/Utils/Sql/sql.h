@@ -86,7 +86,7 @@ namespace Sql
     /**
      * Returns a string with as "dbName-threadNumber" to be used for connecting
      */
-    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QString databaseNameThread(const QString &dbName);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QString databaseNameThread(const QString &dbName = QString());
 
     /**
      * Returns a QSqlQuery object prepared with \pa query using the \pa dbName database
