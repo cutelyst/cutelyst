@@ -48,11 +48,18 @@ CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &op
     m_lastDateTimer.start();
 
     const QString staticMap = wsgi->staticMap();
-    if (!staticMap.isEmpty()) {
+    const QString staticMap2 = wsgi->staticMap2();
+    if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
         auto staticMapPlugin = new StaticMap(app);
+
         const auto parts = staticMap.split(QLatin1Char(';'));
         for (const QString &part : parts) {
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+        }
+
+        const auto parts2 = staticMap2.split(QLatin1Char(';'));
+        for (const QString &part : parts2) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
         }
     }
 }
