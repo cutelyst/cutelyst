@@ -54,7 +54,7 @@ QByteArray DispatchTypePath::list() const
         const auto paths = d->paths.value(path);
         for (Action *action : paths) {
             QString _path = QLatin1Char('/') + path;
-            if (action->attributes().value(QLatin1String("Args")).isEmpty()) {
+            if (action->attribute(QLatin1String("Args")).isEmpty()) {
                 _path.append(QLatin1String("/..."));
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
