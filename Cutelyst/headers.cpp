@@ -163,16 +163,14 @@ QDateTime Headers::date() const
     if (it != m_data.constEnd()) {
         const QString date = it.value();
 
-        QDateTime localDT;
         if (date.endsWith(QLatin1String(" GMT"))) {
-            localDT = QLocale::c().toDateTime(date.left(date.size() - 4),
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret = QLocale::c().toDateTime(date.left(date.size() - 4),
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
-            localDT = QLocale::c().toDateTime(date,
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret = QLocale::c().toDateTime(date,
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         }
-
-        ret = QDateTime(localDT.date(), localDT.time(), Qt::UTC);
+        ret.setTimeSpec(Qt::UTC);
     }
 
     return ret;
@@ -190,15 +188,14 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     if (it != m_data.constEnd()) {
         const QString ifModifiedStr = it.value();
 
-        QDateTime localDT;
         if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
-            localDT = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
-            localDT = QLocale::c().toDateTime(ifModifiedStr,
-                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret = QLocale::c().toDateTime(ifModifiedStr,
+                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         }
-        ret = QDateTime(localDT.date(), localDT.time(), Qt::UTC);
+        ret.setTimeSpec(Qt::UTC);
     }
 
     return ret;
