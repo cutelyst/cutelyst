@@ -419,10 +419,6 @@ void WSGIPrivate::proc()
     }
 
     const QString app = QCoreApplication::applicationFilePath();
-    QStringList args = QCoreApplication::arguments();
-    args.takeFirst();
-    args.removeOne(QStringLiteral("-M"));
-    args.removeOne(QStringLiteral("--master"));
 
     auto env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
@@ -430,7 +426,7 @@ void WSGIPrivate::proc()
 
     masterChildProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
-    masterChildProcess->start(app, args);
+    masterChildProcess->start(app, QCoreApplication::arguments());
 
     delete materChildRestartTimer;
     materChildRestartTimer = nullptr;
