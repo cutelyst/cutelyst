@@ -72,6 +72,17 @@ public:
     QHostAddress address() const;
 
     /**
+     * Returns the address as string of the client.
+     *
+     * When using IPv6 sockets to listen to both IPv4 and IPv6 sockets the
+     * output of QHostAddress might be something like "::ffff:127.0.0.1", which
+     * is not a bug and a valid address, but from an application point of view
+     * this might not be interesting to have, so this function checks if it's
+     * possible to convert to an IPv4 address and returns "127.0.0.1".
+     */
+    QString addressString() const;
+
+    /**
      * Returns the hostname of the client,
      * or null if not found or an error has happened.
      *

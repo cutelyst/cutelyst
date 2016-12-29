@@ -491,7 +491,7 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
     if (path.isEmpty()) {
         path = QStringLiteral("/");
     }
-    qCDebug(CUTELYST_REQUEST) << req->method() << "request for" << path << "from" << req->address().toString();
+    qCDebug(CUTELYST_REQUEST) << req->method() << "request for" << path << "from" << req->addressString();
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {

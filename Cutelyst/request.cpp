@@ -43,6 +43,19 @@ QHostAddress Request::address() const
     return d->remoteAddress;
 }
 
+QString Request::addressString() const
+{
+    Q_D(const Request);
+
+    bool ok;
+    quint32 data = d->remoteAddress.toIPv4Address(&ok);
+    if (ok) {
+        return QHostAddress(data).toString();
+    } else {
+        return d->remoteAddress.toString();
+    }
+}
+
 QString Request::hostname() const
 {
     Q_D(const Request);
