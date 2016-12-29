@@ -726,8 +726,6 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
 bool WSGIPrivate::loadConfig()
 {
-    Q_Q(WSGI);
-
     QSettings settings(ini, QSettings::IniFormat);
     if (settings.status() != QSettings::NoError) {
         return false;
