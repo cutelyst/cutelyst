@@ -94,7 +94,7 @@ int WSGI::load(Cutelyst::Application *app)
     d->parseCommandLine();
 
     if (!d->ini.isEmpty()) {
-        std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;;
+        std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;
         if (!d->loadConfig()) {
             qCCritical(CUTELYST_WSGI) << "Failed to load config " << d->ini;
             return 1;
@@ -286,8 +286,10 @@ bool WSGI::master() const
 void WSGI::setAutoReload(bool enable)
 {
     Q_D(WSGI);
-    d->autoReload = enable;
-    setMaster(true); // master is required to restart app
+    if (enable) {
+        d->autoReload = true;
+        setMaster(true); // master is required to restart app
+    }
 }
 
 bool WSGI::autoReload() const
@@ -299,8 +301,10 @@ bool WSGI::autoReload() const
 void WSGI::setTouchReload(const QString &file)
 {
     Q_D(WSGI);
-    d->touchReload.append(file.split(QLatin1Char(';'), QString::SkipEmptyParts));
-    setMaster(true); // master is required to restart app
+    if (!file.isEmpty()) {
+        d->touchReload.append(file.split(QLatin1Char(';'), QString::SkipEmptyParts));
+        setMaster(true); // master is required to restart app
+    }
 }
 
 QString WSGI::touchReload() const
