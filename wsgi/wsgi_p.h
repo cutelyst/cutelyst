@@ -28,6 +28,7 @@
 
 class QTcpServer;
 class QSettings;
+class QTimer;
 
 namespace CWSGI {
 
@@ -45,6 +46,8 @@ public:
     void parseCommandLine();
     int setupApplication(Cutelyst::Application *app);
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void restart(const QString &path);
+    void restartTerminate();
     void engineInitted();
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
@@ -64,15 +67,19 @@ public:
     QString chdir;
     QString chdir2;
     QString ini;
-    int bufferSize = 4096;
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
+    QProcess *masterChildProcess = nullptr;
+    QTimer *materChildRestartTimer = nullptr;
+    int bufferSize = 4096;
     int enginesInitted = 1;
     int threads = 0;
     int process = 0;
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
+    int autoReloadCount = 0;
     bool master = false;
+    bool autoReload = false;
     bool tcpNodelay = false;
     bool soKeepalive = false;
 

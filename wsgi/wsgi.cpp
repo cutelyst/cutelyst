@@ -42,12 +42,14 @@
 #include <QPluginLoader>
 #include <QThread>
 #include <QLoggingCategory>
+#include <QFileSystemWatcher>
 #include <QSettings>
+#include <QTimer>
 #include <QDir>
 
 #include <iostream>
 
-Q_LOGGING_CATEGORY(CUTELYST_WSGI, "cutelyst.wsgi")
+Q_LOGGING_CATEGORY(CUTELYST_WSGI, "cwsgi")
 
 using namespace CWSGI;
 
@@ -281,6 +283,19 @@ bool WSGI::master() const
     return d->master;
 }
 
+void WSGI::setAutoReload(bool enable)
+{
+    Q_D(WSGI);
+    d->autoReload = enable;
+    setMaster(true); // master is required to restart app
+}
+
+bool WSGI::autoReload() const
+{
+    Q_D(const WSGI);
+    return d->autoReload;
+}
+
 void WSGI::setBufferSize(qint64 size)
 {
     Q_D(WSGI);
@@ -313,7 +328,7 @@ void WSGI::setPostBufferingBufsize(qint64 size)
 {
     Q_D(WSGI);
     if (size < 4096) {
-        qWarning() << "Post buffer size must be at least 4096 bytes, ignoring";
+        qCWarning(CUTELYST_WSGI) << "Post buffer size must be at least 4096 bytes, ignoring";
         return;
     }
     d->postBufferingBufsize = size;
@@ -375,11 +390,15 @@ int WSGI::socketRcvbuf() const
 
 void WSGIPrivate::proc()
 {
-    static QProcess *process = nullptr;
-    if (!process) {
-        process = new QProcess(this);
-        QObject::connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+    if (!masterChildProcess) {
+        masterChildProcess = new QProcess(this);
+        QObject::connect(masterChildProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 this, &WSGIPrivate::childFinished);
+
+        if (autoReload) {
+            auto watcher = new QFileSystemWatcher({ application }, this);
+            QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, &WSGIPrivate::restart);
+        }
     }
 
     const QString app = QCoreApplication::applicationFilePath();
@@ -390,11 +409,14 @@ void WSGIPrivate::proc()
 
     auto env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
-    process->setProcessEnvironment(env);
+    masterChildProcess->setProcessEnvironment(env);
 
-    process->setProcessChannelMode(QProcess::ForwardedChannels);
+    masterChildProcess->setProcessChannelMode(QProcess::ForwardedChannels);
 
-    process->start(app, args);
+    masterChildProcess->start(app, args);
+
+    delete materChildRestartTimer;
+    materChildRestartTimer = nullptr;
 }
 
 void WSGIPrivate::parseCommandLine()
@@ -472,9 +494,9 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "mountpoint=path"));
     parser.addOption(staticMap2);
 
-    auto restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
-                                      QCoreApplication::translate("main", "restarts when the application file changes"));
-    parser.addOption(restart);
+    auto autoReload = QCommandLineOption({ QStringLiteral("auto-restart"), QStringLiteral("r") },
+                                      QCoreApplication::translate("main", "auto restarts when the application file changes"));
+    parser.addOption(autoReload);
 
     auto tcpNoDelay = QCommandLineOption(QStringLiteral("tcp-nodelay"),
                                          QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
@@ -552,6 +574,8 @@ void WSGIPrivate::parseCommandLine()
 
     bool masterSet = parser.isSet(master);
     q->setMaster(masterSet);
+
+    q->setAutoReload(parser.isSet(autoReload));
 
     q->setTcpNodelay(parser.isSet(tcpNoDelay));
 
@@ -673,10 +697,33 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 
 void WSGIPrivate::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    if (exitStatus == QProcess::CrashExit) {
+    qCDebug(CUTELYST_WSGI) << "Master child finished" << exitCode << exitStatus;
+    if (materChildRestartTimer || exitStatus == QProcess::CrashExit) {
         proc();
     } else {
         qApp->exit(exitCode);
+    }
+}
+
+void WSGIPrivate::restart(const QString &path)
+{
+    qCDebug(CUTELYST_WSGI) << "File changed restarting" << path;
+    if (!materChildRestartTimer) {
+        materChildRestartTimer = new QTimer(this);
+        materChildRestartTimer->setInterval(1 * 1000);
+        materChildRestartTimer->setSingleShot(false);
+
+        QObject::connect(materChildRestartTimer, &QTimer::timeout, this, &WSGIPrivate::restartTerminate);
+    }
+    materChildRestartTimer->start();
+}
+
+void WSGIPrivate::restartTerminate()
+{
+    if (++autoReloadCount > 5) {
+        masterChildProcess->kill();
+    } else {
+        masterChildProcess->terminate();
     }
 }
 

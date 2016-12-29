@@ -93,6 +93,10 @@ public:
     void setMaster(bool enable);
     bool master() const;
 
+    Q_PROPERTY(bool autoReload READ autoReload WRITE setAutoReload)
+    void setAutoReload(bool enable);
+    bool autoReload() const;
+
     Q_PROPERTY(qint64 buffer_size READ bufferSize WRITE setBufferSize)
     void setBufferSize(qint64 size);
     int bufferSize() const;
