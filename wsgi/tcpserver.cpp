@@ -62,13 +62,19 @@ void TcpServer::incomingConnection(qintptr handle)
         connect(sock, &TcpSocket::finished, this, &TcpServer::enqueue);
     }
 
-    sock->serverAddress = m_serverAddress;
-    sock->setSocketDescriptor(handle);
-    for (auto opt : m_socketOptions) {
-        sock->setSocketOption(opt.first, opt.second);
-    }
+    if (sock->setSocketDescriptor(handle)) {
+        sock->startOfRequest = QDateTime::currentMSecsSinceEpoch();
+        sock->serverAddress = m_serverAddress;
+        sock->remoteAddress = sock->peerAddress();
+        sock->remotePort = sock->peerPort();
 
-    sock->startOfRequest = QDateTime::currentMSecsSinceEpoch();
+        for (auto opt : m_socketOptions) {
+            sock->setSocketOption(opt.first, opt.second);
+        }
+
+    } else {
+        m_socks.push_back(sock);
+    }
 }
 
 void TcpServer::enqueue()
