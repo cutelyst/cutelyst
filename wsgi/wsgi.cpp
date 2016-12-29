@@ -738,7 +738,17 @@ bool WSGIPrivate::loadConfig()
         qputenv("QT_LOGGING_CONF", ini.toUtf8());
     }
 
-    settings.beginGroup(QStringLiteral("wsgi"));
+    loadConfigGroup(QStringLiteral("uwsgi"), settings);
+    loadConfigGroup(QStringLiteral("wsgi"), settings);
+
+    return true;
+}
+
+void WSGIPrivate::loadConfigGroup(const QString &group, QSettings &settings)
+{
+    Q_Q(WSGI);
+
+    settings.beginGroup(group);
     const auto keys = settings.allKeys();
     for (const QString &key : keys) {
         QString prop = key;
@@ -753,8 +763,7 @@ bool WSGIPrivate::loadConfig()
             q->setProperty(prop.toLatin1().constData(), value);
         }
     }
-
-    return true;
+    settings.endGroup();
 }
 
 #include "moc_wsgi.cpp"

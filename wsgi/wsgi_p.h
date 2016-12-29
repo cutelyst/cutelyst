@@ -27,6 +27,7 @@
 #include <Cutelyst/Application>
 
 class QTcpServer;
+class QSettings;
 
 namespace CWSGI {
 
@@ -49,6 +50,7 @@ public:
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
     bool loadConfig();
+    void loadConfigGroup(const QString &group, QSettings &settings);
 
     WSGI *q_ptr;
     std::vector<QTcpServer *> sockets;
