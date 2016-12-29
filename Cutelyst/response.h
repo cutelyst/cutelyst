@@ -260,7 +260,7 @@ public:
      */
     bool isSequential() const override;
 
-    qint64 size() const;
+    qint64 size() const override;
 
 protected:
     explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
