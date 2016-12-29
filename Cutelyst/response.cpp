@@ -50,8 +50,19 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->flags & ResponsePrivate::FinalizedHeaders)) {
+        if (d->headers.header(QStringLiteral("transfer_encoding")) == QLatin1String("chunked")) {
+            d->flags |= ResponsePrivate::IOWrite | ResponsePrivate::Chunked;
+        } else {
+            // When chunked encoding is not set the client can only know
+            // that data is finished if we close the connection
+            d->headers.setHeader(QStringLiteral("connection"), QStringLiteral("close"));
+            d->flags |= ResponsePrivate::IOWrite;
+        }
+        delete d->bodyIODevice;
+        d->bodyIODevice = nullptr;
+        d->bodyData = QByteArray();
+
         d->engine->finalizeHeaders(d->context);
-        d->flags |= ResponsePrivate::IOWrite;
     }
 
     return d->engine->write(d->context, data, len, d->context->engineData());
@@ -77,7 +88,7 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->bodyData.isEmpty() || d->bodyIODevice || (d->flags & ResponsePrivate::IOWrite);
+    return !d->bodyData.isEmpty() || d->bodyIODevice || d->flags & ResponsePrivate::IOWrite;
 }
 
 QByteArray &Response::body()
@@ -102,10 +113,12 @@ void Response::setBody(QIODevice *body)
     Q_D(Response);
     Q_ASSERT(body && body->isOpen() && body->isReadable());
 
-    body->setParent(d->context);
+    if (!(d->flags & ResponsePrivate::IOWrite)) {
+        body->setParent(d->context);
 
-    d->bodyData = QByteArray();
-    d->bodyIODevice = body;
+        d->bodyData = QByteArray();
+        d->bodyIODevice = body;
+    }
 }
 
 void Response::setBody(const QByteArray &body)
@@ -266,14 +279,28 @@ bool Response::isSequential() const
     return true;
 }
 
+qint64 Response::size() const
+{
+    Q_D(const Response);
+    if (d->flags & ResponsePrivate::IOWrite) {
+        return -1;
+    } else if (d->bodyIODevice) {
+        return d->bodyIODevice->size();
+    } else {
+        return d->bodyData.size();
+    }
+}
+
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
-    if (bodyIODevice) {
-        delete bodyIODevice;
-        bodyIODevice = nullptr;
+    if (!(flags & ResponsePrivate::IOWrite)) {
+        if (bodyIODevice) {
+            delete bodyIODevice;
+            bodyIODevice = nullptr;
+        }
+        bodyData = body;
+        headers.setContentLength(body.size());
     }
-    bodyData = body;
-    headers.setContentLength(body.size());
 }
 
 #include "moc_response.cpp"

@@ -59,4 +59,6 @@ public:
 
 }
 
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::ResponsePrivate::ResponseStatus)
+
 #endif // CUTELYST_RESPONSE_P_H

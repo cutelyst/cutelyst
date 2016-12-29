@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -259,6 +259,8 @@ public:
      * Writting to user-agent is always sequential
      */
     bool isSequential() const override;
+
+    qint64 size() const;
 
 protected:
     explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);

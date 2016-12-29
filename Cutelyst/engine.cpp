@@ -121,26 +121,11 @@ bool Engine::finalizeHeaders(Context *c)
     Headers &headers = response->headers();
 
     // Fix missing content length
-    if (headers.contentLength() < 0 && response->hasBody()) {
-        QIODevice *body = response->bodyDevice();
-        if (!body) {
-            headers.setContentLength(response->body().size());
-        } else {
-            qint64 size = body->size();
-            if (size >= 0) {
-                headers.setContentLength(body->size());
-            } else if (c->request()->protocol() == QLatin1String("HTTP/1.1")) {
-                // if status is not 1xx or 204 NoContent or 304 NotModified
-                if (!(status >= 100 && status <= 199) && status != 204 && status != 304) {
-                    qCDebug(CUTELYST_ENGINE, "Using chunked transfer-encoding to send unknown length body");
-                    headers.setHeader(QStringLiteral("transfer_encoding"), QStringLiteral("chunked"));
-                    response->d_ptr->flags |= ResponsePrivate::Chunked;
-                }
-            }
+    if (headers.contentLength() < 0) {
+        qint16 size = response->size();
+        if (size >= 0) {
+            headers.setContentLength(size);
         }
-    } else if (headers.header(QStringLiteral("transfer_encoding")) == QLatin1String("chunked")) {
-        qCDebug(CUTELYST_ENGINE, "Chunked transfer-encoding set for response");
-        response->d_ptr->flags |= ResponsePrivate::Chunked;
     }
 
     finalizeCookies(c);
