@@ -93,9 +93,13 @@ public:
     void setMaster(bool enable);
     bool master() const;
 
-    Q_PROPERTY(bool autoReload READ autoReload WRITE setAutoReload)
+    Q_PROPERTY(bool auto_reload READ autoReload WRITE setAutoReload)
     void setAutoReload(bool enable);
     bool autoReload() const;
+
+    Q_PROPERTY(QString touch_reload READ touchReload WRITE setTouchReload)
+    void setTouchReload(const QString &file);
+    QString touchReload() const;
 
     Q_PROPERTY(qint64 buffer_size READ bufferSize WRITE setBufferSize)
     void setBufferSize(qint64 size);

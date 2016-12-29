@@ -63,6 +63,7 @@ public:
     QStringList httpSockets;
     QStringList staticMaps;
     QStringList staticMaps2;
+    QStringList touchReload;
     QString application;
     QString chdir;
     QString chdir2;

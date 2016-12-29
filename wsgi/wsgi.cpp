@@ -296,6 +296,19 @@ bool WSGI::autoReload() const
     return d->autoReload;
 }
 
+void WSGI::setTouchReload(const QString &file)
+{
+    Q_D(WSGI);
+    d->touchReload.append(file.split(QLatin1Char(';'), QString::SkipEmptyParts));
+    setMaster(true); // master is required to restart app
+}
+
+QString WSGI::touchReload() const
+{
+    Q_D(const WSGI);
+    return d->touchReload.join(QLatin1Char(';'));
+}
+
 void WSGI::setBufferSize(qint64 size)
 {
     Q_D(WSGI);
@@ -396,7 +409,11 @@ void WSGIPrivate::proc()
                 this, &WSGIPrivate::childFinished);
 
         if (autoReload) {
-            auto watcher = new QFileSystemWatcher({ application }, this);
+            touchReload.append(application);
+        }
+
+        if (!touchReload.isEmpty()) {
+            auto watcher = new QFileSystemWatcher(touchReload, this);
             QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, &WSGIPrivate::restart);
         }
     }
@@ -497,6 +514,11 @@ void WSGIPrivate::parseCommandLine()
     auto autoReload = QCommandLineOption({ QStringLiteral("auto-restart"), QStringLiteral("r") },
                                       QCoreApplication::translate("main", "auto restarts when the application file changes"));
     parser.addOption(autoReload);
+
+    auto touchReload = QCommandLineOption(QStringLiteral("touch-reload"),
+                                        QCoreApplication::translate("main", "reload application if the specified file is modified/touched"),
+                                        QCoreApplication::translate("main", "file"));
+    parser.addOption(touchReload);
 
     auto tcpNoDelay = QCommandLineOption(QStringLiteral("tcp-nodelay"),
                                          QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
@@ -617,6 +639,13 @@ void WSGIPrivate::parseCommandLine()
         const auto maps = parser.values(staticMap2);
         for (const QString &map : maps) {
             q->setStaticMap2(map);
+        }
+    }
+
+    if (parser.isSet(touchReload)) {
+        const auto maps = parser.values(touchReload);
+        for (const QString &map : maps) {
+            q->setTouchReload(map);
         }
     }
 }
