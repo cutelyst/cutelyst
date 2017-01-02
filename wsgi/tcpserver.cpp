@@ -63,7 +63,6 @@ void TcpServer::incomingConnection(qintptr handle)
     }
 
     if (sock->setSocketDescriptor(handle)) {
-        sock->startOfRequest = QDateTime::currentMSecsSinceEpoch();
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();

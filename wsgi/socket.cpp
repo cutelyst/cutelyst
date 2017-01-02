@@ -30,6 +30,7 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
 {
     isSecure = false;
     requestPtr = this;
+    startOfRequest = 0;
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
 }
 

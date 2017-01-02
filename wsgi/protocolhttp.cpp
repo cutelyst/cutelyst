@@ -106,6 +106,9 @@ void ProtocolHttp::readyRead()
             sock->last = sock->beginLine;
 
             if (sock->connState == Socket::MethodLine) {
+                if (!sock->startOfRequest) {
+                    sock->startOfRequest = sock->engine->time();
+                }
                 parseMethod(ptr, ptr + len, sock);
                 sock->connState = Socket::HeaderLine;
                 sock->contentLength = -1;
@@ -160,6 +163,9 @@ void ProtocolHttp::readyRead()
                 }
             }
         } else {
+            if (!sock->startOfRequest) {
+                sock->startOfRequest = sock->engine->time();
+            }
             sock->last = sock->buf_size;
         }
     }
@@ -194,7 +200,6 @@ bool ProtocolHttp::processRequest(TcpSocket *sock)
     } else {
         sock->resetSocket();
     }
-    sock->startOfRequest = sock->engine->time();
 
     return true;
 }

@@ -49,6 +49,7 @@ public:
         buf_size = 0;
         beginLine = 0;
         last = 0;
+        startOfRequest = 0;
         headerClose = 0;
         processing = false;
         headerHost = false;
