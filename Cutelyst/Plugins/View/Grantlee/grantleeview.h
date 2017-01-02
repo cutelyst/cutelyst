@@ -25,6 +25,10 @@
 
 #include <Cutelyst/View>
 
+namespace Grantlee {
+class Engine;
+}
+
 namespace Cutelyst {
 
 class GrantleeViewPrivate;
@@ -55,6 +59,8 @@ public:
     Q_PROPERTY(bool cache READ isCaching WRITE setCache)
     bool isCaching() const;
     void setCache(bool enable);
+
+    Grantlee::Engine *engine() const;
 
     void preloadTemplates();
 

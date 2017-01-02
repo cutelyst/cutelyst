@@ -42,7 +42,7 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
 
-    Application *app = qobject_cast<Application *>(parent);
+    auto app = qobject_cast<Application *>(parent);
     if (app) {
         // make sure templates can be found on the current directory
         setIncludePaths({ app->config(QStringLiteral("root")).toString() });
@@ -116,6 +116,12 @@ void GrantleeView::setCache(bool enable)
         d->cache.clear();
         d->engine->addTemplateLoader(d->loader);
     }
+}
+
+Grantlee::Engine *GrantleeView::engine() const
+{
+    Q_D(const GrantleeView);
+    return d->engine;
 }
 
 void GrantleeView::preloadTemplates()
