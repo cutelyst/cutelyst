@@ -178,6 +178,7 @@ QByteArray GrantleeView::render(Context *c) const
     Q_D(const GrantleeView);
 
     QByteArray ret;
+    c->setStash(d->cutelystVar, QVariant::fromValue(c));
     const QVariantHash stash = c->stash();
     auto it = stash.constFind(QStringLiteral("template"));
     const auto itEnd = stash.constEnd();
@@ -208,8 +209,6 @@ QByteArray GrantleeView::render(Context *c) const
         auto localizer = QSharedPointer<Grantlee::QtLocalizer>::create(locale);
         gc.setLocalizer(localizer);
     }
-
-    gc.insert(d->cutelystVar, c);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gc);
