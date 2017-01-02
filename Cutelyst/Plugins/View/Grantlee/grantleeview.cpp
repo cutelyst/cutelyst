@@ -24,6 +24,8 @@
 #include "action.h"
 #include "response.h"
 
+#include <grantlee/qtlocalizer.h>
+
 #include <QString>
 #include <QDirIterator>
 #include <QtCore/QLoggingCategory>
@@ -118,6 +120,18 @@ void GrantleeView::setCache(bool enable)
     }
 }
 
+QString GrantleeView::localeKey() const
+{
+    Q_D(const GrantleeView);
+    return d->localeKey;
+}
+
+void GrantleeView::setLocaleKey(const QString &name)
+{
+    Q_D(GrantleeView);
+    d->localeKey = name;
+}
+
 Grantlee::Engine *GrantleeView::engine() const
 {
     Q_D(const GrantleeView);
@@ -165,8 +179,12 @@ QByteArray GrantleeView::render(Context *c) const
 
     QByteArray ret;
     QVariantHash stash = c->stash();
-    QString templateFile = stash.value(QStringLiteral("template")).toString();
-    if (templateFile.isEmpty()) {
+    auto it = stash.constFind(QStringLiteral("template"));
+    const auto itEnd = stash.constEnd();
+    QString templateFile;
+    if (it != itEnd) {
+        templateFile = it.value().toString();
+    } else {
         if (c->action() && !c->action()->reverse().isEmpty()) {
             templateFile = c->action()->reverse() + d->extension;
             if (templateFile.startsWith(QLatin1Char('/'))) {
@@ -185,6 +203,13 @@ QByteArray GrantleeView::render(Context *c) const
     stash.insert(d->cutelystVar, QVariant::fromValue(c));
 
     Grantlee::Context gc(stash);
+
+    it = stash.constFind(d->localeKey);
+    if (it != stash.constEnd()) {
+        auto locale = it.value().value<QLocale>();
+        auto localizer = QSharedPointer<Grantlee::QtLocalizer>::create(locale);
+        gc.setLocalizer(localizer);
+    }
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gc);
