@@ -381,8 +381,29 @@ public:
      */
     bool execute(Component *code);
 
+    /**
+     * Returns the current locale to be used when processing Views
+     * or translating user messages.
+     *
+     * If not explicity set by setLocale it will use the QLocale::setDefault(),
+     * or QLocale::system() if not set.
+     */
     QLocale locale() const;
 
+    /**
+     * Defines the current locale to be used when processing Views
+     * or translating user messages.
+     *
+     * Setting a locale on a web application can be done in many ways,
+     * so it's up to the developer to decide which one to use.
+     *
+     * For example it's possible to try to guess the user locale with
+     * the request header Accept-Language, and  or use the chained dispatcher to first
+     * match the locale as in "example.com/pt-br/some_action", and or store
+     * the locale into a cookie or session.
+     *
+     * Be sure to set it as soon as possible so that all content can be properly localized.
+     */
     void setLocale(const QLocale &locale);
 
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
