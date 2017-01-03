@@ -128,3 +128,5 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
     delete file;
     return false;
 }
+
+#include "moc_staticmap.cpp"

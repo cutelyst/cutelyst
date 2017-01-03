@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -59,7 +59,9 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->engine = m_engine;
         auto proto = new ProtocolHttp(sock, m_wsgi, sock);
         connect(sock, &QIODevice::readyRead, proto, &Protocol::readyRead);
-        connect(sock, &TcpSocket::finished, this, &TcpServer::enqueue);
+        connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
+            m_socks.push_back(obj);
+        });
     }
 
     if (sock->setSocketDescriptor(handle)) {
@@ -74,11 +76,6 @@ void TcpServer::incomingConnection(qintptr handle)
     } else {
         m_socks.push_back(sock);
     }
-}
-
-void TcpServer::enqueue(TcpSocket *obj)
-{
-    m_socks.push_back(obj);
 }
 
 #include "moc_tcpserver.cpp"

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,8 +35,6 @@ public:
     explicit TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle);
-
-    void enqueue(TcpSocket *obj);
 
     QString m_serverAddress;
     CWsgiEngine *m_engine;
