@@ -76,9 +76,9 @@ void TcpServer::incomingConnection(qintptr handle)
     }
 }
 
-void TcpServer::enqueue()
+void TcpServer::enqueue(TcpSocket *obj)
 {
-    m_socks.push_back(qobject_cast<TcpSocket*>(sender()));
+    m_socks.push_back(obj);
 }
 
 #include "moc_tcpserver.cpp"

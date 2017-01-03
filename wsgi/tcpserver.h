@@ -36,7 +36,7 @@ public:
 
     virtual void incomingConnection(qintptr handle);
 
-    void enqueue();
+    void enqueue(TcpSocket *obj);
 
     QString m_serverAddress;
     CWsgiEngine *m_engine;

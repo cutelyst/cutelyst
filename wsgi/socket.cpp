@@ -49,7 +49,7 @@ void TcpSocket::socketDisconnected()
 {
 //    qDebug() << Q_FUNC_INFO << processing;
     if (!processing) {
-        Q_EMIT finished();
+        Q_EMIT finished(this);
     }
 }
 

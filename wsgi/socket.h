@@ -78,7 +78,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
-    void finished();
+    void finished(TcpSocket *bj);
 };
 
 }
