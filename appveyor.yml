@@ -18,32 +18,40 @@ environment:
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
     VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
   - CMAKE_GENERATOR: "Ninja"
     QT5: C:\Qt\5.6\msvc2015_64
     PLATFORM: X64
     VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
   - CMAKE_GENERATOR: "Visual Studio 14"
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
     VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
   - CMAKE_GENERATOR: "Visual Studio 14 Win64"
     QT5: C:\Qt\5.6\msvc2015_64
     PLATFORM: X64
     VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
 #  - CMAKE_GENERATOR: "NMake Makefiles JOM"
 #    QT5: C:\Qt\5.6\msvc2015
 #    PLATFORM: X86
 #    VSVER: 14
+#    DISABLE_MAINTAINER_CFLAGS: on
 #  - CMAKE_GENERATOR: "NMake Makefiles JOM"
 #    QT5: C:\Qt\5.6\msvc2015_64
 #    PLATFORM: X64
 #    VSVER: 14
+#    DISABLE_MAINTAINER_CFLAGS: on
   - CMAKE_GENERATOR: "MinGW Makefiles"
     QT5: C:\Qt\5.7\mingw53_32
     MINGW_PATH: C:\Qt\Tools\mingw530_32
+    DISABLE_MAINTAINER_CFLAGS: off
   - CMAKE_GENERATOR: "MinGW Makefiles"
     QT5: C:\Qt\5.6\mingw49_32
     MINGW_PATH: C:\Qt\Tools\mingw492_32
+    DISABLE_MAINTAINER_CFLAGS: off
 
 before_build:
   - set PATH=C:\cygwin\bin;%QT5%\bin;c:\dev\cutelyst\build\Cutelyst;%PATH%
@@ -70,7 +78,7 @@ build_script:
   - cd c:\dev\cutelyst
   - md build
   - cd build
-  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%" "-DDISABLE_MAINTAINER_CFLAGS=off"
+  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%" "-DDISABLE_MAINTAINER_CFLAGS=%DISABLE_MAINTAINER_CFLAGS%"
   - cmake --build . --config Debug
   - cmake --build . --config Release
 
