@@ -46,6 +46,7 @@ public:
 
     QStringList error;
     QVariantHash stash;
+    QLocale locale;
     QStack<Component *> stack;
     QVector<Plugin *> plugins;
 

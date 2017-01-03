@@ -35,7 +35,6 @@ public:
     QString extension = QStringLiteral(".html");
     QString wrapper;
     QString cutelystVar;
-    QString localeKey = QStringLiteral("locale");
     Grantlee::Engine *engine;
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
     QSharedPointer<Grantlee::CachingLoaderDecorator> cache;

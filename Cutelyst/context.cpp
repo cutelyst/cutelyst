@@ -373,6 +373,18 @@ bool Context::execute(Component *code)
     return ret;
 }
 
+QLocale Context::locale() const
+{
+    Q_D(const Context);
+    return d->locale;
+}
+
+void Context::setLocale(const QLocale &locale)
+{
+    Q_D(Context);
+    d->locale = locale;
+}
+
 QVariant Context::config(const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Context);

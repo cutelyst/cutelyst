@@ -120,18 +120,6 @@ void GrantleeView::setCache(bool enable)
     }
 }
 
-QString GrantleeView::localeKey() const
-{
-    Q_D(const GrantleeView);
-    return d->localeKey;
-}
-
-void GrantleeView::setLocaleKey(const QString &name)
-{
-    Q_D(GrantleeView);
-    d->localeKey = name;
-}
-
 Grantlee::Engine *GrantleeView::engine() const
 {
     Q_D(const GrantleeView);
@@ -181,9 +169,8 @@ QByteArray GrantleeView::render(Context *c) const
     c->setStash(d->cutelystVar, QVariant::fromValue(c));
     const QVariantHash stash = c->stash();
     auto it = stash.constFind(QStringLiteral("template"));
-    const auto itEnd = stash.constEnd();
     QString templateFile;
-    if (it != itEnd) {
+    if (it != stash.constEnd()) {
         templateFile = it.value().toString();
     } else {
         if (c->action() && !c->action()->reverse().isEmpty()) {
@@ -203,12 +190,8 @@ QByteArray GrantleeView::render(Context *c) const
 
     Grantlee::Context gc(stash);
 
-    it = stash.constFind(d->localeKey);
-    if (it != stash.constEnd()) {
-        auto locale = it.value().value<QLocale>();
-        auto localizer = QSharedPointer<Grantlee::QtLocalizer>::create(locale);
-        gc.setLocalizer(localizer);
-    }
+    auto localizer = QSharedPointer<Grantlee::QtLocalizer>::create(c->locale());
+    gc.setLocalizer(localizer);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
     QString content = tmpl->render(&gc);

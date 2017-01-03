@@ -60,10 +60,6 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
-    Q_PROPERTY(QString localeKey READ localeKey WRITE setLocaleKey)
-    QString localeKey() const;
-    void setLocaleKey(const QString &name);
-
     Grantlee::Engine *engine() const;
 
     void preloadTemplates();

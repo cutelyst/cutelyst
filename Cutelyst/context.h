@@ -381,6 +381,10 @@ public:
      */
     bool execute(Component *code);
 
+    QLocale locale() const;
+
+    void setLocale(const QLocale &locale);
+
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
     QVariantMap config() const;
