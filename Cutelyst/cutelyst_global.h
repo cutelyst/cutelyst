@@ -54,6 +54,11 @@
 #else
 #  define CUTELYST_PLUGIN_UTILS_SQL_EXPORT Q_DECL_IMPORT
 #endif
+#if defined(cutelyst_qt5_plugin_utils_validator_EXPORTS)
+#  define CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Q_DECL_IMPORT
+#endif
 #if defined(cutelyst_view_clearsilver_EXPORTS)
 #  define CUTELYST_VIEW_CLEARSILVER_EXPORT Q_DECL_EXPORT
 #else
