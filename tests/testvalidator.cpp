@@ -652,7 +652,7 @@ public:
     C_ATTR(regex, :Local :AutoArgs)
     void regex(Context *c) {
         Validator v(c);
-        v.addValidator(new ValidatorRegex(QStringLiteral("field"), QRegularExpression(QStringLiteral("^(\\d\\d)/(\\d\\d)/(\\d\\d\\d\\d)$")), QString(), QStringLiteral("invalid")));
+        v.addValidator(new ValidatorRegularExpression(QStringLiteral("field"), QRegularExpression(QStringLiteral("^(\\d\\d)/(\\d\\d)/(\\d\\d\\d\\d)$")), QString(), QStringLiteral("invalid")));
         if (v.validate()) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {

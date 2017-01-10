@@ -80,9 +80,9 @@ set(plugin_validator_SRC
     validatorpresent.cpp
     validatorpresent_p.h
     validatorpresent.h
-    validatorregex.cpp
-    validatorregex_p.h
-    validatorregex.h
+    validatorregularexpression.cpp
+    validatorregularexpression_p.h
+    validatorregularexpression.h
     validatorrequired.cpp
     validatorrequired_p.h
     validatorrequired.h
@@ -149,7 +149,7 @@ set(plugin_validator_HEADERS
     validatornotin.h
     validatornumeric.h
     validatorpresent.h
-    validatorregex.h
+    validatorregularexpression.h
     validatorrequired.h
     validatorrequiredif.h
     validatorrequiredunless.h

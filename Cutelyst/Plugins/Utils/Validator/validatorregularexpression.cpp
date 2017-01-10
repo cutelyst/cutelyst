@@ -17,39 +17,39 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "validatorregex_p.h"
+#include "validatorregularexpression_p.h"
 
 using namespace Cutelyst;
 
-ValidatorRegex::ValidatorRegex(const QString &field, const QRegularExpression &regex, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorRegexPrivate(field, regex, label, customError), parent)
+ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label, const QString &customError, QObject *parent) :
+    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, label, customError), parent)
 {
 
 }
 
 
-ValidatorRegex::ValidatorRegex(ValidatorRegexPrivate &dd, QObject *parent) :
+ValidatorRegularExpression::ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
 
 }
 
 
-ValidatorRegex::~ValidatorRegex()
+ValidatorRegularExpression::~ValidatorRegularExpression()
 {
 
 }
 
 
 
-bool ValidatorRegex::validate()
+bool ValidatorRegularExpression::validate()
 {
     if (value().isEmpty()) {
         setValid(true);
         return true;
     }
 
-    Q_D(ValidatorRegex);
+    Q_D(ValidatorRegularExpression);
 
     if (value().contains(d->regex)) {
         setValid(true);
@@ -61,16 +61,16 @@ bool ValidatorRegex::validate()
 
 
 
-QString ValidatorRegex::genericErrorMessage() const
+QString ValidatorRegularExpression::genericErrorMessage() const
 {
-    Q_D(const ValidatorRegex);
+    Q_D(const ValidatorRegularExpression);
     return tr("The “%1” field does not match the desired format.").arg(genericFieldName());
 }
 
 
-void ValidatorRegex::setRegex(const QRegularExpression &regex)
+void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)
 {
-    Q_D(ValidatorRegex);
+    Q_D(ValidatorRegularExpression);
     d->regex = regex;
 }
 

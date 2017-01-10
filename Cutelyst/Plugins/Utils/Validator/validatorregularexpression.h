@@ -26,7 +26,7 @@
 
 namespace Cutelyst {
     
-class ValidatorRegexPrivate;
+class ValidatorRegularExpressionPrivate;
 
 /*!
  * \brief The field under validation must match the given regular expression.
@@ -40,7 +40,7 @@ class ValidatorRegexPrivate;
  *
  * \link Validator See Validator for general usage of validators. \endlink
  */
-class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRegex : public ValidatorRule
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRegularExpression : public ValidatorRule
 {
     Q_OBJECT
 public:
@@ -52,12 +52,12 @@ public:
      * \param customError   Custom errror message if validation fails.
      * \param parent        Parent object.
      */
-    ValidatorRegex(const QString &field, const QRegularExpression &regex, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
     
     /*!
      * \brief Deconstructs the regex validator.
      */
-    ~ValidatorRegex();
+    ~ValidatorRegularExpression();
     
     /*!
      * \brief Performs the validation.
@@ -77,11 +77,11 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorRegex(ValidatorRegexPrivate &dd, QObject *parent);
+    ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd, QObject *parent);
     
 private:
-    Q_DECLARE_PRIVATE(ValidatorRegex)
-    Q_DISABLE_COPY(ValidatorRegex)
+    Q_DECLARE_PRIVATE(ValidatorRegularExpression)
+    Q_DISABLE_COPY(ValidatorRegularExpression)
 };
     
 }

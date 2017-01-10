@@ -23,7 +23,7 @@
 #include "validatornotin.h"
 #include "validatornumeric.h"
 #include "validatorpresent.h"
-#include "validatorregex.h"
+#include "validatorregularexpression.h"
 #include "validatorrequired.h" 
 #include "validatorrequiredif.h"
 #include "validatorrequiredunless.h"
