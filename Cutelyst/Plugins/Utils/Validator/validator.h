@@ -112,23 +112,22 @@ class ValidatorRule;
  *          // seems like we are building a registration form, so lets require a password
  *          v.addValidator(new ValidatorRequired(QStringLiteral("password")));
  *
- *          // security over all, so we want to have a loooong password, or better passphrase
- *          // 30 characters minimum should be enough
- *          v.addValidator(new ValidatorMin(QStringLiteral("password"), QMetaType::QString, 30));
+ *          // the password should have a niminum length of 10 characters
+ *          v.addValidator(new ValidatorMin(QStringLiteral("password"), QMetaType::QString, 10));
  *
  *          // and as true over the top usability experts we will have a password confirmation field (named password_confirmation)
- *          // but we don't like the generic error message and we also don't like people, so lets define a custom error message
- *          // (for sure we like people, only writing documentation sucks - sometimes - ok, not really)
- *          v.addValidator(new ValidatorConfirmed(QStringLiteral("password"), QString(), tr("You fool! The entered passwords do not match!!!111!eleven!!")));
+ *          // but we don't like the generic error message and want to define a custom one
+ *          v.addValidator(new ValidatorConfirmed(QStringLiteral("password"), QString(), tr("Please enter the same password again in the confirmation field.")));
  *
  *          // ok, now we have all our validators in place - let the games begin
  *          if (v.validate()) {
- *              // ok everything is valid, we can now sell the collected user data to some dreadful hack0rz
- *              c->response()->redirect(uriFor("sellthestuff"));
+ *              // ok everything is valid, we can now process the input data and advance to the next
+ *              // step for example
+ *              c->response()->redirect(uriFor("nextstep"));
  *
- *              // but what happens if the input data was not valid? the price for the data would be shit...
+ *              // but what happens if the input data was not valid?
  *              // because we set a template to the main Validator, it will automatically fill the stash
- *              // with error information so that our user can enter them correclty now, hopefully...
+ *              // with error information so that our user can enter them correclty now
  *          }
  *
  *      } else {
