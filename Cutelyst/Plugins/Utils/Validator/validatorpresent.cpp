@@ -38,7 +38,7 @@ ValidatorPresent::~ValidatorPresent()
 bool ValidatorPresent::validate()
 {
     if (parameters().contains(field())) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

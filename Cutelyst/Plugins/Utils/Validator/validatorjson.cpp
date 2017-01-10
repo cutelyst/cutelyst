@@ -43,13 +43,13 @@ bool ValidatorJson::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     QJsonDocument json = QJsonDocument::fromJson(v.toUtf8(), &d->jsonParseError);
     if (!json.isEmpty() && !json.isNull()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

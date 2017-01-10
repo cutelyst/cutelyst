@@ -38,13 +38,16 @@ ValidatorFilled::~ValidatorFilled()
 bool ValidatorFilled::validate()
 {
     if (!parameters().contains(field())) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
-        bool ret = !value().isEmpty();
-        setValid(ret);
-        return ret;
+        if (!value().isEmpty()) {
+            setError(ValidatorRule::NoError);
+            return true;
+        }
     }
+
+    return false;
 }
 
 QString ValidatorFilled::genericErrorMessage() const

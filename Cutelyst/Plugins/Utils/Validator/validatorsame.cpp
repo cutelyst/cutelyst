@@ -42,12 +42,12 @@ bool ValidatorSame::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (v == d->parameters.value(d->otherField)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

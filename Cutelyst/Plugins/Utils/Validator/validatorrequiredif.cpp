@@ -40,24 +40,24 @@ bool ValidatorRequiredIf::validate()
     Q_D(ValidatorRequiredIf);
 
     if (d->otherField.isEmpty()) {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
     }
 
     if (d->otherValues.isEmpty()) {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
     }
 
     if (d->otherValues.contains(d->parameters.value(d->otherField))) {
 
         if (!value().isEmpty()) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
 
     } else {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

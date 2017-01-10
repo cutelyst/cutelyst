@@ -40,7 +40,7 @@ bool ValidatorSize::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -50,31 +50,31 @@ bool ValidatorSize::validate()
         qlonglong val = v.toLongLong();
         qlonglong size = (qlonglong)d->size;
         if (val == size) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::UInt) {
         qulonglong val = v.toULongLong();
         qulonglong size = (qulonglong)d->size;
         if (val == size) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::Float) {
         double val = v.toDouble();
         if (val == d->size) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::QString) {
         int val = v.length();
         int size = (int)d->size;
         if (val == size) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
     }
 
     return false;

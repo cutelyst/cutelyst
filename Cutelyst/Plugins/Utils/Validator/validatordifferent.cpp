@@ -42,14 +42,14 @@ bool ValidatorDifferent::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     QString o = d->parameters.value(d->otherField).trimmed();
 
     if (v != o) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

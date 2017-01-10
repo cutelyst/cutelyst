@@ -40,17 +40,17 @@ bool ValidatorIn::validate()
     Q_D(ValidatorIn);
 
     if (d->values.isEmpty()) {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
     }
 
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (d->values.contains(value())) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

@@ -38,14 +38,20 @@ ValidatorRule::~ValidatorRule()
 QString ValidatorRule::errorMessage() const
 {
     Q_D(const ValidatorRule);
-    if (d->parsingError) {
+    switch(d->errorType) {
+    case ValidationFailed:
+        if (!d->customError.isEmpty()) {
+            return d->customError;
+        } else {
+            return genericErrorMessage();
+        }
+    case ParsingError:
         return parsingErrorMessage();
-    } else if (d->validationDataError) {
+    case ValidationDataError:
         return validationDataErrorMessage();
-    } else if (!d->customError.isEmpty()) {
-        return d->customError;
-    } else {
-        return genericErrorMessage();
+    case NoError:
+    default:
+        return QString();
     }
 }
 
@@ -87,13 +93,7 @@ void ValidatorRule::setCustomError(const QString &customError)
     d->customError = customError;
 }
 
-bool ValidatorRule::isValid() const { Q_D(const ValidatorRule); return d->valid; }
-
-void ValidatorRule::setValid(bool valid)
-{
-    Q_D(ValidatorRule);
-    d->valid = valid;
-}
+bool ValidatorRule::isValid() const { Q_D(const ValidatorRule); return d->errorType == NoError; }
 
 void ValidatorRule::setParameters(const ParamsMultiMap &params)
 {
@@ -110,36 +110,6 @@ ParamsMultiMap ValidatorRule::parameters() const
 QString ValidatorRule::genericFieldName() const
 {
     return !label().isEmpty() ? label() : field();
-}
-
-void ValidatorRule::setParsingError(bool parsingError)
-{
-    Q_D(ValidatorRule);
-    d->parsingError = parsingError;
-    if (parsingError) {
-        d->valid = false;
-    }
-}
-
-bool ValidatorRule::parsingError() const
-{
-    Q_D(const ValidatorRule);
-    return d->parsingError;
-}
-
-void ValidatorRule::setValidationDataError(bool validationDataError)
-{
-    Q_D(ValidatorRule);
-    d->validationDataError = validationDataError;
-    if (validationDataError) {
-        d->valid = false;
-    }
-}
-
-bool ValidatorRule::validationDataError() const
-{
-    Q_D(const ValidatorRule);
-    return d->validationDataError;
 }
 
 QString ValidatorRule::genericErrorMessage() const
@@ -189,4 +159,16 @@ bool ValidatorRule::trimBefore() const
 {
     Q_D(const ValidatorRule);
     return d->trimBefore;
+}
+
+ValidatorRule::ValidatonErrorType ValidatorRule::error() const
+{
+    Q_D(const ValidatorRule);
+    return d->errorType;
+}
+
+void ValidatorRule::setError(ValidatonErrorType errorType)
+{
+    Q_D(ValidatorRule);
+    d->errorType = errorType;
 }

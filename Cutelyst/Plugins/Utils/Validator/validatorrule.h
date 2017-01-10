@@ -99,20 +99,20 @@ class ValidatorRulePrivate;
  *     // if the value is empty or the field is missing, the validation should succeed,
  *     // because we already have the required validators for that purpose
  *     if (v.isEmpts()) {
- *         setValid(true);
+ *         setError(ValidatorRule::NoError);
  *         return true;
  *     }
  *
  *     // if our comparision value is empty, the validation should fail and we will
  *     // set setValidationDataError() to true to return the appropriate error message
  *     if (m_compareValue.isEmpty()) {
- *         setValidationDataError(true);
+ *         setError(ValidatorRule::ValidationDataError);
  *         return false;
  *     }
  *
  *     // now lets compare our values
  *     if (m_compareValue == value()) {
- *         setValid(true);
+ *         setError(ValidatorRule::NoError);
  *         return true;
  *     }
  *
@@ -132,6 +132,16 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRule
 {
 public:
     /*!
+     * \brief Defines the validation status.
+     */
+    enum ValidatonErrorType {
+        NoError             = 0,    /**< The validation succeeded and the input data is valid. */
+        ValidationFailed    = 1,    /**< Validation failed and data is not valid. */
+        ParsingError        = 2,    /**< The input data could not be parsed into a comparable type. Validation failed. */
+        ValidationDataError = 3     /**< The data to validate against is missing or unusable. Validation failed. */
+    };
+
+    /*!
      * \brief Constructs a new ValidatorRule with given parameters and \a parent.
      * \param field         Name of the field to validate.
      * \param label         Human readable input field label, used for generic error messages.
@@ -147,18 +157,23 @@ public:
     /*!
      * \brief Reimplement this in a subclass to perform the validation.
      *
-     * When reimplementing this function, do not forget to set the validity with setValid().
+     * When reimplementing this function, do not forget to set the status via setError().
      *
      * \par Example
      *
      * \code{.cpp}
      * bool MyValidator::validate() const
      * {
-     *      if (value().isEmpty()) {
+     *      if (m_myComparisonValue.isEmpty()) {
+     *          setError(ValidatorRule::ValidationDataError);
      *          return false;
-     *      } else {
-     *          setValid(true);
+     *      }
+     *
+     *      if (m_myComparisonValue == value()) {
+     *          setError(ValidatorRule::NoError)
      *          return true;
+     *      } else {
+     *          return false;
      *      }
      * }
      * \endcode
@@ -189,38 +204,41 @@ public:
     QString customError() const;
 
     /*!
-     * \brief Returns true if the validation was successful.
+     * \brief Returns \c true if the validation was successful.
+     *
+     * Returns \c true if the validation was successful and error() returns ValidatorRule::NoError.
      */
     bool isValid() const;
 
     /*!
      * \brief Returns an error message if validation fails.
      *
-     * Use isValid() to check if the validation failed. This will either return a generic error
-     * message or a custom error message.
+     * Use isValid() or error() to check if the validation failed. Depending on the ValidatorRule::ValidationErrorType it
+     * will return the appropriate error message, either a generic one, or if set, a custom one.
+     *
+     * \sa setCustomError(), setCustomParsingError(), setCustomValidationDataError()
      */
     QString errorMessage() const;
 
     /*!
-     * \brief Returns true if input data parsing fails.
-     * \sa setParsingError(), ValidatorRule::parsingError
-     */
-    bool parsingError() const;
-
-    /*!
-     * \brief Returns true if the validation data is missing or unusable.
-     * \sa setValidationDataError(), ValidatorRule::validationDataError
-     */
-    bool validationDataError() const;
-
-    /*!
      * \brief Returns true if field value should be trimmed before validation.
      *
-     * Default is \c true.
+     * By default, this will return \c true and all input values will be trimmed before validation to
+     * remove whitespaces from the beginning and the end.
      *
      * \sa setTrimBefore()
      */
     bool trimBefore() const;
+
+    /*!
+     * \brief Returns the error type.
+     *
+     * By default this will return ValidationRule::ValidationFailed. Only if validation
+     * has been performed and was successful, it will return ValidationRule::NoError.
+     *
+     * If this returns ValidationRule::NoError, isValid() will return \c true.
+     */
+    ValidatonErrorType error() const;
 
 
 
@@ -269,7 +287,10 @@ public:
     /*!
      * \brief Set to \c false to not trim input value before validation.
      *
-     * Default is \c true.
+     * By default, this value is set to \c true and all input values will be trimmed before validation to
+     * remove whitespaces from the beginning and the end.
+     *
+     * \sa trimBefore()
      */
     void setTrimBefore(bool trimBefore);
 
@@ -280,20 +301,18 @@ protected:
     /*!
      * \brief Returns a generic error message.
      *
-     * Reimplement this in your subclass to return a generic error message that will be used by the \link ValidatorRule::errorMessage errorMessage \endlink property.
+     * Reimplement this in your subclass to return a generic error message that will be used by the ValidatorRule::errorMessage() function.
      *
-     * The default implementation returns a (translated) string like this: "The input data in the “Foo Bar” field is not valid.".
+     * The default implementation returns a string like this: "The input data in the “Foo Bar” field is not valid.".
      *
-     * When reimplementing this, you should at first look if the \link ValidatorRule::label label \endlink property is set
-     * and use it in your generic message. If that is empty, use the \link ValidatorRule::field field \endlink property.
+     * When reimplementing this, you should the genericFieldName() function to either get a label, if any has been set, or the field name.
      *
      * \par Example
      *
      * \code{.cpp}
      * QString MyValidator::genericErrorMessage() const
      * {
-     *      QString fn = !label().isEmpty() ? label() : field();
-     *      return tr("The “%1” field has the wrong content.").arg(fn);
+     *      return tr("The “%1” field has the wrong content.").arg(genericFieldName());
      * }
      * \endcode
      */
@@ -302,21 +321,20 @@ protected:
     /*!
      * \brief Returns an error message if an error occured while parsing input.
      *
-     * Reimplement this in your subclass to return an error message that will be returned if the input data could not be parsed
+     * Reimplement this in your subclass to return an error message in case the input data could not be parsed
      * into a comparative value. The default implementation returns a generic message unless a custom one is set via setCustomParsingError().
      *
      * When reimplementing this function take into account that there might be a custom parsing error message set by the user.
      */
     virtual QString parsingErrorMessage() const;
 
-
     /*!
-     * \brief Returns an error messag if an validation data is missing or invalid.
+     * \brief Returns an error message if any validation data is missing or invalid.
      *
-     * Reimplement this in your sublcass to return an error message that will be returned if the validation data is missing
-     * or invalid. The default implementation return a generic message unless a custom one is set via setCustomValidationDataError().
+     * Reimplement this in your sublcass to return an error message in case the validation data is missing
+     * or invalid. The default implementation returns a generic message unless a custom one is set via setCustomValidationDataError().
      *
-     * When reimplementing this function take into account taht there might be a cstom parsing error message set by the user.
+     * When reimplementing this function take into account that there might be a custom validation data error message set by the user.
      */
     virtual QString validationDataErrorMessage() const;
 
@@ -324,42 +342,10 @@ protected:
      * \brief Returns the name of the field for the generic error message.
      *
      * This can be used by genericErrorMessage() to retrieve the field name.
-     * It will return the \link ValidatorRule::label label \endlink property if it is set, otherwise
-     * it will return the \link ValidatorRule::field field \endlink property.
+     * It will return the \link ValidatorRule::label() label() \endlink if it is set, otherwise
+     * it will return the \link ValidatorRule::field() field() \endlink.
      */
     QString genericFieldName() const;
-
-    /*!
-     * \brief Set this in your subclass to true if validation was successful.
-     */
-    void setValid(bool valid);
-
-    /*!
-     * \brief Set this to true if parsing of input data fails.
-     *
-     * Set \a parsingError to \c true if the parsing of input data fails for further checks. If you want to check
-     * a date range for example, you at first want to parse the input data into a date (QDate), if that parsing
-     * fails, set \a parsingError to \c true. Setting this to \c true will automatically set setValid() to \c false.
-     *
-     * This information will be used to provide a valid error message.
-     *
-     * \sa parsingError()
-     */
-    void setParsingError(bool parsingError);
-
-    /*!
-     * \brief Set this to true if validation data is missing or unusable.
-     *
-     * Set \a validationDataError to \c true if the data to validate the input against is missing or unusable. If
-     * you want to check a date or time range for example, you expect a QDate, QDateTime or QDate to check against
-     * but if there is something else or nothing, set \a validationDataError to \c true.
-     * Setting this to \c true will automatically set setValid() to \c false.
-     *
-     * This information will be used to provide a valid error message.
-     *
-     * \sa validationDataError()
-     */
-    void setValidationDataError(bool validationDataError);
 
     /*!
      * \brief Returns the custom parsing error message if any is set.
@@ -374,6 +360,14 @@ protected:
      * \sa setCustomValidationDataError(), validationDataErrorMessage()
      */
     QString customValidationDataError() const;
+
+    /*!
+     * \brief Sets the error type.
+     *
+     * Use this to set the result of the validation when reimplementing ValidatorRule. The default value is ValidationRule::ValidationError,
+     * if the validation succeeded, set this to ValidationRule::NoError.
+     */
+    void setError(ValidatonErrorType errorType);
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRule)

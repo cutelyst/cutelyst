@@ -33,7 +33,8 @@ public:
         valid(false),
         parsingError(false),
         validationDataError(false),
-        trimBefore(true)
+        trimBefore(true),
+        errorType(ValidatorRule::ValidationFailed)
     {}
 
     ValidatorRulePrivate(const QString f, const QString &l, const QString &e) :
@@ -43,7 +44,8 @@ public:
         valid(false),
         parsingError(false),
         validationDataError(false),
-        trimBefore(true)
+        trimBefore(true),
+        errorType(ValidatorRule::ValidationFailed)
     {}
 
     virtual ~ValidatorRulePrivate() {}
@@ -129,6 +131,7 @@ public:
     QString customParsingError;
     QString customValidationDataError;
     bool trimBefore;
+    ValidatorRule::ValidatonErrorType errorType;
 };
 
 }

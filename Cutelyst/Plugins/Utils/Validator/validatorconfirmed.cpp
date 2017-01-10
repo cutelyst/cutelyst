@@ -38,7 +38,7 @@ ValidatorConfirmed::~ValidatorConfirmed()
 bool ValidatorConfirmed::validate()
 {
     if (value().trimmed().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -46,7 +46,7 @@ bool ValidatorConfirmed::validate()
     ofn.append(QLatin1String("_confirmation"));
 
     if (value() == parameters().value(ofn)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

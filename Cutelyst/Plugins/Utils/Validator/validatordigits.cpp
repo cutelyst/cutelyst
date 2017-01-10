@@ -42,20 +42,20 @@ bool ValidatorDigits::validate()
     Q_D(ValidatorDigits);
 
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
         if (d->length > 0) {
             if (value().length() == d->length) {
-                setValid(true);
+                setError(ValidatorRule::NoError);
                 return true;
             } else {
                 return false;
             }
         } else {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else {

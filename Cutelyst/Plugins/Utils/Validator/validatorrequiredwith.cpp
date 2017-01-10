@@ -40,7 +40,7 @@ bool ValidatorRequiredWith::validate()
     Q_D(ValidatorRequiredWith);
 
     if (d->otherFields.isEmpty()) {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
     }
 
@@ -57,13 +57,13 @@ bool ValidatorRequiredWith::validate()
 
     if (containsOther) {
         if (!value().isEmpty()) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         } else {
             return false;
         }
     } else {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

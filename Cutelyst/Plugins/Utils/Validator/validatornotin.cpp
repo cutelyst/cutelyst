@@ -40,19 +40,19 @@ bool ValidatorNotIn::validate()
     Q_D(ValidatorNotIn);
 
     if (d->values.isEmpty()) {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
     }
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (!d->values.contains(v)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

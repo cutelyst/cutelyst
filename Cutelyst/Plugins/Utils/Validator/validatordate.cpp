@@ -44,14 +44,14 @@ bool ValidatorDate::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     QDate date = d->extractDate(v, d->format);
 
     if (date.isValid()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

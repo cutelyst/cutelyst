@@ -39,12 +39,12 @@ ValidatorNumeric::~ValidatorNumeric()
 bool ValidatorNumeric::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

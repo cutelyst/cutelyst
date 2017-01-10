@@ -43,12 +43,12 @@ bool ValidatorInteger::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

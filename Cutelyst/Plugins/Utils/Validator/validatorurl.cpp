@@ -43,7 +43,7 @@ bool ValidatorUrl::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -75,7 +75,7 @@ bool ValidatorUrl::validate()
         for (const QString &s : sc) {
             const QString sl =  s.toLower();
             if (url.scheme() == sl) {
-                setValid(true);
+                setError(ValidatorRule::NoError);
                 return true;
             }
         }
@@ -83,7 +83,7 @@ bool ValidatorUrl::validate()
         return false;
 
     } else {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 }

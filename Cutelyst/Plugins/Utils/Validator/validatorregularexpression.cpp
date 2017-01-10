@@ -38,14 +38,14 @@ ValidatorRegularExpression::~ValidatorRegularExpression()
 bool ValidatorRegularExpression::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     Q_D(ValidatorRegularExpression);
 
     if (value().contains(d->regex)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 

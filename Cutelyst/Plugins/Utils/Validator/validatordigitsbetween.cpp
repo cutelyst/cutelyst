@@ -42,25 +42,25 @@ bool ValidatorDigitsBetween::validate()
     Q_D(ValidatorDigitsBetween);
 
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
 
         if (d->min < 1 || d->max < 1) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         } else {
 
-            bool res = ((value().length() >= d->min) && (value().length() <= d->max));
-            setValid(res);
-            return res;
+            if ((value().length() >= d->min) && (value().length() <= d->max)) {
+                setError(ValidatorRule::NoError);
+                return true;
+            }
         }
-
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 QString ValidatorDigitsBetween::genericErrorMessage() const

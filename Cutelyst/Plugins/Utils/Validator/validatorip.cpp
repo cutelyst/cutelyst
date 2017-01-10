@@ -44,7 +44,7 @@ bool ValidatorIp::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -58,7 +58,7 @@ bool ValidatorIp::validate()
 
         if (d->constraints.testFlag(NoConstraint)) {
 
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
 
         } else {
@@ -169,7 +169,7 @@ bool ValidatorIp::validate()
                     }
                 }
 
-                setValid(true);
+                setError(ValidatorRule::NoError);
                 return true;
 
             } else {
@@ -252,7 +252,7 @@ bool ValidatorIp::validate()
                     }
                 }
 
-                setValid(true);
+                setError(ValidatorRule::NoError);
                 return true;
 
             }

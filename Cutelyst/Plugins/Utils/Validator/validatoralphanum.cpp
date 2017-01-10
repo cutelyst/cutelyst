@@ -42,12 +42,12 @@ ValidatorAlphaNum::~ValidatorAlphaNum()
 bool ValidatorAlphaNum::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
         return false;

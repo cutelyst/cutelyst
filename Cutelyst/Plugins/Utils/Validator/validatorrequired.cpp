@@ -38,7 +38,7 @@ ValidatorRequired::~ValidatorRequired()
 bool ValidatorRequired::validate()
 {
     if (!value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
         return false;

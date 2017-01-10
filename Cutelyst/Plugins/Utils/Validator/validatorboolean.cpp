@@ -39,13 +39,13 @@ ValidatorBoolean::~ValidatorBoolean()
 bool ValidatorBoolean::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
     if (l.contains(value(), Qt::CaseInsensitive)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
         return false;

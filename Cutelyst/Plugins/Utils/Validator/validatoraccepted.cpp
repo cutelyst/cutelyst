@@ -42,7 +42,7 @@ bool ValidatorAccepted::validate()
 {
     QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
     if (l.contains(value(), Qt::CaseInsensitive)) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
         return false;

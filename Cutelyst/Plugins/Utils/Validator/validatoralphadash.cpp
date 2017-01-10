@@ -42,12 +42,12 @@ ValidatorAlphaDash::~ValidatorAlphaDash()
 bool ValidatorAlphaDash::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     } else {
         return false;

@@ -39,7 +39,7 @@ ValidatorEmail::~ValidatorEmail()
 bool ValidatorEmail::validate()
 {
     if (value().isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -79,8 +79,12 @@ bool ValidatorEmail::validate()
                                                                   ")"
                                                                   "^(?&addr_spec)$"), QRegularExpression::ExtendedPatternSyntaxOption));
 
-    setValid(isEmail);
-    return isEmail;
+    if (isEmail) {
+        setError(ValidatorRule::NoError);
+        return true;
+    }
+
+    return false;
 }
 
 QString ValidatorEmail::genericErrorMessage() const

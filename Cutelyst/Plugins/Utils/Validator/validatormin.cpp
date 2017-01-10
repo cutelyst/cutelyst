@@ -40,7 +40,7 @@ bool ValidatorMin::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -50,31 +50,31 @@ bool ValidatorMin::validate()
         qlonglong val = v.toLongLong();
         qlonglong min = (qlonglong)d->min;
         if (val >= min) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::UInt) {
         qulonglong val = v.toULongLong();
         qulonglong min = (qulonglong)d->min;
         if (val >= min) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::Float) {
         double val = v.toDouble();
         if (val >= d->min) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::QString) {
         int val = v.length();
         int min = (int)d->min;
         if (val >= min) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
     }
 
     return false;

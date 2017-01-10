@@ -40,7 +40,7 @@ bool ValidatorMax::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -50,31 +50,31 @@ bool ValidatorMax::validate()
         qlonglong val = v.toLongLong();
         qlonglong max = (qlonglong)d->max;
         if (val <= max) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::UInt) {
         qulonglong val = v.toULongLong();
         qulonglong max = (qulonglong)d->max;
         if (val <= max) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::Float) {
         double val = v.toDouble();
         if (val <= d->max) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else if (d->type == QMetaType::QString) {
         int val = v.length();
         int max = (int)d->max;
         if (val <= max) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         }
     } else {
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
     }
 
     return false;

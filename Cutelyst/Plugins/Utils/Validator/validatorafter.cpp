@@ -49,7 +49,7 @@ bool ValidatorAfter::validate()
     QString v = value();
 
     if (v.isEmpty()) {
-        setValid(true);
+        setError(ValidatorRule::NoError);
         return true;
     }
 
@@ -57,18 +57,18 @@ bool ValidatorAfter::validate()
 
         QDate odate = d->date.toDate();
         if (!odate.isValid()) {
-            setValidationDataError(true);
+            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORAFTER) << "Invalid validation date.";
             return false;
         }
         QDate date = d->extractDate(v, d->inputFormat);
         if (!date.isValid()) {
-            setParsingError(true);
+            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORAFTER) << "Can not parse input date:" << v;
             return false;
         }
         if (date > odate) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         } else {
             return false;
@@ -78,18 +78,18 @@ bool ValidatorAfter::validate()
 
         QDateTime odatetime = d->date.toDateTime();
         if (!odatetime.isValid()) {
-            setValidationDataError(true);
+            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORAFTER) << "Invalid validation date and time.";
             return false;
         }
         QDateTime datetime = d->extractDateTime(v, d->inputFormat);
         if (!datetime.isValid()) {
-            setParsingError(true);
+            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORAFTER) << "Can not parse input date and time:" << v;
             return false;
         }
         if (datetime > odatetime) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         } else {
             return false;
@@ -99,18 +99,18 @@ bool ValidatorAfter::validate()
 
         QTime otime = d->date.toTime();
         if (!otime.isValid()) {
-            setValidationDataError(true);
+            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORAFTER) << "Invalid validation time.";
             return false;
         }
         QTime time = d->extractTime(v, d->inputFormat);
         if (!time.isValid()) {
-            setParsingError(true);
+            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORAFTER) << "Can not parse input time:" << v;
             return false;
         }
         if (time > otime) {
-            setValid(true);
+            setError(ValidatorRule::NoError);
             return true;
         } else {
             return false;
@@ -119,7 +119,7 @@ bool ValidatorAfter::validate()
     } else {
 
         qCWarning(C_VALIDATORAFTER) << "Invalid validation data:" << d->date;
-        setValidationDataError(true);
+        setError(ValidatorRule::ValidationDataError);
         return false;
 
     }
