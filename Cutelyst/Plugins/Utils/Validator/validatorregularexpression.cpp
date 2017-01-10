@@ -63,7 +63,6 @@ bool ValidatorRegularExpression::validate()
 
 QString ValidatorRegularExpression::genericErrorMessage() const
 {
-    Q_D(const ValidatorRegularExpression);
     return tr("The “%1” field does not match the desired format.").arg(genericFieldName());
 }
 
