@@ -56,8 +56,7 @@ public:
     // ***** Endpoint for ValidatorAccepted ******
     C_ATTR(accepted, :Local :AutoArgs)
     void accepted(Context *c) {
-        Validator v(c);
-        v.addValidator(new ValidatorAccepted(QStringLiteral("accepted_field"), QString(), QStringLiteral("invalid")));
+        Validator v(c, {new ValidatorAccepted(QStringLiteral("accepted_field"), QString(), QStringLiteral("invalid"))});
         if (v.validate()) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {

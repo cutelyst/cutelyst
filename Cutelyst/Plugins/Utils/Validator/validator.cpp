@@ -24,22 +24,25 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator")
 
+Validator::Validator(Context *c) :
+    d_ptr(new ValidatorPrivate(c))
+{
+}
+
+#ifdef Q_COMPILER_INITIALIZER_LISTS
+Validator::Validator(Context *c, std::initializer_list<ValidatorRule *> list) :
+    d_ptr(new ValidatorPrivate(c, list))
+{
+}
+#endif
 
 Validator::Validator(const ParamsMultiMap &params) :
     d_ptr(new ValidatorPrivate(params))
 {
-
-}
-
-Validator::Validator(Context *c) :
-    d_ptr(new ValidatorPrivate(c))
-{
-
 }
 
 Validator::~Validator()
 {
-
 }
 
 void Validator::setStopOnFirstError(bool stopOnFirstError)
@@ -58,8 +61,8 @@ void Validator::clear()
 {
     Q_D(Validator);
     d->params.clear();
-    if (!d->validators.isEmpty()) {
-        qDeleteAll(d->validators);
+    if (!d->validators.empty()) {
+        qDeleteAll(d->validators.begin(), d->validators.end());
         d->validators.clear();
     }
 }
@@ -68,7 +71,7 @@ bool Validator::validate()
 {
     Q_D(Validator);
 
-    if (d->validators.isEmpty()) {
+    if (d->validators.empty()) {
         qCWarning(C_VALIDATOR) << "Validation started with empty validator list.";
         return true;
     }
@@ -79,9 +82,8 @@ bool Validator::validate()
 
     bool valid = true;
 
-    for (int i = 0; i < d->validators.count(); ++i) {
-
-        ValidatorRule *v = d->validators.at(i);
+    for (std::vector<ValidatorRule*>::iterator it = d->validators.begin(); it != d->validators.end(); ++it) {
+        ValidatorRule *v = *it;
         v->setParameters(d->params);
 
         if (v->label().isEmpty()) {
@@ -96,7 +98,6 @@ bool Validator::validate()
                 valid = false;
             }
         }
-
     }
 
     if (!valid) {
@@ -109,8 +110,7 @@ bool Validator::validate()
 void Validator::addValidator(ValidatorRule *v)
 {
     Q_D(Validator);
-
-    d->validators.append(v);
+    d->validators.push_back(v);
 }
 
 QVariantList Validator::errorStrings() const
@@ -119,9 +119,9 @@ QVariantList Validator::errorStrings() const
 
     QVariantList strings;
 
-    if (!d->validators.isEmpty()) {
-        for (int i = 0; i < d->validators.count(); ++i) {
-            ValidatorRule *v = d->validators.at(i);
+    if (!d->validators.empty()) {
+        for (std::vector<ValidatorRule*>::const_iterator it = d->validators.cbegin(); it != d->validators.cend(); ++it) {
+            ValidatorRule *v = *it;
             if (!v->isValid()) {
                 strings << v->errorMessage();
             }
@@ -137,9 +137,9 @@ QVariantList Validator::errorFields() const
 
     QVariantList fields;
 
-    if (!d->validators.isEmpty()) {
-        for (int i = 0; i < d->validators.count(); ++i) {
-            ValidatorRule *v = d->validators.at(i);
+    if (!d->validators.empty()) {
+        for (std::vector<ValidatorRule*>::const_iterator it = d->validators.cbegin(); it != d->validators.cend(); ++it) {
+            ValidatorRule *v = *it;
             if (!v->isValid()) {
                 fields << v->field();
             }

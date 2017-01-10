@@ -29,26 +29,35 @@ namespace Cutelyst {
 class ValidatorPrivate
 {
 public:
-    ValidatorPrivate() :
-        stopOnFirstError(false)
-    {}
-
-    ValidatorPrivate(const ParamsMultiMap &parameters) :
-        params(parameters),
-        stopOnFirstError(false),
-        context(nullptr)
-    {}
-
     ValidatorPrivate(Context *c) :
         stopOnFirstError(false),
         context(c)
     {
-        params = c->request()->parameters();
+        if (context) {
+            params = c->request()->parameters();
+        }
     }
+
+#ifdef Q_COMPILER_INITIALIZER_LISTS
+    ValidatorPrivate(Context *c, std::initializer_list<ValidatorRule*> list) :
+        stopOnFirstError(false),
+        validators(list),
+        context(c)
+    {
+        if (context) {
+            params = c->request()->parameters();
+        }
+    }
+#endif
+
+    ValidatorPrivate(const ParamsMultiMap &parameters) :
+        params(parameters),
+        stopOnFirstError(false)
+    {}
 
     ParamsMultiMap params;
     bool stopOnFirstError;
-    QList<ValidatorRule*> validators;
+    std::vector<ValidatorRule*> validators;
     QHash<QString,QString> labelDict;
     QString tmpl;
     Context *context;
@@ -56,12 +65,12 @@ public:
 
     void setStashOnInvalid()
     {
-        if (!tmpl.isEmpty() && (context != nullptr) && !validators.isEmpty()) {
+        if (!tmpl.isEmpty() && (context != nullptr) && !validators.empty()) {
 
             QVariantList validationErrorStrings;
             QVariantList validationErrorFields;
 
-            for (int i = 0; i < validators.count(); ++i) {
+            for (size_t i = 0; i < validators.size(); ++i) {
                 ValidatorRule *v = validators.at(i);
                 if (!v->isValid()) {
                     validationErrorStrings << v->errorMessage();

@@ -141,17 +141,18 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator
 {
 public:
     /*!
-     * \brief Constructs a new validator with given \a params and \a parent.
-     */
-    Validator(const ParamsMultiMap &params);
-
-    /*!
      * \brief Constructs a new validator with given Context \a c and \a parent.
      *
      * The Context \a c will be used to extract the request parameters. If you set a template with setTemplate(),
      * the context's stash will be filled with error information if validation fails.
      */
     Validator(Context *c);
+
+#ifdef Q_COMPILER_INITIALIZER_LISTS
+    Validator(Context *c, std::initializer_list<ValidatorRule*> list);
+#endif
+
+    Validator(const ParamsMultiMap &params);
 
     /*!
      * \brief Desconstructs the validator.
