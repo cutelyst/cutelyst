@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -51,7 +50,6 @@ class ValidatorMaxPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMax : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new max validator.
@@ -60,9 +58,8 @@ public:
      * \param max           Maximum value.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorMax(const QString &field, QMetaType::Type type, double max, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorMax(const QString &field, QMetaType::Type type, double max, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the max validator.
@@ -92,7 +89,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorMax(ValidatorMaxPrivate &dd, QObject *parent);
+    ValidatorMax(ValidatorMaxPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorMax)

@@ -21,7 +21,7 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/ParamsMultiMap>
-#include <QObject>
+#include <QScopedPointer>
 
 namespace Cutelyst {
 
@@ -137,14 +137,13 @@ class ValidatorRule;
  * }
  * \endcode
  */
-class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator : public QObject
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new validator with given \a params and \a parent.
      */
-    Validator(const ParamsMultiMap &params, QObject *parent = nullptr);
+    Validator(const ParamsMultiMap &params);
 
     /*!
      * \brief Constructs a new validator with given Context \a c and \a parent.
@@ -152,7 +151,7 @@ public:
      * The Context \a c will be used to extract the request parameters. If you set a template with setTemplate(),
      * the context's stash will be filled with error information if validation fails.
      */
-    Validator(Context *c, QObject *parent = nullptr);
+    Validator(Context *c);
 
     /*!
      * \brief Desconstructs the validator.

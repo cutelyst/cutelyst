@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorMax::ValidatorMax(const QString &field, QMetaType::Type type, double max, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorMaxPrivate(field, type, max, label, customError), parent)
+ValidatorMax::ValidatorMax(const QString &field, QMetaType::Type type, double max, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorMaxPrivate(field, type, max, label, customError))
 {
 }
 
-ValidatorMax::ValidatorMax(ValidatorMaxPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorMax::ValidatorMax(ValidatorMaxPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -85,11 +85,11 @@ QString ValidatorMax::genericErrorMessage() const
     Q_D(const ValidatorMax);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return tr("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(),QString::number(d->max, 'f', 0));
+        return QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(),QString::number(d->max, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        return tr("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max));
+        return QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max));
     } else if (d->type == QMetaType::QString) {
-        return tr("The length of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max, 'f', 0));
+        return QStringLiteral("The length of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max, 'f', 0));
     } else {
         return QString();
     }

@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -41,7 +40,6 @@ class ValidatorUrlPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorUrl : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constraints to limit the validation.
@@ -62,9 +60,8 @@ public:
      * \param schemes       List of allowed schemes for a valid URL.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorUrl(const QString &field, Constraints constraints = NoConstraint, const QStringList &schemes = QStringList(), const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorUrl(const QString &field, Constraints constraints = NoConstraint, const QStringList &schemes = QStringList(), const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the validator.
@@ -94,7 +91,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorUrl(ValidatorUrlPrivate &dd, QObject *parent);
+    ValidatorUrl(ValidatorUrlPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorUrl)

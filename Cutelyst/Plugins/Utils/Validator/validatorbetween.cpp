@@ -21,14 +21,14 @@
 
 using namespace Cutelyst;
 
-ValidatorBetween::ValidatorBetween(const QString &field, QMetaType::Type type, double min, double max, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorBetweenPrivate(field, type, min, max, label, customError), parent)
+ValidatorBetween::ValidatorBetween(const QString &field, QMetaType::Type type, double min, double max, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorBetweenPrivate(field, type, min, max, label, customError))
 {
 }
 
 
-ValidatorBetween::ValidatorBetween(ValidatorBetweenPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorBetween::ValidatorBetween(ValidatorBetweenPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -92,11 +92,11 @@ QString ValidatorBetween::genericErrorMessage() const
     Q_D(const ValidatorBetween);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return tr("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
+        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        return tr("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min), QString::number(d->max));
+        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min), QString::number(d->max));
     } else if (d->type == QMetaType::QString) {
-        return tr("The length of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
+        return QStringLiteral("The length of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
     } else {
         return QString();
     }

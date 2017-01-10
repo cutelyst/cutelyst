@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -53,7 +52,6 @@ class ValidatorBetweenPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorBetween : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new between validator.
@@ -63,9 +61,8 @@ public:
      * \param max           Maximum value. Will be converted into comparable value.
      * \param label         Human readable input field label, used for error messages.
      * \param customError   Custom errror message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorBetween(const QString &field, QMetaType::Type type, double min, double max, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorBetween(const QString &field, QMetaType::Type type, double min, double max, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the between validator.
@@ -102,7 +99,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorBetween(ValidatorBetweenPrivate &dd, QObject *parent);
+    ValidatorBetween(ValidatorBetweenPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorBetween)

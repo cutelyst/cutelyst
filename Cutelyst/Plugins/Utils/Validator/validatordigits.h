@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -45,7 +44,6 @@ class ValidatorDigitsPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDigits : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new digits validator.
@@ -53,9 +51,8 @@ public:
      * \param length        Length of the digits, defaults to \c -1 what disables the check.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorDigits(const QString &field, int length = -1, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorDigits(const QString &field, int length = -1, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the digits validator.
@@ -82,7 +79,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorDigits(ValidatorDigitsPrivate &dd, QObject *parent);
+    ValidatorDigits(ValidatorDigitsPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorDigits)

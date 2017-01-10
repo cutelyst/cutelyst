@@ -22,13 +22,13 @@
 
 using namespace Cutelyst;
 
-ValidatorEmail::ValidatorEmail(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorEmailPrivate(field, label, customError), parent)
+ValidatorEmail::ValidatorEmail(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorEmailPrivate(field, label, customError))
 {
 }
 
-ValidatorEmail::ValidatorEmail(ValidatorEmailPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorEmail::ValidatorEmail(ValidatorEmailPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -85,5 +85,5 @@ bool ValidatorEmail::validate()
 
 QString ValidatorEmail::genericErrorMessage() const
 {
-    return tr("The email address in the “%1” field is not valid.").arg(genericFieldName());
+    return QStringLiteral("The email address in the “%1” field is not valid.").arg(genericFieldName());
 }

@@ -22,13 +22,13 @@
 
 using namespace Cutelyst;
 
-ValidatorJson::ValidatorJson(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorJsonPrivate(field, label, customError), parent)
+ValidatorJson::ValidatorJson(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorJsonPrivate(field, label, customError))
 {
 }
 
-ValidatorJson::ValidatorJson(ValidatorJsonPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorJson::ValidatorJson(ValidatorJsonPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -58,7 +58,7 @@ bool ValidatorJson::validate()
 
 QString ValidatorJson::genericErrorMessage() const
 {
-    return tr("The data entered in the “%1” field is not valid JSON: %2").arg(genericFieldName(), jsonParseError().errorString());
+    return QStringLiteral("The data entered in the “%1” field is not valid JSON: %2").arg(genericFieldName(), jsonParseError().errorString());
 }
 
 QJsonParseError ValidatorJson::jsonParseError() const

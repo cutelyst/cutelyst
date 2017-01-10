@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorDifferent::ValidatorDifferent(const QString &field, const QString &other, const QString &label, const QString &otherLabel, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorDifferentPrivate(field, other, label, otherLabel, customError), parent)
+ValidatorDifferent::ValidatorDifferent(const QString &field, const QString &other, const QString &label, const QString &otherLabel, const QString &customError) :
+    ValidatorRule(*new ValidatorDifferentPrivate(field, other, label, otherLabel, customError))
 {
 }
 
-ValidatorDifferent::ValidatorDifferent(ValidatorDifferentPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorDifferent::ValidatorDifferent(ValidatorDifferentPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -63,7 +63,7 @@ QString ValidatorDifferent::genericErrorMessage() const
 
     QString ogn = !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField;
 
-    return tr("The value in the “%1” field has to be different from the value in the “%2” field.").arg(genericFieldName(), ogn);
+    return QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(genericFieldName(), ogn);
 }
 
 void ValidatorDifferent::setOtherField(const QString &otherField)

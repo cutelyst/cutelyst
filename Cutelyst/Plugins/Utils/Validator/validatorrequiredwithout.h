@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 #include <QStringList>
 
 namespace Cutelyst {
@@ -44,7 +43,6 @@ class ValidatorRequiredWithoutPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequiredWithout : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new required with validator.
@@ -52,9 +50,8 @@ public:
      * \param otherFields   List of other fields from which one has to be missing in the input to require the field.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorRequiredWithout(const QString &field, const QStringList &otherFields, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorRequiredWithout(const QString &field, const QStringList &otherFields, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the required with validator.
@@ -79,7 +76,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorRequiredWithout(ValidatorRequiredWithoutPrivate &dd, QObject *parent);
+    ValidatorRequiredWithout(ValidatorRequiredWithoutPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredWithout)

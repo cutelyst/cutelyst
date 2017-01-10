@@ -22,14 +22,14 @@
 
 using namespace Cutelyst;
 
-ValidatorAlpha::ValidatorAlpha(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorAlphaPrivate(field, label, customError), parent)
+ValidatorAlpha::ValidatorAlpha(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorAlphaPrivate(field, label, customError))
 {
 
 }
 
-ValidatorAlpha::ValidatorAlpha(ValidatorAlphaPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorAlpha::ValidatorAlpha(ValidatorAlphaPrivate &dd) :
+    ValidatorRule(dd)
 {
 
 }
@@ -56,5 +56,5 @@ bool ValidatorAlpha::validate()
 
 QString ValidatorAlpha::genericErrorMessage() const
 {
-    return tr("The text in the “%1” field must be entirely alphabetic characters.").arg(genericFieldName());
+    return QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(genericFieldName());
 }

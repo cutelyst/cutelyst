@@ -23,13 +23,13 @@
 
 using namespace Cutelyst;
 
-ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, int min, int max, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, label, customError), parent)
+ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, int min, int max, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, label, customError))
 {
 }
 
-ValidatorDigitsBetween::ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorDigitsBetween::ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -67,9 +67,9 @@ QString ValidatorDigitsBetween::genericErrorMessage() const
 {
     Q_D(const ValidatorDigitsBetween);
     if (d->min < 1 || d->max < 1) {
-        return tr("The “%1” field must only contain digits.").arg(genericFieldName());
+        return QStringLiteral("The “%1” field must only contain digits.").arg(genericFieldName());
     } else {
-        return tr("The “%1” field must only contain digits with a length between %2 and %3.").arg(genericFieldName(), QString::number(d->min), QString::number(d->max));
+        return QStringLiteral("The “%1” field must only contain digits with a length between %2 and %3.").arg(genericFieldName(), QString::number(d->min), QString::number(d->max));
     }
 }
 

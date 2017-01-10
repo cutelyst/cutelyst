@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorNotInPrivate(field, values, label, customError), parent)
+ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorNotInPrivate(field, values, label, customError))
 {
 }
 
-ValidatorNotIn::ValidatorNotIn(ValidatorNotInPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorNotIn::ValidatorNotIn(ValidatorNotInPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -61,7 +61,7 @@ bool ValidatorNotIn::validate()
 
 QString ValidatorNotIn::genericErrorMessage() const
 {
-    return tr("The value in the “%1“ field is not allowed.").arg(genericFieldName());
+    return QStringLiteral("The value in the “%1“ field is not allowed.").arg(genericFieldName());
 }
 
 void ValidatorNotIn::setValues(const QStringList &values)

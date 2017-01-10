@@ -22,13 +22,13 @@
 
 using namespace Cutelyst;
 
-ValidatorUrl::ValidatorUrl(const QString &field, Constraints constraints, const QStringList &schemes, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorUrlPrivate(field, constraints, schemes, label, customError), parent)
+ValidatorUrl::ValidatorUrl(const QString &field, Constraints constraints, const QStringList &schemes, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorUrlPrivate(field, constraints, schemes, label, customError))
 {
 }
 
-ValidatorUrl::ValidatorUrl(ValidatorUrlPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorUrl::ValidatorUrl(ValidatorUrlPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -90,7 +90,7 @@ bool ValidatorUrl::validate()
 
 QString ValidatorUrl::genericErrorMessage() const
 {
-    return tr("The value in the “%1” field is not a valid URL.").arg(genericFieldName());
+    return QStringLiteral("The value in the “%1” field is not a valid URL.").arg(genericFieldName());
 }
 
 void ValidatorUrl::setConstraints(Constraints constraints)

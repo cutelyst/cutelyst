@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -43,16 +42,14 @@ class ValidatorIntegerPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorInteger : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new integer validator.
      * \param field         Name of the input field to validate.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorInteger(const QString &field, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorInteger(const QString &field, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the integer validator.
@@ -72,7 +69,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorInteger(ValidatorIntegerPrivate &dd, QObject *parent);
+    ValidatorInteger(ValidatorIntegerPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorInteger)

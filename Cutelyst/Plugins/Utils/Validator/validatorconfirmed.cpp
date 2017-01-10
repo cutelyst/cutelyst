@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorConfirmed::ValidatorConfirmed(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorConfirmedPrivate(field, label, customError), parent)
+ValidatorConfirmed::ValidatorConfirmed(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorConfirmedPrivate(field, label, customError))
 {
 }
 
-ValidatorConfirmed::ValidatorConfirmed(ValidatorConfirmedPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorConfirmed::ValidatorConfirmed(ValidatorConfirmedPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -55,5 +55,5 @@ bool ValidatorConfirmed::validate()
 
 QString ValidatorConfirmed::genericErrorMessage() const
 {
-    return tr("The content of the “%1” field has not been confirmed.").arg(genericFieldName());
+    return QStringLiteral("The content of the “%1” field has not been confirmed.").arg(genericFieldName());
 }

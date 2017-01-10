@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
 
@@ -42,16 +41,14 @@ class ValidatorRequiredPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequired : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new required validator.
      * \param field         Name of the input field to validate.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorRequired(const QString &field, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorRequired(const QString &field, const QString &label = QString(), const QString &customError = QString());
 
     /*!
      * \brief Deconstructs the required validator.
@@ -71,7 +68,7 @@ protected:
      */
     QString genericErrorMessage() const override;
 
-    ValidatorRequired(ValidatorRequiredPrivate &dd, QObject *parent);
+    ValidatorRequired(ValidatorRequiredPrivate &dd);
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRequired)

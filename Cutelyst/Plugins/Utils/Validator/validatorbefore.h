@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
 
@@ -50,7 +49,6 @@ class ValidatorBeforePrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorBefore : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new before validator.
@@ -59,9 +57,8 @@ public:
      * \param inputFormat   Optional input format for input data parsing.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat = QString(), const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat = QString(), const QString &label = QString(), const QString &customError = QString());
 
     /*!
      * \brief Deconstructs the before validator.
@@ -91,7 +88,7 @@ protected:
      */
     QString genericErrorMessage() const override;
 
-    ValidatorBefore(ValidatorBeforePrivate &dd, QObject *parent);
+    ValidatorBefore(ValidatorBeforePrivate &dd);
 
 private:
     Q_DECLARE_PRIVATE(ValidatorBefore)

@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -45,7 +44,6 @@ class ValidatorDigitsBetweenPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDigitsBetween : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new digits between validator.
@@ -54,9 +52,8 @@ public:
      * \param max           Maximum length of the digits
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorDigitsBetween(const QString &field, int min, int max, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorDigitsBetween(const QString &field, int min, int max, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the digits between validator.
@@ -86,7 +83,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd, QObject *parent);
+    ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorDigitsBetween)

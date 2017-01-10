@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -42,7 +41,6 @@ class ValidatorIpPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorIp : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Acceptable address ranges.
@@ -64,9 +62,8 @@ public:
      * \param constraint    Optional validation constraints.
      * \param label         Human readable input field label, used for error messages.
      * \param customError   Custom errror message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorIp(const QString &field, Constraints constraints = NoConstraint, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorIp(const QString &field, Constraints constraints = NoConstraint, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the ip validator.
@@ -91,7 +88,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorIp(ValidatorIpPrivate &dd, QObject *parent);
+    ValidatorIp(ValidatorIpPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorIp)

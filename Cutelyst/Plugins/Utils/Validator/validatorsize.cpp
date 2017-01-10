@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorSize::ValidatorSize(const QString &field, QMetaType::Type type, double size, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorSizePrivate(field, type, size, label, customError), parent)
+ValidatorSize::ValidatorSize(const QString &field, QMetaType::Type type, double size, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorSizePrivate(field, type, size, label, customError))
 {
 }
 
-ValidatorSize::ValidatorSize(ValidatorSizePrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorSize::ValidatorSize(ValidatorSizePrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -85,11 +85,11 @@ QString ValidatorSize::genericErrorMessage() const
     Q_D(const ValidatorSize);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return tr("The value of the “%1” field has to be equal to %2.").arg(genericFieldName(),QString::number(d->size, 'f', 0));
+        return QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(genericFieldName(),QString::number(d->size, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        return tr("The value of the “%1” field has to be equal to %2.").arg(genericFieldName(), QString::number(d->size));
+        return QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(genericFieldName(), QString::number(d->size));
     } else if (d->type == QMetaType::QString) {
-        return tr("The length of the “%1” field has to be equal to %2.").arg(genericFieldName(), QString::number(d->size, 'f', 0));
+        return QStringLiteral("The length of the “%1” field has to be equal to %2.").arg(genericFieldName(), QString::number(d->size, 'f', 0));
     } else {
         return QString();
     }

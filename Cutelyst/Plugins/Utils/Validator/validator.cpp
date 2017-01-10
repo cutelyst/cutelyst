@@ -25,14 +25,14 @@ using namespace Cutelyst;
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator")
 
 
-Validator::Validator(const ParamsMultiMap &params, QObject *parent) :
-    QObject(parent), d_ptr(new ValidatorPrivate(params))
+Validator::Validator(const ParamsMultiMap &params) :
+    d_ptr(new ValidatorPrivate(params))
 {
 
 }
 
-Validator::Validator(Context *c, QObject *parent) :
-    QObject(parent), d_ptr(new ValidatorPrivate(c))
+Validator::Validator(Context *c) :
+    d_ptr(new ValidatorPrivate(c))
 {
 
 }
@@ -58,11 +58,8 @@ void Validator::clear()
 {
     Q_D(Validator);
     d->params.clear();
-    while (!d->validators.isEmpty()) {
-        ValidatorRule *v = d->validators.takeLast();
-        if (v->parent() == this) {
-            delete v;
-        }
+    if (!d->validators.isEmpty()) {
+        qDeleteAll(d->validators);
         d->validators.clear();
     }
 }
@@ -112,10 +109,6 @@ bool Validator::validate()
 void Validator::addValidator(ValidatorRule *v)
 {
     Q_D(Validator);
-
-    if (v->parent() == nullptr) {
-        v->setParent(this);
-    }
 
     d->validators.append(v);
 }

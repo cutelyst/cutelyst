@@ -22,14 +22,14 @@
 
 using namespace Cutelyst;
 
-ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorAlphaDashPrivate(field, label, customError), parent)
+ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorAlphaDashPrivate(field, label, customError))
 {
 
 }
 
-ValidatorAlphaDash::ValidatorAlphaDash(ValidatorAlphaDashPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorAlphaDash::ValidatorAlphaDash(ValidatorAlphaDashPrivate &dd) :
+    ValidatorRule(dd)
 {
 
 }
@@ -56,5 +56,5 @@ bool ValidatorAlphaDash::validate()
 
 QString ValidatorAlphaDash::genericErrorMessage() const
 {
-    return tr("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(genericFieldName());
+    return QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(genericFieldName());
 }

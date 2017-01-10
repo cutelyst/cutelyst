@@ -23,13 +23,13 @@
 
 using namespace Cutelyst;
 
-ValidatorDigits::ValidatorDigits(const QString &field, int length, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorDigitsPrivate(field, length, label, customError), parent)
+ValidatorDigits::ValidatorDigits(const QString &field, int length, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorDigitsPrivate(field, length, label, customError))
 {
 }
 
-ValidatorDigits::ValidatorDigits(ValidatorDigitsPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorDigits::ValidatorDigits(ValidatorDigitsPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -66,9 +66,9 @@ bool ValidatorDigits::validate()
 QString ValidatorDigits::genericErrorMessage() const
 {
     Q_D(const ValidatorDigits);    if (d->length > 0) {
-        return tr("The “%1” field must only contain exactly %2 digits.").arg(genericFieldName(), QString::number(d->length));
+        return QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(genericFieldName(), QString::number(d->length));
     } else {
-        return tr("The “%1” field must only contain digits.").arg(genericFieldName());
+        return QStringLiteral("The “%1” field must only contain digits.").arg(genericFieldName());
     }
 }
 

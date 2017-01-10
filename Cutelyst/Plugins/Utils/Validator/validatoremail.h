@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -46,16 +45,14 @@ class ValidatorEmailPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorEmail : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new email validator.
      * \param field         Name of the input field to validate.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorEmail(const QString &field, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorEmail(const QString &field, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the email validator.
@@ -75,7 +72,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorEmail(ValidatorEmailPrivate &dd, QObject *parent);
+    ValidatorEmail(ValidatorEmailPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorEmail)

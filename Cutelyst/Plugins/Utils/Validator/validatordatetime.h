@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -45,7 +44,6 @@ class ValidatorDateTimePrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorDateTime : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new datetime validator.
@@ -53,9 +51,8 @@ public:
      * \param format        Optional date format for input parsing.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorDateTime(const QString &field, const QString &format = QString(), const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorDateTime(const QString &field, const QString &format = QString(), const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the datetime validator.
@@ -80,7 +77,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorDateTime(ValidatorDateTimePrivate &dd, QObject *parent);
+    ValidatorDateTime(ValidatorDateTimePrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorDateTime)

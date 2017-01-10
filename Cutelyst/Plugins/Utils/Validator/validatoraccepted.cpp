@@ -21,14 +21,14 @@
 
 using namespace Cutelyst;
 
-ValidatorAccepted::ValidatorAccepted(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorRulePrivate(field, label, customError), parent)
+ValidatorAccepted::ValidatorAccepted(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorRulePrivate(field, label, customError))
 {
 
 }
 
-ValidatorAccepted::ValidatorAccepted(ValidatorAcceptedPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorAccepted::ValidatorAccepted(ValidatorAcceptedPrivate &dd) :
+    ValidatorRule(dd)
 {
 
 }
@@ -51,5 +51,5 @@ bool ValidatorAccepted::validate()
 
 QString ValidatorAccepted::genericErrorMessage() const
 {
-    return tr("The “%1” has to be accepted.").arg(genericFieldName());
+    return QStringLiteral("The “%1” has to be accepted.").arg(genericFieldName());
 }

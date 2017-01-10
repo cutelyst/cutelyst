@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 #include <QRegularExpression>
 
 namespace Cutelyst {
@@ -42,7 +41,6 @@ class ValidatorRegularExpressionPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRegularExpression : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new regex validator.
@@ -50,9 +48,8 @@ public:
      * \param regex         The regular expression to check against.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom errror message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the regex validator.
@@ -77,7 +74,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd, QObject *parent);
+    ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorRegularExpression)

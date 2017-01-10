@@ -22,13 +22,13 @@
 
 using namespace Cutelyst;
 
-ValidatorBoolean::ValidatorBoolean(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorBooleanPrivate(field, label, customError), parent)
+ValidatorBoolean::ValidatorBoolean(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorBooleanPrivate(field, label, customError))
 {
 }
 
-ValidatorBoolean::ValidatorBoolean(ValidatorBooleanPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorBoolean::ValidatorBoolean(ValidatorBooleanPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -54,6 +54,6 @@ bool ValidatorBoolean::validate()
 
 QString ValidatorBoolean::genericErrorMessage() const
 {
-    return tr("The data in the “%1” field can not be interpreted as a boolean.").arg(genericFieldName());
+    return QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(genericFieldName());
 }
 

@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorIn::ValidatorIn(const QString &field, const QStringList &values, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorInPrivate(field, values, label, customError), parent)
+ValidatorIn::ValidatorIn(const QString &field, const QStringList &values, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorInPrivate(field, values, label, customError))
 {
 }
 
-ValidatorIn::ValidatorIn(ValidatorInPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorIn::ValidatorIn(ValidatorInPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -60,7 +60,7 @@ bool ValidatorIn::validate()
 QString ValidatorIn::genericErrorMessage() const
 {
     Q_D(const ValidatorIn);
-    return tr("The value in the “%1“ field has to be one of the following: %2").arg(genericFieldName(), d->values.join(QStringLiteral(", ")));
+    return QStringLiteral("The value in the “%1“ field has to be one of the following: %2").arg(genericFieldName(), d->values.join(QStringLiteral(", ")));
 }
 
 void ValidatorIn::setValues(const QStringList &values)

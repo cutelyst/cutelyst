@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 #include <QStringList>
 
 namespace Cutelyst {
@@ -44,7 +43,6 @@ class ValidatorNotInPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorNotIn : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new not in validator.
@@ -52,9 +50,8 @@ public:
      * \param values        List of values to compare against.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorNotIn(const QString &field, const QStringList &values, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorNotIn(const QString &field, const QStringList &values, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the validator.
@@ -79,7 +76,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorNotIn(ValidatorNotInPrivate &dd, QObject *parent);
+    ValidatorNotIn(ValidatorNotInPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorNotIn)

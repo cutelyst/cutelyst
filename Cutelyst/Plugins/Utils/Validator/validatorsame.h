@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 
 namespace Cutelyst {
     
@@ -41,7 +40,6 @@ class ValidatorSamePrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorSame : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new same validator.
@@ -50,9 +48,8 @@ public:
      * \param label         Human readable input field label, used for generic error messages.
      * \param otherLabel    Human readable other field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorSame(const QString &field, const QString &otherField, const QString &label = QString(), const QString &otherLabel = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorSame(const QString &field, const QString &otherField, const QString &label = QString(), const QString &otherLabel = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the same validator.
@@ -77,7 +74,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorSame(ValidatorSamePrivate &dd, QObject *parent);
+    ValidatorSame(ValidatorSamePrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorSame)

@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, label, customError), parent)
+ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, label, customError))
 {
 }
 
-ValidatorRegularExpression::ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorRegularExpression::ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -54,7 +54,7 @@ bool ValidatorRegularExpression::validate()
 
 QString ValidatorRegularExpression::genericErrorMessage() const
 {
-    return tr("The “%1” field does not match the desired format.").arg(genericFieldName());
+    return QStringLiteral("The “%1” field does not match the desired format.").arg(genericFieldName());
 }
 
 void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)

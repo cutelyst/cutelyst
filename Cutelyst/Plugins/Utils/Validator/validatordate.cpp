@@ -22,13 +22,13 @@
 
 using namespace Cutelyst;
 
-ValidatorDate::ValidatorDate(const QString &field, const QString &format, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorDatePrivate(field, format, label, customError), parent)
+ValidatorDate::ValidatorDate(const QString &field, const QString &format, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorDatePrivate(field, format, label, customError))
 {
 }
 
-ValidatorDate::ValidatorDate(ValidatorDatePrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorDate::ValidatorDate(ValidatorDatePrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -63,9 +63,9 @@ QString ValidatorDate::genericErrorMessage() const
     Q_D(const ValidatorDate);
 
     if (!d->format.isEmpty()) {
-        return tr("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(genericFieldName(), d->format);
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(genericFieldName(), d->format);
     } else {
-        return tr("The data in the “%1” field can not be interpreted as date.").arg(genericFieldName());
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(genericFieldName());
     }
 }
 

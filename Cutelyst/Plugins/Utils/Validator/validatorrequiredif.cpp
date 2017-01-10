@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredIf::ValidatorRequiredIf(const QString &field, const QString &otherField, const QStringList &otherValues, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorRequiredIfPrivate(field, otherField, otherValues, label, customError), parent)
+ValidatorRequiredIf::ValidatorRequiredIf(const QString &field, const QString &otherField, const QStringList &otherValues, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorRequiredIfPrivate(field, otherField, otherValues, label, customError))
 {
 }
 
-ValidatorRequiredIf::ValidatorRequiredIf(ValidatorRequiredIfPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorRequiredIf::ValidatorRequiredIf(ValidatorRequiredIfPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -66,7 +66,7 @@ bool ValidatorRequiredIf::validate()
 
 QString ValidatorRequiredIf::genericErrorMessage() const
 {
-    return tr("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
 }
 
 void ValidatorRequiredIf::setOtherField(const QString &otherField)

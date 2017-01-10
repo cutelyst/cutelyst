@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorPresent::ValidatorPresent(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorPresentPrivate(field, label, customError), parent)
+ValidatorPresent::ValidatorPresent(const QString &field, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorPresentPrivate(field, label, customError))
 {
 }
 
-ValidatorPresent::ValidatorPresent(ValidatorPresentPrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorPresent::ValidatorPresent(ValidatorPresentPrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -47,5 +47,5 @@ bool ValidatorPresent::validate()
 
 QString ValidatorPresent::genericErrorMessage() const
 {
-    return tr("The “%1“ field was not found in the input data.").arg(genericFieldName());
+    return QStringLiteral("The “%1“ field was not found in the input data.").arg(genericFieldName());
 }

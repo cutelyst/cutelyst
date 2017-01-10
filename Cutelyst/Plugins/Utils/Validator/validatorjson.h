@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QObject>
 #include <QJsonParseError>
 
 namespace Cutelyst {
@@ -42,16 +41,14 @@ class ValidatorJsonPrivate;
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorJson : public ValidatorRule
 {
-    Q_OBJECT
 public:
     /*!
      * \brief Constructs a new json validator.
      * \param field         Name of the input field to validate.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorJson(const QString &field, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorJson(const QString &field, const QString &label = QString(), const QString &customError = QString());
     
     /*!
      * \brief Deconstructs the json validator.
@@ -76,7 +73,7 @@ protected:
      */
     QString genericErrorMessage() const override;
     
-    ValidatorJson(ValidatorJsonPrivate &dd, QObject *parent);
+    ValidatorJson(ValidatorJsonPrivate &dd);
     
 private:
     Q_DECLARE_PRIVATE(ValidatorJson)

@@ -23,13 +23,13 @@
 
 using namespace Cutelyst;
 
-ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &format, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorDateTimePrivate(field, format, label, customError), parent)
+ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &format, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorDateTimePrivate(field, format, label, customError))
 {
 }
 
-ValidatorDateTime::ValidatorDateTime(ValidatorDateTimePrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorDateTime::ValidatorDateTime(ValidatorDateTimePrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -64,9 +64,9 @@ QString ValidatorDateTime::genericErrorMessage() const
     Q_D(const ValidatorDateTime);
 
     if (!d->format.isEmpty()) {
-        return tr("The data in the “%1” field can not be interpreted as date and time of this schema: %2").arg(genericFieldName(), d->format);
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time of this schema: %2").arg(genericFieldName(), d->format);
     } else {
-        return tr("The data in the “%1” field can not be interpreted as date and time.").arg(genericFieldName());
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time.").arg(genericFieldName());
     }
 }
 

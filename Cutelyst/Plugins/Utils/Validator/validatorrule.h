@@ -21,7 +21,8 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/ParamsMultiMap>
-#include <QObject>
+
+#include <QScopedPointer>
 
 namespace Cutelyst {
 
@@ -53,7 +54,6 @@ class ValidatorRulePrivate;
  *
  * \code{.cpp}
  * #include <Cutelyst/Plugins/Utils/ValidatorRule>
- * #include <QObject>
  *
  * class MyValidator : public Cutelyst::ValidatorRule
  * {
@@ -128,86 +128,16 @@ class ValidatorRulePrivate;
  *
  * That's it. Now you can use your own validator in the main Validator.
  */
-class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRule : public QObject
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRule
 {
-    Q_OBJECT
-    /*!
-     * \brief Name of the field to validate.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>QString</TD><TD>field() const</TD></TR><TR><TD>void</TD><TD>setField(const QString &nField)</TD></TR></TABLE>
-     */
-    Q_PROPERTY(QString field READ field WRITE setField)
-    /*!
-     * \brief Human readable label of the field.
-     *
-     * Will be used to create a generic error message if no \link ValidatorRule::customError custom error \endlink is set. If label
-     * is empty, the name of the \link ValidatorRule::field field \endlink will be used.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>QString</TD><TD>label() const</TD></TR><TR><TD>void</TD><TD>setLabel(const QString &nLabel)</TD></TR></TABLE>
-     */
-    Q_PROPERTY(QString label READ label WRITE setLabel)
-    /*!
-     * \brief Value that should be validated.
-     *
-     * This is extracted from the parameters set via setParameters() together with the \link ValidatorRule::field field \endlink property.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>QString</TD><TD>value() const</TD></TR></TABLE>
-     */
-    Q_PROPERTY(QString value READ value)
-    /*!
-     * \brief Custom error message that should be shown if validation fails.
-     *
-     * If no custom error message is set, \link ValidatorRule::errorMessage errorMessage \endlink will return a generic error message.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>QString</TD><TD>customError() const</TD></TR><TR><TD>void</TD><TD>setCustomError(const QString &nCustomError)</TD></TR></TABLE>
-     */
-    Q_PROPERTY(QString customError READ customError WRITE setCustomError)
-    /*!
-     * \brief Returns \c true if the validation was successfull.
-     *
-     * Defaults to \c false.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>bool</TD><TD>isValid() const</TD></TR></TABLE>
-     */
-    Q_PROPERTY(bool valid READ isValid)
-    /*!
-     * \brief Error message returned if the validation fails.
-     *
-     * This contains a human readable error message if the validation fails. If \link ValidatorRule::customError customError \endlink is set, it will be
-     * returned, otherwise a generic error message will be created that uses the \link ValidatorRule::label label \endlink or the \link ValidatorRule::field field \endlink property.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>QString</TD><TD>errorMessage() const</TD></TR></TABLE>
-     */
-    Q_PROPERTY(QString errorMessage READ errorMessage)
-    /*!
-     * \brief True if input data parsing fails.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>bool</TD><TD>parsingError() const</TD></TR></TABLE>
-     */
-    Q_PROPERTY(bool parsingError READ parsingError)
-    /*!
-     * \brief True if the validation data is missing or unusable.
-     *
-     * \par Access functions:
-     * <TABLE><TR><TD>bool</TD><TD>validationDataError() const</TD></TR></TABLE>
-     */
-    Q_PROPERTY(bool validationDataError READ validationDataError)
 public:
     /*!
      * \brief Constructs a new ValidatorRule with given parameters and \a parent.
      * \param field         Name of the field to validate.
      * \param label         Human readable input field label, used for generic error messages.
      * \param customError   Human readable custom error message if validation fails.
-     * \param parent        Parent object.
      */
-    ValidatorRule(const QString &field, const QString &label = QString(), const QString &customError = QString(), QObject *parent = nullptr);
+    ValidatorRule(const QString &field, const QString &label = QString(), const QString &customError = QString());
 
     /*!
      * \brief Deconstructs the ValidatorRule.
@@ -236,47 +166,53 @@ public:
     virtual bool validate() = 0;
 
     /*!
-     * \brief Getter function for the \link ValidatorRule::field field \endlink property.
-     * \sa ValidatorRule::setField()
+     * \brief Returns the name of the field to validate.
+     * \sa setField()
      */
     QString field() const;
+
     /*!
-     * \brief Getter function for the \link ValidatorRule::label label \endlink property.
-     * \sa ValidatorRule::setLabel()
+     * \brief Returns the human readable field label used for generic error messages.
+     * \sa setLabel()
      */
     QString label() const;
+
     /*!
-     * \brief Getter function for the \link ValidatorRule::value value \endlink property.
-     * \sa ValidatorRule::setValue()
+     * \brief Returns the field value.
      */
     QString value() const;
+
     /*!
-     * \brief Getter function for the \link ValidatorRule::customError customError \endlink property.
-     * \sa ValidatorRule::setCustomError()
+     * \brief Returns the custom error.
+     * \sa setCustomError()
      */
     QString customError() const;
+
     /*!
-     * \brief Getter function for the \link ValidatorRule::valid valid \endlink property.
-     * \sa ValidatorRule::setValid()
+     * \brief Returns true if the validation was successful.
      */
     bool isValid() const;
+
     /*!
-     * \brief Getter function for the \link ValidatorRule::errorMessage errorMessage \endlink property.
-     * \sa ValidatorRule::setErrorMessage()
+     * \brief Returns an error message if validation fails.
+     *
+     * Use isValid() to check if the validation failed. This will either return a generic error
+     * message or a custom error message.
      */
     QString errorMessage() const;
+
     /*!
      * \brief Returns true if input data parsing fails.
-     *
      * \sa setParsingError(), ValidatorRule::parsingError
      */
     bool parsingError() const;
+
     /*!
      * \brief Returns true if the validation data is missing or unusable.
-     *
      * \sa setValidationDataError(), ValidatorRule::validationDataError
      */
     bool validationDataError() const;
+
     /*!
      * \brief Returns true if field value should be trimmed before validation.
      *
@@ -289,45 +225,43 @@ public:
 
 
     /*!
-     * \brief Setter function for the \link ValidatorRule::field field \endlink property.
-     * \sa ValidatorRule::field()
+     * \brief Sets the name of the field to validate.
+     * \sa field()
      */
     void setField(const QString &field);
+
     /*!
-     * \brief Setter function for the \link ValidatorRule::label label \endlink property.
-     * \sa ValidatorRule::label()
+     * \brief Sets human readable field label for generic error messages.
+     * \sa label()
      */
     void setLabel(const QString &label);
+
     /*!
-     * \brief Setter function for the \link ValidatorRule::customError customError \endlink property.
-     * \sa ValidatorRule::customError()
+     * \brief Sets a cutom error returned with errorMessage()
+     * \sa customError()
      */
     void setCustomError(const QString &customError);
 
     /*!
      * \brief Sets the request parameters to validate.
-     *
      * \sa parameters()
      */
     void setParameters(const ParamsMultiMap &params);
 
     /*!
      * \brief Returns the parameters to validate.
-     *
      * \sa setParameters()
      */
     ParamsMultiMap parameters() const;
 
     /*!
      * \brief Sets a custom error message that is shown if parsing of input data fails.
-     *
      * \sa customParsingError(), parsingErrorMessage()
      */
     void setCustomParsingError(const QString &custom);
 
     /*!
      * \brief Sets a custom error message if validation data is invalid or missing.
-     *
      * \sa customValidationDataError(), validationDataErrorMessage()
      */
     void setCustomValidationDataError(const QString &custom);
@@ -341,7 +275,7 @@ public:
 
 protected:
     const QScopedPointer<ValidatorRulePrivate> d_ptr;
-    ValidatorRule(ValidatorRulePrivate &dd, QObject *parent);
+    ValidatorRule(ValidatorRulePrivate &dd);
 
     /*!
      * \brief Returns a generic error message.

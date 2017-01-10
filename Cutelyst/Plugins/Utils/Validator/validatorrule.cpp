@@ -21,13 +21,13 @@
 
 using namespace Cutelyst;
 
-ValidatorRule::ValidatorRule(const QString &field, const QString &label, const QString &customError, QObject *parent) :
-    QObject(parent), d_ptr(new ValidatorRulePrivate(field, label, customError))
+ValidatorRule::ValidatorRule(const QString &field, const QString &label, const QString &customError) :
+    d_ptr(new ValidatorRulePrivate(field, label, customError))
 {
 }
 
-ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd, QObject *parent) :
-    QObject(parent), d_ptr(&dd)
+ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd) :
+    d_ptr(&dd)
 {
 }
 
@@ -144,14 +144,14 @@ bool ValidatorRule::validationDataError() const
 
 QString ValidatorRule::genericErrorMessage() const
 {
-    return tr("The input data in the “%1” field is not valid.").arg(genericFieldName());
+    return QStringLiteral("The input data in the “%1” field is not valid.").arg(genericFieldName());
 }
 
 QString ValidatorRule::parsingErrorMessage() const
 {
     Q_D(const ValidatorRule);
     if (d->customParsingError.isEmpty()) {
-        return tr("Failed to parse the input data of the “%1” field.").arg(genericFieldName());
+        return QStringLiteral("Failed to parse the input data of the “%1” field.").arg(genericFieldName());
     } else {
         return d->customParsingError;
     }
@@ -161,7 +161,7 @@ QString ValidatorRule::validationDataErrorMessage() const
 {
     Q_D(const ValidatorRule);
     if (d->customValidationDataError.isEmpty()) {
-        return tr("Missing or unusable validation data for the “%1” field.").arg(genericFieldName());
+        return QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(genericFieldName());
     } else {
         return d->customValidationDataError;
     }

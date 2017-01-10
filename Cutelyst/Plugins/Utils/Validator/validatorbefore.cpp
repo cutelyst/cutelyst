@@ -25,13 +25,13 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before")
 
-ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat, const QString &label, const QString &customError, QObject *parent) :
-    ValidatorRule(*new ValidatorBeforePrivate(field, dateTime, inputFormat, label, customError), parent)
+ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat, const QString &label, const QString &customError) :
+    ValidatorRule(*new ValidatorBeforePrivate(field, dateTime, inputFormat, label, customError))
 {
 }
 
-ValidatorBefore::ValidatorBefore(ValidatorBeforePrivate &dd, QObject *parent) :
-    ValidatorRule(dd, parent)
+ValidatorBefore::ValidatorBefore(ValidatorBeforePrivate &dd) :
+    ValidatorRule(dd)
 {
 }
 
@@ -130,17 +130,17 @@ QString ValidatorBefore::genericErrorMessage() const
 
     switch(d->date.type()) {
     case QVariant::Date:
-        return tr("The date in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The date in the “%1” field must be before %2.").arg(genericFieldName(),
                                                                       //: date shown in validator error message
-                                                                      d->date.toDate().toString(tr("MM/dd/yyyy")));
+                                                                      d->date.toDate().toString(QStringLiteral("dd.MM.yyyy")));
     case QVariant::DateTime:
-        return tr("The date and time in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The date and time in the “%1” field must be before %2.").arg(genericFieldName(),
                                                                                //: date and time shown in validator error message
-                                                                               d->date.toDateTime().toString(tr("MM/dd/yyyy hh:mm")));
+                                                                               d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
     case QVariant::Time:
-        return tr("The time in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The time in the “%1” field must be before %2.").arg(genericFieldName(),
                                                                       //: time shown in the validator error message
-                                                                      d->date.toTime().toString(tr("hh:mm")));
+                                                                      d->date.toTime().toString(QStringLiteral("HH:mm")));
     default:
         return QString();
     }
