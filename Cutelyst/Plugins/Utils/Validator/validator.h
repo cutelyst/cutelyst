@@ -141,15 +141,26 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator
 {
 public:
     /*!
-     * \brief Constructs a new validator with given Context \a c and \a parent.
-     *
-     * The Context \a c will be used to extract the request parameters. If you set a template with setTemplate(),
-     * the context's stash will be filled with error information if validation fails.
+     * \brief Constructs a new Validator using Context \a c.
+     * \param c Will be used to get the input parameters and to set the stash if validation is started wit FillStash.
      */
     Validator(Context *c);
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-    Validator(Context *c, std::initializer_list<ValidatorRule*> list);
+    /*!
+     * \brief Constructs a new Validator using Context \a c and the defined \a validators.
+     * \param c             Will be used to get the input parameters and to set the stash if validation is started wit FillStash.
+     * \param validators    List of validators that should be performed on the input fields.
+     */
+    Validator(Context *c, std::initializer_list<ValidatorRule*> validators);
+
+    /*!
+     * \brief Constructs a new Validator using Context \a c, the defined \a validators and the \a labelDictionary.
+     * \param c                 Will be used to get the input parameters and to set the stash if validation is started wit FillStash.
+     * \param validators        List of validators that should be performed on the input fields.
+     * \param labelDictionary   Dictionary translating the field names into human readable labels for generic error messages.
+     */
+    Validator(Context *c, std::initializer_list<ValidatorRule*> validators, std::initializer_list<std::pair<QString,QString> > labelDictionary);
 #endif
 
     Validator(const ParamsMultiMap &params);

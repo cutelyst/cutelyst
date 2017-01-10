@@ -30,8 +30,13 @@ Validator::Validator(Context *c) :
 }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-Validator::Validator(Context *c, std::initializer_list<ValidatorRule *> list) :
-    d_ptr(new ValidatorPrivate(c, list))
+Validator::Validator(Context *c, std::initializer_list<ValidatorRule *> validators) :
+    d_ptr(new ValidatorPrivate(c, validators))
+{
+}
+
+Validator::Validator(Context *c, std::initializer_list<ValidatorRule *> validators, std::initializer_list<std::pair<QString, QString> > labelDictionary) :
+    d_ptr(new ValidatorPrivate(c, validators, labelDictionary))
 {
 }
 #endif

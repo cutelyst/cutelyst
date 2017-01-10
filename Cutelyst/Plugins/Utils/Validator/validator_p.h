@@ -39,9 +39,20 @@ public:
     }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-    ValidatorPrivate(Context *c, std::initializer_list<ValidatorRule*> list) :
+    ValidatorPrivate(Context *c, std::initializer_list<ValidatorRule*> vals) :
         stopOnFirstError(false),
-        validators(list),
+        validators(vals),
+        context(c)
+    {
+        if (context) {
+            params = c->request()->parameters();
+        }
+    }
+
+    ValidatorPrivate(Context *c, std::initializer_list<ValidatorRule*> vals, std::initializer_list<std::pair<QString, QString> > labelDictionary) :
+        stopOnFirstError(false),
+        validators(vals),
+        labelDict(labelDictionary),
         context(c)
     {
         if (context) {
