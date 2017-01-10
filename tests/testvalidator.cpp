@@ -56,8 +56,8 @@ public:
     // ***** Endpoint for ValidatorAccepted ******
     C_ATTR(accepted, :Local :AutoArgs)
     void accepted(Context *c) {
-        Validator v(c, {new ValidatorAccepted(QStringLiteral("accepted_field"), QString(), QStringLiteral("invalid"))});
-        if (v.validate()) {
+        Validator v({new ValidatorAccepted(QStringLiteral("accepted_field"), QString(), QStringLiteral("invalid"))});
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -67,12 +67,12 @@ public:
     // ***** Endpoint for ValidatorAfter with QDate ******
     C_ATTR(afterDate, :Local :AutoArgs)
     void afterDate(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QDate::currentDate());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -82,12 +82,12 @@ public:
     // ***** Endpoint for ValidatorAfter with QTime ******
     C_ATTR(afterTime, :Local :AutoArgs)
     void afterTime(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QTime(12, 0));
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -97,12 +97,12 @@ public:
     // ***** Endpoint for ValidatorAfter with QDateTime ******
     C_ATTR(afterDateTime, :Local :AutoArgs)
     void afterDateTime(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QDateTime::currentDateTime());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -112,13 +112,13 @@ public:
     // ***** Endpoint for ValidatorAfter with custom format ******
     C_ATTR(afterFormat, :Local :AutoArgs)
     void afterFormat(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QDateTime::currentDateTime());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         va->setInputFormat(QStringLiteral("yyyy d MM HH:mm"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -128,12 +128,12 @@ public:
     // ***** Endpoint for ValidatorAfter with invalid validation data ******
     C_ATTR(afterInvalidValidationData, :Local :AutoArgs)
     void afterInvalidValidationData(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QDate());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -143,12 +143,12 @@ public:
     // ***** Endpoint for ValidatorAfter with invalid validation data 2 ******
     C_ATTR(afterInvalidValidationData2, :Local :AutoArgs)
     void afterInvalidValidationData2(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorAfter *va = new ValidatorAfter(QStringLiteral("after_field"), QStringLiteral("schiet"));
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -158,9 +158,9 @@ public:
     // ***** Endpoint for ValidatorAlpha ******
     C_ATTR(alpha, :Local :AutoArgs)
     void alpha(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorAlpha(QStringLiteral("alpha_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -170,9 +170,9 @@ public:
     // ***** Endpoint for ValidatorAlphaDash ******
     C_ATTR(alphaDash, :Local :AutoArgs)
     void alphaDash(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorAlphaDash(QStringLiteral("alphadash_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -182,9 +182,9 @@ public:
     // ***** Endpoint for ValidatorAlphaNum ******
     C_ATTR(alphaNum, :Local :AutoArgs)
     void alphaNum(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorAlphaNum(QStringLiteral("alphanum_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -194,12 +194,12 @@ public:
     // ***** Endpoint for ValidatorBefore with QDate ******
     C_ATTR(beforeDate, :Local :AutoArgs)
     void beforeDate(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QDate::currentDate());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -209,12 +209,12 @@ public:
     // ***** Endpoint for ValidatorBefore with QTime ******
     C_ATTR(beforeTime, :Local :AutoArgs)
     void beforeTime(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QTime(12, 0));
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -224,12 +224,12 @@ public:
     // ***** Endpoint for ValidatorBefore with QDateTime ******
     C_ATTR(beforeDateTime, :Local :AutoArgs)
     void beforeDateTime(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QDateTime::currentDateTime());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -239,13 +239,13 @@ public:
     // ***** Endpoint for ValidatorBefore with custom format ******
     C_ATTR(beforeFormat, :Local :AutoArgs)
     void beforeFormat(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QDateTime::currentDateTime());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         va->setInputFormat(QStringLiteral("yyyy d MM HH:mm"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -255,12 +255,12 @@ public:
     // ***** Endpoint for ValidatorBefore with invalid validation data ******
     C_ATTR(beforeInvalidValidationData, :Local :AutoArgs)
     void beforeInvalidValidationData(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QDate());
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -270,12 +270,12 @@ public:
     // ***** Endpoint for ValidatorBefore with invalid validation data 2 ******
     C_ATTR(beforeInvalidValidationData2, :Local :AutoArgs)
     void beforeInvalidValidationData2(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorBefore *va = new ValidatorBefore(QStringLiteral("before_field"), QStringLiteral("schiet"));
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -285,9 +285,9 @@ public:
     // ***** Endpoint for ValidatorBetween with int ******
     C_ATTR(betweenInt, :Local :AutoArgs)
     void betweenInt(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::Int, -10, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -297,9 +297,9 @@ public:
     // ***** Endpoint for ValidatorBetween with uint ******
     C_ATTR(betweenUint, :Local :AutoArgs)
     void betweenUint(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::UInt, 10, 20, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -309,9 +309,9 @@ public:
     // ***** Endpoint for ValidatorBetween with float ******
     C_ATTR(betweenFloat, :Local :AutoArgs)
     void betweenFloat(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::Float, -10.0, 10.0, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -321,9 +321,9 @@ public:
     // ***** Endpoint for ValidatorBetween with string ******
     C_ATTR(betweenString, :Local :AutoArgs)
     void betweenString(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::QString, 5, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -333,9 +333,9 @@ public:
     // ***** Endpoint for ValidatorBoolean ******
     C_ATTR(boolean, :Local :AutoArgs)
     void boolean(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorBoolean(QStringLiteral("boolean_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -345,9 +345,9 @@ public:
     // ***** Endpoint for ValidatorConfirmed ******
     C_ATTR(confirmed, :Local :AutoArgs)
     void confirmed(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorConfirmed(QStringLiteral("pass"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -357,9 +357,9 @@ public:
     // ***** Endpoint for ValidatorDate with standard formats ******
     C_ATTR(date, :Local :AutoArgs)
     void date(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDate(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -369,9 +369,9 @@ public:
     // ***** Endpoint for ValidatorDate with custom format ******
     C_ATTR(dateFormat, :Local :AutoArgs)
     void dateFormat(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDate(QStringLiteral("field"), QStringLiteral("yyyy d MM"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -381,9 +381,9 @@ public:
     // ***** Endpoint for ValidatorDateTime with standard formats ******
     C_ATTR(dateTime, :Local :AutoArgs)
     void dateTime(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDateTime(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -393,9 +393,9 @@ public:
     // ***** Endpoint for ValidatorDateTime with custom format ******
     C_ATTR(dateTimeFormat, :Local :AutoArgs)
     void dateTimeFormat(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDateTime(QStringLiteral("field"), QStringLiteral("yyyy d MM mm:HH" ), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -405,9 +405,9 @@ public:
     // ***** Endpoint for ValidatorDifferent ******
     C_ATTR(different, :Local :AutoArgs)
     void different(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDifferent(QStringLiteral("field"), QStringLiteral("other"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -417,9 +417,9 @@ public:
     // ***** Endpoint for ValidatorDigits without exact length ******
     C_ATTR(digits, :Local :AutoArgs)
     void digits(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDigits(QStringLiteral("field"), -1, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -429,9 +429,9 @@ public:
     // ***** Endpoint for ValidatorDigits with exact length ******
     C_ATTR(digitsLength, :Local :AutoArgs)
     void digitsLength(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDigits(QStringLiteral("field"), 10, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -441,9 +441,9 @@ public:
     // ***** Endpoint for ValidatorDigitsBetween ******
     C_ATTR(digitsBetween, :Local :AutoArgs)
     void digitsBetween(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorDigitsBetween(QStringLiteral("field"), 5, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -453,9 +453,9 @@ public:
     // ***** Endpoint for ValidatorEmail ******
     C_ATTR(email, :Local :AutoArgs)
     void email(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorEmail(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -465,9 +465,9 @@ public:
     // ***** Endpoint for ValidatorFilled ******
     C_ATTR(filled, :Local :AutoArgs)
     void filled(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorFilled(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -477,9 +477,9 @@ public:
     // ***** Endpoint for ValidatorIn ******
     C_ATTR(in, :Local :AutoArgs)
     void in(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorIn(QStringLiteral("field"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei"), QStringLiteral("drei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -489,9 +489,9 @@ public:
     // ***** Endpoint for ValidatorInteger ******
     C_ATTR(integer, :Local :AutoArgs)
     void integer(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorInteger(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -501,7 +501,7 @@ public:
     // ***** Endpoint for ValidatorIp ******
     C_ATTR(ip, :Local :AutoArgs)
     void ip(Context *c) {
-        Validator v(c);
+        Validator v;
         ValidatorIp::Constraints constraints = ValidatorIp::NoConstraint;
 
         if (!c->request()->parameters().value(QStringLiteral("constraints")).isEmpty()) {
@@ -528,7 +528,7 @@ public:
         }
 
         v.addValidator(new ValidatorIp(QStringLiteral("field"), constraints, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -539,9 +539,9 @@ public:
     // ***** Endpoint for ValidatorJson ******
     C_ATTR(json, :Local :AutoArgs)
     void json(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorJson(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -552,7 +552,7 @@ public:
     // ***** Endpoint for ValidatorMax ******
     C_ATTR(max, :Local :AutoArgs)
     void max(Context *c) {
-        Validator v(c);
+        Validator v;
         QMetaType::Type type = QMetaType::UnknownType;
 
         if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
@@ -570,7 +570,7 @@ public:
         ValidatorMax *vm = new ValidatorMax(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -580,7 +580,7 @@ public:
     // ***** Endpoint for ValidatorMin ******
     C_ATTR(min, :Local :AutoArgs)
     void min(Context *c) {
-        Validator v(c);
+        Validator v;
         QMetaType::Type type = QMetaType::UnknownType;
 
         if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
@@ -598,7 +598,7 @@ public:
         ValidatorMin *vm = new ValidatorMin(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -608,12 +608,12 @@ public:
     // ***** Endpoint for ValidatorNotIn ******
     C_ATTR(notIn, :Local :AutoArgs)
     void notIn(Context *c) {
-        Validator v(c);
+        Validator v;
         const QStringList values({QStringLiteral("eins"),QStringLiteral("zwei"),QStringLiteral("drei"),QStringLiteral("vier")});
         ValidatorNotIn *va = new ValidatorNotIn(QStringLiteral("field"), values, QString(), QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -624,9 +624,9 @@ public:
     // ***** Endpoint for ValidatorNumeric ******
     C_ATTR(numeric, :Local :AutoArgs)
     void numeric(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorNumeric(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -637,9 +637,9 @@ public:
     // ***** Endpoint for ValidatorPresent ******
     C_ATTR(present, :Local :AutoArgs)
     void present(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorPresent(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -650,9 +650,9 @@ public:
     // ***** Endpoint for ValidatorNumeric ******
     C_ATTR(regex, :Local :AutoArgs)
     void regex(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRegularExpression(QStringLiteral("field"), QRegularExpression(QStringLiteral("^(\\d\\d)/(\\d\\d)/(\\d\\d\\d\\d)$")), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -662,9 +662,9 @@ public:
     // ***** Endpoint for ValidatorRequired ******
     C_ATTR(required, :Local :AutoArgs)
     void required(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequired(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -674,9 +674,9 @@ public:
     // ***** Endpoint for ValidatorRequiredIf ******
     C_ATTR(requiredIf, :Local :AutoArgs)
     void requiredIf(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredIf(QStringLiteral("field"), QStringLiteral("field2"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -686,9 +686,9 @@ public:
     // ***** Endpoint for ValidatorRequiredUnless ******
     C_ATTR(requiredUnless, :Local :AutoArgs)
     void requiredUnless(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredUnless(QStringLiteral("field"), QStringLiteral("field2"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -698,9 +698,9 @@ public:
     // ***** Endpoint for ValidatorRequiredWith ******
     C_ATTR(requiredWith, :Local :AutoArgs)
     void requiredWith(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredWith(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -710,9 +710,9 @@ public:
     // ***** Endpoint for ValidatorRequiredWithAll ******
     C_ATTR(requiredWithAll, :Local :AutoArgs)
     void requiredWithAll(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredWithAll(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3"), QStringLiteral("field4")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -722,9 +722,9 @@ public:
     // ***** Endpoint for ValidatorRequiredWithout ******
     C_ATTR(requiredWithout, :Local :AutoArgs)
     void requiredWithout(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredWithout(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -734,9 +734,9 @@ public:
     // ***** Endpoint for ValidatorRequiredWithoutAll ******
     C_ATTR(requiredWithoutAll, :Local :AutoArgs)
     void requiredWithoutAll(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorRequiredWithoutAll(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -746,9 +746,9 @@ public:
     // ***** Endpoint for ValidatorSame ******
     C_ATTR(same, :Local :AutoArgs)
     void same(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorSame(QStringLiteral("field"), QStringLiteral("other"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -758,7 +758,7 @@ public:
     // ***** Endpoint for ValidatorSize ******
     C_ATTR(size, :Local :AutoArgs)
     void size(Context *c) {
-        Validator v(c);
+        Validator v;
         QMetaType::Type type = QMetaType::UnknownType;
 
         if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
@@ -776,7 +776,7 @@ public:
         ValidatorSize *vm = new ValidatorSize(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -786,9 +786,9 @@ public:
     // ***** Endpoint for ValidatorTime
     C_ATTR(time, :Local :AutoArgs)
     void time(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorTime(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -798,9 +798,9 @@ public:
     // ***** Endpoint for ValidatorTime with custom format ******
     C_ATTR(timeFormat, :Local :AutoArgs)
     void timeFormat(Context *c) {
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorTime(QStringLiteral("field"), QStringLiteral("m:hh"), QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
@@ -836,9 +836,9 @@ public:
             }
         }
 
-        Validator v(c);
+        Validator v;
         v.addValidator(new ValidatorUrl(QStringLiteral("field"), constraints, schemes, QString(), QStringLiteral("invalid")));
-        if (v.validate()) {
+        if (v.validate(c)) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
             c->response()->setBody(v.errorStrings().first().toString());
