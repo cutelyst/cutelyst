@@ -141,7 +141,8 @@ public:
     enum ValidatorFlag {
         NoSpecialBehavior   = 0,    /**< No special behavior, the default. */
         StopOnFirstError    = 1,    /**< Will stop the validation process on the first failed validation. */
-        FillStashOnError    = 2     /**< Will use the fillStash() function to fill the context's stash with error information. Will therfore only have an effect, if validate() has been started with a valid Context. */
+        FillStashOnError    = 2,    /**< Will use the fillStash() function to fill the context's stash with error information. Will therfore only have an effect, if validate() has been started with a valid Context. */
+        NoTrimming          = 4,    /**< Will set ValidatorRule::setTrimBefore() to \c false on every validator. (default behavior is \c true) */
     };
     Q_DECLARE_FLAGS(ValidatorFlags, ValidatorFlag)
 
@@ -154,6 +155,8 @@ public:
     /*!
      * \brief Constructs a new Validator using the defined \a validators.
      * \param validators    List of validators that should be performed on the input fields. Will get destroyed on Validator destruction.
+     *
+     * This constructor is only available if the compiler supports C++11 std::initializer_list.
      */
     Validator(std::initializer_list<ValidatorRule*> validators);
 
@@ -161,6 +164,8 @@ public:
      * \brief Constructs a new Validator using the defined \a validators and \a labelDictionary.
      * \param validators        List of validators that should be performed on the input fields. Will get destroyed on Validator destruction.
      * \param labelDictionary   Dictionary translating the field names into human readable labels for generic error messages.
+     *
+     * This constructor is only available if the compiler supports C++11 std::initializer_list.
      */
     Validator(std::initializer_list<ValidatorRule*> validators, std::initializer_list<std::pair<QString,QString> > labelDictionary);
 #endif

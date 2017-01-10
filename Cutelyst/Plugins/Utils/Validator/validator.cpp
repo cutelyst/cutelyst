@@ -89,6 +89,7 @@ bool Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags)
 
     bool valid = true;
     const bool stopOnFirstError = flags.testFlag(StopOnFirstError);
+    const bool noTrimming = flags.testFlag(NoTrimming);
 
     for (std::vector<ValidatorRule*>::iterator it = d->validators.begin(); it != d->validators.end(); ++it) {
         ValidatorRule *v = *it;
@@ -96,6 +97,10 @@ bool Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags)
 
         if (v->label().isEmpty()) {
             v->setLabel(d->labelDict.value(v->field()));
+        }
+
+        if (noTrimming) {
+            v->setTrimBefore(false);
         }
 
         if (!v->validate()) {
