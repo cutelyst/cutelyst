@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorRequired::ValidatorRequired(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorRequiredPrivate(field, label, customError), parent)
 {
-
 }
-
 
 ValidatorRequired::ValidatorRequired(ValidatorRequiredPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorRequired::~ValidatorRequired()
 {
-
 }
-
-
 
 bool ValidatorRequired::validate()
 {
@@ -51,8 +44,6 @@ bool ValidatorRequired::validate()
         return false;
     }
 }
-
-
 
 QString ValidatorRequired::genericErrorMessage() const
 {

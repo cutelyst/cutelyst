@@ -18,6 +18,7 @@
  */
 
 #include "validatordatetime_p.h"
+
 #include <QDateTime>
 
 using namespace Cutelyst;
@@ -25,23 +26,17 @@ using namespace Cutelyst;
 ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &format, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorDateTimePrivate(field, format, label, customError), parent)
 {
-
 }
-
 
 ValidatorDateTime::ValidatorDateTime(ValidatorDateTimePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
 
 
 ValidatorDateTime::~ValidatorDateTime()
 {
-
 }
-
-
 
 bool ValidatorDateTime::validate()
 {
@@ -64,8 +59,6 @@ bool ValidatorDateTime::validate()
     return false;
 }
 
-
-
 QString ValidatorDateTime::genericErrorMessage() const
 {
     Q_D(const ValidatorDateTime);
@@ -76,7 +69,6 @@ QString ValidatorDateTime::genericErrorMessage() const
         return tr("The data in the “%1” field can not be interpreted as date and time.").arg(genericFieldName());
     }
 }
-
 
 void ValidatorDateTime::setFormat(const QString &format)
 {

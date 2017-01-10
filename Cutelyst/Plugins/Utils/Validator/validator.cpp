@@ -31,20 +31,16 @@ Validator::Validator(const ParamsMultiMap &params, QObject *parent) :
 
 }
 
-
 Validator::Validator(Context *c, QObject *parent) :
     QObject(parent), d_ptr(new ValidatorPrivate(c))
 {
 
 }
 
-
 Validator::~Validator()
 {
 
 }
-
-
 
 void Validator::setStopOnFirstError(bool stopOnFirstError)
 {
@@ -52,14 +48,11 @@ void Validator::setStopOnFirstError(bool stopOnFirstError)
     d->stopOnFirstError = stopOnFirstError;
 }
 
-
 bool Validator::stopOnFirstError() const
 {
     Q_D(const Validator);
     return d->stopOnFirstError;
 }
-
-
 
 void Validator::clear()
 {
@@ -73,8 +66,6 @@ void Validator::clear()
         d->validators.clear();
     }
 }
-
-
 
 bool Validator::validate()
 {
@@ -118,8 +109,6 @@ bool Validator::validate()
     return valid;
 }
 
-
-
 void Validator::addValidator(ValidatorRule *v)
 {
     Q_D(Validator);
@@ -130,8 +119,6 @@ void Validator::addValidator(ValidatorRule *v)
 
     d->validators.append(v);
 }
-
-
 
 QVariantList Validator::errorStrings() const
 {
@@ -151,7 +138,6 @@ QVariantList Validator::errorStrings() const
     return strings;
 }
 
-
 QVariantList Validator::errorFields() const
 {
     Q_D(const Validator);
@@ -170,15 +156,11 @@ QVariantList Validator::errorFields() const
     return fields;
 }
 
-
-
 void Validator::setLabelDictionary(const QHash<QString, QString> &labelDict)
 {
     Q_D(Validator);
     d->labelDict = labelDict;
 }
-
-
 
 void Validator::addLabelDictionary(const QHash<QString, QString> &labelDict)
 {
@@ -191,13 +173,11 @@ void Validator::addLabelDictionary(const QHash<QString, QString> &labelDict)
     }
 }
 
-
 void Validator::addLabel(const QString &field, const QString &label)
 {
     Q_D(Validator);
     d->labelDict.insert(field, label);
 }
-
 
 void Validator::setTemplate(const QString &tmpl)
 {

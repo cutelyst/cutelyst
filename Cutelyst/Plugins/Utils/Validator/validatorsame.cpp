@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const QString &label, const QString &otherLabel, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorSamePrivate(field, otherField, label, otherLabel, customError), parent)
 {
-
 }
-
 
 ValidatorSame::ValidatorSame(ValidatorSamePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorSame::~ValidatorSame()
 {
-
 }
-
-
 
 bool ValidatorSame::validate()
 {
@@ -61,8 +54,6 @@ bool ValidatorSame::validate()
     return false;
 }
 
-
-
 QString ValidatorSame::genericErrorMessage() const
 {
     Q_D(const ValidatorSame);
@@ -71,8 +62,6 @@ QString ValidatorSame::genericErrorMessage() const
 
     return tr("The “%1” field must have the same value as the “%2” field.").arg(genericFieldName(), ol);
 }
-
-
 
 void ValidatorSame::setOtherField(const QString &otherField)
 {

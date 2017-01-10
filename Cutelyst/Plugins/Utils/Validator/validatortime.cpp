@@ -25,23 +25,16 @@ using namespace Cutelyst;
 ValidatorTime::ValidatorTime(const QString &field, const QString &format, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorTimePrivate(field, format, label, customError), parent)
 {
-
 }
-
 
 ValidatorTime::ValidatorTime(ValidatorTimePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorTime::~ValidatorTime()
 {
-
 }
-
-
 
 bool ValidatorTime::validate()
 {
@@ -64,8 +57,6 @@ bool ValidatorTime::validate()
     return false;
 }
 
-
-
 QString ValidatorTime::genericErrorMessage() const
 {
     Q_D(const ValidatorTime);
@@ -76,7 +67,6 @@ QString ValidatorTime::genericErrorMessage() const
        return tr("The data in the “%1” field can not be interpreted as time.").arg(genericFieldName());
    }
 }
-
 
 void ValidatorTime::setFormat(const QString &format)
 {

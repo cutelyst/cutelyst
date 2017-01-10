@@ -25,22 +25,16 @@ using namespace Cutelyst;
 ValidatorDate::ValidatorDate(const QString &field, const QString &format, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorDatePrivate(field, format, label, customError), parent)
 {
-
 }
-
 
 ValidatorDate::ValidatorDate(ValidatorDatePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorDate::~ValidatorDate()
 {
-
 }
-
 
 
 bool ValidatorDate::validate()
@@ -64,8 +58,6 @@ bool ValidatorDate::validate()
     return false;
 }
 
-
-
 QString ValidatorDate::genericErrorMessage() const
 {
     Q_D(const ValidatorDate);
@@ -76,8 +68,6 @@ QString ValidatorDate::genericErrorMessage() const
         return tr("The data in the “%1” field can not be interpreted as date.").arg(genericFieldName());
     }
 }
-
-
 
 void ValidatorDate::setFormat(const QString &format)
 {

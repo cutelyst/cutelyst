@@ -18,6 +18,7 @@
  */
 
 #include "validatordigits_p.h"
+
 #include <QRegularExpression>
 
 using namespace Cutelyst;
@@ -25,23 +26,16 @@ using namespace Cutelyst;
 ValidatorDigits::ValidatorDigits(const QString &field, int length, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorDigitsPrivate(field, length, label, customError), parent)
 {
-
 }
-
 
 ValidatorDigits::ValidatorDigits(ValidatorDigitsPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorDigits::~ValidatorDigits()
 {
-
 }
-
-
 
 bool ValidatorDigits::validate()
 {
@@ -69,8 +63,6 @@ bool ValidatorDigits::validate()
     }
 }
 
-
-
 QString ValidatorDigits::genericErrorMessage() const
 {
     Q_D(const ValidatorDigits);    if (d->length > 0) {
@@ -79,7 +71,6 @@ QString ValidatorDigits::genericErrorMessage() const
         return tr("The “%1” field must only contain digits.").arg(genericFieldName());
     }
 }
-
 
 void ValidatorDigits::setLength(int length)
 {

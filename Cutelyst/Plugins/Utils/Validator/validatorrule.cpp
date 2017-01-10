@@ -24,22 +24,16 @@ using namespace Cutelyst;
 ValidatorRule::ValidatorRule(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     QObject(parent), d_ptr(new ValidatorRulePrivate(field, label, customError))
 {
-
 }
-
 
 ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd, QObject *parent) :
     QObject(parent), d_ptr(&dd)
 {
-
 }
-
 
 ValidatorRule::~ValidatorRule()
 {
-
 }
-
 
 QString ValidatorRule::errorMessage() const
 {
@@ -55,8 +49,6 @@ QString ValidatorRule::errorMessage() const
     }
 }
 
-
-
 QString ValidatorRule::field() const { Q_D(const ValidatorRule); return d->field; }
 
 void ValidatorRule::setField(const QString &field)
@@ -65,9 +57,6 @@ void ValidatorRule::setField(const QString &field)
     d->field = field;
 }
 
-
-
-
 QString ValidatorRule::label() const { Q_D(const ValidatorRule); return d->label; }
 
 void ValidatorRule::setLabel(const QString &label)
@@ -75,9 +64,6 @@ void ValidatorRule::setLabel(const QString &label)
     Q_D(ValidatorRule);
     d->label = label;
 }
-
-
-
 
 QString ValidatorRule::value() const
 {
@@ -93,7 +79,6 @@ QString ValidatorRule::value() const
     }
 }
 
-
 QString ValidatorRule::customError() const { Q_D(const ValidatorRule); return d->customError; }
 
 void ValidatorRule::setCustomError(const QString &customError)
@@ -101,9 +86,6 @@ void ValidatorRule::setCustomError(const QString &customError)
     Q_D(ValidatorRule);
     d->customError = customError;
 }
-
-
-
 
 bool ValidatorRule::isValid() const { Q_D(const ValidatorRule); return d->valid; }
 
@@ -113,14 +95,11 @@ void ValidatorRule::setValid(bool valid)
     d->valid = valid;
 }
 
-
-
 void ValidatorRule::setParameters(const ParamsMultiMap &params)
 {
     Q_D(ValidatorRule);
     d->parameters = params;
 }
-
 
 ParamsMultiMap ValidatorRule::parameters() const
 {
@@ -128,14 +107,10 @@ ParamsMultiMap ValidatorRule::parameters() const
     return d->parameters;
 }
 
-
-
 QString ValidatorRule::genericFieldName() const
 {
     return !label().isEmpty() ? label() : field();
 }
-
-
 
 void ValidatorRule::setParsingError(bool parsingError)
 {
@@ -146,13 +121,11 @@ void ValidatorRule::setParsingError(bool parsingError)
     }
 }
 
-
 bool ValidatorRule::parsingError() const
 {
     Q_D(const ValidatorRule);
     return d->parsingError;
 }
-
 
 void ValidatorRule::setValidationDataError(bool validationDataError)
 {
@@ -163,19 +136,16 @@ void ValidatorRule::setValidationDataError(bool validationDataError)
     }
 }
 
-
 bool ValidatorRule::validationDataError() const
 {
     Q_D(const ValidatorRule);
     return d->validationDataError;
 }
 
-
 QString ValidatorRule::genericErrorMessage() const
 {
     return tr("The input data in the “%1” field is not valid.").arg(genericFieldName());
 }
-
 
 QString ValidatorRule::parsingErrorMessage() const
 {
@@ -187,7 +157,6 @@ QString ValidatorRule::parsingErrorMessage() const
     }
 }
 
-
 QString ValidatorRule::validationDataErrorMessage() const
 {
     Q_D(const ValidatorRule);
@@ -198,13 +167,11 @@ QString ValidatorRule::validationDataErrorMessage() const
     }
 }
 
-
 void ValidatorRule::setCustomParsingError(const QString &custom)
 {
     Q_D(ValidatorRule);
     d->customParsingError = custom;
 }
-
 
 void ValidatorRule::setCustomValidationDataError(const QString &custom)
 {
@@ -212,14 +179,11 @@ void ValidatorRule::setCustomValidationDataError(const QString &custom)
     d->customValidationDataError = custom;
 }
 
-
-
 void ValidatorRule::setTrimBefore(bool trimBefore)
 {
     Q_D(ValidatorRule);
     d->trimBefore = trimBefore;
 }
-
 
 bool ValidatorRule::trimBefore() const
 {

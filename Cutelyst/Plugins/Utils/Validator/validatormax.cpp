@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorMax::ValidatorMax(const QString &field, QMetaType::Type type, double max, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorMaxPrivate(field, type, max, label, customError), parent)
 {
-
 }
-
 
 ValidatorMax::ValidatorMax(ValidatorMaxPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorMax::~ValidatorMax()
 {
-
 }
-
-
 
 bool ValidatorMax::validate()
 {
@@ -87,8 +80,6 @@ bool ValidatorMax::validate()
     return false;
 }
 
-
-
 QString ValidatorMax::genericErrorMessage() const
 {
     Q_D(const ValidatorMax);
@@ -104,14 +95,11 @@ QString ValidatorMax::genericErrorMessage() const
     }
 }
 
-
-
 void ValidatorMax::setType(QMetaType::Type type)
 {
     Q_D(ValidatorMax);
     d->type = type;
 }
-
 
 void ValidatorMax::setMax(double max)
 {

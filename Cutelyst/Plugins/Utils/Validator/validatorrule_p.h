@@ -119,40 +119,6 @@ public:
         return dt;
     }
 
-
-
-    QMetaType::Type getBaseType(QMetaType::Type type) const
-    {
-        switch (type) {
-            case QMetaType::Int:
-            case QMetaType::Long:
-            case QMetaType::LongLong:
-            case QMetaType::Short:
-            case QMetaType::Char:
-            case QMetaType::SChar:
-                return QMetaType::Int;
-            case QMetaType::UInt:
-            case QMetaType::ULong:
-            case QMetaType::ULongLong:
-            case QMetaType::UShort:
-            case QMetaType::UChar:
-                return QMetaType::UInt;
-            case QMetaType::Float:
-            case QMetaType::Double:
-                return QMetaType::Float;
-            case QMetaType::QString:
-                return QMetaType::QString;
-            case QMetaType::QVariantList:
-            case QMetaType::QStringList:
-            case QMetaType::QVariantMap:
-            case QMetaType::QVariantHash:
-            case QMetaType::QByteArrayList:
-                return QMetaType::QVariantList;
-            default:
-                return QMetaType::UnknownType;
-        }
-    }
-
     QString field;
     QString label;
     QString customError;

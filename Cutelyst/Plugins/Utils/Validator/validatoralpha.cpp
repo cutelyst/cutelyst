@@ -28,7 +28,6 @@ ValidatorAlpha::ValidatorAlpha(const QString &field, const QString &label, const
 
 }
 
-
 ValidatorAlpha::ValidatorAlpha(ValidatorAlphaPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
@@ -39,7 +38,6 @@ ValidatorAlpha::~ValidatorAlpha()
 {
 
 }
-
 
 bool ValidatorAlpha::validate()
 {
@@ -55,8 +53,6 @@ bool ValidatorAlpha::validate()
         return false;
     }
 }
-
-
 
 QString ValidatorAlpha::genericErrorMessage() const
 {

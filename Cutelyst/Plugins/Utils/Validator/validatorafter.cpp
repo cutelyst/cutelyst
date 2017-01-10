@@ -18,6 +18,7 @@
  */
 
 #include "validatorafter_p.h"
+
 #include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
@@ -30,22 +31,16 @@ ValidatorAfter::ValidatorAfter(const QString &field, const QVariant &dateTime, c
 
 }
 
-
-
 ValidatorAfter::ValidatorAfter(ValidatorAfterPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
 
 }
 
-
-
 ValidatorAfter::~ValidatorAfter()
 {
 
 }
-
-
 
 bool ValidatorAfter::validate()
 {
@@ -132,9 +127,6 @@ bool ValidatorAfter::validate()
     return false;
 }
 
-
-
-
 QString ValidatorAfter::genericErrorMessage() const
 {
     Q_D(const ValidatorAfter);
@@ -157,15 +149,11 @@ QString ValidatorAfter::genericErrorMessage() const
     }
 }
 
-
-
 void ValidatorAfter::setDateTime(const QVariant &dateTime)
 {
     Q_D(ValidatorAfter);
     d->date = dateTime;
 }
-
-
 
 void ValidatorAfter::setInputFormat(const QString &format)
 {

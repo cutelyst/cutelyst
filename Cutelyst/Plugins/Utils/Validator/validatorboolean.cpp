@@ -25,23 +25,16 @@ using namespace Cutelyst;
 ValidatorBoolean::ValidatorBoolean(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorBooleanPrivate(field, label, customError), parent)
 {
-
 }
-
 
 ValidatorBoolean::ValidatorBoolean(ValidatorBooleanPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorBoolean::~ValidatorBoolean()
 {
-
 }
-
-
 
 bool ValidatorBoolean::validate()
 {
@@ -58,8 +51,6 @@ bool ValidatorBoolean::validate()
         return false;
     }
 }
-
-
 
 QString ValidatorBoolean::genericErrorMessage() const
 {

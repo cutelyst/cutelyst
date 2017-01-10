@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorFilled::ValidatorFilled(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorFilledPrivate(field, label, customError), parent)
 {
-
 }
-
 
 ValidatorFilled::ValidatorFilled(ValidatorFilledPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorFilled::~ValidatorFilled()
 {
-
 }
-
-
 
 bool ValidatorFilled::validate()
 {
@@ -54,10 +47,7 @@ bool ValidatorFilled::validate()
     }
 }
 
-
-
 QString ValidatorFilled::genericErrorMessage() const
 {
     return tr("You must fill in the “%1” field.").arg(genericFieldName());
 }
-

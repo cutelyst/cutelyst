@@ -26,23 +26,16 @@ using namespace Cutelyst;
 ValidatorIp::ValidatorIp(const QString &field, Constraints constraints, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorIpPrivate(field, constraints, label, customError), parent)
 {
-
 }
-
 
 ValidatorIp::ValidatorIp(ValidatorIpPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorIp::~ValidatorIp()
 {
-
 }
-
-
 
 bool ValidatorIp::validate()
 {
@@ -270,14 +263,10 @@ bool ValidatorIp::validate()
     return false;
 }
 
-
-
 QString ValidatorIp::genericErrorMessage() const
 {
     return tr("You have to enter a valid IP address into the “%1“ field.").arg(genericFieldName());
 }
-
-
 
 void ValidatorIp::setConstraints(Constraints constraints)
 {

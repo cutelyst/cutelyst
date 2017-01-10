@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorSize::ValidatorSize(const QString &field, QMetaType::Type type, double size, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorSizePrivate(field, type, size, label, customError), parent)
 {
-
 }
-
 
 ValidatorSize::ValidatorSize(ValidatorSizePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorSize::~ValidatorSize()
 {
-
 }
-
-
 
 bool ValidatorSize::validate()
 {
@@ -87,8 +80,6 @@ bool ValidatorSize::validate()
     return false;
 }
 
-
-
 QString ValidatorSize::genericErrorMessage() const
 {
     Q_D(const ValidatorSize);
@@ -104,13 +95,11 @@ QString ValidatorSize::genericErrorMessage() const
     }
 }
 
-
 void ValidatorSize::setType(QMetaType::Type type)
 {
     Q_D(ValidatorSize);
     d->type = type;
 }
-
 
 void ValidatorSize::setSize(double size)
 {

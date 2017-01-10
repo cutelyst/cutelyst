@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorRequiredUnless::ValidatorRequiredUnless(const QString &field, const QString &otherField, const QStringList &otherValues, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorRequiredUnlessPrivate(field, otherField, otherValues, label, customError), parent)
 {
-
 }
-
 
 ValidatorRequiredUnless::ValidatorRequiredUnless(ValidatorRequiredUnlessPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorRequiredUnless::~ValidatorRequiredUnless()
 {
-
 }
-
-
 
 bool ValidatorRequiredUnless::validate()
 {
@@ -71,20 +64,16 @@ bool ValidatorRequiredUnless::validate()
     return false;
 }
 
-
-
 QString ValidatorRequiredUnless::genericErrorMessage() const
 {
     return tr("You must fill in the “%1” field.").arg(genericFieldName());
 }
-
 
 void ValidatorRequiredUnless::setOtherField(const QString &otherField)
 {
     Q_D(ValidatorRequiredUnless);
     d->otherField = otherField;
 }
-
 
 void ValidatorRequiredUnless::setOtherValues(const QStringList &otherValues)
 {

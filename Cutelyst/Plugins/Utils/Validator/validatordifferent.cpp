@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorDifferent::ValidatorDifferent(const QString &field, const QString &other, const QString &label, const QString &otherLabel, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorDifferentPrivate(field, other, label, otherLabel, customError), parent)
 {
-
 }
-
 
 ValidatorDifferent::ValidatorDifferent(ValidatorDifferentPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorDifferent::~ValidatorDifferent()
 {
-
 }
-
-
 
 bool ValidatorDifferent::validate()
 {
@@ -64,8 +57,6 @@ bool ValidatorDifferent::validate()
     return false;
 }
 
-
-
 QString ValidatorDifferent::genericErrorMessage() const
 {
     Q_D(const ValidatorDifferent);
@@ -75,14 +66,11 @@ QString ValidatorDifferent::genericErrorMessage() const
     return tr("The value in the “%1” field has to be different from the value in the “%2” field.").arg(genericFieldName(), ogn);
 }
 
-
-
 void ValidatorDifferent::setOtherField(const QString &otherField)
 {
     Q_D(ValidatorDifferent);
     d->otherField = otherField;
 }
-
 
 void ValidatorDifferent::setOtherLabel(const QString &otherLabel)
 {

@@ -25,23 +25,16 @@ using namespace Cutelyst;
 ValidatorNumeric::ValidatorNumeric(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorNumericPrivate(field, label, customError), parent)
 {
-
 }
-
 
 ValidatorNumeric::ValidatorNumeric(ValidatorNumericPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorNumeric::~ValidatorNumeric()
 {
-
 }
-
-
 
 bool ValidatorNumeric::validate()
 {
@@ -58,10 +51,7 @@ bool ValidatorNumeric::validate()
     return false;
 }
 
-
-
 QString ValidatorNumeric::genericErrorMessage() const
 {
     return tr("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(genericFieldName());
 }
-

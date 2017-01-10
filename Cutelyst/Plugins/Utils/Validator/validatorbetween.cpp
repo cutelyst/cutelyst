@@ -24,20 +24,17 @@ using namespace Cutelyst;
 ValidatorBetween::ValidatorBetween(const QString &field, QMetaType::Type type, double min, double max, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorBetweenPrivate(field, type, min, max, label, customError), parent)
 {
-
 }
 
 
 ValidatorBetween::ValidatorBetween(ValidatorBetweenPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
 
 
 ValidatorBetween::~ValidatorBetween()
 {
-
 }
 
 
@@ -90,8 +87,6 @@ bool ValidatorBetween::validate()
     return false;
 }
 
-
-
 QString ValidatorBetween::genericErrorMessage() const
 {
     Q_D(const ValidatorBetween);
@@ -107,20 +102,17 @@ QString ValidatorBetween::genericErrorMessage() const
     }
 }
 
-
 void ValidatorBetween::setType(QMetaType::Type type)
 {
     Q_D(ValidatorBetween);
     d->type = type;
 }
 
-
 void ValidatorBetween::setMin(double min)
 {
     Q_D(ValidatorBetween);
     d->min = min;
 }
-
 
 void ValidatorBetween::setMax(double max)
 {

@@ -27,20 +27,16 @@ ValidatorAccepted::ValidatorAccepted(const QString &field, const QString &label,
 
 }
 
-
 ValidatorAccepted::ValidatorAccepted(ValidatorAcceptedPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
 
 }
 
-
 ValidatorAccepted::~ValidatorAccepted()
 {
 
 }
-
-
 
 bool ValidatorAccepted::validate()
 {
@@ -53,10 +49,7 @@ bool ValidatorAccepted::validate()
     }
 }
 
-
-
 QString ValidatorAccepted::genericErrorMessage() const
 {
     return tr("The “%1” has to be accepted.").arg(genericFieldName());
 }
-

@@ -25,23 +25,18 @@ using namespace Cutelyst;
 ValidatorInteger::ValidatorInteger(const QString &field, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorIntegerPrivate(field, label, customError), parent)
 {
-
 }
 
 
 ValidatorInteger::ValidatorInteger(ValidatorIntegerPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
 
 
 ValidatorInteger::~ValidatorInteger()
 {
-
 }
-
-
 
 bool ValidatorInteger::validate()
 {
@@ -60,10 +55,7 @@ bool ValidatorInteger::validate()
     return false;
 }
 
-
-
 QString ValidatorInteger::genericErrorMessage() const
 {
     return tr("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(genericFieldName());
 }
-

@@ -28,20 +28,16 @@ ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, const QString &labe
 
 }
 
-
 ValidatorAlphaDash::ValidatorAlphaDash(ValidatorAlphaDashPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
 
 }
 
-
 ValidatorAlphaDash::~ValidatorAlphaDash()
 {
 
 }
-
-
 
 bool ValidatorAlphaDash::validate()
 {
@@ -57,8 +53,6 @@ bool ValidatorAlphaDash::validate()
         return false;
     }
 }
-
-
 
 QString ValidatorAlphaDash::genericErrorMessage() const
 {

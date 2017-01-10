@@ -18,6 +18,7 @@
  */
 
 #include "validatordigitsbetween_p.h"
+
 #include <QRegularExpression>
 
 using namespace Cutelyst;
@@ -25,23 +26,16 @@ using namespace Cutelyst;
 ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, int min, int max, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, label, customError), parent)
 {
-
 }
-
 
 ValidatorDigitsBetween::ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorDigitsBetween::~ValidatorDigitsBetween()
 {
-
 }
-
-
 
 bool ValidatorDigitsBetween::validate()
 {
@@ -69,8 +63,6 @@ bool ValidatorDigitsBetween::validate()
     }
 }
 
-
-
 QString ValidatorDigitsBetween::genericErrorMessage() const
 {
     Q_D(const ValidatorDigitsBetween);
@@ -81,15 +73,11 @@ QString ValidatorDigitsBetween::genericErrorMessage() const
     }
 }
 
-
-
 void ValidatorDigitsBetween::setMin(int min)
 {
     Q_D(ValidatorDigitsBetween);
     d->min = min;
 }
-
-
 
 void ValidatorDigitsBetween::setMax(int max)
 {

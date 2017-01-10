@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorMin::ValidatorMin(const QString &field, QMetaType::Type type, double min, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorMinPrivate(field, type, min, label, customError), parent)
 {
-
 }
-
 
 ValidatorMin::ValidatorMin(ValidatorMinPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorMin::~ValidatorMin()
 {
-
 }
-
-
 
 bool ValidatorMin::validate()
 {
@@ -87,8 +80,6 @@ bool ValidatorMin::validate()
     return false;
 }
 
-
-
 QString ValidatorMin::genericErrorMessage() const
 {
     Q_D(const ValidatorMin);
@@ -104,14 +95,11 @@ QString ValidatorMin::genericErrorMessage() const
     }
 }
 
-
-
 void ValidatorMin::setType(QMetaType::Type type)
 {
     Q_D(ValidatorMin);
     d->type = type;
 }
-
 
 void ValidatorMin::setMin(double min)
 {

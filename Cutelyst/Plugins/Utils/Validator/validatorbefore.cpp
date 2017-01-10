@@ -18,6 +18,7 @@
  */
 
 #include "validatorbefore_p.h"
+
 #include <QtCore/QLoggingCategory>
 
 using namespace Cutelyst;
@@ -27,23 +28,16 @@ Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before")
 ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorBeforePrivate(field, dateTime, inputFormat, label, customError), parent)
 {
-
 }
-
 
 ValidatorBefore::ValidatorBefore(ValidatorBeforePrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorBefore::~ValidatorBefore()
 {
-
 }
-
-
 
 bool ValidatorBefore::validate()
 {
@@ -130,8 +124,6 @@ bool ValidatorBefore::validate()
     return false;
 }
 
-
-
 QString ValidatorBefore::genericErrorMessage() const
 {
     Q_D(const ValidatorBefore);
@@ -154,14 +146,11 @@ QString ValidatorBefore::genericErrorMessage() const
     }
 }
 
-
 void ValidatorBefore::setDateTime(const QVariant &dateTime)
 {
     Q_D(ValidatorBefore);
     d->date = dateTime;
 }
-
-
 
 void ValidatorBefore::setInputFormat(const QString &format)
 {

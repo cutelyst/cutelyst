@@ -24,23 +24,16 @@ using namespace Cutelyst;
 ValidatorRequiredWithAll::ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const QString &label, const QString &customError, QObject *parent) :
     ValidatorRule(*new ValidatorRequiredWithAllPrivate(field, otherFields, label, customError), parent)
 {
-
 }
-
 
 ValidatorRequiredWithAll::ValidatorRequiredWithAll(ValidatorRequiredWithAllPrivate &dd, QObject *parent) :
     ValidatorRule(dd, parent)
 {
-
 }
-
 
 ValidatorRequiredWithAll::~ValidatorRequiredWithAll()
 {
-
 }
-
-
 
 bool ValidatorRequiredWithAll::validate()
 {
@@ -79,14 +72,10 @@ bool ValidatorRequiredWithAll::validate()
     return false;
 }
 
-
-
 QString ValidatorRequiredWithAll::genericErrorMessage() const
 {
     return tr("You must fill in the “%1” field.").arg(genericFieldName());
 }
-
-
 
 void ValidatorRequiredWithAll::setOtherFields(const QStringList &otherFields)
 {
