@@ -39,22 +39,20 @@ ValidatorAlpha::~ValidatorAlpha()
 
 }
 
-bool ValidatorAlpha::validate()
+QString ValidatorAlpha::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorAlpha::genericErrorMessage() const
+QString ValidatorAlpha::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(genericFieldName());
+    return QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(fieldLabel());
 }

@@ -35,25 +35,23 @@ ValidatorConfirmed::~ValidatorConfirmed()
 {
 }
 
-bool ValidatorConfirmed::validate()
+QString ValidatorConfirmed::validate() const
 {
     if (value().trimmed().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QString ofn = field();
     ofn.append(QLatin1String("_confirmation"));
 
     if (value() == parameters().value(ofn)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorConfirmed::genericErrorMessage() const
+QString ValidatorConfirmed::genericValidationError() const
 {
-    return QStringLiteral("The content of the “%1” field has not been confirmed.").arg(genericFieldName());
+    return QStringLiteral("The content of the “%1” field has not been confirmed.").arg(fieldLabel());
 }

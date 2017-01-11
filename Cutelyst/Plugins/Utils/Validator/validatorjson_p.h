@@ -30,8 +30,6 @@ public:
     ValidatorJsonPrivate(const QString &f, const QString &l, const QString &e) :
         ValidatorRulePrivate(f, l, e)
     {}
-
-    QJsonParseError jsonParseError;
 };
     
 }

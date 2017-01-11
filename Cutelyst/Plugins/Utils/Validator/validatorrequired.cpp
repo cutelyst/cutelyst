@@ -35,17 +35,16 @@ ValidatorRequired::~ValidatorRequired()
 {
 }
 
-bool ValidatorRequired::validate()
+QString ValidatorRequired::validate() const
 {
     if (!value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorRequired::genericErrorMessage() const
+QString ValidatorRequired::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
 }

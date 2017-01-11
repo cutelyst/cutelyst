@@ -38,24 +38,22 @@ ValidatorInteger::~ValidatorInteger()
 {
 }
 
-bool ValidatorInteger::validate()
+QString ValidatorInteger::validate() const
 {
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorInteger::genericErrorMessage() const
+QString ValidatorInteger::genericValidationError() const
 {
-    return QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(fieldLabel());
 }

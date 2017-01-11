@@ -38,18 +38,17 @@ ValidatorAccepted::~ValidatorAccepted()
 
 }
 
-bool ValidatorAccepted::validate()
+QString ValidatorAccepted::validate() const
 {
     QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
     if (l.contains(value(), Qt::CaseInsensitive)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorAccepted::genericErrorMessage() const
+QString ValidatorAccepted::genericValidationError() const
 {
-    return QStringLiteral("The “%1” has to be accepted.").arg(genericFieldName());
+    return QStringLiteral("The “%1” has to be accepted.").arg(fieldLabel());
 }

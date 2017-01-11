@@ -35,33 +35,30 @@ ValidatorNotIn::~ValidatorNotIn()
 {
 }
 
-bool ValidatorNotIn::validate()
+QString ValidatorNotIn::validate() const
 {
-    Q_D(ValidatorNotIn);
+    Q_D(const ValidatorNotIn);
 
     if (d->values.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (!d->values.contains(v)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorNotIn::genericErrorMessage() const
+QString ValidatorNotIn::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1“ field is not allowed.").arg(genericFieldName());
+    return QStringLiteral("The value in the “%1“ field is not allowed.").arg(fieldLabel());
 }
 
 void ValidatorNotIn::setValues(const QStringList &values)

@@ -36,22 +36,20 @@ ValidatorNumeric::~ValidatorNumeric()
 {
 }
 
-bool ValidatorNumeric::validate()
+QString ValidatorNumeric::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorNumeric::genericErrorMessage() const
+QString ValidatorNumeric::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(genericFieldName());
+    return QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(fieldLabel());
 }

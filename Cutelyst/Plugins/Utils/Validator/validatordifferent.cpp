@@ -35,35 +35,33 @@ ValidatorDifferent::~ValidatorDifferent()
 {
 }
 
-bool ValidatorDifferent::validate()
+QString ValidatorDifferent::validate() const
 {
-    Q_D(ValidatorDifferent);
+    Q_D(const ValidatorDifferent);
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QString o = d->parameters.value(d->otherField).trimmed();
 
     if (v != o) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorDifferent::genericErrorMessage() const
+QString ValidatorDifferent::genericValidationError() const
 {
     Q_D(const ValidatorDifferent);
 
     QString ogn = !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField;
 
-    return QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(genericFieldName(), ogn);
+    return QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(fieldLabel(), ogn);
 }
 
 void ValidatorDifferent::setOtherField(const QString &otherField)

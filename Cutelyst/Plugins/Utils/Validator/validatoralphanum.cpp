@@ -39,22 +39,20 @@ ValidatorAlphaNum::~ValidatorAlphaNum()
 
 }
 
-bool ValidatorAlphaNum::validate()
+QString ValidatorAlphaNum::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorAlphaNum::genericErrorMessage() const
+QString ValidatorAlphaNum::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(genericFieldName());
+    return QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(fieldLabel());
 }

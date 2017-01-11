@@ -39,22 +39,20 @@ ValidatorAlphaDash::~ValidatorAlphaDash()
 
 }
 
-bool ValidatorAlphaDash::validate()
+QString ValidatorAlphaDash::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorAlphaDash::genericErrorMessage() const
+QString ValidatorAlphaDash::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(genericFieldName());
+    return QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(fieldLabel());
 }

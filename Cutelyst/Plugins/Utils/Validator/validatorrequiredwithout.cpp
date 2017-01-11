@@ -35,13 +35,12 @@ ValidatorRequiredWithout::~ValidatorRequiredWithout()
 {
 }
 
-bool ValidatorRequiredWithout::validate()
+QString ValidatorRequiredWithout::validate() const
 {
-    Q_D(ValidatorRequiredWithout);
+    Q_D(const ValidatorRequiredWithout);
 
     if (d->otherFields.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     bool otherMissing = false;
@@ -57,22 +56,20 @@ bool ValidatorRequiredWithout::validate()
 
     if (otherMissing) {
         if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         } else {
-            return false;
+            return validationError();
         }
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorRequiredWithout::genericErrorMessage() const
+QString ValidatorRequiredWithout::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
 }
 
 void ValidatorRequiredWithout::setOtherFields(const QStringList &otherFields)

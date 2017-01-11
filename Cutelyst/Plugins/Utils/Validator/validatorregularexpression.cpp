@@ -35,26 +35,24 @@ ValidatorRegularExpression::~ValidatorRegularExpression()
 {
 }
 
-bool ValidatorRegularExpression::validate()
+QString ValidatorRegularExpression::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    Q_D(ValidatorRegularExpression);
+    Q_D(const ValidatorRegularExpression);
 
     if (value().contains(d->regex)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorRegularExpression::genericErrorMessage() const
+QString ValidatorRegularExpression::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field does not match the desired format.").arg(genericFieldName());
+    return QStringLiteral("The “%1” field does not match the desired format.").arg(fieldLabel());
 }
 
 void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)

@@ -17,44 +17,41 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "validatorjson_p.h"
-#include <QJsonDocument>
+#include "validatorresult_p.h"
 
 using namespace Cutelyst;
 
-ValidatorJson::ValidatorJson(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorJsonPrivate(field, label, customError))
+ValidatorResult::ValidatorResult() :
+    d(new ValidatorResultPrivate)
 {
 }
 
-ValidatorJson::ValidatorJson(ValidatorJsonPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorResult::ValidatorResult(const ValidatorResult &other) :
+    d(other.d)
 {
 }
 
-ValidatorJson::~ValidatorJson()
+ValidatorResult::~ValidatorResult()
 {
 }
 
-QString ValidatorJson::validate() const
+bool ValidatorResult::isValid() const
 {
-    Q_D(const ValidatorJson);
-
-    QString v = value();
-
-    if (v.isEmpty()) {
-        return QString();
-    }
-
-    QJsonDocument json = QJsonDocument::fromJson(v.toUtf8());
-    if (!json.isEmpty() && !json.isNull()) {
-        return QString();
-    }
-
-    return validationError();
+    return d->errorFields.isEmpty();
 }
 
-QString ValidatorJson::genericValidationError() const
+void ValidatorResult::addError(const QString &field, const QString &message)
 {
-    return QStringLiteral("The data entered in the “%1” field is not valid JSON.").arg(fieldLabel());
+    d->errorFields.append(field);
+    d->errorStrings.append(message);
+}
+
+QStringList ValidatorResult::errorFields() const
+{
+    return d->errorFields;
+}
+
+QStringList ValidatorResult::errorStrings() const
+{
+    return d->errorStrings;
 }

@@ -21,7 +21,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QJsonParseError>
 
 namespace Cutelyst {
     
@@ -56,22 +55,15 @@ public:
     ~ValidatorJson();
     
     /*!
-     * \brief Performs the validation.
-     *
-     * Returns \c true on success.
+     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
      */
-    bool validate() override;
-
-    /*!
-     * \brief Returns information about parsing error if validation fails.
-     */
-    QJsonParseError jsonParseError() const;
+    QString validate() const override;
     
 protected:
     /*!
      * \brief Returns a generic error message.
      */
-    QString genericErrorMessage() const override;
+    QString genericValidationError() const override;
     
     ValidatorJson(ValidatorJsonPrivate &dd);
     

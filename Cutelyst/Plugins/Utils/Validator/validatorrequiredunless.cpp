@@ -35,38 +35,34 @@ ValidatorRequiredUnless::~ValidatorRequiredUnless()
 {
 }
 
-bool ValidatorRequiredUnless::validate()
+QString ValidatorRequiredUnless::validate() const
 {
-    Q_D(ValidatorRequiredUnless);
+    Q_D(const ValidatorRequiredUnless);
 
     if (d->otherField.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     if (d->otherValues.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     if (!d->otherValues.contains(d->parameters.value(d->otherField))) {
 
         if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
 
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorRequiredUnless::genericErrorMessage() const
+QString ValidatorRequiredUnless::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
 }
 
 void ValidatorRequiredUnless::setOtherField(const QString &otherField)

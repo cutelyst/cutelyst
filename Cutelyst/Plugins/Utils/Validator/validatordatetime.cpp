@@ -38,35 +38,33 @@ ValidatorDateTime::~ValidatorDateTime()
 {
 }
 
-bool ValidatorDateTime::validate()
+QString ValidatorDateTime::validate() const
 {
-    Q_D(ValidatorDateTime);
+    Q_D(const ValidatorDateTime);
 
     QString v = value().trimmed();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QDateTime dt = d->extractDateTime(v, d->format);
 
     if (dt.isValid()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorDateTime::genericErrorMessage() const
+QString ValidatorDateTime::genericValidationError() const
 {
     Q_D(const ValidatorDateTime);
 
     if (!d->format.isEmpty()) {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time of this schema: %2").arg(genericFieldName(), d->format);
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time of this schema: %2").arg(fieldLabel(), d->format);
     } else {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time.").arg(genericFieldName());
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date and time.").arg(fieldLabel());
     }
 }
 

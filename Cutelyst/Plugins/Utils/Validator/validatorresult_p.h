@@ -16,35 +16,31 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef CUTELYSTVALIDATORRESULT_P_H
+#define CUTELYSTVALIDATORRESULT_P_H
 
-#include "validatorpresent_p.h"
+#include "validatorresult.h"
+#include <QSharedData>
 
-using namespace Cutelyst;
+namespace Cutelyst {
 
-ValidatorPresent::ValidatorPresent(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorPresentPrivate(field, label, customError))
+class ValidatorResultPrivate : public QSharedData
 {
+public:
+    ValidatorResultPrivate() {}
+
+    ValidatorResultPrivate(const ValidatorResultPrivate &other) :
+        QSharedData(other),
+        errorStrings(other.errorStrings),
+        errorFields(other.errorFields)
+    {}
+
+    ~ValidatorResultPrivate() {}
+
+    QStringList errorStrings;
+    QStringList errorFields;
+};
+
 }
 
-ValidatorPresent::ValidatorPresent(ValidatorPresentPrivate &dd) :
-    ValidatorRule(dd)
-{
-}
-
-ValidatorPresent::~ValidatorPresent()
-{
-}
-
-QString ValidatorPresent::validate() const
-{
-    if (parameters().contains(field())) {
-        return QString();
-    }
-
-    return validationError();
-}
-
-QString ValidatorPresent::genericValidationError() const
-{
-    return QStringLiteral("The “%1“ field was not found in the input data.").arg(fieldLabel());
-}
+#endif // CUTELYSTVALIDATORRESULT_P_H

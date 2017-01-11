@@ -35,38 +35,34 @@ ValidatorRequiredIf::~ValidatorRequiredIf()
 {
 }
 
-bool ValidatorRequiredIf::validate()
+QString ValidatorRequiredIf::validate() const
 {
-    Q_D(ValidatorRequiredIf);
+    Q_D(const ValidatorRequiredIf);
 
     if (d->otherField.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     if (d->otherValues.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     if (d->otherValues.contains(d->parameters.value(d->otherField))) {
 
         if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
 
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorRequiredIf::genericErrorMessage() const
+QString ValidatorRequiredIf::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
 }
 
 void ValidatorRequiredIf::setOtherField(const QString &otherField)

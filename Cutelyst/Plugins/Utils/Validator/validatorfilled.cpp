@@ -35,22 +35,20 @@ ValidatorFilled::~ValidatorFilled()
 {
 }
 
-bool ValidatorFilled::validate()
+QString ValidatorFilled::validate() const
 {
     if (!parameters().contains(field())) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
         if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorFilled::genericErrorMessage() const
+QString ValidatorFilled::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
 }

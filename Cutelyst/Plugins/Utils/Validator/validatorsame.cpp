@@ -35,32 +35,30 @@ ValidatorSame::~ValidatorSame()
 {
 }
 
-bool ValidatorSame::validate()
+QString ValidatorSame::validate() const
 {
-    Q_D(ValidatorSame);
+    Q_D(const ValidatorSame);
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (v == d->parameters.value(d->otherField)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorSame::genericErrorMessage() const
+QString ValidatorSame::genericValidationError() const
 {
     Q_D(const ValidatorSame);
 
     QString ol = !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField;
 
-    return QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(genericFieldName(), ol);
+    return QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(fieldLabel(), ol);
 }
 
 void ValidatorSame::setOtherField(const QString &otherField)

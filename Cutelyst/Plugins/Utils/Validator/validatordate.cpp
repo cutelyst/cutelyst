@@ -37,35 +37,33 @@ ValidatorDate::~ValidatorDate()
 }
 
 
-bool ValidatorDate::validate()
+QString ValidatorDate::validate() const
 {
-    Q_D(ValidatorDate);
+    Q_D(const ValidatorDate);
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QDate date = d->extractDate(v, d->format);
 
     if (date.isValid()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorDate::genericErrorMessage() const
+QString ValidatorDate::genericValidationError() const
 {
     Q_D(const ValidatorDate);
 
     if (!d->format.isEmpty()) {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(genericFieldName(), d->format);
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
     } else {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(genericFieldName());
+        return QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(fieldLabel());
     }
 }
 

@@ -36,15 +36,14 @@ ValidatorUrl::~ValidatorUrl()
 {
 }
 
-bool ValidatorUrl::validate()
+QString ValidatorUrl::validate() const
 {
-    Q_D(ValidatorUrl);
+    Q_D(const ValidatorUrl);
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
@@ -54,43 +53,48 @@ bool ValidatorUrl::validate()
 
     QUrl url(value(), parsingMode);
     if (!url.isValid() || url.isEmpty()) {
-        return false;
+        return validationError();
     }
 
     if ((d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
-        return false;
+        return validationError();
     }
 
     if ((d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
-        return false;
+        return validationError();
     }
+
+    QStringList schemeList = d->schemes;
 
     if (d->constraints.testFlag(WebsiteOnly)) {
-        d->schemes = QStringList({QStringLiteral("http"), QStringLiteral("https")});
+        if (!schemeList.contains(QStringLiteral("http"))) {
+            schemeList.append(QStringLiteral("http"));
+        }
+        if (!schemeList.contains(QStringLiteral("https"))) {
+            schemeList.append(QStringLiteral("https"));
+        }
     }
 
-    if (!d->schemes.isEmpty()) {
+    if (!schemeList.isEmpty()) {
 
-        const QStringList sc = d->schemes;
+        const QStringList sc = schemeList;
         for (const QString &s : sc) {
             const QString sl =  s.toLower();
             if (url.scheme() == sl) {
-                setError(ValidatorRule::NoError);
-                return true;
+                return QString();
             }
         }
 
-        return false;
+        return validationError();
 
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 }
 
-QString ValidatorUrl::genericErrorMessage() const
+QString ValidatorUrl::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1” field is not a valid URL.").arg(genericFieldName());
+    return QStringLiteral("The value in the “%1” field is not a valid URL.").arg(fieldLabel());
 }
 
 void ValidatorUrl::setConstraints(Constraints constraints)

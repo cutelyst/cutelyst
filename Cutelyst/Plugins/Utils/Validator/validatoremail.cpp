@@ -36,11 +36,10 @@ ValidatorEmail::~ValidatorEmail()
 {
 }
 
-bool ValidatorEmail::validate()
+QString ValidatorEmail::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
 //    bool isEmail = value().contains(QRegularExpression(QStringLiteral("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")));
@@ -80,14 +79,13 @@ bool ValidatorEmail::validate()
                                                                   "^(?&addr_spec)$"), QRegularExpression::ExtendedPatternSyntaxOption));
 
     if (isEmail) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorEmail::genericErrorMessage() const
+QString ValidatorEmail::genericValidationError() const
 {
-    return QStringLiteral("The email address in the “%1” field is not valid.").arg(genericFieldName());
+    return QStringLiteral("The email address in the “%1” field is not valid.").arg(fieldLabel());
 }

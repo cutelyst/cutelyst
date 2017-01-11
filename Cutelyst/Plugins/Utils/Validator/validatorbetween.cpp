@@ -39,66 +39,61 @@ ValidatorBetween::~ValidatorBetween()
 
 
 
-bool ValidatorBetween::validate()
+QString ValidatorBetween::validate() const
 {
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    Q_D(ValidatorBetween);
+    Q_D(const ValidatorBetween);
 
     if (d->type == QMetaType::Int) {
         qlonglong val = v.toLongLong();
         qlonglong min = (qlonglong)d->min;
         qlonglong max = (qlonglong)d->max;
         if ((val >= min) && (val <= max)) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     } else if (d->type == QMetaType::UInt) {
         qulonglong val = v.toULongLong();
         qulonglong min = (qulonglong)d->min;
         qulonglong max = (qulonglong)d->max;
         if ((val >= min) && (val <= max)) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     } else if (d->type == QMetaType::Float) {
         double val = v.toDouble();
         if ((val >= d->min) && (val <= d->max)) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     } else if (d->type == QMetaType::QString) {
         int val = v.length();
         int min = (int)d->min;
         int max = (int)d->max;
         if ((val >= min) && (val <= max)) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     } else {
-        setError(ValidatorRule::ValidationDataError);
+        return validationDataError();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorBetween::genericErrorMessage() const
+QString ValidatorBetween::genericValidationError() const
 {
     Q_D(const ValidatorBetween);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
+        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(fieldLabel(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min), QString::number(d->max));
+        return QStringLiteral("The value of the “%1” field has to be between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
     } else if (d->type == QMetaType::QString) {
-        return QStringLiteral("The length of the “%1” field has to be between %2 and %3.").arg(genericFieldName(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
+        return QStringLiteral("The length of the “%1” field has to be between %2 and %3.").arg(fieldLabel(), QString::number(d->min, 'f', 0), QString::number(d->max, 'f', 0));
     } else {
-        return QString();
+        return validationDataError();
     }
 }
 

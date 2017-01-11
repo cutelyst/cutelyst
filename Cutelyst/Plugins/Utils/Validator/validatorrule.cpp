@@ -35,26 +35,6 @@ ValidatorRule::~ValidatorRule()
 {
 }
 
-QString ValidatorRule::errorMessage() const
-{
-    Q_D(const ValidatorRule);
-    switch(d->errorType) {
-    case ValidationFailed:
-        if (!d->customError.isEmpty()) {
-            return d->customError;
-        } else {
-            return genericErrorMessage();
-        }
-    case ParsingError:
-        return parsingErrorMessage();
-    case ValidationDataError:
-        return validationDataErrorMessage();
-    case NoError:
-    default:
-        return QString();
-    }
-}
-
 QString ValidatorRule::field() const { Q_D(const ValidatorRule); return d->field; }
 
 void ValidatorRule::setField(const QString &field)
@@ -85,15 +65,7 @@ QString ValidatorRule::value() const
     }
 }
 
-QString ValidatorRule::customError() const { Q_D(const ValidatorRule); return d->customError; }
-
-void ValidatorRule::setCustomError(const QString &customError)
-{
-    Q_D(ValidatorRule);
-    d->customError = customError;
-}
-
-bool ValidatorRule::isValid() const { Q_D(const ValidatorRule); return d->errorType == NoError; }
+ParamsMultiMap ValidatorRule::parameters() const { Q_D(const ValidatorRule); return d->parameters; }
 
 void ValidatorRule::setParameters(const ParamsMultiMap &params)
 {
@@ -101,40 +73,60 @@ void ValidatorRule::setParameters(const ParamsMultiMap &params)
     d->parameters = params;
 }
 
-ParamsMultiMap ValidatorRule::parameters() const
-{
-    Q_D(const ValidatorRule);
-    return d->parameters;
-}
-
-QString ValidatorRule::genericFieldName() const
+QString ValidatorRule::fieldLabel() const
 {
     return !label().isEmpty() ? label() : field();
 }
 
-QString ValidatorRule::genericErrorMessage() const
+QString ValidatorRule::validationError() const
 {
-    return QStringLiteral("The input data in the “%1” field is not valid.").arg(genericFieldName());
+    Q_D(const ValidatorRule);
+    if (d->customError.isEmpty()) {
+        return genericValidationError();
+    } else {
+        return d->customError;
+    }
 }
 
-QString ValidatorRule::parsingErrorMessage() const
+QString ValidatorRule::genericValidationError() const
+{
+    return QStringLiteral("The input data in the “%1” field is not valid.").arg(fieldLabel());
+}
+
+QString ValidatorRule::parsingError() const
 {
     Q_D(const ValidatorRule);
     if (d->customParsingError.isEmpty()) {
-        return QStringLiteral("Failed to parse the input data of the “%1” field.").arg(genericFieldName());
+        return genericParsingError();
     } else {
         return d->customParsingError;
     }
 }
 
-QString ValidatorRule::validationDataErrorMessage() const
+QString ValidatorRule::genericParsingError() const
+{
+    return QStringLiteral("Failed to parse the input data of the “%1” field.").arg(fieldLabel());
+}
+
+QString ValidatorRule::validationDataError() const
 {
     Q_D(const ValidatorRule);
     if (d->customValidationDataError.isEmpty()) {
-        return QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(genericFieldName());
+        return genericValidationDataError();
     } else {
         return d->customValidationDataError;
     }
+}
+
+QString ValidatorRule::genericValidationDataError() const
+{
+    return QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(fieldLabel());
+}
+
+void ValidatorRule::setCustomError(const QString &customError)
+{
+    Q_D(ValidatorRule);
+    d->customError = customError;
 }
 
 void ValidatorRule::setCustomParsingError(const QString &custom)
@@ -149,26 +141,10 @@ void ValidatorRule::setCustomValidationDataError(const QString &custom)
     d->customValidationDataError = custom;
 }
 
+bool ValidatorRule::trimBefore() const { Q_D(const ValidatorRule); return d->trimBefore; }
+
 void ValidatorRule::setTrimBefore(bool trimBefore)
 {
     Q_D(ValidatorRule);
     d->trimBefore = trimBefore;
-}
-
-bool ValidatorRule::trimBefore() const
-{
-    Q_D(const ValidatorRule);
-    return d->trimBefore;
-}
-
-ValidatorRule::ValidatonErrorType ValidatorRule::error() const
-{
-    Q_D(const ValidatorRule);
-    return d->errorType;
-}
-
-void ValidatorRule::setError(ValidatonErrorType errorType)
-{
-    Q_D(ValidatorRule);
-    d->errorType = errorType;
 }

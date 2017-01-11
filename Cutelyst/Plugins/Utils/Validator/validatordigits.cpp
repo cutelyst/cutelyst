@@ -37,38 +37,36 @@ ValidatorDigits::~ValidatorDigits()
 {
 }
 
-bool ValidatorDigits::validate()
+QString ValidatorDigits::validate() const
 {
-    Q_D(ValidatorDigits);
+    Q_D(const ValidatorDigits);
 
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
         if (d->length > 0) {
             if (value().length() == d->length) {
-                setError(ValidatorRule::NoError);
-                return true;
+                return QString();
             } else {
-                return false;
+                return validationError();
             }
         } else {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         }
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorDigits::genericErrorMessage() const
+QString ValidatorDigits::genericValidationError() const
 {
-    Q_D(const ValidatorDigits);    if (d->length > 0) {
-        return QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(genericFieldName(), QString::number(d->length));
+    Q_D(const ValidatorDigits);
+    if (d->length > 0) {
+        return QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
     } else {
-        return QStringLiteral("The “%1” field must only contain digits.").arg(genericFieldName());
+        return QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
     }
 }
 

@@ -35,32 +35,29 @@ ValidatorIn::~ValidatorIn()
 {
 }
 
-bool ValidatorIn::validate()
+QString ValidatorIn::validate() const
 {
-    Q_D(ValidatorIn);
+    Q_D(const ValidatorIn);
 
     if (d->values.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
     }
 
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (d->values.contains(value())) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorIn::genericErrorMessage() const
+QString ValidatorIn::genericValidationError() const
 {
     Q_D(const ValidatorIn);
-    return QStringLiteral("The value in the “%1“ field has to be one of the following: %2").arg(genericFieldName(), d->values.join(QStringLiteral(", ")));
+    return QStringLiteral("The value in the “%1“ field has to be one of the following: %2").arg(fieldLabel(), d->values.join(QStringLiteral(", ")));
 }
 
 void ValidatorIn::setValues(const QStringList &values)

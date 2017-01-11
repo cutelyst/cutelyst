@@ -39,110 +39,99 @@ ValidatorBefore::~ValidatorBefore()
 {
 }
 
-bool ValidatorBefore::validate()
+QString ValidatorBefore::validate() const
 {
-    Q_D(ValidatorBefore);
+    Q_D(const ValidatorBefore);
 
     QString v = value();
 
     if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     if (d->date.type() == QVariant::Date) {
 
         QDate odate = d->date.toDate();
         if (!odate.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORBEFORE) << "Invalid validation date.";
-            return false;
+            return validationDataError();
         }
         QDate date = d->extractDate(v, d->inputFormat);
         if (!date.isValid()) {
-            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORBEFORE) << "Can not parse input date:" << v;
-            return false;
+            return parsingError();
         }
         if (date < odate) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         } else {
-            return false;
+            return validationError();
         }
 
     } else if (d->date.type() == QVariant::DateTime) {
 
         QDateTime odatetime = d->date.toDateTime();
         if (!odatetime.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORBEFORE) << "Invalid validation date and time.";
-            return false;
+            return validationDataError();
         }
         QDateTime datetime = d->extractDateTime(v, d->inputFormat);
         if (!datetime.isValid()) {
-            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORBEFORE) << "Can not parse input date and time:" << v;
-            return false;
+            return parsingError();
         }
         if (datetime < odatetime) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         } else {
-            return false;
+            return validationError();
         }
 
     } else if (d->date.type() == QVariant::Time) {
 
         QTime otime = d->date.toTime();
         if (!otime.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
             qCWarning(C_VALIDATORBEFORE) << "Invalid validation time.";
-            return false;
+            return validationDataError();
         }
         QTime time = d->extractTime(v, d->inputFormat);
         if (!time.isValid()) {
-            setError(ValidatorRule::ParsingError);
             qCWarning(C_VALIDATORBEFORE) << "Can not parse input time:" << v;
-            return false;
+            return parsingError();
         }
         if (time < otime) {
-            setError(ValidatorRule::NoError);
-            return true;
+            return QString();
         } else {
-            return false;
+            return validationError();
         }
 
     } else {
 
         qCWarning(C_VALIDATORBEFORE) << "Invalid validation data:" << d->date;
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        return validationDataError();
 
     }
 
-    return false;
+    return validationError();
 }
 
-QString ValidatorBefore::genericErrorMessage() const
+QString ValidatorBefore::genericValidationError() const
 {
     Q_D(const ValidatorBefore);
 
     switch(d->date.type()) {
     case QVariant::Date:
-        return QStringLiteral("The date in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The date in the “%1” field must be before %2.").arg(fieldLabel(),
                                                                       //: date shown in validator error message
                                                                       d->date.toDate().toString(QStringLiteral("dd.MM.yyyy")));
     case QVariant::DateTime:
-        return QStringLiteral("The date and time in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The date and time in the “%1” field must be before %2.").arg(fieldLabel(),
                                                                                //: date and time shown in validator error message
                                                                                d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
     case QVariant::Time:
-        return QStringLiteral("The time in the “%1” field must be before %2.").arg(genericFieldName(),
+        return QStringLiteral("The time in the “%1” field must be before %2.").arg(fieldLabel(),
                                                                       //: time shown in the validator error message
                                                                       d->date.toTime().toString(QStringLiteral("HH:mm")));
     default:
-        return QString();
+        return validationDataError();
     }
 }
 

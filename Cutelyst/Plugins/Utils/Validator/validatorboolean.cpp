@@ -36,24 +36,22 @@ ValidatorBoolean::~ValidatorBoolean()
 {
 }
 
-bool ValidatorBoolean::validate()
+QString ValidatorBoolean::validate() const
 {
     if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     }
 
     QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
     if (l.contains(value(), Qt::CaseInsensitive)) {
-        setError(ValidatorRule::NoError);
-        return true;
+        return QString();
     } else {
-        return false;
+        return validationError();
     }
 }
 
-QString ValidatorBoolean::genericErrorMessage() const
+QString ValidatorBoolean::genericValidationError() const
 {
-    return QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(genericFieldName());
+    return QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(fieldLabel());
 }
 
