@@ -1,4 +1,4 @@
-#ifndef VALIDATORTEST_H
+﻿#ifndef VALIDATORTEST_H
 #define VALIDATORTEST_H
 
 #include <QTest>
