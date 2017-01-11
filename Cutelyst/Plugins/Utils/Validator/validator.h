@@ -193,7 +193,7 @@ public:
      * If Validator::FillStashOnError is set, it will use fillStash() to fill the stash of Context \c with error data
      * and the input values.
      */
-    bool validate(Context *c, ValidatorFlags flags = NoSpecialBehavior);
+    bool validate(Context *c, ValidatorFlags flags = NoSpecialBehavior) const;
 
     /*!
      * \brief Starts the validation process on the \a parameters and returns \c true on success.
@@ -203,7 +203,7 @@ public:
      *
      * Validator::FillStashOnError will not have any effect if using this function.
      */
-    bool validate(const ParamsMultiMap &parameters, ValidatorFlags flags = NoSpecialBehavior);
+    bool validate(const ParamsMultiMap &parameters, ValidatorFlags flags = NoSpecialBehavior) const;
 
     /*!
      * \brief Adds a new validator to the list of validators.
@@ -317,7 +317,7 @@ public:
      * The sensible data of the password fields is not part of the stash, but the other values can be used to prefill the form fields for the next attempt of
      * our little Schalke fan and can give him some hints what was wrong.
      */
-    void fillStash(Context *c);
+    void fillStash(Context *c) const;
 
 protected:
     const QScopedPointer<ValidatorPrivate> d_ptr;

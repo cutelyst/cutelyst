@@ -57,7 +57,7 @@ void Validator::clear()
     }
 }
 
-bool Validator::validate(Context *c, ValidatorFlags flags)
+bool Validator::validate(Context *c, ValidatorFlags flags) const
 {
     if (!c) {
         qCWarning(C_VALIDATOR) << "No valid Context set, aborting validation.";
@@ -73,10 +73,9 @@ bool Validator::validate(Context *c, ValidatorFlags flags)
     return valid;
 }
 
-bool Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags)
+bool Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags) const
 {
-    Q_D(Validator);
-    d->params = params;
+    Q_D(const Validator);
 
     if (d->validators.empty()) {
         qCWarning(C_VALIDATOR) << "Validation started with empty validator list.";
@@ -91,7 +90,7 @@ bool Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags)
     const bool stopOnFirstError = flags.testFlag(StopOnFirstError);
     const bool noTrimming = flags.testFlag(NoTrimming);
 
-    for (std::vector<ValidatorRule*>::iterator it = d->validators.begin(); it != d->validators.end(); ++it) {
+    for (auto it = d->validators.cbegin(); it != d->validators.cend(); ++it) {
         ValidatorRule *v = *it;
         v->setParameters(params);
 
@@ -180,7 +179,7 @@ void Validator::addLabel(const QString &field, const QString &label)
     d->labelDict.insert(field, label);
 }
 
-void Validator::fillStash(Context *c)
+void Validator::fillStash(Context *c) const
 {
     Q_D(const Validator);
 
@@ -188,9 +187,14 @@ void Validator::fillStash(Context *c)
         QVariantList validationErrorStrings;
         QVariantList validationErrorFields;
 
+        ParamsMultiMap params;
+
         for (std::vector<ValidatorRule*>::const_iterator it = d->validators.cbegin(); it != d->validators.cend(); ++it) {
             ValidatorRule *v = *it;
             if (!v->isValid()) {
+                if (params.isEmpty()) {
+                    params = v->parameters();
+                }
                 validationErrorStrings << v->errorMessage();
                 validationErrorFields << v->field();
             }
@@ -199,9 +203,9 @@ void Validator::fillStash(Context *c)
         c->setStash(QStringLiteral("validationErrorStrings"), validationErrorStrings);
         c->setStash(QStringLiteral("validationErrorFields"), validationErrorFields);
 
-        if (!d->params.isEmpty()) {
-            QMap<QString,QString>::const_iterator i = d->params.constBegin();
-            while (i != d->params.constEnd()) {
+        if (!params.isEmpty()) {
+            QMap<QString,QString>::const_iterator i = params.constBegin();
+            while (i != params.constEnd()) {
                 if (!i.key().contains(QStringLiteral("password"), Qt::CaseInsensitive)) {
                     c->setStash(i.key(), i.value());
                 }
