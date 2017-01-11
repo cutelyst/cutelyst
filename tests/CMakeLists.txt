@@ -21,7 +21,7 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network)
+target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network CutelystQt5::Utils::Validator)
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
   foreach(_testname ${ARGN})
@@ -49,5 +49,6 @@ cutelyst_templates_unit_tests(
     testresponse
     testdispatcherpath
     testdispatcherchained
+    testvalidator
 )
 
