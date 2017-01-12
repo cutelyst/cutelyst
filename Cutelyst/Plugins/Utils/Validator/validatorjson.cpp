@@ -38,8 +38,6 @@ ValidatorJson::~ValidatorJson()
 
 QString ValidatorJson::validate() const
 {
-    Q_D(const ValidatorJson);
-
     QString v = value();
 
     if (v.isEmpty()) {
