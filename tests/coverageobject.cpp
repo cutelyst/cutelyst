@@ -7,8 +7,6 @@
 
 #include <Cutelyst/context.h>
 
-#include "cutelyst_paths.h"
-
 using namespace Cutelyst;
 
 void CoverageObject::init()
