@@ -15,6 +15,31 @@ clone_folder: c:\dev\cutelyst
 environment:
   matrix:
   - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.7\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
+  - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.7\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
+  - CMAKE_GENERATOR: "Visual Studio 14"
+    QT5: C:\Qt\5.7\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
+  - CMAKE_GENERATOR: "Visual Studio 14 Win64"
+    QT5: C:\Qt\5.7\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    DISABLE_MAINTAINER_CFLAGS: on
+  - CMAKE_GENERATOR: "MinGW Makefiles"
+    QT5: C:\Qt\5.7\mingw53_32
+    MINGW_PATH: C:\Qt\Tools\mingw530_32
+    DISABLE_MAINTAINER_CFLAGS: off
+
+  - CMAKE_GENERATOR: "Ninja"
     QT5: C:\Qt\5.6\msvc2015
     PLATFORM: X86
     VSVER: 14
@@ -44,10 +69,6 @@ environment:
 #    PLATFORM: X64
 #    VSVER: 14
 #    DISABLE_MAINTAINER_CFLAGS: on
-  - CMAKE_GENERATOR: "MinGW Makefiles"
-    QT5: C:\Qt\5.7\mingw53_32
-    MINGW_PATH: C:\Qt\Tools\mingw530_32
-    DISABLE_MAINTAINER_CFLAGS: off
   - CMAKE_GENERATOR: "MinGW Makefiles"
     QT5: C:\Qt\5.6\mingw49_32
     MINGW_PATH: C:\Qt\Tools\mingw492_32
