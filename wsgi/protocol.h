@@ -33,6 +33,8 @@ public:
     explicit Protocol(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
 
     virtual void readyRead() = 0;
+    virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
+    virtual qint64 sendBody(TcpSocket *sock, const char *data, qint64 len);
 
     TcpSocket *m_sock;
     WSGI *m_wsgi;

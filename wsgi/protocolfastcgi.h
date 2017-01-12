@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,8 +16,8 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef PROTOCOLHTTP_H
-#define PROTOCOLHTTP_H
+#ifndef PROTOCOLFASTCGI_H
+#define PROTOCOLFASTCGI_H
 
 #include <QObject>
 
@@ -26,22 +26,26 @@
 namespace CWSGI {
 
 class WSGI;
-class Socket;
-class ProtocolHttp : public Protocol
+class ProtocolFastCGI : public Protocol
 {
     Q_OBJECT
 public:
-    explicit ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
-    ~ProtocolHttp();
+    explicit ProtocolFastCGI(TcpSocket *sock, WSGI *wsgi, QObject *parent = nullptr);
+    virtual ~ProtocolFastCGI();
 
-    virtual void readyRead();
+    virtual void readyRead() override;
     virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
+    qint64 sendBody(TcpSocket *sock, const char *data, qint64 len) override;
 
 private:
-    inline bool processRequest(TcpSocket *sock);
-    inline void parseMethod(const char *ptr, const char *end, Socket *sock);
-    inline void parseHeader(const char *ptr, const char *end, Socket *sock);
+    inline quint16 addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen);
+    inline int parseHeaders(Socket *wsgi_req, char *buf, size_t len);
+    inline int processPacket(TcpSocket *sock);
+    inline int writeBody(Socket *sock, char *buf, size_t len);
+    // write a STDOUT packet
+    int wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *buf, int len);
 
+    QByteArray m_headerBuffer;
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
     qint64 m_postBuffering;
@@ -50,4 +54,4 @@ private:
 
 }
 
-#endif // PROTOCOLHTTP_H
+#endif // PROTOCOLFASTCGI_H

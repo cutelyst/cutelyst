@@ -40,7 +40,7 @@ class WSGIPrivate : public QObject
 public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
 
-    bool listenTcp(const QString &line);
+    bool listenTcp(const QString &line, int protocol);
     bool listenSocket(const QString &address);
     void proc();
     void parseCommandLine();
@@ -56,11 +56,12 @@ public:
     void loadConfigGroup(const QString &group, QSettings &settings);
 
     WSGI *q_ptr;
-    std::vector<QTcpServer *> sockets;
+    std::vector<std::pair<QTcpServer *, int>> sockets;
     std::vector<Cutelyst::Engine *> engines;
     CWsgiEngine *engine;
 
     QStringList httpSockets;
+    QStringList fastcgiSockets;
     QStringList staticMaps;
     QStringList staticMaps2;
     QStringList touchReload;

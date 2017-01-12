@@ -45,7 +45,7 @@ public:
         processRequest(*sock);
     }
 
-    void setTcpSockets(const std::vector<QTcpServer *> &sockets);
+    void setTcpSockets(const std::vector<std::pair<QTcpServer *, int> > &sockets);
 
     void listen();
 
@@ -65,9 +65,11 @@ protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 
 private:
-    std::vector<QTcpServer *> m_sockets;
+    friend class ProtocolHttp;
+    friend class ProtocolFastCGI;
+
+    std::vector<std::pair<QTcpServer *, int>> m_sockets;
     QByteArray m_lastDate;
-    QByteArray m_serverHeader;
     QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;
 };

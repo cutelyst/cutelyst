@@ -29,6 +29,7 @@ class QIODevice;
 namespace CWSGI {
 
 class WSGI;
+class Protocol;
 class CWsgiEngine;
 class Socket : public Cutelyst::EngineRequest
 {
@@ -36,6 +37,13 @@ class Socket : public Cutelyst::EngineRequest
 public:
     Socket(WSGI *wsgi);
     virtual ~Socket();
+
+    enum HeaderClose {
+        HeaderCloseNotSet = 0,
+        HeaderCloseKeep,
+        HeaderCloseClose
+    };
+    Q_ENUM(HeaderClose)
 
     enum ParserState {
         MethodLine = 0,
@@ -46,11 +54,13 @@ public:
 
     inline void resetSocket() {
         connState = MethodLine;
+        proto_parser_status = 0; // FGCI
+        stream_id = 0; //FCGI
         buf_size = 0;
         beginLine = 0;
         last = 0;
         startOfRequest = 0;
-        headerClose = 0;
+        headerClose = HeaderCloseNotSet;
         processing = false;
         headerHost = false;
         delete body;
@@ -59,12 +69,15 @@ public:
 
     qint64 contentLength;
     CWsgiEngine *engine;
-    char *buf;
+    Protocol *proto;
+    char *buffer;
     ParserState connState = MethodLine;
-    int buf_size = 0;
+    quint64 stream_id = 0;// FGCI
+    quint32 proto_parser_status = 0;// FGCI
+    quint32 buf_size = 0;
     int beginLine = 0;
-    int last = 0;
-    int headerClose = 0;
+    quint32 last = 0;
+    int headerClose = HeaderCloseNotSet;
     bool headerHost = false;
     bool processing = false;
 };

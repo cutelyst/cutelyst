@@ -93,15 +93,15 @@ void ProtocolHttp::readyRead()
         return;
     }
 
-    int len = sock->read(sock->buf + sock->buf_size, m_bufferSize - sock->buf_size);
+    int len = sock->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
     sock->buf_size += len;
 
     while (sock->last < sock->buf_size) {
 //        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
-        int ix = CrLfIndexIn(sock->buf, sock->buf_size, sock->last);
+        int ix = CrLfIndexIn(sock->buffer, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
-            char *ptr = sock->buf + sock->beginLine;
+            char *ptr = sock->buffer + sock->beginLine;
             sock->beginLine = ix + 2;
             sock->last = sock->beginLine;
 
@@ -175,6 +175,46 @@ void ProtocolHttp::readyRead()
     }
 }
 
+bool ProtocolHttp::sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
+{
+    int msgLen;
+    const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
+    sock->write(msg, msgLen);
+
+    const auto headersData = headers.data();
+    if (sock->headerClose == Socket::HeaderCloseKeep) {
+        sock->headerClose = Socket::HeaderCloseNotSet;
+    }
+
+    bool hasDate = false;
+    auto it = headersData.constBegin();
+    const auto endIt = headersData.constEnd();
+    while (it != endIt) {
+        const QString key = it.key();
+        const QString value = it.value();
+        if (sock->headerClose == Socket::HeaderCloseNotSet && key == QLatin1String("connection", 10)) {
+            if (value.compare(QLatin1String("close", 5), Qt::CaseInsensitive) == 0) {
+                sock->headerClose = Socket::HeaderCloseClose;
+            } else {
+                sock->headerClose = Socket::HeaderCloseKeep;
+            }
+        } else if (!hasDate && key == QLatin1String("date", 4)) {
+            hasDate = true;
+        }
+
+        QString ret(QLatin1String("\r\n", 2) + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ", 2) + value);
+        sock->write(ret.toLatin1());
+
+        ++it;
+    }
+
+    if (!hasDate) {
+        sock->write(dateHeader);
+    }
+
+    return sock->write("\r\n\r\n", 4) == 4;
+}
+
 bool ProtocolHttp::processRequest(TcpSocket *sock)
 {
 //    qDebug() << "processRequest" << sock->contentLength;
@@ -185,14 +225,14 @@ bool ProtocolHttp::processRequest(TcpSocket *sock)
     sock->engine->processSocket(sock);
     sock->processing = false;
 
-    if (sock->headerClose == 2) {
+    if (sock->headerClose == Socket::HeaderCloseClose) {
 //                        qDebug() << "disconnectFromHost";
         sock->disconnectFromHost();
         return false;
     } else if (sock->last < sock->buf_size) {
         // move pipelined request to 0
         int remaining = sock->buf_size - sock->last;
-        memmove(sock->buf, sock->buf + sock->last, remaining);
+        memmove(sock->buffer, sock->buffer + sock->last, remaining);
         sock->resetSocket();
         sock->buf_size = remaining;
 
@@ -264,19 +304,19 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock)
     }
     const QString value = QString::fromLatin1(word_boundary, end - word_boundary);
 
-    if (sock->headerClose == 0 && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
-        if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-            sock->headerClose = 2;
+    if (sock->headerClose == Socket::HeaderCloseNotSet && key.compare(QLatin1String("Connection", 10), Qt::CaseInsensitive) == 0) {
+        if (value.compare(QLatin1String("close", 5), Qt::CaseInsensitive) == 0) {
+            sock->headerClose = Socket::HeaderCloseClose;
         } else {
-            sock->headerClose = 1;
+            sock->headerClose = Socket::HeaderCloseKeep;
         }
-    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Content-Length"), Qt::CaseInsensitive) == 0) {
+    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Content-Length", 15), Qt::CaseInsensitive) == 0) {
         bool ok;
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
             sock->contentLength = cl;
         }
-    } else if (!sock->headerHost && key.compare(QLatin1String("Host"), Qt::CaseInsensitive) == 0) {
+    } else if (!sock->headerHost && key.compare(QLatin1String("Host", 4), Qt::CaseInsensitive) == 0) {
         sock->serverAddress = value;
     }
     sock->headers.pushHeader(key, value);

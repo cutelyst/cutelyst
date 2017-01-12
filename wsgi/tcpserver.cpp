@@ -19,6 +19,7 @@
 #include "tcpserver.h"
 #include "socket.h"
 #include "protocolhttp.h"
+#include "protocolfastcgi.h"
 #include "wsgi.h"
 
 #include <Cutelyst/Engine>
@@ -27,8 +28,9 @@
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
+TcpServer::TcpServer(const QString &serverAddress, int protocol, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
   , m_wsgi(wsgi)
+  , m_protocol(protocol)
 {
     m_serverAddress = serverAddress;
     m_engine = qobject_cast<CWsgiEngine*>(parent);
@@ -57,8 +59,14 @@ void TcpServer::incomingConnection(qintptr handle)
     } else {
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
-        auto proto = new ProtocolHttp(sock, m_wsgi, sock);
-        connect(sock, &QIODevice::readyRead, proto, &Protocol::readyRead);
+        if (m_protocol == 1) {
+            sock->proto = new ProtocolHttp(sock, m_wsgi, sock);
+        } else {
+            sock->proto = new ProtocolFastCGI(sock, m_wsgi, sock);
+        }
+        // TODO in future we could use a lamda to avoid the sender() overhead
+        // and have readRead signal call proto->parser(TcpSocket*);
+        connect(sock, &QIODevice::readyRead, sock->proto, &Protocol::readyRead);
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);
         });

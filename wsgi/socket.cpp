@@ -31,23 +31,22 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
     isSecure = false;
     requestPtr = this;
     startOfRequest = 0;
-    connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected);
+    connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected, Qt::DirectConnection);
 }
 
 Socket::Socket(WSGI *wsgi)
 {
     body = nullptr;
-    buf = new char[wsgi->bufferSize()];
+    buffer = new char[wsgi->bufferSize()];
 }
 
 Socket::~Socket()
 {
-    delete [] buf;
+    delete [] buffer;
 }
 
 void TcpSocket::socketDisconnected()
 {
-//    qDebug() << Q_FUNC_INFO << processing;
     if (!processing) {
         Q_EMIT finished(this);
     }

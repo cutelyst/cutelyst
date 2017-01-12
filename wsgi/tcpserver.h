@@ -32,7 +32,7 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, WSGI *wsgi, QObject *parent = 0);
+    explicit TcpServer(const QString &serverAddress, int protocol,  WSGI *wsgi, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle);
 
@@ -42,6 +42,7 @@ public:
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
     std::vector<TcpSocket *> m_socks;
+    int m_protocol;
 };
 
 }

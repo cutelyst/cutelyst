@@ -109,7 +109,7 @@ int WSGI::load(Cutelyst::Application *app)
     return d->setupApplication(app);
 }
 
-bool WSGIPrivate::listenTcp(const QString &line)
+bool WSGIPrivate::listenTcp(const QString &line, int protocol)
 {
     QStringList parts = line.split(QLatin1Char(':'));
     if (parts.size() != 2) {
@@ -133,7 +133,7 @@ bool WSGIPrivate::listenTcp(const QString &line)
     auto server = new QTcpServer(this);
     bool ret = server->listen(address, port);
     server->pauseAccepting();
-    sockets.push_back(server);
+    sockets.push_back({server, protocol});
 
     if (ret) {
         std::cout << "Listening on: "
@@ -219,6 +219,18 @@ QString WSGI::httpSocket() const
 {
     Q_D(const WSGI);
     return d->httpSockets.join(QLatin1Char(' '));
+}
+
+void WSGI::setFastcgiSocket(const QString &fastcgiSocket)
+{
+    Q_D(WSGI);
+    d->fastcgiSockets.append(fastcgiSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
+}
+
+QString WSGI::fastcgiSocket() const
+{
+    Q_D(const WSGI);
+    return d->fastcgiSockets.join(QLatin1Char(' '));
 }
 
 void WSGI::setChdir2(const QString &chdir2)
@@ -499,6 +511,11 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocket);
 
+    auto fastcgiSocket = QCommandLineOption(QStringLiteral("fastcgi-socket"),
+                                            QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
+                                            QCoreApplication::translate("main", "address"));
+    parser.addOption(fastcgiSocket);
+
     auto staticMap = QCommandLineOption(QStringLiteral("static-map"),
                                         QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
                                         QCoreApplication::translate("main", "mountpoint=path"));
@@ -626,6 +643,13 @@ void WSGIPrivate::parseCommandLine()
         }
     }
 
+    if (!masterSet && parser.isSet(fastcgiSocket)) {
+        const auto socks = parser.values(fastcgiSocket);
+        for (const QString &sock : socks) {
+            q->setFastcgiSocket(sock);
+        }
+    }
+
     if (parser.isSet(staticMap)) {
         const auto maps = parser.values(staticMap);
         for (const QString &map : maps) {
@@ -658,8 +682,12 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         }
     }
 
-    for (const auto &httpSocket : httpSockets) {
-        listenTcp(httpSocket);
+    for (const auto &socket : httpSockets) {
+        listenTcp(socket, 1);
+    }
+
+    for (const auto &socket : fastcgiSockets) {
+        listenTcp(socket, 2);
     }
 
     if (!sockets.size()) {

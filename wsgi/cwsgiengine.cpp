@@ -43,7 +43,8 @@ QByteArray dateHeader();
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
-    m_serverHeader.append("\r\nServer: cutelyst/").append(VERSION).append("\r\n\r\n");
+    defaultHeaders().setServer(QLatin1String("cutelyst/", 9) + QLatin1String(VERSION));
+
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
 
@@ -69,7 +70,7 @@ int CWsgiEngine::workerId() const
     return m_workerId;
 }
 
-void CWsgiEngine::setTcpSockets(const std::vector<QTcpServer *> &sockets)
+void CWsgiEngine::setTcpSockets(const std::vector<std::pair<QTcpServer *, int>> &sockets)
 {
     m_sockets = sockets;
 }
@@ -86,9 +87,10 @@ void CWsgiEngine::listen()
     }
 
     const auto sockets = m_sockets;
-    for (QTcpServer *socket : sockets) {
+    for (const std::pair<QTcpServer *, int> &pair : sockets) {
+        QTcpServer *socket = pair.first;
         const QString serverAddress = socket->serverAddress().toString() + QLatin1Char(':') + QString::number(socket->serverPort());
-        auto server = new TcpServer(serverAddress, m_wsgi, this);
+        auto server = new TcpServer(serverAddress, pair.second, m_wsgi, this);
         server->setSocketDescriptor(socket->socketDescriptor());
         server->pauseAccepting();
         connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
@@ -110,63 +112,30 @@ void CWsgiEngine::postFork()
 QByteArray dateHeader()
 {
     QString ret;
-    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
-                                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    ret = QLatin1String("\r\nDate: ", 8) + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                                                 QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     return ret.toLatin1();
 }
 
 bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
-    auto conn = static_cast<QIODevice*>(engineData);
-
-    int msgLen;
-    const char *msg = httpStatusMessage(status, &msgLen);
-    conn->write(msg, msgLen);
-
-    auto sock = qobject_cast<TcpSocket*>(conn);
-    const auto headersData = headers.data();
-    if (sock->headerClose == 1) {
-        sock->headerClose = 0;
-    }
-
-    bool hasDate = false;
-    auto it = headersData.constBegin();
-    const auto endIt = headersData.constEnd();
-    while (it != endIt) {
-        const QString key = it.key();
-        const QString value = it.value();
-        if (sock->headerClose == 0 && key == QLatin1String("connection")) {
-            if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-                sock->headerClose = 2;
-            } else {
-                sock->headerClose = 1;
-            }
-        } else if (!hasDate && key == QLatin1String("date")) {
-            hasDate = true;
-        }
-
-        QString ret(QLatin1String("\r\n") + camelCaseHeader(key) + QLatin1String(": ") + value);
-        conn->write(ret.toLatin1());
-
-        ++it;
-    }
-
-    if (!hasDate) {
+    auto sock = static_cast<TcpSocket*>(engineData);
+    if (sock) {
         if (m_lastDateTimer.hasExpired(1000)) {
             m_lastDate = dateHeader();
             m_lastDateTimer.restart();
         }
-        conn->write(m_lastDate);
-    }
 
-    return conn->write(m_serverHeader) == m_serverHeader.size();
+        return sock->proto->sendHeaders(sock, status, m_lastDate, headers);
+    }
+    return false;
 }
 
 qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
-    auto conn = static_cast<QIODevice*>(engineData);
+    auto sock = static_cast<TcpSocket*>(engineData);
     //    qDebug() << Q_FUNC_INFO << QByteArray(data,len);
-    qint64 ret = conn->write(data, len);
+    qint64 ret = sock->proto->sendBody(sock, data, len);
     //    conn->waitForBytesWritten(200);
     return ret;
 }

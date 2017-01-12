@@ -27,4 +27,9 @@ Protocol::Protocol(TcpSocket *sock, WSGI *wsgi, QObject *parent) : QObject(paren
 
 }
 
+qint64 Protocol::sendBody(TcpSocket *sock, const char *data, qint64 len)
+{
+    return sock->write(data, len);
+}
+
 #include "moc_protocol.cpp"
