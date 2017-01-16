@@ -43,7 +43,7 @@ QByteArray dateHeader();
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
-    defaultHeaders().setServer(QLatin1String("cutelyst/", 9) + QLatin1String(VERSION));
+    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
 
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
@@ -112,8 +112,8 @@ void CWsgiEngine::postFork()
 QByteArray dateHeader()
 {
     QString ret;
-    ret = QLatin1String("\r\nDate: ", 8) + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
-                                                                 QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     return ret.toLatin1();
 }
 

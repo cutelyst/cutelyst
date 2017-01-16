@@ -453,11 +453,11 @@ bool ProtocolFastCGI::sendHeaders(TcpSocket *sock, quint16 status, const QByteAr
     while (it != endIt) {
         const QString key = it.key();
         const QString value = it.value();
-        if (!hasDate && key == QLatin1String("date", 4)) {
+        if (!hasDate && key == QLatin1String("date")) {
             hasDate = true;
         }
 
-        QString line(QLatin1String("\r\n", 2) + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ", 2) + value);
+        QString line(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
         const QByteArray data = line.toLatin1();
         m_headerBuffer.append(data);
 

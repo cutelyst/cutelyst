@@ -203,7 +203,7 @@ Upload::Upload(UploadPrivate *prv) :
     int start = disposition.indexOf(QLatin1String("name=\""));
     if (start != -1) {
         start += 6;
-        int end = disposition.indexOf(QLatin1String("\""), start);
+        int end = disposition.indexOf(QLatin1Char('"'), start);
         if (end != -1) {
             d->name = disposition.mid(start, end - start);
         }
@@ -212,7 +212,7 @@ Upload::Upload(UploadPrivate *prv) :
     start = disposition.indexOf(QLatin1String("filename=\""));
     if (start != -1) {
         start += 10;
-        int end = disposition.indexOf(QLatin1String("\""), start);
+        int end = disposition.indexOf(QLatin1Char('"'), start);
         if (end != -1) {
             d->filename = disposition.mid(start, end - start);
         }
