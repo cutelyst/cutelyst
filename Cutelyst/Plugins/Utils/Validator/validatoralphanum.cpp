@@ -41,15 +41,13 @@ ValidatorAlphaNum::~ValidatorAlphaNum()
 
 QString ValidatorAlphaNum::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
-        return QString();
-    } else {
-        return validationError();
-    }
+    return result;
 }
 
 QString ValidatorAlphaNum::genericValidationError() const

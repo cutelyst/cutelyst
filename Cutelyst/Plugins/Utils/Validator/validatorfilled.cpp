@@ -37,15 +37,13 @@ ValidatorFilled::~ValidatorFilled()
 
 QString ValidatorFilled::validate() const
 {
-    if (!parameters().contains(field())) {
-        return QString();
-    } else {
-        if (!value().isEmpty()) {
-            return QString();
-        }
+    QString result;
+
+    if (parameters().contains(field()) && value().isEmpty()) {
+        result = validationError();
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorFilled::genericValidationError() const

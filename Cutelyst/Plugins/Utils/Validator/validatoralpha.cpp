@@ -41,15 +41,13 @@ ValidatorAlpha::~ValidatorAlpha()
 
 QString ValidatorAlpha::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM]+$")))) {
-        return QString();
-    } else {
-        return validationError();
-    }
+    return result;
 }
 
 QString ValidatorAlpha::genericValidationError() const

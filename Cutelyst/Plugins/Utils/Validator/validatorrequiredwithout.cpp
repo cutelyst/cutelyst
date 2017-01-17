@@ -37,34 +37,31 @@ ValidatorRequiredWithout::~ValidatorRequiredWithout()
 
 QString ValidatorRequiredWithout::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorRequiredWithout);
 
     if (d->otherFields.isEmpty()) {
-        return validationDataError();
-    }
-
-    bool otherMissing = false;
-
-    const QStringList ofc = d->otherFields;
-
-    for (const QString &other : ofc) {
-        if (!d->parameters.contains(other)) {
-            otherMissing = true;
-            break;
-        }
-    }
-
-    if (otherMissing) {
-        if (!value().isEmpty()) {
-            return QString();
-        } else {
-            return validationError();
-        }
+        result = validationDataError();
     } else {
-        return QString();
+
+        bool otherMissing = false;
+
+        const QStringList ofc = d->otherFields;
+
+        for (const QString &other : ofc) {
+            if (!d->parameters.contains(other)) {
+                otherMissing = true;
+                break;
+            }
+        }
+
+        if (otherMissing && value().isEmpty()) {
+            result = validationError();
+        }
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorRequiredWithout::genericValidationError() const

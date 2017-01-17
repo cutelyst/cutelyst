@@ -38,18 +38,18 @@ ValidatorJson::~ValidatorJson()
 
 QString ValidatorJson::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        return QString();
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+        const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8());
+        if (json.isEmpty() || json.isNull()) {
+            result = validationError();
+        }
     }
 
-    QJsonDocument json = QJsonDocument::fromJson(v.toUtf8());
-    if (!json.isEmpty() && !json.isNull()) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorJson::genericValidationError() const

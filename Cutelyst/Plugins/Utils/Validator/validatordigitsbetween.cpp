@@ -39,35 +39,39 @@ ValidatorDigitsBetween::~ValidatorDigitsBetween()
 
 QString ValidatorDigitsBetween::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorDigitsBetween);
 
-    if (value().isEmpty()) {
-        return QString();
-    }
+    if (!value().isEmpty()) {
+        if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
-
-        if (d->min < 1 || d->max < 1) {
-            return QString();
-        } else {
-
-            if ((value().length() >= d->min) && (value().length() <= d->max)) {
-                return QString();
+            if ((d->min > 0) && (d->max > d->min)) {
+                if ((value().length() < d->min) || (value().length() > d->max)) {
+                    result = validationError();
+                }
             }
+
+        } else {
+            result = validationError();
         }
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorDigitsBetween::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorDigitsBetween);
     if (d->min < 1 || d->max < 1) {
-        return QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
+        error = QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
     } else {
-        return QStringLiteral("The “%1” field must only contain digits with a length between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
+        error = QStringLiteral("The “%1” field must only contain digits with a length between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
     }
+
+    return error;
 }
 
 void ValidatorDigitsBetween::setMin(int min)

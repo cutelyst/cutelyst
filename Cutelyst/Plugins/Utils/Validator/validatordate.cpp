@@ -39,32 +39,36 @@ ValidatorDate::~ValidatorDate()
 
 QString ValidatorDate::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorDate);
 
-    QString v = value();
+    const QString v = value();
 
-    if (v.isEmpty()) {
-        return QString();
+    if (!v.isEmpty()) {
+        const QDate date = d->extractDate(v, d->format);
+
+        if (!date.isValid()) {
+            result = validationError();
+        }
     }
 
-    QDate date = d->extractDate(v, d->format);
-
-    if (date.isValid()) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorDate::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorDate);
 
     if (!d->format.isEmpty()) {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
+        error = QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
     } else {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(fieldLabel());
+        error = QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(fieldLabel());
     }
+
+    return error;
 }
 
 void ValidatorDate::setFormat(const QString &format)

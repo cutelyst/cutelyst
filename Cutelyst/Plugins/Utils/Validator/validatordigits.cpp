@@ -39,35 +39,36 @@ ValidatorDigits::~ValidatorDigits()
 
 QString ValidatorDigits::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorDigits);
 
-    if (value().isEmpty()) {
-        return QString();
-    }
+    if (!value().isEmpty()) {
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
-        if (d->length > 0) {
-            if (value().length() == d->length) {
-                return QString();
-            } else {
-                return validationError();
+        if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
+            if ((d->length > 0) && (value().length() != d->length)) {
+                result = validationError();
             }
         } else {
-            return QString();
+            result = validationError();
         }
-    } else {
-        return validationError();
     }
+
+    return result;
 }
 
 QString ValidatorDigits::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorDigits);
     if (d->length > 0) {
-        return QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
+        error = QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
     } else {
-        return QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
+        error = QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
     }
+
+    return error;
 }
 
 void ValidatorDigits::setLength(int length)

@@ -37,11 +37,13 @@ ValidatorPresent::~ValidatorPresent()
 
 QString ValidatorPresent::validate() const
 {
-    if (parameters().contains(field())) {
-        return QString();
+    QString result;
+
+    if (!parameters().contains(field())) {
+        result = validationError();
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorPresent::genericValidationError() const

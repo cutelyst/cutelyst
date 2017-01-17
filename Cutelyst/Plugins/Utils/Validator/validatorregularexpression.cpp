@@ -37,17 +37,15 @@ ValidatorRegularExpression::~ValidatorRegularExpression()
 
 QString ValidatorRegularExpression::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
-    }
+    QString result;
 
     Q_D(const ValidatorRegularExpression);
 
-    if (value().contains(d->regex)) {
-        return QString();
+    if (!value().isEmpty() && !value().contains(d->regex)) {
+        result = validationError();
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorRegularExpression::genericValidationError() const

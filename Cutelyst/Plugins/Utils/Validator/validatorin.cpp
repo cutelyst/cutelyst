@@ -37,21 +37,19 @@ ValidatorIn::~ValidatorIn()
 
 QString ValidatorIn::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorIn);
 
-    if (d->values.isEmpty()) {
-        return validationDataError();
+    if (!d->values.isEmpty()) {
+        if (!value().isEmpty() && !d->values.contains(value())) {
+            result = validationError();
+        }
+    } else {
+        result = validationDataError();
     }
 
-    if (value().isEmpty()) {
-        return QString();
-    }
-
-    if (d->values.contains(value())) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorIn::genericValidationError() const

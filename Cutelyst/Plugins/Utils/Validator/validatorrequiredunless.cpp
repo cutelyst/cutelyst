@@ -37,27 +37,17 @@ ValidatorRequiredUnless::~ValidatorRequiredUnless()
 
 QString ValidatorRequiredUnless::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorRequiredUnless);
 
-    if (d->otherField.isEmpty()) {
-        return validationDataError();
+    if (d->otherField.isEmpty() || d->otherValues.empty()) {
+        result = validationDataError();
+    } else if (!d->otherValues.contains(d->parameters.value(d->otherField)) && value().isEmpty()) {
+        result = validationError();
     }
 
-    if (d->otherValues.isEmpty()) {
-        return validationDataError();
-    }
-
-    if (!d->otherValues.contains(d->parameters.value(d->otherField))) {
-
-        if (!value().isEmpty()) {
-            return QString();
-        }
-
-    } else {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorRequiredUnless::genericValidationError() const

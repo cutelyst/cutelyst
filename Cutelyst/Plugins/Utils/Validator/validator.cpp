@@ -59,13 +59,15 @@ void Validator::clear()
 
 Cutelyst::ValidatorResult Validator::validate(Context *c, ValidatorFlags flags) const
 {
+    ValidatorResult result;
+
     if (!c) {
         qCWarning(C_VALIDATOR) << "No valid Context set, aborting validation.";
-        return ValidatorResult();
+        return result;
     }
 
     const ParamsMultiMap params = c->request()->parameters();
-    const ValidatorResult result = validate(params, flags);
+    result = validate(params, flags);
 
     if (!result && flags.testFlag(FillStashOnError)) {
         c->setStash(QStringLiteral("validationErrorStrings"), result.errorStrings());
@@ -87,9 +89,9 @@ Cutelyst::ValidatorResult Validator::validate(Context *c, ValidatorFlags flags) 
 
 ValidatorResult Validator::validate(const ParamsMultiMap &params, ValidatorFlags flags) const
 {
-    Q_D(const Validator);
-
     ValidatorResult result;
+
+    Q_D(const Validator);
 
     if (d->validators.empty()) {
         qCWarning(C_VALIDATOR) << "Validation started with empty validator list.";

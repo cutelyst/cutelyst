@@ -41,15 +41,13 @@ ValidatorAlphaDash::~ValidatorAlphaDash()
 
 QString ValidatorAlphaDash::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
-        return QString();
-    } else {
-        return validationError();
-    }
+    return result;
 }
 
 QString ValidatorAlphaDash::genericValidationError() const

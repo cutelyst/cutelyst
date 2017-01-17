@@ -38,15 +38,13 @@ ValidatorNumeric::~ValidatorNumeric()
 
 QString ValidatorNumeric::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorNumeric::genericValidationError() const

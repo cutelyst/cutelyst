@@ -40,17 +40,15 @@ ValidatorInteger::~ValidatorInteger()
 
 QString ValidatorInteger::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        return QString();
+    const QString v = value();
+
+    if (!v.isEmpty() && !v.contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorInteger::genericValidationError() const

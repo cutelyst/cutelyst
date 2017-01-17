@@ -38,58 +38,70 @@ ValidatorUrl::~ValidatorUrl()
 
 QString ValidatorUrl::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorUrl);
 
-    QString v = value();
+    const QString v = value();
 
-    if (v.isEmpty()) {
-        return QString();
-    }
+    if (!v.isEmpty()) {
 
-    QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
-    if (d->constraints.testFlag(StrictParsing)) {
-        parsingMode = QUrl::StrictMode;
-    }
+        bool valid = true;
 
-    QUrl url(value(), parsingMode);
-    if (!url.isValid() || url.isEmpty()) {
-        return validationError();
-    }
-
-    if ((d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
-        return validationError();
-    }
-
-    if ((d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
-        return validationError();
-    }
-
-    QStringList schemeList = d->schemes;
-
-    if (d->constraints.testFlag(WebsiteOnly)) {
-        if (!schemeList.contains(QStringLiteral("http"))) {
-            schemeList.append(QStringLiteral("http"));
+        QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
+        if (d->constraints.testFlag(StrictParsing)) {
+            parsingMode = QUrl::StrictMode;
         }
-        if (!schemeList.contains(QStringLiteral("https"))) {
-            schemeList.append(QStringLiteral("https"));
+
+        QUrl url(value(), parsingMode);
+        if (!url.isValid() || url.isEmpty()) {
+            valid = false;
         }
-    }
 
-    if (!schemeList.isEmpty()) {
+        if (valid && (d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
+            valid = false;
+        }
 
-        const QStringList sc = schemeList;
-        for (const QString &s : sc) {
-            const QString sl =  s.toLower();
-            if (url.scheme() == sl) {
-                return QString();
+        if (valid && (d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
+            valid = false;
+        }
+
+        if (valid) {
+            QStringList schemeList = d->schemes;
+
+            if (d->constraints.testFlag(WebsiteOnly)) {
+                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive)) {
+                    schemeList.append(QStringLiteral("http"));
+                }
+                if (!schemeList.contains(QStringLiteral("https"), Qt::CaseInsensitive)) {
+                    schemeList.append(QStringLiteral("https"));
+                }
+            }
+
+            if (!schemeList.isEmpty()) {
+
+                const QStringList sc = schemeList;
+                bool foundScheme = false;
+                for (const QString &s : sc) {
+                    const QString sl =  s.toLower();
+                    if (url.scheme() == sl) {
+                        foundScheme = true;
+                        break;
+                    }
+                }
+
+                if (!foundScheme) {
+                    valid = false;
+                }
             }
         }
 
-        return validationError();
-
-    } else {
-        return QString();
+        if (!valid) {
+            result = validationError();
+        }
     }
+
+    return result;
 }
 
 QString ValidatorUrl::genericValidationError() const

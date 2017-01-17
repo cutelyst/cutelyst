@@ -40,12 +40,14 @@ ValidatorAccepted::~ValidatorAccepted()
 
 QString ValidatorAccepted::validate() const
 {
-    QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
-    if (l.contains(value(), Qt::CaseInsensitive)) {
-        return QString();
-    } else {
-        return validationError();
+    QString result;
+
+    static const QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
+    if (!l.contains(value(), Qt::CaseInsensitive)) {
+        result = validationError();
     }
+
+    return result;
 }
 
 QString ValidatorAccepted::genericValidationError() const

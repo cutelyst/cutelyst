@@ -37,57 +37,62 @@ ValidatorSize::~ValidatorSize()
 
 QString ValidatorSize::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        return QString();
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+
+        Q_D(const ValidatorSize);
+
+        if (d->type == QMetaType::Int) {
+            qlonglong val = v.toLongLong();
+            qlonglong size = (qlonglong)d->size;
+            if (val != size) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::UInt) {
+            qulonglong val = v.toULongLong();
+            qulonglong size = (qulonglong)d->size;
+            if (val != size) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::Float) {
+            double val = v.toDouble();
+            if (val != d->size) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::QString) {
+            int val = v.length();
+            int size = (int)d->size;
+            if (val != size) {
+                result = validationError();
+            }
+        } else {
+            result = validationDataError();
+        }
     }
 
-    Q_D(const ValidatorSize);
-
-    if (d->type == QMetaType::Int) {
-        qlonglong val = v.toLongLong();
-        qlonglong size = (qlonglong)d->size;
-        if (val == size) {
-            return QString();
-        }
-    } else if (d->type == QMetaType::UInt) {
-        qulonglong val = v.toULongLong();
-        qulonglong size = (qulonglong)d->size;
-        if (val == size) {
-            return QString();
-        }
-    } else if (d->type == QMetaType::Float) {
-        double val = v.toDouble();
-        if (val == d->size) {
-            return QString();
-        }
-    } else if (d->type == QMetaType::QString) {
-        int val = v.length();
-        int size = (int)d->size;
-        if (val == size) {
-            return QString();
-        }
-    } else {
-        return validationDataError();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorSize::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorSize);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(fieldLabel(),QString::number(d->size, 'f', 0));
+        error = QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(fieldLabel(),QString::number(d->size, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        return QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size));
+        error =  QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size));
     } else if (d->type == QMetaType::QString) {
-        return QStringLiteral("The length of the “%1” field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size, 'f', 0));
+        error =  QStringLiteral("The length of the “%1” field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size, 'f', 0));
     } else {
-        return validationDataError();
+        error =  validationDataError();
     }
+
+    return error;
 }
 
 void ValidatorSize::setType(QMetaType::Type type)

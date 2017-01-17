@@ -37,11 +37,13 @@ ValidatorRequired::~ValidatorRequired()
 
 QString ValidatorRequired::validate() const
 {
-    if (!value().isEmpty()) {
-        return QString();
-    } else {
-        return validationError();
+    QString result;
+
+    if (value().isEmpty()) {
+        result = validationError();
     }
+
+    return result;
 }
 
 QString ValidatorRequired::genericValidationError() const

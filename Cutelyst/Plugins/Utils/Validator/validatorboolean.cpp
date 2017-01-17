@@ -38,16 +38,16 @@ ValidatorBoolean::~ValidatorBoolean()
 
 QString ValidatorBoolean::validate() const
 {
-    if (value().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty()) {
+        static const QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
+        if (!l.contains(value(), Qt::CaseInsensitive)) {
+            result = validationError();
+        }
     }
 
-    QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
-    if (l.contains(value(), Qt::CaseInsensitive)) {
-        return QString();
-    } else {
-        return validationError();
-    }
+    return result;
 }
 
 QString ValidatorBoolean::genericValidationError() const

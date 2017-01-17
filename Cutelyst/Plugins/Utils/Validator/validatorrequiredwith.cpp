@@ -37,34 +37,30 @@ ValidatorRequiredWith::~ValidatorRequiredWith()
 
 QString ValidatorRequiredWith::validate() const
 {
+    QString result;
+
     Q_D(const ValidatorRequiredWith);
 
-    if (d->otherFields.isEmpty()) {
-        return validationDataError();
-    }
-
-    bool containsOther = false;
-
-    const QStringList ofc = d->otherFields;
-
-    for (const QString &other : ofc)  {
-        if (parameters().contains(other)) {
-            containsOther = true;
-            break;
-        }
-    }
-
-    if (containsOther) {
-        if (!value().isEmpty()) {
-           return QString();
-        } else {
-            return validationError();
-        }
+    if (d->otherFields.empty()) {
+        result = validationDataError();
     } else {
-        return QString();
+        bool containsOther = false;
+
+        const QStringList ofc = d->otherFields;
+
+        for (const QString &other : ofc)  {
+            if (parameters().contains(other)) {
+                containsOther = true;
+                break;
+            }
+        }
+
+        if (containsOther && value().isEmpty()) {
+            result = validationError();
+        }
     }
 
-    return validationError();
+    return result;
 }
 
 QString ValidatorRequiredWith::genericValidationError() const

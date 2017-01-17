@@ -53,16 +53,19 @@ void ValidatorRule::setLabel(const QString &label)
 
 QString ValidatorRule::value() const
 {
+    QString v;
+
     Q_D(const ValidatorRule);
+
     if (!field().isEmpty() && !d->parameters.isEmpty()) {
         if (trimBefore()) {
-            return d->parameters.value(field()).trimmed();
+            v = d->parameters.value(field()).trimmed();
         } else {
-            return d->parameters.value(field());
+            v = d->parameters.value(field());
         }
-    } else {
-        return QString();
     }
+
+    return v;
 }
 
 ParamsMultiMap ValidatorRule::parameters() const { Q_D(const ValidatorRule); return d->parameters; }
@@ -80,12 +83,14 @@ QString ValidatorRule::fieldLabel() const
 
 QString ValidatorRule::validationError() const
 {
+    QString error;
     Q_D(const ValidatorRule);
     if (d->customError.isEmpty()) {
-        return genericValidationError();
+        error = genericValidationError();
     } else {
-        return d->customError;
+        error = d->customError;
     }
+    return error;
 }
 
 QString ValidatorRule::genericValidationError() const
@@ -95,12 +100,14 @@ QString ValidatorRule::genericValidationError() const
 
 QString ValidatorRule::parsingError() const
 {
+    QString error;
     Q_D(const ValidatorRule);
     if (d->customParsingError.isEmpty()) {
-        return genericParsingError();
+        error = genericParsingError();
     } else {
-        return d->customParsingError;
+        error = d->customParsingError;
     }
+    return error;
 }
 
 QString ValidatorRule::genericParsingError() const
@@ -110,12 +117,14 @@ QString ValidatorRule::genericParsingError() const
 
 QString ValidatorRule::validationDataError() const
 {
+    QString error;
     Q_D(const ValidatorRule);
     if (d->customValidationDataError.isEmpty()) {
-        return genericValidationDataError();
+        error = genericValidationDataError();
     } else {
-        return d->customValidationDataError;
+        error = d->customValidationDataError;
     }
+    return error;
 }
 
 QString ValidatorRule::genericValidationDataError() const

@@ -37,18 +37,18 @@ ValidatorConfirmed::~ValidatorConfirmed()
 
 QString ValidatorConfirmed::validate() const
 {
-    if (value().trimmed().isEmpty()) {
-        return QString();
+    QString result;
+
+    if (!value().isEmpty()) {
+        QString ofn = field();
+        ofn.append(QLatin1String("_confirmation"));
+
+        if (value() != parameters().value(ofn)) {
+            result = validationError();
+        }
     }
 
-    QString ofn = field();
-    ofn.append(QLatin1String("_confirmation"));
-
-    if (value() == parameters().value(ofn)) {
-        return QString();
-    }
-
-    return validationError();
+    return result;
 }
 
 QString ValidatorConfirmed::genericValidationError() const
