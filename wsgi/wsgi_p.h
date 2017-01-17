@@ -69,6 +69,7 @@ public:
     QString chdir;
     QString chdir2;
     QString ini;
+    QString socketAccess;
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     QProcess *masterChildProcess = nullptr;

@@ -77,6 +77,10 @@ public:
     void setFastcgiSocket(const QString &fastcgiSocket);
     QString fastcgiSocket() const;
 
+    Q_PROPERTY(QString socket_access READ socketAccess WRITE setSocketAccess)
+    void setSocketAccess(const QString &socketAccess);
+    QString socketAccess() const;
+
     Q_PROPERTY(QString chdir2 READ chdir2 WRITE setChdir2)
     void setChdir2(const QString &chdir2);
     QString chdir2() const;

@@ -38,8 +38,6 @@
 #include <QHostAddress>
 #include <QLocalServer>
 #include <QTcpServer>
-#include <QLocalServer>
-#include <QLocalSocket>
 #include <QPluginLoader>
 #include <QThread>
 #include <QLoggingCategory>
@@ -122,6 +120,21 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
 
     if (line.startsWith(QLatin1Char('/'))) {
         auto server = new QLocalServer(this);
+        if (!socketAccess.isEmpty()) {
+            QLocalServer::SocketOptions options;
+            if (socketAccess.contains(QLatin1Char('u'))) {
+                options |= QLocalServer::UserAccessOption;
+            }
+
+            if (socketAccess.contains(QLatin1Char('g'))) {
+                options |= QLocalServer::GroupAccessOption;
+            }
+
+            if (socketAccess.contains(QLatin1Char('o'))) {
+                options |= QLocalServer::OtherAccessOption;
+            }
+            server->setSocketOptions(options);
+        }
         server->removeServer(line);
         ret = server->listen(line);
 //        server->pauseAccepting(); // TODO
@@ -264,6 +277,18 @@ QString WSGI::fastcgiSocket() const
 {
     Q_D(const WSGI);
     return d->fastcgiSockets.join(QLatin1Char(' '));
+}
+
+void WSGI::setSocketAccess(const QString &socketAccess)
+{
+    Q_D(WSGI);
+    d->socketAccess = socketAccess;
+}
+
+QString WSGI::socketAccess() const
+{
+    Q_D(const WSGI);
+    return d->socketAccess;
 }
 
 void WSGI::setChdir2(const QString &chdir2)
@@ -549,6 +574,11 @@ void WSGIPrivate::parseCommandLine()
                                             QCoreApplication::translate("main", "address"));
     parser.addOption(fastcgiSocket);
 
+    auto socketAccess = QCommandLineOption(QStringLiteral("socket-access"),
+                                           QCoreApplication::translate("main", "set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access"),
+                                           QCoreApplication::translate("main", "options"));
+    parser.addOption(socketAccess);
+
     auto staticMap = QCommandLineOption(QStringLiteral("static-map"),
                                         QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
                                         QCoreApplication::translate("main", "mountpoint=path"));
@@ -603,6 +633,10 @@ void WSGIPrivate::parseCommandLine()
 
     if (parser.isSet(threads)) {
         q->setThreads(parser.value(threads));
+    }
+
+    if (parser.isSet(socketAccess)) {
+        q->setSocketAccess(parser.value(socketAccess));
     }
 
 #ifdef Q_OS_UNIX
