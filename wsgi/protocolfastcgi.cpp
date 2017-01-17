@@ -99,9 +99,9 @@ Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi")
 using namespace CWSGI;
 
 #ifdef Q_CC_MSVC
-
 #pragma pack(push)
 #pragma pack(1)
+#endif
 struct fcgi_record {
     quint8 version;
     quint8 type;
@@ -111,37 +111,28 @@ struct fcgi_record {
     quint8 cl0;
     quint8 pad;
     quint8 reserved;
-};
+}
+#ifdef Q_CC_MSVC
+;
 #pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(1)
-struct fcgi_begin_request_body {
-    quint16	role;
-    quint8		flags;
-    quint8		reserved[5];
-};
-#pragma pack(pop)
-
 #else
+__attribute__ ((__packed__));
+#endif
 
-struct fcgi_record {
-    quint8 version;
-    quint8 type;
-    quint8 req1;
-    quint8 req0;
-    quint8 cl1;
-    quint8 cl0;
-    quint8 pad;
-    quint8 reserved;
-} __attribute__ ((__packed__));
-
+#ifdef Q_CC_MSVC
+#pragma pack(push)
+#pragma pack(1)
+#endif
 struct fcgi_begin_request_body {
     quint16	role;
     quint8		flags;
     quint8		reserved[5];
-} __attribute__ ((__packed__));
-
+}
+#ifdef Q_CC_MSVC
+;
+#pragma pack(pop)
+#else
+__attribute__ ((__packed__));
 #endif
 
 ProtocolFastCGI::ProtocolFastCGI(WSGI *wsgi) : Protocol(wsgi)
