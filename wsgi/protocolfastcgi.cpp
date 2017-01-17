@@ -130,22 +130,22 @@ ProtocolFastCGI::~ProtocolFastCGI()
 }
 
 quint32 wsgi_be32(char *buf) {
-    quint32 *src = (quint32 *) buf;
+    quint32 *src = reinterpret_cast<quint32 *>(buf);
     quint32 ret = 0;
-    quint8 *ptr = (quint8 *) & ret;
-    ptr[0] = (quint8) ((*src >> 24) & 0xff);
-    ptr[1] = (quint8) ((*src >> 16) & 0xff);
-    ptr[2] = (quint8) ((*src >> 8) & 0xff);
-    ptr[3] = (quint8) (*src & 0xff);
+    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 24) & 0xff);
+    ptr[1] = static_cast<quint8>((*src >> 16) & 0xff);
+    ptr[2] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[3] = static_cast<quint8>(*src & 0xff);
     return ret;
 }
 
 quint16 wsgi_be16(char *buf) {
-    quint16 *src = (quint16 *) buf;
+    quint32 *src = reinterpret_cast<quint32 *>(buf);
     quint16 ret = 0;
-    quint8 *ptr = (quint8 *) & ret;
-    ptr[0] = (quint8) ((*src >> 8) & 0xff);
-    ptr[1] = (quint8) (*src & 0xff);
+    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[1] = static_cast<quint8>(*src & 0xff);
     return ret;
 }
 
@@ -198,7 +198,7 @@ int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len)
     quint8 octet;
     quint32 keylen, vallen;
     for (j = 0; j < len; j++) {
-        octet = (quint8) buf[j];
+        octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
                 return -1;
@@ -211,7 +211,7 @@ int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len)
             keylen = octet;
             j++;
         }
-        octet = (quint8) buf[j];
+        octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
                 return -1;
@@ -336,14 +336,14 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *b
             struct fcgi_record fr;
             fr.version = FCGI_VERSION_1;
             fr.type = FCGI_STDOUT;
-            quint8 *sid = (quint8 *) & wsgi_req->stream_id;
+            quint8 *sid = reinterpret_cast<quint8 *>(&wsgi_req->stream_id);
             fr.req1 = sid[1];
             fr.req0 = sid[0];
             fr.pad = 0;
             fr.reserved = 0;
-            fr.cl0 = (quint8) (fcgi_len & 0xff);
-            fr.cl1 = (quint8) ((fcgi_len >> 8) & 0xff);
-            if (wsgi_req->write((char *) &fr, sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
+            fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
+            fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
+            if (m_sock->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
                 return -1;
             }
         }
