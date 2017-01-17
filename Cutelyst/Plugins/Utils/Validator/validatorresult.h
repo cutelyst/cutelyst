@@ -48,7 +48,7 @@ class ValidatorResultPrivate;
  * }
  *
  *
- * // you can also comapre the boolen value of the result directly
+ * // you can also compare the boolen value of the result directly
  * // for example together with the Validator::FillStashOnError flag
  * // to automatically fill the stash with error information and input values
  * if (v.validate(Validator::FillStashOnError)) {
@@ -69,9 +69,14 @@ public:
     ValidatorResult();
 
     /*!
-     * \brief Creates a copy of \a other.
+     * \brief Constructs a copy of \a other.
      */
     ValidatorResult(const ValidatorResult &other);
+
+    /*!
+     * \brief Assigns \a other to this object.
+     */
+    ValidatorResult& operator =(const ValidatorResult &other);
 
     /*!
      * \brief Deconstructs the ValidatorResult.

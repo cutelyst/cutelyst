@@ -31,6 +31,12 @@ ValidatorResult::ValidatorResult(const ValidatorResult &other) :
 {
 }
 
+ValidatorResult& ValidatorResult::operator =(const ValidatorResult &other)
+{
+    d = other.d;
+    return *this;
+}
+
 ValidatorResult::~ValidatorResult()
 {
 }
