@@ -18,13 +18,22 @@
  */
 #include "protocol.h"
 
+#include "wsgi.h"
+
 using namespace CWSGI;
 
-Protocol::Protocol(Socket *sock, WSGI *wsgi, QIODevice *io) : QObject(io)
-  , m_io(io)
-  , m_sock(sock)
+Protocol::Protocol(WSGI *wsgi, QObject *parent) : QObject(parent)
   , m_wsgi(wsgi)
 {
+    m_postBufferSize = m_wsgi->postBufferingBufsize();
+    m_bufferSize = m_wsgi->bufferSize();
+    m_postBuffering = m_wsgi->postBuffering();
+    m_postBuffer = new char[m_wsgi->postBufferingBufsize()];
+}
+
+Protocol::~Protocol()
+{
+    delete [] m_postBuffer;
 }
 
 qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)

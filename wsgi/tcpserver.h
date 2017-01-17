@@ -21,18 +21,17 @@
 
 #include <QTcpServer>
 
-#include "protocol.h"
-#include "socket.h"
-
 namespace CWSGI {
 
 class WSGI;
+class Protocol;
+class TcpSocket;
 class CWsgiEngine;
 class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, int protocol,  WSGI *wsgi, QObject *parent = 0);
+    explicit TcpServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = 0);
 
     virtual void incomingConnection(qintptr handle) override;
 
@@ -42,7 +41,7 @@ public:
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
     std::vector<TcpSocket *> m_socks;
-    int m_protocol;
+    Protocol *m_protocol;
 };
 
 }

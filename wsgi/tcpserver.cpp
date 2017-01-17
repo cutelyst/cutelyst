@@ -18,8 +18,7 @@
  */
 #include "tcpserver.h"
 #include "socket.h"
-#include "protocolhttp.h"
-#include "protocolfastcgi.h"
+#include "protocol.h"
 #include "wsgi.h"
 
 #include <Cutelyst/Engine>
@@ -27,7 +26,7 @@
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(const QString &serverAddress, int protocol, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
+TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
   , m_wsgi(wsgi)
   , m_protocol(protocol)
 {
@@ -58,14 +57,10 @@ void TcpServer::incomingConnection(qintptr handle)
     } else {
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
-        if (m_protocol == 1) {
-            sock->proto = new ProtocolHttp(sock, m_wsgi, sock);
-        } else {
-            sock->proto = new ProtocolFastCGI(sock, m_wsgi, sock);
-        }
+        sock->proto = m_protocol;
 
-        connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->proto->readyRead(sock, sock);
+        connect(sock, &QIODevice::readyRead, [this, sock] () {
+            m_protocol->readyRead(sock, sock);
         });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);

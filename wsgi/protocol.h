@@ -30,15 +30,18 @@ class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    explicit Protocol(Socket *sock, WSGI *wsgi, QIODevice *io);
+    explicit Protocol(WSGI *wsgi, QObject *parent = nullptr);
+    ~Protocol();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
-    virtual bool sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
+    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
     virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
 
-    QIODevice *m_io;
-    Socket *m_sock;
     WSGI *m_wsgi;
+    qint64 m_postBufferSize;
+    qint64 m_bufferSize;
+    qint64 m_postBuffering;
+    char *m_postBuffer;
 };
 
 }

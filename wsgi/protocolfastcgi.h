@@ -30,11 +30,11 @@ class ProtocolFastCGI : public Protocol
 {
     Q_OBJECT
 public:
-    ProtocolFastCGI(Socket *sock, WSGI *wsgi, QIODevice *io);
+    explicit ProtocolFastCGI(WSGI *wsgi, QObject *parent = nullptr);
     virtual ~ProtocolFastCGI();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
-    virtual bool sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
+    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
     qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:
@@ -43,13 +43,9 @@ private:
     inline int processPacket(Socket *sock) const;
     inline int writeBody(Socket *sock, char *buf, size_t len) const;
     // write a STDOUT packet
-    int wsgi_proto_fastcgi_write(Socket *wsgi_req, const char *buf, int len);
+    int wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, const char *buf, int len);
 
     QByteArray m_headerBuffer;
-    qint64 m_postBufferSize;
-    qint64 m_bufferSize;
-    qint64 m_postBuffering;
-    char *m_postBuffer;
 };
 
 }

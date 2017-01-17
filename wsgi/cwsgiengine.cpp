@@ -19,6 +19,7 @@
 #include "cwsgiengine.h"
 
 #include "protocolhttp.h"
+#include "protocolfastcgi.h"
 #include "tcpserver.h"
 #include "localserver.h"
 #include "config.h"
@@ -83,18 +84,32 @@ void CWsgiEngine::listen()
 
     }
 
+    ProtocolHttp *protoHTTP = nullptr;
+    ProtocolFastCGI *protoFCGI = nullptr;
+
     const auto sockets = m_sockets;
     for (const SocketInfo &info : sockets) {
+        Protocol *proto;
+        if (info.protocol == 1) {
+            if (!protoHTTP) {
+                protoHTTP = new ProtocolHttp(m_wsgi, this);
+            }
+            proto = protoHTTP;
+        } else {
+            if (!protoFCGI) {
+                protoFCGI = new ProtocolFastCGI(m_wsgi, this);
+            }
+            proto = protoFCGI;
+        }
+
         if (!info.localSocket) {
-            auto server = new TcpServer(info.serverName, info.protocol, m_wsgi, this);
+            auto server = new TcpServer(info.serverName, proto, m_wsgi, this);
             if (server->setSocketDescriptor(info.socketDescriptor)) {
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
             }
-        }
-
-        if (info.localSocket) {
-            auto server = new LocalServer(info.serverName, info.protocol, m_wsgi, this);
+        } else {
+            auto server = new LocalServer(info.serverName, proto, m_wsgi, this);
             if (server->setSocketDescriptor(info.socketDescriptor)) {
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::resumeAccepting, server, &LocalServer::resumeAccepting);
@@ -132,7 +147,7 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
             m_lastDateTimer.restart();
         }
 
-        return sock->proto->sendHeaders(sock, status, m_lastDate, headers);
+        return sock->proto->sendHeaders(sock, sock, status, m_lastDate, headers);
     }
     return false;
 }

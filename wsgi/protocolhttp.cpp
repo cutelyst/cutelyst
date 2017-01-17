@@ -33,7 +33,7 @@
 
 using namespace CWSGI;
 
-ProtocolHttp::ProtocolHttp(Socket *sock, WSGI *wsgi, QIODevice *io) : Protocol(sock, wsgi, io)
+ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
 {
     m_postBufferSize = m_wsgi->postBufferingBufsize();
     m_bufferSize = m_wsgi->bufferSize();
@@ -43,7 +43,7 @@ ProtocolHttp::ProtocolHttp(Socket *sock, WSGI *wsgi, QIODevice *io) : Protocol(s
 
 ProtocolHttp::~ProtocolHttp()
 {
-    delete [] m_postBuffer;
+
 }
 
 inline int CrLfIndexIn(const char *str, int len, int from)
@@ -173,11 +173,11 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
     }
 }
 
-bool ProtocolHttp::sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
+bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
 {
     int msgLen;
     const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
-    m_io->write(msg, msgLen);
+    io->write(msg, msgLen);
 
     const auto headersData = headers.data();
     if (sock->headerClose == Socket::HeaderCloseKeep) {
@@ -201,16 +201,16 @@ bool ProtocolHttp::sendHeaders(Socket *sock, quint16 status, const QByteArray &d
         }
 
         QString ret(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
-        m_io->write(ret.toLatin1());
+        io->write(ret.toLatin1());
 
         ++it;
     }
 
     if (!hasDate) {
-        m_io->write(dateHeader);
+        io->write(dateHeader);
     }
 
-    return m_io->write("\r\n\r\n", 4) == 4;
+    return io->write("\r\n\r\n", 4) == 4;
 }
 
 bool ProtocolHttp::processRequest(Socket *sock) const
@@ -224,7 +224,7 @@ bool ProtocolHttp::processRequest(Socket *sock) const
     sock->processing = false;
 
     if (sock->headerClose == Socket::HeaderCloseClose) {
-        m_sock->connectionClose();
+        sock->connectionClose();
         return false;
     } else if (sock->last < sock->buf_size) {
         // move pipelined request to 0
