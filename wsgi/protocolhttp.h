@@ -34,7 +34,7 @@ public:
     explicit ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
     ~ProtocolHttp();
 
-    virtual void readyRead();
+    virtual void readyRead() override;
     virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
 
 private:
