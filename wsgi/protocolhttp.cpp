@@ -33,7 +33,7 @@
 
 using namespace CWSGI;
 
-ProtocolHttp::ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent) : Protocol(sock, wsgi, parent)
+ProtocolHttp::ProtocolHttp(Socket *sock, WSGI *wsgi, QIODevice *io) : Protocol(sock, wsgi, io)
 {
     m_postBufferSize = m_wsgi->postBufferingBufsize();
     m_bufferSize = m_wsgi->bufferSize();
@@ -67,20 +67,18 @@ inline int CrLfIndexIn(const char *str, int len, int from)
     return -1;
 }
 
-void ProtocolHttp::readyRead()
+void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
 {
-    const auto sock = m_sock;
-
     // Post buffering
     if (sock->connState == Socket::ContentBody) {
-        qint64 bytesAvailable = sock->bytesAvailable();
+        qint64 bytesAvailable = io->bytesAvailable();
         int len;
         qint64 remaining;
 
         QIODevice *body = sock->body;
         do {
             remaining = sock->contentLength - body->size();
-            len = sock->read(m_postBuffer, qMin(m_postBufferSize, remaining));
+            len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             bytesAvailable -= len;
 //            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
             body->write(m_postBuffer, len);
@@ -93,7 +91,7 @@ void ProtocolHttp::readyRead()
         return;
     }
 
-    int len = sock->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
+    int len = io->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
     sock->buf_size += len;
 
     while (sock->last < sock->buf_size) {
@@ -122,21 +120,21 @@ void ProtocolHttp::readyRead()
                     if (sock->contentLength != -1) {
                         sock->connState = Socket::ContentBody;
                         if (m_postBuffering && sock->contentLength > m_postBuffering) {
-                            auto temp = new QTemporaryFile(sock);
+                            auto temp = new QTemporaryFile;
                             if (!temp->open()) {
                                 qWarning() << "Failed to open temporary file to store post" << temp->errorString();
-                                sock->disconnectFromHost();
+                                io->close(); // On error close immediately
                                 return;
                             }
                             sock->body = temp;
                         } else if (m_postBuffering && sock->contentLength <= m_postBuffering) {
-                            auto buffer = new QBuffer(sock);
+                            auto buffer = new QBuffer;
                             buffer->open(QIODevice::ReadWrite);
                             buffer->buffer().reserve(sock->contentLength);
                             sock->body = buffer;
                         } else {
                             // Unbuffered
-                            auto buffer = new QBuffer(sock);
+                            auto buffer = new QBuffer;
                             buffer->open(QIODevice::ReadWrite);
                             buffer->buffer().reserve(sock->contentLength);
                             sock->body = buffer;
@@ -175,11 +173,11 @@ void ProtocolHttp::readyRead()
     }
 }
 
-bool ProtocolHttp::sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
+bool ProtocolHttp::sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
 {
     int msgLen;
     const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
-    sock->write(msg, msgLen);
+    m_io->write(msg, msgLen);
 
     const auto headersData = headers.data();
     if (sock->headerClose == Socket::HeaderCloseKeep) {
@@ -203,19 +201,19 @@ bool ProtocolHttp::sendHeaders(TcpSocket *sock, quint16 status, const QByteArray
         }
 
         QString ret(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
-        sock->write(ret.toLatin1());
+        m_io->write(ret.toLatin1());
 
         ++it;
     }
 
     if (!hasDate) {
-        sock->write(dateHeader);
+        m_io->write(dateHeader);
     }
 
-    return sock->write("\r\n\r\n", 4) == 4;
+    return m_io->write("\r\n\r\n", 4) == 4;
 }
 
-bool ProtocolHttp::processRequest(TcpSocket *sock)
+bool ProtocolHttp::processRequest(Socket *sock) const
 {
 //    qDebug() << "processRequest" << sock->contentLength;
     sock->processing = true;
@@ -226,8 +224,7 @@ bool ProtocolHttp::processRequest(TcpSocket *sock)
     sock->processing = false;
 
     if (sock->headerClose == Socket::HeaderCloseClose) {
-//                        qDebug() << "disconnectFromHost";
-        sock->disconnectFromHost();
+        m_sock->connectionClose();
         return false;
     } else if (sock->last < sock->buf_size) {
         // move pipelined request to 0
@@ -244,7 +241,7 @@ bool ProtocolHttp::processRequest(TcpSocket *sock)
     return true;
 }
 
-void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock)
+void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) const
 {
     const char *word_boundary = ptr;
     while (*word_boundary != ' ' && word_boundary < end) {
@@ -291,7 +288,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock)
     sock->protocol = QString::fromLatin1(ptr, word_boundary - ptr);
 }
 
-void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock)
+void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) const
 {
     const char *word_boundary = ptr;
     while (*word_boundary != ':' && word_boundary < end) {

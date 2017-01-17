@@ -35,8 +35,8 @@
 #include <QCommandLineParser>
 #include <QUrl>
 #include <QHostAddress>
+#include <QLocalServer>
 #include <QTcpServer>
-#include <QTcpSocket>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QPluginLoader>
@@ -44,6 +44,7 @@
 #include <QLoggingCategory>
 #include <QFileSystemWatcher>
 #include <QSettings>
+#include <QSocketNotifier>
 #include <QTimer>
 #include <QDir>
 
@@ -111,35 +112,71 @@ int WSGI::load(Cutelyst::Application *app)
 
 bool WSGIPrivate::listenTcp(const QString &line, int protocol)
 {
-    QStringList parts = line.split(QLatin1Char(':'));
-    if (parts.size() != 2) {
-        qCDebug(CUTELYST_WSGI) << "error parsing:" << line;
-        return false;
-    }
+    bool ret;
+    SocketInfo info;
 
-    QHostAddress address;
-    if (parts.first().isEmpty()) {
-        address = QHostAddress::Any;
+    if (line.startsWith(QLatin1Char('/'))) {
+        auto server = new QLocalServer(this);
+        server->removeServer(line);
+        ret = server->listen(line);
+//        server->pauseAccepting(); // TODO
+
+        info.serverName = line;
+        info.protocol = protocol;
+        info.localSocket = true;
+
+        // THIS IS A HACK
+        // QLocalServer does not expose the socket
+        // descriptor, so we get it from it's QSocketNotifier child
+        // if this breaks it we fail with an error.
+        const auto children = server->children();
+        for (auto child : children) {
+            auto notifier = qobject_cast<QSocketNotifier*>(child);
+            if (notifier) {
+//                qDebug() << "found notifier" << notifier->socket();
+                info.socketDescriptor = notifier->socket();
+                notifier->deleteLater();
+                break;
+            }
+        }
     } else {
-        address.setAddress(parts.first());
+        const QStringList parts = line.split(QLatin1Char(':'));
+        if (parts.size() != 2) {
+            qCDebug(CUTELYST_WSGI) << "error parsing:" << line;
+            return false;
+        }
+
+        QHostAddress address;
+        if (parts.first().isEmpty()) {
+            address = QHostAddress::Any;
+        } else {
+            address.setAddress(parts.first());
+        }
+
+        bool ok;
+        int port = parts.last().toInt(&ok);
+        if (!ok || (port < 1 && port > 35554)) {
+            port = 80;
+        }
+
+        auto server = new QTcpServer(this);
+        ret = server->listen(address, port);
+        server->pauseAccepting();
+
+        info.serverName = server->serverAddress().toString() + QLatin1Char(':') + QString::number(port);
+        info.protocol = protocol;
+        info.localSocket = false;
+        info.socketDescriptor = server->socketDescriptor();
     }
 
-    bool ok;
-    int port = parts.last().toInt(&ok);
-    if (!ok || (port < 1 && port > 35554)) {
-        port = 80;
-    }
-
-    auto server = new QTcpServer(this);
-    bool ret = server->listen(address, port);
-    server->pauseAccepting();
-    sockets.push_back({server, protocol});
-
-    if (ret) {
-        std::cout << "Listening on: "
-                  << server->serverAddress().toString().toLatin1().constData() << ':' << server->serverPort() << std::endl;
+    if (ret && info.socketDescriptor) {
+        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
+                  << " bound to " << (info.localSocket ? "LOCAL" : "TCP") << " address " << info.serverName.toLatin1().constData()
+                  << " fd " << QByteArray::number(info.socketDescriptor).constData()
+                  << std::endl;
+        sockets.push_back(info);
     } else {
-        std::cout << "Failed to listen on: " << line.toLatin1().constData() << std::endl;
+        std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
         exit(1);
     }
 

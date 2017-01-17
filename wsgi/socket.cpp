@@ -34,6 +34,11 @@ TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(w
     connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected, Qt::DirectConnection);
 }
 
+void TcpSocket::connectionClose()
+{
+    disconnectFromHost();
+}
+
 Socket::Socket(WSGI *wsgi)
 {
     body = nullptr;
@@ -46,6 +51,26 @@ Socket::~Socket()
 }
 
 void TcpSocket::socketDisconnected()
+{
+    if (!processing) {
+        Q_EMIT finished(this);
+    }
+}
+
+LocalSocket::LocalSocket(WSGI *wsgi, QObject *parent) : QLocalSocket(parent), Socket(wsgi)
+{
+    isSecure = false;
+    requestPtr = this;
+    startOfRequest = 0;
+    connect(this, &QLocalSocket::disconnected, this, &LocalSocket::socketDisconnected, Qt::DirectConnection);
+}
+
+void LocalSocket::connectionClose()
+{
+    disconnectFromServer();
+}
+
+void LocalSocket::socketDisconnected()
 {
     if (!processing) {
         Q_EMIT finished(this);

@@ -31,16 +31,16 @@ class ProtocolHttp : public Protocol
 {
     Q_OBJECT
 public:
-    explicit ProtocolHttp(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
+    ProtocolHttp(Socket *sock, WSGI *wsgi, QIODevice *io);
     ~ProtocolHttp();
 
-    virtual void readyRead() override;
-    virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
+    virtual void readyRead(Socket *sock, QIODevice *io) const override;
+    virtual bool sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
 
 private:
-    inline bool processRequest(TcpSocket *sock);
-    inline void parseMethod(const char *ptr, const char *end, Socket *sock);
-    inline void parseHeader(const char *ptr, const char *end, Socket *sock);
+    inline bool processRequest(Socket *sock) const;
+    inline void parseMethod(const char *ptr, const char *end, Socket *sock) const;
+    inline void parseHeader(const char *ptr, const char *end, Socket *sock) const;
 
     qint64 m_postBufferSize;
     qint64 m_bufferSize;

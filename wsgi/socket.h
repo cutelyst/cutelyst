@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 #define SOCKET_H
 
 #include <QTcpSocket>
+#include <QLocalSocket>
 #include <QHostAddress>
 #include <Cutelyst/Headers>
 #include <Cutelyst/Engine>
@@ -67,6 +68,8 @@ public:
         body = nullptr;
     }
 
+    virtual void connectionClose() = 0;
+
     qint64 contentLength;
     CWsgiEngine *engine;
     Protocol *proto;
@@ -88,10 +91,24 @@ class TcpSocket : public QTcpSocket, public Socket
 public:
     explicit TcpSocket(WSGI *wsgi, QObject *parent = 0);
 
+    virtual void connectionClose() override;
     void socketDisconnected();
 
 Q_SIGNALS:
     void finished(TcpSocket *bj);
+};
+
+class LocalSocket : public QLocalSocket, public Socket
+{
+    Q_OBJECT
+public:
+    explicit LocalSocket(WSGI *wsgi, QObject *parent = 0);
+
+    virtual void connectionClose() override;
+    void socketDisconnected();
+
+Q_SIGNALS:
+    void finished(LocalSocket *bj);
 };
 
 }

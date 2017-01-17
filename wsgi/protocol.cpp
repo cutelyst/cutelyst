@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,16 +20,17 @@
 
 using namespace CWSGI;
 
-Protocol::Protocol(TcpSocket *sock, WSGI *wsgi, QObject *parent) : QObject(parent)
+Protocol::Protocol(Socket *sock, WSGI *wsgi, QIODevice *io) : QObject(io)
+  , m_io(io)
   , m_sock(sock)
   , m_wsgi(wsgi)
 {
-
 }
 
-qint64 Protocol::sendBody(TcpSocket *sock, const char *data, qint64 len)
+qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
 {
-    return sock->write(data, len);
+    Q_UNUSED(sock)
+    return io->write(data, len);
 }
 
 #include "moc_protocol.cpp"

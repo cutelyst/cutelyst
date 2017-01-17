@@ -34,7 +34,7 @@ class TcpServer : public QTcpServer
 public:
     explicit TcpServer(const QString &serverAddress, int protocol,  WSGI *wsgi, QObject *parent = 0);
 
-    virtual void incomingConnection(qintptr handle);
+    virtual void incomingConnection(qintptr handle) override;
 
     QString m_serverAddress;
     CWsgiEngine *m_engine;

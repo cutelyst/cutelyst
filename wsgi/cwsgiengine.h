@@ -31,6 +31,13 @@ class QTcpServer;
 
 namespace CWSGI {
 
+struct SocketInfo {
+    QString serverName;
+    int protocol;
+    bool localSocket;
+    qintptr socketDescriptor = 0;
+};
+
 class WSGI;
 class Protocol;
 class CWsgiEngine : public Engine
@@ -41,11 +48,11 @@ public:
 
     virtual int workerId() const;
 
-    inline void processSocket(TcpSocket *sock) {
+    inline void processSocket(Socket *sock) {
         processRequest(*sock);
     }
 
-    void setTcpSockets(const std::vector<std::pair<QTcpServer *, int> > &sockets);
+    void setTcpSockets(const std::vector<SocketInfo> &sockets);
 
     void listen();
 
@@ -68,7 +75,7 @@ private:
     friend class ProtocolHttp;
     friend class ProtocolFastCGI;
 
-    std::vector<std::pair<QTcpServer *, int>> m_sockets;
+    std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;

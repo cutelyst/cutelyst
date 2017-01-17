@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
 
 #include "protocolhttp.h"
 #include "tcpserver.h"
+#include "localserver.h"
 #include "config.h"
 #include "wsgi.h"
 #include "staticmap.h"
@@ -30,11 +31,7 @@
 #include <Cutelyst/Application>
 
 #include <QCoreApplication>
-#include <QTcpServer>
-#include <QTcpSocket>
 #include <QElapsedTimer>
-#include <QLocalServer>
-#include <QLocalSocket>
 
 using namespace CWSGI;
 
@@ -70,7 +67,7 @@ int CWsgiEngine::workerId() const
     return m_workerId;
 }
 
-void CWsgiEngine::setTcpSockets(const std::vector<std::pair<QTcpServer *, int>> &sockets)
+void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
 {
     m_sockets = sockets;
 }
@@ -87,13 +84,22 @@ void CWsgiEngine::listen()
     }
 
     const auto sockets = m_sockets;
-    for (const std::pair<QTcpServer *, int> &pair : sockets) {
-        QTcpServer *socket = pair.first;
-        const QString serverAddress = socket->serverAddress().toString() + QLatin1Char(':') + QString::number(socket->serverPort());
-        auto server = new TcpServer(serverAddress, pair.second, m_wsgi, this);
-        server->setSocketDescriptor(socket->socketDescriptor());
-        server->pauseAccepting();
-        connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
+    for (const SocketInfo &info : sockets) {
+        if (!info.localSocket) {
+            auto server = new TcpServer(info.serverName, info.protocol, m_wsgi, this);
+            if (server->setSocketDescriptor(info.socketDescriptor)) {
+                server->pauseAccepting();
+                connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
+            }
+        }
+
+        if (info.localSocket) {
+            auto server = new LocalServer(info.serverName, info.protocol, m_wsgi, this);
+            if (server->setSocketDescriptor(info.socketDescriptor)) {
+                server->pauseAccepting();
+                connect(this, &CWsgiEngine::resumeAccepting, server, &LocalServer::resumeAccepting);
+            }
+        }
     }
 
     Q_EMIT initted();
@@ -134,8 +140,9 @@ bool CWsgiEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers
 qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     auto sock = static_cast<TcpSocket*>(engineData);
+    auto io = static_cast<QIODevice*>(engineData);
     //    qDebug() << Q_FUNC_INFO << QByteArray(data,len);
-    qint64 ret = sock->proto->sendBody(sock, data, len);
+    qint64 ret = sock->proto->sendBody(io, sock, data, len);
     //    conn->waitForBytesWritten(200);
     return ret;
 }

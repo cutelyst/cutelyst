@@ -30,20 +30,20 @@ class ProtocolFastCGI : public Protocol
 {
     Q_OBJECT
 public:
-    explicit ProtocolFastCGI(TcpSocket *sock, WSGI *wsgi, QObject *parent = nullptr);
+    ProtocolFastCGI(Socket *sock, WSGI *wsgi, QIODevice *io);
     virtual ~ProtocolFastCGI();
 
-    virtual void readyRead() override;
-    virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
-    qint64 sendBody(TcpSocket *sock, const char *data, qint64 len) override;
+    virtual void readyRead(Socket *sock, QIODevice *io) const override;
+    virtual bool sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
+    qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:
-    inline quint16 addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen);
-    inline int parseHeaders(Socket *wsgi_req, char *buf, size_t len);
-    inline int processPacket(TcpSocket *sock);
-    inline int writeBody(Socket *sock, char *buf, size_t len);
+    inline quint16 addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const;
+    inline int parseHeaders(Socket *wsgi_req, char *buf, size_t len) const;
+    inline int processPacket(Socket *sock) const;
+    inline int writeBody(Socket *sock, char *buf, size_t len) const;
     // write a STDOUT packet
-    int wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *buf, int len);
+    int wsgi_proto_fastcgi_write(Socket *wsgi_req, const char *buf, int len);
 
     QByteArray m_headerBuffer;
     qint64 m_postBufferSize;

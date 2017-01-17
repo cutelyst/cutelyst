@@ -115,7 +115,7 @@ struct fcgi_begin_request_body {
     quint8		reserved[5];
 } __attribute__ ((__packed__));
 
-ProtocolFastCGI::ProtocolFastCGI(TcpSocket *sock, WSGI *wsgi, QObject *parent) : Protocol(sock, wsgi, parent)
+ProtocolFastCGI::ProtocolFastCGI(Socket *sock, WSGI *wsgi, QIODevice *io) : Protocol(sock, wsgi, io)
 {
     m_postBufferSize = m_wsgi->postBufferingBufsize();
     m_bufferSize = m_wsgi->bufferSize();
@@ -149,7 +149,7 @@ quint16 wsgi_be16(char *buf) {
     return ret;
 }
 
-quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen)
+quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const
 {
     char *buffer = wsgi_req->buffer + wsgi_req->buf_size;
     char *watermark = wsgi_req->buffer + m_bufferSize;
@@ -160,7 +160,7 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
     }
 
     if (keylen > 5 && memcmp(key, "HTTP_", 5) == 0) {
-        QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
+        const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
         wsgi_req->headers.pushHeader(keyStr, QString::fromLatin1(val, vallen));
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
@@ -192,7 +192,7 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
     return keylen + vallen + 2 + 2;
 }
 
-int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len)
+int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len) const
 {
     size_t j;
     quint8 octet;
@@ -242,7 +242,7 @@ int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len)
     return 0;
 }
 
-int ProtocolFastCGI::processPacket(TcpSocket *sock)
+int ProtocolFastCGI::processPacket(Socket *sock) const
 {
     Q_FOREVER {
         if (sock->buf_size >= sizeof(struct fcgi_record)) {
@@ -292,7 +292,7 @@ int ProtocolFastCGI::processPacket(TcpSocket *sock)
     return WSGI_AGAIN; // read again
 }
 
-int ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len)
+int ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len) const
 {
     if (sock->body) {
         sock->body->write(buf, len);
@@ -323,7 +323,7 @@ int ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len)
     return sock->contentLength < sock->body->size() ? WSGI_AGAIN : WSGI_OK;
 }
 
-int ProtocolFastCGI::wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *buf, int len)
+int ProtocolFastCGI::wsgi_proto_fastcgi_write(Socket *wsgi_req, const char *buf, int len)
 {
     // reset for next write
     int write_pos = 0;
@@ -343,12 +343,12 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *b
             fr.reserved = 0;
             fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
             fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
-            if (m_sock->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
+            if (m_io->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
                 return -1;
             }
         }
 
-        qint64 wlen = wsgi_req->write(buf + write_pos, wsgi_req->proto_parser_status);
+        qint64 wlen = m_io->write(buf + write_pos, wsgi_req->proto_parser_status);
         if (wlen > 0) {
             write_pos += wlen;
             wsgi_req->proto_parser_status -= wlen;
@@ -358,7 +358,7 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *b
             continue;
         }
         if (wlen < 0) {
-            qCWarning(CWSGI_FCGI) << "Writing socket error" << wsgi_req->errorString();
+            qCWarning(CWSGI_FCGI) << "Writing socket error" << m_io->errorString();
         }
         return -1;
     }
@@ -366,7 +366,7 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(TcpSocket *wsgi_req, const char *b
 
 #define FCGI_END_REQUEST_DATA "\1\x06\0\1\0\0\0\0\1\3\0\1\0\x08\0\0\0\0\0\0\0\0\0\0"
 
-void wsgi_proto_fastcgi_endrequest(TcpSocket *wsgi_req)
+void wsgi_proto_fastcgi_endrequest(Socket *wsgi_req, QIODevice *io)
 {
     char end_request[24];
     memcpy(end_request, FCGI_END_REQUEST_DATA, 24);
@@ -376,16 +376,14 @@ void wsgi_proto_fastcgi_endrequest(TcpSocket *wsgi_req)
     end_request[3] = sid[0];
     end_request[10] = sid[1];
     end_request[11] = sid[0];
-    wsgi_req->write(end_request, 24);
+    io->write(end_request, 24);
 }
 
-void ProtocolFastCGI::readyRead()
+void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
 {
-    const auto sock = m_sock;
-
-    qint64 bytesAvailable = sock->bytesAvailable();
+    qint64 bytesAvailable = io->bytesAvailable();
     do {
-        int len = sock->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
+        int len = io->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
         bytesAvailable -= len;
 
         if (len > 0) {
@@ -406,12 +404,12 @@ void ProtocolFastCGI::readyRead()
             } else if (ret == WSGI_OK) {
                 sock->processing = true;
                 sock->engine->processSocket(sock);
-                wsgi_proto_fastcgi_endrequest(sock);
+                wsgi_proto_fastcgi_endrequest(sock, io);
                 sock->processing = false;
 
                 if (sock->headerClose == Socket::HeaderCloseClose) {
                     // Web server did not set FCGI_KEEP_CONN
-                    sock->disconnectFromHost();
+                    m_sock->connectionClose();
                     return;
                 }
 
@@ -419,28 +417,14 @@ void ProtocolFastCGI::readyRead()
                 sock->resetSocket();
                 sock->buf_size = size;
             } else {
-                // On error disconnect
-                sock->disconnectFromHost();
+                // On error disconnect immediately
+                io->close();
             }
         }
-//        else if (fcgi_all_len > wsgi_req->proto_parser_buf_size - wsgi_req->proto_parser_pos) {
-//            char *tmp_buf = realloc(wsgi_req->proto_parser_buf, wsgi_req->proto_parser_buf_size + fcgi_all_len - (wsgi_req->proto_parser_buf_size - wsgi_req->proto_parser_pos));
-//            if (!tmp_buf) {
-//                uwsgi_error("uwsgi_proto_fastcgi_parser()/realloc()");
-//                return -1;
-//            }
-//            wsgi_req->proto_parser_buf = tmp_buf;
-//            wsgi_req->proto_parser_buf_size += (fcgi_all_len - (wsgi_req->proto_parser_buf_size - wsgi_req->proto_parser_pos));
-//            break;
-//        }
-//        else {
-//            break;
-//        }
-//        sock->disconnectFromHost();
     } while (bytesAvailable);
 }
 
-bool ProtocolFastCGI::sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
+bool ProtocolFastCGI::sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
 {
     m_headerBuffer.resize(0);
     m_headerBuffer.append(QByteArrayLiteral("Status: ") + QByteArray::number(status));
@@ -472,7 +456,7 @@ bool ProtocolFastCGI::sendHeaders(TcpSocket *sock, quint16 status, const QByteAr
     return wsgi_proto_fastcgi_write(sock, m_headerBuffer.constData(), m_headerBuffer.size()) == 0;
 }
 
-qint64 ProtocolFastCGI::sendBody(TcpSocket *sock, const char *data, qint64 len)
+qint64 ProtocolFastCGI::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
 {
     if (wsgi_proto_fastcgi_write(sock, data, len) == 0) {
         return len;

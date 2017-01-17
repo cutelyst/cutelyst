@@ -22,6 +22,8 @@
 
 #include "wsgi.h"
 
+#include "cwsgiengine.h"
+
 #include <QProcess>
 
 #include <Cutelyst/Application>
@@ -56,7 +58,7 @@ public:
     void loadConfigGroup(const QString &group, QSettings &settings);
 
     WSGI *q_ptr;
-    std::vector<std::pair<QTcpServer *, int>> sockets;
+    std::vector<SocketInfo> sockets;
     std::vector<Cutelyst::Engine *> engines;
     CWsgiEngine *engine;
 

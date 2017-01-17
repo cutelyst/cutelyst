@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,13 +30,14 @@ class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    explicit Protocol(TcpSocket *sock, WSGI *wsgi, QObject *parent = 0);
+    explicit Protocol(Socket *sock, WSGI *wsgi, QIODevice *io);
 
-    virtual void readyRead() = 0;
-    virtual bool sendHeaders(TcpSocket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
-    virtual qint64 sendBody(TcpSocket *sock, const char *data, qint64 len);
+    virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
+    virtual bool sendHeaders(Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
+    virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
 
-    TcpSocket *m_sock;
+    QIODevice *m_io;
+    Socket *m_sock;
     WSGI *m_wsgi;
 };
 

@@ -24,7 +24,6 @@
 
 #include <Cutelyst/Engine>
 #include <QDateTime>
-#include <QSocketNotifier>
 
 using namespace CWSGI;
 
@@ -64,9 +63,10 @@ void TcpServer::incomingConnection(qintptr handle)
         } else {
             sock->proto = new ProtocolFastCGI(sock, m_wsgi, sock);
         }
-        // TODO in future we could use a lamda to avoid the sender() overhead
-        // and have readRead signal call proto->parser(TcpSocket*);
-        connect(sock, &QIODevice::readyRead, sock->proto, &Protocol::readyRead);
+
+        connect(sock, &QIODevice::readyRead, [sock] () {
+            sock->proto->readyRead(sock, sock);
+        });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);
         });
@@ -77,10 +77,9 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();
 
-        for (auto opt : m_socketOptions) {
+        for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);
         }
-
     } else {
         m_socks.push_back(sock);
     }
