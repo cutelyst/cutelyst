@@ -111,7 +111,7 @@ struct fcgi_record {
     quint8 cl0;
     quint8 pad;
     quint8 reserved;
-} __attribute__ ((__packed__));
+};
 #pragma pack(pop)
 
 #pragma pack(push)
@@ -120,7 +120,7 @@ struct fcgi_begin_request_body {
     quint16	role;
     quint8		flags;
     quint8		reserved[5];
-} __attribute__ ((__packed__));
+};
 #pragma pack(pop)
 
 #else
