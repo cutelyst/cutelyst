@@ -458,3 +458,5 @@ qint64 ProtocolFastCGI::sendBody(QIODevice *io, Socket *sock, const char *data, 
     }
     return -1;
 }
+
+#include "moc_protocolfastcgi.cpp"

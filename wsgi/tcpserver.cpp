@@ -59,8 +59,8 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->engine = m_engine;
         sock->proto = m_protocol;
 
-        connect(sock, &QIODevice::readyRead, [this, sock] () {
-            m_protocol->readyRead(sock, sock);
+        connect(sock, &QIODevice::readyRead, [sock] () {
+            sock->proto->readyRead(sock, sock);
         });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);
