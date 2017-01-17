@@ -144,9 +144,8 @@ struct fcgi_begin_request_body {
 
 #endif
 
-ProtocolFastCGI::ProtocolFastCGI(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
+ProtocolFastCGI::ProtocolFastCGI(WSGI *wsgi) : Protocol(wsgi)
 {
-    m_headerBuffer.reserve(1024);
 }
 
 ProtocolFastCGI::~ProtocolFastCGI()
@@ -450,8 +449,14 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
 
 bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
 {
-    m_headerBuffer.resize(0);
-    m_headerBuffer.append(QByteArrayLiteral("Status: ") + QByteArray::number(status));
+    static thread_local QByteArray headerBuffer = ([]() -> QByteArray {
+                                                       QByteArray ret;
+                                                       ret.reserve(1024);
+                                                       return ret;
+                                                   }());
+
+    headerBuffer.resize(0);
+    headerBuffer.append(QByteArrayLiteral("Status: ") + QByteArray::number(status));
 
     const auto headersData = headers.data();
 
@@ -467,17 +472,17 @@ bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, c
 
         QString line(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
         const QByteArray data = line.toLatin1();
-        m_headerBuffer.append(data);
+        headerBuffer.append(data);
 
         ++it;
     }
 
     if (!hasDate) {
-        m_headerBuffer.append(dateHeader);
+        headerBuffer.append(dateHeader);
     }
-    m_headerBuffer.append("\r\n\r\n", 4);
+    headerBuffer.append("\r\n\r\n", 4);
 
-    return wsgi_proto_fastcgi_write(io, sock, m_headerBuffer.constData(), m_headerBuffer.size()) == 0;
+    return wsgi_proto_fastcgi_write(io, sock, headerBuffer.constData(), headerBuffer.size()) == 0;
 }
 
 qint64 ProtocolFastCGI::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
@@ -487,5 +492,3 @@ qint64 ProtocolFastCGI::sendBody(QIODevice *io, Socket *sock, const char *data, 
     }
     return -1;
 }
-
-#include "moc_protocolfastcgi.cpp"

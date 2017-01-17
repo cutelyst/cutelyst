@@ -20,6 +20,7 @@
 
 #include "protocol.h"
 #include "protocolhttp.h"
+#include "protocolfastcgi.h"
 #include "cwsgiengine.h"
 #include "socket.h"
 
@@ -86,6 +87,9 @@ WSGI::~WSGI()
             delete engine;
         }
     }
+
+    delete d->protoHTTP;
+    delete d->protoFCGI;
 }
 
 int WSGI::load(Cutelyst::Application *app)
@@ -110,10 +114,11 @@ int WSGI::load(Cutelyst::Application *app)
     return d->setupApplication(app);
 }
 
-bool WSGIPrivate::listenTcp(const QString &line, int protocol)
+bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
 {
     bool ret;
     SocketInfo info;
+    info.protocol = protocol;
 
     if (line.startsWith(QLatin1Char('/'))) {
         auto server = new QLocalServer(this);
@@ -122,7 +127,6 @@ bool WSGIPrivate::listenTcp(const QString &line, int protocol)
 //        server->pauseAccepting(); // TODO
 
         info.serverName = line;
-        info.protocol = protocol;
         info.localSocket = true;
 
         // THIS IS A HACK
@@ -164,7 +168,6 @@ bool WSGIPrivate::listenTcp(const QString &line, int protocol)
         server->pauseAccepting();
 
         info.serverName = server->serverAddress().toString() + QLatin1Char(':') + QString::number(port);
-        info.protocol = protocol;
         info.localSocket = false;
         info.socketDescriptor = server->socketDescriptor();
     }
@@ -181,13 +184,6 @@ bool WSGIPrivate::listenTcp(const QString &line, int protocol)
     }
 
     return ret;
-}
-
-bool WSGIPrivate::listenSocket(const QString &address)
-{
-    auto server = new QLocalServer(this);
-    //    connect(server, &QLocalServer::newConnection, this, &WSGI::newconnectionLocalSocket);
-    return server->listen(address);
 }
 
 void WSGI::setApplication(const QString &application)
@@ -711,6 +707,8 @@ void WSGIPrivate::parseCommandLine()
 
 int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 {
+    Q_Q(WSGI);
+
     if (!chdir.isEmpty()) {
         std::cout << "Changing directory to: " << chdir.toLatin1().constData() << std::endl;;
         if (!QDir::setCurrent(chdir)) {
@@ -719,12 +717,20 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         }
     }
 
-    for (const auto &socket : httpSockets) {
-        listenTcp(socket, 1);
+    if (!httpSockets.isEmpty()) {
+        protoHTTP = new ProtocolHttp(q);
+        const auto sockets = httpSockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoHTTP);
+        }
     }
 
-    for (const auto &socket : fastcgiSockets) {
-        listenTcp(socket, 2);
+    if (!fastcgiSockets.isEmpty()) {
+        protoFCGI = new ProtocolFastCGI(q);
+        const auto sockets = fastcgiSockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoFCGI);
+        }
     }
 
     if (!sockets.size()) {

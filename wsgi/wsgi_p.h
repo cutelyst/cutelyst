@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef WSGI_P_H
 #define WSGI_P_H
 
@@ -42,8 +41,7 @@ class WSGIPrivate : public QObject
 public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
 
-    bool listenTcp(const QString &line, int protocol);
-    bool listenSocket(const QString &address);
+    bool listenTcp(const QString &line, Protocol *protocol);
     void proc();
     void parseCommandLine();
     int setupApplication(Cutelyst::Application *app);
@@ -75,6 +73,8 @@ public:
     qint64 postBufferingBufsize = 4096;
     QProcess *masterChildProcess = nullptr;
     QTimer *materChildRestartTimer = nullptr;
+    Protocol *protoHTTP = nullptr;
+    Protocol *protoFCGI = nullptr;
     int bufferSize = 4096;
     int enginesInitted = 1;
     int threads = 0;

@@ -29,9 +29,8 @@ class WSGI;
 class Socket;
 class ProtocolHttp : public Protocol
 {
-    Q_OBJECT
 public:
-    explicit ProtocolHttp(WSGI *wsgi, QObject *parent = nullptr);
+    ProtocolHttp(WSGI *wsgi);
     ~ProtocolHttp();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;

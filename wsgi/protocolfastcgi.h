@@ -28,9 +28,8 @@ namespace CWSGI {
 class WSGI;
 class ProtocolFastCGI : public Protocol
 {
-    Q_OBJECT
 public:
-    explicit ProtocolFastCGI(WSGI *wsgi, QObject *parent = nullptr);
+    ProtocolFastCGI(WSGI *wsgi);
     virtual ~ProtocolFastCGI();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
@@ -44,8 +43,6 @@ private:
     inline int writeBody(Socket *sock, char *buf, size_t len) const;
     // write a STDOUT packet
     int wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, const char *buf, int len);
-
-    QByteArray m_headerBuffer;
 };
 
 }

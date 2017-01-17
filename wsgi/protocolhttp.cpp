@@ -33,17 +33,12 @@
 
 using namespace CWSGI;
 
-ProtocolHttp::ProtocolHttp(WSGI *wsgi, QObject *parent) : Protocol(wsgi, parent)
+ProtocolHttp::ProtocolHttp(WSGI *wsgi) : Protocol(wsgi)
 {
-    m_postBufferSize = m_wsgi->postBufferingBufsize();
-    m_bufferSize = m_wsgi->bufferSize();
-    m_postBuffering = m_wsgi->postBuffering();
-    m_postBuffer = new char[m_wsgi->postBufferingBufsize()];
 }
 
 ProtocolHttp::~ProtocolHttp()
 {
-
 }
 
 inline int CrLfIndexIn(const char *str, int len, int from)
@@ -318,5 +313,3 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     }
     sock->headers.pushHeader(key, value);
 }
-
-#include "moc_protocolhttp.cpp"

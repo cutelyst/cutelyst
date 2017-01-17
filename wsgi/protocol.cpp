@@ -22,13 +22,12 @@
 
 using namespace CWSGI;
 
-Protocol::Protocol(WSGI *wsgi, QObject *parent) : QObject(parent)
-  , m_wsgi(wsgi)
+Protocol::Protocol(WSGI *wsgi)
 {
-    m_postBufferSize = m_wsgi->postBufferingBufsize();
-    m_bufferSize = m_wsgi->bufferSize();
-    m_postBuffering = m_wsgi->postBuffering();
-    m_postBuffer = new char[m_wsgi->postBufferingBufsize()];
+    m_postBufferSize = wsgi->postBufferingBufsize();
+    m_bufferSize = wsgi->bufferSize();
+    m_postBuffering = wsgi->postBuffering();
+    m_postBuffer = new char[wsgi->postBufferingBufsize()];
 }
 
 Protocol::~Protocol()
@@ -41,5 +40,3 @@ qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 
     Q_UNUSED(sock)
     return io->write(data, len);
 }
-
-#include "moc_protocol.cpp"

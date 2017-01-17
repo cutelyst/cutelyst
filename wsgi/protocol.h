@@ -26,18 +26,16 @@
 namespace CWSGI {
 
 class WSGI;
-class Protocol : public QObject
+class Protocol
 {
-    Q_OBJECT
 public:
-    explicit Protocol(WSGI *wsgi, QObject *parent = nullptr);
-    ~Protocol();
+    Protocol(WSGI *wsgi);
+    virtual ~Protocol();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
     virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
 
-    WSGI *m_wsgi;
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
     qint64 m_postBuffering;

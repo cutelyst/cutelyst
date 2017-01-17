@@ -18,7 +18,6 @@
  */
 #include "socket.h"
 
-#include "cwsgiengine.h"
 #include "wsgi.h"
 
 #include <QCoreApplication>

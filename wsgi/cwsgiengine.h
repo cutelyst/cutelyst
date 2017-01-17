@@ -33,7 +33,7 @@ namespace CWSGI {
 
 struct SocketInfo {
     QString serverName;
-    int protocol;
+    Protocol *protocol;
     bool localSocket;
     qintptr socketDescriptor = 0;
 };
