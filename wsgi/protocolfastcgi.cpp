@@ -98,7 +98,7 @@ Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi")
 
 using namespace CWSGI;
 
-#ifdef MSVC
+#ifdef Q_CC_MSVC
 
 #pragma pack(push)
 #pragma pack(1)
