@@ -24,6 +24,8 @@
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
 #include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
 
+// clazy:excludeall=detaching-temporary
+
 using namespace Cutelyst;
 
 class TestValidator : public CoverageObject
