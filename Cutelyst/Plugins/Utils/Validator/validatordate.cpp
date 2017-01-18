@@ -63,9 +63,9 @@ QString ValidatorDate::genericValidationError() const
     Q_D(const ValidatorDate);
 
     if (!d->format.isEmpty()) {
-        error = QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
+        error = QStringLiteral("The data in the %1 field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
     } else {
-        error = QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(fieldLabel());
+        error = QStringLiteral("The data in the %1 field can not be interpreted as date.").arg(fieldLabel());
     }
 
     return error;

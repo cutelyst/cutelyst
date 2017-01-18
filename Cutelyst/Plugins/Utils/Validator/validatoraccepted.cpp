@@ -52,5 +52,5 @@ QString ValidatorAccepted::validate() const
 
 QString ValidatorAccepted::genericValidationError() const
 {
-    return QStringLiteral("The “%1” has to be accepted.").arg(fieldLabel());
+    return QStringLiteral("The %1 has to be accepted.").arg(fieldLabel());
 }

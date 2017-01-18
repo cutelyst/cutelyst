@@ -52,5 +52,5 @@ QString ValidatorAlphaDash::validate() const
 
 QString ValidatorAlphaDash::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(fieldLabel());
+    return QStringLiteral("The %1 field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(fieldLabel());
 }

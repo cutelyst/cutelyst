@@ -55,7 +55,7 @@ QString ValidatorNotIn::validate() const
 
 QString ValidatorNotIn::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1“ field is not allowed.").arg(fieldLabel());
+    return QStringLiteral("The value in the %1 field is not allowed.").arg(fieldLabel());
 }
 
 void ValidatorNotIn::setValues(const QStringList &values)

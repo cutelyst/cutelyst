@@ -66,9 +66,9 @@ QString ValidatorDigitsBetween::genericValidationError() const
 
     Q_D(const ValidatorDigitsBetween);
     if (d->min < 1 || d->max < 1) {
-        error = QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
+        error = QStringLiteral("The %1 field must only contain digits.").arg(fieldLabel());
     } else {
-        error = QStringLiteral("The “%1” field must only contain digits with a length between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
+        error = QStringLiteral("The %1 field must only contain digits with a length between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
     }
 
     return error;

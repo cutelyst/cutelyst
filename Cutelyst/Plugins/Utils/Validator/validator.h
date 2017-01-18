@@ -158,8 +158,8 @@ class ValidatorRule;
  * Validator will add the following entries to the \link Context::stash() stash \endlink:
  * \li \c username: "detlef"
  * \li \c email: "detlef@irgendwo"
- * \li \c validationErrorStrings: ["The email address in the “Email” field is not valid.", "Please enter the same password again in the confirmation field."]
- * \li \c validationErrors: ["email":["The email address in the “Email” field is not valid."], "password":[""Please enter the same password again in the confirmation field.""]]
+ * \li \c validationErrorStrings: ["The email address in the Email field is not valid.", "Please enter the same password again in the confirmation field."]
+ * \li \c validationErrors: ["email":["The email address in the Email field is not valid."], "password":[""Please enter the same password again in the confirmation field.""]]
  *
  * The sensible data of the password fields is not part of the stash, but the other values can be used to prefill the form fields for the next attempt of
  * our little Schalke fan and can give him some hints what was wrong.

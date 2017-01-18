@@ -54,7 +54,7 @@ QString ValidatorDifferent::genericValidationError() const
 {
     Q_D(const ValidatorDifferent);
 
-    return QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(fieldLabel(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    return QStringLiteral("The value in the %1 field has to be different from the value in the %2 field.").arg(fieldLabel(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
 }
 
 void ValidatorDifferent::setOtherField(const QString &otherField)

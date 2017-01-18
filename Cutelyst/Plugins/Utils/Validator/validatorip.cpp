@@ -255,7 +255,7 @@ QString ValidatorIp::validate() const
 
 QString ValidatorIp::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a valid IP address into the “%1“ field.").arg(fieldLabel());
+    return QStringLiteral("You have to enter a valid IP address into the %1 field.").arg(fieldLabel());
 }
 
 void ValidatorIp::setConstraints(Constraints constraints)

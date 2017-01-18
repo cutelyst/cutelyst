@@ -82,11 +82,11 @@ QString ValidatorMin::genericValidationError() const
     Q_D(const ValidatorMin);
 
     if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        error = QStringLiteral("The value of the “%1” field has to be greater than or equal to %2.").arg(fieldLabel(),QString::number(d->min, 'f', 0));
+        error = QStringLiteral("The value of the %1 field has to be greater than or equal to %2.").arg(fieldLabel(),QString::number(d->min, 'f', 0));
     } else if (d->type == QMetaType::Float) {
-        error = QStringLiteral("The value of the “%1” field has to be greater than or equal to %2.").arg(fieldLabel(), QString::number(d->min));
+        error = QStringLiteral("The value of the %1 field has to be greater than or equal to %2.").arg(fieldLabel(), QString::number(d->min));
     } else if (d->type == QMetaType::QString) {
-        error = QStringLiteral("The length of the “%1” field has to be greater than or equal to %2.").arg(fieldLabel(), QString::number(d->min, 'f', 0));
+        error = QStringLiteral("The length of the %1 field has to be greater than or equal to %2.").arg(fieldLabel(), QString::number(d->min, 'f', 0));
     } else {
         error = validationDataError();
     }

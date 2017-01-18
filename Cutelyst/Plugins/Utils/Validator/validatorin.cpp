@@ -55,7 +55,7 @@ QString ValidatorIn::validate() const
 QString ValidatorIn::genericValidationError() const
 {
     Q_D(const ValidatorIn);
-    return QStringLiteral("The value in the “%1“ field has to be one of the following: %2").arg(fieldLabel(), d->values.join(QStringLiteral(", ")));
+    return QStringLiteral("The value in the %1 field has to be one of the following: %2").arg(fieldLabel(), d->values.join(QStringLiteral(", ")));
 }
 
 void ValidatorIn::setValues(const QStringList &values)

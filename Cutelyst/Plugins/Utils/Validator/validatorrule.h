@@ -123,7 +123,7 @@ class ValidatorRulePrivate;
  *
  * QString MyValidator::genericValidationError() const
  * {
- *     return tr("The “%1” field must constain the following value: %2").arg(fieldLabel(), m_compareValue);
+ *     return tr("The %1 field must constain the following value: %2").arg(fieldLabel(), m_compareValue);
  * }
  * \endcode
  *

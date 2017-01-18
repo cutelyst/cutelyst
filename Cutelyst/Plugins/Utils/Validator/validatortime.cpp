@@ -61,9 +61,9 @@ QString ValidatorTime::genericValidationError() const
     Q_D(const ValidatorTime);
 
    if (!d->format.isEmpty()) {
-       error = QStringLiteral("The data in the “%1” field can not be interpreted as time of this schema: %2").arg(fieldLabel(), d->format);
+       error = QStringLiteral("The data in the %1 field can not be interpreted as time of this schema: %2").arg(fieldLabel(), d->format);
    } else {
-       error = QStringLiteral("The data in the “%1” field can not be interpreted as time.").arg(fieldLabel());
+       error = QStringLiteral("The data in the %1 field can not be interpreted as time.").arg(fieldLabel());
    }
 
    return error;

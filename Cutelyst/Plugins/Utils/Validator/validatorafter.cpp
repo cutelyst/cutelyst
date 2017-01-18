@@ -123,17 +123,17 @@ QString ValidatorAfter::genericValidationError() const
 
     switch(d->date.type()) {
     case QVariant::Date:
-        error = QStringLiteral("The date in the “%1” field must be after %2.").arg(fieldLabel(),
+        error = QStringLiteral("The date in the %1 field must be after %2.").arg(fieldLabel(),
                                                                                    //: date shown in validator error message
                                                                                    d->date.toDate().toString(QStringLiteral("dd.MM.yyyy")));
         break;
     case QVariant::DateTime:
-        error = QStringLiteral("The date and time in the “%1” field must be after %2.").arg(fieldLabel(),
+        error = QStringLiteral("The date and time in the %1 field must be after %2.").arg(fieldLabel(),
                                                                                             //: date and time shown in validator error message
                                                                                             d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
         break;
     case QVariant::Time:
-        error = QStringLiteral("The time in the “%1” field must be after %2.").arg(fieldLabel(),
+        error = QStringLiteral("The time in the %1 field must be after %2.").arg(fieldLabel(),
                                                                                    //: time shown in the validator error message
                                                                                    d->date.toTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
         break;

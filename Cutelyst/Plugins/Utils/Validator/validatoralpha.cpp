@@ -52,5 +52,5 @@ QString ValidatorAlpha::validate() const
 
 QString ValidatorAlpha::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(fieldLabel());
+    return QStringLiteral("The text in the %1 field must be entirely alphabetic characters.").arg(fieldLabel());
 }

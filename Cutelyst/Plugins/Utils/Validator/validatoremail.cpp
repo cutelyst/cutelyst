@@ -82,5 +82,5 @@ QString ValidatorEmail::validate() const
 
 QString ValidatorEmail::genericValidationError() const
 {
-    return QStringLiteral("The email address in the “%1” field is not valid.").arg(fieldLabel());
+    return QStringLiteral("The email address in the %1 field is not valid.").arg(fieldLabel());
 }

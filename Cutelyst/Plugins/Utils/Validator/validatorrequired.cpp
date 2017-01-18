@@ -48,5 +48,5 @@ QString ValidatorRequired::validate() const
 
 QString ValidatorRequired::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
+    return QStringLiteral("You must fill in the %1 field.").arg(fieldLabel());
 }

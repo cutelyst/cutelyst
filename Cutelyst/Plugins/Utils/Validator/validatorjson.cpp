@@ -54,5 +54,5 @@ QString ValidatorJson::validate() const
 
 QString ValidatorJson::genericValidationError() const
 {
-    return QStringLiteral("The data entered in the “%1” field is not valid JSON.").arg(fieldLabel());
+    return QStringLiteral("The data entered in the %1 field is not valid JSON.").arg(fieldLabel());
 }

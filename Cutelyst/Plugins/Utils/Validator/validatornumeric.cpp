@@ -49,5 +49,5 @@ QString ValidatorNumeric::validate() const
 
 QString ValidatorNumeric::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(fieldLabel());
+    return QStringLiteral("You have to enter a numeric value into the %1 field, like 1, -2.5 or 3.454e3").arg(fieldLabel());
 }

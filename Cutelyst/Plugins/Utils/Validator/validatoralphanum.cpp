@@ -52,5 +52,5 @@ QString ValidatorAlphaNum::validate() const
 
 QString ValidatorAlphaNum::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(fieldLabel());
+    return QStringLiteral("The text in the %1 field must be entirely alpha-numeric characters.").arg(fieldLabel());
 }

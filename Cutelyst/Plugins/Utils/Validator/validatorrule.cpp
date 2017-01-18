@@ -95,7 +95,7 @@ QString ValidatorRule::validationError() const
 
 QString ValidatorRule::genericValidationError() const
 {
-    return QStringLiteral("The input data in the “%1” field is not valid.").arg(fieldLabel());
+    return QStringLiteral("The input data in the %1 field is not valid.").arg(fieldLabel());
 }
 
 QString ValidatorRule::parsingError() const
@@ -112,7 +112,7 @@ QString ValidatorRule::parsingError() const
 
 QString ValidatorRule::genericParsingError() const
 {
-    return QStringLiteral("Failed to parse the input data of the “%1” field.").arg(fieldLabel());
+    return QStringLiteral("Failed to parse the input data of the %1 field.").arg(fieldLabel());
 }
 
 QString ValidatorRule::validationDataError() const
@@ -129,7 +129,7 @@ QString ValidatorRule::validationDataError() const
 
 QString ValidatorRule::genericValidationDataError() const
 {
-    return QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(fieldLabel());
+    return QStringLiteral("Missing or unusable validation data for the %1 field.").arg(fieldLabel());
 }
 
 void ValidatorRule::setCustomError(const QString &customError)

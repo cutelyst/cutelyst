@@ -48,5 +48,5 @@ QString ValidatorPresent::validate() const
 
 QString ValidatorPresent::genericValidationError() const
 {
-    return QStringLiteral("The “%1“ field was not found in the input data.").arg(fieldLabel());
+    return QStringLiteral("The %1 field was not found in the input data.").arg(fieldLabel());
 }

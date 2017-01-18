@@ -53,5 +53,5 @@ QString ValidatorInteger::validate() const
 
 QString ValidatorInteger::genericValidationError() const
 {
-    return QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(fieldLabel());
+    return QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the %1 field.").arg(fieldLabel());
 }

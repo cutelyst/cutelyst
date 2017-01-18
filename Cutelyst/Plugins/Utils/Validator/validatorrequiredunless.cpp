@@ -52,7 +52,7 @@ QString ValidatorRequiredUnless::validate() const
 
 QString ValidatorRequiredUnless::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(fieldLabel());
+    return QStringLiteral("You must fill in the %1 field.").arg(fieldLabel());
 }
 
 void ValidatorRequiredUnless::setOtherField(const QString &otherField)

@@ -53,5 +53,5 @@ QString ValidatorConfirmed::validate() const
 
 QString ValidatorConfirmed::genericValidationError() const
 {
-    return QStringLiteral("The content of the “%1” field has not been confirmed.").arg(fieldLabel());
+    return QStringLiteral("The content of the %1 field has not been confirmed.").arg(fieldLabel());
 }

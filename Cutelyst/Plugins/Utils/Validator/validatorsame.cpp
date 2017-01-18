@@ -54,7 +54,7 @@ QString ValidatorSame::genericValidationError() const
 {
     Q_D(const ValidatorSame);
 
-    return QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(fieldLabel(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    return QStringLiteral("The %1 field must have the same value as the %2 field.").arg(fieldLabel(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
 }
 
 void ValidatorSame::setOtherField(const QString &otherField)

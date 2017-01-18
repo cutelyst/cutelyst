@@ -50,7 +50,7 @@ QString ValidatorRegularExpression::validate() const
 
 QString ValidatorRegularExpression::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field does not match the desired format.").arg(fieldLabel());
+    return QStringLiteral("The %1 field does not match the desired format.").arg(fieldLabel());
 }
 
 void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)

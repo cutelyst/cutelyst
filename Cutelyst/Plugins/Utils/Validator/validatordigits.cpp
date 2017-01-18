@@ -63,9 +63,9 @@ QString ValidatorDigits::genericValidationError() const
 
     Q_D(const ValidatorDigits);
     if (d->length > 0) {
-        error = QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
+        error = QStringLiteral("The %1 field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
     } else {
-        error = QStringLiteral("The “%1” field must only contain digits.").arg(fieldLabel());
+        error = QStringLiteral("The %1 field must only contain digits.").arg(fieldLabel());
     }
 
     return error;

@@ -52,6 +52,6 @@ QString ValidatorBoolean::validate() const
 
 QString ValidatorBoolean::genericValidationError() const
 {
-    return QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(fieldLabel());
+    return QStringLiteral("The data in the %1 field can not be interpreted as a boolean.").arg(fieldLabel());
 }
 

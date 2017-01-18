@@ -106,7 +106,7 @@ QString ValidatorUrl::validate() const
 
 QString ValidatorUrl::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1” field is not a valid URL.").arg(fieldLabel());
+    return QStringLiteral("The value in the %1 field is not a valid URL.").arg(fieldLabel());
 }
 
 void ValidatorUrl::setConstraints(Constraints constraints)
