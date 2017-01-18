@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -39,22 +39,24 @@ ValidatorAlpha::~ValidatorAlpha()
 
 }
 
-bool ValidatorAlpha::validate()
+QString ValidatorAlpha::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
-    }
+    return result;
 }
 
-QString ValidatorAlpha::genericErrorMessage() const
+QString ValidatorAlpha::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be entirely alphabetic characters.");
+    } else {
+        error = QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(label());
+    }
+    return error;
 }

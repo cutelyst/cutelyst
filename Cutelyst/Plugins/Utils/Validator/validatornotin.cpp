@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,33 +35,33 @@ ValidatorNotIn::~ValidatorNotIn()
 {
 }
 
-bool ValidatorNotIn::validate()
+QString ValidatorNotIn::validate() const
 {
-    Q_D(ValidatorNotIn);
+    QString result;
 
-    if (d->values.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+    Q_D(const ValidatorNotIn);
+
+    if (d->values.empty()) {
+        result = validationDataError();
+    } else {
+        const QString v = value();
+        if (!v.isEmpty() && d->values.contains(v)) {
+            result = validationError();
+        }
     }
 
-    QString v = value();
-
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    if (!d->values.contains(v)) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorNotIn::genericErrorMessage() const
+QString ValidatorNotIn::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1“ field is not allowed.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Value is not allowed.");
+    } else {
+        error = QStringLiteral("The value in the “%1” field is not allowed.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorNotIn::setValues(const QStringList &values)

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -16,43 +16,31 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef CUTELYSTVALIDATORRESULT_P_H
+#define CUTELYSTVALIDATORRESULT_P_H
 
-#include "validatorfilled_p.h"
+#include "validatorresult.h"
+#include <QSharedData>
 
-using namespace Cutelyst;
+namespace Cutelyst {
 
-ValidatorFilled::ValidatorFilled(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorFilledPrivate(field, label, customError))
+class ValidatorResultPrivate : public QSharedData
 {
+public:
+    ValidatorResultPrivate() {}
+
+    ValidatorResultPrivate(const ValidatorResultPrivate &other) :
+        QSharedData(other),
+        errorStrings(other.errorStrings),
+        errors(other.errors)
+    {}
+
+    ~ValidatorResultPrivate() {}
+
+    QStringList errorStrings;
+    QHash<QString,QStringList> errors;
+};
+
 }
 
-ValidatorFilled::ValidatorFilled(ValidatorFilledPrivate &dd) :
-    ValidatorRule(dd)
-{
-}
-
-ValidatorFilled::~ValidatorFilled()
-{
-}
-
-QString ValidatorFilled::validate() const
-{
-    QString result;
-
-    if (parameters().contains(field()) && value().isEmpty()) {
-        result = validationError();
-    }
-
-    return result;
-}
-
-QString ValidatorFilled::genericValidationError() const
-{
-    QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Must be filled.");
-    } else {
-        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
-    }
-    return error;
-}
+#endif // CUTELYSTVALIDATORRESULT_P_H

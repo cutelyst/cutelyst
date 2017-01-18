@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -37,39 +37,50 @@ ValidatorDigits::~ValidatorDigits()
 {
 }
 
-bool ValidatorDigits::validate()
+QString ValidatorDigits::validate() const
 {
-    Q_D(ValidatorDigits);
+    QString result;
 
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
+    Q_D(const ValidatorDigits);
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
-        if (d->length > 0) {
-            if (value().length() == d->length) {
-                setError(ValidatorRule::NoError);
-                return true;
-            } else {
-                return false;
+    if (!value().isEmpty()) {
+
+        if (value().contains(QRegularExpression(QStringLiteral("^[0-9]+$")))) {
+            if ((d->length > 0) && (value().length() != d->length)) {
+                result = validationError();
             }
         } else {
-            setError(ValidatorRule::NoError);
-            return true;
+            result = validationError();
         }
-    } else {
-        return false;
     }
+
+    return result;
 }
 
-QString ValidatorDigits::genericErrorMessage() const
+QString ValidatorDigits::genericValidationError() const
 {
-    Q_D(const ValidatorDigits);    if (d->length > 0) {
-        return QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(genericFieldName(), QString::number(d->length));
+    QString error;
+
+    Q_D(const ValidatorDigits);
+
+    if (label().isEmpty()) {
+
+        if (d->length > 0) {
+            error = QStringLiteral("Must only contain exactly %1 digits.").arg(d->length);
+        } else {
+            error = QStringLiteral("Must only contain digits.");
+        }
+
     } else {
-        return QStringLiteral("The “%1” field must only contain digits.").arg(genericFieldName());
+
+        if (d->length > 0) {
+            error = QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(label(), QString::number(d->length));
+        } else {
+            error = QStringLiteral("The “%1” field must only contain digits.").arg(label());
+        }
     }
+
+    return error;
 }
 
 void ValidatorDigits::setLength(int length)

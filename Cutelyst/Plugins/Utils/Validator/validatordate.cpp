@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -37,36 +37,45 @@ ValidatorDate::~ValidatorDate()
 }
 
 
-bool ValidatorDate::validate()
+QString ValidatorDate::validate() const
 {
-    Q_D(ValidatorDate);
+    QString result;
 
-    QString v = value();
-
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    QDate date = d->extractDate(v, d->format);
-
-    if (date.isValid()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
-}
-
-QString ValidatorDate::genericErrorMessage() const
-{
     Q_D(const ValidatorDate);
 
-    if (!d->format.isEmpty()) {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: %2").arg(genericFieldName(), d->format);
-    } else {
-        return QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(genericFieldName());
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+        const QDate date = d->extractDate(v, d->format);
+
+        if (!date.isValid()) {
+            result = validationError();
+        }
     }
+
+    return result;
+}
+
+QString ValidatorDate::genericValidationError() const
+{
+    QString error;
+
+    Q_D(const ValidatorDate);
+
+    if (label().isEmpty()) {
+
+        error = QStringLiteral("Not a valid date.");
+
+    } else {
+
+        if (!d->format.isEmpty()) {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: “%2”").arg(label(), d->format);
+        } else {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(label());
+        }
+    }
+
+    return error;
 }
 
 void ValidatorDate::setFormat(const QString &format)

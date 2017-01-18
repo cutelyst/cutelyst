@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,32 +35,33 @@ ValidatorIn::~ValidatorIn()
 {
 }
 
-bool ValidatorIn::validate()
+QString ValidatorIn::validate() const
 {
-    Q_D(ValidatorIn);
+    QString result;
 
-    if (d->values.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+    Q_D(const ValidatorIn);
+
+    if (!d->values.isEmpty()) {
+        if (!value().isEmpty() && !d->values.contains(value())) {
+            result = validationError();
+        }
+    } else {
+        result = validationDataError();
     }
 
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    if (d->values.contains(value())) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorIn::genericErrorMessage() const
+QString ValidatorIn::genericValidationError() const
 {
+    QString error;
     Q_D(const ValidatorIn);
-    return QStringLiteral("The value in the “%1“ field has to be one of the following: %2").arg(genericFieldName(), d->values.join(QStringLiteral(", ")));
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be one of the following: %1").arg(d->values.join(QStringLiteral(", ")));
+    } else {
+        error = QStringLiteral("The value in the “%1” field has to be one of the following: %2").arg(label(), d->values.join(QStringLiteral(", ")));
+    }
+    return error;
 }
 
 void ValidatorIn::setValues(const QStringList &values)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,64 +35,78 @@ ValidatorMin::~ValidatorMin()
 {
 }
 
-bool ValidatorMin::validate()
+QString ValidatorMin::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+        Q_D(const ValidatorMin);
+
+        if (d->type == QMetaType::Int) {
+            qlonglong val = v.toLongLong();
+            qlonglong min = (qlonglong)d->min;
+            if (val < min) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::UInt) {
+            qulonglong val = v.toULongLong();
+            qulonglong min = (qulonglong)d->min;
+            if (val < min) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::Float) {
+            double val = v.toDouble();
+            if (val < d->min) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::QString) {
+            int val = v.length();
+            int min = (int)d->min;
+            if (val < min) {
+                result = validationError();
+            }
+        } else {
+            result = validationDataError();
+        }
     }
 
-    Q_D(ValidatorMin);
-
-    if (d->type == QMetaType::Int) {
-        qlonglong val = v.toLongLong();
-        qlonglong min = (qlonglong)d->min;
-        if (val >= min) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::UInt) {
-        qulonglong val = v.toULongLong();
-        qulonglong min = (qulonglong)d->min;
-        if (val >= min) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::Float) {
-        double val = v.toDouble();
-        if (val >= d->min) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::QString) {
-        int val = v.length();
-        int min = (int)d->min;
-        if (val >= min) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else {
-        setError(ValidatorRule::ValidationDataError);
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorMin::genericErrorMessage() const
+QString ValidatorMin::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorMin);
 
-    if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return QStringLiteral("The value of the “%1” field has to be greater than or equal to %2.").arg(genericFieldName(),QString::number(d->min, 'f', 0));
-    } else if (d->type == QMetaType::Float) {
-        return QStringLiteral("The value of the “%1” field has to be greater than or equal to %2.").arg(genericFieldName(), QString::number(d->min));
-    } else if (d->type == QMetaType::QString) {
-        return QStringLiteral("The length of the “%1” field has to be greater than or equal to %2.").arg(genericFieldName(), QString::number(d->min, 'f', 0));
+    QString min;
+    if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::QString) {
+        min = QString::number(d->min, 'f', 0);
     } else {
-        return QString();
+        min = QString::number(d->min);
     }
+
+    if (label().isEmpty()) {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("Has to be greater than or equal to %1.").arg(min);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("Has to be longer than or equal to %1.").arg(min);
+        } else {
+            error = validationDataError();
+        }
+    } else {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("The value of the “%1” field has to be greater than or equal to %2.").arg(label(), min);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("The length of the “%1” field has to be longer than or equal to %2.").arg(label(), min);
+        } else {
+            error = validationDataError();
+        }
+    }
+
+    return error;
 }
 
 void ValidatorMin::setType(QMetaType::Type type)

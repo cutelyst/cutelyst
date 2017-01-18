@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -42,111 +42,127 @@ ValidatorAfter::~ValidatorAfter()
 
 }
 
-bool ValidatorAfter::validate()
+QString ValidatorAfter::validate() const
 {
-    Q_D(ValidatorAfter);
+    QString result;
 
-    QString v = value();
+    Q_D(const ValidatorAfter);
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+
+        if (d->date.type() == QVariant::Date) {
+
+            QDate odate = d->date.toDate();
+            if (!odate.isValid()) {
+                qCWarning(C_VALIDATORAFTER) << "Invalid validation date.";
+                result = validationDataError();
+            } else {
+                QDate date = d->extractDate(v, d->inputFormat);
+                if (!date.isValid()) {
+                    qCWarning(C_VALIDATORAFTER) << "Can not parse input date:" << v;
+                    result = parsingError();
+                } else {
+                    if (date <= odate) {
+                        result = validationError();
+                    }
+                }
+            }
+
+        } else if (d->date.type() == QVariant::DateTime) {
+
+            QDateTime odatetime = d->date.toDateTime();
+            if (!odatetime.isValid()) {
+                qCWarning(C_VALIDATORAFTER) << "Invalid validation date and time.";
+                result = validationDataError();
+            } else {
+                QDateTime datetime = d->extractDateTime(v, d->inputFormat);
+                if (!datetime.isValid()) {
+                    qCWarning(C_VALIDATORAFTER) << "Can not parse input date and time:" << v;
+                    result = parsingError();
+                } else {
+                    if (datetime <= odatetime) {
+                        result = validationError();
+                    }
+                }
+            }
+
+        } else if (d->date.type() == QVariant::Time) {
+
+            QTime otime = d->date.toTime();
+            if (!otime.isValid()) {
+                qCWarning(C_VALIDATORAFTER) << "Invalid validation time.";
+                result = validationDataError();
+            } else {
+                QTime time = d->extractTime(v, d->inputFormat);
+                if (!time.isValid()) {
+                    qCWarning(C_VALIDATORAFTER) << "Can not parse input time:" << v;
+                    result = parsingError();
+                } else {
+                    if (time <= otime) {
+                        result = validationError();
+                    }
+                }
+            }
+
+        } else {
+            qCWarning(C_VALIDATORAFTER) << "Invalid validation data:" << d->date;
+            result = validationDataError();
+        }
     }
 
-    if (d->date.type() == QVariant::Date) {
+    return result;
+}
 
-        QDate odate = d->date.toDate();
-        if (!odate.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
-            qCWarning(C_VALIDATORAFTER) << "Invalid validation date.";
-            return false;
-        }
-        QDate date = d->extractDate(v, d->inputFormat);
-        if (!date.isValid()) {
-            setError(ValidatorRule::ParsingError);
-            qCWarning(C_VALIDATORAFTER) << "Can not parse input date:" << v;
-            return false;
-        }
-        if (date > odate) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
+QString ValidatorAfter::genericValidationError() const
+{
+    QString error;
 
-    } else if (d->date.type() == QVariant::DateTime) {
+    Q_D(const ValidatorAfter);
 
-        QDateTime odatetime = d->date.toDateTime();
-        if (!odatetime.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
-            qCWarning(C_VALIDATORAFTER) << "Invalid validation date and time.";
-            return false;
-        }
-        QDateTime datetime = d->extractDateTime(v, d->inputFormat);
-        if (!datetime.isValid()) {
-            setError(ValidatorRule::ParsingError);
-            qCWarning(C_VALIDATORAFTER) << "Can not parse input date and time:" << v;
-            return false;
-        }
-        if (datetime > odatetime) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
+    QString compDateTime;
 
-    } else if (d->date.type() == QVariant::Time) {
+    switch (d->date.type()) {
+    case QVariant::Date:
+        //: date shown in validator error message
+        compDateTime = d->date.toDate().toString(QStringLiteral("dd.MM.yyyy"));
+        break;
+    case QVariant::DateTime:
+        //: date and time shown in validator error message
+        compDateTime = d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
+        break;
+    case QVariant::Time:
+        //: time shown in the validator error message
+        compDateTime = d->date.toTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
+    default:
+        break;
+    }
 
-        QTime otime = d->date.toTime();
-        if (!otime.isValid()) {
-            setError(ValidatorRule::ValidationDataError);
-            qCWarning(C_VALIDATORAFTER) << "Invalid validation time.";
-            return false;
-        }
-        QTime time = d->extractTime(v, d->inputFormat);
-        if (!time.isValid()) {
-            setError(ValidatorRule::ParsingError);
-            qCWarning(C_VALIDATORAFTER) << "Can not parse input time:" << v;
-            return false;
-        }
-        if (time > otime) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
+    if (label().isEmpty()) {
+
+        error = QStringLiteral("Has to be after %1.").arg(compDateTime);
 
     } else {
 
-        qCWarning(C_VALIDATORAFTER) << "Invalid validation data:" << d->date;
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+        switch(d->date.type()) {
+        case QVariant::Date:
+            error = QStringLiteral("The date in the “%1” field must be after %2.").arg(label(), compDateTime);
+            break;
+        case QVariant::DateTime:
+            error = QStringLiteral("The date and time in the “%1” field must be after %2.").arg(label(), compDateTime);
+            break;
+        case QVariant::Time:
+            error = QStringLiteral("The time in the “%1” field must be after %2.").arg(label(), compDateTime);
+            break;
+        default:
+            error = validationDataError();
+            break;
+        }
 
     }
 
-    return false;
-}
-
-QString ValidatorAfter::genericErrorMessage() const
-{
-    Q_D(const ValidatorAfter);
-
-    switch(d->date.type()) {
-    case QVariant::Date:
-        return QStringLiteral("The date in the “%1” field must be after %2.").arg(genericFieldName(),
-                                                                      //: date shown in validator error message
-                                                                      d->date.toDate().toString(QStringLiteral("dd.MM.yyyy")));
-    case QVariant::DateTime:
-        return QStringLiteral("The date and time in the “%1” field must be after %2.").arg(genericFieldName(),
-                                                                               //: date and time shown in validator error message
-                                                                               d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
-    case QVariant::Time:
-        return QStringLiteral("The time in the “%1” field must be after %2.").arg(genericFieldName(),
-                                                                      //: time shown in the validator error message
-                                                                      d->date.toTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
-    default:
-        return QString();
-    }
+    return error;
 }
 
 void ValidatorAfter::setDateTime(const QVariant &dateTime)

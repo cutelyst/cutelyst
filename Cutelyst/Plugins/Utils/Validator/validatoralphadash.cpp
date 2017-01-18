@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -39,22 +39,24 @@ ValidatorAlphaDash::~ValidatorAlphaDash()
 
 }
 
-bool ValidatorAlphaDash::validate()
+QString ValidatorAlphaDash::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
-    }
+    return result;
 }
 
-QString ValidatorAlphaDash::genericErrorMessage() const
+QString ValidatorAlphaDash::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Can only contain alpha-numeric characters, dashes and underscores.");
+    } else {
+        error = QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(label());
+    }
+    return error;
 }

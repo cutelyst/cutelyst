@@ -59,11 +59,9 @@ public:
     ~ValidatorDifferent();
     
     /*!
-     * \brief Performs the validation.
-     *
-     * Returns \c true on success.
+     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
      */
-    bool validate() override;
+    QString validate() const override;
 
     /*!
      * \brief Sets the name of the other field.
@@ -81,7 +79,7 @@ protected:
     /*!
      * \brief Returns a generic error message.
      */
-    QString genericErrorMessage() const override;
+    QString genericValidationError() const override;
     
     ValidatorDifferent(ValidatorDifferentPrivate &dd);
     

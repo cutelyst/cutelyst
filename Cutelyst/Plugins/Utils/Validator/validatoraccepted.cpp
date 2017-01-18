@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -38,18 +38,25 @@ ValidatorAccepted::~ValidatorAccepted()
 
 }
 
-bool ValidatorAccepted::validate()
+QString ValidatorAccepted::validate() const
 {
-    QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
-    if (l.contains(value(), Qt::CaseInsensitive)) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
+    QString result;
+
+    static const QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
+    if (!l.contains(value(), Qt::CaseInsensitive)) {
+        result = validationError();
     }
+
+    return result;
 }
 
-QString ValidatorAccepted::genericErrorMessage() const
+QString ValidatorAccepted::genericValidationError() const
 {
-    return QStringLiteral("The “%1” has to be accepted.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be accepted.");
+    } else {
+        error = QStringLiteral("The “%1” has to be accepted.").arg(label());
+    }
+    return error;
 }

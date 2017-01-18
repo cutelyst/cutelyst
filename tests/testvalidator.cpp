@@ -22,6 +22,9 @@
 #include <Cutelyst/upload.h>
 #include <Cutelyst/Plugins/Utils/Validator/Validator>
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
+#include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
+
+// clazy:excludeall=detaching-temporary
 
 using namespace Cutelyst;
 
@@ -57,10 +60,11 @@ public:
     C_ATTR(accepted, :Local :AutoArgs)
     void accepted(Context *c) {
         Validator v({new ValidatorAccepted(QStringLiteral("accepted_field"), QString(), QStringLiteral("invalid"))});
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -72,10 +76,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -87,10 +92,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -102,10 +108,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -118,10 +125,11 @@ public:
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         va->setInputFormat(QStringLiteral("yyyy d MM HH:mm"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -133,10 +141,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -148,10 +157,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -160,10 +170,11 @@ public:
     void alpha(Context *c) {
         Validator v;
         v.addValidator(new ValidatorAlpha(QStringLiteral("alpha_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -172,10 +183,11 @@ public:
     void alphaDash(Context *c) {
         Validator v;
         v.addValidator(new ValidatorAlphaDash(QStringLiteral("alphadash_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -184,10 +196,11 @@ public:
     void alphaNum(Context *c) {
         Validator v;
         v.addValidator(new ValidatorAlphaNum(QStringLiteral("alphanum_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -199,10 +212,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -214,10 +228,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -229,10 +244,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -245,10 +261,11 @@ public:
         va->setCustomParsingError(QStringLiteral("parsingerror"));
         va->setInputFormat(QStringLiteral("yyyy d MM HH:mm"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -260,10 +277,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -275,10 +293,11 @@ public:
         va->setCustomError(QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -287,10 +306,11 @@ public:
     void betweenInt(Context *c) {
         Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::Int, -10, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -299,10 +319,11 @@ public:
     void betweenUint(Context *c) {
         Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::UInt, 10, 20, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -311,10 +332,11 @@ public:
     void betweenFloat(Context *c) {
         Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::Float, -10.0, 10.0, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -323,10 +345,11 @@ public:
     void betweenString(Context *c) {
         Validator v;
         v.addValidator(new ValidatorBetween(QStringLiteral("between_field"), QMetaType::QString, 5, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -335,10 +358,11 @@ public:
     void boolean(Context *c) {
         Validator v;
         v.addValidator(new ValidatorBoolean(QStringLiteral("boolean_field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -347,10 +371,11 @@ public:
     void confirmed(Context *c) {
         Validator v;
         v.addValidator(new ValidatorConfirmed(QStringLiteral("pass"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -359,10 +384,11 @@ public:
     void date(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDate(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -371,10 +397,11 @@ public:
     void dateFormat(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDate(QStringLiteral("field"), QStringLiteral("yyyy d MM"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -383,10 +410,11 @@ public:
     void dateTime(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDateTime(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -395,10 +423,11 @@ public:
     void dateTimeFormat(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDateTime(QStringLiteral("field"), QStringLiteral("yyyy d MM mm:HH" ), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -407,10 +436,11 @@ public:
     void different(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDifferent(QStringLiteral("field"), QStringLiteral("other"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -419,10 +449,11 @@ public:
     void digits(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDigits(QStringLiteral("field"), -1, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -431,10 +462,11 @@ public:
     void digitsLength(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDigits(QStringLiteral("field"), 10, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -443,10 +475,11 @@ public:
     void digitsBetween(Context *c) {
         Validator v;
         v.addValidator(new ValidatorDigitsBetween(QStringLiteral("field"), 5, 10, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -455,10 +488,11 @@ public:
     void email(Context *c) {
         Validator v;
         v.addValidator(new ValidatorEmail(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -467,10 +501,11 @@ public:
     void filled(Context *c) {
         Validator v;
         v.addValidator(new ValidatorFilled(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -479,10 +514,11 @@ public:
     void in(Context *c) {
         Validator v;
         v.addValidator(new ValidatorIn(QStringLiteral("field"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei"), QStringLiteral("drei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -491,10 +527,11 @@ public:
     void integer(Context *c) {
         Validator v;
         v.addValidator(new ValidatorInteger(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -528,10 +565,11 @@ public:
         }
 
         v.addValidator(new ValidatorIp(QStringLiteral("field"), constraints, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -541,10 +579,11 @@ public:
     void json(Context *c) {
         Validator v;
         v.addValidator(new ValidatorJson(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -570,10 +609,11 @@ public:
         ValidatorMax *vm = new ValidatorMax(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -598,10 +638,11 @@ public:
         ValidatorMin *vm = new ValidatorMin(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -613,10 +654,11 @@ public:
         ValidatorNotIn *va = new ValidatorNotIn(QStringLiteral("field"), values, QString(), QStringLiteral("invalid"));
         va->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(va);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -626,10 +668,11 @@ public:
     void numeric(Context *c) {
         Validator v;
         v.addValidator(new ValidatorNumeric(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -639,10 +682,11 @@ public:
     void present(Context *c) {
         Validator v;
         v.addValidator(new ValidatorPresent(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -652,10 +696,11 @@ public:
     void regex(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRegularExpression(QStringLiteral("field"), QRegularExpression(QStringLiteral("^(\\d\\d)/(\\d\\d)/(\\d\\d\\d\\d)$")), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -664,10 +709,11 @@ public:
     void required(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequired(QStringLiteral("field"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -676,10 +722,11 @@ public:
     void requiredIf(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredIf(QStringLiteral("field"), QStringLiteral("field2"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -688,10 +735,11 @@ public:
     void requiredUnless(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredUnless(QStringLiteral("field"), QStringLiteral("field2"), QStringList({QStringLiteral("eins"), QStringLiteral("zwei")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -700,10 +748,11 @@ public:
     void requiredWith(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredWith(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -712,10 +761,11 @@ public:
     void requiredWithAll(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredWithAll(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3"), QStringLiteral("field4")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -724,10 +774,11 @@ public:
     void requiredWithout(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredWithout(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -736,10 +787,11 @@ public:
     void requiredWithoutAll(Context *c) {
         Validator v;
         v.addValidator(new ValidatorRequiredWithoutAll(QStringLiteral("field"), QStringList({QStringLiteral("field2"), QStringLiteral("field3")}), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -748,10 +800,11 @@ public:
     void same(Context *c) {
         Validator v;
         v.addValidator(new ValidatorSame(QStringLiteral("field"), QStringLiteral("other"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -776,10 +829,11 @@ public:
         ValidatorSize *vm = new ValidatorSize(QStringLiteral("field"), type, 10.0, QString(), QStringLiteral("invalid"));
         vm->setCustomValidationDataError(QStringLiteral("validationdataerror"));
         v.addValidator(vm);
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -788,10 +842,11 @@ public:
     void time(Context *c) {
         Validator v;
         v.addValidator(new ValidatorTime(QStringLiteral("field"), QString(), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -800,10 +855,11 @@ public:
     void timeFormat(Context *c) {
         Validator v;
         v.addValidator(new ValidatorTime(QStringLiteral("field"), QStringLiteral("m:hh"), QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 
@@ -838,10 +894,11 @@ public:
 
         Validator v;
         v.addValidator(new ValidatorUrl(QStringLiteral("field"), constraints, schemes, QString(), QStringLiteral("invalid")));
-        if (v.validate(c)) {
+        ValidatorResult r = v.validate(c);
+        if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(v.errorStrings().first().toString());
+            c->response()->setBody(r.errorStrings().first());
         }
     }
 };

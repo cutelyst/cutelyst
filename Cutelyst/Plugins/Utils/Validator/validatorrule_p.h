@@ -30,22 +30,14 @@ class ValidatorRulePrivate
 {
 public:
     ValidatorRulePrivate() :
-        valid(false),
-        parsingError(false),
-        validationDataError(false),
-        trimBefore(true),
-        errorType(ValidatorRule::ValidationFailed)
+        trimBefore(true)
     {}
 
     ValidatorRulePrivate(const QString f, const QString &l, const QString &e) :
         field(f),
         label(l),
         customError(e),
-        valid(false),
-        parsingError(false),
-        validationDataError(false),
-        trimBefore(true),
-        errorType(ValidatorRule::ValidationFailed)
+        trimBefore(true)
     {}
 
     virtual ~ValidatorRulePrivate() {}
@@ -124,14 +116,10 @@ public:
     QString field;
     QString label;
     QString customError;
-    bool valid;
     ParamsMultiMap parameters;
-    bool parsingError;
-    bool validationDataError;
     QString customParsingError;
     QString customValidationDataError;
     bool trimBefore;
-    ValidatorRule::ValidatonErrorType errorType;
 };
 
 }

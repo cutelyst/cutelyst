@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,35 +35,34 @@ ValidatorDifferent::~ValidatorDifferent()
 {
 }
 
-bool ValidatorDifferent::validate()
+QString ValidatorDifferent::validate() const
 {
-    Q_D(ValidatorDifferent);
+    QString result;
 
-    QString v = value();
-
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    QString o = d->parameters.value(d->otherField).trimmed();
-
-    if (v != o) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-
-    return false;
-}
-
-QString ValidatorDifferent::genericErrorMessage() const
-{
     Q_D(const ValidatorDifferent);
 
-    QString ogn = !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField;
+    const QString v = value();
 
-    return QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(genericFieldName(), ogn);
+    if (!v.isEmpty() && (v == d->parameters.value(d->otherField).trimmed())) {
+        result = validationError();
+    }
+
+    return result;
+}
+
+QString ValidatorDifferent::genericValidationError() const
+{
+    QString error;
+
+    Q_D(const ValidatorDifferent);
+
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be different from the value in “%1”.").arg(!d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    } else {
+        error = QStringLiteral("The value in the “%1” field has to be different from the value in the “%2” field.").arg(label(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    }
+
+    return error;
 }
 
 void ValidatorDifferent::setOtherField(const QString &otherField)

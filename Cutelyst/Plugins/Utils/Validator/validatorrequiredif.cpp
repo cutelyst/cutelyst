@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,38 +35,30 @@ ValidatorRequiredIf::~ValidatorRequiredIf()
 {
 }
 
-bool ValidatorRequiredIf::validate()
+QString ValidatorRequiredIf::validate() const
 {
-    Q_D(ValidatorRequiredIf);
+    QString result;
 
-    if (d->otherField.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
+    Q_D(const ValidatorRequiredIf);
+
+    if (d->otherField.isEmpty() || d->otherValues.empty()) {
+        result = validationDataError();
+    } else if (d->otherValues.contains(d->parameters.value(d->otherField)) && value().isEmpty()) {
+        result = validationError();
     }
 
-    if (d->otherValues.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
-    }
-
-    if (d->otherValues.contains(d->parameters.value(d->otherField))) {
-
-        if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-
-    } else {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorRequiredIf::genericErrorMessage() const
+QString ValidatorRequiredIf::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRequiredIf::setOtherField(const QString &otherField)

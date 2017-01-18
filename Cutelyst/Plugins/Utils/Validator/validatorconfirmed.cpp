@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,25 +35,29 @@ ValidatorConfirmed::~ValidatorConfirmed()
 {
 }
 
-bool ValidatorConfirmed::validate()
+QString ValidatorConfirmed::validate() const
 {
-    if (value().trimmed().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty()) {
+        QString ofn = field();
+        ofn.append(QLatin1String("_confirmation"));
+
+        if (value() != parameters().value(ofn)) {
+            result = validationError();
+        }
     }
 
-    QString ofn = field();
-    ofn.append(QLatin1String("_confirmation"));
-
-    if (value() == parameters().value(ofn)) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorConfirmed::genericErrorMessage() const
+QString ValidatorConfirmed::genericValidationError() const
 {
-    return QStringLiteral("The content of the “%1” field has not been confirmed.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Confirmation failed.");
+    } else {
+        error = QStringLiteral("The content of the “%1” field has not been confirmed.").arg(label());
+    }
+    return error;
 }

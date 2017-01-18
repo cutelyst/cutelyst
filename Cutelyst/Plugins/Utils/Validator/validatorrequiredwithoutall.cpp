@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,44 +35,44 @@ ValidatorRequiredWithoutAll::~ValidatorRequiredWithoutAll()
 {
 }
 
-bool ValidatorRequiredWithoutAll::validate()
+QString ValidatorRequiredWithoutAll::validate() const
 {
-    Q_D(ValidatorRequiredWithoutAll);
+    QString result;
 
-    if (d->otherFields.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
-    }
+    Q_D(const ValidatorRequiredWithoutAll);
 
-    const QStringList ofc = d->otherFields;
-
-    bool withoutAll = true;
-
-    for (const QString &other : ofc) {
-        if (d->parameters.contains(other)) {
-            withoutAll = false;
-            break;
-        }
-    }
-
-    if (withoutAll) {
-        if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
+    if (d->otherFields.empty()) {
+        result = validationDataError();
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+
+        const QStringList ofc = d->otherFields;
+
+        bool withoutAll = true;
+
+        for (const QString &other : ofc) {
+            if (d->parameters.contains(other)) {
+                withoutAll = false;
+                break;
+            }
+        }
+
+        if (withoutAll && value().isEmpty()) {
+            result = validationError();
+        }
     }
 
-    return false;
+    return result;
 }
 
-QString ValidatorRequiredWithoutAll::genericErrorMessage() const
+QString ValidatorRequiredWithoutAll::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRequiredWithoutAll::setOtherFields(const QStringList &otherFields)

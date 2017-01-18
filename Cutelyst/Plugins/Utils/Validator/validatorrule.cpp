@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,26 +35,6 @@ ValidatorRule::~ValidatorRule()
 {
 }
 
-QString ValidatorRule::errorMessage() const
-{
-    Q_D(const ValidatorRule);
-    switch(d->errorType) {
-    case ValidationFailed:
-        if (!d->customError.isEmpty()) {
-            return d->customError;
-        } else {
-            return genericErrorMessage();
-        }
-    case ParsingError:
-        return parsingErrorMessage();
-    case ValidationDataError:
-        return validationDataErrorMessage();
-    case NoError:
-    default:
-        return QString();
-    }
-}
-
 QString ValidatorRule::field() const { Q_D(const ValidatorRule); return d->field; }
 
 void ValidatorRule::setField(const QString &field)
@@ -73,27 +53,22 @@ void ValidatorRule::setLabel(const QString &label)
 
 QString ValidatorRule::value() const
 {
+    QString v;
+
     Q_D(const ValidatorRule);
+
     if (!field().isEmpty() && !d->parameters.isEmpty()) {
         if (trimBefore()) {
-            return d->parameters.value(field()).trimmed();
+            v = d->parameters.value(field()).trimmed();
         } else {
-            return d->parameters.value(field());
+            v = d->parameters.value(field());
         }
-    } else {
-        return QString();
     }
+
+    return v;
 }
 
-QString ValidatorRule::customError() const { Q_D(const ValidatorRule); return d->customError; }
-
-void ValidatorRule::setCustomError(const QString &customError)
-{
-    Q_D(ValidatorRule);
-    d->customError = customError;
-}
-
-bool ValidatorRule::isValid() const { Q_D(const ValidatorRule); return d->errorType == NoError; }
+ParamsMultiMap ValidatorRule::parameters() const { Q_D(const ValidatorRule); return d->parameters; }
 
 void ValidatorRule::setParameters(const ParamsMultiMap &params)
 {
@@ -101,40 +76,79 @@ void ValidatorRule::setParameters(const ParamsMultiMap &params)
     d->parameters = params;
 }
 
-ParamsMultiMap ValidatorRule::parameters() const
+QString ValidatorRule::validationError() const
 {
+    QString error;
     Q_D(const ValidatorRule);
-    return d->parameters;
+    if (d->customError.isEmpty()) {
+        error = genericValidationError();
+    } else {
+        error = d->customError;
+    }
+    return error;
 }
 
-QString ValidatorRule::genericFieldName() const
+QString ValidatorRule::genericValidationError() const
 {
-    return !label().isEmpty() ? label() : field();
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Input value is not acceptable.");
+    } else {
+        error = QStringLiteral("The input data in the “%1” field is not valid.").arg(label());
+    }
+    return error;
 }
 
-QString ValidatorRule::genericErrorMessage() const
+QString ValidatorRule::parsingError() const
 {
-    return QStringLiteral("The input data in the “%1” field is not valid.").arg(genericFieldName());
-}
-
-QString ValidatorRule::parsingErrorMessage() const
-{
+    QString error;
     Q_D(const ValidatorRule);
     if (d->customParsingError.isEmpty()) {
-        return QStringLiteral("Failed to parse the input data of the “%1” field.").arg(genericFieldName());
+        error = genericParsingError();
     } else {
-        return d->customParsingError;
+        error = d->customParsingError;
     }
+    return error;
 }
 
-QString ValidatorRule::validationDataErrorMessage() const
+QString ValidatorRule::genericParsingError() const
 {
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Failed to parse input data.");
+    } else {
+        error = QStringLiteral("Failed to parse the input data of the “%1” field.").arg(label());
+    }
+    return error;
+}
+
+QString ValidatorRule::validationDataError() const
+{
+    QString error;
     Q_D(const ValidatorRule);
     if (d->customValidationDataError.isEmpty()) {
-        return QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(genericFieldName());
+        error = genericValidationDataError();
     } else {
-        return d->customValidationDataError;
+        error = d->customValidationDataError;
     }
+    return error;
+}
+
+QString ValidatorRule::genericValidationDataError() const
+{
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Missing or unusable validation data.");
+    } else {
+        error = QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(label());
+    }
+    return error;
+}
+
+void ValidatorRule::setCustomError(const QString &customError)
+{
+    Q_D(ValidatorRule);
+    d->customError = customError;
 }
 
 void ValidatorRule::setCustomParsingError(const QString &custom)
@@ -149,26 +163,10 @@ void ValidatorRule::setCustomValidationDataError(const QString &custom)
     d->customValidationDataError = custom;
 }
 
+bool ValidatorRule::trimBefore() const { Q_D(const ValidatorRule); return d->trimBefore; }
+
 void ValidatorRule::setTrimBefore(bool trimBefore)
 {
     Q_D(ValidatorRule);
     d->trimBefore = trimBefore;
-}
-
-bool ValidatorRule::trimBefore() const
-{
-    Q_D(const ValidatorRule);
-    return d->trimBefore;
-}
-
-ValidatorRule::ValidatonErrorType ValidatorRule::error() const
-{
-    Q_D(const ValidatorRule);
-    return d->errorType;
-}
-
-void ValidatorRule::setError(ValidatonErrorType errorType)
-{
-    Q_D(ValidatorRule);
-    d->errorType = errorType;
 }

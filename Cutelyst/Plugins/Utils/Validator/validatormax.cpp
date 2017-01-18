@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,64 +35,78 @@ ValidatorMax::~ValidatorMax()
 {
 }
 
-bool ValidatorMax::validate()
+QString ValidatorMax::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+        Q_D(const ValidatorMax);
+
+        if (d->type == QMetaType::Int) {
+            qlonglong val = v.toLongLong();
+            qlonglong max = (qlonglong)d->max;
+            if (val > max) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::UInt) {
+            qulonglong val = v.toULongLong();
+            qulonglong max = (qulonglong)d->max;
+            if (val > max) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::Float) {
+            double val = v.toDouble();
+            if (val > d->max) {
+                result = validationError();
+            }
+        } else if (d->type == QMetaType::QString) {
+            int val = v.length();
+            int max = (int)d->max;
+            if (val > max) {
+                result = validationError();
+            }
+        } else {
+            result = validationDataError();
+        }
     }
 
-    Q_D(ValidatorMax);
-
-    if (d->type == QMetaType::Int) {
-        qlonglong val = v.toLongLong();
-        qlonglong max = (qlonglong)d->max;
-        if (val <= max) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::UInt) {
-        qulonglong val = v.toULongLong();
-        qulonglong max = (qulonglong)d->max;
-        if (val <= max) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::Float) {
-        double val = v.toDouble();
-        if (val <= d->max) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else if (d->type == QMetaType::QString) {
-        int val = v.length();
-        int max = (int)d->max;
-        if (val <= max) {
-            setError(ValidatorRule::NoError);
-            return true;
-        }
-    } else {
-        setError(ValidatorRule::ValidationDataError);
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorMax::genericErrorMessage() const
+QString ValidatorMax::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorMax);
 
-    if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        return QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(),QString::number(d->max, 'f', 0));
-    } else if (d->type == QMetaType::Float) {
-        return QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max));
-    } else if (d->type == QMetaType::QString) {
-        return QStringLiteral("The length of the “%1” field has to be lower than or equal to %2.").arg(genericFieldName(), QString::number(d->max, 'f', 0));
+    QString max;
+    if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::QString) {
+        max = QString::number(d->max, 'f', 0);
     } else {
-        return QString();
+        max = QString::number(d->max);
     }
+
+    if (label().isEmpty()) {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("Has to be lower than or equal to %1.").arg(max);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("Has to be shorter than or equal to %1.").arg(max);
+        } else {
+            error = validationDataError();
+        }
+    } else {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(label(), max);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("The length of the “%1” field has to be shorter than or equal to %2.").arg(label(), max);
+        } else {
+            error = validationDataError();
+        }
+    }
+
+    return error;
 }
 
 void ValidatorMax::setType(QMetaType::Type type)

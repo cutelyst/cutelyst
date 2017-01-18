@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,46 +35,44 @@ ValidatorRequiredWithAll::~ValidatorRequiredWithAll()
 {
 }
 
-bool ValidatorRequiredWithAll::validate()
+QString ValidatorRequiredWithAll::validate() const
 {
-    Q_D(ValidatorRequiredWithAll);
+    QString result;
 
-    if (d->otherFields.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
-    }
+    Q_D(const ValidatorRequiredWithAll);
 
-    bool containsAll = true;
-
-    const QStringList ofc = d->otherFields;
-
-    for (const QString &other : ofc) {
-        if (!parameters().contains(other)) {
-            containsAll = false;
-            break;
-        }
-    }
-
-    if (containsAll) {
-
-        if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
-
+    if (d->otherFields.empty()) {
+        result = validationDataError();
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+
+        bool containsAll = true;
+
+        const QStringList ofc = d->otherFields;
+
+        for (const QString &other : ofc) {
+            if (!parameters().contains(other)) {
+                containsAll = false;
+                break;
+            }
+        }
+
+        if (containsAll && value().isEmpty()) {
+            result = validationError();
+        }
     }
 
-    return false;
+    return result;
 }
 
-QString ValidatorRequiredWithAll::genericErrorMessage() const
+QString ValidatorRequiredWithAll::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRequiredWithAll::setOtherFields(const QStringList &otherFields)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,44 +35,44 @@ ValidatorRequiredWithout::~ValidatorRequiredWithout()
 {
 }
 
-bool ValidatorRequiredWithout::validate()
+QString ValidatorRequiredWithout::validate() const
 {
-    Q_D(ValidatorRequiredWithout);
+    QString result;
+
+    Q_D(const ValidatorRequiredWithout);
 
     if (d->otherFields.isEmpty()) {
-        setError(ValidatorRule::ValidationDataError);
-        return false;
-    }
-
-    bool otherMissing = false;
-
-    const QStringList ofc = d->otherFields;
-
-    for (const QString &other : ofc) {
-        if (!d->parameters.contains(other)) {
-            otherMissing = true;
-            break;
-        }
-    }
-
-    if (otherMissing) {
-        if (!value().isEmpty()) {
-            setError(ValidatorRule::NoError);
-            return true;
-        } else {
-            return false;
-        }
+        result = validationDataError();
     } else {
-        setError(ValidatorRule::NoError);
-        return true;
+
+        bool otherMissing = false;
+
+        const QStringList ofc = d->otherFields;
+
+        for (const QString &other : ofc) {
+            if (!d->parameters.contains(other)) {
+                otherMissing = true;
+                break;
+            }
+        }
+
+        if (otherMissing && value().isEmpty()) {
+            result = validationError();
+        }
     }
 
-    return false;
+    return result;
 }
 
-QString ValidatorRequiredWithout::genericErrorMessage() const
+QString ValidatorRequiredWithout::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRequiredWithout::setOtherFields(const QStringList &otherFields)

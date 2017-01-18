@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,36 +36,41 @@ ValidatorTime::~ValidatorTime()
 {
 }
 
-bool ValidatorTime::validate()
+QString ValidatorTime::validate() const
 {
-    Q_D(ValidatorTime);
+    QString result;
 
-    QString v = value();
-
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    QTime date = d->extractTime(v, d->format);
-
-    if (date.isValid()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
-}
-
-QString ValidatorTime::genericErrorMessage() const
-{
     Q_D(const ValidatorTime);
 
-   if (!d->format.isEmpty()) {
-       return QStringLiteral("The data in the “%1” field can not be interpreted as time of this schema: %2").arg(genericFieldName(), d->format);
-   } else {
-       return QStringLiteral("The data in the “%1” field can not be interpreted as time.").arg(genericFieldName());
-   }
+    const QString v = value();
+
+    if (!v.isEmpty()) {
+        const QTime date = d->extractTime(v, d->format);
+        if (!date.isValid()) {
+            result = validationError();
+        }
+    }
+
+    return result;
+}
+
+QString ValidatorTime::genericValidationError() const
+{
+    QString error;
+
+    Q_D(const ValidatorTime);
+
+    if (label().isEmpty()) {
+        error = QStringLiteral("Not a valid time.");
+    } else {
+        if (!d->format.isEmpty()) {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as time of this schema: “%2”").arg(label(), d->format);
+        } else {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as time.").arg(label());
+        }
+    }
+
+   return error;
 }
 
 void ValidatorTime::setFormat(const QString &format)

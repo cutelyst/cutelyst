@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,22 +36,24 @@ ValidatorNumeric::~ValidatorNumeric()
 {
 }
 
-bool ValidatorNumeric::validate()
+QString ValidatorNumeric::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+(\\.|,)?\\d*(e|E)?\\d+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorNumeric::genericErrorMessage() const
+QString ValidatorNumeric::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be numeric, like 1, -2.5 or 3.454e3.");
+    } else {
+        error = QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(label());
+    }
+    return error;
 }

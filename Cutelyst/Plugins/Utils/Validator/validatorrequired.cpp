@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,17 +35,24 @@ ValidatorRequired::~ValidatorRequired()
 {
 }
 
-bool ValidatorRequired::validate()
+QString ValidatorRequired::validate() const
 {
-    if (!value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
+    QString result;
+
+    if (value().isEmpty()) {
+        result = validationError();
     }
+
+    return result;
 }
 
-QString ValidatorRequired::genericErrorMessage() const
+QString ValidatorRequired::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }

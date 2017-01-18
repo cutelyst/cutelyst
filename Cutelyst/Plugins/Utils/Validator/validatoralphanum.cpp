@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -39,22 +39,24 @@ ValidatorAlphaNum::~ValidatorAlphaNum()
 
 }
 
-bool ValidatorAlphaNum::validate()
+QString ValidatorAlphaNum::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
-    }
+    return result;
 }
 
-QString ValidatorAlphaNum::genericErrorMessage() const
+QString ValidatorAlphaNum::genericValidationError() const
 {
-    return QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be entirely alpha-numeric characters.");
+    } else {
+        error = QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(label());
+    }
+    return error;
 }

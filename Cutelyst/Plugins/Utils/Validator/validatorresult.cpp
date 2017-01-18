@@ -17,42 +17,49 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "validatorfilled_p.h"
+#include "validatorresult_p.h"
 
 using namespace Cutelyst;
 
-ValidatorFilled::ValidatorFilled(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorFilledPrivate(field, label, customError))
+ValidatorResult::ValidatorResult() :
+    d(new ValidatorResultPrivate)
 {
 }
 
-ValidatorFilled::ValidatorFilled(ValidatorFilledPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorResult::ValidatorResult(const ValidatorResult &other) :
+    d(other.d)
 {
 }
 
-ValidatorFilled::~ValidatorFilled()
+ValidatorResult& ValidatorResult::operator =(const ValidatorResult &other)
+{
+    d = other.d;
+    return *this;
+}
+
+ValidatorResult::~ValidatorResult()
 {
 }
 
-QString ValidatorFilled::validate() const
+bool ValidatorResult::isValid() const
 {
-    QString result;
-
-    if (parameters().contains(field()) && value().isEmpty()) {
-        result = validationError();
-    }
-
-    return result;
+    return d->errors.empty();
 }
 
-QString ValidatorFilled::genericValidationError() const
+void ValidatorResult::addError(const QString &field, const QString &message)
 {
-    QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Must be filled.");
-    } else {
-        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
-    }
-    return error;
+    d->errorStrings.append(message);
+    QStringList fieldErrors = d->errors.value(field);
+    fieldErrors.append(message);
+    d->errors.insert(field, fieldErrors);
+}
+
+QStringList ValidatorResult::errorStrings() const
+{
+    return d->errorStrings;
+}
+
+QHash<QString, QStringList> ValidatorResult::errors() const
+{
+    return d->errors;
 }

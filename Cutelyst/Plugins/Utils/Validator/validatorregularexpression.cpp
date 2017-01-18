@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,26 +35,28 @@ ValidatorRegularExpression::~ValidatorRegularExpression()
 {
 }
 
-bool ValidatorRegularExpression::validate()
+QString ValidatorRegularExpression::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    Q_D(const ValidatorRegularExpression);
+
+    if (!value().isEmpty() && !value().contains(d->regex)) {
+        result = validationError();
     }
 
-    Q_D(ValidatorRegularExpression);
-
-    if (value().contains(d->regex)) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorRegularExpression::genericErrorMessage() const
+QString ValidatorRegularExpression::genericValidationError() const
 {
-    return QStringLiteral("The “%1” field does not match the desired format.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Does not match desired format.");
+    } else {
+        error = QStringLiteral("The “%1” field does not match the desired format.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)

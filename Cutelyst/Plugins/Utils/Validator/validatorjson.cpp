@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,33 +36,29 @@ ValidatorJson::~ValidatorJson()
 {
 }
 
-bool ValidatorJson::validate()
+QString ValidatorJson::validate() const
 {
-    Q_D(ValidatorJson);
+    QString result;
 
-    QString v = value();
+    const QString v = value();
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    if (!v.isEmpty()) {
+        const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8());
+        if (json.isEmpty() || json.isNull()) {
+            result = validationError();
+        }
     }
 
-    QJsonDocument json = QJsonDocument::fromJson(v.toUtf8(), &d->jsonParseError);
-    if (!json.isEmpty() && !json.isNull()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    return result;
+}
+
+QString ValidatorJson::genericValidationError() const
+{
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Invalid JSON data.");
+    } else {
+        error = QStringLiteral("The data entered in the “%1” field is not valid JSON.").arg(label());
     }
-
-    return false;
-}
-
-QString ValidatorJson::genericErrorMessage() const
-{
-    return QStringLiteral("The data entered in the “%1” field is not valid JSON: %2").arg(genericFieldName(), jsonParseError().errorString());
-}
-
-QJsonParseError ValidatorJson::jsonParseError() const
-{
-    Q_D(const ValidatorJson);
-    return d->jsonParseError;
+    return error;
 }

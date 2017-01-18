@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,61 +36,83 @@ ValidatorUrl::~ValidatorUrl()
 {
 }
 
-bool ValidatorUrl::validate()
+QString ValidatorUrl::validate() const
 {
-    Q_D(ValidatorUrl);
+    QString result;
 
-    QString v = value();
+    Q_D(const ValidatorUrl);
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
+    const QString v = value();
 
-    QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
-    if (d->constraints.testFlag(StrictParsing)) {
-        parsingMode = QUrl::StrictMode;
-    }
+    if (!v.isEmpty()) {
 
-    QUrl url(value(), parsingMode);
-    if (!url.isValid() || url.isEmpty()) {
-        return false;
-    }
+        bool valid = true;
 
-    if ((d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
-        return false;
-    }
+        QUrl::ParsingMode parsingMode = QUrl::TolerantMode;
+        if (d->constraints.testFlag(StrictParsing)) {
+            parsingMode = QUrl::StrictMode;
+        }
 
-    if ((d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
-        return false;
-    }
+        QUrl url(value(), parsingMode);
+        if (!url.isValid() || url.isEmpty()) {
+            valid = false;
+        }
 
-    if (d->constraints.testFlag(WebsiteOnly)) {
-        d->schemes = QStringList({QStringLiteral("http"), QStringLiteral("https")});
-    }
+        if (valid && (d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
+            valid = false;
+        }
 
-    if (!d->schemes.isEmpty()) {
+        if (valid && (d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
+            valid = false;
+        }
 
-        const QStringList sc = d->schemes;
-        for (const QString &s : sc) {
-            const QString sl =  s.toLower();
-            if (url.scheme() == sl) {
-                setError(ValidatorRule::NoError);
-                return true;
+        if (valid) {
+            QStringList schemeList = d->schemes;
+
+            if (d->constraints.testFlag(WebsiteOnly)) {
+                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive)) {
+                    schemeList.append(QStringLiteral("http"));
+                }
+                if (!schemeList.contains(QStringLiteral("https"), Qt::CaseInsensitive)) {
+                    schemeList.append(QStringLiteral("https"));
+                }
+            }
+
+            if (!schemeList.isEmpty()) {
+
+                const QStringList sc = schemeList;
+                bool foundScheme = false;
+                for (const QString &s : sc) {
+                    const QString sl =  s.toLower();
+                    if (url.scheme() == sl) {
+                        foundScheme = true;
+                        break;
+                    }
+                }
+
+                if (!foundScheme) {
+                    valid = false;
+                }
             }
         }
 
-        return false;
-
-    } else {
-        setError(ValidatorRule::NoError);
-        return true;
+        if (!valid) {
+            result = validationError();
+        }
     }
+
+    return result;
 }
 
-QString ValidatorUrl::genericErrorMessage() const
+QString ValidatorUrl::genericValidationError() const
 {
-    return QStringLiteral("The value in the “%1” field is not a valid URL.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Not a valid URL.");
+    } else {
+        error = QStringLiteral("The value in the “%1” field is not a valid URL.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorUrl::setConstraints(Constraints constraints)

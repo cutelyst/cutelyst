@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -35,17 +35,24 @@ ValidatorPresent::~ValidatorPresent()
 {
 }
 
-bool ValidatorPresent::validate()
+QString ValidatorPresent::validate() const
 {
-    if (parameters().contains(field())) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!parameters().contains(field())) {
+        result = validationError();
     }
 
-    return false;
+    return result;
 }
 
-QString ValidatorPresent::genericErrorMessage() const
+QString ValidatorPresent::genericValidationError() const
 {
-    return QStringLiteral("The “%1“ field was not found in the input data.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be present in input data.");
+    } else {
+        error = QStringLiteral("The “%1” field was not found in the input data.").arg(label());
+    }
+    return error;
 }

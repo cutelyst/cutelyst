@@ -116,6 +116,9 @@ set(plugin_validator_SRC
     validatorurl.cpp
     validatorurl_p.h
     validatorurl.h
+    validatorresult.cpp
+    validatorresult_p.h
+    validatorresult.h
 ) 
 
 
@@ -162,6 +165,8 @@ set(plugin_validator_HEADERS
     validatortime.h
     validatorurl.h
     Validators
+    validatorresult.h
+    ValidatorResult
 )
 
 add_library(cutelyst_qt5_plugin_utils_validator SHARED

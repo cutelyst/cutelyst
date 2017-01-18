@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -36,24 +36,28 @@ ValidatorBoolean::~ValidatorBoolean()
 {
 }
 
-bool ValidatorBoolean::validate()
+QString ValidatorBoolean::validate() const
 {
-    if (value().isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    QString result;
+
+    if (!value().isEmpty()) {
+        static const QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
+        if (!l.contains(value(), Qt::CaseInsensitive)) {
+            result = validationError();
+        }
     }
 
-    QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
-    if (l.contains(value(), Qt::CaseInsensitive)) {
-        setError(ValidatorRule::NoError);
-        return true;
-    } else {
-        return false;
-    }
+    return result;
 }
 
-QString ValidatorBoolean::genericErrorMessage() const
+QString ValidatorBoolean::genericValidationError() const
 {
-    return QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Can not be interpreted as boolean.");
+    } else {
+        error = QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(label());
+    }
+    return error;
 }
 

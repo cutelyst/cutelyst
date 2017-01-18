@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -38,24 +38,26 @@ ValidatorInteger::~ValidatorInteger()
 {
 }
 
-bool ValidatorInteger::validate()
+QString ValidatorInteger::validate() const
 {
-    QString v = value();
+    QString result;
 
-    if (v.isEmpty()) {
-        setError(ValidatorRule::NoError);
-        return true;
+    const QString v = value();
+
+    if (!v.isEmpty() && !v.contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
+        result = validationError();
     }
 
-    if (value().contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
-        setError(ValidatorRule::NoError);
-        return true;
-    }
-
-    return false;
+    return result;
 }
 
-QString ValidatorInteger::genericErrorMessage() const
+QString ValidatorInteger::genericValidationError() const
 {
-    return QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(genericFieldName());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be an integer (1,2,-3 etc).");
+    } else {
+        error = QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(label());
+    }
+    return error;
 }
