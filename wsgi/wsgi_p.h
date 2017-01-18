@@ -50,6 +50,7 @@ public:
     void restart(const QString &path);
     void restartTerminate();
     void engineInitted();
+    void workerStarted();
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
@@ -83,6 +84,7 @@ public:
     Protocol *protoFCGI = nullptr;
     int bufferSize = 4096;
     int enginesInitted = 1;
+    int workersNotRunning = 1;
     int threads = 0;
     int process = 0;
     int socketSendBuf = -1;

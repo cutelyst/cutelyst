@@ -16,6 +16,7 @@ if (UNIX)
     set(httpEngine_SRC
         ${httpEngine_SRC}
         unixfork.cpp
+        systemdnotify.cpp
         )
 endif (UNIX)
 

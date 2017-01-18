@@ -146,6 +146,10 @@ public:
     void setGid(const QString &gid);
     QString gid() const;
 #endif
+
+Q_SIGNALS:
+    void ready();
+
 protected:
     WSGIPrivate *d_ptr;
 };

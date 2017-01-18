@@ -30,6 +30,7 @@
 
 #ifdef Q_OS_LINUX
 #include "../EventLoopEPoll/eventdispatcher_epoll.h"
+#include "systemdnotify.h"
 #endif
 
 #include <QCoreApplication>
@@ -152,7 +153,8 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
                       << std::endl;
             sockets.push_back(info);
         } else {
-            std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
+            std::cout << "Failed to listen on TCP: " << line.toUtf8().constData()
+                      << " : " << server->errorString().toUtf8().constData() << std::endl;
             exit(1);
         }
     }
@@ -834,6 +836,15 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         }
     }
 
+#ifdef Q_OS_LINUX
+    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
+        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
+        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
+        auto notify = new systemdNotify(notifySocket.constData(), this);
+        connect(q, &WSGI::ready, notify, &systemdNotify::ready);
+    }
+#endif
+
 #ifdef Q_OS_UNIX
     if (!gid.isEmpty()) {
         UnixFork::setGid(gid);
@@ -901,6 +912,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
     std::cout << "Threads:" << threads << std::endl;
     if (threads) {
         enginesInitted = threads;
+        workersNotRunning = threads;
         for (int i = 1; i < threads; ++i) {
             createEngine(localApp, i);
         }
@@ -969,12 +981,23 @@ void WSGIPrivate::engineInitted()
     }
 }
 
+void WSGIPrivate::workerStarted()
+{
+    Q_Q(WSGI);
+
+    // All workers have started
+    if (--workersNotRunning == 0) {
+        Q_EMIT q->ready();
+    }
+}
+
 CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 {
     Q_Q(WSGI);
 
     auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
     connect(engine, &CWsgiEngine::initted, this, &WSGIPrivate::engineInitted, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     engine->setTcpSockets(sockets);
     engines.push_back(engine);

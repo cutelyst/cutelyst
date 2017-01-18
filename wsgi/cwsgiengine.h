@@ -64,7 +64,7 @@ public:
 
 Q_SIGNALS:
     void initted();
-    void resumeAccepting();
+    void started();
 
 protected:
     virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);

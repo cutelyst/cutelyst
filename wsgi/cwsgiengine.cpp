@@ -89,13 +89,13 @@ void CWsgiEngine::listen()
             auto server = new TcpServer(info.serverName, info.protocol, m_wsgi, this);
             if (server->setSocketDescriptor(info.socketDescriptor)) {
                 server->pauseAccepting();
-                connect(this, &CWsgiEngine::resumeAccepting, server, &TcpServer::resumeAccepting);
+                connect(this, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
             }
         } else {
             auto server = new LocalServer(info.serverName, info.protocol, m_wsgi, this);
             if (server->setSocketDescriptor(info.socketDescriptor)) {
                 server->pauseAccepting();
-                connect(this, &CWsgiEngine::resumeAccepting, server, &LocalServer::resumeAccepting);
+                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
             }
         }
     }
@@ -110,7 +110,7 @@ void CWsgiEngine::postFork()
         QCoreApplication::exit(15);
     }
 
-    Q_EMIT resumeAccepting();
+    Q_EMIT started();
 }
 
 QByteArray dateHeader()
