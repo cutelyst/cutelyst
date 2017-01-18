@@ -223,7 +223,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = Q_QDOC
+PREDEFINED             = Q_QDOC Q_COMPILER_INITIALIZER_LISTS
 EXPAND_AS_DEFINED      = TemplateImpl
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
