@@ -152,7 +152,7 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
             if (notifier) {
 //                qDebug() << "found notifier" << notifier->socket();
                 info.socketDescriptor = notifier->socket();
-                notifier->deleteLater();
+                notifier->setEnabled(false);
                 break;
             }
         }
