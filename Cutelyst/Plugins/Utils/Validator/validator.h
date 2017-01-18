@@ -145,8 +145,8 @@ class ValidatorRule;
  * information and field values that are not sensible (field names that do not contain \c password).
  *
  * Beside the field values added with their field names, Validator will add two more entries to the stash:
- * \li \a validationErrorStrings - a QStringList containing a list of all validation error messages
- * \li \a validationErrorFields - a QStringList containting a list of field names that have validation errors
+ * \li \a validationErrorStrings - a QStringList containing a list of all validation error messages, returned by ValidatorResult::errorStrings()
+ * \li \a validationErrors - a QHash containing a dictionary with field names and their error strings, returned by ValidatorResult::errors()
  *
  * Let's assume that a user enters the following values into the form fields from the above example:
  * \li \c username = detlef
@@ -159,10 +159,39 @@ class ValidatorRule;
  * \li \c username: "detlef"
  * \li \c email: "detlef@irgendwo"
  * \li \c validationErrorStrings: ["The email address in the “Email” field is not valid.", "Please enter the same password again in the confirmation field."]
- * \li \c validationErrorFields: ["email", "password"]
+ * \li \c validationErrors: ["email":["The email address in the “Email” field is not valid."], "password":[""Please enter the same password again in the confirmation field.""]]
  *
  * The sensible data of the password fields is not part of the stash, but the other values can be used to prefill the form fields for the next attempt of
  * our little Schalke fan and can give him some hints what was wrong.
+ *
+ * \par Usage with Grantlee
+ *
+ * The following example shows possible usage of the error data with \link GrantleeView Grantlee \endlink and the Bootstrap framework.
+ *
+ * \code{.html}
+ * {% if validationErrorStrings.count %}
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">Errors in input data</h4>
+        <p>
+        <ul>
+            {% for errorString in validationErrorStrings %}
+            <li>{{ errorString }}</li>
+            {% endfor %}
+        </ul>
+        </p>
+    </div>
+    {% endif %}
+
+    <form>
+
+        <div class="form-group{% if validationErrors.email.count %} has-warning{% endif %}">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" maxlength="255" class="form-control{% if validationErrors.email.count %} form-control-warning{% endif %}" placeholder="Email" aria-describedby="emailHelpBlock" required value="{{ email }}">
+            <small id="emailHelpBlock" class="form-text text-muted">The email address will be used to send notifications and to restore lost passwords. Maximum length: 255</small>
+        </div>
+
+    </form>
+ * \endcode
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator
 {

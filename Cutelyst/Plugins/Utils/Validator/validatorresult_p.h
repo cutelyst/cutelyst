@@ -32,13 +32,13 @@ public:
     ValidatorResultPrivate(const ValidatorResultPrivate &other) :
         QSharedData(other),
         errorStrings(other.errorStrings),
-        errorFields(other.errorFields)
+        errors(other.errors)
     {}
 
     ~ValidatorResultPrivate() {}
 
     QStringList errorStrings;
-    QStringList errorFields;
+    QHash<QString,QStringList> errors;
 };
 
 }

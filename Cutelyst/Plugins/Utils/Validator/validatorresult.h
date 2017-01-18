@@ -23,6 +23,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSharedDataPointer>
+#include <QVariantHash>
 
 namespace Cutelyst {
 
@@ -105,11 +106,13 @@ public:
     QStringList errorStrings() const;
 
     /*!
-     * \brief Returns a list of field names with errors.
+     * \brief Returns a dictionary containing fields with errors.
      *
-     * Returns a list of all field names for that a ValidatorRule failed.
+     * Returns a dictionary that contains the fields that have validation errors
+     * together with the errors strings. The \a key will be the field name, the \a value
+     * will be the list of errors for that field.
      */
-    QStringList errorFields() const;
+    QHash<QString,QStringList> errors() const;
 
     /*!
      * \brief Returns \c true if the validation was successful.

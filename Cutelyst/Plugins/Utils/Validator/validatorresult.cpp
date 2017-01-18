@@ -43,21 +43,23 @@ ValidatorResult::~ValidatorResult()
 
 bool ValidatorResult::isValid() const
 {
-    return d->errorFields.isEmpty();
+    return d->errors.empty();
 }
 
 void ValidatorResult::addError(const QString &field, const QString &message)
 {
-    d->errorFields.append(field);
     d->errorStrings.append(message);
-}
-
-QStringList ValidatorResult::errorFields() const
-{
-    return d->errorFields;
+    QStringList fieldErrors = d->errors.value(field);
+    fieldErrors.append(message);
+    d->errors.insert(field, fieldErrors);
 }
 
 QStringList ValidatorResult::errorStrings() const
 {
     return d->errorStrings;
+}
+
+QHash<QString, QStringList> ValidatorResult::errors() const
+{
+    return d->errors;
 }
