@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <sys/socket.h>
 #include <signal.h>
@@ -91,6 +93,42 @@ void UnixFork::chldSignalHandler(int unused)
 {
     char a = 1;
     ::write(sigChldFd[0], &a, sizeof(a));
+}
+
+void UnixFork::setGid(const QString &gid)
+{
+    bool ok;
+    int gidInt = gid.toInt(&ok);
+    if (!ok) {
+        struct group *ugroup = getgrnam(gid.toUtf8().constData());
+        if (ugroup) {
+            gidInt = ugroup->gr_gid;
+        } else {
+            qFatal("group %s not found.", gid.toUtf8().constData());
+        }
+    }
+
+    if (setgid(gidInt)) {
+        qFatal("Failed to set gid '%s'", strerror(errno));
+    }
+}
+
+void UnixFork::setUid(const QString &uid)
+{
+    bool ok;
+    int uidInt = uid.toInt(&ok);
+    if (!ok) {
+        struct passwd *upasswd = getpwnam(uid.toUtf8().constData());
+        if (upasswd) {
+            uidInt = upasswd->pw_uid;
+        } else {
+            qFatal("user %s not found.", uid.toUtf8().constData());
+        }
+    }
+
+    if (setuid(uidInt)) {
+        qFatal("Failed to set uid: '%s'", strerror(errno));
+    }
 }
 
 void UnixFork::handleSigHup()

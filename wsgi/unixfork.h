@@ -38,6 +38,9 @@ public:
     static void intSignalHandler(int unused);
     static void chldSignalHandler(int unused);
 
+    static void setGid(const QString &gid);
+    static void setUid(const QString &uid);
+
     void handleSigHup();
     void handleSigTerm();
     void handleSigKill();

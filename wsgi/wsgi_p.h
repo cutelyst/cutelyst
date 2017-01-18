@@ -42,6 +42,7 @@ public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
 
     bool listenTcp(const QString &line, Protocol *protocol);
+    bool listenLocal(const QString &line, Protocol *protocol);
     void proc();
     void parseCommandLine();
     int setupApplication(Cutelyst::Application *app);
@@ -70,6 +71,10 @@ public:
     QString chdir2;
     QString ini;
     QString socketAccess;
+#ifdef Q_OS_UNIX
+    QString uid;
+    QString gid;
+#endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     QProcess *masterChildProcess = nullptr;

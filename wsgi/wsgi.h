@@ -137,6 +137,15 @@ public:
     void setSocketRcvbuf(int value);
     int socketRcvbuf() const;
 
+#ifdef Q_OS_UNIX
+    Q_PROPERTY(QString uid READ uid WRITE setUid)
+    void setUid(const QString &uid);
+    QString uid() const;
+
+    Q_PROPERTY(QString gid READ gid WRITE setGid)
+    void setGid(const QString &gid);
+    QString gid() const;
+#endif
 protected:
     WSGIPrivate *d_ptr;
 };

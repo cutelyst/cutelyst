@@ -114,49 +114,8 @@ int WSGI::load(Cutelyst::Application *app)
 
 bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
 {
-    bool ret;
-    SocketInfo info;
-    info.protocol = protocol;
-
-    if (line.startsWith(QLatin1Char('/'))) {
-        auto server = new QLocalServer(this);
-        if (!socketAccess.isEmpty()) {
-            QLocalServer::SocketOptions options;
-            if (socketAccess.contains(QLatin1Char('u'))) {
-                options |= QLocalServer::UserAccessOption;
-            }
-
-            if (socketAccess.contains(QLatin1Char('g'))) {
-                options |= QLocalServer::GroupAccessOption;
-            }
-
-            if (socketAccess.contains(QLatin1Char('o'))) {
-                options |= QLocalServer::OtherAccessOption;
-            }
-            server->setSocketOptions(options);
-        }
-        server->removeServer(line);
-        ret = server->listen(line);
-//        server->pauseAccepting(); // TODO
-
-        info.serverName = line;
-        info.localSocket = true;
-
-        // THIS IS A HACK
-        // QLocalServer does not expose the socket
-        // descriptor, so we get it from it's QSocketNotifier child
-        // if this breaks it we fail with an error.
-        const auto children = server->children();
-        for (auto child : children) {
-            auto notifier = qobject_cast<QSocketNotifier*>(child);
-            if (notifier) {
-//                qDebug() << "found notifier" << notifier->socket();
-                info.socketDescriptor = notifier->socket();
-                notifier->setEnabled(false);
-                break;
-            }
-        }
-    } else {
+    bool ret = true;
+    if (!line.startsWith(QLatin1Char('/'))) {
         const QStringList parts = line.split(QLatin1Char(':'));
         if (parts.size() != 2) {
             qCDebug(CUTELYST_WSGI) << "error parsing:" << line;
@@ -180,20 +139,81 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
         ret = server->listen(address, port);
         server->pauseAccepting();
 
+        SocketInfo info;
+        info.protocol = protocol;
         info.serverName = server->serverAddress().toString() + QLatin1Char(':') + QString::number(port);
         info.localSocket = false;
         info.socketDescriptor = server->socketDescriptor();
+
+        if (ret && info.socketDescriptor) {
+            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
+                      << " bound to TCP address " << info.serverName.toLatin1().constData()
+                      << " fd " << QByteArray::number(info.socketDescriptor).constData()
+                      << std::endl;
+            sockets.push_back(info);
+        } else {
+            std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
+            exit(1);
+        }
     }
 
-    if (ret && info.socketDescriptor) {
-        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
-                  << " bound to " << (info.localSocket ? "LOCAL" : "TCP") << " address " << info.serverName.toLatin1().constData()
-                  << " fd " << QByteArray::number(info.socketDescriptor).constData()
-                  << std::endl;
-        sockets.push_back(info);
-    } else {
-        std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
-        exit(1);
+    return ret;
+}
+
+bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
+{
+    bool ret = true;
+    if (line.startsWith(QLatin1Char('/'))) {
+        auto server = new QLocalServer(this);
+        if (!socketAccess.isEmpty()) {
+            QLocalServer::SocketOptions options;
+            if (socketAccess.contains(QLatin1Char('u'))) {
+                options |= QLocalServer::UserAccessOption;
+            }
+
+            if (socketAccess.contains(QLatin1Char('g'))) {
+                options |= QLocalServer::GroupAccessOption;
+            }
+
+            if (socketAccess.contains(QLatin1Char('o'))) {
+                options |= QLocalServer::OtherAccessOption;
+            }
+            server->setSocketOptions(options);
+        }
+        server->removeServer(line);
+        ret = server->listen(line);
+//        server->pauseAccepting(); // TODO
+
+        SocketInfo info;
+        info.protocol = protocol;
+        info.serverName = line;
+        info.localSocket = true;
+
+        // THIS IS A HACK
+        // QLocalServer does not expose the socket
+        // descriptor, so we get it from it's QSocketNotifier child
+        // if this breaks it we fail with an error.
+        const auto children = server->children();
+        for (auto child : children) {
+            auto notifier = qobject_cast<QSocketNotifier*>(child);
+            if (notifier) {
+//                qDebug() << "found notifier" << notifier->socket();
+                info.socketDescriptor = notifier->socket();
+                notifier->setEnabled(false);
+                break;
+            }
+        }
+
+        if (ret && info.socketDescriptor) {
+            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
+                      << " bound to LOCAL address " << info.serverName.toLatin1().constData()
+                      << " fd " << QByteArray::number(info.socketDescriptor).constData()
+                      << std::endl;
+            sockets.push_back(info);
+        } else {
+            std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
+            exit(1);
+        }
     }
 
     return ret;
@@ -475,6 +495,32 @@ int WSGI::socketRcvbuf() const
     return d->socketReceiveBuf;
 }
 
+#ifdef Q_OS_UNIX
+void WSGI::setUid(const QString &uid)
+{
+    Q_D(WSGI);
+    d->uid = uid;
+}
+
+QString WSGI::uid() const
+{
+    Q_D(const WSGI);
+    return d->uid;
+}
+
+void WSGI::setGid(const QString &gid)
+{
+    Q_D(WSGI);
+    d->gid = gid;
+}
+
+QString WSGI::gid() const
+{
+    Q_D(const WSGI);
+    return d->gid;
+}
+#endif
+
 void WSGIPrivate::proc()
 {
     if (!masterChildProcess) {
@@ -616,6 +662,18 @@ void WSGIPrivate::parseCommandLine()
                                            QCoreApplication::translate("main", "bytes"));
     parser.addOption(socketRcvbuf);
 
+#ifdef Q_OS_UNIX
+    auto uidOption = QCommandLineOption(QStringLiteral("uid"),
+                                        QCoreApplication::translate("main", "setuid to the specified user/uid"),
+                                        QCoreApplication::translate("main", "user/uid"));
+    parser.addOption(uidOption);
+
+    auto gidOption = QCommandLineOption(QStringLiteral("gid"),
+                                        QCoreApplication::translate("main", "setgid to the specified group/gid"),
+                                        QCoreApplication::translate("main", "group/gid"));
+    parser.addOption(gidOption);
+#endif
+
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
 
@@ -642,6 +700,14 @@ void WSGIPrivate::parseCommandLine()
 #ifdef Q_OS_UNIX
     if (parser.isSet(process)) {
         q->setProcess(parser.value(process));
+    }
+
+    if (parser.isSet(uidOption)) {
+        q->setUid(parser.value(uidOption));
+    }
+
+    if (parser.isSet(gidOption)) {
+        q->setGid(parser.value(gidOption));
     }
 #endif // Q_OS_UNIX
 
@@ -751,6 +817,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         }
     }
 
+    // TCP needs root privileges
     if (!httpSockets.isEmpty()) {
         protoHTTP = new ProtocolHttp(q);
         const auto sockets = httpSockets;
@@ -764,6 +831,31 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         const auto sockets = fastcgiSockets;
         for (const auto &socket : sockets) {
             listenTcp(socket, protoFCGI);
+        }
+    }
+
+#ifdef Q_OS_UNIX
+    if (!gid.isEmpty()) {
+        UnixFork::setGid(gid);
+    }
+
+    if (!uid.isEmpty()) {
+        UnixFork::setUid(uid);
+    }
+#endif
+
+    // LOCAL shoud use new user privileges
+    if (!httpSockets.isEmpty()) {
+        const auto sockets = httpSockets;
+        for (const auto &socket : sockets) {
+            listenLocal(socket, protoHTTP);
+        }
+    }
+
+    if (!fastcgiSockets.isEmpty()) {
+        const auto sockets = fastcgiSockets;
+        for (const auto &socket : sockets) {
+            listenLocal(socket, protoFCGI);
         }
     }
 
