@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -49,5 +49,11 @@ QString ValidatorNumeric::validate() const
 
 QString ValidatorNumeric::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a numeric value into the %1 field, like 1, -2.5 or 3.454e3").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be numeric, like 1, -2.5 or 3.454e3.");
+    } else {
+        error = QStringLiteral("You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(label());
+    }
+    return error;
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -54,5 +54,11 @@ QString ValidatorJson::validate() const
 
 QString ValidatorJson::genericValidationError() const
 {
-    return QStringLiteral("The data entered in the %1 field is not valid JSON.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Invalid JSON data.");
+    } else {
+        error = QStringLiteral("The data entered in the “%1” field is not valid JSON.").arg(label());
+    }
+    return error;
 }

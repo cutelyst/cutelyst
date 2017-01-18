@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -106,7 +106,13 @@ QString ValidatorUrl::validate() const
 
 QString ValidatorUrl::genericValidationError() const
 {
-    return QStringLiteral("The value in the %1 field is not a valid URL.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Not a valid URL.");
+    } else {
+        error = QStringLiteral("The value in the “%1” field is not a valid URL.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorUrl::setConstraints(Constraints constraints)

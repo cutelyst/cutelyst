@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -62,10 +62,17 @@ QString ValidatorDate::genericValidationError() const
 
     Q_D(const ValidatorDate);
 
-    if (!d->format.isEmpty()) {
-        error = QStringLiteral("The data in the %1 field can not be interpreted as date of this schema: %2").arg(fieldLabel(), d->format);
+    if (label().isEmpty()) {
+
+        error = QStringLiteral("Not a valid date.");
+
     } else {
-        error = QStringLiteral("The data in the %1 field can not be interpreted as date.").arg(fieldLabel());
+
+        if (!d->format.isEmpty()) {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as date of this schema: “%2”").arg(label(), d->format);
+        } else {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as date.").arg(label());
+        }
     }
 
     return error;

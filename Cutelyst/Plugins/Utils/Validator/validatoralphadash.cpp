@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,5 +52,11 @@ QString ValidatorAlphaDash::validate() const
 
 QString ValidatorAlphaDash::genericValidationError() const
 {
-    return QStringLiteral("The %1 field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Can only contain alpha-numeric characters, dashes and underscores.");
+    } else {
+        error = QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(label());
+    }
+    return error;
 }

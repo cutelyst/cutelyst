@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -55,7 +55,13 @@ QString ValidatorNotIn::validate() const
 
 QString ValidatorNotIn::genericValidationError() const
 {
-    return QStringLiteral("The value in the %1 field is not allowed.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Value is not allowed.");
+    } else {
+        error = QStringLiteral("The value in the “%1” field is not allowed.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorNotIn::setValues(const QStringList &values)

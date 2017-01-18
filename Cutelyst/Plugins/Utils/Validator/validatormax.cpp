@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -81,14 +81,29 @@ QString ValidatorMax::genericValidationError() const
 
     Q_D(const ValidatorMax);
 
-    if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        error = QStringLiteral("The value of the %1 field has to be lower than or equal to %2.").arg(fieldLabel(),QString::number(d->max, 'f', 0));
-    } else if (d->type == QMetaType::Float) {
-        error =  QStringLiteral("The value of the %1 field has to be lower than or equal to %2.").arg(fieldLabel(), QString::number(d->max));
-    } else if (d->type == QMetaType::QString) {
-        error =  QStringLiteral("The length of the %1 field has to be lower than or equal to %2.").arg(fieldLabel(), QString::number(d->max, 'f', 0));
+    QString max;
+    if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::QString) {
+        max = QString::number(d->max, 'f', 0);
     } else {
-        error =  validationDataError();
+        max = QString::number(d->max);
+    }
+
+    if (label().isEmpty()) {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("Has to be lower than or equal to %1.").arg(max);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("Has to be shorter than or equal to %1.").arg(max);
+        } else {
+            error = validationDataError();
+        }
+    } else {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("The value of the “%1” field has to be lower than or equal to %2.").arg(label(), max);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("The length of the “%1” field has to be shorter than or equal to %2.").arg(label(), max);
+        } else {
+            error = validationDataError();
+        }
     }
 
     return error;

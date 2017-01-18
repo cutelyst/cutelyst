@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -54,8 +54,14 @@ QString ValidatorIn::validate() const
 
 QString ValidatorIn::genericValidationError() const
 {
+    QString error;
     Q_D(const ValidatorIn);
-    return QStringLiteral("The value in the %1 field has to be one of the following: %2").arg(fieldLabel(), d->values.join(QStringLiteral(", ")));
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be one of the following: %1").arg(d->values.join(QStringLiteral(", ")));
+    } else {
+        error = QStringLiteral("The value in the “%1” field has to be one of the following: %2").arg(label(), d->values.join(QStringLiteral(", ")));
+    }
+    return error;
 }
 
 void ValidatorIn::setValues(const QStringList &values)

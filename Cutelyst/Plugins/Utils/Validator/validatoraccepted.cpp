@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,5 +52,11 @@ QString ValidatorAccepted::validate() const
 
 QString ValidatorAccepted::genericValidationError() const
 {
-    return QStringLiteral("The %1 has to be accepted.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be accepted.");
+    } else {
+        error = QStringLiteral("The “%1” has to be accepted.").arg(label());
+    }
+    return error;
 }

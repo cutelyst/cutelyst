@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -82,14 +82,29 @@ QString ValidatorSize::genericValidationError() const
 
     Q_D(const ValidatorSize);
 
-    if (d->type == QMetaType::Int || d->type == QMetaType::UInt) {
-        error = QStringLiteral("The value of the %1 field has to be equal to %2.").arg(fieldLabel(),QString::number(d->size, 'f', 0));
-    } else if (d->type == QMetaType::Float) {
-        error =  QStringLiteral("The value of the %1 field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size));
-    } else if (d->type == QMetaType::QString) {
-        error =  QStringLiteral("The length of the %1 field has to be equal to %2.").arg(fieldLabel(), QString::number(d->size, 'f', 0));
+    QString size;
+    if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::QString) {
+        size = QString::number(d->size, 'f', 0);
     } else {
-        error =  validationDataError();
+        size = QString::number(d->size);
+    }
+
+    if (label().isEmpty()) {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("Value has to be equal to %1.").arg(size);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("Length has to be equal to %1.").arg(size);
+        } else {
+            error = validationDataError();
+        }
+    } else {
+        if (d->type == QMetaType::Int || d->type == QMetaType::UInt || d->type == QMetaType::Float) {
+            error = QStringLiteral("The value of the “%1” field has to be equal to %2.").arg(label(), size);
+        } else if (d->type == QMetaType::QString) {
+            error = QStringLiteral("The length of the “%1” field has to be equal to %2.").arg(label(), size);
+        } else {
+            error = validationDataError();
+        }
     }
 
     return error;

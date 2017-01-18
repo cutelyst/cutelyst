@@ -69,6 +69,7 @@ class ValidatorRulePrivate;
  *     ~MyValidator();
  *
  *     // this will contain the validation logic
+ *     // and should return an empty QString on success
  *     QString validate() const override;
  *
  * protected:
@@ -95,35 +96,41 @@ class ValidatorRulePrivate;
  * // else will be seen as an error
  * QString MyValidator::validate() const
  * {
+ *     QString result;
+ *
  *     // lets get the field value
  *     const QString v = value();
- *
- *     // if the value is empty or the field is missing, the validation should succeed,
- *     // because we already have the required validators for that purpose
- *     if (v.isEmpty()) {
- *         return QString();
- *     }
  *
  *     // if our comparision value is empty, the validation should fail and we want
  *     // to return an error message according to this situation
  *     if (m_compareValue.isEmpty()) {
- *         return validationDataError();
+ *         result = validationDataError();
+ *     } else {
+ *
+ *         // if the value is empty or the field is missing, the validation should succeed,
+ *         // because we already have the required validators for that purpose
+ *         // than we will compare our values and if they are not the same, we
+ *         // will return an error string
+ *         if (!v.isEmpty() && (m_compareValue != v)) {
+ *              result = validationError();
+ *         }
  *     }
  *
- *     // now lets compare our values and if they are the same
- *     // we will return an empty QString
- *     if (m_compareValue == value()) {
- *         return QString();
- *     }
- *
- *     // if we are at this point, validation failed and we are returning the validation error message
- *     return validationError();
+ *     // now let's return our result, if it is empty, validation was successfull
+ *     return result;
  * }
  *
  *
  * QString MyValidator::genericValidationError() const
  * {
- *     return tr("The %1 field must constain the following value: %2").arg(fieldLabel(), m_compareValue);
+ *     QString error;
+ *     // if no label is set, we will return a shorter error message
+ *     if (label().isEmpty()) {
+ *          error = tr("Must contain this value: %1).arg(m_compareValue);
+ *     } else {
+ *          error = tr("The %1 field must contain the following value: %2").arg(label(), m_compareValue);
+ *     }
+ *     return error;
  * }
  * \endcode
  *
@@ -162,15 +169,17 @@ public:
      * \code{.cpp}
      * QString MyValidator::validate() const
      * {
+     *      QString result;
+     *
      *      if (m_myComparisonValue.isEmpty()) {
-     *          return validationDataError();
+     *          result = validationDataError();
+     *      } else {
+     *          if (m_myComparisonValue != value()) {
+     *              result = validationError();
+     *          }
      *      }
      *
-     *      if (m_myComparisonValue == value()) {
-     *          return QString();
-     *      } else {
-     *          return validationError();
-     *      }
+     *      return result;
      * }
      * \endcode
      */
@@ -312,15 +321,6 @@ protected:
      * reimplement this in a subclass.
      */
     virtual QString genericValidationDataError() const;
-
-    /*!
-     * \brief Returns the name of the field for generic error messages.
-     *
-     * This can be used by validationError() to retrieve the field name.
-     * It will return the \link ValidatorRule::label() label() \endlink if it is set, otherwise
-     * it will return the \link ValidatorRule::field() field() \endlink.
-     */
-    QString fieldLabel() const;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRule)

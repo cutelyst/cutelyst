@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -82,5 +82,11 @@ QString ValidatorEmail::validate() const
 
 QString ValidatorEmail::genericValidationError() const
 {
-    return QStringLiteral("The email address in the %1 field is not valid.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Not a valid email address.");
+    } else {
+        error = QStringLiteral("The email address in the “%1” field is not valid.").arg(label());
+    }
+    return error;
 }

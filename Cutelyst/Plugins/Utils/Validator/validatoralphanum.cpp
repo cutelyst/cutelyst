@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,5 +52,11 @@ QString ValidatorAlphaNum::validate() const
 
 QString ValidatorAlphaNum::genericValidationError() const
 {
-    return QStringLiteral("The text in the %1 field must be entirely alpha-numeric characters.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be entirely alpha-numeric characters.");
+    } else {
+        error = QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(label());
+    }
+    return error;
 }

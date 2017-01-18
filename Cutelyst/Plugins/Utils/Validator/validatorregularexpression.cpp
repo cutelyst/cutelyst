@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -50,7 +50,13 @@ QString ValidatorRegularExpression::validate() const
 
 QString ValidatorRegularExpression::genericValidationError() const
 {
-    return QStringLiteral("The %1 field does not match the desired format.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Does not match desired format.");
+    } else {
+        error = QStringLiteral("The “%1” field does not match the desired format.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)

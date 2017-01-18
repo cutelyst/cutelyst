@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -60,11 +60,15 @@ QString ValidatorTime::genericValidationError() const
 
     Q_D(const ValidatorTime);
 
-   if (!d->format.isEmpty()) {
-       error = QStringLiteral("The data in the %1 field can not be interpreted as time of this schema: %2").arg(fieldLabel(), d->format);
-   } else {
-       error = QStringLiteral("The data in the %1 field can not be interpreted as time.").arg(fieldLabel());
-   }
+    if (label().isEmpty()) {
+        error = QStringLiteral("Not a valid time.");
+    } else {
+        if (!d->format.isEmpty()) {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as time of this schema: “%2”").arg(label(), d->format);
+        } else {
+            error = QStringLiteral("The data in the “%1” field can not be interpreted as time.").arg(label());
+        }
+    }
 
    return error;
 }

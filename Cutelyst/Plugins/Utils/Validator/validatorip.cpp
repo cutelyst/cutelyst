@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -255,7 +255,13 @@ QString ValidatorIp::validate() const
 
 QString ValidatorIp::genericValidationError() const
 {
-    return QStringLiteral("You have to enter a valid IP address into the %1 field.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("IP address is invalid or not acceptable.");
+    } else {
+        error = QStringLiteral("You have to enter a valid IP address into the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorIp::setConstraints(Constraints constraints)

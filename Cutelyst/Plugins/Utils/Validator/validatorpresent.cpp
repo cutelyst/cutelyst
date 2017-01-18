@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -48,5 +48,11 @@ QString ValidatorPresent::validate() const
 
 QString ValidatorPresent::genericValidationError() const
 {
-    return QStringLiteral("The %1 field was not found in the input data.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Has to be present in input data.");
+    } else {
+        error = QStringLiteral("The “%1” field was not found in the input data.").arg(label());
+    }
+    return error;
 }

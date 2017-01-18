@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -62,10 +62,22 @@ QString ValidatorDigits::genericValidationError() const
     QString error;
 
     Q_D(const ValidatorDigits);
-    if (d->length > 0) {
-        error = QStringLiteral("The %1 field must only contain exactly %2 digits.").arg(fieldLabel(), QString::number(d->length));
+
+    if (label().isEmpty()) {
+
+        if (d->length > 0) {
+            error = QStringLiteral("Must only contain exactly %1 digits.").arg(d->length);
+        } else {
+            error = QStringLiteral("Must only contain digits.");
+        }
+
     } else {
-        error = QStringLiteral("The %1 field must only contain digits.").arg(fieldLabel());
+
+        if (d->length > 0) {
+            error = QStringLiteral("The “%1” field must only contain exactly %2 digits.").arg(label(), QString::number(d->length));
+        } else {
+            error = QStringLiteral("The “%1” field must only contain digits.").arg(label());
+        }
     }
 
     return error;

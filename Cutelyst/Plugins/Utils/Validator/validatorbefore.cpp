@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -118,25 +118,44 @@ QString ValidatorBefore::genericValidationError() const
 
     Q_D(const ValidatorBefore);
 
-    switch(d->date.type()) {
+    QString compDateTime;
+
+    switch (d->date.type()) {
     case QVariant::Date:
-        error = QStringLiteral("The date in the %1 field must be before %2.").arg(fieldLabel(),
-                                                                                    //: date shown in validator error message
-                                                                                    d->date.toDate().toString(QStringLiteral("dd.MM.yyyy")));
+        //: date shown in validator error message
+        compDateTime = d->date.toDate().toString(QStringLiteral("dd.MM.yyyy"));
         break;
     case QVariant::DateTime:
-        error = QStringLiteral("The date and time in the %1 field must be before %2.").arg(fieldLabel(),
-                                                                                             //: date and time shown in validator error message
-                                                                                             d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm")));
+        //: date and time shown in validator error message
+        compDateTime = d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
         break;
     case QVariant::Time:
-        error = QStringLiteral("The time in the %1 field must be before %2.").arg(fieldLabel(),
-                                                                                    //: time shown in the validator error message
-                                                                                    d->date.toTime().toString(QStringLiteral("HH:mm")));
-        break;
+        //: time shown in the validator error message
+        compDateTime = d->date.toTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
     default:
-        error = validationDataError();
         break;
+    }
+
+    if (label().isEmpty()) {
+
+        error = QStringLiteral("Must be before %1.").arg(compDateTime);
+
+    } else {
+
+        switch(d->date.type()) {
+        case QVariant::Date:
+            error = QStringLiteral("The date in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            break;
+        case QVariant::DateTime:
+            error = QStringLiteral("The date and time in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            break;
+        case QVariant::Time:
+            error = QStringLiteral("The time in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            break;
+        default:
+            error = validationDataError();
+            break;
+        }
     }
 
     return error;

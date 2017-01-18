@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -65,10 +65,19 @@ QString ValidatorDigitsBetween::genericValidationError() const
     QString error;
 
     Q_D(const ValidatorDigitsBetween);
-    if (d->min < 1 || d->max < 1) {
-        error = QStringLiteral("The %1 field must only contain digits.").arg(fieldLabel());
+
+    if (label().isEmpty()) {
+        if (d->min < 1 || d->max < 1) {
+            error = QStringLiteral("Must only contain digits.");
+        } else {
+            error = QStringLiteral("Must only contain digits with a length between %1 and %2.").arg(QString::number(d->min), QString::number(d->max));
+        }
     } else {
-        error = QStringLiteral("The %1 field must only contain digits with a length between %2 and %3.").arg(fieldLabel(), QString::number(d->min), QString::number(d->max));
+        if (d->min < 1 || d->max < 1) {
+            error = QStringLiteral("The “%1” field must only contain digits.").arg(label());
+        } else {
+            error = QStringLiteral("The “%1” field must only contain digits with a length between %2 and %3.").arg(label(), QString::number(d->min), QString::number(d->max));
+        }
     }
 
     return error;

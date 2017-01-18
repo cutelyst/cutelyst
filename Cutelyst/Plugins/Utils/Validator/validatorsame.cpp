@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,9 +52,17 @@ QString ValidatorSame::validate() const
 
 QString ValidatorSame::genericValidationError() const
 {
+    QString error;
+
     Q_D(const ValidatorSame);
 
-    return QStringLiteral("The %1 field must have the same value as the %2 field.").arg(fieldLabel(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be the same as in the “%1” field.").arg(!d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    } else {
+        error = QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(label(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    }
+
+    return error;
 }
 
 void ValidatorSame::setOtherField(const QString &otherField)

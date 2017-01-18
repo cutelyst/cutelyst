@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -53,5 +53,11 @@ QString ValidatorConfirmed::validate() const
 
 QString ValidatorConfirmed::genericValidationError() const
 {
-    return QStringLiteral("The content of the %1 field has not been confirmed.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Confirmation failed.");
+    } else {
+        error = QStringLiteral("The content of the “%1” field has not been confirmed.").arg(label());
+    }
+    return error;
 }

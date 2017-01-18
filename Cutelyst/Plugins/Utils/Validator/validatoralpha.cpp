@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,5 +52,11 @@ QString ValidatorAlpha::validate() const
 
 QString ValidatorAlpha::genericValidationError() const
 {
-    return QStringLiteral("The text in the %1 field must be entirely alphabetic characters.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Must be entirely alphabetic characters.");
+    } else {
+        error = QStringLiteral("The text in the “%1” field must be entirely alphabetic characters.").arg(label());
+    }
+    return error;
 }

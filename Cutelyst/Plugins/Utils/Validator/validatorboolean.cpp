@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,6 +52,12 @@ QString ValidatorBoolean::validate() const
 
 QString ValidatorBoolean::genericValidationError() const
 {
-    return QStringLiteral("The data in the %1 field can not be interpreted as a boolean.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Can not be interpreted as boolean.");
+    } else {
+        error = QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(label());
+    }
+    return error;
 }
 

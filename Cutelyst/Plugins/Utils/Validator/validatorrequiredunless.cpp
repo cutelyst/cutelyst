@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -52,7 +52,13 @@ QString ValidatorRequiredUnless::validate() const
 
 QString ValidatorRequiredUnless::genericValidationError() const
 {
-    return QStringLiteral("You must fill in the %1 field.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("This is required.");
+    } else {
+        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRequiredUnless::setOtherField(const QString &otherField)

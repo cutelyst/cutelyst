@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
@@ -76,11 +76,6 @@ void ValidatorRule::setParameters(const ParamsMultiMap &params)
     d->parameters = params;
 }
 
-QString ValidatorRule::fieldLabel() const
-{
-    return !label().isEmpty() ? label() : field();
-}
-
 QString ValidatorRule::validationError() const
 {
     QString error;
@@ -95,7 +90,13 @@ QString ValidatorRule::validationError() const
 
 QString ValidatorRule::genericValidationError() const
 {
-    return QStringLiteral("The input data in the %1 field is not valid.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Input value is not acceptable.");
+    } else {
+        error = QStringLiteral("The input data in the “%1” field is not valid.").arg(label());
+    }
+    return error;
 }
 
 QString ValidatorRule::parsingError() const
@@ -112,7 +113,13 @@ QString ValidatorRule::parsingError() const
 
 QString ValidatorRule::genericParsingError() const
 {
-    return QStringLiteral("Failed to parse the input data of the %1 field.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Failed to parse input data.");
+    } else {
+        error = QStringLiteral("Failed to parse the input data of the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 QString ValidatorRule::validationDataError() const
@@ -129,7 +136,13 @@ QString ValidatorRule::validationDataError() const
 
 QString ValidatorRule::genericValidationDataError() const
 {
-    return QStringLiteral("Missing or unusable validation data for the %1 field.").arg(fieldLabel());
+    QString error;
+    if (label().isEmpty()) {
+        error = QStringLiteral("Missing or unusable validation data.");
+    } else {
+        error = QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(label());
+    }
+    return error;
 }
 
 void ValidatorRule::setCustomError(const QString &customError)
