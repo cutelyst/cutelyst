@@ -119,7 +119,7 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
     if (!line.startsWith(QLatin1Char('/'))) {
         const QStringList parts = line.split(QLatin1Char(':'));
         if (parts.size() != 2) {
-            qCDebug(CUTELYST_WSGI) << "error parsing:" << line;
+            qCDebug(CUTELYST_WSGI) << "error parsing:" << line << line.at(0);
             return false;
         }
 

@@ -155,31 +155,6 @@ int fd_cloexec(int fd, bool cloexec) {
     return 0;
 }
 
-int parse_pid(const QByteArray &s, pid_t* ret_pid) {
-    unsigned long ul = 0;
-    pid_t pid;
-    int r;
-
-    Q_ASSERT(ret_pid);
-
-    bool ok;
-    ul = s.toULong(&ok);
-    if (!ok) {
-        return -1;
-    }
-
-    pid = (pid_t) ul;
-
-    if ((unsigned long) pid != ul)
-        return -ERANGE;
-
-    if (pid <= 0)
-        return -ERANGE;
-
-    *ret_pid = pid;
-    return 0;
-}
-
 int sd_listen_fds()
 {
     const QByteArray listenPid = qgetenv("LISTEN_PID");
