@@ -31,6 +31,9 @@ public:
 
     void createProcess(int process);
 
+    void killChild();
+    void terminateChild();
+
     // Unix signal handlers.
     static void hupSignalHandler(int unused);
     static void termSignalHandler(int unused);

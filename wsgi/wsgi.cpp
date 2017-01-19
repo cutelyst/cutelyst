@@ -106,8 +106,10 @@ int WSGI::load(Cutelyst::Application *app)
     }
 
     if (d->master) {
-        d->proc();
-        return 0;
+        if (d->proc()) {
+            // On Windows we use QProcess to start a child process
+            return 0;
+        }
     }
 
     return d->setupApplication(app);
@@ -594,12 +596,23 @@ QString WSGI::chownSocket() const
 }
 #endif
 
-void WSGIPrivate::proc()
+bool WSGIPrivate::proc()
 {
+    delete materChildRestartTimer;
+    materChildRestartTimer = nullptr;
+
+#ifdef Q_OS_UNIX
+    if (master && process == 0) {
+        process = 1;
+    }
+    return false;
+#else
     if (!masterChildProcess) {
         masterChildProcess = new QProcess(this);
-        QObject::connect(masterChildProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+        connect(masterChildProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
                 this, &WSGIPrivate::childFinished);
+        connect(this, &WSGIPrivate::killChildProcess, masterChildProcess, &QProcess::kill);
+        connect(this, &WSGIPrivate::terminateChildProcess, masterChildProcess, &QProcess::terminate);
 
         if (autoReload) {
             touchReload.append(application);
@@ -619,8 +632,8 @@ void WSGIPrivate::proc()
 
     masterChildProcess->start(QCoreApplication::applicationFilePath(), QCoreApplication::arguments());
 
-    delete materChildRestartTimer;
-    materChildRestartTimer = nullptr;
+    return true;
+#endif
 }
 
 void WSGIPrivate::parseCommandLine()
@@ -656,6 +669,13 @@ void WSGIPrivate::parseCommandLine()
                                       QCoreApplication::translate("main", "Number of thread to use"),
                                       QCoreApplication::translate("main", "threads"));
     parser.addOption(threads);
+
+#ifdef Q_OS_UNIX
+    auto process = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
+                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
+                                      QCoreApplication::translate("main", "processes"));
+    parser.addOption(process);
+#endif
 
     auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
                                       QCoreApplication::translate("main", "Enable master process"));
@@ -729,11 +749,6 @@ void WSGIPrivate::parseCommandLine()
     parser.addOption(socketRcvbuf);
 
 #ifdef Q_OS_UNIX
-    auto process = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
-                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
-                                      QCoreApplication::translate("main", "processes"));
-    parser.addOption(process);
-
     auto uidOption = QCommandLineOption(QStringLiteral("uid"),
                                         QCoreApplication::translate("main", "setuid to the specified user/uid"),
                                         QCoreApplication::translate("main", "user/uid"));
@@ -1017,9 +1032,9 @@ void WSGIPrivate::restart(const QString &path)
 void WSGIPrivate::restartTerminate()
 {
     if (++autoReloadCount > 5) {
-        masterChildProcess->kill();
+        Q_EMIT killChildProcess();
     } else {
-        masterChildProcess->terminate();
+        Q_EMIT terminateChildProcess();
     }
 }
 
@@ -1031,6 +1046,8 @@ void WSGIPrivate::engineInitted()
         if (process) {
             auto uFork = new UnixFork(this);
             connect(uFork, &UnixFork::forked, this, &WSGIPrivate::forked);
+            connect(this, &WSGIPrivate::killChildProcess, uFork, &UnixFork::killChild);
+            connect(this, &WSGIPrivate::terminateChildProcess, uFork, &UnixFork::terminateChild);
             uFork->createProcess(process);
         } else {
             Q_EMIT forked();

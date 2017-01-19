@@ -65,6 +65,24 @@ void UnixFork::createProcess(int process)
     qDebug() << "Created workers" << process;
 }
 
+void UnixFork::killChild()
+{
+    for (qint64 pid : m_childs) {
+        if (pid) {
+            ::kill(pid_t(pid), SIGKILL);
+        }
+    }
+}
+
+void UnixFork::terminateChild()
+{
+    for (qint64 pid : m_childs) {
+        if (pid) {
+            ::kill(pid_t(pid), SIGTERM);
+        }
+    }
+}
+
 void UnixFork::hupSignalHandler(int unused)
 {
     char a = 1;

@@ -61,9 +61,12 @@ public:
     void setThreads(const QString &threads);
     QString threads() const;
 
-    Q_PROPERTY(QString process READ process WRITE setProcess)
+#ifdef Q_OS_UNIX
+    Q_PROPERTY(QString processes READ process WRITE setProcess)
+    Q_PROPERTY(QString process READ process WRITE setProcess) // DEPRECATED
     void setProcess(const QString &process);
     QString process() const;
+#endif
 
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir)
     void setChdir(const QString &chdir);

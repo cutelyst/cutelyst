@@ -45,7 +45,7 @@ public:
     bool listenTcp(const QString &line, Protocol *protocol);
     void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
-    void proc();
+    bool proc();
     void parseCommandLine();
     int setupApplication(Cutelyst::Application *app);
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -100,6 +100,8 @@ public:
 
 Q_SIGNALS:
     void forked();
+    void killChildProcess();
+    void terminateChildProcess();
 };
 
 }
