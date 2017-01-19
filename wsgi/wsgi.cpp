@@ -312,6 +312,7 @@ QString WSGI::threads() const
     return QString::number(d->threads);
 }
 
+#ifdef Q_OS_UNIX
 void WSGI::setProcess(const QString &process)
 {
     Q_D(WSGI);
@@ -327,6 +328,7 @@ QString WSGI::process() const
     Q_D(const WSGI);
     return QString::number(d->process);
 }
+#endif
 
 void WSGI::setChdir(const QString &chdir)
 {
