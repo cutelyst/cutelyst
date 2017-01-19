@@ -213,7 +213,8 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
                       << std::endl;
             sockets.push_back(info);
         } else {
-            std::cout << "Failed to listen on LOCAL: " << line.toLatin1().constData() << std::endl;
+            std::cout << "Failed to listen on LOCAL: " << line.toUtf8().constData()
+                      << " : " << server->errorString().toUtf8().constData() << std::endl;
             exit(1);
         }
     }
