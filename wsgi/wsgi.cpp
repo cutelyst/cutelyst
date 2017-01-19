@@ -729,7 +729,7 @@ void WSGIPrivate::parseCommandLine()
     parser.addOption(socketRcvbuf);
 
 #ifdef Q_OS_UNIX
-    auto process = QCommandLineOption({ QStringLiteral("process"), QStringLiteral("p") },
+    auto process = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
                                       QCoreApplication::translate("main", "spawn the specified number of processes"),
                                       QCoreApplication::translate("main", "processes"));
     parser.addOption(process);
