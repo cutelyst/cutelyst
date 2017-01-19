@@ -41,7 +41,9 @@ class WSGIPrivate : public QObject
 public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
 
+    void listenTcpSockets();
     bool listenTcp(const QString &line, Protocol *protocol);
+    void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
     void proc();
     void parseCommandLine();
@@ -75,6 +77,7 @@ public:
 #ifdef Q_OS_UNIX
     QString uid;
     QString gid;
+    QString chownSocket;
 #endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;

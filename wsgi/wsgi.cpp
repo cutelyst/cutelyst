@@ -113,6 +113,33 @@ int WSGI::load(Cutelyst::Application *app)
     return d->setupApplication(app);
 }
 
+void WSGIPrivate::listenTcpSockets()
+{
+    Q_Q(WSGI);
+
+    if (!httpSockets.isEmpty()) {
+        if (!protoHTTP) {
+            protoHTTP = new ProtocolHttp(q);
+        }
+
+        const auto sockets = httpSockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoHTTP);
+        }
+    }
+
+    if (!fastcgiSockets.isEmpty()) {
+        if (!protoFCGI) {
+            protoFCGI = new ProtocolFastCGI(q);
+        }
+
+        const auto sockets = fastcgiSockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoFCGI);
+        }
+    }
+}
+
 bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
 {
     bool ret = true;
@@ -162,6 +189,33 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
     return ret;
 }
 
+void WSGIPrivate::listenLocalSockets()
+{
+    Q_Q(WSGI);
+
+    if (!httpSockets.isEmpty()) {
+        if (!protoHTTP) {
+            protoHTTP = new ProtocolHttp(q);
+        }
+
+        const auto sockets = httpSockets;
+        for (const auto &socket : sockets) {
+            listenLocal(socket, protoHTTP);
+        }
+    }
+
+    if (!fastcgiSockets.isEmpty()) {
+        if (!protoFCGI) {
+            protoFCGI = new ProtocolFastCGI(q);
+        }
+
+        const auto sockets = fastcgiSockets;
+        for (const auto &socket : sockets) {
+            listenLocal(socket, protoFCGI);
+        }
+    }
+}
+
 bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
 {
     bool ret = true;
@@ -206,17 +260,21 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
             }
         }
 
-        if (ret && info.socketDescriptor) {
-            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
-                      << " bound to LOCAL address " << info.serverName.toLatin1().constData()
-                      << " fd " << QByteArray::number(info.socketDescriptor).constData()
-                      << std::endl;
-            sockets.push_back(info);
-        } else {
+        if (!ret || !info.socketDescriptor) {
             std::cout << "Failed to listen on LOCAL: " << line.toUtf8().constData()
                       << " : " << server->errorString().toUtf8().constData() << std::endl;
             exit(1);
         }
+
+#ifdef Q_OS_UNIX
+        UnixFork::chownSocket(line, chownSocket);
+#endif
+
+        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
+                  << " bound to LOCAL address " << info.serverName.toLatin1().constData()
+                  << " fd " << QByteArray::number(info.socketDescriptor).constData()
+                  << std::endl;
+        sockets.push_back(info);
     }
 
     return ret;
@@ -522,6 +580,18 @@ QString WSGI::gid() const
     Q_D(const WSGI);
     return d->gid;
 }
+
+void WSGI::setChownSocket(const QString &chownSocket)
+{
+    Q_D(WSGI);
+    d->chownSocket = chownSocket;
+}
+
+QString WSGI::chownSocket() const
+{
+    Q_D(const WSGI);
+    return d->chownSocket;
+}
 #endif
 
 void WSGIPrivate::proc()
@@ -586,13 +656,6 @@ void WSGIPrivate::parseCommandLine()
                                       QCoreApplication::translate("main", "Number of thread to use"),
                                       QCoreApplication::translate("main", "threads"));
     parser.addOption(threads);
-
-#ifdef Q_OS_UNIX
-    auto process = QCommandLineOption({ QStringLiteral("process"), QStringLiteral("p") },
-                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
-                                      QCoreApplication::translate("main", "processes"));
-    parser.addOption(process);
-#endif // Q_OS_UNIX
 
     auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
                                       QCoreApplication::translate("main", "Enable master process"));
@@ -666,6 +729,11 @@ void WSGIPrivate::parseCommandLine()
     parser.addOption(socketRcvbuf);
 
 #ifdef Q_OS_UNIX
+    auto process = QCommandLineOption({ QStringLiteral("process"), QStringLiteral("p") },
+                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
+                                      QCoreApplication::translate("main", "processes"));
+    parser.addOption(process);
+
     auto uidOption = QCommandLineOption(QStringLiteral("uid"),
                                         QCoreApplication::translate("main", "setuid to the specified user/uid"),
                                         QCoreApplication::translate("main", "user/uid"));
@@ -675,7 +743,12 @@ void WSGIPrivate::parseCommandLine()
                                         QCoreApplication::translate("main", "setgid to the specified group/gid"),
                                         QCoreApplication::translate("main", "group/gid"));
     parser.addOption(gidOption);
-#endif
+
+    auto chownSocketOption = QCommandLineOption(QStringLiteral("chown-socket"),
+                                                QCoreApplication::translate("main", "chown unix sockets"),
+                                                QCoreApplication::translate("main", "uid:gid"));
+    parser.addOption(chownSocketOption);
+#endif // Q_OS_UNIX
 
     // Process the actual command line arguments given by the user
     parser.process(*qApp);
@@ -711,6 +784,10 @@ void WSGIPrivate::parseCommandLine()
 
     if (parser.isSet(gidOption)) {
         q->setGid(parser.value(gidOption));
+    }
+
+    if (parser.isSet(chownSocketOption)) {
+        q->setGid(parser.value(chownSocketOption));
     }
 #endif // Q_OS_UNIX
 
@@ -812,6 +889,15 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 {
     Q_Q(WSGI);
 
+#ifdef Q_OS_LINUX
+    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
+        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
+        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
+        auto notify = new systemdNotify(notifySocket.constData(), this);
+        connect(q, &WSGI::ready, notify, &systemdNotify::ready);
+    }
+#endif
+
     if (!chdir.isEmpty()) {
         std::cout << "Changing directory to: " << chdir.toLatin1().constData() << std::endl;;
         if (!QDir::setCurrent(chdir)) {
@@ -821,34 +907,13 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
     }
 
     // TCP needs root privileges
-    if (!httpSockets.isEmpty()) {
-        protoHTTP = new ProtocolHttp(q);
-        const auto sockets = httpSockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoHTTP);
-        }
-    }
-
-    if (!fastcgiSockets.isEmpty()) {
-        protoFCGI = new ProtocolFastCGI(q);
-        const auto sockets = fastcgiSockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoFCGI);
-        }
-    }
-
-#ifdef Q_OS_LINUX
-    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
-        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
-        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
-        auto notify = new systemdNotify(notifySocket.constData(), this);
-        connect(q, &WSGI::ready, notify, &systemdNotify::ready);
-    }
-
-
-#endif
+    listenTcpSockets();
 
 #ifdef Q_OS_UNIX
+    if (!chownSocket.isEmpty()) {
+        listenLocalSockets();
+    }
+
     if (!gid.isEmpty()) {
         UnixFork::setGid(gid);
     }
@@ -856,22 +921,14 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
     if (!uid.isEmpty()) {
         UnixFork::setUid(uid);
     }
+
+    if (chownSocket.isEmpty()) {
+        // LOCAL shoud use new user privileges if chown is not set
+        listenLocalSockets();
+    }
+#else
+    listenLocalSockets();
 #endif
-
-    // LOCAL shoud use new user privileges
-    if (!httpSockets.isEmpty()) {
-        const auto sockets = httpSockets;
-        for (const auto &socket : sockets) {
-            listenLocal(socket, protoHTTP);
-        }
-    }
-
-    if (!fastcgiSockets.isEmpty()) {
-        const auto sockets = fastcgiSockets;
-        for (const auto &socket : sockets) {
-            listenLocal(socket, protoFCGI);
-        }
-    }
 
     if (!sockets.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;

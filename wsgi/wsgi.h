@@ -145,6 +145,10 @@ public:
     Q_PROPERTY(QString gid READ gid WRITE setGid)
     void setGid(const QString &gid);
     QString gid() const;
+
+    Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket)
+    void setChownSocket(const QString &chownSocket);
+    QString chownSocket() const;
 #endif
 
 Q_SIGNALS:

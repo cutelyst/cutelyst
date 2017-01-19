@@ -131,6 +131,44 @@ void UnixFork::setUid(const QString &uid)
     }
 }
 
+void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
+{
+    uid_t new_uid = -1;
+    uid_t new_gid = -1;
+    struct group *new_group = NULL;
+    struct passwd *new_user = NULL;
+
+    const QString owner = uidGid.section(QLatin1Char(':'), 0, 0);
+
+    bool ok;
+    new_uid = owner.toInt(&ok);
+
+    if (!ok) {
+        new_user = getpwnam(owner.toUtf8().constData());
+        if (!new_user) {
+            qFatal("unable to find user %s\n", owner.toUtf8().constData());
+        }
+        new_uid = new_user->pw_uid;
+    }
+
+    const QString group = uidGid.section(QLatin1Char(':'), 1, 1);
+    if (!group.isEmpty()) {
+        new_gid = group.toInt(&ok);
+        if (!ok) {
+            new_group = getgrnam(group.toUtf8().constData());
+            if (!new_group) {
+                qFatal("unable to find group %s\n", group.toUtf8().constData());
+                exit(1);
+            }
+            new_gid = new_group->gr_gid;
+        }
+    }
+
+    if (chown(filename.toUtf8().constData(), new_uid, new_gid)) {
+        qFatal("chown()");
+    }
+}
+
 void UnixFork::handleSigHup()
 {
     auto socket = qobject_cast<QSocketNotifier*>(sender());

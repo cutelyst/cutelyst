@@ -40,6 +40,7 @@ public:
 
     static void setGid(const QString &gid);
     static void setUid(const QString &uid);
+    static void chownSocket(const QString &filename, const QString &uidGid);
 
     void handleSigHup();
     void handleSigTerm();
