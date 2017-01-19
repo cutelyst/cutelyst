@@ -122,7 +122,7 @@ void UnixFork::setGid(const QString &gid)
         if (ugroup) {
             gidInt = ugroup->gr_gid;
         } else {
-            qFatal("group %s not found.", gid.toUtf8().constData());
+            qFatal("setgid group %s not found.", gid.toUtf8().constData());
         }
     }
 
@@ -140,7 +140,7 @@ void UnixFork::setUid(const QString &uid)
         if (upasswd) {
             uidInt = upasswd->pw_uid;
         } else {
-            qFatal("user %s not found.", uid.toUtf8().constData());
+            qFatal("setuid user %s not found.", uid.toUtf8().constData());
         }
     }
 
@@ -164,7 +164,7 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
     if (!ok) {
         new_user = getpwnam(owner.toUtf8().constData());
         if (!new_user) {
-            qFatal("unable to find user %s\n", owner.toUtf8().constData());
+            qFatal("unable to find user '%s'", owner.toUtf8().constData());
         }
         new_uid = new_user->pw_uid;
     }
@@ -175,15 +175,14 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
         if (!ok) {
             new_group = getgrnam(group.toUtf8().constData());
             if (!new_group) {
-                qFatal("unable to find group %s\n", group.toUtf8().constData());
-                exit(1);
+                qFatal("unable to find group '%s'", group.toUtf8().constData());
             }
             new_gid = new_group->gr_gid;
         }
     }
 
     if (chown(filename.toUtf8().constData(), new_uid, new_gid)) {
-        qFatal("chown()");
+        qFatal("chown() error '%s'", strerror(errno));
     }
 }
 

@@ -269,7 +269,9 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         }
 
 #ifdef Q_OS_UNIX
-        UnixFork::chownSocket(line, chownSocket);
+        if (!chownSocket.isEmpty()) {
+            UnixFork::chownSocket(line, chownSocket);
+        }
 #endif
 
         std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
@@ -802,7 +804,7 @@ void WSGIPrivate::parseCommandLine()
     }
 
     if (parser.isSet(chownSocketOption)) {
-        q->setGid(parser.value(chownSocketOption));
+        q->setChownSocket(parser.value(chownSocketOption));
     }
 #endif // Q_OS_UNIX
 
