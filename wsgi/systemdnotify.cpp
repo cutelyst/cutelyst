@@ -22,7 +22,15 @@
 #include <sys/un.h>
 #include <string.h>
 
+
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <QCoreApplication>
 #include <QDebug>
+
+/* The first passed file descriptor is fd 3 */
+#define SD_LISTEN_FDS_START 3
 
 using namespace CWSGI;
 
@@ -123,3 +131,112 @@ void systemdNotify::ready()
         qWarning("sendmsg()");
     }
 }
+
+int fd_cloexec(int fd, bool cloexec) {
+    int flags, nflags;
+
+    Q_ASSERT(fd >= 0);
+
+    flags = fcntl(fd, F_GETFD, 0);
+    if (flags < 0)
+        return -errno;
+
+    if (cloexec)
+        nflags = flags | FD_CLOEXEC;
+    else
+        nflags = flags & ~FD_CLOEXEC;
+
+    if (nflags == flags)
+        return 0;
+
+    if (fcntl(fd, F_SETFD, nflags) < 0)
+        return -errno;
+
+    return 0;
+}
+
+int parse_pid(const QByteArray &s, pid_t* ret_pid) {
+    unsigned long ul = 0;
+    pid_t pid;
+    int r;
+
+    Q_ASSERT(ret_pid);
+
+    bool ok;
+    ul = s.toULong(&ok);
+    if (!ok) {
+        return -1;
+    }
+
+    pid = (pid_t) ul;
+
+    if ((unsigned long) pid != ul)
+        return -ERANGE;
+
+    if (pid <= 0)
+        return -ERANGE;
+
+    *ret_pid = pid;
+    return 0;
+}
+
+int sd_listen_fds()
+{
+    const QByteArray listenPid = qgetenv("LISTEN_PID");
+    bool ok;
+    qint64 pid = static_cast<pid_t>(listenPid.toLongLong(&ok));
+    if (!ok) {
+        return 0;
+    }
+
+    /* Is this for us? */
+    if (QCoreApplication::applicationPid() != pid) {
+        return 0;
+    }
+
+    const QByteArray listenFDS = qgetenv("LISTEN_FDS");
+    int n = listenFDS.toInt(&ok);
+    if (!ok) {
+        return 0;
+    }
+
+    Q_ASSERT(SD_LISTEN_FDS_START < INT_MAX);
+    if (n <= 0 || n > INT_MAX - SD_LISTEN_FDS_START) {
+        return  -EINVAL;
+    }
+
+    qDebug("systemd socket activation detected");
+
+    int r = 0;
+    for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd ++) {
+        r = fd_cloexec(fd, true);
+        if (r < 0) {
+            return r;
+        }
+    }
+
+    r = n;
+
+    return r;
+}
+
+std::vector<int> systemdNotify::listenFds(bool unsetEnvironment)
+{
+    std::vector<int> ret;
+    int maxFD;
+    if ((maxFD = sd_listen_fds()) > 0) {
+        for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + maxFD; ++fd) {
+            ret.push_back(fd);
+        }
+    }
+
+    if (unsetEnvironment) {
+        qunsetenv("LISTEN_PID");
+        qunsetenv("LISTEN_FDS");
+        qunsetenv("LISTEN_FDNAMES");
+    }
+
+    return ret;
+}
+
+#include "moc_systemdnotify.cpp"

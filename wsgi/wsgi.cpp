@@ -843,6 +843,8 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
         auto notify = new systemdNotify(notifySocket.constData(), this);
         connect(q, &WSGI::ready, notify, &systemdNotify::ready);
     }
+
+
 #endif
 
 #ifdef Q_OS_UNIX

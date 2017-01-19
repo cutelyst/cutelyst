@@ -35,6 +35,7 @@ public:
 
     void notify(const QByteArray &data);
     void ready();
+    static std::vector<int> listenFds(bool unsetEnvironment = true);
 
 private:
     systemdNotifyPrivate *d_ptr;
