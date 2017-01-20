@@ -24,8 +24,6 @@
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
 #include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
 
-// clazy:excludeall=detaching-temporary
-
 using namespace Cutelyst;
 
 class TestValidator : public CoverageObject
@@ -64,7 +62,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -80,7 +78,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -96,7 +94,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -112,7 +110,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -129,7 +127,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -145,7 +143,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -161,7 +159,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -174,7 +172,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -187,7 +185,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -200,7 +198,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -216,7 +214,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -232,7 +230,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -248,7 +246,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -265,7 +263,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -281,7 +279,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -297,7 +295,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -310,7 +308,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -323,7 +321,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -336,7 +334,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -349,7 +347,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -362,7 +360,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -375,7 +373,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -388,7 +386,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -401,7 +399,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -414,7 +412,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -427,7 +425,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -440,7 +438,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -453,7 +451,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -466,7 +464,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -479,7 +477,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -492,7 +490,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -505,7 +503,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -518,7 +516,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -531,7 +529,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -569,7 +567,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -583,7 +581,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -613,7 +611,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -642,7 +640,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -658,7 +656,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -672,7 +670,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -686,7 +684,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -700,7 +698,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -713,7 +711,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -726,7 +724,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -739,7 +737,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -752,7 +750,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -765,7 +763,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -778,7 +776,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -791,7 +789,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -804,7 +802,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -833,7 +831,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -846,7 +844,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -859,7 +857,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 
@@ -898,7 +896,7 @@ public:
         if (r) {
             c->response()->setBody(QByteArrayLiteral("valid"));
         } else {
-            c->response()->setBody(r.errorStrings().first());
+            c->response()->setBody(r.errorStrings().constFirst());
         }
     }
 };
