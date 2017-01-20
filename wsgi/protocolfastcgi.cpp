@@ -183,8 +183,7 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
         wsgi_req->headers.pushHeader(keyStr, value);
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
-    } else if (memcmp(key, "SCRIPT_NAME", 11) == 0) {
-        // DOCUMENT_URI has the same value no idea which one to use
+    } else if (memcmp(key, "REQUEST_URI", 11) == 0) {
         wsgi_req->path = QString::fromLatin1(val + 1, vallen - 1);
     } else if (memcmp(key, "QUERY_STRING", 12) == 0) {
         wsgi_req->query = QByteArray(val, vallen);
