@@ -58,7 +58,6 @@ class ValidatorRulePrivate;
  *
  * class MyValidator : public Cutelyst::ValidatorRule
  * {
- *     Q_OBJECT
  * public:
  *     // field: name of the input field
  *     // compareValue: our custom value we want compare
