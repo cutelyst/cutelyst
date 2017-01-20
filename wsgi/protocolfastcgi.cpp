@@ -276,8 +276,11 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
             // if STDIN, end of the loop
             if (fcgi_type == FCGI_STDIN) {
                 int ret = WSGI_OK;
-                if (sock->contentLength > 0) {
-                    ret = writeBody(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len);
+                if (fcgi_len > 0) {
+                    if (!writeBody(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len)) {
+                        return -1;
+                    }
+                    ret = WSGI_AGAIN;
                 }
 
                 memmove(sock->buffer, sock->buffer + fcgi_all_len, sock->buf_size - fcgi_all_len);
@@ -310,18 +313,17 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
     return WSGI_AGAIN; // read again
 }
 
-int ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len) const
+bool ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len) const
 {
     if (sock->body) {
-        sock->body->write(buf, len);
-        return sock->contentLength < sock->body->size() ? WSGI_AGAIN : WSGI_OK;
+        return sock->body->write(buf, len) == len;
     }
 
     if (m_postBuffering && sock->contentLength > m_postBuffering) {
         auto temp = new QTemporaryFile;
         if (!temp->open()) {
             qWarning() << "Failed to open temporary file to store post" << temp->errorString();
-            return -1;
+            return false;
         }
         sock->body = temp;
     } else if (m_postBuffering && sock->contentLength <= m_postBuffering) {
@@ -337,8 +339,7 @@ int ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len) const
         sock->body = buffer;
     }
 
-    sock->body->write(buf, len);
-    return sock->contentLength < sock->body->size() ? WSGI_AGAIN : WSGI_OK;
+    return sock->body->write(buf, len) == len;
 }
 
 int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, const char *buf, int len)
