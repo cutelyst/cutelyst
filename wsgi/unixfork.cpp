@@ -67,7 +67,8 @@ void UnixFork::createProcess(int process)
 
 void UnixFork::killChild()
 {
-    for (qint64 pid : m_childs) {
+    const auto childs = m_childs;
+    for (qint64 pid : childs) {
         if (pid) {
             ::kill(pid_t(pid), SIGKILL);
         }
@@ -76,7 +77,8 @@ void UnixFork::killChild()
 
 void UnixFork::terminateChild()
 {
-    for (qint64 pid : m_childs) {
+    const auto childs = m_childs;
+    for (qint64 pid : childs) {
         if (pid) {
             ::kill(pid_t(pid), SIGTERM);
         }
