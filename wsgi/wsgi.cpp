@@ -1111,6 +1111,8 @@ bool WSGIPrivate::loadConfig()
         return false;
     }
 
+    qputenv("CUTELYST_CONFIG", ini.toUtf8());
+
     loadConfigGroup(QStringLiteral("uwsgi"), settings);
     loadConfigGroup(QStringLiteral("wsgi"), settings);
 
