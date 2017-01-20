@@ -275,17 +275,18 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
 
             // if STDIN, end of the loop
             if (fcgi_type == FCGI_STDIN) {
-                if (fcgi_len > 0) {
-                    if (!writeBody(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len)) {
-                        return -1;
-                    }
-                    continue;
+                if (fcgi_len == 0) {
+                    return WSGI_OK;
+                }
+
+                if (!writeBody(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len)) {
+                    return -1;
                 }
 
                 memmove(sock->buffer, sock->buffer + fcgi_all_len, sock->buf_size - fcgi_all_len);
                 sock->buf_size -= fcgi_all_len;
 
-                return WSGI_OK;
+                continue;
             }
 
             // if we have a full packet, parse it and reset the memory
