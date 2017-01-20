@@ -59,6 +59,11 @@ WSGI::WSGI(QObject *parent) : QObject(parent),
 {
     std::cout << "Cutelyst WSGI starting" << std::endl;
 
+    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
+        qputenv("QT_MESSAGE_PATTERN",
+                "%{category}[%{if-debug}debug%{endif}%{if-info}info%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
+    }
+
 #ifdef Q_OS_LINUX
     if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
         std::cout << "Installing EPoll event loop" << std::endl;
