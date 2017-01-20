@@ -48,7 +48,7 @@ QString ValidatorIp::validate() const
     if (!v.isEmpty()) {
 
         // simple check for an IPv4 address with four parts, because QHostAddress also tolerates addresses like 192.168.2 and fills them with 0 somewhere
-        if (!v.contains(QStringLiteral(":")) && !v.contains(QRegularExpression(QStringLiteral("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")))) {
+        if (!v.contains(QLatin1Char(':')) && !v.contains(QRegularExpression(QStringLiteral("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")))) {
 
             result = validationError();
 

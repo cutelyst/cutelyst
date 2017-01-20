@@ -40,8 +40,7 @@ QString ValidatorConfirmed::validate() const
     QString result;
 
     if (!value().isEmpty()) {
-        QString ofn = field();
-        ofn.append(QLatin1String("_confirmation"));
+        const QString ofn = field() + QLatin1String("_confirmation");
 
         if (value() != parameters().value(ofn)) {
             result = validationError();

@@ -71,7 +71,7 @@ Cutelyst::ValidatorResult Validator::validate(Context *c, ValidatorFlags flags) 
 
     if (!result && flags.testFlag(FillStashOnError)) {
         c->setStash(QStringLiteral("validationErrorStrings"), result.errorStrings());
-        c->setStash(QStringLiteral("validationErrors"), QVariant::fromValue<QHash<QString,QStringList>>(result.errors()));
+        c->setStash(QStringLiteral("validationErrors"), QVariant::fromValue(result.errors()));
 
         if (!params.isEmpty()) {
             QMap<QString,QString>::const_iterator i = params.constBegin();
@@ -105,8 +105,7 @@ ValidatorResult Validator::validate(const ParamsMultiMap &params, ValidatorFlags
     const bool stopOnFirstError = flags.testFlag(StopOnFirstError);
     const bool noTrimming = flags.testFlag(NoTrimming);
 
-    for (auto it = d->validators.cbegin(); it != d->validators.cend(); ++it) {
-        ValidatorRule *v = *it;
+    for (ValidatorRule *v : d->validators) {
         v->setParameters(params);
 
         if (v->label().isEmpty()) {

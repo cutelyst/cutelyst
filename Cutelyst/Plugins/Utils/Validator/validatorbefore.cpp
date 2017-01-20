@@ -51,12 +51,12 @@ QString ValidatorBefore::validate() const
 
         if (d->date.type() == QVariant::Date) {
 
-            QDate odate = d->date.toDate();
+            const QDate odate = d->date.toDate();
             if (!odate.isValid()) {
                 qCWarning(C_VALIDATORBEFORE) << "Invalid validation date.";
                 result = validationDataError();
             } else {
-                QDate date = d->extractDate(v, d->inputFormat);
+                const QDate date = d->extractDate(v, d->inputFormat);
                 if (!date.isValid()) {
                     qCWarning(C_VALIDATORBEFORE) << "Can not parse input date:" << v;
                     result = parsingError();
@@ -69,12 +69,12 @@ QString ValidatorBefore::validate() const
 
         } else if (d->date.type() == QVariant::DateTime) {
 
-            QDateTime odatetime = d->date.toDateTime();
+            const QDateTime odatetime = d->date.toDateTime();
             if (!odatetime.isValid()) {
                 qCWarning(C_VALIDATORBEFORE) << "Invalid validation date and time.";
                 result = validationDataError();
             } else {
-                QDateTime datetime = d->extractDateTime(v, d->inputFormat);
+                const QDateTime datetime = d->extractDateTime(v, d->inputFormat);
                 if (!datetime.isValid()) {
                     qCWarning(C_VALIDATORBEFORE) << "Can not parse input date and time:" << v;
                     result = parsingError();
@@ -87,12 +87,12 @@ QString ValidatorBefore::validate() const
 
         } else if (d->date.type() == QVariant::Time) {
 
-            QTime otime = d->date.toTime();
+            const QTime otime = d->date.toTime();
             if (!otime.isValid()) {
                 qCWarning(C_VALIDATORBEFORE) << "Invalid validation time.";
                 result = validationDataError();
             } else {
-                QTime time = d->extractTime(v, d->inputFormat);
+                const QTime time = d->extractTime(v, d->inputFormat);
                 if (!time.isValid()) {
                     qCWarning(C_VALIDATORBEFORE) << "Can not parse input time:" << v;
                     result = parsingError();
