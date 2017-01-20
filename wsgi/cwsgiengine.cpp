@@ -92,7 +92,7 @@ void CWsgiEngine::listen()
                 connect(this, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
             }
         } else {
-            auto server = new LocalServer(info.serverName, info.protocol, m_wsgi, this);
+            auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
             if (server->setSocketDescriptor(info.socketDescriptor)) {
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);

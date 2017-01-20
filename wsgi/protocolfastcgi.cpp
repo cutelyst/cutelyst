@@ -175,7 +175,12 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
 
     if (keylen > 5 && memcmp(key, "HTTP_", 5) == 0) {
         const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
-        wsgi_req->headers.pushHeader(keyStr, QString::fromLatin1(val, vallen));
+        const QString value = QString::fromLatin1(val, vallen);
+        if (!wsgi_req->headerHost && keyStr.compare(QLatin1String("Host"), Qt::CaseInsensitive) == 0) {
+            wsgi_req->serverAddress = value;
+            wsgi_req->headerHost = true;
+        }
+        wsgi_req->headers.pushHeader(keyStr, value);
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
     } else if (memcmp(key, "SCRIPT_NAME", 11) == 0) {
