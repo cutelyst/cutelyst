@@ -35,10 +35,13 @@ int main(int argc, char *argv[])
     CWSGI::WSGI wsgi;
 
     QCoreApplication app(argc, argv);
-    QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    QCoreApplication::installTranslator(&qtTranslator);
+
+    qputenv("QT_LOGGING_CONF", "/home/daniel/cutelyst.ini");
+
+//    QTranslator qtTranslator;
+//    qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
+//                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+//    QCoreApplication::installTranslator(&qtTranslator);
 
     int ret = wsgi.load();
     if (ret) {

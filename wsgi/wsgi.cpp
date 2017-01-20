@@ -911,10 +911,10 @@ void WSGIPrivate::parseCommandLine()
 
 int WSGIPrivate::setupApplication(Cutelyst::Application *app)
 {
-    Q_Q(WSGI);
-
 #ifdef Q_OS_LINUX
     if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
+        Q_Q(WSGI);
+
         const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
         qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
         auto notify = new systemdNotify(notifySocket.constData(), this);

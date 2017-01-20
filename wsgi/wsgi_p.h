@@ -58,6 +58,7 @@ public:
 
     bool loadConfig();
     void loadConfigGroup(const QString &group, QSettings &settings);
+    void loadLoggingRules(QSettings &settings);
 
     WSGI *q_ptr;
     std::vector<SocketInfo> sockets;
