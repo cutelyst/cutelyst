@@ -16,9 +16,15 @@ if (UNIX)
     set(httpEngine_SRC
         ${httpEngine_SRC}
         unixfork.cpp
+        )
+endif ()
+
+if (LINUX)
+    set(httpEngine_SRC
+        ${httpEngine_SRC}
         systemdnotify.cpp
         )
-endif (UNIX)
+endif ()
 
 add_library(cutelyst_wsgi_qt5 SHARED ${httpEngine_SRC})
 
@@ -38,7 +44,7 @@ if (LINUX)
 target_link_libraries(cutelyst_wsgi_qt5
     PRIVATE CutelystQt5::EventLoopEPoll
 )
-endif (LINUX)
+endif ()
 
 install(TARGETS cutelyst_wsgi_qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 

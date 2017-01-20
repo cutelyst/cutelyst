@@ -62,7 +62,7 @@ endif()
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX
     "/usr" CACHE PATH "cutelyst default install prefix" FORCE)
-endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+endif()
 
 #
 # Configure files
@@ -111,7 +111,7 @@ if (NOT WIN32)
 add_definitions(
     -std=c++11
 )
-endif (NOT WIN32)
+endif()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
@@ -147,15 +147,15 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (LINUX)
-add_subdirectory(EventLoopEPoll)
-endif (LINUX)
+    add_subdirectory(EventLoopEPoll)
+endif()
 
 add_subdirectory(wsgi)
 
 find_program(UWSGI_BIN NAMES uwsgi)
 if (UWSGI_EXEC_PATH)
     add_subdirectory(uwsgiEngine)
-endif (UWSGI_EXEC_PATH)
+endif()
 
 add_subdirectory(cmd)
 
