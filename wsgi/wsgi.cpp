@@ -1111,11 +1111,6 @@ bool WSGIPrivate::loadConfig()
         return false;
     }
 
-    qputenv("CUTELYST_CONFIG", ini.toUtf8());
-    if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
-        qputenv("QT_LOGGING_CONF", ini.toUtf8());
-    }
-
     loadConfigGroup(QStringLiteral("uwsgi"), settings);
     loadConfigGroup(QStringLiteral("wsgi"), settings);
 
