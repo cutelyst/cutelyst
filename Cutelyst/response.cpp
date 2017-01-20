@@ -218,7 +218,7 @@ void Response::redirect(const QUrl &url, quint16 status)
     if (url.isValid()) {
         const QString location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
         d->headers.setHeader(QStringLiteral("location"), location);
-        qCDebug(CUTELYST_ENGINE) << "Redirecting to" << location;
+        qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location;
 
         if (!hasBody()) {
             QString buf = QStringLiteral(
