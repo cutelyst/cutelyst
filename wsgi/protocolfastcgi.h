@@ -40,7 +40,7 @@ private:
     inline quint16 addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const;
     inline int parseHeaders(Socket *wsgi_req, char *buf, size_t len) const;
     inline int processPacket(Socket *sock) const;
-    inline bool writeBody(Socket *sock, char *buf, size_t len) const;
+    inline bool writeBody(Socket *sock, char *buf, qint64 len) const;
     // write a STDOUT packet
     int wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, const char *buf, int len);
 };

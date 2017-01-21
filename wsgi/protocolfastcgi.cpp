@@ -316,7 +316,7 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
     return WSGI_AGAIN; // read again
 }
 
-bool ProtocolFastCGI::writeBody(Socket *sock, char *buf, size_t len) const
+bool ProtocolFastCGI::writeBody(Socket *sock, char *buf, qint64 len) const
 {
     if (sock->body) {
         return sock->body->write(buf, len) == len;
