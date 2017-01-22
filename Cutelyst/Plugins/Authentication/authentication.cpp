@@ -64,7 +64,7 @@ void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm, const QStrin
 
 void Cutelyst::Authentication::addRealm(Cutelyst::AuthenticationStore *store, Cutelyst::AuthenticationCredential *credential, const QString &name)
 {
-    AuthenticationRealm *realm = new AuthenticationRealm(store, credential, this);
+    auto realm = new AuthenticationRealm(store, credential, this);
     realm->setName(name);
     addRealm(realm, name);
 }
