@@ -379,13 +379,12 @@ QString HeadersPrivate::normalizeHeaderKey(const QString &field)
     int i = 0;
     while (i < key.size()) {
         QCharRef c = key[i];
-        if (c.isSpace()) {
-            key.remove(i, 1);
-            continue;
+        if (c.isLetter()) {
+            if (c.isLower()) {
+                c = c.toUpper();
+            }
         } else if (c == QLatin1Char('-')) {
             c = QLatin1Char('_');
-        } else {
-            c = c.toUpper();
         }
         ++i;
     }
