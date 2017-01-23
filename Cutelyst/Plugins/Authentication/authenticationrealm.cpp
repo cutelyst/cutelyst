@@ -77,8 +77,7 @@ AuthenticationUser AuthenticationRealm::authenticate(Context *c, const ParamsMul
 
 void AuthenticationRealm::removePersistedUser(Context *c)
 {
-    Session::deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER));
-    Session::deleteValue(c, QStringLiteral(SESSION_AUTHENTICATION_USER_REALM));
+    Session::deleteValues(c, {QStringLiteral(SESSION_AUTHENTICATION_USER), QStringLiteral(SESSION_AUTHENTICATION_USER_REALM)});
 }
 
 AuthenticationUser AuthenticationRealm::persistUser(Context *c, const AuthenticationUser &user)

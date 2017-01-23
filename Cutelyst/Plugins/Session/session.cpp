@@ -217,6 +217,31 @@ void Session::deleteValue(Context *c, const QString &key)
     c->setProperty(SESSION_UPDATED, true);
 }
 
+void Session::deleteValues(Context *c, const QStringList &keys)
+{
+    QVariant session = c->property(SESSION_VALUES);
+    if (session.isNull()) {
+        session = SessionPrivate::loadSession(c);
+        if (session.isNull()) {
+            if (Q_UNLIKELY(!m_instance)) {
+                qCCritical(C_SESSION) << "Session plugin not registered";
+                return;
+            }
+
+            SessionPrivate::createSessionIdIfNeeded(m_instance, c, m_instance->d_ptr->sessionExpires);
+            session = SessionPrivate::initializeSessionData(m_instance, c);
+        }
+    }
+
+    QVariantHash data = session.toHash();
+    for (const QString &key : keys) {
+        data.remove(key);
+    }
+
+    c->setProperty(SESSION_VALUES, data);
+    c->setProperty(SESSION_UPDATED, true);
+}
+
 bool Session::isValid(Cutelyst::Context *c)
 {
     return !SessionPrivate::loadSession(c).isNull();

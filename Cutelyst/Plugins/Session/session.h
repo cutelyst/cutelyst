@@ -97,6 +97,7 @@ public:
     static QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
     static void setValue(Context *c, const QString &key, const QVariant &value);
     static void deleteValue(Context *c, const QString &key);
+    static void deleteValues(Context *c, const QStringList &keys);
 
     static bool isValid(Context *c);
 

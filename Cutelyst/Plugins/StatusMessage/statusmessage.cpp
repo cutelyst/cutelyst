@@ -115,18 +115,23 @@ void StatusMessage::load(Context *c)
         return;
     }
 
+    QStringList deleteKeys;
     const QString statusKey = priv->sessionPrefix + QLatin1String("status") + token;
     const QVariant statusValue = Session::value(c, statusKey);
     if (!statusValue.isNull()) {
-        Session::deleteValue(c, statusKey);
+        deleteKeys.append(statusKey);
         c->setStash(priv->statusMsgStashKey, statusValue);
     }
 
     const QString errorKey = priv->sessionPrefix + QLatin1String("error") + token;
     const QVariant errorValue = Session::value(c, errorKey);
     if (!errorValue.isNull()) {
-        Session::deleteValue(c, errorKey);
+        deleteKeys.append(errorKey);
         c->setStash(priv->errorMsgStashKey, errorValue);
+    }
+
+    if (!deleteKeys.isEmpty()) {
+        Session::deleteValues(c, deleteKeys);
     }
 }
 
