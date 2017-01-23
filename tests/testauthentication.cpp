@@ -3,6 +3,7 @@
 
 #include <QTest>
 #include <QObject>
+#include <QNetworkCookie>
 #include <QUrlQuery>
 
 #include "headers.h"
@@ -81,6 +82,54 @@ public:
     void authenticate_user_realm(Context *c, const QString &realm) {
         if (Authentication::authenticate(c, c->request()->queryParameters(), realm)) {
             c->response()->setBody(QStringLiteral("ok"));
+        } else {
+            c->response()->setBody(QStringLiteral("fail"));
+        }
+    }
+
+    C_ATTR(authenticate_user_exists, :Local :AutoArgs)
+    void authenticate_user_exists(Context *c, const QString &realm) {
+        if (!Authentication::userExists(c)
+                && Authentication::authenticate(c, c->request()->queryParameters(), realm)
+                && Authentication::userExists(c)) {
+            c->response()->setBody(QStringLiteral("ok"));
+        } else {
+            c->response()->setBody(QStringLiteral("fail"));
+        }
+    }
+
+    C_ATTR(authenticate_user_obj, :Local :AutoArgs)
+    void authenticate_user_obj(Context *c, const QString &realm) {
+        if (Authentication::user(c).isNull()
+                && Authentication::authenticate(c, c->request()->queryParameters(), realm)
+                && !Authentication::user(c).id().isEmpty()) {
+            c->response()->setBody(QStringLiteral("ok"));
+        } else {
+            c->response()->setBody(QStringLiteral("fail"));
+        }
+    }
+
+    C_ATTR(authenticate_user_logout, :Local :AutoArgs)
+    void authenticate_user_logout(Context *c, const QString &realm) {
+        if (!Authentication::userExists(c)
+                && Authentication::authenticate(c, c->request()->queryParameters(), realm)
+                && Authentication::userExists(c)) {
+            Authentication::logout(c);
+            if (!Authentication::userExists(c)) {
+                c->response()->setBody(QStringLiteral("ok"));
+                return;
+            }
+        }
+        c->response()->setBody(QStringLiteral("fail"));
+    }
+
+    C_ATTR(authenticate_user_cookie, :Local :AutoArgs)
+    void authenticate_user_cookie(Context *c, const QString &realm) {
+        Authentication::authenticate(c, c->request()->queryParameters(), realm);
+        const auto cookie = c->response()->cookie(QByteArrayLiteral("testauthentication_exec_session")).value<QNetworkCookie>();
+        if (cookie.isHttpOnly() && cookie.path() == QLatin1String("/")) {
+            c->response()->setBody(QStringLiteral("ok"));
+            return;
         } else {
             c->response()->setBody(QStringLiteral("fail"));
         }
@@ -296,22 +345,54 @@ void TestAuthentication::testController_data()
     headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("321"));
     QTest::newRow("auth-http-realm-test02") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
                                             << headers << 200 << QByteArrayLiteral("ok");
-
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("123"));
     QTest::newRow("auth-http-realm-test03") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
                                             << headers << 401 << QByteArrayLiteral("fail");
-
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
     QTest::newRow("auth-http-realm-test04") << QStringLiteral("/authentication/test/authenticate_realm/httpNone")
                                             << headers << 200 << QByteArrayLiteral("ok");
-
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("3212134324234324"));
     QTest::newRow("auth-http-realm-test05") << QStringLiteral("/authentication/test/authenticate_realm/httpNone")
                                             << headers << 200 << QByteArrayLiteral("ok");
 
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-user-exists-test00") << QStringLiteral("/authentication/test/authenticate_user_exists/httpHashed")
+                                             << headers << 200 << QByteArrayLiteral("ok");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
+    QTest::newRow("auth-user-user-test01") << QStringLiteral("/authentication/test/authenticate_user_exists/httpHashed")
+                                           << headers << 401 << QByteArrayLiteral("fail");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-user-obj-test00") << QStringLiteral("/authentication/test/authenticate_user_obj/httpHashed")
+                                          << headers << 200 << QByteArrayLiteral("ok");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
+    QTest::newRow("auth-user-obj-test01") << QStringLiteral("/authentication/test/authenticate_user_obj/httpHashed")
+                                          << headers << 401 << QByteArrayLiteral("fail");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-user-logout-test00") << QStringLiteral("/authentication/test/authenticate_user_logout/httpHashed")
+                                             << headers << 200 << QByteArrayLiteral("ok");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
+    QTest::newRow("auth-user-logout-test01") << QStringLiteral("/authentication/test/authenticate_user_logout/httpHashed")
+                                             << headers << 401 << QByteArrayLiteral("fail");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-user-cookie-test00") << QStringLiteral("/authentication/test/authenticate_user_cookie/httpHashed")
+                                             << headers << 200 << QByteArrayLiteral("ok");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
+    QTest::newRow("auth-user-cookie-test01") << QStringLiteral("/authentication/test/authenticate_user_cookie/httpHashed")
+                                             << headers << 401 << QByteArrayLiteral("fail");
 }
 
 QTEST_MAIN(TestAuthentication)
