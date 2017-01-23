@@ -283,34 +283,53 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     sock->protocol = QString::fromLatin1(ptr, word_boundary - ptr);
 }
 
+
+inline QString normalizeHeaderKey(const char *str, int size)
+{
+    int i = 0;
+    QString key = QString::fromLatin1(str, size);
+    while (i < key.size()) {
+        QCharRef c = key[i];
+        if (c.isLetter()) {
+            if (c.isLower()) {
+                c = c.toUpper();
+            }
+        } else if (c == QLatin1Char('-')) {
+            c = QLatin1Char('_');
+        }
+        ++i;
+    }
+    return key;
+}
+
 void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) const
 {
     const char *word_boundary = ptr;
     while (*word_boundary != ':' && word_boundary < end) {
         ++word_boundary;
     }
-    const QString key = QString::fromLatin1(ptr, word_boundary - ptr);
+    const QString key = normalizeHeaderKey(ptr, word_boundary - ptr);
 
     while ((*word_boundary == ':' || *word_boundary == ' ') && word_boundary < end) {
         ++word_boundary;
     }
     const QString value = QString::fromLatin1(word_boundary, end - word_boundary);
 
-    if (sock->headerClose == Socket::HeaderCloseNotSet && key.compare(QLatin1String("Connection"), Qt::CaseInsensitive) == 0) {
+    if (sock->headerClose == Socket::HeaderCloseNotSet && key == QLatin1String("CONNECTION")) {
         if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
             sock->headerClose = Socket::HeaderCloseClose;
         } else {
             sock->headerClose = Socket::HeaderCloseKeep;
         }
-    } else if (sock->contentLength < 0 && key.compare(QLatin1String("Content-Length"), Qt::CaseInsensitive) == 0) {
+    } else if (sock->contentLength < 0 && key == QLatin1String("CONTENT_LENGTH")) {
         bool ok;
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
             sock->contentLength = cl;
         }
-    } else if (!sock->headerHost && key.compare(QLatin1String("Host"), Qt::CaseInsensitive) == 0) {
+    } else if (!sock->headerHost && key == QLatin1String("HOST")) {
         sock->serverAddress = value;
         sock->headerHost = true;
     }
-    sock->headers.pushHeader(key, value);
+    sock->headers.pushRawHeader(key, value);
 }
