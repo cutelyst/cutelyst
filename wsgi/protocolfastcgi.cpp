@@ -96,6 +96,10 @@ Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi")
 #define WSGI_AGAIN  1
 #define WSGI_ERROR -1
 
+#define FCGI_ALIGNMENT		 8
+#define FCGI_ALIGN(n)		 \
+    (((n) + (FCGI_ALIGNMENT - 1)) & ~(FCGI_ALIGNMENT - 1))
+
 using namespace CWSGI;
 
 #ifdef Q_CC_MSVC
@@ -353,16 +357,26 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, c
 
     Q_FOREVER {
         // fastcgi packets are limited to 64k
+        quint8 padding = 0;
+
         if (proto_parser_status == 0) {
             quint16 fcgi_len = qMin(len - write_pos, 0xffff);
             proto_parser_status = fcgi_len;
+
             struct fcgi_record fr;
             fr.version = FCGI_VERSION_1;
             fr.type = FCGI_STDOUT;
+
             quint8 *sid = reinterpret_cast<quint8 *>(&wsgi_req->stream_id);
             fr.req1 = sid[1];
             fr.req0 = sid[0];
-            fr.pad = 0;
+
+            quint16 padded_len = FCGI_ALIGN(fcgi_len);
+            if (padded_len > fcgi_len) {
+                padding = padded_len - fcgi_len;
+            }
+            fr.pad = padding;
+
             fr.reserved = 0;
             fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
             fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
@@ -372,6 +386,10 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, c
         }
 
         qint64 wlen = io->write(buf + write_pos, proto_parser_status);
+        if (padding) {
+            io->write("\0\0\0\0\0\0\0\0\0", padding);
+        }
+
         if (wlen > 0) {
             write_pos += wlen;
             proto_parser_status -= wlen;
@@ -391,8 +409,8 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, c
 
 void wsgi_proto_fastcgi_endrequest(Socket *wsgi_req, QIODevice *io)
 {
-    char end_request[24];
-    memcpy(end_request, FCGI_END_REQUEST_DATA, 24);
+    char end_request[] = FCGI_END_REQUEST_DATA;
+//    memcpy(end_request, FCGI_END_REQUEST_DATA, 24);
     char *sid = (char *) &wsgi_req->stream_id;
     // update with request id
     end_request[2] = sid[1];
