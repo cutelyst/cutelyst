@@ -45,4 +45,6 @@ cutelyst_templates_unit_tests(
 
 cute_test(testvalidator CutelystQt5::Utils::Validator "" "")
 
-cute_test(testauthentication CutelystQt5::Authentication CutelystQt5::Session "")
+if (NOT CMAKE_GENERATOR MATCHES "Visual Studio")
+    cute_test(testauthentication CutelystQt5::Authentication CutelystQt5::Session "")
+endif()

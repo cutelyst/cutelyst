@@ -154,7 +154,7 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     const QString storedPassword = user.value(passwordField).toString();
 
     if (passwordType == CredentialHttp::None) {
-        qCDebug(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
+        qCCritical(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
         return true;
     } else if (passwordType == CredentialHttp::Clear) {
         return storedPassword == password;
@@ -198,7 +198,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     AuthenticationUser _user = realm->findUser(c, auth);
     if (!_user.isNull()) {
         auth.insert(passwordField, userPass.second);
-        if (checkPassword(user, auth)) {
+        if (checkPassword(_user, auth)) {
             user = _user;
         } else {
             qCDebug(C_CREDENTIALHTTP) << "Password didn't match";
