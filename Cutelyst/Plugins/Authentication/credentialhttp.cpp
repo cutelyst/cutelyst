@@ -195,13 +195,14 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
 
     ParamsMultiMap auth;
     auth.insert(usernameField, userPass.first);
-    user = realm->findUser(c, auth);
-    if (!user.isNull()) {
+    AuthenticationUser _user = realm->findUser(c, auth);
+    if (!_user.isNull()) {
         auth.insert(passwordField, userPass.second);
         if (checkPassword(user, auth)) {
-            return user;
+            user = _user;
+        } else {
+            qCDebug(C_CREDENTIALHTTP) << "Password didn't match";
         }
-        qCDebug(C_CREDENTIALHTTP) << "Password didn't match";
     } else {
         qCDebug(C_CREDENTIALHTTP) << "Unable to locate a user matching user info provided in realm";
     }

@@ -42,13 +42,15 @@ CredentialPassword::~CredentialPassword()
 
 AuthenticationUser CredentialPassword::authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
+    AuthenticationUser user;
     Q_D(CredentialPassword);
-    AuthenticationUser user = realm->findUser(c, authinfo);
-    if (!user.isNull()) {
-        if (d->checkPassword(user, authinfo)) {
-            return user;
+    AuthenticationUser _user = realm->findUser(c, authinfo);
+    if (!_user.isNull()) {
+        if (d->checkPassword(_user, authinfo)) {
+            user = _user;
+        } else {
+            qCDebug(C_CREDENTIALPASSWORD) << "Password didn't match";
         }
-        qCDebug(C_CREDENTIALPASSWORD) << "Password didn't match";
     } else {
         qCDebug(C_CREDENTIALPASSWORD) << "Unable to locate a user matching user info provided in realm";
     }
