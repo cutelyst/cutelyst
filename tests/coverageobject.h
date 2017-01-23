@@ -46,6 +46,7 @@ private:
     QByteArray m_responseData;
     QByteArray m_status;
     Headers m_headers;
+    quint16 m_statusCode;
 };
 
 class SequentialBuffer : public QIODevice

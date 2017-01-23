@@ -59,6 +59,15 @@ public:
         }
     }
 
+    C_ATTR(authenticate_realm, :Local :AutoArgs)
+    void authenticate_realm(Context *c, const QString &realm) {
+        if (Authentication::authenticate(c, realm)) {
+            c->response()->setBody(QStringLiteral("ok"));
+        } else {
+            c->response()->setBody(QStringLiteral("fail"));
+        }
+    }
+
     C_ATTR(authenticate_user, :Local :AutoArgs)
     void authenticate_user(Context *c) {
         if (Authentication::authenticate(c, c->request()->queryParameters())) {
@@ -70,7 +79,6 @@ public:
 
     C_ATTR(authenticate_user_realm, :Local :AutoArgs)
     void authenticate_user_realm(Context *c, const QString &realm) {
-        qDebug() << "HEADERS" << c->req()->headers().authorizationBasic();
         if (Authentication::authenticate(c, c->request()->queryParameters(), realm)) {
             c->response()->setBody(QStringLiteral("ok"));
         } else {
@@ -152,6 +160,7 @@ void TestAuthentication::doTest()
 {
     QFETCH(QString, url);
     QFETCH(Headers, headers);
+    QFETCH(int, status);
     QFETCH(QByteArray, output);
 
     QUrl urlAux(url.mid(1));
@@ -162,6 +171,7 @@ void TestAuthentication::doTest()
                                                  headers,
                                                  nullptr);
 
+    QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), status);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
 
@@ -169,109 +179,138 @@ void TestAuthentication::testController_data()
 {
     QTest::addColumn<QString>("url");
     QTest::addColumn<Headers>("headers");
+    QTest::addColumn<int>("status");
     QTest::addColumn<QByteArray>("output");
 
-    // UriFor
+    // Auth based on query data
     Headers headers;
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-test00") << QStringLiteral("/authentication/test/authenticate?") + query.toString(QUrl::FullyEncoded)
-                                 << headers << QByteArrayLiteral("fail");
+                                 << headers << 200 << QByteArrayLiteral("fail");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("321"));
     QTest::newRow("auth-test01") << QStringLiteral("/authentication/test/authenticate?") + query.toString(QUrl::FullyEncoded)
-                                 << headers << QByteArrayLiteral("fail");
+                                 << headers << 200 << QByteArrayLiteral("fail");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-user-test00") << QStringLiteral("/authentication/test/authenticate_user?") + query.toString(QUrl::FullyEncoded)
-                                      << headers << QByteArrayLiteral("ok");
+                                      << headers << 200 << QByteArrayLiteral("ok");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("321"));
     QTest::newRow("auth-user-test01") << QStringLiteral("/authentication/test/authenticate_user?") + query.toString(QUrl::FullyEncoded)
-                                      << headers << QByteArrayLiteral("fail");
+                                      << headers << 200 << QByteArrayLiteral("fail");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("321"));
     QTest::newRow("auth-user-test02") << QStringLiteral("/authentication/test/authenticate_user?") + query.toString(QUrl::FullyEncoded)
-                                      << headers << QByteArrayLiteral("ok");
+                                      << headers << 200 << QByteArrayLiteral("ok");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-user-test03") << QStringLiteral("/authentication/test/authenticate_user?") + query.toString(QUrl::FullyEncoded)
-                                      << headers << QByteArrayLiteral("fail");
+                                      << headers << 200 << QByteArrayLiteral("fail");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-user-realm-test00") << QStringLiteral("/authentication/test/authenticate_user_realm/hashed?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("ok");
+                                            << headers << 200 << QByteArrayLiteral("ok");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("321"));
     QTest::newRow("auth-user-realm-test01") << QStringLiteral("/authentication/test/authenticate_user_realm/hashed?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("fail");
+                                            << headers << 200 << QByteArrayLiteral("fail");
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("321"));
     QTest::newRow("auth-user-realm-test02") << QStringLiteral("/authentication/test/authenticate_user_realm/hashed?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("ok");
+                                            << headers << 200 << QByteArrayLiteral("ok");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("bar"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-user-realm-test03") << QStringLiteral("/authentication/test/authenticate_user_realm/hashed?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("fail");
+                                            << headers << 200 << QByteArrayLiteral("fail");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("123"));
     QTest::newRow("auth-user-realm-test04") << QStringLiteral("/authentication/test/authenticate_user_realm/none?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("ok");
+                                            << headers << 200 << QByteArrayLiteral("ok");
 
     query.clear();
     query.addQueryItem(QStringLiteral("id"), QStringLiteral("foo"));
     query.addQueryItem(QStringLiteral("password"), QStringLiteral("3212134324234324"));
     QTest::newRow("auth-user-realm-test05") << QStringLiteral("/authentication/test/authenticate_user_realm/none?") + query.toString(QUrl::FullyEncoded)
-                                            << headers << QByteArrayLiteral("ok");
+                                            << headers << 200 << QByteArrayLiteral("ok");
 
     // HTTP auth
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
     QTest::newRow("auth-http-user-realm-test00") << QStringLiteral("/authentication/test/authenticate_user_realm/httpHashed")
-                                                 << headers << QByteArrayLiteral("ok");
+                                                 << headers << 200 << QByteArrayLiteral("ok");
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
     QTest::newRow("auth-http-user-realm-test01") << QStringLiteral("/authentication/test/authenticate_user_realm/httpHashed")
-                                                 << headers << QByteArrayLiteral("fail");
+                                                 << headers << 401 << QByteArrayLiteral("fail");
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("321"));
     QTest::newRow("auth-http-user-realm-test02") << QStringLiteral("/authentication/test/authenticate_user_realm/httpHashed")
-                                                 << headers << QByteArrayLiteral("ok");
+                                                 << headers << 200 << QByteArrayLiteral("ok");
 
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("123"));
     QTest::newRow("auth-http-user-realm-test03") << QStringLiteral("/authentication/test/authenticate_user_realm/httpHashed")
-                                                 << headers << QByteArrayLiteral("fail");
+                                                 << headers << 401 << QByteArrayLiteral("fail");
 
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
     QTest::newRow("auth-http-user-realm-test04") << QStringLiteral("/authentication/test/authenticate_user_realm/httpNone")
-                                                 << headers << QByteArrayLiteral("ok");
+                                                 << headers << 200 << QByteArrayLiteral("ok");
 
     headers.clear();
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("3212134324234324"));
     QTest::newRow("auth-http-user-realm-test05") << QStringLiteral("/authentication/test/authenticate_user_realm/httpNone")
-                                                 << headers << QByteArrayLiteral("ok");
+                                                 << headers << 200 << QByteArrayLiteral("ok");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-http-realm-test00") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
+                                            << headers << 200 << QByteArrayLiteral("ok");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("321"));
+    QTest::newRow("auth-http-realm-test01") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
+                                            << headers << 401 << QByteArrayLiteral("fail");
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("321"));
+    QTest::newRow("auth-http-realm-test02") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
+                                            << headers << 200 << QByteArrayLiteral("ok");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("bar"), QStringLiteral("123"));
+    QTest::newRow("auth-http-realm-test03") << QStringLiteral("/authentication/test/authenticate_realm/httpHashed")
+                                            << headers << 401 << QByteArrayLiteral("fail");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("123"));
+    QTest::newRow("auth-http-realm-test04") << QStringLiteral("/authentication/test/authenticate_realm/httpNone")
+                                            << headers << 200 << QByteArrayLiteral("ok");
+
+    headers.clear();
+    headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("3212134324234324"));
+    QTest::newRow("auth-http-realm-test05") << QStringLiteral("/authentication/test/authenticate_realm/httpNone")
+                                            << headers << 200 << QByteArrayLiteral("ok");
 
 }
 

@@ -97,6 +97,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     ret = {
         {QStringLiteral("body"), m_responseData},
         {QStringLiteral("status"), m_status},
+        {QStringLiteral("statusCode"), m_statusCode},
         {QStringLiteral("headers"), QVariant::fromValue(m_headers)}
     };
 
@@ -109,6 +110,7 @@ bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers 
 {
     int len;
     const auto *statusChar = httpStatusMessage(status, &len);
+    m_statusCode = status;
     m_status = QByteArray(statusChar + 9, len - 9);
     m_headers = headers;
 
