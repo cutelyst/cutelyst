@@ -13,13 +13,10 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network CutelystQt5::Utils::Validator)
+target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network)
 
-macro(CUTELYST_TEMPLATES_UNIT_TESTS)
-  foreach(_testname ${ARGN})
-    add_executable(${_testname}_exec
-                  ${_testname}.cpp
-    )
+function(cute_test _testname _link)
+    add_executable(${_testname}_exec ${_testname}.cpp)
     add_test(NAME ${_testname} COMMAND ${_testname}_exec)
     target_compile_features(${_testname}_exec
       PRIVATE
@@ -28,8 +25,13 @@ macro(CUTELYST_TEMPLATES_UNIT_TESTS)
         cxx_nullptr
         cxx_override
     )
-    target_link_libraries(${_testname}_exec CutelystQt5::Core coverage_test)
-  endforeach(_testname)
+    target_link_libraries(${_testname}_exec ${_link} CutelystQt5::Core coverage_test)
+endfunction()
+
+macro(CUTELYST_TEMPLATES_UNIT_TESTS)
+    foreach(_testname ${ARGN})
+        cute_test(${_testname} "")
+    endforeach(_testname)
 endmacro(CUTELYST_TEMPLATES_UNIT_TESTS)
 
 cutelyst_templates_unit_tests(
@@ -39,6 +41,6 @@ cutelyst_templates_unit_tests(
     testresponse
     testdispatcherpath
     testdispatcherchained
-    testvalidator
 )
 
+cute_test(testvalidator CutelystQt5::Utils::Validator)
