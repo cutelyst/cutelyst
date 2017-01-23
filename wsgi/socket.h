@@ -55,7 +55,6 @@ public:
 
     inline void resetSocket() {
         connState = MethodLine;
-        proto_parser_status = 0; // FGCI
         stream_id = 0; //FCGI
         buf_size = 0;
         beginLine = 0;
@@ -76,7 +75,6 @@ public:
     char *buffer;
     ParserState connState = MethodLine;
     quint64 stream_id = 0;// FGCI
-    quint32 proto_parser_status = 0;// FGCI
     quint32 buf_size = 0;
     int beginLine = 0;
     quint32 last = 0;

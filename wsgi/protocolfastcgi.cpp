@@ -349,12 +349,13 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, c
 {
     // reset for next write
     int write_pos = 0;
+    quint32 proto_parser_status = 0;
 
     Q_FOREVER {
         // fastcgi packets are limited to 64k
-        if (wsgi_req->proto_parser_status == 0) {
+        if (proto_parser_status == 0) {
             quint16 fcgi_len = qMin(len - write_pos, 0xffff);
-            wsgi_req->proto_parser_status = fcgi_len;
+            proto_parser_status = fcgi_len;
             struct fcgi_record fr;
             fr.version = FCGI_VERSION_1;
             fr.type = FCGI_STDOUT;
@@ -370,10 +371,10 @@ int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, c
             }
         }
 
-        qint64 wlen = io->write(buf + write_pos, wsgi_req->proto_parser_status);
+        qint64 wlen = io->write(buf + write_pos, proto_parser_status);
         if (wlen > 0) {
             write_pos += wlen;
-            wsgi_req->proto_parser_status -= wlen;
+            proto_parser_status -= wlen;
             if (write_pos == len) {
                 return WSGI_OK;
             }
