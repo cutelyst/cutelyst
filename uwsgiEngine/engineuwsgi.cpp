@@ -136,8 +136,8 @@ void uWSGI::processRequest(wsgi_request *req)
         struct iovec &value = req->hvec[i];
         if (!uwsgi_startswith(static_cast<char *>(name.iov_base),
                               const_cast<char *>("HTTP_"), 5)) {
-            headers.pushHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
-                              QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
+            headers.pushRawHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
+                                  QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
         } else if (!request.remotePort &&
                    !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
                                   static_cast<char *>(name.iov_base), name.iov_len)) {

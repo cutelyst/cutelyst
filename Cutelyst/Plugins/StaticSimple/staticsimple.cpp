@@ -116,7 +116,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL
-                headers.setHeader(QStringLiteral("cache_control"), QStringLiteral("public"));
+                headers.setHeader(QStringLiteral("CACHE_CONTROL"), QStringLiteral("public"));
 
                 return true;
             }

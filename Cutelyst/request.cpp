@@ -433,7 +433,7 @@ void RequestPrivate::parseBody() const
             body->seek(0);
         }
 
-        uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("content_type")), headers.contentLength());
+        uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("CONTENT_TYPE")), headers.contentLength());
         auto it = uploads.crbegin();
         const auto crend = uploads.crend();
         while (it != crend) {
@@ -527,7 +527,7 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 void RequestPrivate::parseCookies() const
 {
     std::vector<std::pair<QString, QString> > ret;
-    const QString cookieString = headers.header(QStringLiteral("cookie"));
+    const QString cookieString = headers.header(QStringLiteral("COOKIE"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {

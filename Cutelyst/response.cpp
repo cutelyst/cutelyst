@@ -50,12 +50,12 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->flags & ResponsePrivate::FinalizedHeaders)) {
-        if (d->headers.header(QStringLiteral("transfer_encoding")) == QLatin1String("chunked")) {
+        if (d->headers.header(QStringLiteral("TRANSFER_ENCODING")) == QLatin1String("chunked")) {
             d->flags |= ResponsePrivate::IOWrite | ResponsePrivate::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
             // that data is finished if we close the connection
-            d->headers.setHeader(QStringLiteral("connection"), QStringLiteral("close"));
+            d->headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("close"));
             d->flags |= ResponsePrivate::IOWrite;
         }
         delete d->bodyIODevice;
@@ -217,7 +217,7 @@ void Response::redirect(const QUrl &url, quint16 status)
 
     if (url.isValid()) {
         const QString location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
-        d->headers.setHeader(QStringLiteral("location"), location);
+        d->headers.setHeader(QStringLiteral("LOCATION"), location);
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location;
 
         if (!hasBody()) {
@@ -237,7 +237,7 @@ void Response::redirect(const QUrl &url, quint16 status)
             d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
         }
     } else {
-        d->headers.removeHeader(QStringLiteral("location"));
+        d->headers.removeHeader(QStringLiteral("LOCATION"));
         qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url;
     }
 }

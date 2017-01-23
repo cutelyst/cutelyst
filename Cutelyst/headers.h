@@ -246,6 +246,15 @@ public:
 
     void pushHeader(const QString &field, const QString &value);
 
+    /**
+     * This method directly inserts a Header in it's properly form
+     * which is field in upper case form with underscores instead of
+     * dashes, so 'Content-Type' becomes 'CONTENT_TYPE' like CGI does,
+     * this method should be used only by Engines to get faster performance
+     * and avoiding normalization.
+     */
+    inline void pushRawHeader(const QString &field, const QString &value);
+
     void pushHeader(const QString &field, const QStringList &values);
 
     void removeHeader(const QString &field);
@@ -281,6 +290,10 @@ public:
 private:
     QHash<QString, QString> m_data;
 };
+
+void Headers::pushRawHeader(const QString &field, const QString &value) {
+    m_data.insertMulti(field, value);
+}
 
 }
 

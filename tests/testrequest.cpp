@@ -467,7 +467,7 @@ void TestRequest::testController_data()
     headers.setAuthorizationBasic(QStringLiteral("foo"), QStringLiteral("bar"));
     headers.setReferer(QStringLiteral("http://www.cutelyst.org"));
     QTest::newRow("headers-test00") << get << QStringLiteral("/request/test/headers") << headers << QByteArray()
-                                    << QByteArrayLiteral("authorization=Basic%20Zm9vOmJhcg%3D%3D&referer=http://www.cutelyst.org");
+                                    << QByteArrayLiteral("AUTHORIZATION=Basic%20Zm9vOmJhcg%3D%3D&REFERER=http://www.cutelyst.org");
 
     headers.clear();
     headers.setHeader(QStringLiteral("User-Agent"), QStringLiteral("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36"));
