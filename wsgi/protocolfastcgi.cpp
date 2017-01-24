@@ -187,7 +187,8 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
         wsgi_req->headers.pushRawHeader(keyStr, value);
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
-    } else if (memcmp(key, "REQUEST_URI", 11) == 0) {
+    } else if (memcmp(key, "DOCUMENT_URI", 11) == 0) {
+        // REQUEST_URI has query string which break things
         wsgi_req->path = QString::fromLatin1(val + 1, vallen - 1);
     } else if (memcmp(key, "QUERY_STRING", 12) == 0) {
         wsgi_req->query = QByteArray(val, vallen);
