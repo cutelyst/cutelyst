@@ -182,32 +182,43 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
     if (salt.size() == 0 || salt.size() > std::numeric_limits<int>::max() - 4) {
         return key;
     }
+    key.reserve(keyLength);
 
+    int saltSize = salt.size();
     QByteArray asalt = salt;
-    asalt.resize(salt.size() + 4);
+    asalt.resize(saltSize + 4);
+
+    QByteArray d1, obuf;
+
+    QMessageAuthenticationCode code(method, password);
 
     for (int count = 1, remainingBytes = keyLength; remainingBytes > 0; ++count) {
-        asalt[salt.size() + 0] = static_cast<char>((count >> 24) & 0xff);
-        asalt[salt.size() + 1] = static_cast<char>((count >> 16) & 0xff);
-        asalt[salt.size() + 2] = static_cast<char>((count >> 8) & 0xff);
-        asalt[salt.size() + 3] = static_cast<char>(count & 0xff);
-        QByteArray d1 = QMessageAuthenticationCode::hash(asalt, password, method);
-        QByteArray obuf = d1;
+        asalt[saltSize + 0] = static_cast<char>((count >> 24) & 0xff);
+        asalt[saltSize + 1] = static_cast<char>((count >> 16) & 0xff);
+        asalt[saltSize + 2] = static_cast<char>((count >> 8) & 0xff);
+        asalt[saltSize + 3] = static_cast<char>(count & 0xff);
+
+        code.reset();
+        code.addData(asalt);
+        obuf = d1 = code.result();
 
         for (int i = 1; i < rounds; ++i) {
-            d1 = QMessageAuthenticationCode::hash(d1, password, method);
-            for (int j = 0; j < obuf.size(); ++j)
-                obuf[j] = obuf[j] ^ d1[j];
+            code.reset();
+            code.addData(d1);
+            d1 = code.result();
+            auto it = obuf.begin();
+            auto end = obuf.end();
+            auto d1It = d1.begin();
+            while (it != end) {
+                *it = *it ^ *d1It;
+                ++it;
+                ++d1It;
+            }
         }
 
-        key = key.append(obuf);
+        key.append(obuf);
         remainingBytes -= obuf.size();
-
-        d1.fill('\0');
-        obuf.fill('\0');
     }
-
-    asalt.fill('\0');
 
     key = key.mid(0, keyLength);
     return key;
