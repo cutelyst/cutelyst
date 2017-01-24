@@ -59,10 +59,10 @@ void TestPbkdf2::testPbkdf2_data()
                                                         "bead49d926f721d0"
                                                         "65a429c1");
 
-    QTest::newRow("pbkdf2-test03") << QByteArrayLiteral("password") << QByteArrayLiteral("salt") << 16777216 << 20
-                                   << QByteArrayLiteral("eefe3d61cd4da4e4"
-                                                        "e9945b3d6ba2158c"
-                                                        "2634e984");
+//    QTest::newRow("pbkdf2-test03") << QByteArrayLiteral("password") << QByteArrayLiteral("salt") << 16777216 << 20
+//                                   << QByteArrayLiteral("eefe3d61cd4da4e4"
+//                                                        "e9945b3d6ba2158c"
+//                                                        "2634e984");
 
     QTest::newRow("pbkdf2-test04") << QByteArrayLiteral("passwordPASSWORDpassword") << QByteArrayLiteral("saltSALTsaltSALTsaltSALTsaltSALTsalt") << 4096 << 25
                                    << QByteArrayLiteral("3d2eec4fe41c849b"
