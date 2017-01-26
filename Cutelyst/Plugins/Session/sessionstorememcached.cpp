@@ -22,6 +22,7 @@
 
 #include <QLoggingCategory>
 #include <QDataStream>
+#include <QCoreApplication>
 
 using namespace Cutelyst;
 
@@ -94,7 +95,8 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::stri
         return data;
     }
 
-    const QString sessionKey = QLatin1String("csession_") + sid;
+    const static QString sessionPrefix = QCoreApplication::applicationName() + QLatin1String("_sess_");
+    const QString sessionKey = sessionPrefix + sid;
 
     static memcache::Memcache memc(config);
 
@@ -124,7 +126,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::stri
             {
                 std::string errorString;
                 memc.error(errorString);
-                qCWarning(C_SESSION_MEMCACHED) << "Failed to set session to Memcached:" << QString::fromStdString(errorString);
+                qCWarning(C_SESSION_MEMCACHED) << "Failed to store session to Memcached:" << QString::fromStdString(errorString);
             }
         }
     });
@@ -136,7 +138,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::stri
             for (auto it = storedData.cbegin(); it != storedData.cend(); ++it) {
                 storedArray.append(*it);
             }
-            if (!storedArray.isEmpty()) {
+            if (!storedArray.isNull()) {
                 QDataStream in(&storedArray, QIODevice::ReadOnly);
                 in >> data;
             }
