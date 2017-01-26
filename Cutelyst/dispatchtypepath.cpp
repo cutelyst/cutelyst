@@ -185,7 +185,7 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         }
 
         it.value().push_back(action);
-        qSort(it.value().begin(), it.value().end(), [](Action *a, Action *b) -> bool {
+        std::sort(it.value().begin(), it.value().end(), [](Action *a, Action *b) -> bool {
             return a->numberOfArgs() < b->numberOfArgs();
         });
     } else {

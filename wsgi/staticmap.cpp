@@ -53,7 +53,7 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
     }
 
     m_staticMaps.push_back({ mp, path, append });
-    qSort(m_staticMaps.begin(), m_staticMaps.end(), [](const MountPoint &a, const MountPoint &b) -> bool {
+    std::sort(m_staticMaps.begin(), m_staticMaps.end(), [](const MountPoint &a, const MountPoint &b) -> bool {
               return a.mountPoint.size() < b.mountPoint.size();
     });
 }

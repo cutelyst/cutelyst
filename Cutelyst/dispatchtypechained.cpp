@@ -44,7 +44,7 @@ QByteArray DispatchTypeChained::list() const
 
     QByteArray buffer;
     Actions endPoints = d->endPoints;
-    qSort(endPoints.begin(), endPoints.end(), [](Action *a, Action *b) -> bool {
+    std::sort(endPoints.begin(), endPoints.end(), [](Action *a, Action *b) -> bool {
         return a->reverse() < b->reverse();
     });
 
@@ -365,7 +365,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
 
     const StringActionsMap children = it.value();
     QStringList keys = children.keys();
-    qSort(keys.begin(), keys.end(), [](const QString &a, const QString &b) -> bool {
+    std::sort(keys.begin(), keys.end(), [](const QString &a, const QString &b) -> bool {
         // action2 then action1 to try the longest part first
         return b.size() < a.size();
     });

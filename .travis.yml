@@ -39,7 +39,7 @@ before_install:
 before_script:
    - mkdir build
    - cd build
-   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off
+   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DENABLE_MAINTAINER_CFLAGS=on
 
 script:
    - cmake --build . --config $CONFIG
