@@ -207,9 +207,8 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
             code.addData(d1);
             d1 = code.result();
             auto it = obuf.begin();
-            auto end = obuf.end();
-            auto d1It = d1.begin();
-            while (it != end) {
+            auto d1It = d1.cbegin();
+            while (d1It != d1.cend()) {
                 *it = *it ^ *d1It;
                 ++it;
                 ++d1It;
