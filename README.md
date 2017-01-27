@@ -34,15 +34,20 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
  * Asynchronous processing (optional and dependent on application code)
  * Unit tested
  * QtCreator integration
- 
+
 ## BENCHMARKS
 
-http://www.techempower.com/benchmarks/#section=data-r13
+http://www.techempower.com/benchmarks/
 
-## LICENSE
+## DOCUMENTATION
 
-The library is under the LGPLv2+ and public header files, documentation and
-examples are under MIT license.
+Get started with our [Tutorial](https://github.com/cutelyst/cutelyst/wiki/Tutorial_01_Intro) or check the [API](http://api.cutelyst.org).
+
+## COMMUNITY
+
+The Cutelyst project IRC channel is [#cutelyst](http://webchat.freenode.net/?channels=%23cutelyst) on freenode.
+
+Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutelyst)
 
 ## REQUIREMENTS
 
@@ -52,3 +57,8 @@ examples are under MIT license.
 ## OPTIONAL
 
   * uWSGI - to receive and parse protocols requests (>= 1.9 recommended)
+  
+## LICENSE
+
+The library is under the LGPLv2+ and public header files, documentation and
+examples are under MIT license.
