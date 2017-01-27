@@ -159,7 +159,7 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
 
         QHostAddress address;
         if (parts.first().isEmpty()) {
-            address = QHostAddress::Any;
+            address.setAddress(QHostAddress::Any);
         } else {
             address.setAddress(parts.first());
         }

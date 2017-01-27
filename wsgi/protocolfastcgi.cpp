@@ -195,7 +195,7 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
     } else if (memcmp(key, "SERVER_PROTOCOL", 15) == 0) {
         wsgi_req->protocol = QString::fromLatin1(val, vallen);
     } else if (memcmp(key, "REMOTE_ADDR", 11) == 0) {
-        wsgi_req->remoteAddress = QHostAddress(QString::fromLatin1(val, vallen));
+        wsgi_req->remoteAddress.setAddress(QString::fromLatin1(val, vallen));
     } else if (memcmp(key, "REMOTE_PORT", 11) == 0) {
         wsgi_req->remotePort = QByteArray(val, vallen).toUInt();
     } else if (memcmp(key, "CONTENT_TYPE", 12) == 0) {

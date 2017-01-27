@@ -122,7 +122,7 @@ void uWSGI::processRequest(wsgi_request *req)
 
     request.method = QString::fromLatin1(req->method, req->method_len);
     request.protocol = QString::fromLatin1(req->protocol, req->protocol_len);
-    request.remoteAddress = QHostAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
+    request.remoteAddress.setAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
     request.remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
     request.isSecure = req->https_len;
     request.startOfRequest = req->start_of_request;
