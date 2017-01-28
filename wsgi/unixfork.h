@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QVector>
 
+class QSocketNotifier;
 class UnixFork : public QObject
 {
     Q_OBJECT
@@ -34,33 +35,29 @@ public:
     void killChild();
     void terminateChild();
 
-    // Unix signal handlers.
-    static void hupSignalHandler(int unused);
-    static void termSignalHandler(int unused);
-    static void killSignalHandler(int unused);
-    static void intSignalHandler(int unused);
-    static void chldSignalHandler(int unused);
-
     static void setGid(const QString &gid);
     static void setUid(const QString &uid);
     static void chownSocket(const QString &filename, const QString &uidGid);
 
     void handleSigHup();
     void handleSigTerm();
-    void handleSigKill();
     void handleSigInt();
     void handleSigChld();
 
-    int setupUnixSignalHandlers();
 
 Q_SIGNALS:
     void forked();
 
 private:
+    int setupUnixSignalHandlers();
+    void setupSocketPair(bool closeSignalsFD);
     bool createChild();
+    static void signalHandler(int signal);
 
-    bool m_child = false;
     QVector<qint64> m_childs;
+    QSocketNotifier *m_signalNotifier = nullptr;
+    bool m_child = false;
+    bool m_terminating = false;
 };
 
 #endif // UNIXFORK_H

@@ -79,15 +79,23 @@ WSGI::~WSGI()
     std::cout << "Cutelyst WSGI stopping" << std::endl;
     const auto engines = d->engines;
     for (auto engine : engines) {
-        engine->thread()->quit();
+        if (QThread::currentThread() != engine->thread()) {
+            engine->thread()->quit();
+        }
     }
 
     for (auto engine : engines) {
-        engine->thread()->wait(30 * 1000);
+        if (QThread::currentThread() != engine->thread()) {
+            engine->thread()->wait(30 * 1000);
+        }
     }
 
     for (auto engine : engines) {
-        if (engine->thread()->isFinished()) {
+        if (QThread::currentThread() != engine->thread()) {
+            if (engine->thread()->isFinished()) {
+                delete engine;
+            }
+        } else {
             delete engine;
         }
     }

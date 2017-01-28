@@ -31,18 +31,17 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include <iostream>
+
 #include <QCoreApplication>
 #include <QSocketNotifier>
+#include <QTimer>
 #include <QDebug>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 
-static int sighupFd[2];
-static int sigtermFd[2];
-static int sigkillFd[2];
-static int sigintFd[2];
-static int sigChldFd[2];
+static int signalsFd[2];
 
 UnixFork::UnixFork(QObject *parent) : QObject(parent)
 {
@@ -80,39 +79,15 @@ void UnixFork::terminateChild()
     const auto childs = m_childs;
     for (qint64 pid : childs) {
         if (pid) {
-            ::kill(pid_t(pid), SIGTERM);
+            ::kill(pid_t(pid), SIGQUIT);
         }
     }
 }
 
-void UnixFork::hupSignalHandler(int unused)
+void UnixFork::signalHandler(int signal)
 {
-    char a = 1;
-    ::write(sighupFd[0], &a, sizeof(a));
-}
-
-void UnixFork::termSignalHandler(int unused)
-{
-    char a = 1;
-    ::write(sigtermFd[0], &a, sizeof(a));
-}
-
-void UnixFork::killSignalHandler(int unused)
-{
-    char a = 1;
-    ::write(sigkillFd[0], &a, sizeof(a));
-}
-
-void UnixFork::intSignalHandler(int unused)
-{
-    char a = 1;
-    ::write(sigintFd[0], &a, sizeof(a));
-}
-
-void UnixFork::chldSignalHandler(int unused)
-{
-    char a = 1;
-    ::write(sigChldFd[0], &a, sizeof(a));
+//    qDebug() << Q_FUNC_INFO << signal;
+    ::write(signalsFd[0], &signal, sizeof(signal));
 }
 
 void UnixFork::setGid(const QString &gid)
@@ -190,121 +165,61 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
 
 void UnixFork::handleSigHup()
 {
-    auto socket = qobject_cast<QSocketNotifier*>(sender());
-    socket->setEnabled(false);
-    char tmp;
-    ::read(sighupFd[1], &tmp, sizeof(tmp));
-
     // do Qt stuff
     qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 //    m_proc->kill();
-
-    socket->setEnabled(true);
 }
 
 void UnixFork::handleSigTerm()
 {
-    auto socket = qobject_cast<QSocketNotifier*>(sender());
-    socket->setEnabled(false);
-    char tmp;
-    ::read(sigtermFd[1], &tmp, sizeof(tmp));
-
     // do Qt stuff
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
+//    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 //    qApp->quit();
 //    m_proc->terminate();
-
-    socket->setEnabled(true);
-}
-
-void UnixFork::handleSigKill()
-{
-    auto socket = qobject_cast<QSocketNotifier*>(sender());
-    socket->setEnabled(false);
-    char tmp;
-    ::read(sigkillFd[1], &tmp, sizeof(tmp));
-
-    // do Qt stuff
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
-//    m_proc->terminate();
-
-    socket->setEnabled(true);
 }
 
 void UnixFork::handleSigInt()
 {
-    auto socket = qobject_cast<QSocketNotifier*>(sender());
-    socket->setEnabled(false);
-    char tmp;
-    ::read(sigintFd[1], &tmp, sizeof(tmp));
-
     // do Qt stuff
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
-//    qApp->quit();
-
-    socket->setEnabled(true);
+//    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
+    m_terminating = true;
+    if (m_child) {
+        qApp->quit();
+    } else {
+        std::cout << "SIGINT/SIGQUIT received, killing workers..." << std::endl;
+        QTimer::singleShot(10 * 1000, [this]() {
+            std::cout << "workers killing timeout, KILL ..." << std::endl;
+            killChild();
+            QTimer::singleShot(10 * 1000, qApp, &QCoreApplication::quit);
+        });
+//        terminateChild();
+    }
 }
 
 void UnixFork::handleSigChld()
 {
-    auto socket = qobject_cast<QSocketNotifier*>(sender());
-    socket->setEnabled(false);
-    char tmp;
-    ::read(sigChldFd[1], &tmp, sizeof(tmp));
-
-    // do Qt stuff
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
     pid_t p;
     int status;
 
     while ((p = waitpid(-1, &status, WNOHANG)) > 0)
     {
         /* Handle the death of pid p */
-        qDebug() << Q_FUNC_INFO << "died" << p << status;
-        if (m_childs.removeOne(p)) {
+        qDebug() << Q_FUNC_INFO << "worker died" << p << status;
+        // SIGTERM is used when CHEAPED (ie post fork failed)
+        if (m_childs.removeOne(p) && !m_terminating && status != SIGTERM) {
             createChild();
+        } else if (!m_child && m_childs.isEmpty()) {
+            qApp->quit();
         }
     }
-
-    socket->setEnabled(true);
 }
 
 int UnixFork::setupUnixSignalHandlers()
 {
-    QSocketNotifier *socket;
-
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sighupFd)) {
-        qFatal("Couldn't create HUP socketpair");
-    }
-    socket = new QSocketNotifier(sighupFd[1], QSocketNotifier::Read, this);
-    connect(socket, &QSocketNotifier::activated, this, &UnixFork::handleSigHup);
-
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigtermFd)) {
-        qFatal("Couldn't create TERM socketpair");
-    }
-    socket = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
-    connect(socket, &QSocketNotifier::activated, this, &UnixFork::handleSigTerm);
-
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigkillFd)) {
-        qFatal("Couldn't create KILL socketpair");
-    }
-    socket = new QSocketNotifier(sigkillFd[1], QSocketNotifier::Read, this);
-    connect(socket, &QSocketNotifier::activated, this, &UnixFork::handleSigKill);
-
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigintFd)) {
-        qFatal("Couldn't create INT socketpair");
-    }
-    socket = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
-    connect(socket, &QSocketNotifier::activated, this, &UnixFork::handleSigInt);
-
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, sigChldFd)) {
-        qFatal("Couldn't create CHLD socketpair");
-    }
-    socket = new QSocketNotifier(sigChldFd[1], QSocketNotifier::Read, this);
-    connect(socket, &QSocketNotifier::activated, this, &UnixFork::handleSigChld);
+    setupSocketPair(false);
 
 //    struct sigaction hup;
-//    hup.sa_handler = UnixFork::hupSignalHandler;
+//    hup.sa_handler = UnixFork::signalHandler;
 //    sigemptyset(&hup.sa_mask);
 //    hup.sa_flags = 0;
 //    hup.sa_flags |= SA_RESTART;
@@ -313,38 +228,78 @@ int UnixFork::setupUnixSignalHandlers()
 //        return 1;
 
 //    struct sigaction term;
-//    term.sa_handler = UnixFork::termSignalHandler;
+//    term.sa_handler = UnixFork::signalHandler;
 //    sigemptyset(&term.sa_mask);
 //    term.sa_flags |= SA_RESTART;
 
 //    if (sigaction(SIGTERM, &term, 0) > 0)
 //        return 2;
 
-    struct sigaction kill;
-    kill.sa_handler = UnixFork::killSignalHandler;
-    sigemptyset(&kill.sa_mask);
-    kill.sa_flags |= SA_RESTART;
+//    struct sigaction kill;
+//    kill.sa_handler = UnixFork::signalHandler;
+//    sigemptyset(&kill.sa_mask);
+//    kill.sa_flags |= SA_RESTART;
 
-    if (sigaction(SIGKILL, &kill, 0) > 0)
-        return 3;
+//    if (sigaction(SIGKILL, &kill, 0) > 0)
+//        return 3;
 
-//    struct sigaction inta;
-//    inta.sa_handler = UnixFork::intSignalHandler;
-//    sigemptyset(&inta.sa_mask);
-//    inta.sa_flags |= SA_RESTART;
+    struct sigaction action;
 
-//    if (sigaction(SIGINT, &inta, 0) > 0)
-//        return 4;
+    action.sa_handler = UnixFork::signalHandler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags |= SA_RESTART;
+    if (sigaction(SIGINT, &action, 0) > 0)
+        return SIGINT;
 
-    struct sigaction chld;
-    chld.sa_handler = UnixFork::chldSignalHandler;
-    sigemptyset(&chld.sa_mask);
-    chld.sa_flags |= SA_RESTART;
+    action.sa_handler = UnixFork::signalHandler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags |= SA_RESTART;
+    if (sigaction(SIGQUIT, &action, 0) > 0)
+        return SIGQUIT;
 
-    if (sigaction(SIGCHLD, &chld, 0) > 0)
-        return 5;
+//    struct sigaction chld;
+    action.sa_handler = UnixFork::signalHandler;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGCHLD, &action, 0) > 0)
+        return SIGCHLD;
 
     return 0;
+}
+
+void UnixFork::setupSocketPair(bool closeSignalsFD)
+{
+    if (closeSignalsFD) {
+        close(signalsFd[0]);
+        close(signalsFd[1]);
+    }
+
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, signalsFd)) {
+        qFatal("Couldn't create SIGNALS socketpair");
+    }
+    delete m_signalNotifier;
+    m_signalNotifier = new QSocketNotifier(signalsFd[1], QSocketNotifier::Read, this);
+    connect(m_signalNotifier, &QSocketNotifier::activated, this, [this](int fd) {
+        int signal;
+        ::read(fd, &signal, sizeof(signal));
+
+//        qDebug() << "Got signal:" << signal << "pid:" << QCoreApplication::applicationPid();
+        switch (signal) {
+        case SIGCHLD:
+            handleSigChld();
+            break;
+        case SIGINT:
+        case SIGQUIT:
+            handleSigInt();
+            break;
+        default:
+            break;
+        }
+
+        // do Qt stuff
+    //    m_proc->kill();
+    });
 }
 
 bool UnixFork::createChild()
@@ -357,9 +312,11 @@ bool UnixFork::createChild()
 
     if(childPID >= 0) {
         if(childPID == 0) {
+            qDebug() << "spawned uWSGI worker 2 (pid: 31576, cores: 1)";
+            setupSocketPair(true);
+
             m_child = true;
             Q_EMIT forked();
-            deleteLater();
         } else {
             m_childs.push_back(childPID);
             return true;
