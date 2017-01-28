@@ -386,7 +386,7 @@ QString WSGI::socketAccess() const
 void WSGI::setChdir2(const QString &chdir2)
 {
     Q_D(WSGI);
-    d->chdir = chdir2;
+    d->chdir2 = chdir2;
 }
 
 QString WSGI::chdir2() const
@@ -786,7 +786,7 @@ void WSGIPrivate::parseCommandLine()
     }
 
     if (parser.isSet(chdir2)) {
-        q->setChdir(parser.value(chdir2));
+        q->setChdir2(parser.value(chdir2));
     }
 
     if (parser.isSet(threads)) {
