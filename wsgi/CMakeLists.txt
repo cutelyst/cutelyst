@@ -1,3 +1,9 @@
+option(USE_JEMALLOC "Use jemalloc memory allocator" OFF)
+
+if (USE_JEMALLOC)
+    find_package(JeMalloc REQUIRED)
+endif()
+
 set(httpEngine_SRC
     wsgi.cpp
     wsgi_p.h
@@ -67,6 +73,7 @@ target_compile_features(cutelyst-wsgi
 target_link_libraries(cutelyst-wsgi
     cutelyst-qt5
     cutelyst_wsgi_qt5
+    ${JEMALLOC_LIBRARIES}
 #    eventdispatcher_epoll
 )
 
