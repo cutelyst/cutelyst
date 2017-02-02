@@ -92,14 +92,14 @@ void TcpServer::shutdown()
             ++m_processing;
             connect(socket, &TcpSocket::finished, [this] () {
                 if (--m_processing == 0) {
-                    Q_EMIT stopped();
+                    Q_EMIT shutdownCompleted();
                 }
             });
         }
     }
 
     if (m_processing == 0) {
-        Q_EMIT stopped();
+        Q_EMIT shutdownCompleted();
     }
 }
 

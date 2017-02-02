@@ -90,7 +90,7 @@ void CWsgiEngine::listen()
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
                 connect(this, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
-                connect(server, &TcpServer::stopped, this, &CWsgiEngine::serverShutdown);
+                connect(server, &TcpServer::shutdownCompleted, this, &CWsgiEngine::serverShutdown);
             }
         } else {
             auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
@@ -98,7 +98,7 @@ void CWsgiEngine::listen()
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
                 connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
-                connect(server, &LocalServer::stopped, this, &CWsgiEngine::serverShutdown);
+                connect(server, &LocalServer::shutdownCompleted, this, &CWsgiEngine::serverShutdown);
             }
         }
         ++m_servers;
@@ -152,7 +152,7 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 void CWsgiEngine::serverShutdown()
 {
     if (--m_servers == 0) {
-        Q_EMIT finished(this);
+        Q_EMIT shutdownCompleted(this);
     }
 }
 

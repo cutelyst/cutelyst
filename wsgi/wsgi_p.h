@@ -51,7 +51,7 @@ public:
     bool listenLocal(const QString &line, Protocol *protocol);
     bool proc();
     void parseCommandLine();
-    int setupApplication(Cutelyst::Application *app);
+    int setupApplication();
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void restart(const QString &path);
     void restartTerminate();
@@ -68,6 +68,7 @@ public:
     WSGI *q_ptr;
     std::vector<SocketInfo> sockets;
     std::vector<Cutelyst::Engine *> engines;
+    Cutelyst::Application *app = nullptr;
     CWsgiEngine *engine;
 
     QStringList httpSockets;
@@ -102,6 +103,9 @@ public:
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
     int autoReloadCount = 0;
+#ifdef Q_OS_UNIX
+    bool lazy = false;
+#endif
     bool master = false;
     bool autoReload = false;
     bool tcpNodelay = false;

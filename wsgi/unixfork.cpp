@@ -45,7 +45,9 @@ Q_DECLARE_LOGGING_CATEGORY(CUTELYST_WSGI)
 
 static int signalsFd[2];
 
-UnixFork::UnixFork(QObject *parent) : QObject(parent)
+UnixFork::UnixFork(int process, int threads, QObject *parent) : QObject(parent)
+  , m_threads(threads)
+  , m_processes(process)
 {
     setupUnixSignalHandlers();
 }
@@ -57,10 +59,9 @@ UnixFork::~UnixFork()
     }
 }
 
-void UnixFork::createProcess(int process, int threads)
+void UnixFork::createProcess()
 {
-    m_threads = threads + 1;
-    for (int i = 0; i < process; ++i) {
+    for (int i = 0; i < m_processes; ++i) {
         if (!createChild(i + 1, false)) {
             return;
         }

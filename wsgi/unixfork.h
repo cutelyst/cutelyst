@@ -27,10 +27,10 @@ class UnixFork : public QObject
 {
     Q_OBJECT
 public:
-    explicit UnixFork(QObject *parent = 0);
+    explicit UnixFork(int process, int threads, QObject *parent = 0);
     ~UnixFork();
 
-    void createProcess(int process, int threads);
+    void createProcess();
 
     void killChild();
     void terminateChild();
@@ -56,7 +56,8 @@ private:
 
     QHash<qint64, int> m_childs;
     QSocketNotifier *m_signalNotifier = nullptr;
-    int m_threads = 0;
+    int m_threads;
+    int m_processes;
     bool m_child = false;
     bool m_terminating = false;
 };

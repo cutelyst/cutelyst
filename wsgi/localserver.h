@@ -44,7 +44,7 @@ public:
     virtual void incomingConnection(quintptr handle) override;
 
 Q_SIGNALS:
-    void stopped();
+    void shutdownCompleted();
 
 private:
     QString m_serverAddress;

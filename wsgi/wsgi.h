@@ -152,6 +152,10 @@ public:
     Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket)
     void setChownSocket(const QString &chownSocket);
     QString chownSocket() const;
+
+    Q_PROPERTY(bool lazy READ lazy WRITE setLazy)
+    void setLazy(bool enable);
+    bool lazy() const;
 #endif
 
 Q_SIGNALS:

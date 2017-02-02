@@ -81,14 +81,14 @@ void LocalServer::shutdown()
             ++m_processing;
             connect(socket, &LocalSocket::finished, [this] () {
                 if (--m_processing == 0) {
-                    Q_EMIT stopped();
+                    Q_EMIT shutdownCompleted();
                 }
             });
         }
     }
 
     if (m_processing == 0) {
-        Q_EMIT stopped();
+        Q_EMIT shutdownCompleted();
     }
 }
 

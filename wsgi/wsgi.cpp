@@ -87,14 +87,6 @@ int WSGI::load(Cutelyst::Application *app)
 
     d->parseCommandLine();
 
-#ifdef Q_OS_UNIX
-    d->unixFork = new UnixFork(this);
-    connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::forked);
-    connect(d->unixFork, &UnixFork::shutdown, d, &WSGIPrivate::shutdown);
-    connect(d, &WSGIPrivate::killChildProcess, d->unixFork, &UnixFork::killChild);
-    connect(d, &WSGIPrivate::terminateChildProcess, d->unixFork, &UnixFork::terminateChild);
-#endif
-
     if (!d->ini.isEmpty()) {
         std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;
         if (!d->loadConfig()) {
@@ -114,22 +106,86 @@ int WSGI::load(Cutelyst::Application *app)
         }
     }
 
-    int ret = d->setupApplication(app);
+#ifdef Q_OS_UNIX
+    d->unixFork = new UnixFork(d->process, qMax(d->threads, 1), this);
+    connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::forked);
+    connect(d->unixFork, &UnixFork::shutdown, d, &WSGIPrivate::shutdown);
+    connect(d, &WSGIPrivate::killChildProcess, d->unixFork, &UnixFork::killChild);
+    connect(d, &WSGIPrivate::terminateChildProcess, d->unixFork, &UnixFork::terminateChild);
+#endif
+
+#ifdef Q_OS_LINUX
+    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
+        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
+        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
+        auto notify = new systemdNotify(notifySocket.constData(), this);
+        connect(this, &WSGI::ready, notify, &systemdNotify::ready);
+    }
+#endif
+
+    if (!d->chdir.isEmpty()) {
+        std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << std::endl;;
+        if (!QDir::setCurrent(d->chdir)) {
+            qFatal("Failed to chdir to: '%s'", d->chdir.toLatin1().constData());
+        }
+    }
+
+    // TCP needs root privileges
+    d->listenTcpSockets();
 
 #ifdef Q_OS_UNIX
-    if (ret == 0 && d->process) {
-        // Forking with an event loop running leads to
-        // non working event loops on child process
-        // so this is a temporary loop until all engines
-        // are initted
-        QCoreApplication::exec();
-
-        if (d->enginesInitted != 0) {
-            return 1;
-        }
-
-        d->unixFork->createProcess(d->process, d->threads);
+    if (!d->chownSocket.isEmpty()) {
+        d->listenLocalSockets();
     }
+
+    if (!d->gid.isEmpty()) {
+        UnixFork::setGid(d->gid);
+    }
+
+    if (!d->uid.isEmpty()) {
+        UnixFork::setUid(d->uid);
+    }
+
+    if (d->chownSocket.isEmpty()) {
+        // LOCAL shoud use new user privileges if chown is not set
+        d->listenLocalSockets();
+    }
+#else
+    d->listenLocalSockets();
+#endif
+
+    if (!d->sockets.size()) {
+        std::cout << "Please specify a socket to listen to" << std::endl;
+        return 1;
+    }
+
+    d->app = app;
+
+    int ret;
+
+#ifdef Q_OS_UNIX
+    if (d->lazy) {
+        connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::setupApplication);
+        d->unixFork->createProcess();
+    } else {
+        ret = d->setupApplication();
+
+        if (ret == 0 && d->process) {
+            // Forking with an event loop running leads to
+            // non working event loops on child process
+            // so this is a temporary loop until all engines
+            // are initted
+            QCoreApplication::exec();
+
+            if (d->enginesInitted != 0) {
+                return 1;
+            }
+
+            d->unixFork->createProcess();
+        }
+    }
+#else
+    ret = d->setupApplication();
 #endif
 
     return ret;
@@ -618,6 +674,18 @@ QString WSGI::chownSocket() const
     Q_D(const WSGI);
     return d->chownSocket;
 }
+
+void WSGI::setLazy(bool enable)
+{
+    Q_D(WSGI);
+    d->lazy = enable;
+}
+
+bool WSGI::lazy() const
+{
+    Q_D(const WSGI);
+    return d->lazy;
+}
 #endif
 
 bool WSGIPrivate::proc()
@@ -683,6 +751,12 @@ void WSGIPrivate::parseCommandLine()
                                      QCoreApplication::translate("main", "chdir to specified directory afterapps loading"),
                                      QCoreApplication::translate("main", "directory"));
     parser.addOption(chdir2);
+
+#ifdef Q_OS_UNIX
+    auto lazyOption = QCommandLineOption(QStringLiteral("lazy"),
+                                         QCoreApplication::translate("main", "set lazy mode (load app in workers instead of master)"));
+    parser.addOption(lazyOption);
+#endif
 
     auto application = QCommandLineOption({ QStringLiteral("application"), QStringLiteral("a") },
                                           QCoreApplication::translate("main", "Application to load"),
@@ -817,6 +891,10 @@ void WSGIPrivate::parseCommandLine()
         q->setProcess(parser.value(process));
     }
 
+    if (parser.isSet(lazyOption)) {
+        q->setLazy(true);
+    }
+
     if (parser.isSet(uidOption)) {
         q->setUid(parser.value(uidOption));
     }
@@ -923,57 +1001,8 @@ void WSGIPrivate::parseCommandLine()
     }
 }
 
-int WSGIPrivate::setupApplication(Cutelyst::Application *app)
+int WSGIPrivate::setupApplication()
 {
-#ifdef Q_OS_LINUX
-    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
-        Q_Q(WSGI);
-
-        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
-        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
-        auto notify = new systemdNotify(notifySocket.constData(), this);
-        connect(q, &WSGI::ready, notify, &systemdNotify::ready);
-    }
-#endif
-
-    if (!chdir.isEmpty()) {
-        std::cout << "Changing directory to: " << chdir.toLatin1().constData() << std::endl;;
-        if (!QDir::setCurrent(chdir)) {
-            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir;
-            return 1;
-        }
-    }
-
-    // TCP needs root privileges
-    listenTcpSockets();
-
-#ifdef Q_OS_UNIX
-    if (!chownSocket.isEmpty()) {
-        listenLocalSockets();
-    }
-
-    if (!gid.isEmpty()) {
-        UnixFork::setGid(gid);
-    }
-
-    if (!uid.isEmpty()) {
-        UnixFork::setUid(uid);
-    }
-
-    if (chownSocket.isEmpty()) {
-        // LOCAL shoud use new user privileges if chown is not set
-        listenLocalSockets();
-    }
-#else
-    listenLocalSockets();
-#endif
-
-    if (!sockets.size()) {
-        qDebug() << httpSockets << fastcgiSockets << QCoreApplication::applicationPid();
-        std::cout << "Please specify a socket to listen to" << std::endl;
-        return 1;
-    }
-
     Cutelyst::Application *localApp = app;
     if (!localApp) {
         std::cout << "Loading application: " << application.toLatin1().constData() << std::endl;;
@@ -1020,8 +1049,7 @@ int WSGIPrivate::setupApplication(Cutelyst::Application *app)
     if (!chdir2.isEmpty()) {
         std::cout << "Changing directory2 to" << chdir2.toLatin1().constData()  << std::endl;;
         if (!QDir::setCurrent(chdir2)) {
-            qCCritical(CUTELYST_WSGI) << "Failed to chdir to" << chdir2;
-            return 1;
+            qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
         }
     }
 
@@ -1067,7 +1095,7 @@ void WSGIPrivate::engineInitted()
     // All engines are initted
     if (--enginesInitted == 0) {
 #ifdef Q_OS_UNIX
-        if (process) {
+        if (process && !lazy) {
             QCoreApplication::exit();
         } else {
             Q_EMIT forked();
@@ -1109,7 +1137,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
     auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
     connect(engine, &CWsgiEngine::initted, this, &WSGIPrivate::engineInitted, Qt::QueuedConnection);
-    connect(engine, &CWsgiEngine::finished, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);

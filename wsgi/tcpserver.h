@@ -38,7 +38,7 @@ public:
     void shutdown();
 
 Q_SIGNALS:
-    void stopped();
+    void shutdownCompleted();
 
 private:
     QString m_serverAddress;

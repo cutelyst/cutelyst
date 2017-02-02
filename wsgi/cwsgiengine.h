@@ -66,7 +66,7 @@ Q_SIGNALS:
     void initted();
     void started();
     void shutdown();
-    void finished(CWsgiEngine *engine);
+    void shutdownCompleted(CWsgiEngine *engine);
 
 protected:
     virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);
