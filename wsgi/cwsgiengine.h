@@ -65,6 +65,8 @@ public:
 Q_SIGNALS:
     void initted();
     void started();
+    void shutdown();
+    void finished(CWsgiEngine *engine);
 
 protected:
     virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);
@@ -72,6 +74,8 @@ protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
 
 private:
+    void serverShutdown();
+
     friend class ProtocolHttp;
     friend class ProtocolFastCGI;
 
@@ -79,6 +83,7 @@ private:
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     WSGI *m_wsgi;
+    int m_servers = 0;
 };
 
 }

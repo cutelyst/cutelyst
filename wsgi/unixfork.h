@@ -20,9 +20,9 @@
 #define UNIXFORK_H
 
 #include <QObject>
-#include <QVector>
+#include <QHash>
 
-class QSocketNotifier;
+class QLocalSocket;
 class UnixFork : public QObject
 {
     Q_OBJECT
@@ -44,18 +44,18 @@ public:
     void handleSigInt();
     void handleSigChld();
 
-
 Q_SIGNALS:
     void forked();
+    void shutdown();
 
 private:
     int setupUnixSignalHandlers();
     void setupSocketPair(bool closeSignalsFD);
-    bool createChild();
+    bool createChild(int worker, bool respawn);
     static void signalHandler(int signal);
 
-    QVector<qint64> m_childs;
-    QSocketNotifier *m_signalNotifier = nullptr;
+    QHash<qint64, int> m_childs;
+    QLocalSocket *m_signalNotifier = nullptr;
     int m_threads = 0;
     bool m_child = false;
     bool m_terminating = false;

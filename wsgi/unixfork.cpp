@@ -34,7 +34,7 @@
 #include <iostream>
 
 #include <QCoreApplication>
-#include <QSocketNotifier>
+#include <QLocalSocket>
 #include <QTimer>
 #include <QLoggingCategory>
 
@@ -52,14 +52,16 @@ UnixFork::UnixFork(QObject *parent) : QObject(parent)
 
 UnixFork::~UnixFork()
 {
-
+    if (m_child) {
+        _exit(0);
+    }
 }
 
 void UnixFork::createProcess(int process, int threads)
 {
-    m_threads = threads;
+    m_threads = threads + 1;
     for (int i = 0; i < process; ++i) {
-        if (!createChild()) {
+        if (!createChild(i + 1, false)) {
             return;
         }
     }
@@ -70,6 +72,7 @@ void UnixFork::killChild()
     const auto childs = m_childs;
     for (qint64 pid : childs) {
         if (pid) {
+//            qDebug() << "SIGKILL " << pid;
             ::kill(pid_t(pid), SIGKILL);
         }
     }
@@ -80,6 +83,7 @@ void UnixFork::terminateChild()
     const auto childs = m_childs;
     for (qint64 pid : childs) {
         if (pid) {
+//            qDebug() << "SIGQUIT " << pid;
             ::kill(pid_t(pid), SIGQUIT);
         }
     }
@@ -87,8 +91,9 @@ void UnixFork::terminateChild()
 
 void UnixFork::signalHandler(int signal)
 {
-//    qDebug() << Q_FUNC_INFO << signal;
-    ::write(signalsFd[0], &signal, sizeof(signal));
+//    qDebug() << Q_FUNC_INFO << signal << QCoreApplication::applicationPid();
+    char sig = signal;
+    write(signalsFd[0], &sig, sizeof(sig));
 }
 
 void UnixFork::setGid(const QString &gid)
@@ -184,16 +189,21 @@ void UnixFork::handleSigInt()
     // do Qt stuff
 //    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
     m_terminating = true;
-    if (m_child) {
-        qApp->quit();
+    if (m_child || (m_childs.isEmpty())) {
+        Q_EMIT shutdown();
     } else {
         std::cout << "SIGINT/SIGQUIT received, killing workers..." << std::endl;
-        QTimer::singleShot(10 * 1000, [this]() {
-            std::cout << "workers killing timeout, KILL ..." << std::endl;
+        auto checkChild = new QTimer(this);
+        checkChild->start(500);
+        connect(checkChild, &QTimer::timeout, this, &UnixFork::handleSigChld);
+
+        QTimer::singleShot(30 * 1000, [this]() {
+            std::cout << "workers terminating timeout, KILL ..." << std::endl;
             killChild();
-            QTimer::singleShot(10 * 1000, qApp, &QCoreApplication::quit);
+            QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);
         });
-//        terminateChild();
+
+        terminateChild();
     }
 }
 
@@ -205,10 +215,18 @@ void UnixFork::handleSigChld()
     while ((p = waitpid(-1, &status, WNOHANG)) > 0)
     {
         /* Handle the death of pid p */
-        qCDebug(CUTELYST_WSGI) << "SIGNCHLD worker died" << p << status;
+//        qCDebug(CUTELYST_WSGI) << "SIGCHLD worker died" << p << status;
         // SIGTERM is used when CHEAPED (ie post fork failed)
-        if (m_childs.removeOne(p) && !m_terminating && status != SIGTERM) {
-            createChild();
+        int worker = 0;
+        auto it = m_childs.find(p);
+        if (it != m_childs.end()) {
+            worker = it.value();
+            m_childs.erase(it);
+        }
+
+        if (worker && !m_terminating && status != SIGTERM) {
+            std::cout << "DAMN ! worker " << worker << " (pid: " << p << ") died, killed by signal " << status << " :( trying respawn .." << std::endl;
+            createChild(worker, true);
         } else if (!m_child && m_childs.isEmpty()) {
             qApp->quit();
         }
@@ -236,15 +254,9 @@ int UnixFork::setupUnixSignalHandlers()
 //    if (sigaction(SIGTERM, &term, 0) > 0)
 //        return 2;
 
-//    struct sigaction kill;
-//    kill.sa_handler = UnixFork::signalHandler;
-//    sigemptyset(&kill.sa_mask);
-//    kill.sa_flags |= SA_RESTART;
-
-//    if (sigaction(SIGKILL, &kill, 0) > 0)
-//        return 3;
-
     struct sigaction action;
+
+//    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
@@ -258,7 +270,6 @@ int UnixFork::setupUnixSignalHandlers()
     if (sigaction(SIGQUIT, &action, 0) > 0)
         return SIGQUIT;
 
-//    struct sigaction chld;
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
@@ -280,30 +291,32 @@ void UnixFork::setupSocketPair(bool closeSignalsFD)
         qFatal("Couldn't create SIGNALS socketpair");
     }
     delete m_signalNotifier;
-    m_signalNotifier = new QSocketNotifier(signalsFd[1], QSocketNotifier::Read, this);
-    connect(m_signalNotifier, &QSocketNotifier::activated, this, [this](int fd) {
-        int signal;
-        ::read(fd, &signal, sizeof(signal));
 
-//        qDebug() << "Got signal:" << signal << "pid:" << QCoreApplication::applicationPid();
-        switch (signal) {
-        case SIGCHLD:
-            handleSigChld();
-            break;
-        case SIGINT:
-        case SIGQUIT:
-            handleSigInt();
-            break;
-        default:
-            break;
+    m_signalNotifier = new QLocalSocket(this);
+    m_signalNotifier->setSocketDescriptor(signalsFd[1], QLocalSocket::ConnectedState, QLocalSocket::ReadOnly);
+    connect(m_signalNotifier, &QLocalSocket::readyRead, this, [this]() {
+        int bytesAvailable = m_signalNotifier->bytesAvailable();
+        while (bytesAvailable--) {
+            char signal;
+            m_signalNotifier->read(&signal, sizeof(char));
+
+//            qCDebug(CUTELYST_WSGI) << "Got signal:" << static_cast<int>(signal) << "pid:" << QCoreApplication::applicationPid() << bytesAvailable;
+            switch (signal) {
+            case SIGCHLD:
+                QTimer::singleShot(0, this, &UnixFork::handleSigChld);
+                break;
+            case SIGINT:
+            case SIGQUIT:
+                handleSigInt();
+                break;
+            default:
+                break;
+            }
         }
-
-        // do Qt stuff
-    //    m_proc->kill();
     });
 }
 
-bool UnixFork::createChild()
+bool UnixFork::createChild(int worker, bool respawn)
 {
     if (m_child) {
         return false;
@@ -318,8 +331,12 @@ bool UnixFork::createChild()
             m_child = true;
             Q_EMIT forked();
         } else {
-            qCDebug(CUTELYST_WSGI) << "spawned WSGI worker" << 2 << "(pid:" << childPID << ", cores:" << m_threads << ")";
-            m_childs.push_back(childPID);
+            if (respawn) {
+                std::cout << "Respawned WSGI worker " << worker << " (new pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
+            } else {
+                std::cout << "spawned WSGI worker " << worker << " (pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
+            }
+            m_childs.insert(childPID, worker);
             return true;
         }
     } else {

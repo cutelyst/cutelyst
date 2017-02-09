@@ -69,6 +69,29 @@ void LocalServer::resumeAccepting()
     m_notifier->setEnabled(true);
 }
 
+void LocalServer::shutdown()
+{
+    pauseAccepting();
+
+    m_processing = 0;
+    const auto childrenL = children();
+    for (auto child : childrenL) {
+        auto socket = qobject_cast<LocalSocket*>(child);
+        if (socket && socket->processing) {
+            ++m_processing;
+            connect(socket, &LocalSocket::finished, [this] () {
+                if (--m_processing == 0) {
+                    Q_EMIT stopped();
+                }
+            });
+        }
+    }
+
+    if (m_processing == 0) {
+        Q_EMIT stopped();
+    }
+}
+
 void LocalServer::incomingConnection(quintptr handle)
 {
     LocalSocket *sock;

@@ -80,4 +80,27 @@ void TcpServer::incomingConnection(qintptr handle)
     }
 }
 
+void TcpServer::shutdown()
+{
+    pauseAccepting();
+
+    m_processing = 0;
+    const auto childrenL = children();
+    for (auto child : childrenL) {
+        auto socket = qobject_cast<TcpSocket*>(child);
+        if (socket && socket->processing) {
+            ++m_processing;
+            connect(socket, &TcpSocket::finished, [this] () {
+                if (--m_processing == 0) {
+                    Q_EMIT stopped();
+                }
+            });
+        }
+    }
+
+    if (m_processing == 0) {
+        Q_EMIT stopped();
+    }
+}
+
 #include "moc_tcpserver.cpp"

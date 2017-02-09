@@ -31,6 +31,10 @@ class QTcpServer;
 class QSettings;
 class QTimer;
 
+#ifdef Q_OS_UNIX
+class UnixFork;
+#endif
+
 namespace CWSGI {
 
 class CWsgiEngine;
@@ -52,6 +56,7 @@ public:
     void restart(const QString &path);
     void restartTerminate();
     void engineInitted();
+    void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
@@ -86,6 +91,9 @@ public:
     QTimer *materChildRestartTimer = nullptr;
     Protocol *protoHTTP = nullptr;
     Protocol *protoFCGI = nullptr;
+#ifdef Q_OS_UNIX
+    UnixFork *unixFork = nullptr;
+#endif
     int bufferSize = 4096;
     int enginesInitted = 1;
     int workersNotRunning = 1;
@@ -103,6 +111,7 @@ Q_SIGNALS:
     void forked();
     void killChildProcess();
     void terminateChildProcess();
+    void shutdown();
 };
 
 }

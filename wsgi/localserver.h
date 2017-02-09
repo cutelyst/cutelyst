@@ -39,8 +39,14 @@ public:
     void pauseAccepting();
     void resumeAccepting();
 
+    void shutdown();
+
     virtual void incomingConnection(quintptr handle) override;
 
+Q_SIGNALS:
+    void stopped();
+
+private:
     QString m_serverAddress;
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
@@ -48,6 +54,7 @@ public:
 
     std::vector<LocalSocket *> m_socks;
     Protocol *m_protocol;
+    int m_processing = 0;
 };
 
 }

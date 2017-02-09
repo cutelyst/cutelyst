@@ -92,8 +92,7 @@ void uwsgi_cutelyst_on_load()
     }
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qputenv("QT_MESSAGE_PATTERN",
-                "%{category}[%{if-debug}debug%{endif}%{if-info}info%{endif}%{if-warning}warn%{endif}%{if-critical}crit%{endif}%{if-fatal}fatal%{endif}] %{message}");
+        qSetMessagePattern(QStringLiteral("%{category}[%{type}] %{message}"));
     }
 }
 
