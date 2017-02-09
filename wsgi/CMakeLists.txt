@@ -77,9 +77,7 @@ target_link_libraries(cutelyst-wsgi
 )
 
 if (JEMALLOC_FOUND)
-    target_link_libraries(cutelyst-wsgi
-        ${JEMALLOC_LIBRARIES}
-    )
+    target_link_libraries(cutelyst-wsgi ${JEMALLOC_LIBRARIES})
 endif()
 
 install(TARGETS cutelyst-wsgi DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

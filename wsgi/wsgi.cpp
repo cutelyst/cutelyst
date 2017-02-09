@@ -50,7 +50,7 @@
 
 #include <iostream>
 
-Q_LOGGING_CATEGORY(CUTELYST_WSGI, "cwsgi")
+Q_LOGGING_CATEGORY(CUTELYST_WSGI, "wsgi")
 
 using namespace CWSGI;
 
@@ -1065,7 +1065,7 @@ void WSGIPrivate::engineInitted()
             connect(uFork, &UnixFork::forked, this, &WSGIPrivate::forked);
             connect(this, &WSGIPrivate::killChildProcess, uFork, &UnixFork::killChild);
             connect(this, &WSGIPrivate::terminateChildProcess, uFork, &UnixFork::terminateChild);
-            uFork->createProcess(process);
+            uFork->createProcess(process, threads);
         } else {
             Q_EMIT forked();
         }

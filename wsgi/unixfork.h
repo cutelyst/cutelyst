@@ -30,7 +30,7 @@ public:
     explicit UnixFork(QObject *parent = 0);
     ~UnixFork();
 
-    void createProcess(int process);
+    void createProcess(int process, int threads);
 
     void killChild();
     void terminateChild();
@@ -56,6 +56,7 @@ private:
 
     QVector<qint64> m_childs;
     QSocketNotifier *m_signalNotifier = nullptr;
+    int m_threads = 0;
     bool m_child = false;
     bool m_terminating = false;
 };

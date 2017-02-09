@@ -36,7 +36,9 @@
 #include <QCoreApplication>
 #include <QSocketNotifier>
 #include <QTimer>
-#include <QDebug>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(CUTELYST_WSGI)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
@@ -53,15 +55,14 @@ UnixFork::~UnixFork()
 
 }
 
-void UnixFork::createProcess(int process)
+void UnixFork::createProcess(int process, int threads)
 {
+    m_threads = threads;
     for (int i = 0; i < process; ++i) {
         if (!createChild()) {
             return;
         }
     }
-
-    qDebug() << "Created workers" << process;
 }
 
 void UnixFork::killChild()
@@ -166,7 +167,7 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
 void UnixFork::handleSigHup()
 {
     // do Qt stuff
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
+//    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 //    m_proc->kill();
 }
 
@@ -204,7 +205,7 @@ void UnixFork::handleSigChld()
     while ((p = waitpid(-1, &status, WNOHANG)) > 0)
     {
         /* Handle the death of pid p */
-        qDebug() << Q_FUNC_INFO << "worker died" << p << status;
+        qCDebug(CUTELYST_WSGI) << "SIGNCHLD worker died" << p << status;
         // SIGTERM is used when CHEAPED (ie post fork failed)
         if (m_childs.removeOne(p) && !m_terminating && status != SIGTERM) {
             createChild();
@@ -312,12 +313,12 @@ bool UnixFork::createChild()
 
     if(childPID >= 0) {
         if(childPID == 0) {
-            qDebug() << "spawned uWSGI worker 2 (pid: 31576, cores: 1)";
             setupSocketPair(true);
 
             m_child = true;
             Q_EMIT forked();
         } else {
+            qCDebug(CUTELYST_WSGI) << "spawned WSGI worker" << 2 << "(pid:" << childPID << ", cores:" << m_threads << ")";
             m_childs.push_back(childPID);
             return true;
         }
