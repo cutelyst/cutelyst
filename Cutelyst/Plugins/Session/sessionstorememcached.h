@@ -29,7 +29,9 @@ class SessionStoreMemcachedPrivate;
 /*!
  * \brief Memcached session store.
  *
- * This session store saves session data to a \link http://memcached.org/ Memcached \endlink server using \link http://libmemcached.org/libMemcached.html libmemcached \endlink.
+ * This session store saves session data to a \link http://memcached.org/ Memcached \endlink server using \link http://libmemcached.org/libMemcached.html libMemcached \endlink.
+ *
+ * This is completely optional. To build it, you need \link https://www.freedesktop.org/wiki/Software/pkg-config/ pkg-config \endlink and \link http://libmemcached.org/libMemcached.html libMemcached \endlink in your build environment. If pkg-config and libMemcached can not be found, this session store will be silently disabled and not be build.
  *
  * \par Usage example with custom configuration
  *
