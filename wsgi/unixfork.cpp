@@ -330,6 +330,9 @@ bool UnixFork::createChild(int worker, bool respawn)
 
             m_child = true;
             Q_EMIT forked();
+
+            int ret = QCoreApplication::exec();
+            _exit(ret);
         } else {
             if (respawn) {
                 std::cout << "Respawned WSGI worker " << worker << " (new pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;

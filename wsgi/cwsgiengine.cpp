@@ -80,7 +80,6 @@ void CWsgiEngine::listen()
             qCritical() << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
             return;
         }
-
     }
 
     const auto sockets = m_sockets;

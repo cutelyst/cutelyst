@@ -115,7 +115,25 @@ int WSGI::load(Cutelyst::Application *app)
         }
     }
 
-    return d->setupApplication(app);
+    int ret = d->setupApplication(app);
+
+#ifdef Q_OS_UNIX
+    if (ret == 0 && d->process) {
+        // Forking with an event loop running leads to
+        // non working event loops on child process
+        // so this is a temporary loop until all engines
+        // are initted
+        QCoreApplication::exec();
+
+        if (!d->enginesInitted == 0) {
+            return 1;
+        }
+
+        d->unixFork->createProcess(d->process, d->threads);
+    }
+#endif
+
+    return ret;
 }
 
 void WSGIPrivate::listenTcpSockets()
@@ -1051,7 +1069,7 @@ void WSGIPrivate::engineInitted()
     if (--enginesInitted == 0) {
 #ifdef Q_OS_UNIX
         if (process) {
-           unixFork->createProcess(process, threads);
+            QCoreApplication::exit();
         } else {
             Q_EMIT forked();
         }
@@ -1108,7 +1126,6 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
         }
 #endif
         engine->moveToThread(thread);
-        engine->setParent(thread);
         connect(thread, &QThread::started, engine, &CWsgiEngine::listen, Qt::DirectConnection);
         thread->start();
     } else {
