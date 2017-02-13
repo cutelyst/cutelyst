@@ -88,11 +88,13 @@ int WSGI::load(Cutelyst::Application *app)
 
     d->parseCommandLine();
 
+#ifdef Q_OS_UNIX
     d->unixFork = new UnixFork(this);
     connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::forked);
     connect(d->unixFork, &UnixFork::shutdown, d, &WSGIPrivate::shutdown);
     connect(d, &WSGIPrivate::killChildProcess, d->unixFork, &UnixFork::killChild);
     connect(d, &WSGIPrivate::terminateChildProcess, d->unixFork, &UnixFork::terminateChild);
+#endif
 
     if (!d->ini.isEmpty()) {
         std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;
