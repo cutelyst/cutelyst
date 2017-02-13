@@ -34,7 +34,7 @@
 #include <iostream>
 
 #include <QCoreApplication>
-#include <QLocalSocket>
+#include <QSocketNotifier>
 #include <QTimer>
 #include <QLoggingCategory>
 
@@ -292,26 +292,22 @@ void UnixFork::setupSocketPair(bool closeSignalsFD)
     }
     delete m_signalNotifier;
 
-    m_signalNotifier = new QLocalSocket(this);
-    m_signalNotifier->setSocketDescriptor(signalsFd[1], QLocalSocket::ConnectedState, QLocalSocket::ReadOnly);
-    connect(m_signalNotifier, &QLocalSocket::readyRead, this, [this]() {
-        int bytesAvailable = m_signalNotifier->bytesAvailable();
-        while (bytesAvailable--) {
-            char signal;
-            m_signalNotifier->read(&signal, sizeof(char));
+    m_signalNotifier = new QSocketNotifier(signalsFd[1], QSocketNotifier::Read, this);
+    connect(m_signalNotifier, &QSocketNotifier::activated, this, [this]() {
+        char signal;
+        read(signalsFd[1], &signal, sizeof(signal));
 
-//            qCDebug(CUTELYST_WSGI) << "Got signal:" << static_cast<int>(signal) << "pid:" << QCoreApplication::applicationPid() << bytesAvailable;
-            switch (signal) {
-            case SIGCHLD:
-                QTimer::singleShot(0, this, &UnixFork::handleSigChld);
-                break;
-            case SIGINT:
-            case SIGQUIT:
-                handleSigInt();
-                break;
-            default:
-                break;
-            }
+//        qCDebug(CUTELYST_WSGI) << "Got signal:" << static_cast<int>(signal) << "pid:" << QCoreApplication::applicationPid();
+        switch (signal) {
+        case SIGCHLD:
+            QTimer::singleShot(0, this, &UnixFork::handleSigChld);
+            break;
+        case SIGINT:
+        case SIGQUIT:
+            handleSigInt();
+            break;
+        default:
+            break;
         }
     });
 }

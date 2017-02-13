@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QHash>
 
-class QLocalSocket;
+class QSocketNotifier;
 class UnixFork : public QObject
 {
     Q_OBJECT
@@ -55,7 +55,7 @@ private:
     static void signalHandler(int signal);
 
     QHash<qint64, int> m_childs;
-    QLocalSocket *m_signalNotifier = nullptr;
+    QSocketNotifier *m_signalNotifier = nullptr;
     int m_threads = 0;
     bool m_child = false;
     bool m_terminating = false;
