@@ -125,7 +125,7 @@ int WSGI::load(Cutelyst::Application *app)
         // are initted
         QCoreApplication::exec();
 
-        if (!d->enginesInitted == 0) {
+        if (d->enginesInitted != 0) {
             return 1;
         }
 
