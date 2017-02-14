@@ -178,13 +178,15 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
     }
 
     if (keylen > 5 && memcmp(key, "HTTP_", 5) == 0) {
-        const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
         const QString value = QString::fromLatin1(val, vallen);
-        if (!wsgi_req->headerHost && keyStr == QLatin1String("HOST")) {
+        if (!wsgi_req->headerHost && memcmp(key + 5, "HOST", 4) == 0) {
             wsgi_req->serverAddress = value;
             wsgi_req->headerHost = true;
+            wsgi_req->headers.pushRawHeader(QStringLiteral("HOST"), value);
+        } else {
+            const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
+            wsgi_req->headers.pushRawHeader(keyStr, value);
         }
-        wsgi_req->headers.pushRawHeader(keyStr, value);
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
     } else if (memcmp(key, "DOCUMENT_URI", 12) == 0) {

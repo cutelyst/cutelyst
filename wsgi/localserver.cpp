@@ -114,9 +114,6 @@ void LocalServer::incomingConnection(quintptr handle)
 
     if (sock->setSocketDescriptor(handle)) {
         sock->serverAddress = m_serverAddress;
-//        sock->remoteAddress = sock->peerAddress();
-//        sock->remotePort = sock->peerPort();
-
     } else {
         m_socks.push_back(sock);
     }

@@ -79,7 +79,6 @@ WSGI::~WSGI()
     delete d->protoFCGI;
 
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
-
 }
 
 int WSGI::load(Cutelyst::Application *app)
