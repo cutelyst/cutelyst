@@ -38,6 +38,7 @@ public:
     Grantlee::Engine *engine;
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
     QSharedPointer<Grantlee::CachingLoaderDecorator> cache;
+    QHash<QString, QTranslator*> translators;
 };
 
 }

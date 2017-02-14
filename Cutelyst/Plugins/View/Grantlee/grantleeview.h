@@ -25,6 +25,8 @@
 
 #include <Cutelyst/View>
 
+class QTranslator;
+
 namespace Grantlee {
 class Engine;
 }
@@ -65,6 +67,35 @@ public:
     void preloadTemplates();
 
     QByteArray render(Context *c) const final;
+
+    /*!
+     * \brief Adds a \a translator for the specified \a locale to the list of translators.
+     *
+     * The \a locale string should be parseable by QLocale.
+     *
+     * \par Example usage
+     * \code{.cpp}
+     * bool MyCutelystApp::init()
+     * {
+     *      // ...
+     *
+     *      auto view = new GrantleeView(this);
+     *
+     *      auto deDeTrans = new QTranslator(this);
+     *      if (deDeTrans->load(QStringLiteral("de_DE"), QStringLiteral("/path/to/my/translations")) {
+     *          view->addTranslator(QStringLiteral("de_DE"), deDeTrans);
+     *      }
+     *
+     *      auto ptBrTrans = new QTranslator(this);
+     *      if (ptBrTrans->load(QStringLiteral("pt_BR"), QStringLiteral("/path/to/my/translations")) {
+     *          view->addTranslator(QStringLiteral("pt_BR"), ptBrTrans);
+     *      }
+     *
+     *      // ...
+     * }
+     * \endcode
+     */
+    void addTranslator(const QString &locale, QTranslator *translator);
 
 protected:
     GrantleeViewPrivate *d_ptr;
