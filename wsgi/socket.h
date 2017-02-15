@@ -25,13 +25,14 @@
 #include <Cutelyst/Headers>
 #include <Cutelyst/Engine>
 
+#include "cwsgiengine.h"
+
 class QIODevice;
 
 namespace CWSGI {
 
 class WSGI;
 class Protocol;
-class CWsgiEngine;
 class Socket : public Cutelyst::EngineRequest
 {
     Q_GADGET
@@ -63,6 +64,7 @@ public:
         headerClose = HeaderCloseNotSet;
         processing = false;
         headerHost = false;
+        timeout = false;
         delete body;
         body = nullptr;
     }
@@ -76,11 +78,12 @@ public:
     ParserState connState = MethodLine;
     quint64 stream_id = 0;// FGCI
     quint32 buf_size = 0;
-    int beginLine = 0;
     quint32 last = 0;
+    int beginLine = 0;
     int headerClose = HeaderCloseNotSet;
     bool headerHost = false;
     bool processing = false;
+    bool timeout = false;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

@@ -33,7 +33,7 @@ public:
     virtual ~ProtocolFastCGI();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
-    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) override;
+    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
     qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:

@@ -37,7 +37,6 @@ class UnixFork;
 
 namespace CWSGI {
 
-class CWsgiEngine;
 class WSGIPrivate : public QObject
 {
     Q_OBJECT
@@ -103,6 +102,7 @@ public:
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
     int autoReloadCount = 0;
+    int socketTimeout = 4;
 #ifdef Q_OS_UNIX
     bool lazy = false;
 #endif

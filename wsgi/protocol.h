@@ -26,6 +26,7 @@
 namespace CWSGI {
 
 class WSGI;
+class Socket;
 class Protocol
 {
 public:
@@ -33,7 +34,7 @@ public:
     virtual ~Protocol();
 
     virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
-    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers) = 0;
+    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) = 0;
     virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
 
     qint64 m_postBufferSize;

@@ -53,27 +53,33 @@ void TcpServer::incomingConnection(qintptr handle)
     if (!m_socks.empty()) {
         sock = m_socks.back();
         m_socks.pop_back();
-        sock->resetSocket();
     } else {
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
         sock->proto = m_protocol;
 
         connect(sock, &QIODevice::readyRead, [sock] () {
+            sock->timeout = false;
             sock->proto->readyRead(sock, sock);
         });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);
+            --m_processing;
         });
     }
 
     if (sock->setSocketDescriptor(handle)) {
+        sock->resetSocket();
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);
+        }
+
+        if (++m_processing) {
+            Q_EMIT startSocketTimeout();
         }
     } else {
         m_socks.push_back(sock);
@@ -84,22 +90,35 @@ void TcpServer::shutdown()
 {
     pauseAccepting();
 
-    m_processing = 0;
-    const auto childrenL = children();
-    for (auto child : childrenL) {
-        auto socket = qobject_cast<TcpSocket*>(child);
-        if (socket && socket->processing) {
-            ++m_processing;
-            connect(socket, &TcpSocket::finished, [this] () {
-                if (--m_processing == 0) {
-                    Q_EMIT shutdownCompleted();
-                }
-            });
-        }
-    }
-
     if (m_processing == 0) {
         Q_EMIT shutdownCompleted();
+    } else {
+        connect(this, &TcpServer::stopSocketTimeout, this, &TcpServer::shutdownCompleted);
+
+        const auto childrenL = children();
+        for (auto child : childrenL) {
+            auto socket = qobject_cast<TcpSocket*>(child);
+            if (socket) {
+                socket->headerClose = Socket::HeaderCloseClose;
+            }
+        }
+    }
+}
+
+void TcpServer::timeoutConnections()
+{
+    if (m_processing) {
+        const auto childrenL = children();
+        for (auto child : childrenL) {
+            auto socket = qobject_cast<TcpSocket*>(child);
+            if (socket && !socket->processing && socket->state() == QTcpSocket::ConnectedState) {
+                if (socket->timeout) {
+                    socket->connectionClose();
+                } else {
+                    socket->timeout = true;
+                }
+            }
+        }
     }
 }
 

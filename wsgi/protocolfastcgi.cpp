@@ -468,7 +468,7 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
     } while (bytesAvailable);
 }
 
-bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Headers &headers)
+bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers)
 {
     static thread_local QByteArray headerBuffer = ([]() -> QByteArray {
                                                        QByteArray ret;

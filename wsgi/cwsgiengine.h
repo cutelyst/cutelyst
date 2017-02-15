@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,21 +16,19 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef CUTEENGINE_H
-#define CUTEENGINE_H
+#ifndef CWSGI_ENGINE_H
+#define CWSGI_ENGINE_H
 
 #include <QObject>
 #include <QElapsedTimer>
 #include <Cutelyst/Engine>
 
-#include "socket.h"
-
-using namespace Cutelyst;
-
 class QTcpServer;
+class QTimer;
 
 namespace CWSGI {
 
+class Protocol;
 struct SocketInfo {
     QString serverName;
     Protocol *protocol;
@@ -39,16 +37,15 @@ struct SocketInfo {
 };
 
 class WSGI;
-class Protocol;
-class CWsgiEngine : public Engine
+class CWsgiEngine : public Cutelyst::Engine
 {
     Q_OBJECT
 public:
-    explicit CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi);
+    CWsgiEngine(Cutelyst::Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi);
 
     virtual int workerId() const;
 
-    inline void processSocket(Socket *sock) {
+    inline void processSocket(Cutelyst::EngineRequest *sock) {
         processRequest(*sock);
     }
 
@@ -69,12 +66,14 @@ Q_SIGNALS:
     void shutdownCompleted(CWsgiEngine *engine);
 
 protected:
-    virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData);
+    virtual bool finalizeHeadersWrite(Cutelyst::Context *c, quint16 status,  const Cutelyst::Headers &headers, void *engineData);
 
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData);
+    virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData);
 
 private:
     void serverShutdown();
+    void startSocketTimeout();
+    void stopSocketTimeout();
 
     friend class ProtocolHttp;
     friend class ProtocolFastCGI;
@@ -82,10 +81,12 @@ private:
     std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
+    QTimer *m_socketTimeout = nullptr;
     WSGI *m_wsgi;
     int m_servers = 0;
+    int m_serversTimeout = 0;
 };
 
 }
 
-#endif // CUTEENGINE_H
+#endif // CWSGI_ENGINE_H

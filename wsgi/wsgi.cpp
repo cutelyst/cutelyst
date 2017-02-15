@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -53,6 +53,7 @@
 Q_LOGGING_CATEGORY(CUTELYST_WSGI, "wsgi")
 
 using namespace CWSGI;
+using namespace Cutelyst;
 
 WSGI::WSGI(QObject *parent) : QObject(parent),
     d_ptr(new WSGIPrivate(this))
@@ -454,6 +455,18 @@ QString WSGI::socketAccess() const
     return d->socketAccess;
 }
 
+void WSGI::setSocketTimeout(int timeout)
+{
+    Q_D(WSGI);
+    d->socketTimeout = timeout;
+}
+
+int WSGI::socketTimeout() const
+{
+    Q_D(const WSGI);
+    return d->socketTimeout;
+}
+
 void WSGI::setChdir2(const QString &chdir2)
 {
     Q_D(WSGI);
@@ -809,6 +822,11 @@ void WSGIPrivate::parseCommandLine()
                                            QCoreApplication::translate("main", "options"));
     parser.addOption(socketAccess);
 
+    auto socketTimeout = QCommandLineOption({ QStringLiteral("socket-timeout"), QStringLiteral("z") },
+                                            QCoreApplication::translate("main", "set internal sockets timeout"),
+                                            QCoreApplication::translate("main", "seconds"));
+    parser.addOption(socketTimeout);
+
     auto staticMap = QCommandLineOption(QStringLiteral("static-map"),
                                         QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
                                         QCoreApplication::translate("main", "mountpoint=path"));
@@ -884,6 +902,15 @@ void WSGIPrivate::parseCommandLine()
 
     if (parser.isSet(socketAccess)) {
         q->setSocketAccess(parser.value(socketAccess));
+    }
+
+    if (parser.isSet(socketTimeout)) {
+        bool ok;
+        auto size = parser.value(socketTimeout).toInt(&ok);
+        q->setSocketTimeout(size);
+        if (!ok || size < 0) {
+            parser.showHelp(1);
+        }
     }
 
 #ifdef Q_OS_UNIX

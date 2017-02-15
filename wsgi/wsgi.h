@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -83,6 +83,10 @@ public:
     Q_PROPERTY(QString socket_access READ socketAccess WRITE setSocketAccess)
     void setSocketAccess(const QString &socketAccess);
     QString socketAccess() const;
+
+    Q_PROPERTY(int socket_timeout READ socketTimeout WRITE setSocketTimeout)
+    void setSocketTimeout(int timeout);
+    int socketTimeout() const;
 
     Q_PROPERTY(QString chdir2 READ chdir2 WRITE setChdir2)
     void setChdir2(const QString &chdir2);

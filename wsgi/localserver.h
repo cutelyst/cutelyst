@@ -39,12 +39,15 @@ public:
     void pauseAccepting();
     void resumeAccepting();
 
-    void shutdown();
-
     virtual void incomingConnection(quintptr handle) override;
+
+    void shutdown();
+    void timeoutConnections();
 
 Q_SIGNALS:
     void shutdownCompleted();
+    void startSocketTimeout();
+    void stopSocketTimeout();
 
 private:
     QString m_serverAddress;
