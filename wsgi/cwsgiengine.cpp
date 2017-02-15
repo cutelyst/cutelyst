@@ -80,12 +80,11 @@ void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
 
 void CWsgiEngine::listen()
 {
-    if (workerCore() > 0) {
-        // init and postfork
-        if (!initApplication()) {
-            qCritical() << "Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?";
-            return;
-        }
+    // init and postfork
+    if (!initApplication()) {
+        qCritical() << "Failed to init application, cheaping...";
+        Q_EMIT shutdownCompleted(this);
+        return;
     }
 
     const auto sockets = m_sockets;
