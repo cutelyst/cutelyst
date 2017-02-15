@@ -21,10 +21,10 @@
 
 #include <QObject>
 #include <QElapsedTimer>
+#include <QTimer>
 #include <Cutelyst/Engine>
 
 class QTcpServer;
-class QTimer;
 
 namespace CWSGI {
 
@@ -70,13 +70,29 @@ protected:
 
     virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData);
 
-private:
-    void serverShutdown();
-    void startSocketTimeout();
-    void stopSocketTimeout();
+    inline void startSocketTimeout() {
+        if (m_socketTimeout && ++m_serversTimeout == 1) {
+            m_socketTimeout->start();
+        }
+    }
 
+    inline void stopSocketTimeout() {
+        if (m_socketTimeout && --m_serversTimeout == 0) {
+            m_socketTimeout->stop();
+        }
+    }
+
+    inline void serverShutdown() {
+        if (--m_servers == 0) {
+            Q_EMIT shutdownCompleted(this);
+        }
+    }
+
+private:
     friend class ProtocolHttp;
     friend class ProtocolFastCGI;
+    friend class LocalServer;
+    friend class TcpServer;
 
     std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;

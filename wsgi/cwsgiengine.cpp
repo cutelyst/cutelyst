@@ -32,8 +32,6 @@
 #include <Cutelyst/Application>
 
 #include <QCoreApplication>
-#include <QElapsedTimer>
-#include <QTimer>
 
 using namespace CWSGI;
 using namespace Cutelyst;
@@ -98,10 +96,7 @@ void CWsgiEngine::listen()
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
                 connect(this, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
-                connect(server, &TcpServer::shutdownCompleted, this, &CWsgiEngine::serverShutdown);
                 if (m_socketTimeout) {
-                    connect(server, &TcpServer::startSocketTimeout, this, &CWsgiEngine::startSocketTimeout);
-                    connect(server, &TcpServer::stopSocketTimeout, this, &CWsgiEngine::stopSocketTimeout);
                     connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
                 }
             }
@@ -111,10 +106,7 @@ void CWsgiEngine::listen()
                 server->pauseAccepting();
                 connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
                 connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
-                connect(server, &LocalServer::shutdownCompleted, this, &CWsgiEngine::serverShutdown);
                 if (m_socketTimeout) {
-                    connect(server, &LocalServer::startSocketTimeout, this, &CWsgiEngine::startSocketTimeout);
-                    connect(server, &LocalServer::stopSocketTimeout, this, &CWsgiEngine::stopSocketTimeout);
                     connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
                 }
             }
@@ -167,26 +159,7 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
     return ret;
 }
 
-void CWsgiEngine::serverShutdown()
-{
-    if (--m_servers == 0) {
-        Q_EMIT shutdownCompleted(this);
-    }
-}
 
-void CWsgiEngine::startSocketTimeout()
-{
-    if (++m_serversTimeout == 1) {
-        m_socketTimeout->start();
-    }
-}
-
-void CWsgiEngine::stopSocketTimeout()
-{
-    if (--m_serversTimeout == 0) {
-        m_socketTimeout->stop();
-    }
-}
 
 bool CWsgiEngine::init()
 {

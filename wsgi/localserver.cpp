@@ -87,7 +87,7 @@ void LocalServer::incomingConnection(quintptr handle)
         connect(sock, &LocalSocket::finished, [this] (LocalSocket *obj) {
             m_socks.push_back(obj);
             if (--m_processing == 0) {
-                Q_EMIT stopSocketTimeout();
+                m_engine->stopSocketTimeout();
             }
         });
     }
@@ -96,7 +96,7 @@ void LocalServer::incomingConnection(quintptr handle)
         sock->resetSocket();
         sock->serverAddress = m_serverAddress;
         if (++m_processing) {
-            Q_EMIT startSocketTimeout();
+            m_engine->startSocketTimeout();
         }
     } else {
         m_socks.push_back(sock);
@@ -108,15 +108,18 @@ void LocalServer::shutdown()
     pauseAccepting();
 
     if (m_processing == 0) {
-        Q_EMIT shutdownCompleted();
+        m_engine->serverShutdown();
     } else {
-        connect(this, &LocalServer::stopSocketTimeout, this, &LocalServer::shutdownCompleted);
-
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<LocalSocket*>(child);
             if (socket) {
                 socket->headerClose = Socket::HeaderCloseClose;
+                connect(socket, &LocalSocket::finished, [this] () {
+                    if (!m_processing) {
+                        m_engine->serverShutdown();
+                    }
+                });
             }
         }
     }

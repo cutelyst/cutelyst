@@ -44,11 +44,6 @@ public:
     void shutdown();
     void timeoutConnections();
 
-Q_SIGNALS:
-    void shutdownCompleted();
-    void startSocketTimeout();
-    void stopSocketTimeout();
-
 private:
     QString m_serverAddress;
     CWsgiEngine *m_engine;
