@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QLocale>
 
 #include <Cutelyst/View>
 
@@ -71,8 +72,6 @@ public:
     /*!
      * \brief Adds a \a translator for the specified \a locale to the list of translators.
      *
-     * The \a locale string should be parseable by QLocale.
-     *
      * \par Example usage
      * \code{.cpp}
      * bool MyCutelystApp::init()
@@ -83,17 +82,30 @@ public:
      *
      *      auto deDeTrans = new QTranslator(this);
      *      if (deDeTrans->load(QStringLiteral("de_DE"), QStringLiteral("/path/to/my/translations")) {
-     *          view->addTranslator(QStringLiteral("de_DE"), deDeTrans);
+     *          view->addTranslator(QLocale("de_DE"), deDeTrans);
      *      }
      *
      *      auto ptBrTrans = new QTranslator(this);
      *      if (ptBrTrans->load(QStringLiteral("pt_BR"), QStringLiteral("/path/to/my/translations")) {
-     *          view->addTranslator(QStringLiteral("pt_BR"), ptBrTrans);
+     *          view->addTranslator(QLocale("pt_BR"), ptBrTrans);
      *      }
      *
      *      // ...
      * }
      * \endcode
+     *
+     * \since Cutelyst 1.5.0
+     */
+    void addTranslator(const QLocale &locale, QTranslator *translator);
+
+    /*!
+     * \brief Adds a \a translator for the specified \a locale to the list of translators.
+     *
+     * The \a locale string should be parseable by QLocale.
+     *
+     * \overload
+     *
+     * \since Cutelyst 1.4.0
      */
     void addTranslator(const QString &locale, QTranslator *translator);
 

@@ -192,9 +192,9 @@ QByteArray GrantleeView::render(Context *c) const
 
     auto localizer = QSharedPointer<Grantlee::QtLocalizer>::create(c->locale());
 
-    auto transIt = d->translators.constFind(c->locale().name());
+    auto transIt = d->translators.constFind(c->locale());
     if (transIt != d->translators.constEnd()) {
-        localizer.data()->installTranslator(transIt.value(), transIt.key());
+        localizer.data()->installTranslator(transIt.value(), transIt.key().name());
     }
 
     gc.setLocalizer(localizer);
@@ -224,10 +224,16 @@ QByteArray GrantleeView::render(Context *c) const
     return ret;
 }
 
-void GrantleeView::addTranslator(const QString &locale, QTranslator *translator)
+void GrantleeView::addTranslator(const QLocale &locale, QTranslator *translator)
 {
     Q_D(GrantleeView);
+    Q_ASSERT_X(translator, "add translator to GrantleeView", "invalid QTranslator object");
     d->translators.insert(locale, translator);
+}
+
+void GrantleeView::addTranslator(const QString &locale, QTranslator *translator)
+{
+    addTranslator(QLocale(locale), translator);
 }
 
 #include "moc_grantleeview.cpp"
