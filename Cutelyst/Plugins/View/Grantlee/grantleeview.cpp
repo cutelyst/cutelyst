@@ -197,6 +197,12 @@ QByteArray GrantleeView::render(Context *c) const
         localizer.data()->installTranslator(transIt.value(), transIt.key().name());
     }
 
+    auto catalogIt = d->translationCatalogs.constBegin();
+    while (catalogIt != d->translationCatalogs.constEnd()) {
+        localizer.data()->loadCatalog(catalogIt.value(), catalogIt.key());
+        ++it;
+    }
+
     gc.setLocalizer(localizer);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
@@ -234,6 +240,21 @@ void GrantleeView::addTranslator(const QLocale &locale, QTranslator *translator)
 void GrantleeView::addTranslator(const QString &locale, QTranslator *translator)
 {
     addTranslator(QLocale(locale), translator);
+}
+
+void GrantleeView::addTranslationCatalog(const QString &path, const QString &catalog)
+{
+    Q_D(GrantleeView);
+    Q_ASSERT_X(!path.isEmpty(), "add translation catalog to GrantleeView", "empty path");
+    Q_ASSERT_X(!catalog.isEmpty(), "add translation catalog to GrantleeView", "empty catalog name");
+    d->translationCatalogs.insert(catalog, path);
+}
+
+void GrantleeView::addTranslationCatalogs(const QHash<QString, QString> &catalogs)
+{
+    Q_D(GrantleeView);
+    Q_ASSERT_X(!catalogs.empty(), "add translation catalogs to GranteleeView", "empty QHash");
+    d->translationCatalogs.unite(catalogs);
 }
 
 #include "moc_grantleeview.cpp"

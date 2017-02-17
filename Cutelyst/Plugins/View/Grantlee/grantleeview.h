@@ -109,6 +109,46 @@ public:
      */
     void addTranslator(const QString &locale, QTranslator *translator);
 
+    /*!
+     * \brief Dynamically adds translation \a catalog at \a path to the translator.
+     *
+     * Translation catalogs can be used to dynamically integrate translations into the
+     * GrantleeView, for example for plugins and themes. The \a catalog could be the name
+     * of an extension for example that is loaded from a locale specifc directory under \a path.
+     *
+     * The catalog will be loaded in the following way: /path/locale/catalog, for example
+     * \c /usr/share/mycutelystapp/l10n/de_DE/fancytheme.qm. The current locale is defined by
+     * Context::locale() when rendering the theme. The \a path \c /usr/share/myapp/l10n would
+     * then contain locale specific subdirectories like de_DE, pt_BR, etc. that contain the
+     * translation files named by \a catalog.
+     *
+     * \par Usage example:
+     * \code{.cpp}
+     * bool MyCutelystApp::init()
+     * {
+     *      // ...
+     *
+     *      auto view = new GrantleeView(this);
+     *      view->addTranslationCatalog(QStringLiteral("/usr/share/mycutelystapp/l10n"), QStringLiteral("fancytheme"));
+     *
+     *      // ...
+     * }
+     * \endcode
+     *
+     * \since Cutelyst 1.5.0
+     */
+    void addTranslationCatalog(const QString &path, const QString &catalog);
+
+    /*!
+     * \brief Adds a dictionary of translation catalogs and paths to the translator.
+     *
+     * The \a key of the QHash is the name of the catalog, the \a value is the path.
+     * See addTranslationCatalog() for more information about translation catalogs.
+     *
+     * \since Cutelyst 1.5.0
+     */
+    void addTranslationCatalogs(const QHash<QString, QString> &catalogs);
+
 protected:
     GrantleeViewPrivate *d_ptr;
 };

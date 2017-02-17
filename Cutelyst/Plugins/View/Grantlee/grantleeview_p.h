@@ -39,6 +39,7 @@ public:
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
     QSharedPointer<Grantlee::CachingLoaderDecorator> cache;
     QHash<QLocale, QTranslator*> translators;
+    QHash<QString, QString> translationCatalogs;
 };
 
 }
