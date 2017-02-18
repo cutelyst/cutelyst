@@ -69,8 +69,8 @@ public:
 
     QByteArray render(Context *c) const final;
 
-    /*!
-     * \brief Adds a \a translator for the specified \a locale to the list of translators.
+    /**
+     * Adds a \a translator for the specified \a locale to the list of translators.
      *
      * \par Example usage
      * \code{.cpp}
@@ -98,8 +98,8 @@ public:
      */
     void addTranslator(const QLocale &locale, QTranslator *translator);
 
-    /*!
-     * \brief Adds a \a translator for the specified \a locale to the list of translators.
+    /**
+     * Adds a \a translator for the specified \a locale to the list of translators.
      *
      * The \a locale string should be parseable by QLocale.
      *
@@ -109,8 +109,8 @@ public:
      */
     void addTranslator(const QString &locale, QTranslator *translator);
 
-    /*!
-     * \brief Dynamically adds translation \a catalog at \a path to the translator.
+    /**
+     * Dynamically adds translation \a catalog at \a path to the translator.
      *
      * Translation catalogs can be used to dynamically integrate translations into the
      * GrantleeView, for example for plugins and themes. The \a catalog could be the name
@@ -139,8 +139,8 @@ public:
      */
     void addTranslationCatalog(const QString &path, const QString &catalog);
 
-    /*!
-     * \brief Adds a dictionary of translation catalogs and paths to the translator.
+    /**
+     * Adds a dictionary of translation catalogs and paths to the translator.
      *
      * The \a key of the QHash is the name of the catalog, the \a value is the path.
      * See addTranslationCatalog() for more information about translation catalogs.
