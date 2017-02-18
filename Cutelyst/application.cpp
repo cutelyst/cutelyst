@@ -38,6 +38,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QPluginLoader>
+#include <QtCore/QTranslator>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
@@ -439,6 +440,96 @@ bool Application::enginePostFork()
     Q_EMIT postForked(this);
 
     return true;
+}
+
+void Application::addTranslator(const QLocale &locale, QTranslator *translator)
+{
+    Q_D(Application);
+    Q_ASSERT_X(translator, "add translator to application", "invalid QTranslator object");
+    if (d->translators.contains(locale)) {
+        QVector<QTranslator*> trs = d->translators.value(locale);
+        trs.prepend(translator);
+        d->translators.insert(locale, trs);
+    } else {
+        d->translators.insert(locale, QVector<QTranslator*>(1, translator));
+    }
+}
+
+void Application::addTranslator(const QString &locale, QTranslator *translator)
+{
+    addTranslator(QLocale(locale), translator);
+}
+
+void Application::addTranslators(const QLocale &locale, const QVector<QTranslator *> &translators)
+{
+    Q_D(Application);
+    Q_ASSERT_X(!translators.empty(), "add translators to application", "empty translators vector");
+    if (d->translators.contains(locale)) {
+        QVector<QTranslator*> trs = d->translators.value(locale);
+        for (auto it = translators.crbegin(); it != translators.crend(); ++it) {
+            trs.prepend(*it);
+        }
+        d->translators.insert(locale, trs);
+    } else {
+        d->translators.insert(locale, translators);
+    }
+}
+
+static void replacePercentN(QString *result, int n)
+{
+  if (n >= 0) {
+    auto percentPos = 0;
+    auto len = 0;
+    while ((percentPos = result->indexOf(QLatin1Char('%'), percentPos + len))
+           != -1) {
+      len = 1;
+      QString fmt;
+      if (result->at(percentPos + len) == QLatin1Char('L')) {
+        ++len;
+        fmt = QStringLiteral("%L1");
+      } else {
+        fmt = QStringLiteral("%1");
+      }
+      if (result->at(percentPos + len) == QLatin1Char('n')) {
+        fmt = fmt.arg(n);
+        ++len;
+        result->replace(percentPos, len, fmt);
+        len = fmt.length();
+      }
+    }
+  }
+}
+
+QString Application::translate(const QLocale &locale, const char *context, const char *sourceText, const char *disambiguation, int n) const
+{
+    QString result;
+
+    if (!sourceText) {
+        return result;
+    }
+
+    Q_D(const Application);
+
+    const QVector<QTranslator*> translators = d->translators.value(locale);
+    if (translators.empty()) {
+        result = QString::fromUtf8(sourceText);
+        replacePercentN(&result, n);
+        return result;
+    }
+
+    for (QTranslator *translator : translators) {
+        result = translator->translate(context, sourceText, disambiguation, n);
+        if (!result.isEmpty()) {
+            break;
+        }
+    }
+
+    if (result.isEmpty()) {
+        result = QString::fromUtf8(sourceText);
+    }
+
+    replacePercentN(&result, n);
+    return result;
 }
 
 

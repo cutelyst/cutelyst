@@ -53,6 +53,7 @@ public:
     Engine *engine;
     bool useStats;
     bool init = false;
+    QHash<QLocale, QVector<QTranslator*>> translators;
 };
 
 }

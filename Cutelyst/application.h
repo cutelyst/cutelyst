@@ -22,8 +22,11 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qvariant.h>
+#include <QtCore/qlocale.h>
 
 #include <Cutelyst/cutelyst_global.h>
+
+class QTranslator;
 
 namespace Cutelyst {
 
@@ -131,6 +134,67 @@ public:
      * Returns cutelyst version.
      */
     static const char *cutelystVersion();
+
+    /**
+     * Adds a @a translator for the specified @a locale.
+     *
+     * You can add multiple translators for different application parts for every supported
+     * locale. The installed translators will then be used by Context::translate() (what itself
+     * will use Application::translate()) to translate strings according to the locale set by
+     * Context::setLocale().
+     *
+     * @par Usage example:
+     * @code{.cpp}
+     * bool MyCutelystApp::init()
+     * {
+     *      // ...
+     *
+     *      auto trans = new QTranslator(this);
+     *      QLocale deDE(QLocale::German, QLocale::Germany);
+     *      if (trans->load(deDE, QStringLiteral("mycutelystapp"), QStringLiteral("."), QStringLiteral("/usr/share/mycutelystapp/l10n")) {
+     *          addTranslator(deDE, trans);
+     *      }
+     *
+     *      // ...
+     * }
+     * @endcode
+     *
+     * @since Cutelyst 1.5.0
+     */
+    void addTranslator(const QLocale &locale, QTranslator *translator);
+
+    /**
+     * Adds a @a translator for the specified @a locale.
+     *
+     * The @a locale string has to be parseable by QLocale.
+     *
+     * @overload
+     *
+     * @since Cutelyst 1.5.0
+     */
+    void addTranslator(const QString &locale, QTranslator *translator);
+
+    /**
+     * Adds multiple @a translators for the specified @a locale.
+     *
+     * @sa addTranslator()
+     *
+     * @since Cutelyst 1.5.0
+     */
+    void addTranslators(const QLocale &locale, const QVector<QTranslator *> &translators);
+
+    /**
+     * Translates the @a sourceText into the target @a locale language.
+     *
+     * This uses the installed translators for the specified @a locale to translate the @a sourceText for the
+     * given @a context into the target locale. Optionally you can use a @a disambiguation and/or the @a n parameter
+     * to translate a pluralized version.
+     *
+     * @sa Context::translate(), QTranslator::translate()
+     *
+     * @since Cutelyst 1.5.0
+     */
+    QString translate(const QLocale &locale, const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
 
 protected:
     /**
