@@ -403,6 +403,12 @@ void *Context::engineData()
     return d->requestPtr;
 }
 
+QString Context::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
+{
+    Q_D(const Context);
+    return d->app->translate(d->locale, context, sourceText, disambiguation, n);
+}
+
 QString ContextPrivate::statsStartExecute(Component *code)
 {
     QString actionName;
