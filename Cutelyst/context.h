@@ -412,6 +412,21 @@ public:
 
     void *engineData();
 
+    /**
+     * Translates the \a sourceText for the given \a context into the language defined by locale().
+     *
+     * See Application::addTranslator() for information about installation of translators. Internally
+     * this function will use QTranslator::translate().
+     *
+     * \code{.cpp}
+     * void MyController::index(Context *c)
+     * {
+     *      c->res()->body() = c->translate("MyController", "You are on the index page.").toUtf8();
+     * }
+     * \endcode
+     */
+    QString translate(const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
+
 protected:
     Context(ContextPrivate *priv);
 
