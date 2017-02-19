@@ -475,27 +475,26 @@ void Application::addTranslators(const QLocale &locale, const QVector<QTranslato
 
 static void replacePercentN(QString *result, int n)
 {
-  if (n >= 0) {
-    auto percentPos = 0;
-    auto len = 0;
-    while ((percentPos = result->indexOf(QLatin1Char('%'), percentPos + len))
-           != -1) {
-      len = 1;
-      QString fmt;
-      if (result->at(percentPos + len) == QLatin1Char('L')) {
-        ++len;
-        fmt = QStringLiteral("%L1");
-      } else {
-        fmt = QStringLiteral("%1");
-      }
-      if (result->at(percentPos + len) == QLatin1Char('n')) {
-        fmt = fmt.arg(n);
-        ++len;
-        result->replace(percentPos, len, fmt);
-        len = fmt.length();
-      }
+    if (n >= 0) {
+        auto percentPos = 0;
+        auto len = 0;
+        while ((percentPos = result->indexOf(QLatin1Char('%'), percentPos + len)) != -1) {
+            len = 1;
+            QString fmt;
+            if (result->at(percentPos + len) == QLatin1Char('L')) {
+                ++len;
+                fmt = QStringLiteral("%L1");
+            } else {
+                fmt = QStringLiteral("%1");
+            }
+            if (result->at(percentPos + len) == QLatin1Char('n')) {
+                fmt = fmt.arg(n);
+                ++len;
+                result->replace(percentPos, len, fmt);
+                len = fmt.length();
+            }
+        }
     }
-  }
 }
 
 QString Application::translate(const QLocale &locale, const char *context, const char *sourceText, const char *disambiguation, int n) const
