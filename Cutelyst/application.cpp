@@ -446,10 +446,9 @@ void Application::addTranslator(const QLocale &locale, QTranslator *translator)
 {
     Q_D(Application);
     Q_ASSERT_X(translator, "add translator to application", "invalid QTranslator object");
-    if (d->translators.contains(locale)) {
-        QVector<QTranslator*> trs = d->translators.value(locale);
-        trs.prepend(translator);
-        d->translators.insert(locale, trs);
+    auto it = d->translators.find(locale);
+    if (it != d->translators.end()) {
+        it.value().prepend(translator);
     } else {
         d->translators.insert(locale, QVector<QTranslator*>(1, translator));
     }
@@ -464,12 +463,11 @@ void Application::addTranslators(const QLocale &locale, const QVector<QTranslato
 {
     Q_D(Application);
     Q_ASSERT_X(!translators.empty(), "add translators to application", "empty translators vector");
-    if (d->translators.contains(locale)) {
-        QVector<QTranslator*> trs = d->translators.value(locale);
+    auto transIt = d->translators.find(locale);
+    if (transIt != d->translators.end()) {
         for (auto it = translators.crbegin(); it != translators.crend(); ++it) {
-            trs.prepend(*it);
+            transIt.value().prepend(*it);
         }
-        d->translators.insert(locale, trs);
     } else {
         d->translators.insert(locale, translators);
     }
