@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,14 +32,19 @@ namespace Cutelyst {
 class Controller;
 class Dispatcher;
 class ActionPrivate;
-/**
- * \brief Cutelyst Action
+/*! \class Action action.h Cutelyst/Action
+ * \brief This class represents a %Cutelyst %Action.
  *
  * This class represents a Cutelyst Action.
+ *
+ * It encapsulates a Controller method that was defined with
+ * C_ATTR macro, it's usually automatically created by Cutelyst::Controller
+ * using it's introspections information, this class allows Cutelyst
+ * to call a Controller method.
+ *
  * You can access the object for the currently dispatched
  * action via c->action(). See the Cutelyst::Dispatcher for
  * more information on how actions are dispatched.
- * Actions are defined in Cutelyst::Controller subclasses.
  */
 class CUTELYST_LIBRARY Action : public Component
 {
@@ -59,19 +64,26 @@ public:
 
     /**
      * Returns the value attribute by it's name, if not found
-     * dafault value is returned
+     * dafault value is returned.
+     *
+     * Attributes can be defined using the C_ATTR macro on Controller's
+     * method declaration.
      */
     QString attribute(const QString &name, const QString &defaultValue = QString()) const;
 
+    /**
+     * Defines the Actions attibutes that were defined using the C_ATTR macro on Controller's
+     * method declaration.
+     */
     void setAttributes(const QMap<QString, QString> &attributes);
 
     /**
-     * @return Returns the name of the component where this action is defined
+     * Returns the name of the component where this action is defined
      */
     QString className() const;
 
     /**
-     * @return Returns the controller where this action is defined
+     * Returns the controller where this action is defined
      */
     Controller* controller() const;
 
@@ -81,19 +93,19 @@ public:
     inline bool dispatch(Context *c) { return c->execute(this); }
 
     /**
-     * @brief Check Args attribute, and makes sure number of
+     * Check Args attribute, and makes sure number of
      * args matches the setting. Always returns true if Args is omitted.
      */
     virtual bool match(int numberOfArgs) const;
 
     /**
-     * @brief Can be implemented by action class
+     * Can be implemented by action class
      * and action role authors. If the method exists,
      * then it will be called with the request context
      * and an array reference of the captures for this action.
      *
      * @return Returning true from this method causes the chain
-     * match to continue, returning makes the chain not match
+     * match to continue, returning false makes the chain not match
      * (and alternate, less preferred chains will be attempted).
      */
     virtual bool matchCaptures(int numberOfCaptures) const;
@@ -104,16 +116,14 @@ public:
     QString ns() const;
 
     /**
-     * @brief numberOfArgs
-     * @return Returns the number of args this action expects.
+     * Returns the number of args this action expects.
      * This is 0 if the action doesn't take any arguments and
      * undef if it will take any number of arguments.
      */
     virtual qint8 numberOfArgs() const;
 
     /**
-     * @brief numberOfCaptures
-     * @return Returns the number of captures this action
+     * Returns the number of captures this action
      * expects for Chained actions.
      */
     virtual qint8 numberOfCaptures() const;

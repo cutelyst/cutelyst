@@ -32,6 +32,10 @@ class Application;
 namespace CWSGI {
 
 class WSGIPrivate;
+/*! \class WSGI wsgi.h Cutelyst/WSGI
+ * \brief Implements a %WSGI server.
+ *
+ */
 class CUTELYST_WSGI_EXPORT WSGI : public QObject
 {
     Q_OBJECT
@@ -140,23 +144,46 @@ public:
     void setSocketSndbuf(int value);
     int socketSndbuf() const;
 
+    /**
+     * @brief Defines the socket receive bufffer.
+     *
+     * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option
+     *
+     * @accessors %gid(), setGid()
+     */
     Q_PROPERTY(int socketRcvbuf READ socketRcvbuf WRITE setSocketRcvbuf)
     void setSocketRcvbuf(int value);
     int socketRcvbuf() const;
 
 #ifdef Q_OS_UNIX
+    /**
+     * @brief Defines user id of the process.
+     * @accessors uid(), setUid()
+     */
     Q_PROPERTY(QString uid READ uid WRITE setUid)
     void setUid(const QString &uid);
     QString uid() const;
 
+    /**
+     * @brief Defines group id of the process.
+     * @accessors gid(), setGid()
+     */
     Q_PROPERTY(QString gid READ gid WRITE setGid)
     void setGid(const QString &gid);
     QString gid() const;
 
+    /**
+     * @brief Defines owner of UNIX sockets.
+     * @accessors chownSocket(), setChownSocket()
+     */
     Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket)
     void setChownSocket(const QString &chownSocket);
     QString chownSocket() const;
 
+    /**
+     * @brief Defines is the Application should be lazy loaded.
+     * @accessors lazy(), setLazy()
+     */
     Q_PROPERTY(bool lazy READ lazy WRITE setLazy)
     void setLazy(bool enable);
     bool lazy() const;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,12 @@ class Context;
 class Controller;
 class Dispatcher;
 class ComponentPrivate;
+
+/*! \class Component component.h Cutelyst/Component
+ * @brief Cutelyst::Component - The Cutelyst Component
+ *
+ * This is the base class of a Cutelyst component
+ */
 class CUTELYST_LIBRARY Component : public QObject
 {
     Q_OBJECT

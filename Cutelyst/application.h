@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -47,8 +47,8 @@ class Plugin;
 class Headers;
 class ApplicationPrivate;
 
-/**
- * @brief Cutelyst::Application - The Cutelyst Application
+/*! \class Application application.h Cutelyst/Application
+ * @brief The %Cutelyst %Application
  *
  * This is the main class of a Cutelyst appplication
  */
@@ -69,7 +69,7 @@ public:
      *
      * \warning DO NOT register your controllers,
      * plugins or anything that might want to
-     * use config(), do that in init()
+     * use config() in here, do that in init()
      */
     explicit Application(QObject *parent = nullptr);
     virtual ~Application();
@@ -208,7 +208,7 @@ protected:
      * initialize resouces that cannot be shared among
      * process. \sa postFork
      *
-     * @return True if your application was successfuly initted
+     * @return \c true if your application was successfuly initted
      */
     virtual bool init();
 
@@ -243,7 +243,7 @@ protected:
      * to be created explicity for a single request and returns
      * true on plugin->isApplicationPlugin();
      *
-     * @return True if the plugin could be registered
+     * @return \c true if the plugin could be registered
      */
     bool registerPlugin(Plugin *plugin);
 
@@ -255,7 +255,7 @@ protected:
      * might want to use a session plugin or the stash.
      *
      * @param controller the Controller class
-     * @return True if succeeded
+     * @return \c true if succeeded
      */
     bool registerController(Controller *controller);
 
@@ -264,7 +264,7 @@ protected:
      * is responsible for rendering requests.
      *
      * @param view the View class
-     * @return True if succeeded
+     * @return \c true if succeeded
      */
     bool registerView(View *view);
 

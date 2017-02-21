@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,8 +28,8 @@
 namespace Cutelyst {
 
 class ActionChainPrivate;
-/**
- * @brief Cutelyst::ActionChain - Chain of Cutelyst Actions
+/*! \class ActionChain actionchain.h Cutelyst/ActionChain
+ * @brief Holds a chain of %Cutelyst %Actions
  *
  * This class represents a chain of Cutelyst Actions.
  * It behaves exactly like the action at the *end* of the chain
@@ -44,8 +44,8 @@ public:
     ~ActionChain();
 
     /**
-     * @brief the action chain
-     * @return a list of the Cutelyst::Action objects encapsulated by this chain.
+     * The action chain
+     * @return a list of Cutelyst::Action objects encapsulated by this chain.
      */
     ActionList chain() const;
 

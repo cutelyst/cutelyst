@@ -31,7 +31,7 @@ namespace Cutelyst
 
   @section start_community Community
 
-  The %Cutelyst project IRC channel is <a href="http://webchat.freenode.net?channels=%23cutelyst">#cutelyst</a> on freenode.
+  The %Cutelyst project IRC channel is <a href="http://webchat.freenode.net?channels=%23cutelyst">\#cutelyst</a> on freenode.
 
   The source repository is located at https://github.com/cutelyst/cutelyst
 

@@ -36,6 +36,7 @@ SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 8
 ALIASES               += gr_tag{1}="<tt>{%&nbsp;\1&nbsp;%}</tt>"
 ALIASES               += gr_var{1}="<tt>{{&nbsp;\1&nbsp;}}</tt>"
+ALIASES               += "accessors=\par Accessors:\n"
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
@@ -94,7 +95,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = @CMAKE_SOURCE_DIR@/dox/Mainpage.dox @CMAKE_SOURCE_DIR@/Cutelyst @CMAKE_SOURCE_DIR@/wsgi @CMAKE_SOURCE_DIR@/uwsgiEngine
+INPUT                  = @CMAKE_SOURCE_DIR@/dox/Mainpage.dox @CMAKE_SOURCE_DIR@/Cutelyst @CMAKE_SOURCE_DIR@/wsgi/wsgi.h
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
                          *.dox \
@@ -223,7 +224,7 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = Q_QDOC Q_COMPILER_INITIALIZER_LISTS
+PREDEFINED             = Q_QDOC Q_COMPILER_INITIALIZER_LISTS Q_OS_UNIX
 EXPAND_AS_DEFINED      = TemplateImpl
 SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------

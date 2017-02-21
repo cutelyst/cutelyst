@@ -42,6 +42,13 @@ class View;
 class Stats;
 class Plugin;
 class ContextPrivate;
+
+/*! \class Context context.h Cutelyst/Context
+ * @brief Cutelyst::Context - The Cutelyst Context
+ *
+ * This is the context class that glues Request and Response plus
+ * some helper methods.
+ */
 class CUTELYST_LIBRARY Context : public QObject
 {
     Q_OBJECT
