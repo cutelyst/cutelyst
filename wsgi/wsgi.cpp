@@ -534,7 +534,6 @@ void WSGI::setAutoReload(bool enable)
     Q_D(WSGI);
     if (enable) {
         d->autoReload = true;
-        setMaster(true); // master is required to restart app
     }
 }
 
@@ -549,7 +548,6 @@ void WSGI::setTouchReload(const QString &file)
     Q_D(WSGI);
     if (!file.isEmpty()) {
         d->touchReload.append(file.split(QLatin1Char(';'), QString::SkipEmptyParts));
-        setMaster(true); // master is required to restart app
     }
 }
 
