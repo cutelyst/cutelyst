@@ -32,6 +32,12 @@ class Context;
 class Controller;
 class DispatchType;
 class DispatcherPrivate;
+
+/*! \class Dispatcher dispatcher.h Cutelyst/Dispatcher
+ * @brief The %Cutelyst %Dispatcher
+ *
+ * This class is resposible for finding an Action for new Requests and invoking it.
+ */
 class CUTELYST_LIBRARY Dispatcher : public QObject
 {
     Q_OBJECT
@@ -70,13 +76,21 @@ public:
      */
     QString uriForAction(Action *action, const QStringList &captures) const;
 
+    /**
+     * Expand an action into a full representation of the dispatch. mostly useful for chained where the
+     * returned Action will be of ActionChain type, other actions will just return a single action.
+     */
     Action *expandAction(Context *c, Action *action) const;
 
+    /**
+     * Returns a list of all dispatchers currently in use, if the dispatcher doesn't successfuly
+     * register an Action it's removed from the list.
+     */
     QVector<DispatchType *> dispatchers() const;
 
 protected:
     /**
-     *
+     * Used by Application to register all Controllers Actions into the list of DispatchType
      */
     void setupActions(const QVector<Controller *> &controllers, const QVector<DispatchType *> &dispatchers, bool printActions);
 
@@ -86,8 +100,19 @@ protected:
      */
     bool dispatch(Context *c);
 
+    /**
+     * Used by Application to forward execution to the following Component
+     */
     bool forward(Context *c, Component *component);
+
+    /**
+     * Used by Application to forward execution to \p opname that is resolved to an Action
+     */
     bool forward(Context *c, const QString &opname);
+
+    /**
+     * Used by Application to find a matching action for the current Context
+     */
     void prepareAction(Context *c);
 
 protected:

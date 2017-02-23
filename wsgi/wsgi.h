@@ -61,17 +61,28 @@ public:
     void setApplication(const QString &application);
     QString application() const;
 
+    /**
+     * Defines the number of threads to use, if set to "auto" the ideal thread count is used
+     * @accessors threads(), setThreads()
+     */
     Q_PROPERTY(QString threads READ threads WRITE setThreads)
     void setThreads(const QString &threads);
     QString threads() const;
 
 #ifdef Q_OS_UNIX
-    Q_PROPERTY(QString processes READ process WRITE setProcess)
-    Q_PROPERTY(QString process READ process WRITE setProcess) // DEPRECATED
-    void setProcess(const QString &process);
-    QString process() const;
+    /**
+     * Defines the number of processes to use, if set to "auto" the ideal processes count is used
+     * @accessors threads(), setThreads()
+     */
+    Q_PROPERTY(QString processes READ processes WRITE setProcesses)
+    void setProcesses(const QString &process);
+    QString processes() const;
 #endif
 
+    /**
+     * Defines directory to chdir to before application loading
+     * @accessors chdir(), setChdir()
+     */
     Q_PROPERTY(QString chdir READ chdir WRITE setChdir)
     void setChdir(const QString &chdir);
     QString chdir() const;
@@ -88,22 +99,42 @@ public:
     void setSocketAccess(const QString &socketAccess);
     QString socketAccess() const;
 
+    /**
+     * Defines set internal socket timeout
+     * @accessors socketTimeout(), setSocketTimeout()
+     */
     Q_PROPERTY(int socket_timeout READ socketTimeout WRITE setSocketTimeout)
     void setSocketTimeout(int timeout);
     int socketTimeout() const;
 
+    /**
+     * Defines directory to chdir to after application loading
+     * @accessors chdir2(), setChdir2()
+     */
     Q_PROPERTY(QString chdir2 READ chdir2 WRITE setChdir2)
     void setChdir2(const QString &chdir2);
     QString chdir2() const;
 
+    /**
+     * Load config from ini file
+     * @accessors ini(), setIni()
+     */
     Q_PROPERTY(QString ini READ ini WRITE setIni)
     void setIni(const QString &ini);
     QString ini() const;
 
+    /**
+     * Map the mountpoint to static directory (or file)
+     * @accessors staticMap(), setStaticMap()
+     */
     Q_PROPERTY(QString static_map READ staticMap WRITE setStaticMap)
     void setStaticMap(const QString &staticMap);
     QString staticMap() const;
 
+    /**
+     * Map the mountpoint to static directory (or file), completely appending the requested resource to the docroot
+     * @accessors staticMap2(), setStaticMap2()
+     */
     Q_PROPERTY(QString static_map2 READ staticMap2 WRITE setStaticMap2)
     void setStaticMap2(const QString &staticMap);
     QString staticMap2() const;
@@ -112,10 +143,18 @@ public:
     void setMaster(bool enable);
     bool master() const;
 
+    /**
+     * Reload application if the application file is modified or touched
+     * @accessors autoReload(), setAutoReload()
+     */
     Q_PROPERTY(bool auto_reload READ autoReload WRITE setAutoReload)
     void setAutoReload(bool enable);
     bool autoReload() const;
 
+    /**
+     * Reload application if the specified file is modified or touched
+     * @accessors touchReload(), setTouchReload()
+     */
     Q_PROPERTY(QString touch_reload READ touchReload WRITE setTouchReload)
     void setTouchReload(const QString &file);
     QString touchReload() const;
@@ -132,32 +171,37 @@ public:
     void setPostBufferingBufsize(qint64 size);
     qint64 postBufferingBufsize() const;
 
-    Q_PROPERTY(bool tcpNodelay READ tcpNodelay WRITE setTcpNodelay)
+    /**
+     * Enable TCP NODELAY on each request
+     * @accessors tcpNodelay(), setTcpNodelay()
+     */
+    Q_PROPERTY(bool tcp_nodelay READ tcpNodelay WRITE setTcpNodelay)
     void setTcpNodelay(bool enable);
     bool tcpNodelay() const;
 
-    Q_PROPERTY(bool soKeepalive READ soKeepalive WRITE setSoKeepalive)
+    Q_PROPERTY(bool so_keepalive READ soKeepalive WRITE setSoKeepalive)
     void setSoKeepalive(bool enable);
     bool soKeepalive() const;
 
-    Q_PROPERTY(int socketSndbuf READ socketSndbuf WRITE setSocketSndbuf)
+    /**
+     * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option
+     * @accessors %socketSndbuf(), setSocketSndbuf()
+     */
+    Q_PROPERTY(int socket_sndbuf READ socketSndbuf WRITE setSocketSndbuf)
     void setSocketSndbuf(int value);
     int socketSndbuf() const;
 
     /**
-     * @brief Defines the socket receive bufffer.
-     *
      * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option
-     *
-     * @accessors %gid(), setGid()
+     * @accessors %socketRcvbuf(), setSocketRcvbuf()
      */
-    Q_PROPERTY(int socketRcvbuf READ socketRcvbuf WRITE setSocketRcvbuf)
+    Q_PROPERTY(int socket_rcvbuf READ socketRcvbuf WRITE setSocketRcvbuf)
     void setSocketRcvbuf(int value);
     int socketRcvbuf() const;
 
 #ifdef Q_OS_UNIX
     /**
-     * @brief Defines user id of the process.
+     * Defines user id of the process.
      * @accessors uid(), setUid()
      */
     Q_PROPERTY(QString uid READ uid WRITE setUid)
@@ -165,7 +209,7 @@ public:
     QString uid() const;
 
     /**
-     * @brief Defines group id of the process.
+     * Defines group id of the process.
      * @accessors gid(), setGid()
      */
     Q_PROPERTY(QString gid READ gid WRITE setGid)
@@ -173,7 +217,7 @@ public:
     QString gid() const;
 
     /**
-     * @brief Defines owner of UNIX sockets.
+     * Defines owner of UNIX sockets.
      * @accessors chownSocket(), setChownSocket()
      */
     Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket)
@@ -181,7 +225,7 @@ public:
     QString chownSocket() const;
 
     /**
-     * @brief Defines is the Application should be lazy loaded.
+     * Defines is the Application should be lazy loaded.
      * @accessors lazy(), setLazy()
      */
     Q_PROPERTY(bool lazy READ lazy WRITE setLazy)
@@ -190,6 +234,9 @@ public:
 #endif
 
 Q_SIGNALS:
+    /**
+     * It is emitted once the server is ready.
+     */
     void ready();
 
 protected:

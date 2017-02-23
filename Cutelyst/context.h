@@ -44,7 +44,7 @@ class Plugin;
 class ContextPrivate;
 
 /*! \class Context context.h Cutelyst/Context
- * @brief Cutelyst::Context - The Cutelyst Context
+ * @brief The %Cutelyst %Context
  *
  * This is the context class that glues Request and Response plus
  * some helper methods.

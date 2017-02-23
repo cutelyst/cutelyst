@@ -98,7 +98,7 @@ public:
     int enginesInitted = 1;
     int workersNotRunning = 1;
     int threads = 0;
-    int process = 0;
+    int processes = 0;
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
     int autoReloadCount = 0;

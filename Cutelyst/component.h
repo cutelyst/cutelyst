@@ -33,7 +33,7 @@ class Dispatcher;
 class ComponentPrivate;
 
 /*! \class Component component.h Cutelyst/Component
- * @brief Cutelyst::Component - The Cutelyst Component
+ * @brief The %Cutelyst %Component base class
  *
  * This is the base class of a Cutelyst component
  */

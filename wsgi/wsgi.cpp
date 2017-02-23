@@ -108,7 +108,7 @@ int WSGI::load(Cutelyst::Application *app)
     }
 
 #ifdef Q_OS_UNIX
-    d->unixFork = new UnixFork(d->process, qMax(d->threads, 1), this);
+    d->unixFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
     connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::forked);
     connect(d->unixFork, &UnixFork::shutdown, d, &WSGIPrivate::shutdown);
     connect(d, &WSGIPrivate::killChildProcess, d->unixFork, &UnixFork::killChild);
@@ -171,7 +171,7 @@ int WSGI::load(Cutelyst::Application *app)
     } else {
         ret = d->setupApplication();
 
-        if (ret == 0 && d->process) {
+        if (ret == 0 && d->processes) {
             // Forking with an event loop running leads to
             // non working event loops on child process
             // so this is a temporary loop until all engines
@@ -390,20 +390,20 @@ QString WSGI::threads() const
 }
 
 #ifdef Q_OS_UNIX
-void WSGI::setProcess(const QString &process)
+void WSGI::setProcesses(const QString &process)
 {
     Q_D(WSGI);
     if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        d->process = QThread::idealThreadCount();
+        d->processes = QThread::idealThreadCount();
     } else {
-        d->process = process.toInt();
+        d->processes = process.toInt();
     }
 }
 
-QString WSGI::process() const
+QString WSGI::processes() const
 {
     Q_D(const WSGI);
-    return QString::number(d->process);
+    return QString::number(d->processes);
 }
 #endif
 
@@ -705,8 +705,8 @@ bool WSGIPrivate::proc()
     materChildRestartTimer = nullptr;
 
 #ifdef Q_OS_UNIX
-    if (master && process == 0) {
-        process = 1;
+    if (master && processes == 0) {
+        processes = 1;
     }
     return false;
 #else
@@ -780,10 +780,10 @@ void WSGIPrivate::parseCommandLine()
     parser.addOption(threads);
 
 #ifdef Q_OS_UNIX
-    auto process = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
+    auto processes = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
                                       QCoreApplication::translate("main", "spawn the specified number of processes"),
                                       QCoreApplication::translate("main", "processes"));
-    parser.addOption(process);
+    parser.addOption(processes);
 #endif
 
     auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
@@ -912,8 +912,8 @@ void WSGIPrivate::parseCommandLine()
     }
 
 #ifdef Q_OS_UNIX
-    if (parser.isSet(process)) {
-        q->setProcess(parser.value(process));
+    if (parser.isSet(processes)) {
+        q->setProcesses(parser.value(processes));
     }
 
     if (parser.isSet(lazyOption)) {
@@ -1120,7 +1120,7 @@ void WSGIPrivate::engineInitted()
     // All engines are initted
     if (--enginesInitted == 0) {
 #ifdef Q_OS_UNIX
-        if (process && !lazy) {
+        if (processes && !lazy) {
             QCoreApplication::exit();
         } else {
             Q_EMIT forked();

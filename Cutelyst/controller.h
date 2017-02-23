@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,8 +34,8 @@
 #define C_ATTR(X, Y) Q_CLASSINFO(STR(X), STR(Y)) Q_INVOKABLE
 
 #  define CActionFor(str) \
-    ([this]() -> Action * { \
-        static thread_local Action *action = \
+    ([this]() -> Cutelyst::Action * { \
+        static thread_local Cutelyst::Action *action = \
             Cutelyst::Controller::actionFor(str); \
         return action; \
     }()) \
@@ -44,8 +44,8 @@
 namespace  Cutelyst {
 
 class ControllerPrivate;
-/**
- * @brief Cutelyst::Controller - Cutelyst Controller base class
+/*! \class Controller controller.h Cutelyst/Controller
+ * @brief %Cutelyst %Controller base class
  *
  * Controllers are where the actions in the Cutelyst framework reside.
  * Each action is represented by a function with an attribute to identify
