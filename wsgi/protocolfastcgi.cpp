@@ -464,6 +464,9 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
                 // On error disconnect immediately
                 io->close();
             }
+        } else {
+            qCWarning(CWSGI_FCGI) << "Failed to read from socket" << io->errorString();
+            break;
         }
     } while (bytesAvailable);
 }

@@ -29,9 +29,11 @@
 #include <QTemporaryFile>
 #include <QBuffer>
 #include <QTimer>
-#include <QDebug>
+#include <QLoggingCategory>
 
 using namespace CWSGI;
+
+Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http")
 
 ProtocolHttp::ProtocolHttp(WSGI *wsgi) : Protocol(wsgi)
 {
@@ -75,7 +77,7 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
             remaining = sock->contentLength - body->size();
             len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             bytesAvailable -= len;
-//            qDebug() << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
+//            qCDebug(CWSGI_HTTP) << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
             body->write(m_postBuffer, len);
         } while (bytesAvailable);
 
@@ -87,10 +89,14 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
     }
 
     int len = io->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
+    if (len == -1) {
+        qCWarning(CWSGI_HTTP) << "Failed to read from socket" << io->errorString();
+        return;
+    }
     sock->buf_size += len;
 
     while (sock->last < sock->buf_size) {
-//        qDebug() << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
+//        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(sock->buf, sock->buf_size);
         int ix = CrLfIndexIn(sock->buffer, sock->buf_size, sock->last);
         if (ix != -1) {
             int len = ix - sock->beginLine;
@@ -106,7 +112,7 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
                 sock->connState = Socket::HeaderLine;
                 sock->contentLength = -1;
                 sock->headers = Cutelyst::Headers();
-//                qDebug() << "--------" << sock->method << sock->path << sock->query << sock->protocol;
+//                qCDebug(CWSGI_HTTP) << "--------" << sock->method << sock->path << sock->query << sock->protocol;
 
             } else if (sock->connState == Socket::HeaderLine) {
                 if (len) {
@@ -117,7 +123,7 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
                         if (m_postBuffering && sock->contentLength > m_postBuffering) {
                             auto temp = new QTemporaryFile;
                             if (!temp->open()) {
-                                qWarning() << "Failed to open temporary file to store post" << temp->errorString();
+                                qCWarning(CWSGI_HTTP) << "Failed to open temporary file to store post" << temp->errorString();
                                 io->close(); // On error close immediately
                                 return;
                             }
@@ -137,14 +143,14 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
 
                         ptr += 2;
                         len = qMin(sock->contentLength, static_cast<qint64>(sock->buf_size - sock->last));
-//                        qDebug() << "WRITE" << sock->contentLength << len;
+//                        qCDebug(CWSGI_HTTP) << "WRITE" << sock->contentLength << len;
                         if (len) {
                             sock->body->write(ptr, len);
                         }
                         sock->last += len;
 
                         if (sock->contentLength > len) {
-//                            qDebug() << "WRITE more..." << sock->contentLength << len;
+//                            qCDebug(CWSGI_HTTP) << "WRITE more..." << sock->contentLength << len;
                             // need to wait for more data
                             return;
                         }
@@ -210,7 +216,7 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
 
 bool ProtocolHttp::processRequest(Socket *sock) const
 {
-//    qDebug() << "processRequest" << sock->contentLength;
+//    qCDebug(CWSGI_HTTP) << "processRequest" << sock->contentLength;
     sock->processing = true;
     if (sock->body) {
         sock->body->seek(0);
