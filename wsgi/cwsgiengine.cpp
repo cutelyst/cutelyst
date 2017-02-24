@@ -51,12 +51,12 @@ CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &op
     if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
         auto staticMapPlugin = new StaticMap(app);
 
-        const auto parts = staticMap.split(QLatin1Char(';'));
+        const auto parts = staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts);
         for (const QString &part : parts) {
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
         }
 
-        const auto parts2 = staticMap2.split(QLatin1Char(';'));
+        const auto parts2 = staticMap2.split(QLatin1Char(';'), QString::SkipEmptyParts);
         for (const QString &part : parts2) {
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
         }

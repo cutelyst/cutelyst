@@ -52,6 +52,8 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
         mp.remove(0, 1);
     }
 
+    qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
+
     m_staticMaps.push_back({ mp, path, append });
     std::sort(m_staticMaps.begin(), m_staticMaps.end(), [](const MountPoint &a, const MountPoint &b) -> bool {
               return a.mountPoint.size() < b.mountPoint.size();
