@@ -49,12 +49,6 @@ bool Upload::save(const QString &newName)
 {
     Q_D(Upload);
 
-    auto temp = qobject_cast<QTemporaryFile *>(d->device);
-    if (temp && temp->rename(newName)) {
-        temp->setAutoRemove(false);
-        return true;
-    }
-
     bool error = false;
     QString fileTemplate = QStringLiteral("%1/qt_temp.XXXXXX");
 #ifdef QT_NO_TEMPORARYFILE
