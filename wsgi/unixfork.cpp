@@ -253,8 +253,14 @@ void UnixFork::handleSigChld()
             m_childs.erase(it);
         }
 
+        int exitStatus = WEXITSTATUS(status);
+        if (WIFEXITED(status) && exitStatus == 15) {
+            // Child process cheaping
+            worker = 0;
+        }
+
         if (worker && !m_terminating/* && status != SIGTERM*/) {
-            std::cout << "DAMN ! worker " << worker << " (pid: " << p << ") died, killed by signal " << status << " :( trying respawn .." << std::endl;
+            std::cout << "DAMN ! worker " << worker << " (pid: " << p << ") died, killed by signal " << exitStatus << " :( trying respawn .." << std::endl;
             m_recreateWorker.push_back(worker);
             qApp->quit();
         } else if (!m_child && m_childs.isEmpty()) {

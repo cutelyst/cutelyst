@@ -400,7 +400,7 @@ bool uWSGI::forked()
         // We need to tell the master process that the
         // application failed to setup and that it shouldn't
         // try to respawn the worker
-        exit(UWSGI_GO_CHEAP_CODE);
+        _exit(UWSGI_GO_CHEAP_CODE);
 #endif // UWSGI_GO_CHEAP_CODE
     }
 
