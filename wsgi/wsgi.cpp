@@ -82,7 +82,7 @@ WSGI::~WSGI()
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
 }
 
-int WSGI::load(Cutelyst::Application *app)
+int WSGI::exec(Cutelyst::Application *app)
 {
     Q_D(WSGI);
 
@@ -167,26 +167,33 @@ int WSGI::load(Cutelyst::Application *app)
 #ifdef Q_OS_UNIX
     if (d->lazy) {
         connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::setupApplication);
-        d->unixFork->createProcess();
+        ret = d->unixFork->exec();
     } else {
         ret = d->setupApplication();
 
-        if (ret == 0 && d->processes) {
-            // Forking with an event loop running leads to
-            // non working event loops on child process
-            // so this is a temporary loop until all engines
-            // are initted
-            QCoreApplication::exec();
+        if (ret == 0) {
+            if (d->processes) {
+                // Forking with an event loop running leads to
+                // non working event loops on child process
+                // so this is a temporary loop until all engines
+                // are initted
+                QCoreApplication::exec();
 
-            if (d->enginesInitted != 0) {
-                return 1;
+                if (d->enginesInitted != 0) {
+                    return 1;
+                }
+
+                ret = d->unixFork->exec();
+            } else {
+                ret = QCoreApplication::exec();
             }
-
-            d->unixFork->createProcess();
         }
     }
 #else
     ret = d->setupApplication();
+    if (ret == 0) {
+        ret = QCoreApplication::exec();
+    }
 #endif
 
     return ret;

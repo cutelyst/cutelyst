@@ -59,13 +59,41 @@ UnixFork::~UnixFork()
     }
 }
 
-void UnixFork::createProcess()
+int UnixFork::exec()
 {
-    for (int i = 0; i < m_processes; ++i) {
-        if (!createChild(i + 1, false)) {
-            return;
+    int ret;
+    bool respawn = false;
+    do {
+        if (!createProcess(respawn)) {
+            return 1;
+        }
+        respawn = true;
+
+        ret = QCoreApplication::exec();
+    } while (!m_terminating);
+
+    return ret;
+}
+
+bool UnixFork::createProcess(bool respawn)
+{
+    if (respawn) {
+        auto it = m_recreateWorker.begin();
+        while (it != m_recreateWorker.end()) {
+            int worker = *it;
+            if (!createChild(worker, respawn)) {
+                std::cout << "CHEAPING worker: " << worker << std::endl;
+                --m_processes;
+            }
+            m_recreateWorker.erase(it);
+        }
+    } else {
+        for (int i = 0; i < m_processes; ++i) {
+            createChild(i + 1, respawn);
         }
     }
+
+    return !m_childs.empty();
 }
 
 void UnixFork::killChild()
@@ -225,9 +253,10 @@ void UnixFork::handleSigChld()
             m_childs.erase(it);
         }
 
-        if (worker && !m_terminating && status != SIGTERM) {
+        if (worker && !m_terminating/* && status != SIGTERM*/) {
             std::cout << "DAMN ! worker " << worker << " (pid: " << p << ") died, killed by signal " << status << " :( trying respawn .." << std::endl;
-            createChild(worker, true);
+            m_recreateWorker.push_back(worker);
+            qApp->quit();
         } else if (!m_child && m_childs.isEmpty()) {
             qApp->quit();
         }
@@ -259,18 +288,21 @@ int UnixFork::setupUnixSignalHandlers()
 
 //    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
     if (sigaction(SIGINT, &action, 0) > 0)
         return SIGINT;
 
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
     if (sigaction(SIGQUIT, &action, 0) > 0)
         return SIGQUIT;
 
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;

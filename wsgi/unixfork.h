@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QVector>
 
 class QSocketNotifier;
 class UnixFork : public QObject
@@ -30,7 +31,8 @@ public:
     explicit UnixFork(int process, int threads, QObject *parent = 0);
     ~UnixFork();
 
-    void createProcess();
+    int exec();
+    bool createProcess(bool respawn);
 
     void killChild();
     void terminateChild();
@@ -55,6 +57,7 @@ private:
     static void signalHandler(int signal);
 
     QHash<qint64, int> m_childs;
+    QVector<int> m_recreateWorker;
     QSocketNotifier *m_signalNotifier = nullptr;
     int m_threads;
     int m_processes;

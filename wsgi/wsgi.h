@@ -54,8 +54,13 @@ public:
      * marked as Q_INVOKABLE).
      *
      * It will return 0 in case of sucess.
+     *
+     * @note This method calls QCoreApplication::exec() internally,
+     * this is needed because when creating or recreating child process
+     * the event loop must not be running otherwise we get undefined
+     * behavior. So exit main after this function.
      */
-    int load(Cutelyst::Application *app = nullptr);
+    int exec(Cutelyst::Application *app = nullptr);
 
     Q_PROPERTY(QString application READ application WRITE setApplication)
     void setApplication(const QString &application);

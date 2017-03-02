@@ -43,10 +43,5 @@ int main(int argc, char *argv[])
 //                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 //    QCoreApplication::installTranslator(&qtTranslator);
 
-    int ret = wsgi.load();
-    if (ret) {
-        return ret;
-    }
-
-    return app.exec();
+    return wsgi.exec();
 }
