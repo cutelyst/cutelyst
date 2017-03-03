@@ -62,6 +62,7 @@ public:
         last = 0;
         startOfRequest = 0;
         headerClose = HeaderCloseNotSet;
+        header_size = 0;
         processing = false;
         headerHost = false;
         timeout = false;
@@ -81,6 +82,7 @@ public:
     quint32 last = 0;
     int beginLine = 0;
     int headerClose = HeaderCloseNotSet;
+    quint16 header_size = 0;// FGCI
     bool headerHost = false;
     bool processing = false;
     bool timeout = false;

@@ -169,7 +169,7 @@ quint16 wsgi_be16(char *buf) {
 
 quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const
 {
-    char *buffer = wsgi_req->buffer + wsgi_req->buf_size;
+    char *buffer = wsgi_req->buffer + wsgi_req->header_size;
     char *watermark = wsgi_req->buffer + m_bufferSize;
 
     if (buffer + keylen + vallen + 2 + 2 >= watermark) {
@@ -259,7 +259,7 @@ int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len) const
         quint16 pktsize = addHeader(wsgi_req, buf + j, keylen, buf + j + keylen, vallen);
         if (pktsize == 0)
             return -1;
-//        wsgi_req->uh->pktsize += pktsize;
+        wsgi_req->header_size += pktsize;
         // -1 here as the for() will increment j again
         j += (keylen + vallen) - 1;
     }
