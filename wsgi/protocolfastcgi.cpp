@@ -94,6 +94,7 @@ Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi")
 
 #define WSGI_OK     0
 #define WSGI_AGAIN  1
+#define WSGI_BODY   2
 #define WSGI_ERROR -1
 
 #define FCGI_ALIGNMENT		 8
@@ -169,7 +170,7 @@ quint16 wsgi_be16(char *buf) {
 
 quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const
 {
-    char *buffer = wsgi_req->buffer + wsgi_req->header_size;
+    char *buffer = wsgi_req->buffer + wsgi_req->pktsize;
     char *watermark = wsgi_req->buffer + m_bufferSize;
 
     if (buffer + keylen + vallen + 2 + 2 >= watermark) {
@@ -259,7 +260,7 @@ int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len) const
         quint16 pktsize = addHeader(wsgi_req, buf + j, keylen, buf + j + keylen, vallen);
         if (pktsize == 0)
             return -1;
-        wsgi_req->header_size += pktsize;
+        wsgi_req->pktsize += pktsize;
         // -1 here as the for() will increment j again
         j += (keylen + vallen) - 1;
     }
@@ -285,38 +286,45 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
                 if (fcgi_len == 0) {
                     memmove(sock->buffer, sock->buffer + fcgi_all_len, sock->buf_size - fcgi_all_len);
                     sock->buf_size -= fcgi_all_len;
-
                     return WSGI_OK;
                 }
 
-                if (!writeBody(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len)) {
-                    return -1;
+                quint16 content_size = sock->buf_size - sizeof(struct fcgi_record);
+                if (!writeBody(sock, sock->buffer + sizeof(struct fcgi_record),
+                               qMin(content_size, fcgi_len))) {
+                    return WSGI_ERROR;
+                }
+
+                if (content_size < fcgi_len) {
+                    // we still need the rest of the pkt body
+                    sock->connState = Socket::ContentBody;
+                    sock->pktsize = fcgi_len - content_size;
+                    sock->buf_size = fr->pad;
+                    return WSGI_BODY;
                 }
 
                 memmove(sock->buffer, sock->buffer + fcgi_all_len, sock->buf_size - fcgi_all_len);
                 sock->buf_size -= fcgi_all_len;
-
-                continue;
-            }
-
-            // if we have a full packet, parse it and reset the memory
-            if (sock->buf_size >= fcgi_all_len) {
+            } else if (sock->buf_size >= fcgi_all_len) {
                 // PARAMS ? (ignore other types)
                 if (fcgi_type == FCGI_PARAMS) {
                     if (parseHeaders(sock, sock->buffer + sizeof(struct fcgi_record), fcgi_len)) {
-                        return -1;
+                        return WSGI_ERROR;
                     }
                 } else if (fcgi_type == FCGI_BEGIN_REQUEST) {
                     auto brb = reinterpret_cast<struct fcgi_begin_request_body *>(sock->buffer + sizeof(struct fcgi_begin_request_body));
                     sock->headerClose = (brb->flags & FCGI_KEEP_CONN) ? Socket::HeaderCloseKeep : Socket::HeaderCloseClose;
                     sock->contentLength = -1;
                     sock->headers = Cutelyst::Headers();
+                    sock->connState = Socket::MethodLine;
                 }
+
                 memmove(sock->buffer, sock->buffer + fcgi_all_len, sock->buf_size - fcgi_all_len);
                 sock->buf_size -= fcgi_all_len;
+            } else {
+                break;
             }
-        }
-        else {
+        } else {
             break;
         }
     }
@@ -332,7 +340,7 @@ bool ProtocolFastCGI::writeBody(Socket *sock, char *buf, qint64 len) const
     if (m_postBuffering && sock->contentLength > m_postBuffering) {
         auto temp = new QTemporaryFile;
         if (!temp->open()) {
-            qWarning() << "Failed to open temporary file to store post" << temp->errorString();
+            qCWarning(CWSGI_FCGI) << "Failed to open temporary file to store post" << temp->errorString();
             return false;
         }
         sock->body = temp;
@@ -423,9 +431,50 @@ void wsgi_proto_fastcgi_endrequest(Socket *wsgi_req, QIODevice *io)
     io->write(end_request, 24);
 }
 
+qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const
+{
+    int len;
+    QIODevice *body = sock->body;
+    quint32 &pad = sock->buf_size;
+    while (bytesAvailable && sock->pktsize + pad) {
+        // We need to read and ignore ending PAD data
+        len = io->read(m_postBuffer, qMin(m_postBufferSize, static_cast<qint64>(sock->pktsize + pad)));
+        if (len == -1) {
+            sock->connectionClose();
+            return -1;
+        }
+        bytesAvailable -= len;
+
+        if (len > sock->pktsize) {
+            // We read past pktsize, so possibly PAD data was read too.
+            pad -= len - sock->pktsize;
+            len = sock->pktsize;
+            sock->pktsize = 0;
+        } else {
+            sock->pktsize -= len;
+        }
+
+        body->write(m_postBuffer, len);
+    }
+
+    if ( sock->pktsize + pad == 0) {
+        sock->connState = Socket::MethodLine;
+    }
+
+    return bytesAvailable;
+}
+
 void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
 {
+    // Post buffering
     qint64 bytesAvailable = io->bytesAvailable();
+    if (sock->connState == Socket::ContentBody) {
+        bytesAvailable = readBody(sock, io, bytesAvailable);
+        if (bytesAvailable == -1) {
+            return;
+        }
+    }
+
     do {
         int len = io->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
         bytesAvailable -= len;
@@ -460,6 +509,11 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
                 auto size = sock->buf_size;
                 sock->resetSocket();
                 sock->buf_size = size;
+            } else if (ret == WSGI_BODY) {
+                bytesAvailable = readBody(sock, io, bytesAvailable);
+                if (bytesAvailable == -1) {
+                    return;
+                }
             } else {
                 // On error disconnect immediately
                 io->close();

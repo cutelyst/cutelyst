@@ -76,6 +76,10 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
         do {
             remaining = sock->contentLength - body->size();
             len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
+            if (len == -1) {
+                sock->connectionClose();
+                return;
+            }
             bytesAvailable -= len;
 //            qCDebug(CWSGI_HTTP) << "WRITE body" << sock->contentLength << remaining << len << (remaining == len) << sock->bytesAvailable();
             body->write(m_postBuffer, len);
