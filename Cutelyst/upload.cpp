@@ -51,20 +51,10 @@ bool Upload::save(const QString &newName)
 
     bool error = false;
     QString fileTemplate = QStringLiteral("%1/qt_temp.XXXXXX");
-#ifdef QT_NO_TEMPORARYFILE
     QFile out(fileTemplate.arg(QFileInfo(newName).path()));
     if (!out.open(QIODevice::ReadWrite)) {
         error = true;
     }
-#else
-    QTemporaryFile out(fileTemplate.arg(QFileInfo(newName).path()));
-    if (!out.open()) {
-        out.setFileTemplate(fileTemplate.arg(QDir::tempPath()));
-        if (!out.open()) {
-            error = true;
-        }
-    }
-#endif
 
     if (error) {
         out.close();
@@ -98,15 +88,9 @@ bool Upload::save(const QString &newName)
             setErrorString(QStringLiteral("Cannot create %1 for output").arg(newName));
             qCWarning(CUTELYST_UPLOAD) << errorString();
         }
-#ifdef QT_NO_TEMPORARYFILE
         if (error) {
             out.remove();
         }
-#else
-        if (!error) {
-            out.setAutoRemove(false);
-        }
-#endif
         seek(posOrig);
     }
 
