@@ -122,6 +122,7 @@ void UnixFork::terminateChild()
 bool UnixFork::setUmask(const QString &valueStr)
 {
     if (valueStr.size() < 3) {
+        std::cerr << "umask too small" << std::endl;
         return false;
     }
 
@@ -137,6 +138,7 @@ bool UnixFork::setUmask(const QString &valueStr)
         mode = (mode << 3) + (value[2] - '0');
         mode = (mode << 3) + (value[3] - '0');
     }
+    std::cout << "umask() " << value << std::endl;
 
     umask(mode);
 
@@ -166,6 +168,7 @@ void UnixFork::setGid(const QString &gid)
     if (setgid(gidInt)) {
         qFatal("Failed to set gid '%s'", strerror(errno));
     }
+    std::cout << "setgid() " << gidInt << std::endl;
 }
 
 void UnixFork::setUid(const QString &uid)
@@ -184,6 +187,7 @@ void UnixFork::setUid(const QString &uid)
     if (setuid(uidInt)) {
         qFatal("Failed to set uid: '%s'", strerror(errno));
     }
+    std::cout << "setuid() " << uidInt << std::endl;
 }
 
 void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
