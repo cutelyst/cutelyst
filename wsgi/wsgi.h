@@ -230,6 +230,14 @@ public:
     QString chownSocket() const;
 
     /**
+     * Defines file mode creation mask
+     * @accessors umask(), setUmask()
+     */
+    Q_PROPERTY(QString umask READ umask WRITE setUmask)
+    void setUmask(const QString &value);
+    QString umask() const;
+
+    /**
      * Defines is the Application should be lazy loaded.
      * @accessors lazy(), setLazy()
      */

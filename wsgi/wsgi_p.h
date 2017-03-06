@@ -84,6 +84,7 @@ public:
     QString uid;
     QString gid;
     QString chownSocket;
+    QString umask;
 #endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;

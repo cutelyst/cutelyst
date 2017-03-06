@@ -139,6 +139,11 @@ int WSGI::exec(Cutelyst::Application *app)
         d->listenLocalSockets();
     }
 
+    if (!d->umask.isEmpty() &&
+            !UnixFork::setUmask(d->umask)) {
+        return 1;
+    }
+
     if (!d->gid.isEmpty()) {
         UnixFork::setGid(d->gid);
     }
@@ -693,6 +698,18 @@ QString WSGI::chownSocket() const
     return d->chownSocket;
 }
 
+void WSGI::setUmask(const QString &value)
+{
+    Q_D(WSGI);
+    d->umask = value;
+}
+
+QString WSGI::umask() const
+{
+    Q_D(const WSGI);
+    return d->umask;
+}
+
 void WSGI::setLazy(bool enable)
 {
     Q_D(WSGI);
@@ -884,6 +901,11 @@ void WSGIPrivate::parseCommandLine()
                                                 QCoreApplication::translate("main", "chown unix sockets"),
                                                 QCoreApplication::translate("main", "uid:gid"));
     parser.addOption(chownSocketOption);
+
+    auto umaskOption = QCommandLineOption(QStringLiteral("umask"),
+                                          QCoreApplication::translate("main", "set file mode creation mask"),
+                                          QCoreApplication::translate("main", "mode"));
+    parser.addOption(umaskOption);
 #endif // Q_OS_UNIX
 
     // Process the actual command line arguments given by the user
@@ -937,6 +959,10 @@ void WSGIPrivate::parseCommandLine()
 
     if (parser.isSet(chownSocketOption)) {
         q->setChownSocket(parser.value(chownSocketOption));
+    }
+
+    if (parser.isSet(umaskOption)) {
+        q->setUmask(parser.value(umaskOption));
     }
 #endif // Q_OS_UNIX
 

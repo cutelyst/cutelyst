@@ -20,6 +20,7 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <stdio.h>
 #include <sys/wait.h>
@@ -116,6 +117,30 @@ void UnixFork::terminateChild()
             ::kill(pid_t(pid), SIGQUIT);
         }
     }
+}
+
+bool UnixFork::setUmask(const QString &valueStr)
+{
+    if (valueStr.size() < 3) {
+        return false;
+    }
+
+    const char *value = valueStr.toLatin1().constData();
+    mode_t mode = 0;
+    if (valueStr.size() == 3) {
+        mode = (mode << 3) + (value[0] - '0');
+        mode = (mode << 3) + (value[1] - '0');
+        mode = (mode << 3) + (value[2] - '0');
+    }
+    else {
+        mode = (mode << 3) + (value[1] - '0');
+        mode = (mode << 3) + (value[2] - '0');
+        mode = (mode << 3) + (value[3] - '0');
+    }
+
+    umask(mode);
+
+    return true;
 }
 
 void UnixFork::signalHandler(int signal)
