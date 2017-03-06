@@ -88,6 +88,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qi
     while (pos < contentLength) {
         qint64 len = body->read(buffer + bufferSkip, bufferSize - bufferSkip);
         if (len < 0) {
+            qCWarning(CUTELYST_MULTIPART) << "Error while reading POST body" << body->errorString();
             return ret;
         }
 

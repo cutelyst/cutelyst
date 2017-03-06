@@ -170,6 +170,7 @@ void uWSGI::processRequest(wsgi_request *req)
             body = new BodyUWSGI(req, !uwsgi.post_buffering);
             body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
         }
+        headers.setContentLength(req->post_cl);
     }
     request.body = body;
 
