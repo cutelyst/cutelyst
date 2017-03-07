@@ -62,6 +62,11 @@ public:
      */
     int exec(Cutelyst::Application *app = nullptr);
 
+    /**
+     * Defines application file path to be loaded, an alternative is to provide
+     * the Cutelyst::Application pointer to exec()
+     * @accessors application(), setApplication()
+     */
     Q_PROPERTY(QString application READ application WRITE setApplication)
     void setApplication(const QString &application);
     QString application() const;
@@ -92,14 +97,26 @@ public:
     void setChdir(const QString &chdir);
     QString chdir() const;
 
+    /**
+     * Defines how an HTTP socket should be binded
+     * @accessors httpSocket(), setHttpSocket()
+     */
     Q_PROPERTY(QString http_socket READ httpSocket WRITE setHttpSocket)
     void setHttpSocket(const QString &httpSocket);
     QString httpSocket() const;
 
+    /**
+     * Defines how an FastCGI socket should be binded
+     * @accessors fastcgiSocket(), setFastcgiSocket()
+     */
     Q_PROPERTY(QString fastcgi_socket READ fastcgiSocket WRITE setFastcgiSocket)
     void setFastcgiSocket(const QString &fastcgiSocket);
     QString fastcgiSocket() const;
 
+    /**
+     * Defines the file permissions of a local socket, u = user, g = group, o = others
+     * @accessors socketAccess(), setSocketAccess()
+     */
     Q_PROPERTY(QString socket_access READ socketAccess WRITE setSocketAccess)
     void setSocketAccess(const QString &socketAccess);
     QString socketAccess() const;
@@ -144,6 +161,11 @@ public:
     void setStaticMap2(const QString &staticMap);
     QString staticMap2() const;
 
+    /**
+     * Defines if a master process should be created to watch for it's
+     * child processes
+     * @accessors master(), setMaster()
+     */
     Q_PROPERTY(bool master READ master WRITE setMaster)
     void setMaster(bool enable);
     bool master() const;
@@ -164,14 +186,27 @@ public:
     void setTouchReload(const QString &file);
     QString touchReload() const;
 
+    /**
+     * Defines the buffer size used when parsing requests
+     * @accessors bufferSize(), setBufferSize()
+     */
     Q_PROPERTY(qint64 buffer_size READ bufferSize WRITE setBufferSize)
     void setBufferSize(qint64 size);
     int bufferSize() const;
 
+    /**
+     * Defines the maximum buffer size of POST request, if a request has a content length
+     * that is bigger than the post buffer size a temporary file is created instead
+     * @accessors postBuffering(), setPostBuffering()
+     */
     Q_PROPERTY(qint64 post_buffering READ postBuffering WRITE setPostBuffering)
     void setPostBuffering(qint64 size);
     qint64 postBuffering() const;
 
+    /**
+     * Defines the buffer size when reading a POST request
+     * @accessors postBufferingBufsize(), setPostBufferingBufsize()
+     */
     Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize)
     void setPostBufferingBufsize(qint64 size);
     qint64 postBufferingBufsize() const;
@@ -184,6 +219,10 @@ public:
     void setTcpNodelay(bool enable);
     bool tcpNodelay() const;
 
+    /**
+     * Enable SO_KEEPALIVE for the sockets
+     * @accessors %soKeepalive(), setSoKeepalive()
+     */
     Q_PROPERTY(bool so_keepalive READ soKeepalive WRITE setSoKeepalive)
     void setSoKeepalive(bool enable);
     bool soKeepalive() const;
