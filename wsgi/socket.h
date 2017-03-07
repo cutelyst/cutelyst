@@ -20,6 +20,7 @@
 #define SOCKET_H
 
 #include <QTcpSocket>
+#include <QSslSocket>
 #include <QLocalSocket>
 #include <QHostAddress>
 #include <Cutelyst/Headers>
@@ -99,6 +100,19 @@ public:
 
 Q_SIGNALS:
     void finished(TcpSocket *bj);
+};
+
+class SslSocket : public QSslSocket, public Socket
+{
+    Q_OBJECT
+public:
+    explicit SslSocket(WSGI *wsgi, QObject *parent = 0);
+
+    virtual void connectionClose() override;
+    void socketDisconnected();
+
+Q_SIGNALS:
+    void finished(SslSocket *bj);
 };
 
 class LocalSocket : public QLocalSocket, public Socket

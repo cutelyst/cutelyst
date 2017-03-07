@@ -22,6 +22,8 @@
 #include <QObject>
 #include <QElapsedTimer>
 #include <QTimer>
+#include <QSslConfiguration>
+
 #include <Cutelyst/Engine>
 
 class QTcpServer;
@@ -31,8 +33,10 @@ namespace CWSGI {
 class Protocol;
 struct SocketInfo {
     QString serverName;
+    QSslConfiguration sslConfiguration;
     Protocol *protocol;
     bool localSocket;
+    bool secure = false;
     qintptr socketDescriptor = 0;
 };
 
@@ -93,6 +97,7 @@ private:
     friend class ProtocolFastCGI;
     friend class LocalServer;
     friend class TcpServer;
+    friend class TcpSslServer;
 
     std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;

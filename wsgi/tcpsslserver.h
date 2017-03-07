@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,39 +16,45 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef TCPSERVER_H
-#define TCPSERVER_H
+#ifndef TCPSSLSERVER_H
+#define TCPSSLSERVER_H
 
-#include <QTcpServer>
+#include "tcpserver.h"
+
+#include <QSslConfiguration>
 
 namespace CWSGI {
 
 class WSGI;
 class Protocol;
-class TcpSocket;
+class SslSocket;
 class CWsgiEngine;
-class TcpServer : public QTcpServer
+class TcpSslServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = nullptr);
+    explicit TcpSslServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = nullptr);
 
     virtual void incomingConnection(qintptr handle) override;
 
     void shutdown();
     void timeoutConnections();
 
-protected:
+    void setSslConfiguration(const QSslConfiguration &conf);
+
+private:
+    QSslConfiguration m_sslConfiguration;
+
     QString m_serverAddress;
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
-    std::vector<TcpSocket *> m_socks;
+//    std::vector<SslSocket *> m_socks;
     Protocol *m_protocol;
     int m_processing = 0;
 };
 
 }
 
-#endif // TCPSERVER_H
+#endif // TCPSSLSERVER_H

@@ -76,4 +76,24 @@ void LocalSocket::socketDisconnected()
     }
 }
 
+SslSocket::SslSocket(WSGI *wsgi, QObject *parent) : QSslSocket(parent), Socket(wsgi)
+{
+    isSecure = true;
+    requestPtr = this;
+    startOfRequest = 0;
+    connect(this, &QSslSocket::disconnected, this, &SslSocket::socketDisconnected, Qt::DirectConnection);
+}
+
+void SslSocket::connectionClose()
+{
+    disconnectFromHost();
+}
+
+void SslSocket::socketDisconnected()
+{
+    if (!processing) {
+        Q_EMIT finished(this);
+    }
+}
+
 #include "moc_socket.cpp"

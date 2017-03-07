@@ -14,6 +14,7 @@ set(httpEngine_SRC
     cwsgiengine.cpp
     socket.cpp
     tcpserver.cpp
+    tcpsslserver.cpp
     localserver.cpp
     staticmap.cpp
 )

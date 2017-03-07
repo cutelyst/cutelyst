@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,19 +16,20 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include "tcpserver.h"
-#include "socket.h"
+#include "tcpsslserver.h"
+
 #include "protocol.h"
+#include "socket.h"
 #include "wsgi.h"
 
-#include <Cutelyst/Engine>
-#include <QDateTime>
+#include <QSslError>
 
 using namespace CWSGI;
 
-TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
-  , m_wsgi(wsgi)
-  , m_protocol(protocol)
+TcpSslServer::TcpSslServer(const QString &serverAddress, CWSGI::Protocol *protocol, CWSGI::WSGI *wsgi, QObject *parent)
+    : QTcpServer(parent)
+    , m_wsgi(wsgi)
+    , m_protocol(protocol)
 {
     m_serverAddress = serverAddress;
     m_engine = qobject_cast<CWsgiEngine*>(parent);
@@ -47,29 +48,25 @@ TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsg
     }
 }
 
-void TcpServer::incomingConnection(qintptr handle)
+void TcpSslServer::incomingConnection(qintptr handle)
 {
-    TcpSocket *sock;
-    if (!m_socks.empty()) {
-        sock = m_socks.back();
-        m_socks.pop_back();
-    } else {
-        sock = new TcpSocket(m_wsgi, this);
-        sock->engine = m_engine;
-        sock->proto = m_protocol;
+    auto sock = new SslSocket(m_wsgi, this);
+    sock->setSslConfiguration(m_sslConfiguration);
+    sock->engine = m_engine;
+    sock->proto = m_protocol;
 
-        connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->timeout = false;
-            sock->proto->readyRead(sock, sock);
-        });
-        connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
-            m_socks.push_back(obj);
-            --m_processing;
-        });
-    }
+    connect(sock, &QIODevice::readyRead, [sock] () {
+        sock->timeout = false;
+        sock->proto->readyRead(sock, sock);
+    });
+    connect(sock, &SslSocket::finished, [this] () {
+        --m_processing;
+    });
+    connect(sock, &SslSocket::disconnected, sock, &SslSocket::deleteLater);
 
     if (sock->setSocketDescriptor(handle)) {
         sock->resetSocket();
+
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();
@@ -81,12 +78,14 @@ void TcpServer::incomingConnection(qintptr handle)
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }
+
+        sock->startServerEncryption();
     } else {
-        m_socks.push_back(sock);
+        delete sock;
     }
 }
 
-void TcpServer::shutdown()
+void TcpSslServer::shutdown()
 {
     pauseAccepting();
 
@@ -108,12 +107,12 @@ void TcpServer::shutdown()
     }
 }
 
-void TcpServer::timeoutConnections()
+void TcpSslServer::timeoutConnections()
 {
     if (m_processing) {
         const auto childrenL = children();
         for (auto child : childrenL) {
-            auto socket = qobject_cast<TcpSocket*>(child);
+            auto socket = qobject_cast<SslSocket*>(child);
             if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
                 if (socket->timeout) {
                     socket->connectionClose();
@@ -125,4 +124,7 @@ void TcpServer::timeoutConnections()
     }
 }
 
-#include "moc_tcpserver.cpp"
+void TcpSslServer::setSslConfiguration(const QSslConfiguration &conf)
+{
+    m_sslConfiguration = conf;
+}

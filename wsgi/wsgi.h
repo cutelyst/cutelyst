@@ -106,6 +106,14 @@ public:
     QString httpSocket() const;
 
     /**
+     * Defines how an HTTPS socket should be binded
+     * @accessors httpsSocket(), setHttpsSocket()
+     */
+    Q_PROPERTY(QString https_socket READ httpsSocket WRITE setHttpsSocket)
+    void setHttpsSocket(const QString &httpsSocket);
+    QString httpsSocket() const;
+
+    /**
      * Defines how an FastCGI socket should be binded
      * @accessors fastcgiSocket(), setFastcgiSocket()
      */

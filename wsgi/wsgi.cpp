@@ -23,6 +23,7 @@
 #include "protocolfastcgi.h"
 #include "cwsgiengine.h"
 #include "socket.h"
+#include "tcpsslserver.h"
 
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
@@ -47,6 +48,9 @@
 #include <QSocketNotifier>
 #include <QTimer>
 #include <QDir>
+
+#include <QSslCertificate>
+#include <QSslKey>
 
 #include <iostream>
 
@@ -124,15 +128,15 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 #endif
 
+    // TCP needs root privileges
+    d->listenTcpSockets();
+
     if (!d->chdir.isEmpty()) {
         std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << std::endl;;
         if (!QDir::setCurrent(d->chdir)) {
             qFatal("Failed to chdir to: '%s'", d->chdir.toLatin1().constData());
         }
     }
-
-    // TCP needs root privileges
-    d->listenTcpSockets();
 
 #ifdef Q_OS_UNIX
     if (!d->chownSocket.isEmpty()) {
@@ -215,7 +219,18 @@ void WSGIPrivate::listenTcpSockets()
 
         const auto sockets = httpSockets;
         for (const auto &socket : sockets) {
-            listenTcp(socket, protoHTTP);
+            listenTcp(socket, protoHTTP, false);
+        }
+    }
+
+    if (!httpsSockets.isEmpty()) {
+        if (!protoHTTP) {
+            protoHTTP = new ProtocolHttp(q);
+        }
+
+        const auto sockets = httpsSockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoHTTP, true);
         }
     }
 
@@ -226,30 +241,31 @@ void WSGIPrivate::listenTcpSockets()
 
         const auto sockets = fastcgiSockets;
         for (const auto &socket : sockets) {
-            listenTcp(socket, protoFCGI);
+            listenTcp(socket, protoFCGI, false);
         }
     }
 }
 
-bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
+bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure)
 {
     bool ret = true;
     if (!line.startsWith(QLatin1Char('/'))) {
-        const QStringList parts = line.split(QLatin1Char(':'));
-        if (parts.size() != 2) {
-            qCDebug(CUTELYST_WSGI) << "error parsing:" << line << line.at(0);
-            return false;
-        }
+        const QString addressString = line
+                .section(QLatin1Char(':'), 0, 0)
+                .section(QLatin1Char(','), 0, 0);
 
         QHostAddress address;
-        if (parts.first().isEmpty()) {
+        if (addressString.isEmpty()) {
             address = QHostAddress(QHostAddress::Any);
         } else {
-            address.setAddress(parts.first());
+            address.setAddress(addressString);
         }
 
+        const QString afterColon = line.section(QLatin1Char(':'), 1);
+        const QString portString = afterColon.section(QLatin1Char(','), 0, 0);
+
         bool ok;
-        int port = parts.last().toInt(&ok);
+        int port = portString.toInt(&ok);
         if (!ok || (port < 1 && port > 35554)) {
             port = 80;
         }
@@ -259,6 +275,41 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
         server->pauseAccepting();
 
         SocketInfo info;
+        if (secure) {
+            const QString certPath = afterColon.section(QLatin1Char(','), 1, 1);
+            auto certFile = new QFile(certPath);
+            if (!certFile->open(QFile::ReadOnly)) {
+                std::cerr << "Failed to open SSL certificate" << certPath.toLocal8Bit().constData()
+                          << certFile->errorString().toLocal8Bit().constData() << std::endl;
+                exit(1);
+            }
+            QSslCertificate cert(certFile);
+            if (cert.isNull()) {
+                std::cerr << "Failed to parse SSL certificate" << std::endl;
+                exit(1);
+            }
+
+            const QString keyPath = afterColon.section(QLatin1Char(','), 2, 2);
+            auto keyFile = new QFile(keyPath);
+            if (!keyFile->open(QFile::ReadOnly)) {
+                std::cerr << "Failed to open SSL private key" << keyPath.toLocal8Bit().constData()
+                          << keyFile->errorString().toLocal8Bit().constData() << std::endl;
+                exit(1);
+            }
+            QSslKey key(keyFile, QSsl::Rsa);
+            if (key.isNull()) {
+                std::cerr << "Failed to parse SSL private key" << std::endl;
+                exit(1);
+            }
+
+            QSslConfiguration conf;
+            conf.setLocalCertificate(cert);
+            conf.setPrivateKey(key);
+
+            info.sslConfiguration = conf;
+            info.secure = true;
+        }
+
         info.protocol = protocol;
         info.serverName = server->serverAddress().toString() + QLatin1Char(':') + QString::number(port);
         info.localSocket = false;
@@ -271,7 +322,7 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol)
                       << std::endl;
             sockets.push_back(info);
         } else {
-            std::cout << "Failed to listen on TCP: " << line.toUtf8().constData()
+            std::cerr << "Failed to listen on TCP: " << line.toUtf8().constData()
                       << " : " << server->errorString().toUtf8().constData() << std::endl;
             exit(1);
         }
@@ -441,6 +492,18 @@ QString WSGI::httpSocket() const
 {
     Q_D(const WSGI);
     return d->httpSockets.join(QLatin1Char(' '));
+}
+
+void WSGI::setHttpsSocket(const QString &httpsSocket)
+{
+    Q_D(WSGI);
+    d->httpsSockets.append(httpsSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
+}
+
+QString WSGI::httpsSocket() const
+{
+    Q_D(const WSGI);
+    return d->httpsSockets.join(QLatin1Char(' '));
 }
 
 void WSGI::setFastcgiSocket(const QString &fastcgiSocket)
@@ -834,6 +897,11 @@ void WSGIPrivate::parseCommandLine()
                                          QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocket);
 
+    auto httpsSocket = QCommandLineOption({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
+                                         QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
+                                         QCoreApplication::translate("main", "address"));
+    parser.addOption(httpsSocket);
+
     auto fastcgiSocket = QCommandLineOption(QStringLiteral("fastcgi-socket"),
                                             QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
                                             QCoreApplication::translate("main", "address"));
@@ -1027,6 +1095,13 @@ void WSGIPrivate::parseCommandLine()
         const auto socks = parser.values(httpSocket);
         for (const QString &http : socks) {
             q->setHttpSocket(http);
+        }
+    }
+
+    if (parser.isSet(httpsSocket)) {
+        const auto socks = parser.values(httpsSocket);
+        for (const QString &https : socks) {
+            q->setHttpsSocket(https);
         }
     }
 

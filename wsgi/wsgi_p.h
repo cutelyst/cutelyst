@@ -45,7 +45,7 @@ public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
 
     void listenTcpSockets();
-    bool listenTcp(const QString &line, Protocol *protocol);
+    bool listenTcp(const QString &line, Protocol *protocol, bool secure);
     void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
     bool proc();
@@ -71,6 +71,7 @@ public:
     CWsgiEngine *engine;
 
     QStringList httpSockets;
+    QStringList httpsSockets;
     QStringList fastcgiSockets;
     QStringList staticMaps;
     QStringList staticMaps2;
