@@ -37,6 +37,7 @@
 #include <QCoreApplication>
 #include <QSocketNotifier>
 #include <QTimer>
+#include <QFile>
 #include <QLoggingCategory>
 
 Q_DECLARE_LOGGING_CATEGORY(CUTELYST_WSGI)
@@ -117,6 +118,26 @@ void UnixFork::terminateChild()
             ::kill(pid_t(pid), SIGQUIT);
         }
     }
+}
+
+void UnixFork::stopWSGI(const QString &pidfile)
+{
+    QFile file(pidfile);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        std::cerr << "Failed open pid file " << pidfile.toLocal8Bit().constData() << std::endl;
+        exit(1);
+    }
+
+    QByteArray piddata = file.readLine().simplified();
+    qint64 pid = piddata.toLongLong();
+    if (pid < 2) {
+        qDebug() << piddata;
+        std::cerr << "Failed read pid file " << pidfile.toLocal8Bit().constData() << std::endl;
+        exit(1);
+    }
+
+    ::kill(pid_t(pid), SIGINT);
+    exit(0);
 }
 
 bool UnixFork::setUmask(const QString &valueStr)

@@ -37,6 +37,8 @@ public:
     void killChild();
     void terminateChild();
 
+    static void stopWSGI(const QString &pidfile);
+
     static bool setUmask(const QString &valueStr);
     static void setGid(const QString &gid);
     static void setUid(const QString &uid);

@@ -62,8 +62,6 @@ using namespace Cutelyst;
 WSGI::WSGI(QObject *parent) : QObject(parent),
     d_ptr(new WSGIPrivate(this))
 {
-    std::cout << "Cutelyst-WSGI starting" << std::endl;
-
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(QStringLiteral("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
@@ -91,6 +89,8 @@ int WSGI::exec(Cutelyst::Application *app)
     Q_D(WSGI);
 
     d->parseCommandLine();
+
+    std::cout << "Cutelyst-WSGI starting" << std::endl;
 
     if (!d->ini.isEmpty()) {
         std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;
@@ -993,6 +993,11 @@ void WSGIPrivate::parseCommandLine()
     parser.addOption(pidfile2Opt);
 
 #ifdef Q_OS_UNIX
+    auto stopOption = QCommandLineOption(QStringLiteral("stop"),
+                                        QCoreApplication::translate("main", "stop an instance"),
+                                        QCoreApplication::translate("main", "pidfile"));
+    parser.addOption(stopOption);
+
     auto uidOption = QCommandLineOption(QStringLiteral("uid"),
                                         QCoreApplication::translate("main", "setuid to the specified user/uid"),
                                         QCoreApplication::translate("main", "user/uid"));
@@ -1055,6 +1060,10 @@ void WSGIPrivate::parseCommandLine()
     }
 
 #ifdef Q_OS_UNIX
+    if (parser.isSet(stopOption)) {
+        UnixFork::stopWSGI(parser.value(stopOption));
+    }
+
     if (parser.isSet(processes)) {
         q->setProcesses(parser.value(processes));
     }
@@ -1321,6 +1330,8 @@ void WSGIPrivate::writePidFile(const QString &filename)
         std::cerr << "Failed write pid file " << filename.toLocal8Bit().constData() << std::endl;
         exit(1);
     }
+
+    std::cout << "Writting pidfile to " << filename.toLocal8Bit().constData() << std::endl;
     file.write(QByteArray::number(QCoreApplication::applicationPid()) + '\n');
 }
 
