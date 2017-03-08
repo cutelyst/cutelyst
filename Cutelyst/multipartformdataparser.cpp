@@ -23,7 +23,7 @@
 
 using namespace Cutelyst;
 
-Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, qint64 contentLength, int bufferSize)
+Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
 {
     Uploads ret;
     if (body->isSequential()) {
@@ -66,20 +66,21 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     }
     char *buffer = new char[bufferSize];
 
-    ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, contentLength, body, boundary);
+    ret = MultiPartFormDataParserPrivate::execute(buffer, bufferSize, body, boundary);
 
     delete [] buffer;
 
     return ret;
 }
 
-Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, qint64 contentLength, QIODevice *body, const QByteArray &boundary)
+Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QIODevice *body, const QByteArray &boundary)
 {
     Uploads ret;
     QByteArray headerLine;
     Headers headers;
     qint64 startOffset;
     qint64 pos = 0;
+    qint64 contentLength = body->size();
     int bufferSkip = 0;
     int boundarySize = boundary.size();
     ParserState state = FindBoundary;
