@@ -251,6 +251,22 @@ public:
     void setSocketRcvbuf(int value);
     int socketRcvbuf() const;
 
+    /**
+     * Defines the pid file to be written before privileges drop
+     * @accessors pidfile(), setPidfile()
+     */
+    Q_PROPERTY(QString pidfile READ pidfile WRITE setPidfile)
+    void setPidfile(const QString &file);
+    QString pidfile() const;
+
+    /**
+     * Defines the pid file to be written before privileges drop
+     * @accessors pidfile(), setPidfile()
+     */
+    Q_PROPERTY(QString pidfile2 READ pidfile2 WRITE setPidfile2)
+    void setPidfile2(const QString &file);
+    QString pidfile2() const;
+
 #ifdef Q_OS_UNIX
     /**
      * Defines user id of the process.

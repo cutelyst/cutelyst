@@ -57,6 +57,7 @@ public:
     void engineInitted();
     void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
+    void writePidFile(const QString &filename);
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
@@ -81,6 +82,8 @@ public:
     QString chdir2;
     QString ini;
     QString socketAccess;
+    QString pidfile;
+    QString pidfile2;
 #ifdef Q_OS_UNIX
     QString uid;
     QString gid;

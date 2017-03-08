@@ -131,12 +131,7 @@ int WSGI::exec(Cutelyst::Application *app)
     // TCP needs root privileges
     d->listenTcpSockets();
 
-    if (!d->chdir.isEmpty()) {
-        std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << std::endl;;
-        if (!QDir::setCurrent(d->chdir)) {
-            qFatal("Failed to chdir to: '%s'", d->chdir.toLatin1().constData());
-        }
-    }
+    d->writePidFile(d->pidfile);
 
 #ifdef Q_OS_UNIX
     if (!d->chownSocket.isEmpty()) {
@@ -167,6 +162,15 @@ int WSGI::exec(Cutelyst::Application *app)
     if (!d->sockets.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
         return 1;
+    }
+
+    d->writePidFile(d->pidfile2);
+
+    if (!d->chdir.isEmpty()) {
+        std::cout << "Changing directory to: " << d->chdir.toLatin1().constData() << std::endl;;
+        if (!QDir::setCurrent(d->chdir)) {
+            qFatal("Failed to chdir to: '%s'", d->chdir.toLatin1().constData());
+        }
     }
 
     d->app = app;
@@ -724,6 +728,30 @@ int WSGI::socketRcvbuf() const
     return d->socketReceiveBuf;
 }
 
+void WSGI::setPidfile(const QString &file)
+{
+    Q_D(WSGI);
+    d->pidfile = file;
+}
+
+QString WSGI::pidfile() const
+{
+    Q_D(const WSGI);
+    return d->pidfile;
+}
+
+void WSGI::setPidfile2(const QString &file)
+{
+    Q_D(WSGI);
+    d->pidfile2 = file;
+}
+
+QString WSGI::pidfile2() const
+{
+    Q_D(const WSGI);
+    return d->pidfile2;
+}
+
 #ifdef Q_OS_UNIX
 void WSGI::setUid(const QString &uid)
 {
@@ -954,6 +982,16 @@ void WSGIPrivate::parseCommandLine()
                                            QCoreApplication::translate("main", "bytes"));
     parser.addOption(socketRcvbuf);
 
+    auto pidfileOpt = QCommandLineOption(QStringLiteral("pidfile"),
+                                         QCoreApplication::translate("main", "create pidfile (before privileges drop)"),
+                                         QCoreApplication::translate("main", "file"));
+    parser.addOption(pidfileOpt);
+
+    auto pidfile2Opt = QCommandLineOption(QStringLiteral("pidfile2"),
+                                          QCoreApplication::translate("main", "create pidfile (after privileges drop)"),
+                                          QCoreApplication::translate("main", "file"));
+    parser.addOption(pidfile2Opt);
+
 #ifdef Q_OS_UNIX
     auto uidOption = QCommandLineOption(QStringLiteral("uid"),
                                         QCoreApplication::translate("main", "setuid to the specified user/uid"),
@@ -1006,6 +1044,14 @@ void WSGIPrivate::parseCommandLine()
         if (!ok || size < 0) {
             parser.showHelp(1);
         }
+    }
+
+    if (parser.isSet(pidfileOpt)) {
+        q->setPidfile(parser.value(pidfileOpt));
+    }
+
+    if (parser.isSet(pidfile2Opt)) {
+        q->setPidfile2(parser.value(pidfile2Opt));
     }
 
 #ifdef Q_OS_UNIX
@@ -1262,6 +1308,20 @@ void WSGIPrivate::workerStarted()
     if (--workersNotRunning == 0) {
         Q_EMIT q->ready();
     }
+}
+
+void WSGIPrivate::writePidFile(const QString &filename)
+{
+    if (filename.isEmpty()) {
+        return;
+    }
+
+    QFile file(filename);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        std::cerr << "Failed write pid file " << filename.toLocal8Bit().constData() << std::endl;
+        exit(1);
+    }
+    file.write(QByteArray::number(QCoreApplication::applicationPid()) + '\n');
 }
 
 CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
