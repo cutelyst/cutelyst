@@ -68,7 +68,7 @@ void TcpServer::incomingConnection(qintptr handle)
         });
     }
 
-    if (sock->setSocketDescriptor(handle)) {
+    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();

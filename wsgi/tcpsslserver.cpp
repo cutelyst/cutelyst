@@ -64,7 +64,7 @@ void TcpSslServer::incomingConnection(qintptr handle)
     });
     connect(sock, &SslSocket::disconnected, sock, &SslSocket::deleteLater);
 
-    if (sock->setSocketDescriptor(handle)) {
+    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
 
         sock->serverAddress = m_serverAddress;

@@ -92,7 +92,7 @@ void LocalServer::incomingConnection(quintptr handle)
         });
     }
 
-    if (sock->setSocketDescriptor(handle)) {
+    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
         sock->serverAddress = m_serverAddress;
         if (++m_processing) {
