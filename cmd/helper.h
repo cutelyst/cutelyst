@@ -10,8 +10,6 @@ class Helper : public QObject
 public:
     explicit Helper(QObject *parent = 0);
 
-    bool run(const QString &appFilename, int port, bool restart);
-
     static bool findProjectDir(const QDir &dir, QDir *projectDir);
     static QString findApplication(const QDir &projectDir);
 };
