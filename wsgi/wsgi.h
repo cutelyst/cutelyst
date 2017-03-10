@@ -301,6 +301,7 @@ public:
     Q_PROPERTY(QString umask READ umask WRITE setUmask)
     void setUmask(const QString &value);
     QString umask() const;
+#endif
 
     /**
      * Defines is the Application should be lazy loaded.
@@ -309,7 +310,6 @@ public:
     Q_PROPERTY(bool lazy READ lazy WRITE setLazy)
     void setLazy(bool enable);
     bool lazy() const;
-#endif
 
 Q_SIGNALS:
     /**

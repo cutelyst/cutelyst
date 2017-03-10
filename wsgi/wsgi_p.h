@@ -107,9 +107,7 @@ public:
     int socketReceiveBuf = -1;
     int autoReloadCount = 0;
     int socketTimeout = 4;
-#ifdef Q_OS_UNIX
     bool lazy = false;
-#endif
     bool master = false;
     bool autoReload = false;
     bool tcpNodelay = false;

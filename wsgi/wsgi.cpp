@@ -106,11 +106,9 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                               QCoreApplication::translate("main", "directory"));
     parser.addOption(chdir2);
 
-#ifdef Q_OS_UNIX
     QCommandLineOption lazyOption(QStringLiteral("lazy"),
                                   QCoreApplication::translate("main", "set lazy mode (load app in workers instead of master)"));
     parser.addOption(lazyOption);
-#endif
 
     QCommandLineOption application({ QStringLiteral("application"), QStringLiteral("a") },
                                    QCoreApplication::translate("main", "Application to load"),
@@ -296,10 +294,6 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         setProcesses(parser.value(processes));
     }
 
-    if (parser.isSet(lazyOption)) {
-        setLazy(true);
-    }
-
     if (parser.isSet(uidOption)) {
         setUid(parser.value(uidOption));
     }
@@ -316,6 +310,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         setUmask(parser.value(umaskOption));
     }
 #endif // Q_OS_UNIX
+
+    if (parser.isSet(lazyOption)) {
+        setLazy(true);
+    }
 
     if (parser.isSet(bufferSize)) {
         bool ok;
@@ -1131,6 +1129,7 @@ QString WSGI::umask() const
     Q_D(const WSGI);
     return d->umask;
 }
+#endif
 
 void WSGI::setLazy(bool enable)
 {
@@ -1143,7 +1142,6 @@ bool WSGI::lazy() const
     Q_D(const WSGI);
     return d->lazy;
 }
-#endif
 
 bool WSGIPrivate::proc()
 {
