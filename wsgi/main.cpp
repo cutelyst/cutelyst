@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
 
     QCoreApplication app(argc, argv);
 
+    wsgi.parseCommandLine(app.arguments());
+
     qputenv("QT_LOGGING_CONF", "/home/daniel/cutelyst.ini");
 
 //    QTranslator qtTranslator;

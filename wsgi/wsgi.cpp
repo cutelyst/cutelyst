@@ -84,11 +84,342 @@ WSGI::~WSGI()
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
 }
 
+void WSGI::parseCommandLine(const QStringList &arguments)
+{
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption ini(QStringLiteral("ini"),
+                           QCoreApplication::translate("main", "load config from ini file"),
+                           QCoreApplication::translate("main", "file"));
+    parser.addOption(ini);
+
+    QCommandLineOption chdir(QStringLiteral("chdir"),
+                             QCoreApplication::translate("main", "chdir to specified directory before apps loading"),
+                             QCoreApplication::translate("main", "directory"));
+    parser.addOption(chdir);
+
+    QCommandLineOption chdir2(QStringLiteral("chdir2"),
+                              QCoreApplication::translate("main", "chdir to specified directory afterapps loading"),
+                              QCoreApplication::translate("main", "directory"));
+    parser.addOption(chdir2);
+
+#ifdef Q_OS_UNIX
+    QCommandLineOption lazyOption(QStringLiteral("lazy"),
+                                  QCoreApplication::translate("main", "set lazy mode (load app in workers instead of master)"));
+    parser.addOption(lazyOption);
+#endif
+
+    QCommandLineOption application({ QStringLiteral("application"), QStringLiteral("a") },
+                                   QCoreApplication::translate("main", "Application to load"),
+                                   QCoreApplication::translate("main", "file"));
+    parser.addOption(application);
+
+    QCommandLineOption threads({ QStringLiteral("threads"), QStringLiteral("t") },
+                               QCoreApplication::translate("main", "Number of thread to use"),
+                               QCoreApplication::translate("main", "threads"));
+    parser.addOption(threads);
+
+#ifdef Q_OS_UNIX
+    QCommandLineOption processes({ QStringLiteral("processes"), QStringLiteral("p") },
+                                 QCoreApplication::translate("main", "spawn the specified number of processes"),
+                                 QCoreApplication::translate("main", "processes"));
+    parser.addOption(processes);
+#endif
+
+    QCommandLineOption master({ QStringLiteral("master"), QStringLiteral("M") },
+                              QCoreApplication::translate("main", "Enable master process"));
+    parser.addOption(master);
+
+    QCommandLineOption bufferSize({ QStringLiteral("buffer-size"), QStringLiteral("b") },
+                                  QCoreApplication::translate("main", "set internal buffer size"),
+                                  QCoreApplication::translate("main", "bytes"));
+    parser.addOption(bufferSize);
+
+    QCommandLineOption postBuffering(QStringLiteral("post-buffering"),
+                                     QCoreApplication::translate("main", "set size after which will buffer to disk instead of memory"),
+                                     QCoreApplication::translate("main", "bytes"));
+    parser.addOption(postBuffering);
+
+    QCommandLineOption postBufferingBufsize(QStringLiteral("post-buffering-bufsize"),
+                                            QCoreApplication::translate("main", "set buffer size for read() in post buffering mode"),
+                                            QCoreApplication::translate("main", "bytes"));
+    parser.addOption(postBufferingBufsize);
+
+    QCommandLineOption httpSocket({ QStringLiteral("http-socket"), QStringLiteral("h1") },
+                                  QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
+                                  QCoreApplication::translate("main", "address"));
+    parser.addOption(httpSocket);
+
+    QCommandLineOption httpsSocket({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
+                                   QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
+                                   QCoreApplication::translate("main", "address"));
+    parser.addOption(httpsSocket);
+
+    QCommandLineOption fastcgiSocket(QStringLiteral("fastcgi-socket"),
+                                     QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
+                                     QCoreApplication::translate("main", "address"));
+    parser.addOption(fastcgiSocket);
+
+    QCommandLineOption socketAccess(QStringLiteral("socket-access"),
+                                    QCoreApplication::translate("main", "set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access"),
+                                    QCoreApplication::translate("main", "options"));
+    parser.addOption(socketAccess);
+
+    QCommandLineOption socketTimeout({ QStringLiteral("socket-timeout"), QStringLiteral("z") },
+                                     QCoreApplication::translate("main", "set internal sockets timeout"),
+                                     QCoreApplication::translate("main", "seconds"));
+    parser.addOption(socketTimeout);
+
+    QCommandLineOption staticMap(QStringLiteral("static-map"),
+                                 QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
+                                 QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMap);
+
+    QCommandLineOption staticMap2(QStringLiteral("static-map2"),
+                                  QCoreApplication::translate("main", "like static-map but completely appending the requested resource to the docroot"),
+                                  QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMap2);
+
+    QCommandLineOption autoReload({ QStringLiteral("auto-restart"), QStringLiteral("r") },
+                                  QCoreApplication::translate("main", "auto restarts when the application file changes"));
+    parser.addOption(autoReload);
+
+    QCommandLineOption touchReload(QStringLiteral("touch-reload"),
+                                   QCoreApplication::translate("main", "reload application if the specified file is modified/touched"),
+                                   QCoreApplication::translate("main", "file"));
+    parser.addOption(touchReload);
+
+    QCommandLineOption tcpNoDelay(QStringLiteral("tcp-nodelay"),
+                                  QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
+    parser.addOption(tcpNoDelay);
+
+    QCommandLineOption soKeepAlive(QStringLiteral("so-keepalive"),
+                                   QCoreApplication::translate("main", "enable TCP KEEPALIVEs"));
+    parser.addOption(soKeepAlive);
+
+    QCommandLineOption socketSndbuf(QStringLiteral("socket-sndbuf"),
+                                    QCoreApplication::translate("main", "set SO_SNDBUF"),
+                                    QCoreApplication::translate("main", "bytes"));
+    parser.addOption(socketSndbuf);
+
+    QCommandLineOption socketRcvbuf(QStringLiteral("socket-rcvbuf"),
+                                    QCoreApplication::translate("main", "set SO_RCVBUF"),
+                                    QCoreApplication::translate("main", "bytes"));
+    parser.addOption(socketRcvbuf);
+
+    QCommandLineOption pidfileOpt(QStringLiteral("pidfile"),
+                                  QCoreApplication::translate("main", "create pidfile (before privileges drop)"),
+                                  QCoreApplication::translate("main", "file"));
+    parser.addOption(pidfileOpt);
+
+    QCommandLineOption pidfile2Opt(QStringLiteral("pidfile2"),
+                                   QCoreApplication::translate("main", "create pidfile (after privileges drop)"),
+                                   QCoreApplication::translate("main", "file"));
+    parser.addOption(pidfile2Opt);
+
+#ifdef Q_OS_UNIX
+    QCommandLineOption stopOption(QStringLiteral("stop"),
+                                  QCoreApplication::translate("main", "stop an instance"),
+                                  QCoreApplication::translate("main", "pidfile"));
+    parser.addOption(stopOption);
+
+    QCommandLineOption uidOption(QStringLiteral("uid"),
+                                 QCoreApplication::translate("main", "setuid to the specified user/uid"),
+                                 QCoreApplication::translate("main", "user/uid"));
+    parser.addOption(uidOption);
+
+    QCommandLineOption gidOption(QStringLiteral("gid"),
+                                 QCoreApplication::translate("main", "setgid to the specified group/gid"),
+                                 QCoreApplication::translate("main", "group/gid"));
+    parser.addOption(gidOption);
+
+    QCommandLineOption chownSocketOption(QStringLiteral("chown-socket"),
+                                         QCoreApplication::translate("main", "chown unix sockets"),
+                                         QCoreApplication::translate("main", "uid:gid"));
+    parser.addOption(chownSocketOption);
+
+    QCommandLineOption umaskOption(QStringLiteral("umask"),
+                                   QCoreApplication::translate("main", "set file mode creation mask"),
+                                   QCoreApplication::translate("main", "mode"));
+    parser.addOption(umaskOption);
+#endif // Q_OS_UNIX
+
+    // Process the actual command line arguments given by the user
+    parser.process(arguments);
+
+    if (parser.isSet(ini)) {
+        setIni(parser.value(ini));
+    }
+
+    if (parser.isSet(chdir)) {
+        setChdir(parser.value(chdir));
+    }
+
+    if (parser.isSet(chdir2)) {
+        setChdir2(parser.value(chdir2));
+    }
+
+    if (parser.isSet(threads)) {
+        setThreads(parser.value(threads));
+    }
+
+    if (parser.isSet(socketAccess)) {
+        setSocketAccess(parser.value(socketAccess));
+    }
+
+    if (parser.isSet(socketTimeout)) {
+        bool ok;
+        auto size = parser.value(socketTimeout).toInt(&ok);
+        setSocketTimeout(size);
+        if (!ok || size < 0) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(pidfileOpt)) {
+        setPidfile(parser.value(pidfileOpt));
+    }
+
+    if (parser.isSet(pidfile2Opt)) {
+        setPidfile2(parser.value(pidfile2Opt));
+    }
+
+#ifdef Q_OS_UNIX
+    if (parser.isSet(stopOption)) {
+        UnixFork::stopWSGI(parser.value(stopOption));
+    }
+
+    if (parser.isSet(processes)) {
+        setProcesses(parser.value(processes));
+    }
+
+    if (parser.isSet(lazyOption)) {
+        setLazy(true);
+    }
+
+    if (parser.isSet(uidOption)) {
+        setUid(parser.value(uidOption));
+    }
+
+    if (parser.isSet(gidOption)) {
+        setGid(parser.value(gidOption));
+    }
+
+    if (parser.isSet(chownSocketOption)) {
+        setChownSocket(parser.value(chownSocketOption));
+    }
+
+    if (parser.isSet(umaskOption)) {
+        setUmask(parser.value(umaskOption));
+    }
+#endif // Q_OS_UNIX
+
+    if (parser.isSet(bufferSize)) {
+        bool ok;
+        auto size = parser.value(bufferSize).toLongLong(&ok);
+        setBufferSize(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(postBuffering)) {
+        bool ok;
+        auto size = parser.value(postBuffering).toLongLong(&ok);
+        setPostBuffering(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(postBufferingBufsize)) {
+        bool ok;
+        auto size = parser.value(postBufferingBufsize).toLongLong(&ok);
+        setPostBufferingBufsize(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(application)) {
+        setApplication(parser.value(application));
+    }
+
+    setMaster(parser.isSet(master));
+
+    setAutoReload(parser.isSet(autoReload));
+
+    setTcpNodelay(parser.isSet(tcpNoDelay));
+
+    setSoKeepalive(parser.isSet(soKeepAlive));
+
+    if (parser.isSet(socketSndbuf)) {
+        bool ok;
+        auto size = parser.value(socketSndbuf).toInt(&ok);
+        setSocketSndbuf(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(socketRcvbuf)) {
+        bool ok;
+        auto size = parser.value(socketRcvbuf).toInt(&ok);
+        setSocketRcvbuf(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(httpSocket)) {
+        const auto socks = parser.values(httpSocket);
+        for (const QString &http : socks) {
+            setHttpSocket(http);
+        }
+    }
+
+    if (parser.isSet(httpsSocket)) {
+        const auto socks = parser.values(httpsSocket);
+        for (const QString &https : socks) {
+            setHttpsSocket(https);
+        }
+    }
+
+    if (parser.isSet(fastcgiSocket)) {
+        const auto socks = parser.values(fastcgiSocket);
+        for (const QString &sock : socks) {
+            setFastcgiSocket(sock);
+        }
+    }
+
+    if (parser.isSet(staticMap)) {
+        const auto maps = parser.values(staticMap);
+        for (const QString &map : maps) {
+            setStaticMap(map);
+        }
+    }
+
+    if (parser.isSet(staticMap2)) {
+        const auto maps = parser.values(staticMap2);
+        for (const QString &map : maps) {
+            setStaticMap2(map);
+        }
+    }
+
+    if (parser.isSet(touchReload)) {
+        const auto maps = parser.values(touchReload);
+        for (const QString &map : maps) {
+            setTouchReload(map);
+        }
+    }
+}
+
 int WSGI::exec(Cutelyst::Application *app)
 {
     Q_D(WSGI);
-
-    d->parseCommandLine();
 
     std::cout << "Cutelyst-WSGI starting" << std::endl;
 
@@ -852,341 +1183,6 @@ bool WSGIPrivate::proc()
 
     return true;
 #endif
-}
-
-void WSGIPrivate::parseCommandLine()
-{
-    Q_Q(WSGI);
-
-    QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
-    parser.addHelpOption();
-    parser.addVersionOption();
-
-    auto ini = QCommandLineOption(QStringLiteral("ini"),
-                                  QCoreApplication::translate("main", "load config from ini file"),
-                                  QCoreApplication::translate("main", "file"));
-    parser.addOption(ini);
-
-    auto chdir = QCommandLineOption(QStringLiteral("chdir"),
-                                    QCoreApplication::translate("main", "chdir to specified directory before apps loading"),
-                                    QCoreApplication::translate("main", "directory"));
-    parser.addOption(chdir);
-
-    auto chdir2 = QCommandLineOption(QStringLiteral("chdir2"),
-                                     QCoreApplication::translate("main", "chdir to specified directory afterapps loading"),
-                                     QCoreApplication::translate("main", "directory"));
-    parser.addOption(chdir2);
-
-#ifdef Q_OS_UNIX
-    auto lazyOption = QCommandLineOption(QStringLiteral("lazy"),
-                                         QCoreApplication::translate("main", "set lazy mode (load app in workers instead of master)"));
-    parser.addOption(lazyOption);
-#endif
-
-    auto application = QCommandLineOption({ QStringLiteral("application"), QStringLiteral("a") },
-                                          QCoreApplication::translate("main", "Application to load"),
-                                          QCoreApplication::translate("main", "file"));
-    parser.addOption(application);
-
-    auto threads = QCommandLineOption({ QStringLiteral("threads"), QStringLiteral("t") },
-                                      QCoreApplication::translate("main", "Number of thread to use"),
-                                      QCoreApplication::translate("main", "threads"));
-    parser.addOption(threads);
-
-#ifdef Q_OS_UNIX
-    auto processes = QCommandLineOption({ QStringLiteral("processes"), QStringLiteral("p") },
-                                      QCoreApplication::translate("main", "spawn the specified number of processes"),
-                                      QCoreApplication::translate("main", "processes"));
-    parser.addOption(processes);
-#endif
-
-    auto master = QCommandLineOption({ QStringLiteral("master"), QStringLiteral("M") },
-                                      QCoreApplication::translate("main", "Enable master process"));
-    parser.addOption(master);
-
-    auto bufferSize = QCommandLineOption({ QStringLiteral("buffer-size"), QStringLiteral("b") },
-                                         QCoreApplication::translate("main", "set internal buffer size"),
-                                         QCoreApplication::translate("main", "bytes"));
-    parser.addOption(bufferSize);
-
-    auto postBuffering = QCommandLineOption(QStringLiteral("post-buffering"),
-                                            QCoreApplication::translate("main", "set size after which will buffer to disk instead of memory"),
-                                            QCoreApplication::translate("main", "bytes"));
-    parser.addOption(postBuffering);
-
-    auto postBufferingBufsize = QCommandLineOption(QStringLiteral("post-buffering-bufsize"),
-                                            QCoreApplication::translate("main", "set buffer size for read() in post buffering mode"),
-                                            QCoreApplication::translate("main", "bytes"));
-    parser.addOption(postBufferingBufsize);
-
-    auto httpSocket = QCommandLineOption({ QStringLiteral("http-socket"), QStringLiteral("h1") },
-                                         QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
-                                         QCoreApplication::translate("main", "address"));
-    parser.addOption(httpSocket);
-
-    auto httpsSocket = QCommandLineOption({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
-                                         QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
-                                         QCoreApplication::translate("main", "address"));
-    parser.addOption(httpsSocket);
-
-    auto fastcgiSocket = QCommandLineOption(QStringLiteral("fastcgi-socket"),
-                                            QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
-                                            QCoreApplication::translate("main", "address"));
-    parser.addOption(fastcgiSocket);
-
-    auto socketAccess = QCommandLineOption(QStringLiteral("socket-access"),
-                                           QCoreApplication::translate("main", "set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access"),
-                                           QCoreApplication::translate("main", "options"));
-    parser.addOption(socketAccess);
-
-    auto socketTimeout = QCommandLineOption({ QStringLiteral("socket-timeout"), QStringLiteral("z") },
-                                            QCoreApplication::translate("main", "set internal sockets timeout"),
-                                            QCoreApplication::translate("main", "seconds"));
-    parser.addOption(socketTimeout);
-
-    auto staticMap = QCommandLineOption(QStringLiteral("static-map"),
-                                        QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
-                                        QCoreApplication::translate("main", "mountpoint=path"));
-    parser.addOption(staticMap);
-
-    auto staticMap2 = QCommandLineOption(QStringLiteral("static-map2"),
-                                         QCoreApplication::translate("main", "like static-map but completely appending the requested resource to the docroot"),
-                                         QCoreApplication::translate("main", "mountpoint=path"));
-    parser.addOption(staticMap2);
-
-    auto autoReload = QCommandLineOption({ QStringLiteral("auto-restart"), QStringLiteral("r") },
-                                      QCoreApplication::translate("main", "auto restarts when the application file changes"));
-    parser.addOption(autoReload);
-
-    auto touchReload = QCommandLineOption(QStringLiteral("touch-reload"),
-                                        QCoreApplication::translate("main", "reload application if the specified file is modified/touched"),
-                                        QCoreApplication::translate("main", "file"));
-    parser.addOption(touchReload);
-
-    auto tcpNoDelay = QCommandLineOption(QStringLiteral("tcp-nodelay"),
-                                         QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
-    parser.addOption(tcpNoDelay);
-
-    auto soKeepAlive = QCommandLineOption(QStringLiteral("so-keepalive"),
-                                          QCoreApplication::translate("main", "enable TCP KEEPALIVEs"));
-    parser.addOption(soKeepAlive);
-
-    auto socketSndbuf = QCommandLineOption(QStringLiteral("socket-sndbuf"),
-                                           QCoreApplication::translate("main", "set SO_SNDBUF"),
-                                           QCoreApplication::translate("main", "bytes"));
-    parser.addOption(socketSndbuf);
-
-    auto socketRcvbuf = QCommandLineOption(QStringLiteral("socket-rcvbuf"),
-                                           QCoreApplication::translate("main", "set SO_RCVBUF"),
-                                           QCoreApplication::translate("main", "bytes"));
-    parser.addOption(socketRcvbuf);
-
-    auto pidfileOpt = QCommandLineOption(QStringLiteral("pidfile"),
-                                         QCoreApplication::translate("main", "create pidfile (before privileges drop)"),
-                                         QCoreApplication::translate("main", "file"));
-    parser.addOption(pidfileOpt);
-
-    auto pidfile2Opt = QCommandLineOption(QStringLiteral("pidfile2"),
-                                          QCoreApplication::translate("main", "create pidfile (after privileges drop)"),
-                                          QCoreApplication::translate("main", "file"));
-    parser.addOption(pidfile2Opt);
-
-#ifdef Q_OS_UNIX
-    auto stopOption = QCommandLineOption(QStringLiteral("stop"),
-                                        QCoreApplication::translate("main", "stop an instance"),
-                                        QCoreApplication::translate("main", "pidfile"));
-    parser.addOption(stopOption);
-
-    auto uidOption = QCommandLineOption(QStringLiteral("uid"),
-                                        QCoreApplication::translate("main", "setuid to the specified user/uid"),
-                                        QCoreApplication::translate("main", "user/uid"));
-    parser.addOption(uidOption);
-
-    auto gidOption = QCommandLineOption(QStringLiteral("gid"),
-                                        QCoreApplication::translate("main", "setgid to the specified group/gid"),
-                                        QCoreApplication::translate("main", "group/gid"));
-    parser.addOption(gidOption);
-
-    auto chownSocketOption = QCommandLineOption(QStringLiteral("chown-socket"),
-                                                QCoreApplication::translate("main", "chown unix sockets"),
-                                                QCoreApplication::translate("main", "uid:gid"));
-    parser.addOption(chownSocketOption);
-
-    auto umaskOption = QCommandLineOption(QStringLiteral("umask"),
-                                          QCoreApplication::translate("main", "set file mode creation mask"),
-                                          QCoreApplication::translate("main", "mode"));
-    parser.addOption(umaskOption);
-#endif // Q_OS_UNIX
-
-    // Process the actual command line arguments given by the user
-    parser.process(*qApp);
-
-    if (parser.isSet(ini)) {
-        q->setIni(parser.value(ini));
-    }
-
-    if (parser.isSet(chdir)) {
-        q->setChdir(parser.value(chdir));
-    }
-
-    if (parser.isSet(chdir2)) {
-        q->setChdir2(parser.value(chdir2));
-    }
-
-    if (parser.isSet(threads)) {
-        q->setThreads(parser.value(threads));
-    }
-
-    if (parser.isSet(socketAccess)) {
-        q->setSocketAccess(parser.value(socketAccess));
-    }
-
-    if (parser.isSet(socketTimeout)) {
-        bool ok;
-        auto size = parser.value(socketTimeout).toInt(&ok);
-        q->setSocketTimeout(size);
-        if (!ok || size < 0) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(pidfileOpt)) {
-        q->setPidfile(parser.value(pidfileOpt));
-    }
-
-    if (parser.isSet(pidfile2Opt)) {
-        q->setPidfile2(parser.value(pidfile2Opt));
-    }
-
-#ifdef Q_OS_UNIX
-    if (parser.isSet(stopOption)) {
-        UnixFork::stopWSGI(parser.value(stopOption));
-    }
-
-    if (parser.isSet(processes)) {
-        q->setProcesses(parser.value(processes));
-    }
-
-    if (parser.isSet(lazyOption)) {
-        q->setLazy(true);
-    }
-
-    if (parser.isSet(uidOption)) {
-        q->setUid(parser.value(uidOption));
-    }
-
-    if (parser.isSet(gidOption)) {
-        q->setGid(parser.value(gidOption));
-    }
-
-    if (parser.isSet(chownSocketOption)) {
-        q->setChownSocket(parser.value(chownSocketOption));
-    }
-
-    if (parser.isSet(umaskOption)) {
-        q->setUmask(parser.value(umaskOption));
-    }
-#endif // Q_OS_UNIX
-
-    if (parser.isSet(bufferSize)) {
-        bool ok;
-        auto size = parser.value(bufferSize).toLongLong(&ok);
-        q->setBufferSize(size);
-        if (!ok || size < 1) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(postBuffering)) {
-        bool ok;
-        auto size = parser.value(postBuffering).toLongLong(&ok);
-        q->setPostBuffering(size);
-        if (!ok || size < 1) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(postBufferingBufsize)) {
-        bool ok;
-        auto size = parser.value(postBufferingBufsize).toLongLong(&ok);
-        q->setPostBufferingBufsize(size);
-        if (!ok || size < 1) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(application)) {
-        q->setApplication(parser.value(application));
-    }
-
-    q->setMaster(parser.isSet(master));
-
-    q->setAutoReload(parser.isSet(autoReload));
-
-    q->setTcpNodelay(parser.isSet(tcpNoDelay));
-
-    q->setSoKeepalive(parser.isSet(soKeepAlive));
-
-    if (parser.isSet(socketSndbuf)) {
-        bool ok;
-        auto size = parser.value(socketSndbuf).toInt(&ok);
-        q->setSocketSndbuf(size);
-        if (!ok || size < 1) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(socketRcvbuf)) {
-        bool ok;
-        auto size = parser.value(socketRcvbuf).toInt(&ok);
-        q->setSocketRcvbuf(size);
-        if (!ok || size < 1) {
-            parser.showHelp(1);
-        }
-    }
-
-    if (parser.isSet(httpSocket)) {
-        const auto socks = parser.values(httpSocket);
-        for (const QString &http : socks) {
-            q->setHttpSocket(http);
-        }
-    }
-
-    if (parser.isSet(httpsSocket)) {
-        const auto socks = parser.values(httpsSocket);
-        for (const QString &https : socks) {
-            q->setHttpsSocket(https);
-        }
-    }
-
-    if (parser.isSet(fastcgiSocket)) {
-        const auto socks = parser.values(fastcgiSocket);
-        for (const QString &sock : socks) {
-            q->setFastcgiSocket(sock);
-        }
-    }
-
-    if (parser.isSet(staticMap)) {
-        const auto maps = parser.values(staticMap);
-        for (const QString &map : maps) {
-            q->setStaticMap(map);
-        }
-    }
-
-    if (parser.isSet(staticMap2)) {
-        const auto maps = parser.values(staticMap2);
-        for (const QString &map : maps) {
-            q->setStaticMap2(map);
-        }
-    }
-
-    if (parser.isSet(touchReload)) {
-        const auto maps = parser.values(touchReload);
-        for (const QString &map : maps) {
-            q->setTouchReload(map);
-        }
-    }
 }
 
 int WSGIPrivate::setupApplication()

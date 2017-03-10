@@ -4,7 +4,7 @@ include_directories(
 )
 
 set(cutelyst_cmd_SRCS
-    uwsgiprocess.cpp
+    helper.cpp
     main.cpp
 )
 
@@ -16,6 +16,7 @@ target_compile_features(cutelyst-skell
 target_link_libraries(cutelyst-skell
     Qt5::Core
     Qt5::Network
+    cutelyst_wsgi_qt5
 )
 
 set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst)

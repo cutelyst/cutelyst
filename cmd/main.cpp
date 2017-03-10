@@ -11,13 +11,16 @@
 #include <QStringBuilder>
 #include <QDir>
 
+#include <wsgi/wsgi.h>
+
 #include <ostream>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
 
-#include "uwsgiprocess.h"
+#include "config.h"
+#include "helper.h"
 
 #define OUT_EXISTS  "  exists"
 #define OUT_CREATED " created"
@@ -33,7 +36,7 @@ bool createController(const QString &controllerName)
     }
 
     QDir projectDir;
-    if (!uwsgiProcess::findProjectDir(QDir::current(), &projectDir)) {
+    if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
         qDebug() << "Error: failed to find project";
         return false;
     }
@@ -223,7 +226,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
         out << "    explicit " << controllerName << "(QObject *parent = 0);" << "\n";
         out << "    ~" << controllerName << "();" << "\n";
         out << "\n";
-        out << "    C_ATTR(index, :Path :Args(0))" << "\n";
+        out << "    C_ATTR(index, :Path :AutoArgs)" << "\n";
         out << "    void index(Context *c);" << "\n";
         if (helpers) {
             out << "\n";
@@ -415,11 +418,18 @@ bool createApplication(const QString &name)
 
 int main(int argc, char *argv[])
 {
+    QByteArray logging = qgetenv("QT_LOGGING_RULES");
+    if (!logging.isEmpty()) {
+        logging.append(';');
+    }
+    logging.append("cutelyst.*=true");
+    qputenv("QT_LOGGING_RULES", logging);
+
     QCoreApplication app(argc, argv);
     QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
     QCoreApplication::setApplicationName(QStringLiteral("cutelyst"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("0.0.1"));
+    QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
 
     QTranslator qtTranslator;
     qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
@@ -428,36 +438,53 @@ int main(int argc, char *argv[])
 
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QStringLiteral("Creates a skeleton for a new application, and for controllers"));
+    parser.setApplicationDescription(QStringLiteral("Cutelyst DEVELOPER helper, it can create a skeleton for a new application, controllers and start your application"));
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption appName = QCommandLineOption(QStringLiteral("create-app"),
-                                                    QStringLiteral("Creates a new Cutelyst application"),
-                                                    QStringLiteral("app_name"));
+    QCommandLineOption appName(QStringLiteral("create-app"),
+                               QStringLiteral("Creates a new Cutelyst application"),
+                               QStringLiteral("app_name"));
     parser.addOption(appName);
-    QCommandLineOption controller = QCommandLineOption(QStringLiteral("controller"),
-                                                       QStringLiteral("Name of the Controller application to create"),
-                                                       QStringLiteral("controller_name"));
+
+    QCommandLineOption controller(QStringLiteral("controller"),
+                                  QStringLiteral("Name of the Controller application to create"),
+                                  QStringLiteral("controller_name"));
 
     parser.addOption(controller);
-    QCommandLineOption server = QCommandLineOption(QStringLiteral("server"),
-                                                   QStringLiteral("Starts a HTTP server (requires uWSGI)"));
+
+    QCommandLineOption server(QStringLiteral("server"),
+                              QStringLiteral("Starts a HTTP server"));
     parser.addOption(server);
-    QCommandLineOption appFile = QCommandLineOption(QStringLiteral("app-file"),
-                                                    QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so), if not set it will try to auto-detect"),
-                                                    QStringLiteral("file_name"));
+
+    QCommandLineOption appFile(QStringLiteral("app-file"),
+                               QStringLiteral("Application file of to use with the server (usually in build/src/lib*.so), if not set it will try to auto-detect"),
+                               QStringLiteral("file_name"));
     parser.addOption(appFile);
-    QCommandLineOption serverPort = QCommandLineOption({ QStringLiteral("server-port"), QStringLiteral("p") },
-                                                       QStringLiteral("Development server port"),
-                                                       QStringLiteral("port"));
+
+    QCommandLineOption serverPort({ QStringLiteral("server-port"), QStringLiteral("p") },
+                                  QStringLiteral("Development server port"),
+                                  QStringLiteral("port"));
     parser.addOption(serverPort);
-    QCommandLineOption restart = QCommandLineOption({ QStringLiteral("restart"), QStringLiteral("r") },
-                                                    QStringLiteral("Restarts the development server when the application file changes"));
-    parser.addOption(restart);
+
+    QCommandLineOption restartOpt({ QStringLiteral("restart"), QStringLiteral("r") },
+                                  QStringLiteral("Restarts the development server when the application file changes"));
+    parser.addOption(restartOpt);
+
+    const QStringList arguments = app.arguments();
+    QStringList argsBeforeDashDash;
+    QStringList argsAfterDashDash = arguments.mid(0, 1);
+
+    int pos = arguments.indexOf(QStringLiteral("--"));
+    if (pos != -1) {
+        argsBeforeDashDash = arguments.mid(0, pos);
+        argsAfterDashDash.append(arguments.mid(pos + 1));
+    } else {
+        argsBeforeDashDash = arguments;
+    }
 
     // Process the actual command line arguments given by the user
-    parser.process(app);
+    parser.process(argsBeforeDashDash);
 
     if (parser.isSet(appName)) {
         QString name = parser.value(appName);
@@ -470,18 +497,42 @@ int main(int argc, char *argv[])
             parser.showHelp(3);
         }
     } else if (parser.isSet(server)) {
-        QString filename = parser.value(appFile);
         int port = 3000;
         if (parser.isSet(serverPort)) {
             port = parser.value(serverPort).toInt();
         }
 
-        uwsgiProcess server;
-        if (!server.run(filename, port, parser.isSet(restart))) {
+        CWSGI::WSGI wsgi;
+
+        wsgi.parseCommandLine(argsAfterDashDash);
+
+        wsgi.setHttpSocket(QLatin1Char(':') + QString::number(port));
+
+        bool restart = parser.isSet(restartOpt);
+        wsgi.setMaster(restart);
+        wsgi.setAutoReload(restart);
+        wsgi.setLazy(restart);
+
+        QDir projectDir;
+        if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
+            qDebug() << "Error: failed to find project";
+            return false;
+        }
+
+        QString localFilename = parser.value(appFile);
+        if (localFilename.isEmpty()) {
+            localFilename = Helper::findApplication(projectDir);
+        }
+
+        QFileInfo fileInfo(localFilename);
+        if (!fileInfo.exists()) {
+            qDebug() << "Error: Application file not found";
             return 1;
         }
 
-        return app.exec();
+        wsgi.setApplication(localFilename);
+
+        return wsgi.exec();
     } else {
         parser.showHelp(1);
     }

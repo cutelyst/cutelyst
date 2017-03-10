@@ -44,6 +44,8 @@ public:
     explicit WSGI(QObject *parent = nullptr);
     virtual ~WSGI();
 
+    void parseCommandLine(const QStringList &args);
+
     /**
      * This function will start the WSGI server.
      *

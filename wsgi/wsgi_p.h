@@ -49,7 +49,6 @@ public:
     void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
     bool proc();
-    void parseCommandLine();
     int setupApplication();
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void restart(const QString &path);
