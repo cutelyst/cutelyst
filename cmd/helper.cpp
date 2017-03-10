@@ -40,8 +40,7 @@ QString Helper::findApplication(const QDir &projectDir)
     while (it.hasNext()) {
         QString file = it.next();
         const QMimeType mime = m_db.mimeTypeForFile(file);
-        if (mime.inherits(QStringLiteral("application/x-sharedlib")) ||
-                mime.inherits(QStringLiteral("application/octet-stream"))) {
+        if (mime.inherits(QStringLiteral("application/x-sharedlib"))) {
             return file;
         }
     }
