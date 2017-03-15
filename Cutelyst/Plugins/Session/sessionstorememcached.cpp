@@ -108,11 +108,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::stri
         QVariantHash data = c->property(SESSION_STORE_MEMCD_DATA).toHash();
 
         if (data.isEmpty()) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
-            if (!memc.remove(sessionKey.toStdString(), QDateTime::currentDateTimeUtc().toSecsSinceEpoch()())) {
-#else
-            if (!memc.remove(sessionKey.toStdString(), QDateTime::currentDateTimeUtc().toTime_t())) {
-#endif
+            if (!memc.remove(sessionKey.toStdString()))
                 std::string errorString;
                 memc.error(errorString);
                 qCWarning(C_SESSION_MEMCACHED) << "Failed to remove session from Memcached:" << QString::fromStdString(errorString);
