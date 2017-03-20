@@ -93,7 +93,7 @@ void CWsgiEngine::listen()
                 auto server = new TcpSslServer(info.serverName, info.protocol, m_wsgi, this);
                 if (server->setSocketDescriptor(info.socketDescriptor)) {
                     server->pauseAccepting();
-                    server->setSslConfiguration(info.sslConfiguration);
+                    server->setSslConfiguration(*info.sslConfiguration);
                     connect(this, &CWsgiEngine::started, server, &TcpSslServer::resumeAccepting);
                     connect(this, &CWsgiEngine::shutdown, server, &TcpSslServer::shutdown);
                     if (m_socketTimeout) {

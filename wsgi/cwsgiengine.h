@@ -33,7 +33,7 @@ namespace CWSGI {
 class Protocol;
 struct SocketInfo {
     QString serverName;
-    QSslConfiguration sslConfiguration;
+    QSslConfiguration *sslConfiguration = nullptr;
     Protocol *protocol;
     bool localSocket;
     bool secure = false;

@@ -81,6 +81,10 @@ WSGI::~WSGI()
     delete d->protoHTTP;
     delete d->protoFCGI;
 
+    for (const SocketInfo &info : d->sockets) {
+        delete info.sslConfiguration;
+    }
+
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
 }
 
@@ -601,9 +605,9 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure
                 exit(1);
             }
 
-            QSslConfiguration conf;
-            conf.setLocalCertificate(cert);
-            conf.setPrivateKey(key);
+            auto conf = new QSslConfiguration;
+            conf->setLocalCertificate(cert);
+            conf->setPrivateKey(key);
 
             info.sslConfiguration = conf;
             info.secure = true;
