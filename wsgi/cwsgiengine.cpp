@@ -47,18 +47,16 @@ CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &op
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
 
-    const QString staticMap = wsgi->staticMap();
-    const QString staticMap2 = wsgi->staticMap2();
+    const QStringList staticMap = wsgi->staticMap();
+    const QStringList staticMap2 = wsgi->staticMap2();
     if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
         auto staticMapPlugin = new StaticMap(app);
 
-        const auto parts = staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts);
-        for (const QString &part : parts) {
+        for (const QString &part : staticMap) {
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
         }
 
-        const auto parts2 = staticMap2.split(QLatin1Char(';'), QString::SkipEmptyParts);
-        for (const QString &part : parts2) {
+        for (const QString &part : staticMap2) {
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
         }
     }

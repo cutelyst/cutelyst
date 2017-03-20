@@ -60,7 +60,7 @@ public:
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
-    bool loadConfig();
+    bool loadConfig(const QString &ini);
     void loadConfigGroup(const QString &group, QSettings &settings);
     void loadLoggingRules(QSettings &settings);
 

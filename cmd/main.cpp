@@ -506,7 +506,7 @@ int main(int argc, char *argv[])
 
         wsgi.parseCommandLine(argsAfterDashDash);
 
-        wsgi.setHttpSocket(QLatin1Char(':') + QString::number(port));
+        wsgi.setHttpSocket({ QLatin1Char(':') + QString::number(port) });
 
         bool restart = parser.isSet(restartOpt);
         wsgi.setMaster(restart);

@@ -86,6 +86,8 @@ WSGI::~WSGI()
 
 void WSGI::parseCommandLine(const QStringList &arguments)
 {
+    Q_D(WSGI);
+
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
     parser.addHelpOption();
@@ -146,20 +148,20 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                             QCoreApplication::translate("main", "bytes"));
     parser.addOption(postBufferingBufsize);
 
-    QCommandLineOption httpSocket({ QStringLiteral("http-socket"), QStringLiteral("h1") },
-                                  QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
-                                  QCoreApplication::translate("main", "address"));
-    parser.addOption(httpSocket);
-
-    QCommandLineOption httpsSocket({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
-                                   QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
-                                   QCoreApplication::translate("main", "address"));
-    parser.addOption(httpsSocket);
-
-    QCommandLineOption fastcgiSocket(QStringLiteral("fastcgi-socket"),
-                                     QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
+    QCommandLineOption httpSocketOpt({ QStringLiteral("http-socket"), QStringLiteral("h1") },
+                                     QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
                                      QCoreApplication::translate("main", "address"));
-    parser.addOption(fastcgiSocket);
+    parser.addOption(httpSocketOpt);
+
+    QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
+                                      QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
+                                      QCoreApplication::translate("main", "address"));
+    parser.addOption(httpsSocketOpt);
+
+    QCommandLineOption fastcgiSocketOpt(QStringLiteral("fastcgi-socket"),
+                                        QCoreApplication::translate("main", "bind to the specified UNIX/TCP socket using FastCGI protocol"),
+                                        QCoreApplication::translate("main", "address"));
+    parser.addOption(fastcgiSocketOpt);
 
     QCommandLineOption socketAccess(QStringLiteral("socket-access"),
                                     QCoreApplication::translate("main", "set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access"),
@@ -171,24 +173,24 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                      QCoreApplication::translate("main", "seconds"));
     parser.addOption(socketTimeout);
 
-    QCommandLineOption staticMap(QStringLiteral("static-map"),
-                                 QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
-                                 QCoreApplication::translate("main", "mountpoint=path"));
-    parser.addOption(staticMap);
+    QCommandLineOption staticMapOpt(QStringLiteral("static-map"),
+                                    QCoreApplication::translate("main", "map mountpoint to static directory (or file)"),
+                                    QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMapOpt);
 
-    QCommandLineOption staticMap2(QStringLiteral("static-map2"),
-                                  QCoreApplication::translate("main", "like static-map but completely appending the requested resource to the docroot"),
-                                  QCoreApplication::translate("main", "mountpoint=path"));
-    parser.addOption(staticMap2);
+    QCommandLineOption staticMap2Opt(QStringLiteral("static-map2"),
+                                     QCoreApplication::translate("main", "like static-map but completely appending the requested resource to the docroot"),
+                                     QCoreApplication::translate("main", "mountpoint=path"));
+    parser.addOption(staticMap2Opt);
 
     QCommandLineOption autoReload({ QStringLiteral("auto-restart"), QStringLiteral("r") },
                                   QCoreApplication::translate("main", "auto restarts when the application file changes"));
     parser.addOption(autoReload);
 
-    QCommandLineOption touchReload(QStringLiteral("touch-reload"),
-                                   QCoreApplication::translate("main", "reload application if the specified file is modified/touched"),
-                                   QCoreApplication::translate("main", "file"));
-    parser.addOption(touchReload);
+    QCommandLineOption touchReloadOpt(QStringLiteral("touch-reload"),
+                                      QCoreApplication::translate("main", "reload application if the specified file is modified/touched"),
+                                      QCoreApplication::translate("main", "file"));
+    parser.addOption(touchReloadOpt);
 
     QCommandLineOption tcpNoDelay(QStringLiteral("tcp-nodelay"),
                                   QCoreApplication::translate("main", "enable TCP NODELAY on each request"));
@@ -248,8 +250,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     // Process the actual command line arguments given by the user
     parser.process(arguments);
 
-    if (parser.isSet(ini)) {
-        setIni(parser.value(ini));
+    const auto inis = parser.values(ini);
+    for (const QString &ini : inis) {
+        d->loadConfig(ini);
+        setIni(ini);
     }
 
     if (parser.isSet(chdir)) {
@@ -372,47 +376,17 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         }
     }
 
-    if (parser.isSet(httpSocket)) {
-        const auto socks = parser.values(httpSocket);
-        for (const QString &http : socks) {
-            setHttpSocket(http);
-        }
-    }
+    setHttpSocket(httpSocket() + parser.values(httpSocketOpt));
 
-    if (parser.isSet(httpsSocket)) {
-        const auto socks = parser.values(httpsSocket);
-        for (const QString &https : socks) {
-            setHttpsSocket(https);
-        }
-    }
+    setHttpsSocket(httpsSocket() + parser.values(httpsSocketOpt));
 
-    if (parser.isSet(fastcgiSocket)) {
-        const auto socks = parser.values(fastcgiSocket);
-        for (const QString &sock : socks) {
-            setFastcgiSocket(sock);
-        }
-    }
+    setFastcgiSocket(fastcgiSocket() + parser.values(fastcgiSocketOpt));
 
-    if (parser.isSet(staticMap)) {
-        const auto maps = parser.values(staticMap);
-        for (const QString &map : maps) {
-            setStaticMap(map);
-        }
-    }
+    setStaticMap(staticMap() + parser.values(staticMapOpt));
 
-    if (parser.isSet(staticMap2)) {
-        const auto maps = parser.values(staticMap2);
-        for (const QString &map : maps) {
-            setStaticMap2(map);
-        }
-    }
+    setStaticMap2(staticMap2() + parser.values(staticMap2Opt));
 
-    if (parser.isSet(touchReload)) {
-        const auto maps = parser.values(touchReload);
-        for (const QString &map : maps) {
-            setTouchReload(map);
-        }
-    }
+    setTouchReload(touchReload() + parser.values(touchReloadOpt));
 }
 
 int WSGI::exec(Cutelyst::Application *app)
@@ -420,14 +394,6 @@ int WSGI::exec(Cutelyst::Application *app)
     Q_D(WSGI);
 
     std::cout << "Cutelyst-WSGI starting" << std::endl;
-
-    if (!d->ini.isEmpty()) {
-        std::cout << "Loading configuration: " << d->ini.toLatin1().constData() << std::endl;
-        if (!d->loadConfig()) {
-            qCCritical(CUTELYST_WSGI) << "Failed to load config " << d->ini;
-            return 1;
-        }
-    }
 
     if (!qEnvironmentVariableIsSet("CUTELYST_WSGI_IGNORE_MASTER") && !d->master) {
         std::cout << "*** WARNING: you are running Cutelyst-WSGI without its master process manager ***" << std::endl;
@@ -713,7 +679,7 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         }
         server->removeServer(line);
         ret = server->listen(line);
-//        server->pauseAccepting(); // TODO
+        //        server->pauseAccepting(); // TODO
 
         SocketInfo info;
         info.protocol = protocol;
@@ -728,7 +694,7 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         for (auto child : children) {
             auto notifier = qobject_cast<QSocketNotifier*>(child);
             if (notifier) {
-//                qDebug() << "found notifier" << notifier->socket();
+                //                qDebug() << "found notifier" << notifier->socket();
                 info.socketDescriptor = notifier->socket();
                 notifier->setEnabled(false);
                 break;
@@ -815,40 +781,40 @@ QString WSGI::chdir() const
     return d->chdir;
 }
 
-void WSGI::setHttpSocket(const QString &httpSocket)
+void WSGI::setHttpSocket(const QStringList &httpSocket)
 {
     Q_D(WSGI);
-    d->httpSockets.append(httpSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
+    d->httpSockets = httpSocket;
 }
 
-QString WSGI::httpSocket() const
+QStringList WSGI::httpSocket() const
 {
     Q_D(const WSGI);
-    return d->httpSockets.join(QLatin1Char(' '));
+    return d->httpSockets;
 }
 
-void WSGI::setHttpsSocket(const QString &httpsSocket)
+void WSGI::setHttpsSocket(const QStringList &httpsSocket)
 {
     Q_D(WSGI);
-    d->httpsSockets.append(httpsSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
+    d->httpsSockets = httpsSocket;
 }
 
-QString WSGI::httpsSocket() const
+QStringList WSGI::httpsSocket() const
 {
     Q_D(const WSGI);
-    return d->httpsSockets.join(QLatin1Char(' '));
+    return d->httpsSockets;
 }
 
-void WSGI::setFastcgiSocket(const QString &fastcgiSocket)
+void WSGI::setFastcgiSocket(const QStringList &fastcgiSocket)
 {
     Q_D(WSGI);
-    d->fastcgiSockets.append(fastcgiSocket.split(QLatin1Char(' '), QString::SkipEmptyParts));
+    d->fastcgiSockets = fastcgiSocket;
 }
 
-QString WSGI::fastcgiSocket() const
+QStringList WSGI::fastcgiSocket() const
 {
     Q_D(const WSGI);
-    return d->fastcgiSockets.join(QLatin1Char(' '));
+    return d->fastcgiSockets;
 }
 
 void WSGI::setSocketAccess(const QString &socketAccess)
@@ -899,28 +865,28 @@ QString WSGI::ini() const
     return d->ini;
 }
 
-void WSGI::setStaticMap(const QString &staticMap)
+void WSGI::setStaticMap(const QStringList &staticMap)
 {
     Q_D(WSGI);
-    d->staticMaps.append(staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts));
+    d->staticMaps = staticMap;
 }
 
-QString WSGI::staticMap() const
+QStringList WSGI::staticMap() const
 {
     Q_D(const WSGI);
-    return d->staticMaps.join(QLatin1Char(';'));
+    return d->staticMaps;
 }
 
-void WSGI::setStaticMap2(const QString &staticMap)
+void WSGI::setStaticMap2(const QStringList &staticMap)
 {
     Q_D(WSGI);
-    d->staticMaps2.append(staticMap.split(QLatin1Char(';'), QString::SkipEmptyParts));
+    d->staticMaps2 = staticMap;
 }
 
-QString WSGI::staticMap2() const
+QStringList WSGI::staticMap2() const
 {
     Q_D(const WSGI);
-    return d->staticMaps2.join(QLatin1Char(';'));
+    return d->staticMaps2;
 }
 
 void WSGI::setMaster(bool enable)
@@ -951,18 +917,16 @@ bool WSGI::autoReload() const
     return d->autoReload;
 }
 
-void WSGI::setTouchReload(const QString &file)
+void WSGI::setTouchReload(const QStringList &files)
 {
     Q_D(WSGI);
-    if (!file.isEmpty()) {
-        d->touchReload.append(file.split(QLatin1Char(';'), QString::SkipEmptyParts));
-    }
+    d->touchReload = files;
 }
 
-QString WSGI::touchReload() const
+QStringList WSGI::touchReload() const
 {
     Q_D(const WSGI);
-    return d->touchReload.join(QLatin1Char(';'));
+    return d->touchReload;
 }
 
 void WSGI::setBufferSize(qint64 size)
@@ -1235,7 +1199,7 @@ int WSGIPrivate::setupApplication()
         }
     }
 
-// TODO create a listening timer
+    // TODO create a listening timer
 
     return 0;
 }
@@ -1360,10 +1324,13 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     return engine;
 }
 
-bool WSGIPrivate::loadConfig()
+bool WSGIPrivate::loadConfig(const QString &ini)
 {
+    std::cout << "Loading configuration: " << ini.toLocal8Bit().constData() << std::endl;
+
     QSettings settings(ini, QSettings::IniFormat);
     if (settings.status() != QSettings::NoError) {
+        qFatal("Failed to load config");
         return false;
     }
 
@@ -1384,14 +1351,14 @@ void WSGIPrivate::loadConfigGroup(const QString &group, QSettings &settings)
     for (const QString &key : keys) {
         QString prop = key;
         prop.replace(QLatin1Char('-'), QLatin1Char('_'));
+        const char *keyChar = prop.toLatin1().constData();
+
         const QVariant value = settings.value(key);
         if (value.type() == QVariant::StringList) {
-            const auto values = value.toStringList();
-            for (const auto &str : values) {
-                q->setProperty(prop.toLatin1().constData(), str);
-            }
+            const QStringList currentValues = q->property(keyChar).toStringList();
+            q->setProperty(keyChar, currentValues + value.toStringList());
         } else {
-            q->setProperty(prop.toLatin1().constData(), value);
+            q->setProperty(keyChar, value);
         }
     }
     settings.endGroup();

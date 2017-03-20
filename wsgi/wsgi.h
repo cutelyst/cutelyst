@@ -103,25 +103,25 @@ public:
      * Defines how an HTTP socket should be binded
      * @accessors httpSocket(), setHttpSocket()
      */
-    Q_PROPERTY(QString http_socket READ httpSocket WRITE setHttpSocket)
-    void setHttpSocket(const QString &httpSocket);
-    QString httpSocket() const;
+    Q_PROPERTY(QStringList http_socket READ httpSocket WRITE setHttpSocket)
+    void setHttpSocket(const QStringList &httpSocket);
+    QStringList httpSocket() const;
 
     /**
      * Defines how an HTTPS socket should be binded
      * @accessors httpsSocket(), setHttpsSocket()
      */
-    Q_PROPERTY(QString https_socket READ httpsSocket WRITE setHttpsSocket)
-    void setHttpsSocket(const QString &httpsSocket);
-    QString httpsSocket() const;
+    Q_PROPERTY(QStringList https_socket READ httpsSocket WRITE setHttpsSocket)
+    void setHttpsSocket(const QStringList &httpsSocket);
+    QStringList httpsSocket() const;
 
     /**
      * Defines how an FastCGI socket should be binded
      * @accessors fastcgiSocket(), setFastcgiSocket()
      */
-    Q_PROPERTY(QString fastcgi_socket READ fastcgiSocket WRITE setFastcgiSocket)
-    void setFastcgiSocket(const QString &fastcgiSocket);
-    QString fastcgiSocket() const;
+    Q_PROPERTY(QStringList fastcgi_socket READ fastcgiSocket WRITE setFastcgiSocket)
+    void setFastcgiSocket(const QStringList &fastcgiSocket);
+    QStringList fastcgiSocket() const;
 
     /**
      * Defines the file permissions of a local socket, u = user, g = group, o = others
@@ -159,17 +159,17 @@ public:
      * Map the mountpoint to static directory (or file)
      * @accessors staticMap(), setStaticMap()
      */
-    Q_PROPERTY(QString static_map READ staticMap WRITE setStaticMap)
-    void setStaticMap(const QString &staticMap);
-    QString staticMap() const;
+    Q_PROPERTY(QStringList static_map READ staticMap WRITE setStaticMap)
+    void setStaticMap(const QStringList &staticMap);
+    QStringList staticMap() const;
 
     /**
      * Map the mountpoint to static directory (or file), completely appending the requested resource to the docroot
      * @accessors staticMap2(), setStaticMap2()
      */
-    Q_PROPERTY(QString static_map2 READ staticMap2 WRITE setStaticMap2)
-    void setStaticMap2(const QString &staticMap);
-    QString staticMap2() const;
+    Q_PROPERTY(QStringList static_map2 READ staticMap2 WRITE setStaticMap2)
+    void setStaticMap2(const QStringList &staticMap);
+    QStringList staticMap2() const;
 
     /**
      * Defines if a master process should be created to watch for it's
@@ -192,9 +192,9 @@ public:
      * Reload application if the specified file is modified or touched
      * @accessors touchReload(), setTouchReload()
      */
-    Q_PROPERTY(QString touch_reload READ touchReload WRITE setTouchReload)
-    void setTouchReload(const QString &file);
-    QString touchReload() const;
+    Q_PROPERTY(QStringList touch_reload READ touchReload WRITE setTouchReload)
+    void setTouchReload(const QStringList &files);
+    QStringList touchReload() const;
 
     /**
      * Defines the buffer size used when parsing requests
