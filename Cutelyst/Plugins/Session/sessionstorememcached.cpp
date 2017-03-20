@@ -108,7 +108,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::stri
         QVariantHash data = c->property(SESSION_STORE_MEMCD_DATA).toHash();
 
         if (data.isEmpty()) {
-            if (!memc.remove(sessionKey.toStdString()))
+            if (!memc.remove(sessionKey.toStdString())) {
                 std::string errorString;
                 memc.error(errorString);
                 qCWarning(C_SESSION_MEMCACHED) << "Failed to remove session from Memcached:" << QString::fromStdString(errorString);
