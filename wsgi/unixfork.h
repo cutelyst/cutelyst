@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,19 +23,40 @@
 #include <QHash>
 #include <QVector>
 
+#include "abstractfork.h"
+
+typedef struct {
+    bool null = true;
+    int id;
+    int restart = 0;
+} Worker;
+
+class QTimer;
 class QSocketNotifier;
-class UnixFork : public QObject
+class UnixFork : public AbstractFork
 {
     Q_OBJECT
 public:
     explicit UnixFork(int process, int threads, QObject *parent = 0);
     ~UnixFork();
 
-    int exec();
+    virtual bool continueMaster(int *exit = 0) override;
+
+    virtual int exec(bool lazy, bool master) override;
+
+    virtual void restart();
+
+    int internalExec();
+
     bool createProcess(bool respawn);
 
-    void killChild();
-    void terminateChild();
+    virtual void killChild() override;
+    void killChild(qint64 pid);
+
+    virtual void terminateChild() override;
+    void terminateChild(qint64 pid);
+
+    virtual void enginesInitted() override;
 
     static void stopWSGI(const QString &pidfile);
 
@@ -49,23 +70,23 @@ public:
     void handleSigInt();
     void handleSigChld();
 
-Q_SIGNALS:
-    void forked();
-    void shutdown();
-
 private:
     int setupUnixSignalHandlers();
     void setupSocketPair(bool closeSignalsFD);
-    bool createChild(int worker, bool respawn);
+    bool createChild(const Worker &worker, bool respawn);
     static void signalHandler(int signal);
+    void setupCheckChildTimer();
+    void postFork();
 
-    QHash<qint64, int> m_childs;
-    QVector<int> m_recreateWorker;
+    QHash<qint64, Worker> m_childs;
+    QVector<Worker> m_recreateWorker;
     QSocketNotifier *m_signalNotifier = nullptr;
+    QTimer *m_checkChildRestart = nullptr;
     int m_threads;
     int m_processes;
     bool m_child = false;
     bool m_terminating = false;
+    bool m_enginedInitted = false;
 };
 
 #endif // UNIXFORK_H

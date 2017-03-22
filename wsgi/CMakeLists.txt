@@ -7,6 +7,7 @@ endif()
 set(httpEngine_SRC
     wsgi.cpp
     wsgi_p.h
+    abstractfork.cpp
     protocol.cpp
     protocolhttp.cpp
     protocolfastcgi.cpp
@@ -23,6 +24,11 @@ if (UNIX)
     set(httpEngine_SRC
         ${httpEngine_SRC}
         unixfork.cpp
+        )
+else ()
+    set(httpEngine_SRC
+        ${httpEngine_SRC}
+        windowsfork.cpp
         )
 endif ()
 

@@ -23,17 +23,11 @@
 
 #include "cwsgiengine.h"
 
-#include <QProcess>
-
 #include <Cutelyst/Application>
 
 class QTcpServer;
 class QSettings;
-class QTimer;
-
-#ifdef Q_OS_UNIX
-class UnixFork;
-#endif
+class AbstractFork;
 
 namespace CWSGI {
 
@@ -48,11 +42,7 @@ public:
     bool listenTcp(const QString &line, Protocol *protocol, bool secure);
     void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
-    bool proc();
-    int setupApplication();
-    void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void restart(const QString &path);
-    void restartTerminate();
+    void setupApplication();
     void engineInitted();
     void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
@@ -91,13 +81,9 @@ public:
 #endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
-    QProcess *masterChildProcess = nullptr;
-    QTimer *materChildRestartTimer = nullptr;
     Protocol *protoHTTP = nullptr;
     Protocol *protoFCGI = nullptr;
-#ifdef Q_OS_UNIX
-    UnixFork *unixFork = nullptr;
-#endif
+    AbstractFork *genericFork = nullptr;
     int bufferSize = 4096;
     int enginesInitted = 1;
     int workersNotRunning = 1;
@@ -105,7 +91,6 @@ public:
     int processes = 0;
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
-    int autoReloadCount = 0;
     int socketTimeout = 4;
     bool lazy = false;
     bool master = false;

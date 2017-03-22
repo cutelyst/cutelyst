@@ -27,6 +27,8 @@
 
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
+#else
+#include "windowsfork.h"
 #endif
 
 #ifdef Q_OS_LINUX
@@ -43,9 +45,9 @@
 #include <QPluginLoader>
 #include <QThread>
 #include <QLoggingCategory>
-#include <QFileSystemWatcher>
 #include <QSettings>
 #include <QSocketNotifier>
+#include <QMetaProperty>
 #include <QTimer>
 #include <QDir>
 
@@ -354,13 +356,21 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         setApplication(parser.value(application));
     }
 
-    setMaster(parser.isSet(master));
+    if (parser.isSet(master)) {
+        setMaster(true);
+    }
 
-    setAutoReload(parser.isSet(autoReload));
+    if (parser.isSet(autoReload)) {
+        setAutoReload(true);
+    }
 
-    setTcpNodelay(parser.isSet(tcpNoDelay));
+    if (parser.isSet(tcpNoDelay)) {
+        setTcpNodelay(true);
+    }
 
-    setSoKeepalive(parser.isSet(soKeepAlive));
+    if (parser.isSet(soKeepAlive)) {
+        setSoKeepalive(true);
+    }
 
     if (parser.isSet(socketSndbuf)) {
         bool ok;
@@ -396,27 +406,33 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 int WSGI::exec(Cutelyst::Application *app)
 {
     Q_D(WSGI);
-
     std::cout << "Cutelyst-WSGI starting" << std::endl;
 
     if (!qEnvironmentVariableIsSet("CUTELYST_WSGI_IGNORE_MASTER") && !d->master) {
         std::cout << "*** WARNING: you are running Cutelyst-WSGI without its master process manager ***" << std::endl;
     }
 
-    if (d->master) {
-        if (d->proc()) {
-            // On Windows we use QProcess to start a child process
-            return 0;
+#ifdef Q_OS_UNIX
+    d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
+#else
+    d->genericFork = new WindowsFork(this);
+#endif
+
+    connect(d->genericFork, &AbstractFork::forked, d, &WSGIPrivate::forked);
+    connect(d->genericFork, &AbstractFork::shutdown, d, &WSGIPrivate::shutdown);
+    connect(d->genericFork, &AbstractFork::setupApplication, d, &WSGIPrivate::setupApplication);
+
+    if (d->master && d->lazy) {
+        if (d->autoReload && !d->application.isEmpty()) {
+            d->touchReload.append(d->application);
         }
+        d->genericFork->setTouchReload(d->touchReload);
     }
 
-#ifdef Q_OS_UNIX
-    d->unixFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
-    connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::forked);
-    connect(d->unixFork, &UnixFork::shutdown, d, &WSGIPrivate::shutdown);
-    connect(d, &WSGIPrivate::killChildProcess, d->unixFork, &UnixFork::killChild);
-    connect(d, &WSGIPrivate::terminateChildProcess, d->unixFork, &UnixFork::terminateChild);
-#endif
+    int ret;
+    if (d->master && !d->genericFork->continueMaster(&ret)) {
+        return ret;
+    }
 
 #ifdef Q_OS_LINUX
     if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
@@ -432,9 +448,11 @@ int WSGI::exec(Cutelyst::Application *app)
 
     d->writePidFile(d->pidfile);
 
+    bool isListeningLocalSockets = false;
 #ifdef Q_OS_UNIX
     if (!d->chownSocket.isEmpty()) {
         d->listenLocalSockets();
+        isListeningLocalSockets = true;
     }
 
     if (!d->umask.isEmpty() &&
@@ -449,14 +467,11 @@ int WSGI::exec(Cutelyst::Application *app)
     if (!d->uid.isEmpty()) {
         UnixFork::setUid(d->uid);
     }
+#endif
 
-    if (d->chownSocket.isEmpty()) {
-        // LOCAL shoud use new user privileges if chown is not set
+    if (!isListeningLocalSockets) {
         d->listenLocalSockets();
     }
-#else
-    d->listenLocalSockets();
-#endif
 
     if (!d->sockets.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
@@ -474,39 +489,7 @@ int WSGI::exec(Cutelyst::Application *app)
 
     d->app = app;
 
-    int ret;
-
-#ifdef Q_OS_UNIX
-    if (d->lazy) {
-        connect(d->unixFork, &UnixFork::forked, d, &WSGIPrivate::setupApplication);
-        ret = d->unixFork->exec();
-    } else {
-        ret = d->setupApplication();
-
-        if (ret == 0) {
-            if (d->processes) {
-                // Forking with an event loop running leads to
-                // non working event loops on child process
-                // so this is a temporary loop until all engines
-                // are initted
-                QCoreApplication::exec();
-
-                if (d->enginesInitted != 0) {
-                    return 1;
-                }
-
-                ret = d->unixFork->exec();
-            } else {
-                ret = QCoreApplication::exec();
-            }
-        }
-    }
-#else
-    ret = d->setupApplication();
-    if (ret == 0) {
-        ret = QCoreApplication::exec();
-    }
-#endif
+    ret = d->genericFork->exec(d->lazy, d->master);
 
     return ret;
 }
@@ -1111,47 +1094,7 @@ bool WSGI::lazy() const
     return d->lazy;
 }
 
-bool WSGIPrivate::proc()
-{
-    delete materChildRestartTimer;
-    materChildRestartTimer = nullptr;
-
-#ifdef Q_OS_UNIX
-    if (master && processes == 0) {
-        processes = 1;
-    }
-    return false;
-#else
-    if (!masterChildProcess) {
-        masterChildProcess = new QProcess(this);
-        connect(masterChildProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-                this, &WSGIPrivate::childFinished);
-        connect(this, &WSGIPrivate::killChildProcess, masterChildProcess, &QProcess::kill);
-        connect(this, &WSGIPrivate::terminateChildProcess, masterChildProcess, &QProcess::terminate);
-
-        if (autoReload) {
-            touchReload.append(application);
-        }
-
-        if (!touchReload.isEmpty()) {
-            auto watcher = new QFileSystemWatcher(touchReload, this);
-            QObject::connect(watcher, &QFileSystemWatcher::fileChanged, this, &WSGIPrivate::restart);
-        }
-    }
-
-    auto env = QProcessEnvironment::systemEnvironment();
-    env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));
-    masterChildProcess->setProcessEnvironment(env);
-
-    masterChildProcess->setProcessChannelMode(QProcess::ForwardedChannels);
-
-    masterChildProcess->start(QCoreApplication::applicationFilePath(), QCoreApplication::arguments());
-
-    return true;
-#endif
-}
-
-int WSGIPrivate::setupApplication()
+void WSGIPrivate::setupApplication()
 {
     Cutelyst::Application *localApp = app;
     if (!localApp) {
@@ -1159,7 +1102,7 @@ int WSGIPrivate::setupApplication()
         QPluginLoader loader(application);
         if (!loader.load()) {
             qCCritical(CUTELYST_WSGI) << "Could not load application:" << loader.errorString();
-            return 1;
+            exit(1);
         }
 
         QObject *instance = loader.instance();
@@ -1202,48 +1145,14 @@ int WSGIPrivate::setupApplication()
             qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
         }
     }
-
-    // TODO create a listening timer
-
-    return 0;
-}
-
-void WSGIPrivate::childFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
-    qCDebug(CUTELYST_WSGI) << "Master child finished" << exitCode << exitStatus;
-    if (materChildRestartTimer || exitStatus == QProcess::CrashExit) {
-        proc();
-    } else {
-        qApp->exit(exitCode);
-    }
-}
-
-void WSGIPrivate::restart(const QString &path)
-{
-    qCDebug(CUTELYST_WSGI) << "File changed restarting" << path;
-    if (!materChildRestartTimer) {
-        materChildRestartTimer = new QTimer(this);
-        materChildRestartTimer->setInterval(1 * 1000);
-        materChildRestartTimer->setSingleShot(false);
-
-        QObject::connect(materChildRestartTimer, &QTimer::timeout, this, &WSGIPrivate::restartTerminate);
-    }
-    materChildRestartTimer->start();
-}
-
-void WSGIPrivate::restartTerminate()
-{
-    if (++autoReloadCount > 5) {
-        Q_EMIT killChildProcess();
-    } else {
-        Q_EMIT terminateChildProcess();
-    }
 }
 
 void WSGIPrivate::engineInitted()
 {
     // All engines are initted
     if (--enginesInitted == 0) {
+        genericFork->enginesInitted();
+
 #ifdef Q_OS_UNIX
         if (processes && !lazy) {
             QCoreApplication::exit();
@@ -1353,17 +1262,30 @@ void WSGIPrivate::loadConfigGroup(const QString &group, QSettings &settings)
     settings.beginGroup(group);
     const auto keys = settings.allKeys();
     for (const QString &key : keys) {
-        QString prop = key;
-        prop.replace(QLatin1Char('-'), QLatin1Char('_'));
-        const char *keyChar = prop.toLatin1().constData();
+        QString normKey = key;
+        normKey.replace(QLatin1Char('-'), QLatin1Char('_'));
+
+        int ix = q->metaObject()->indexOfProperty(normKey.toLatin1().constData());
+        if (ix == -1) {
+            continue;
+        }
 
         const QVariant value = settings.value(key);
-        if (value.type() == QVariant::StringList) {
-            const QStringList currentValues = q->property(keyChar).toStringList();
-            q->setProperty(keyChar, currentValues + value.toStringList());
+        const QMetaProperty prop = q->metaObject()->property(ix);
+        if (prop.type() == value.type()) {
+            if (prop.type() == QVariant::StringList) {
+                const QStringList currentValues = prop.read(q).toStringList();
+                prop.write(q, currentValues + value.toStringList());
+            } else {
+                prop.write(q, value);
+            }
+        } else if (prop.type() == QVariant::StringList) {
+            const QStringList currentValues = prop.read(q).toStringList();
+            prop.write(q, currentValues + QStringList{ value.toString() });
         } else {
-            q->setProperty(keyChar, value);
+            prop.write(q, value);
         }
+
     }
     settings.endGroup();
 }
