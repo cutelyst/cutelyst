@@ -38,7 +38,7 @@ public:
     virtual void killChild() override;
     virtual void terminateChild() override;
 
-    virtual void restart();
+    virtual void restart() override;
 
 private:
     void startChild();

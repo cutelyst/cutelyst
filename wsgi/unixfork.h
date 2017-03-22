@@ -44,7 +44,7 @@ public:
 
     virtual int exec(bool lazy, bool master) override;
 
-    virtual void restart();
+    virtual void restart() override;
 
     int internalExec();
 
