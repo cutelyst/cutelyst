@@ -9,23 +9,23 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
 
  * Cross-platform
  * Pluggable Engines
-  * uWSGI - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
-  * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 and FastCGI both with Pipelining and Keep-Alive support)
+   * uWSGI - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
+   * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 and FastCGI both with Pipelining and Keep-Alive support)
  * REST with ActionREST
  * Plugin based views
-  * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
-  * [Clearsilver](http://www.clearsilver.net)
-  * JSON
-  * [Email](https://github.com/cutelyst/simple-mail)
+   * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
+   * [Clearsilver](http://www.clearsilver.net)
+   * JSON
+   * [Email](https://github.com/cutelyst/simple-mail)
  * Dispatcher
-  * Chained
-  * Path
+   * Chained
+   * Path
  * Plugins
-  * Session
-  * Authentication (with PBKDF2)
-  * Authorization with RoleACL
-  * StatusMessage
-  * Validator (to validate user input)
+   * Session
+   * Authentication (with PBKDF2)
+   * Authorization with RoleACL
+   * StatusMessage
+   * Validator (to validate user input)
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
