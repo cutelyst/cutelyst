@@ -513,21 +513,21 @@ int main(int argc, char *argv[])
         wsgi.setAutoReload(restart);
         wsgi.setLazy(restart);
 
+        QDir projectDir;
+        if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
+            qDebug() << "Error: failed to find project";
+            return false;
+        }
+        wsgi.setChdir(projectDir.absolutePath());
+
         QString localFilename = parser.value(appFile);
         if (localFilename.isEmpty()) {
-            QDir projectDir;
-            if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
-                qDebug() << "Error: failed to find project";
-                return false;
-            }
-
             localFilename = Helper::findApplication(projectDir);
             if (!QFile::exists(localFilename)) {
                 qDebug() << "Error: Application file not found";
                 return 1;
             }
         }
-
         wsgi.setApplication(localFilename);
 
         return wsgi.exec();
