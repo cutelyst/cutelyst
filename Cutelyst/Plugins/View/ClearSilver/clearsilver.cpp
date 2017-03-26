@@ -201,7 +201,7 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
 void ClearSilverPrivate::renderError(Context *c, const QString &error) const
 {
     c->error(error);
-    c->res()->body() = error.toUtf8();
+    c->res()->setBody(error);
 }
 
 HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) const

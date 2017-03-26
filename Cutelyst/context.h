@@ -428,7 +428,7 @@ public:
      * \code{.cpp}
      * void MyController::index(Context *c)
      * {
-     *      c->res()->body() = c->translate("MyController", "You are on the index page.").toUtf8();
+     *      c->res()->setBody(c->translate("MyController", "You are on the index page."));
      * }
      * \endcode
      */
