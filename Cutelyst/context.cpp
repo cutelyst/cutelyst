@@ -216,15 +216,9 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     }
 
     if (!args.isEmpty()) {
-        QStringList encodedArgs;
-        encodedArgs.append(_path);
-
-        for (const QString &arg : args) {
-            encodedArgs.append(QString::fromLatin1(QUrl::toPercentEncoding(arg)));
-        }
-        _path = encodedArgs.join(QLatin1Char('/'));
+        _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
     }
-    uri.setPath(_path);
+    uri.setPath(_path, QUrl::DecodedMode);
 
     QUrlQuery query;
     if (!queryValues.isEmpty()) {

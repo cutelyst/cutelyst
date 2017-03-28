@@ -215,6 +215,16 @@ void TestContext::testController_data()
     QTest::newRow("urifor-test07") << QStringLiteral("/uriFor/a/b/c?") + query.toString(QUrl::FullyEncoded)
                                    << QByteArrayLiteral("http://127.0.0.1/test/controller/a/b/c?foo=bar");
 
+    query.clear();
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/root"));
+    QTest::newRow("urifor-test08") << QStringLiteral("/uriFor/a space/b/c?") + query.toString(QUrl::FullyEncoded)
+                                   << QByteArrayLiteral("http://127.0.0.1/root/a space/b/c");
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("path"), QStringLiteral("/root"));
+    QTest::newRow("urifor-test09") << QStringLiteral("/uriFor/a%20space/b/c?") + query.toString(QUrl::FullyEncoded)
+                                   << QByteArrayLiteral("http://127.0.0.1/root/a space/b/c");
+
     // UriForAction Path
     query.clear();
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("/root"));
