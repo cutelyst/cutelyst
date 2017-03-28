@@ -144,9 +144,10 @@ QString Response::contentEncoding() const
 void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
-    if (d->flags & ResponsePrivate::FinalizedHeaders) {
-        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
-    }
+    Q_ASSERT_X(d->flags & ResponsePrivate::FinalizedHeaders,
+               "setContentEncoding",
+               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+
     d->headers.setContentEncoding(encoding);
 }
 
@@ -159,9 +160,10 @@ qint64 Response::contentLength() const
 void Response::setContentLength(qint64 length)
 {
     Q_D(Response);
-    if (d->flags & ResponsePrivate::FinalizedHeaders) {
-        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
-    }
+    Q_ASSERT_X(d->flags & ResponsePrivate::FinalizedHeaders,
+               "setContentLength",
+               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+
     d->headers.setContentLength(length);
 }
 
@@ -261,9 +263,10 @@ QString Response::header(const QString &field) const
 void Response::setHeader(const QString &field, const QString &value)
 {
     Q_D(Response);
-    if (d->flags & ResponsePrivate::FinalizedHeaders) {
-        qCWarning(CUTELYST_RESPONSE, "Useless setting a header value after finalize_headers and the response callback has been called. Not what you want.");
-    }
+    Q_ASSERT_X(d->flags & ResponsePrivate::FinalizedHeaders,
+               "setHeader",
+               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+
     d->headers.setHeader(field, value);
 }
 
