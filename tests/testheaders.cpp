@@ -143,6 +143,23 @@ void TestHeaders::testCombining()
     headers.setContentType(QStringLiteral(""));
     QCOMPARE(headers.contentType().isEmpty(), true);
     QCOMPARE(headers.contentType().isNull(), false);
+
+    headers.clear();
+    headers.setContentDisposition(QStringLiteral(""));
+    QCOMPARE(headers.contentDisposition().isEmpty(), true);
+    QCOMPARE(headers.contentDisposition().isNull(), false);
+
+    headers.clear();
+    headers.setContentDisposition(QStringLiteral("attachment; filename=\"foo.txt\""));
+    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment; filename=\"foo.txt\""));
+
+    headers.clear();
+    headers.setContentDispositionAttachment();
+    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment"));
+
+    headers.clear();
+    headers.setContentDispositionAttachment(QStringLiteral("foo.txt"));
+    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment; filename=\"foo.txt\""));
 }
 
 QTEST_MAIN(TestHeaders)

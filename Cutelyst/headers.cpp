@@ -44,7 +44,7 @@ void Headers::setContentDispositionAttachment(const QString &filename)
     if (filename.isEmpty()) {
         setContentDisposition(QStringLiteral("attachment"));
     } else {
-        setContentDisposition(QLatin1String("attachment; \"") + filename + QLatin1Char('"'));
+        setContentDisposition(QLatin1String("attachment; filename=\"") + filename + QLatin1Char('"'));
     }
 }
 
