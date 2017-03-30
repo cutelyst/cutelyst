@@ -29,6 +29,25 @@ Headers::Headers()
 
 }
 
+QString Headers::contentDisposition() const
+{
+    return m_data.value(QStringLiteral("CONTENT_DISPOSITION"));
+}
+
+void Headers::setContentDisposition(const QString &contentDisposition)
+{
+    m_data.insert(QStringLiteral("CONTENT_DISPOSITION"), contentDisposition);
+}
+
+void Headers::setContentDispositionAttachment(const QString &filename)
+{
+    if (filename.isEmpty()) {
+        setContentDisposition(QStringLiteral("attachment"));
+    } else {
+        setContentDisposition(QLatin1String("attachment; \"") + filename + QLatin1Char('"'));
+    }
+}
+
 QString Headers::contentEncoding() const
 {
     return m_data.value(QStringLiteral("CONTENT_ENCODING"));

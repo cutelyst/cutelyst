@@ -39,8 +39,36 @@ public:
     }
 #endif
 
+    /**
+     * The Content-Disposition header field indicates if the content is expected
+     * to be displayed inline in the browser, that is, as a Web page or as part
+     * of a Web page, or as an attachment, that is downloaded and saved locally
+     */
+    QString contentDisposition() const;
+
+    /**
+     * Defines the Content-Disposition header
+     * \sa contentDisposition()
+     */
+    void setContentDisposition(const QString &contentDisposition);
+
+    /**
+     * Defines the Content-Disposition header as type attachment and the
+     * optional filename parameter
+     * \sa contentDisposition()
+     */
+    void setContentDispositionAttachment(const QString &filename = QString());
+
+    /**
+     * The Content-Encoding header field is used as a modifier to the media type.
+     * When present, its value indicates what additional encoding mechanism has been applied to the resource.
+     */
     QString contentEncoding() const;
 
+    /**
+     * Defines the Content-Encoding header
+     * \sa contentEncoding()
+     */
     void setContentEncoding(const QString &encoding);
 
     /**
@@ -52,8 +80,8 @@ public:
     QString contentType() const;
 
     /**
-     * The Content-Type header field indicates the media type of the message content.
-     * E.g.: "text/html"
+     * Defines the Content-Encoding header
+     * \sa contentType()
      */
     void setContentType(const QString &contentType);
 

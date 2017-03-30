@@ -174,7 +174,7 @@ Upload::Upload(UploadPrivate *prv) :
 {
     Q_D(Upload);
     open(prv->device->openMode());
-    const QString disposition = prv->headers.header(QStringLiteral("CONTENT_DISPOSITION"));
+    const QString disposition = prv->headers.contentDisposition();
     int start = disposition.indexOf(QLatin1String("name=\""));
     if (start != -1) {
         start += 6;
