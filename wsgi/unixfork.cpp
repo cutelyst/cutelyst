@@ -37,6 +37,7 @@
 #include <QCoreApplication>
 #include <QSocketNotifier>
 #include <QTimer>
+#include <QThread>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QFileSystemWatcher>
@@ -337,6 +338,70 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
     if (chown(filename.toUtf8().constData(), new_uid, new_gid)) {
         qFatal("chown() error '%s'", strerror(errno));
     }
+}
+
+static int cpuSockets = -1;
+static int cpuCores = -1;
+
+void parseProcCpuinfo() {
+    QFile file(QStringLiteral("/proc/cpuinfo"));
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        qCWarning(WSGI_UNIX) << "Failed to open file" << file.errorString();
+        cpuSockets = 1;
+        return;
+    }
+
+    char buf[1024];
+    qint64 lineLength;
+    QByteArrayList physicalIds;
+    cpuCores = 0;
+    while ((lineLength = file.readLine(buf, sizeof(buf))) != -1) {
+        const QByteArray line(buf, lineLength);
+        if (line.startsWith("physical id\t: ")) {
+            const QByteArray id = line.mid(14).trimmed();
+            if (!physicalIds.contains(id)) {
+                physicalIds.push_back(id);
+            }
+        } else if (line.startsWith("processor \t: ")) {
+            ++cpuCores;
+        }
+    }
+
+    if (cpuCores == 0) {
+        cpuCores = QThread::idealThreadCount();
+    }
+
+    if (physicalIds.size()) {
+        cpuSockets = physicalIds.size();
+    } else {
+        cpuSockets = 1;
+    }
+}
+
+int UnixFork::idealProcessCount()
+{
+#ifdef Q_OS_LINUX
+    if (cpuSockets == -1) {
+        parseProcCpuinfo();
+    }
+
+    return cpuSockets;
+#else
+    return 1;
+#endif
+}
+
+int UnixFork::idealThreadCount()
+{
+#ifdef Q_OS_LINUX
+    if (cpuCores == -1) {
+        parseProcCpuinfo();
+    }
+
+    return cpuCores;
+#else
+    return QThread::idealThreadCount();
+#endif
 }
 
 void UnixFork::handleSigHup()

@@ -413,8 +413,22 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 
 #ifdef Q_OS_UNIX
+    if (d->processes == -1 && d->threads == -1) {
+        d->processes = UnixFork::idealProcessCount();
+        d->threads = UnixFork::idealThreadCount() / d->processes;
+    } else if (d->processes == -1) {
+        d->processes = UnixFork::idealThreadCount();
+    } else if (d->threads == -1) {
+        d->threads = UnixFork::idealThreadCount();
+    }
     d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
 #else
+    if (d->processes == -1) {
+        d->processes = 1;
+    }
+    if (d->threads == -1) {
+        d->threads = QThread::idealThreadCount();
+    }
     d->genericFork = new WindowsFork(this);
 #endif
 
@@ -726,7 +740,7 @@ void WSGI::setThreads(const QString &threads)
 {
     Q_D(WSGI);
     if (threads.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        d->threads = QThread::idealThreadCount();
+        d->threads = -1;
     } else {
         d->threads = threads.toInt();
     }
@@ -735,6 +749,9 @@ void WSGI::setThreads(const QString &threads)
 QString WSGI::threads() const
 {
     Q_D(const WSGI);
+    if (d->threads == -1) {
+        return QStringLiteral("auto");
+    }
     return QString::number(d->threads);
 }
 
@@ -743,7 +760,7 @@ void WSGI::setProcesses(const QString &process)
 {
     Q_D(WSGI);
     if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        d->processes = QThread::idealThreadCount();
+        d->processes = -1;
     } else {
         d->processes = process.toInt();
     }
@@ -752,6 +769,9 @@ void WSGI::setProcesses(const QString &process)
 QString WSGI::processes() const
 {
     Q_D(const WSGI);
+    if (d->processes == -1) {
+        return QStringLiteral("auto");
+    }
     return QString::number(d->processes);
 }
 #endif
@@ -1154,7 +1174,7 @@ void WSGIPrivate::engineInitted()
         genericFork->enginesInitted();
 
 #ifdef Q_OS_UNIX
-        if (processes && !lazy) {
+        if (processes > 0 && !lazy) {
             QCoreApplication::exit();
         } else {
             Q_EMIT forked();

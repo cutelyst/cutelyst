@@ -65,6 +65,9 @@ public:
     static void setUid(const QString &uid);
     static void chownSocket(const QString &filename, const QString &uidGid);
 
+    static int idealProcessCount();
+    static int idealThreadCount();
+
     void handleSigHup();
     void handleSigTerm();
     void handleSigInt();
