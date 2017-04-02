@@ -1,4 +1,9 @@
-find_package(PkgConfig REQUIRED)
+find_package(PkgConfig QUIET)
+
+if (NOT PkgConfig_FOUND)
+    message(WARNING "pkg-config not found, not building uWSGI plugin")
+    return()
+endif ()
 
 # uwsgi.h required if #ifdef UWSGI_UUID
 pkg_check_modules(UUID REQUIRED uuid)
