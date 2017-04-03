@@ -27,25 +27,8 @@
 using namespace CWSGI;
 
 TcpSslServer::TcpSslServer(const QString &serverAddress, CWSGI::Protocol *protocol, CWSGI::WSGI *wsgi, QObject *parent)
-    : QTcpServer(parent)
-    , m_wsgi(wsgi)
-    , m_protocol(protocol)
+    : TcpServer(serverAddress, protocol, wsgi, parent)
 {
-    m_serverAddress = serverAddress;
-    m_engine = qobject_cast<CWsgiEngine*>(parent);
-
-    if (m_wsgi->tcpNodelay()) {
-        m_socketOptions.push_back({ QAbstractSocket::LowDelayOption, 1 });
-    }
-    if (m_wsgi->soKeepalive()) {
-        m_socketOptions.push_back({ QAbstractSocket::KeepAliveOption, 1 });
-    }
-    if (m_wsgi->socketSndbuf() != -1) {
-        m_socketOptions.push_back({ QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf() });
-    }
-    if (m_wsgi->socketRcvbuf() != -1) {
-        m_socketOptions.push_back({ QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf() });
-    }
 }
 
 void TcpSslServer::incomingConnection(qintptr handle)

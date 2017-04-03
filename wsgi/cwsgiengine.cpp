@@ -19,6 +19,7 @@
 #include "cwsgiengine.h"
 
 #include "protocol.h"
+#include "tcpserverbalancer.h"
 #include "tcpserver.h"
 #include "tcpsslserver.h"
 #include "localserver.h"
@@ -88,28 +89,11 @@ void CWsgiEngine::listen()
 
     const auto sockets = m_sockets;
     for (const SocketInfo &info : sockets) {
-        if (!info.localSocket) {
-            if (info.secure) {
-                auto server = new TcpSslServer(info.serverName, info.protocol, m_wsgi, this);
-                if (server->setSocketDescriptor(info.socketDescriptor)) {
-                    server->pauseAccepting();
-                    server->setSslConfiguration(*info.sslConfiguration);
-                    connect(this, &CWsgiEngine::started, server, &TcpSslServer::resumeAccepting);
-                    connect(this, &CWsgiEngine::shutdown, server, &TcpSslServer::shutdown);
-                    if (m_socketTimeout) {
-                        connect(m_socketTimeout, &QTimer::timeout, server, &TcpSslServer::timeoutConnections);
-                    }
-                }
-            } else {
-                auto server = new TcpServer(info.serverName, info.protocol, m_wsgi, this);
-                if (server->setSocketDescriptor(info.socketDescriptor)) {
-                    server->pauseAccepting();
-                    connect(this, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
-                    connect(this, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
-                    if (m_socketTimeout) {
-                        connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
-                    }
-                }
+        if (info.tcpServer) {
+            TcpServerBalancer *balancer = info.tcpServer;
+            TcpServer *server = balancer->addServer(this);
+            if (server && m_socketTimeout) {
+                connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
             }
         } else {
             auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);

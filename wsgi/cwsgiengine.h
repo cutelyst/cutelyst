@@ -22,7 +22,6 @@
 #include <QObject>
 #include <QElapsedTimer>
 #include <QTimer>
-#include <QSslConfiguration>
 
 #include <Cutelyst/Engine>
 
@@ -30,13 +29,12 @@ class QTcpServer;
 
 namespace CWSGI {
 
+class TcpServerBalancer;
 class Protocol;
 struct SocketInfo {
     QString serverName;
-    QSslConfiguration *sslConfiguration = nullptr;
     Protocol *protocol;
-    bool localSocket;
-    bool secure = false;
+    TcpServerBalancer *tcpServer = nullptr;
     qintptr socketDescriptor = 0;
 };
 

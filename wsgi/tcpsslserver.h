@@ -29,7 +29,7 @@ class WSGI;
 class Protocol;
 class SslSocket;
 class CWsgiEngine;
-class TcpSslServer : public QTcpServer
+class TcpSslServer : public TcpServer
 {
     Q_OBJECT
 public:
@@ -37,22 +37,13 @@ public:
 
     virtual void incomingConnection(qintptr handle) override;
 
-    void shutdown();
-    void timeoutConnections();
+    virtual void shutdown() override;
+    virtual void timeoutConnections() override;
 
     void setSslConfiguration(const QSslConfiguration &conf);
 
 private:
     QSslConfiguration m_sslConfiguration;
-
-    QString m_serverAddress;
-    CWsgiEngine *m_engine;
-    WSGI *m_wsgi;
-
-    std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
-//    std::vector<SslSocket *> m_socks;
-    Protocol *m_protocol;
-    int m_processing = 0;
 };
 
 }

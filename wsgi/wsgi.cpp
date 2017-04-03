@@ -23,6 +23,7 @@
 #include "protocolfastcgi.h"
 #include "cwsgiengine.h"
 #include "socket.h"
+#include "tcpserverbalancer.h"
 #include "tcpsslserver.h"
 
 #ifdef Q_OS_UNIX
@@ -84,7 +85,7 @@ WSGI::~WSGI()
     delete d->protoFCGI;
 
     for (const SocketInfo &info : d->sockets) {
-        delete info.sslConfiguration;
+        delete info.tcpServer;
     }
 
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
@@ -253,6 +254,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     parser.addOption(umaskOption);
 #endif // Q_OS_UNIX
 
+    QCommandLineOption threadBalancerOpt(QStringLiteral("experimental-thread-balancer"),
+                                         QCoreApplication::translate("main", "balances new connections to threads using round-robin"));
+    parser.addOption(threadBalancerOpt);
+
     // Process the actual command line arguments given by the user
     parser.process(arguments);
 
@@ -401,6 +406,8 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     setStaticMap2(staticMap2() + parser.values(staticMap2Opt));
 
     setTouchReload(touchReload() + parser.values(touchReloadOpt));
+
+    d->threadBalancer = parser.isSet(threadBalancerOpt);
 }
 
 int WSGI::exec(Cutelyst::Application *app)
@@ -548,83 +555,27 @@ void WSGIPrivate::listenTcpSockets()
 
 bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure)
 {
+    Q_Q(WSGI);
+
     bool ret = true;
     if (!line.startsWith(QLatin1Char('/'))) {
-        const QString addressString = line
-                .section(QLatin1Char(':'), 0, 0)
-                .section(QLatin1Char(','), 0, 0);
 
-        QHostAddress address;
-        if (addressString.isEmpty()) {
-            address = QHostAddress(QHostAddress::Any);
-        } else {
-            address.setAddress(addressString);
-        }
 
-        const QString afterColon = line.section(QLatin1Char(':'), 1);
-        const QString portString = afterColon.section(QLatin1Char(','), 0, 0);
-
-        bool ok;
-        int port = portString.toInt(&ok);
-        if (!ok || (port < 1 && port > 35554)) {
-            port = 80;
-        }
-
-        auto server = new QTcpServer(this);
-        ret = server->listen(address, port);
-        server->pauseAccepting();
+        auto server = new TcpServerBalancer(q);
+        server->setBalancer(threadBalancer);
+        ret = server->listen(line, protocol, secure);
 
         SocketInfo info;
-        if (secure) {
-            const QString certPath = afterColon.section(QLatin1Char(','), 1, 1);
-            auto certFile = new QFile(certPath);
-            if (!certFile->open(QFile::ReadOnly)) {
-                std::cerr << "Failed to open SSL certificate" << certPath.toLocal8Bit().constData()
-                          << certFile->errorString().toLocal8Bit().constData() << std::endl;
-                exit(1);
-            }
-            QSslCertificate cert(certFile);
-            if (cert.isNull()) {
-                std::cerr << "Failed to parse SSL certificate" << std::endl;
-                exit(1);
-            }
 
-            const QString keyPath = afterColon.section(QLatin1Char(','), 2, 2);
-            auto keyFile = new QFile(keyPath);
-            if (!keyFile->open(QFile::ReadOnly)) {
-                std::cerr << "Failed to open SSL private key" << keyPath.toLocal8Bit().constData()
-                          << keyFile->errorString().toLocal8Bit().constData() << std::endl;
-                exit(1);
-            }
-            QSslKey key(keyFile, QSsl::Rsa);
-            if (key.isNull()) {
-                std::cerr << "Failed to parse SSL private key" << std::endl;
-                exit(1);
-            }
-
-            auto conf = new QSslConfiguration;
-            conf->setLocalCertificate(cert);
-            conf->setPrivateKey(key);
-
-            info.sslConfiguration = conf;
-            info.secure = true;
-        }
-
-        info.protocol = protocol;
-        info.serverName = server->serverAddress().toString() + QLatin1Char(':') + QString::number(port);
-        info.localSocket = false;
         info.socketDescriptor = server->socketDescriptor();
+        info.tcpServer = server;
 
-        if (ret && info.socketDescriptor) {
+        if (ret && server->socketDescriptor()) {
             std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
-                      << " bound to TCP address " << info.serverName.toLatin1().constData()
-                      << " fd " << QByteArray::number(info.socketDescriptor).constData()
+                      << " bound to TCP address " << server->serverName().toLatin1().constData()
+                      << " fd " << QByteArray::number(server->socketDescriptor()).constData()
                       << std::endl;
             sockets.push_back(info);
-        } else {
-            std::cerr << "Failed to listen on TCP: " << line.toUtf8().constData()
-                      << " : " << server->errorString().toUtf8().constData() << std::endl;
-            exit(1);
         }
     }
 
@@ -685,7 +636,6 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         SocketInfo info;
         info.protocol = protocol;
         info.serverName = line;
-        info.localSocket = true;
 
         // THIS IS A HACK
         // QLocalServer does not expose the socket

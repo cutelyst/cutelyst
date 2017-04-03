@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,45 +16,45 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef TCPSERVER_H
-#define TCPSERVER_H
+#ifndef TCPSERVERBALANCER_H
+#define TCPSERVERBALANCER_H
 
 #include <QTcpServer>
+
+class QSslConfiguration;
 
 namespace CWSGI {
 
 class WSGI;
-class Protocol;
-class TcpSocket;
+class TcpServer;
 class CWsgiEngine;
-class TcpServer : public QTcpServer
+class Protocol;
+class TcpServerBalancer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = nullptr);
+    TcpServerBalancer(WSGI *parent);
+    ~TcpServerBalancer();
 
-    Q_INVOKABLE
+    bool listen(const QString &address, Protocol *protocol, bool secure);
+
+    void setBalancer(bool enable);
+    QString serverName() const { return m_serverName; }
+
     virtual void incomingConnection(qintptr handle) override;
 
-    virtual void shutdown();
-    virtual void timeoutConnections();
+    TcpServer *addServer(CWsgiEngine *engine);
 
-Q_SIGNALS:
-    void createConnection(qintptr handle);
-
-protected:
-    friend class TcpServerBalancer;
-
-    QString m_serverAddress;
-    CWsgiEngine *m_engine;
+private:
+    QString m_serverName;
+    std::vector<TcpServer *> m_servers;
     WSGI *m_wsgi;
-
-    std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
-    std::vector<TcpSocket *> m_socks;
     Protocol *m_protocol;
-    int m_processing = 0;
+    QSslConfiguration *m_sslConfiguration = nullptr;
+    int m_currentServer = 0;
+    bool m_balancer = false;
 };
 
 }
 
-#endif // TCPSERVER_H
+#endif // TCPSERVERBALANCER_H

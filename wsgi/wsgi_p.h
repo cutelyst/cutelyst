@@ -97,6 +97,7 @@ public:
     bool autoReload = false;
     bool tcpNodelay = false;
     bool soKeepalive = false;
+    bool threadBalancer = false;
 
 Q_SIGNALS:
     void forked();

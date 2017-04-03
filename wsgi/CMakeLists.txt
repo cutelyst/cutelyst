@@ -14,6 +14,7 @@ set(httpEngine_SRC
     postunbuffered.cpp
     cwsgiengine.cpp
     socket.cpp
+    tcpserverbalancer.cpp
     tcpserver.cpp
     tcpsslserver.cpp
     localserver.cpp
