@@ -78,42 +78,10 @@ void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
     m_sockets = sockets;
 }
 
-void CWsgiEngine::listen()
+void CWsgiEngine::postFork(int workerId)
 {
-    // init and postfork
-    if (!initApplication()) {
-        qCritical() << "Failed to init application, cheaping...";
-        Q_EMIT shutdownCompleted(this);
-        return;
-    }
+    m_workerId = workerId;
 
-    const auto sockets = m_sockets;
-    for (const SocketInfo &info : sockets) {
-        if (info.tcpServer) {
-            TcpServerBalancer *balancer = info.tcpServer;
-            TcpServer *server = balancer->addServer(this);
-            if (server && m_socketTimeout) {
-                connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
-            }
-        } else {
-            auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
-            if (server->setSocketDescriptor(info.socketDescriptor)) {
-                server->pauseAccepting();
-                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
-                connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
-                if (m_socketTimeout) {
-                    connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
-                }
-            }
-        }
-        ++m_servers;
-    }
-
-    Q_EMIT initted();
-}
-
-void CWsgiEngine::postFork()
-{
     if (!postForkApplication()) {
         // CHEAP
         QCoreApplication::exit(15);
@@ -158,7 +126,38 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 
 bool CWsgiEngine::init()
 {
-    return initApplication();
+    // init and postfork
+    if (!initApplication()) {
+        qCritical() << "Failed to init application, cheaping...";
+        Q_EMIT shutdownCompleted(this);
+        return false;
+    }
+
+    const auto sockets = m_sockets;
+    for (const SocketInfo &info : sockets) {
+        if (info.tcpServer) {
+            TcpServerBalancer *balancer = info.tcpServer;
+            TcpServer *server = balancer->addServer(this);
+            if (server && m_socketTimeout) {
+                connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+            }
+        } else {
+            auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
+            if (server->setSocketDescriptor(info.socketDescriptor)) {
+                server->pauseAccepting();
+                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
+                connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+                if (m_socketTimeout) {
+                    connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
+                }
+            }
+        }
+        ++m_servers;
+    }
+
+    Q_EMIT initted();
+
+    return true;
 }
 
 #include "moc_cwsgiengine.cpp"

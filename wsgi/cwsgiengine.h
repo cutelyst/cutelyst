@@ -53,9 +53,7 @@ public:
 
     void setTcpSockets(const std::vector<SocketInfo> &sockets);
 
-    void listen();
-
-    void postFork();
+    void postFork(int workerId);
 
     int m_workerId = 0;
 

@@ -100,7 +100,7 @@ public:
     bool threadBalancer = false;
 
 Q_SIGNALS:
-    void forked();
+    void forked(int workerId);
     void killChildProcess();
     void terminateChildProcess();
     void shutdown();

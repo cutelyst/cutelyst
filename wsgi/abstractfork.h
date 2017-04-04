@@ -69,7 +69,7 @@ public:
     void removeTouchReload();
 
 Q_SIGNALS:
-    void forked();
+    void forked(int workerId);
     void shutdown();
     void setupApplication();
 

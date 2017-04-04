@@ -79,7 +79,7 @@ private:
     bool createChild(const Worker &worker, bool respawn);
     static void signalHandler(int signal);
     void setupCheckChildTimer();
-    void postFork();
+    void postFork(int workerId);
 
     QHash<qint64, Worker> m_childs;
     QVector<Worker> m_recreateWorker;

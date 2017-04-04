@@ -257,12 +257,12 @@ void UnixFork::setupCheckChildTimer()
     }
 }
 
-void UnixFork::postFork()
+void UnixFork::postFork(int workerId)
 {
     // Child must not have parent timers
     delete m_checkChildRestart;
 
-    Q_EMIT forked();
+    Q_EMIT forked(workerId);
 }
 
 void UnixFork::setGid(const QString &gid)
@@ -587,7 +587,7 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
             setupSocketPair(true);
 
             m_child = true;
-            postFork();
+            postFork(worker.id);
 
             int ret = qApp->exec();
             _exit(ret);

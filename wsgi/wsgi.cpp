@@ -1094,19 +1094,16 @@ void WSGIPrivate::setupApplication()
         qCDebug(CUTELYST_WSGI) << "Loaded application: " << QCoreApplication::applicationName();
     }
 
-    engine = createEngine(localApp, 0);
-    if (!engine->init()) {
-        qCCritical(CUTELYST_WSGI) << "Failed to init application.";
-        exit(1);
-    }
-
     std::cout << "Threads:" << threads << std::endl;
     if (threads) {
         enginesInitted = threads;
         workersNotRunning = threads;
+        engine = createEngine(localApp, 0);
         for (int i = 1; i < threads; ++i) {
             createEngine(localApp, i);
         }
+    } else {
+        engine = createEngine(localApp, 0);
     }
 
     if (!chdir2.isEmpty()) {
@@ -1127,10 +1124,10 @@ void WSGIPrivate::engineInitted()
         if (processes > 0 && !lazy) {
             QCoreApplication::exit();
         } else {
-            Q_EMIT forked();
+            Q_EMIT forked(0);
         }
 #else
-        Q_EMIT forked();
+        Q_EMIT forked(0);
 #endif //Q_OS_UNIX
     }
 }
@@ -1190,7 +1187,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     engine->setTcpSockets(sockets);
     engines.push_back(engine);
 
-    if (threads && core) {
+    if (threads) {
         auto thread = new QThread(this);
 #ifdef Q_OS_LINUX
         if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
@@ -1198,11 +1195,11 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
         }
 #endif
         engine->moveToThread(thread);
-        connect(thread, &QThread::started, engine, &CWsgiEngine::listen, Qt::DirectConnection);
+        connect(thread, &QThread::started, engine, &CWsgiEngine::init, Qt::DirectConnection);
         thread->start();
     } else {
         engine->setParent(this);
-        engine->listen();
+        engine->init();
     }
     return engine;
 }
