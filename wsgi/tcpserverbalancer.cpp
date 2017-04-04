@@ -140,9 +140,9 @@ TcpServer *TcpServerBalancer::addServer(CWsgiEngine *engine)
     }
 
     if (!m_balancer) {
-        server->pauseAccepting();
-
         if (server->setSocketDescriptor(socketDescriptor())) {
+            server->pauseAccepting();
+
             connect(engine, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
         } else {
             qFatal("Failed to set server socket descriptor");

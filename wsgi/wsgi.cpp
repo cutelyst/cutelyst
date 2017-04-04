@@ -51,9 +51,7 @@
 #include <QMetaProperty>
 #include <QTimer>
 #include <QDir>
-
-#include <QSslCertificate>
-#include <QSslKey>
+#include <QMutex>
 
 #include <iostream>
 
@@ -1102,6 +1100,8 @@ void WSGIPrivate::setupApplication()
         for (int i = 1; i < threads; ++i) {
             createEngine(localApp, i);
         }
+
+        Q_EMIT startThreads();
     } else {
         engine = createEngine(localApp, 0);
     }
@@ -1111,24 +1111,6 @@ void WSGIPrivate::setupApplication()
         if (!QDir::setCurrent(chdir2)) {
             qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
         }
-    }
-}
-
-void WSGIPrivate::engineInitted()
-{
-    // All engines are initted
-    if (--enginesInitted == 0) {
-        genericFork->enginesInitted();
-
-#ifdef Q_OS_UNIX
-        if (processes > 0 && !lazy) {
-            QCoreApplication::exit();
-        } else {
-            Q_EMIT forked(0);
-        }
-#else
-        Q_EMIT forked(0);
-#endif //Q_OS_UNIX
     }
 }
 
@@ -1178,11 +1160,28 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     Q_Q(WSGI);
 
     auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
-    connect(engine, &CWsgiEngine::initted, this, &WSGIPrivate::engineInitted, Qt::QueuedConnection);
-    connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
-    connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
+    connect(engine, &CWsgiEngine::initted, this, [=]() {
+        // All engines are initted
+        static QMutex mutex;
+        QMutexLocker locker(&mutex);
+        if (--enginesInitted == 0) {
+            genericFork->enginesInitted();
+
+    #ifdef Q_OS_UNIX
+            if (processes > 0 && !lazy) {
+                qApp->quit();
+            } else {
+                Q_EMIT forked(0);
+            }
+    #else
+            Q_EMIT forked(0);
+    #endif //Q_OS_UNIX
+        }
+    }, Qt::DirectConnection);
 
     engine->setTcpSockets(sockets);
     engines.push_back(engine);

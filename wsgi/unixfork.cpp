@@ -77,7 +77,7 @@ int UnixFork::exec(bool lazy, bool master)
     int ret;
     if (lazy) {
         if (master) {
-            connect(this, &UnixFork::forked, this, &UnixFork::setupApplication);
+            connect(this, &UnixFork::forked, this, &UnixFork::setupApplication, Qt::QueuedConnection);
             ret = internalExec();
         } else {
             std::cerr << "*** Master mode must be set on lazy mode" << std::endl;

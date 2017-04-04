@@ -43,29 +43,7 @@ QByteArray dateHeader();
 CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
   , m_wsgi(wsgi)
 {
-    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
 
-    m_lastDate = dateHeader();
-    m_lastDateTimer.start();
-
-    const QStringList staticMap = wsgi->staticMap();
-    const QStringList staticMap2 = wsgi->staticMap2();
-    if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
-        auto staticMapPlugin = new StaticMap(app);
-
-        for (const QString &part : staticMap) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
-        }
-
-        for (const QString &part : staticMap2) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
-        }
-    }
-
-    if (wsgi->socketTimeout()) {
-        m_socketTimeout = new QTimer(this);
-        m_socketTimeout->setInterval(wsgi->socketTimeout() * 1000);
-    }
 }
 
 int CWsgiEngine::workerId() const
@@ -126,6 +104,30 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 
 bool CWsgiEngine::init()
 {
+    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
+
+    m_lastDate = dateHeader();
+    m_lastDateTimer.start();
+
+    const QStringList staticMap = m_wsgi->staticMap();
+    const QStringList staticMap2 = m_wsgi->staticMap2();
+    if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
+        auto staticMapPlugin = new StaticMap(app());
+
+        for (const QString &part : staticMap) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+        }
+
+        for (const QString &part : staticMap2) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
+        }
+    }
+
+    if (m_wsgi->socketTimeout()) {
+        m_socketTimeout = new QTimer(this);
+        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
+    }
+
     // init and postfork
     if (!initApplication()) {
         qCritical() << "Failed to init application, cheaping...";

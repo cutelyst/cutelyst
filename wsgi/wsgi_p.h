@@ -43,7 +43,6 @@ public:
     void listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
     void setupApplication();
-    void engineInitted();
     void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
     void writePidFile(const QString &filename);
@@ -104,6 +103,7 @@ Q_SIGNALS:
     void killChildProcess();
     void terminateChildProcess();
     void shutdown();
+    void startThreads();
 };
 
 }
