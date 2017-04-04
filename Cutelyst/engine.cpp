@@ -256,12 +256,12 @@ bool Engine::postForkApplication()
 
 /*!
  \returns a time to be used for stats, the default implementation returns
- QDateTime::currentMSecsSinceEpoch(), but if the engine
+ QDateTime::currentMSecsSinceEpoch() * 1000, to become micro seconds, so if the engine
  supports a more precise value it can reimplement this method
 */
 quint64 Engine::time()
 {
-    return QDateTime::currentMSecsSinceEpoch();
+    return QDateTime::currentMSecsSinceEpoch() * 1000;
 }
 
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
