@@ -106,6 +106,7 @@ protected:
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_saveSession(Context*))
+    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
 };
 
 }

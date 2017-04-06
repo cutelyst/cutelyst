@@ -49,7 +49,7 @@ static thread_local Session *m_instance = nullptr;
 Session::Session(Cutelyst::Application *parent) : Plugin(parent)
   , d_ptr(new SessionPrivate(this))
 {
-    m_instance = this;
+
 }
 
 Cutelyst::Session::~Session()
@@ -69,6 +69,7 @@ bool Session::setup(Application *app)
     d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
+    connect(app, &Application::postForked, this, &SessionPrivate::_q_postFork);
 
     if (!d->store) {
         d->store = new SessionStoreFile(this);
@@ -344,6 +345,11 @@ void SessionPrivate::_q_saveSession(Context *c)
 
     const QString sid = c->property(SESSION_ID).toString();
     store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
+}
+
+void SessionPrivate::_q_postFork(Application *app)
+{
+    m_instance = app->plugin<Session *>();
 }
 
 void SessionPrivate::deleteSession(Session *session, Context *c, const QString &reason)

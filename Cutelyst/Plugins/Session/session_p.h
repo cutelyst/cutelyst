@@ -38,6 +38,7 @@ public:
     static QString createSessionIdIfNeeded(Session *session, Context *c, quint64 expires);
     static inline QString createSessionId(Session *session, Context *c, quint64 expires);
     static void _q_saveSession(Context *c);
+    static void _q_postFork(Application *app);
     static void deleteSession(Session *session, Context *c, const QString &reason);
     static inline void deleteSessionId(Session *session, Context *c, const QString &sid);
     static QVariant loadSession(Context *c);
