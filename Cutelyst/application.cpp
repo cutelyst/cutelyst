@@ -217,6 +217,12 @@ QVector<Cutelyst::DispatchType *> Application::dispatchers() const
     return d->dispatcher->dispatchers();
 }
 
+QVector<Plugin *> Application::plugins() const
+{
+    Q_D(const Application);
+    return d->plugins;
+}
+
 QVariantMap Application::config() const
 {
     Q_D(const Application);

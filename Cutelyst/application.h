@@ -103,6 +103,20 @@ public:
      */
     QVector<DispatchType *> dispatchers() const;
 
+    QVector<Plugin *> plugins() const;
+    template <typename T>
+    T plugin()
+    {
+        const auto pluginsConst = plugins();
+        for (Plugin *plugin : pluginsConst) {
+            auto p = qobject_cast<T>(plugin);
+            if (p) {
+                return p;
+            }
+        }
+        return 0;
+    }
+
     /**
      * User configuration for the application
      * @return A variant hash with configuration settings
