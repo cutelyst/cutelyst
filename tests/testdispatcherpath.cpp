@@ -79,7 +79,7 @@ void TestDispatcherPath::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     // Path dispatcher
-    QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource") << QByteArrayLiteral("Unknown resource \"test/unknown_resource\".");
+    QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource") << QByteArrayLiteral("Unknown resource 'test/unknown_resource'.");
     QTest::newRow("path-test01") << QStringLiteral("/test/controller") << QByteArrayLiteral("path /test/controller args ");
     QTest::newRow("path-test02") << QStringLiteral("/test/controller/hello") << QByteArrayLiteral("path /test/controller/hello args ");
     QTest::newRow("path-test03") << QStringLiteral("/global") << QByteArrayLiteral("path /global args ");
