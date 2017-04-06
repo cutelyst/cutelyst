@@ -170,7 +170,7 @@ protected:
                 lastWasDash = true;
             } else if (lastWasDash) {
                 lastWasDash = false;
-                c = c.toUpper();
+                c = c.toLower();
             }
         }
         return key;
@@ -188,7 +188,7 @@ protected:
                 lastWasDash = true;
             } else if (lastWasDash) {
                 lastWasDash = false;
-                c = QChar::toUpper(c);
+                c = QChar::toLower(c);
             }
         }
     }
