@@ -129,7 +129,7 @@ bool Dispatcher::dispatch(Context *c)
         if (path.isEmpty()) {
             c->error(c->translate("Cutelyst::Dispatcher", "No default action defined"));
         } else {
-            c->error(c->translate("Cutelyst::Dispatcher", "Unknown resource \"%1\".").arg(path));
+            c->error(c->translate("Cutelyst::Dispatcher", "Unknown resource '%1'.").arg(path));
         }
     }
     return false;
