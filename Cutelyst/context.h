@@ -363,11 +363,13 @@ public:
     /**
      * Gets an action in a given namespace.
      */
+    // TODO C2 mark as const
     Action *getAction(const QString &action, const QString &ns = QString());
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
+    // TODO C2 mark as const
     QVector<Action *> getActions(const QString &action, const QString &ns = QString());
 
     /**
@@ -419,10 +421,20 @@ public:
      */
     void setLocale(const QLocale &locale);
 
+    /**
+     * Returns a configuration value for key with an optional default value
+     */
     QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
+    /**
+     * Returns a configuration mapping for all configuration read
+     */
     QVariantMap config() const;
 
+    /**
+     * Pointer to internal engine data about the current request.
+     * \note It's only used by Engines subclasses, Application code should not use it.
+     */
     void *engineData();
 
     /**
