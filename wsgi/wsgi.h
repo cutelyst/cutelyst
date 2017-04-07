@@ -306,7 +306,7 @@ public:
      * Defines file mode creation mask
      * @accessors umask(), setUmask()
      */
-    Q_PROPERTY(int cpuAffinity READ cpuAffinity WRITE setCpuAffinity)
+    Q_PROPERTY(int cpu_affinity READ cpuAffinity WRITE setCpuAffinity)
     void setCpuAffinity(int value);
     int cpuAffinity() const;
 #endif
