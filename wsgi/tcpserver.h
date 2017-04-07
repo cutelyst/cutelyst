@@ -41,6 +41,7 @@ public:
 
 Q_SIGNALS:
     void createConnection(qintptr handle);
+    void engineReady(TcpServer *obj);
 
 protected:
     friend class TcpServerBalancer;

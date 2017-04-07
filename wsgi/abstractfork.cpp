@@ -31,11 +31,6 @@ AbstractFork::AbstractFork(QObject *parent) : QObject(parent)
 
 }
 
-void AbstractFork::enginesInitted()
-{
-
-}
-
 void AbstractFork::setTouchReload(const QStringList &paths)
 {
     m_touchReloadPaths = paths;

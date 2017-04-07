@@ -426,6 +426,10 @@ int WSGI::exec(Cutelyst::Application *app)
     } else if (d->threads == -1) {
         d->threads = UnixFork::idealThreadCount();
     }
+
+    if (d->processes == 0 && d->master) {
+        d->processes = 1;
+    }
     d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
 #else
     if (d->processes == -1) {
@@ -437,9 +441,9 @@ int WSGI::exec(Cutelyst::Application *app)
     d->genericFork = new WindowsFork(this);
 #endif
 
-    connect(d->genericFork, &AbstractFork::forked, d, &WSGIPrivate::forked);
-    connect(d->genericFork, &AbstractFork::shutdown, d, &WSGIPrivate::shutdown);
-    connect(d->genericFork, &AbstractFork::setupApplication, d, &WSGIPrivate::setupApplication);
+    connect(d->genericFork, &AbstractFork::forked, d, &WSGIPrivate::postFork, Qt::DirectConnection);
+    connect(d->genericFork, &AbstractFork::shutdown, d, &WSGIPrivate::shutdown, Qt::DirectConnection);
+    connect(d->genericFork, &AbstractFork::setupApplication, d, &WSGIPrivate::setupApplication, Qt::DirectConnection);
 
     if (d->master && d->lazy) {
         if (d->autoReload && !d->application.isEmpty()) {
@@ -1094,16 +1098,18 @@ void WSGIPrivate::setupApplication()
 
     std::cout << "Threads:" << threads << std::endl;
     if (threads) {
-        enginesInitted = threads;
-        workersNotRunning = threads;
         engine = createEngine(localApp, 0);
         for (int i = 1; i < threads; ++i) {
-            createEngine(localApp, i);
+            if (createEngine(localApp, i)) {
+                ++workersNotRunning;
+            }
         }
-
-        Q_EMIT startThreads();
     } else {
         engine = createEngine(localApp, 0);
+    }
+
+    if (!engine) {
+        qFatal("Main engine failed to init");
     }
 
     if (!chdir2.isEmpty()) {
@@ -1139,6 +1145,28 @@ void WSGIPrivate::workerStarted()
     }
 }
 
+void WSGIPrivate::postFork(int workerId)
+{
+    qCDebug(CUTELYST_WSGI) << "Starting threads";
+    for (CWsgiEngine *engine : engines) {
+        QThread *thread = engine->thread();
+        if (thread != qApp->thread()) {
+            thread->start();
+        }
+    }
+
+    Q_EMIT postForked(workerId);
+
+    QTimer::singleShot(1000, this, [=]() {
+        // THIS IS NEEDED when
+        // --master --threads N --experimental-thread-balancer
+        // for some reason sometimes the balancer doesn't get
+        // the ready signal (which stays on event loop queue)
+        // from TcpServer and doesn't starts listening.
+        qApp->processEvents();
+    });
+}
+
 void WSGIPrivate::writePidFile(const QString &filename)
 {
     if (filename.isEmpty()) {
@@ -1160,46 +1188,33 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     Q_Q(WSGI);
 
     auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
-    connect(this, &WSGIPrivate::forked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);
+    connect(this, &WSGIPrivate::postForked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
-    connect(engine, &CWsgiEngine::initted, this, [=]() {
-        // All engines are initted
-        static QMutex mutex;
-        QMutexLocker locker(&mutex);
-        if (--enginesInitted == 0) {
-            genericFork->enginesInitted();
-
-    #ifdef Q_OS_UNIX
-            if (processes > 0 && !lazy) {
-                qApp->quit();
-            } else {
-                Q_EMIT forked(0);
-            }
-    #else
-            Q_EMIT forked(0);
-    #endif //Q_OS_UNIX
-        }
-    }, Qt::DirectConnection);
 
     engine->setTcpSockets(sockets);
+    if (!engine->init()) {
+        qCCritical(CUTELYST_WSGI) << "Failed to init engine for core:" << core;
+        delete engine;
+        return nullptr;
+    }
+
     engines.push_back(engine);
 
     if (threads) {
         auto thread = new QThread(this);
+        engine->moveToThread(thread);
+
 #ifdef Q_OS_LINUX
         if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
             thread->setEventDispatcher(new EventDispatcherEPoll);
         }
 #endif
-        engine->moveToThread(thread);
-        connect(thread, &QThread::started, engine, &CWsgiEngine::init, Qt::DirectConnection);
-        thread->start();
     } else {
         engine->setParent(this);
-        engine->init();
     }
+
     return engine;
 }
 

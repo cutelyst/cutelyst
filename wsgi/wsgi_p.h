@@ -45,6 +45,7 @@ public:
     void setupApplication();
     void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
+    void postFork(int workerId);
     void writePidFile(const QString &filename);
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
@@ -55,7 +56,7 @@ public:
 
     WSGI *q_ptr;
     std::vector<SocketInfo> sockets;
-    std::vector<Cutelyst::Engine *> engines;
+    std::vector<CWsgiEngine *> engines;
     Cutelyst::Application *app = nullptr;
     CWsgiEngine *engine;
 
@@ -84,7 +85,6 @@ public:
     Protocol *protoFCGI = nullptr;
     AbstractFork *genericFork = nullptr;
     int bufferSize = 4096;
-    int enginesInitted = 1;
     int workersNotRunning = 1;
     int threads = 0;
     int processes = 0;
@@ -99,11 +99,10 @@ public:
     bool threadBalancer = false;
 
 Q_SIGNALS:
-    void forked(int workerId);
+    void postForked(int workerId);
     void killChildProcess();
     void terminateChildProcess();
     void shutdown();
-    void startThreads();
 };
 
 }

@@ -30,6 +30,7 @@ class QTcpServer;
 namespace CWSGI {
 
 class TcpServerBalancer;
+class TcpServer;
 class Protocol;
 struct SocketInfo {
     QString serverName;
@@ -43,7 +44,7 @@ class CWsgiEngine : public Cutelyst::Engine
 {
     Q_OBJECT
 public:
-    CWsgiEngine(Cutelyst::Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi);
+    CWsgiEngine(Cutelyst::Application *localApp, int workerCore, const QVariantMap &opts, WSGI *wsgi);
 
     virtual int workerId() const;
 
@@ -60,7 +61,6 @@ public:
     virtual bool init();
 
 Q_SIGNALS:
-    void initted();
     void started();
     void shutdown();
     void shutdownCompleted(CWsgiEngine *engine);
@@ -95,6 +95,7 @@ private:
     friend class TcpServer;
     friend class TcpSslServer;
 
+    std::vector<TcpServer *> m_tcpServers;
     std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;

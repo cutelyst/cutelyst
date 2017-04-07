@@ -40,10 +40,32 @@ using namespace Cutelyst;
 
 QByteArray dateHeader();
 
-CWsgiEngine::CWsgiEngine(Application *app, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(app, workerCore, opts)
+CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(localApp, workerCore, opts)
   , m_wsgi(wsgi)
 {
+    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
 
+    m_lastDate = dateHeader();
+    m_lastDateTimer.start();
+
+    const QStringList staticMap = m_wsgi->staticMap();
+    const QStringList staticMap2 = m_wsgi->staticMap2();
+    if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
+        auto staticMapPlugin = new StaticMap(app());
+
+        for (const QString &part : staticMap) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+        }
+
+        for (const QString &part : staticMap2) {
+            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
+        }
+    }
+
+    if (m_wsgi->socketTimeout()) {
+        m_socketTimeout = new QTimer(this);
+        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
+    }
 }
 
 int CWsgiEngine::workerId() const
@@ -62,7 +84,12 @@ void CWsgiEngine::postFork(int workerId)
 
     if (!postForkApplication()) {
         // CHEAP
-        QCoreApplication::exit(15);
+        Q_EMIT shutdown();
+        return;
+    }
+
+    for (TcpServer *server : m_tcpServers) {
+        Q_EMIT server->engineReady(server);
     }
 
     Q_EMIT started();
@@ -104,34 +131,8 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
 
 bool CWsgiEngine::init()
 {
-    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
-
-    m_lastDate = dateHeader();
-    m_lastDateTimer.start();
-
-    const QStringList staticMap = m_wsgi->staticMap();
-    const QStringList staticMap2 = m_wsgi->staticMap2();
-    if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
-        auto staticMapPlugin = new StaticMap(app());
-
-        for (const QString &part : staticMap) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
-        }
-
-        for (const QString &part : staticMap2) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
-        }
-    }
-
-    if (m_wsgi->socketTimeout()) {
-        m_socketTimeout = new QTimer(this);
-        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
-    }
-
-    // init and postfork
     if (!initApplication()) {
         qCritical() << "Failed to init application, cheaping...";
-        Q_EMIT shutdownCompleted(this);
         return false;
     }
 
@@ -139,9 +140,12 @@ bool CWsgiEngine::init()
     for (const SocketInfo &info : sockets) {
         if (info.tcpServer) {
             TcpServerBalancer *balancer = info.tcpServer;
-            TcpServer *server = balancer->addServer(this);
-            if (server && m_socketTimeout) {
-                connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+            TcpServer *server = balancer->createServer(this);
+            if (server) {
+                if (m_socketTimeout) {
+                    connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+                }
+                m_tcpServers.push_back(server);
             }
         } else {
             auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
@@ -156,8 +160,6 @@ bool CWsgiEngine::init()
         }
         ++m_servers;
     }
-
-    Q_EMIT initted();
 
     return true;
 }

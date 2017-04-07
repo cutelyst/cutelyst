@@ -56,8 +56,6 @@ public:
     virtual void terminateChild() override;
     void terminateChild(qint64 pid);
 
-    virtual void enginesInitted() override;
-
     static void stopWSGI(const QString &pidfile);
 
     static bool setUmask(const QString &valueStr);
@@ -89,7 +87,6 @@ private:
     int m_processes;
     bool m_child = false;
     bool m_terminating = false;
-    bool m_enginedInitted = false;
 };
 
 #endif // UNIXFORK_H

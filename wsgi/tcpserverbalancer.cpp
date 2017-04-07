@@ -31,8 +31,6 @@
 
 #include <iostream>
 
-static QMutex mutex;
-
 using namespace CWSGI;
 
 TcpServerBalancer::TcpServerBalancer(WSGI *wsgi) : QTcpServer(wsgi)
@@ -126,10 +124,8 @@ void TcpServerBalancer::incomingConnection(qintptr handle)
     serverIdle->createConnection(handle);
 }
 
-TcpServer *TcpServerBalancer::addServer(CWsgiEngine *engine)
+TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
 {
-    QMutexLocker locker(&mutex);
-
     TcpServer *server;
     if (m_sslConfiguration) {
         auto sslServer = new TcpSslServer(m_serverName, m_protocol, m_wsgi, engine);
@@ -139,21 +135,25 @@ TcpServer *TcpServerBalancer::addServer(CWsgiEngine *engine)
         server = new TcpServer(m_serverName, m_protocol, m_wsgi, engine);
     }
 
-    if (!m_balancer) {
+    if (m_balancer) {
+        connect(server, &TcpServer::engineReady, this, &TcpServerBalancer::serverReady, Qt::QueuedConnection);
+        connect(server, &TcpServer::createConnection, server, &TcpServer::incomingConnection, Qt::QueuedConnection);
+    } else {
         if (server->setSocketDescriptor(socketDescriptor())) {
             server->pauseAccepting();
 
-            connect(engine, &CWsgiEngine::started, server, &TcpServer::resumeAccepting);
+            connect(server, &TcpServer::engineReady, server, &TcpServer::resumeAccepting, Qt::DirectConnection);
         } else {
             qFatal("Failed to set server socket descriptor");
         }
-    } else {
-        connect(engine, &CWsgiEngine::started, this, &TcpServerBalancer::resumeAccepting, Qt::QueuedConnection);
-        connect(server, &TcpServer::createConnection, server, &TcpServer::incomingConnection, Qt::QueuedConnection);
     }
     connect(engine, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
 
-    m_servers.push_back(server);
-
     return server;
+}
+
+void TcpServerBalancer::serverReady(TcpServer *server)
+{
+    m_servers.push_back(server);
+    resumeAccepting();
 }

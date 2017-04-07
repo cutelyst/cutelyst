@@ -43,7 +43,9 @@ public:
 
     virtual void incomingConnection(qintptr handle) override;
 
-    TcpServer *addServer(CWsgiEngine *engine);
+    TcpServer *createServer(CWsgiEngine *engine) const;
+
+    void serverReady(TcpServer *server);
 
 private:
     QString m_serverName;

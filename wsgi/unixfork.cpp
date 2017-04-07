@@ -37,6 +37,7 @@
 #include <QCoreApplication>
 #include <QSocketNotifier>
 #include <QTimer>
+#include <QMutex>
 #include <QThread>
 #include <QFile>
 #include <QLoggingCategory>
@@ -66,9 +67,6 @@ UnixFork::~UnixFork()
 bool UnixFork::continueMaster(int *exit)
 {
     Q_UNUSED(exit)
-    if (m_processes == 0) {
-        m_processes = 1;
-    }
     return true;
 }
 
@@ -77,28 +75,19 @@ int UnixFork::exec(bool lazy, bool master)
     int ret;
     if (lazy) {
         if (master) {
-            connect(this, &UnixFork::forked, this, &UnixFork::setupApplication, Qt::QueuedConnection);
+            connect(this, &UnixFork::forked, this, &UnixFork::setupApplication);
             ret = internalExec();
         } else {
             std::cerr << "*** Master mode must be set on lazy mode" << std::endl;
+            ret = -1;
         }
     } else {
         Q_EMIT setupApplication();
 
-        if (m_processes) {
-            // Forking with an event loop running leads to
-            // non working event loops on child process
-            // so this is a temporary loop until all engines
-            // are initted
-            qApp->exec();
-
-            if (!m_enginedInitted) {
-                std::cerr << "Failed to init engines" << std::endl;
-                return 1;
-            }
-
+        if (m_processes > 0) {
             ret = internalExec();
         } else {
+            Q_EMIT forked(0);
             ret = qApp->exec();
         }
     }
@@ -189,11 +178,6 @@ void UnixFork::terminateChild(qint64 pid)
 {
 //    qCDebug(WSGI_UNIX) << "SIGQUIT " << pid;
     ::kill(pid_t(pid), SIGQUIT);
-}
-
-void UnixFork::enginesInitted()
-{
-    m_enginedInitted = true;
 }
 
 void UnixFork::stopWSGI(const QString &pidfile)
@@ -340,14 +324,18 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
     }
 }
 
+#ifdef Q_OS_LINUX
 static int cpuSockets = -1;
 static int cpuCores = -1;
+static QMutex mutex;
 
 void parseProcCpuinfo() {
+    QMutexLocker locker(&mutex);
     QFile file(QStringLiteral("/proc/cpuinfo"));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         qCWarning(WSGI_UNIX) << "Failed to open file" << file.errorString();
         cpuSockets = 1;
+        cpuCores = QThread::idealThreadCount();
         return;
     }
 
@@ -377,10 +365,12 @@ void parseProcCpuinfo() {
         cpuSockets = 1;
     }
 }
+#endif
 
 int UnixFork::idealProcessCount()
 {
 #ifdef Q_OS_LINUX
+    QMutexLocker locker(&mutex);
     if (cpuSockets == -1) {
         parseProcCpuinfo();
     }
@@ -394,6 +384,7 @@ int UnixFork::idealProcessCount()
 int UnixFork::idealThreadCount()
 {
 #ifdef Q_OS_LINUX
+    QMutexLocker locker(&mutex);
     if (cpuCores == -1) {
         parseProcCpuinfo();
     }

@@ -54,11 +54,6 @@ public:
     virtual void terminateChild() = 0;
 
     /**
-     * Called when all engines have initted
-     */
-    virtual void enginesInitted();
-
-    /**
      * Called to restart process when any of the watched paths changes
      */
     virtual void restart() = 0;
