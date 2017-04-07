@@ -31,6 +31,10 @@ typedef struct {
     int restart = 0;
 } Worker;
 
+namespace CWSGI {
+class WSGI;
+}
+
 class QTimer;
 class QSocketNotifier;
 class UnixFork : public AbstractFork
@@ -71,7 +75,7 @@ public:
     void handleSigInt();
     void handleSigChld();
 
-    static void setSched(int cpu_affinity, int workerId, int workerCore);
+    static void setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore);
 
 private:
     int setupUnixSignalHandlers();

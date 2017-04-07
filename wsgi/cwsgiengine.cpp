@@ -85,7 +85,6 @@ void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
 void CWsgiEngine::postFork(int workerId)
 {
     m_workerId = workerId;
-    qDebug() << Q_FUNC_INFO << workerId;
 
     if (!postForkApplication()) {
         // CHEAP
@@ -94,7 +93,7 @@ void CWsgiEngine::postFork(int workerId)
     }
 
 #ifdef Q_OS_UNIX
-    UnixFork::setSched(m_wsgi->cpuAffinity(), workerId, workerCore());
+    UnixFork::setSched(m_wsgi, workerId, workerCore());
 #endif
 
     for (TcpServer *server : m_tcpServers) {

@@ -18,6 +18,8 @@
  */
 #include "unixfork.h"
 
+#include "wsgi.h"
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -481,14 +483,21 @@ void UnixFork::handleSigChld()
     }
 }
 
-void UnixFork::setSched(int cpu_affinity, int workerId, int workerCore)
+void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
 {
     char buf[4096];
     int ret;
     int pos = 0;
+    int cpu_affinity = wsgi->cpuAffinity();
     if (cpu_affinity) {
         int coreCount = idealThreadCount();
-        int base_cpu = workerCore * cpu_affinity;
+        int base_cpu;
+        if (wsgi->threads().toInt() > 0) {
+            base_cpu = workerCore * cpu_affinity;
+        } else {
+            base_cpu = workerId * cpu_affinity;
+        }
+
         if (base_cpu >= coreCount) {
             base_cpu = base_cpu % coreCount;
         }
