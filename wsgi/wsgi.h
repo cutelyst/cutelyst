@@ -301,6 +301,14 @@ public:
     Q_PROPERTY(QString umask READ umask WRITE setUmask)
     void setUmask(const QString &value);
     QString umask() const;
+
+    /**
+     * Defines file mode creation mask
+     * @accessors umask(), setUmask()
+     */
+    Q_PROPERTY(int cpuAffinity READ cpuAffinity WRITE setCpuAffinity)
+    void setCpuAffinity(int value);
+    int cpuAffinity() const;
 #endif
 
     /**

@@ -246,7 +246,7 @@ void UnixFork::postFork(int workerId)
     // Child must not have parent timers
     delete m_checkChildRestart;
 
-    Q_EMIT forked(workerId);
+    Q_EMIT forked(workerId - 1);
 }
 
 void UnixFork::setGid(const QString &gid)
@@ -327,9 +327,9 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
 #ifdef Q_OS_LINUX
 static int cpuSockets = -1;
 static int cpuCores = -1;
-static QMutex mutex;
 
 void parseProcCpuinfo() {
+    static QMutex mutex;
     QMutexLocker locker(&mutex);
     QFile file(QStringLiteral("/proc/cpuinfo"));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -370,7 +370,6 @@ void parseProcCpuinfo() {
 int UnixFork::idealProcessCount()
 {
 #ifdef Q_OS_LINUX
-    QMutexLocker locker(&mutex);
     if (cpuSockets == -1) {
         parseProcCpuinfo();
     }
@@ -384,7 +383,6 @@ int UnixFork::idealProcessCount()
 int UnixFork::idealThreadCount()
 {
 #ifdef Q_OS_LINUX
-    QMutexLocker locker(&mutex);
     if (cpuCores == -1) {
         parseProcCpuinfo();
     }
@@ -480,6 +478,57 @@ void UnixFork::handleSigChld()
             m_checkChildRestart->deleteLater();
             m_checkChildRestart = nullptr;
         }
+    }
+}
+
+void UnixFork::setSched(int cpu_affinity, int workerId, int workerCore)
+{
+    char buf[4096];
+    int ret;
+    int pos = 0;
+    if (cpu_affinity) {
+        int coreCount = idealThreadCount();
+        int base_cpu = workerCore * cpu_affinity;
+        if (base_cpu >= coreCount) {
+            base_cpu = base_cpu % coreCount;
+        }
+        ret = snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
+        if (ret < 25 || ret >= 4096) {
+            qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
+            exit(1);
+        }
+        pos += ret;
+#if defined(__linux__) || defined(__GNU_kFreeBSD__)
+        cpu_set_t cpuset;
+#elif defined(__FreeBSD__)
+        cpuset_t cpuset;
+#endif
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__GNU_kFreeBSD__)
+        CPU_ZERO(&cpuset);
+        int i;
+        for (i = 0; i < cpu_affinity; i++) {
+            if (base_cpu >= coreCount)
+                base_cpu = 0;
+            CPU_SET(base_cpu, &cpuset);
+            ret = snprintf(buf + pos, 4096 - pos, " %d", base_cpu);
+            if (ret < 2 || ret >= 4096) {
+                qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
+                exit(1);
+            }
+            pos += ret;
+            base_cpu++;
+        }
+#endif
+#if defined(__linux__) || defined(__GNU_kFreeBSD__)
+        if (sched_setaffinity(0, sizeof(cpu_set_t), &cpuset)) {
+            qFatal("failed to sched_setaffinity()");
+        }
+#elif defined(__FreeBSD__)
+        if (cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, -1, sizeof(cpuset), &cpuset)) {
+            qFatal("cpuset_setaffinity");
+        }
+#endif
+        qCDebug(WSGI_UNIX) << buf;
     }
 }
 

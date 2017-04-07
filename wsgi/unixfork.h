@@ -71,6 +71,8 @@ public:
     void handleSigInt();
     void handleSigChld();
 
+    static void setSched(int cpu_affinity, int workerId, int workerCore);
+
 private:
     int setupUnixSignalHandlers();
     void setupSocketPair(bool closeSignalsFD);

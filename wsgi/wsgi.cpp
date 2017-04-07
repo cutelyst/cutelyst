@@ -250,6 +250,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                    QCoreApplication::translate("main", "set file mode creation mask"),
                                    QCoreApplication::translate("main", "mode"));
     parser.addOption(umaskOption);
+
+    QCommandLineOption cpuAffinityOption(QStringLiteral("cpu-affinity"),
+                                         QCoreApplication::translate("main", "set CPU affinity"),
+                                         QCoreApplication::translate("main", "number of CPUs available for each worker core"));
+    parser.addOption(cpuAffinityOption);
 #endif // Q_OS_UNIX
 
     QCommandLineOption threadBalancerOpt(QStringLiteral("experimental-thread-balancer"),
@@ -321,6 +326,15 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     if (parser.isSet(umaskOption)) {
         setUmask(parser.value(umaskOption));
+    }
+
+    if (parser.isSet(cpuAffinityOption)) {
+        bool ok;
+        auto value = parser.value(cpuAffinityOption).toInt(&ok);
+        setCpuAffinity(value);
+        if (!ok || value < 1) {
+            parser.showHelp(1);
+        }
     }
 #endif // Q_OS_UNIX
 
@@ -1051,6 +1065,18 @@ QString WSGI::umask() const
 {
     Q_D(const WSGI);
     return d->umask;
+}
+
+void WSGI::setCpuAffinity(int value)
+{
+    Q_D(WSGI);
+    d->cpuAffinity = value;
+}
+
+int WSGI::cpuAffinity() const
+{
+    Q_D(const WSGI);
+    return d->cpuAffinity;
 }
 #endif
 

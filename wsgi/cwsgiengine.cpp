@@ -28,6 +28,10 @@
 #include "staticmap.h"
 #include "socket.h"
 
+#ifdef Q_OS_UNIX
+#include "unixfork.h"
+#endif
+
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
 #include <Cutelyst/Request>
@@ -81,12 +85,17 @@ void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
 void CWsgiEngine::postFork(int workerId)
 {
     m_workerId = workerId;
+    qDebug() << Q_FUNC_INFO << workerId;
 
     if (!postForkApplication()) {
         // CHEAP
         Q_EMIT shutdown();
         return;
     }
+
+#ifdef Q_OS_UNIX
+    UnixFork::setSched(m_wsgi->cpuAffinity(), workerId, workerCore());
+#endif
 
     for (TcpServer *server : m_tcpServers) {
         Q_EMIT server->engineReady(server);
@@ -126,8 +135,6 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
     //    conn->waitForBytesWritten(200);
     return ret;
 }
-
-
 
 bool CWsgiEngine::init()
 {
