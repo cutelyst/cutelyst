@@ -98,13 +98,13 @@ public:
 
     C_ATTR(getActions, :Local :AutoArgs)
     void getActions(Context *c) {
-        ActionList actions = c->getActions(c->request()->queryParam(QStringLiteral("action")),
-                                           c->request()->queryParam(QStringLiteral("ns")));
+        const ActionList actions = c->getActions(c->request()->queryParam(QStringLiteral("action")),
+                                                 c->request()->queryParam(QStringLiteral("ns")));
         if (actions.isEmpty()) {
             c->response()->setBody(QStringLiteral("__NOT_FOUND__"));
         } else {
             QString ret;
-            Q_FOREACH (Action *action, actions) {
+            for (Action *action : actions) {
                 ret.append(action->reverse() + QLatin1Char(';'));
             }
             c->response()->setBody(ret);
