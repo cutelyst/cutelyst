@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -370,14 +370,20 @@ public:
      */
     QVector<Action *> getActions(const QString &action, const QString &ns = QString());
 
+    /**
+     * Returns all registered plugins
+     */
+    // TODO C2 mark as const
     QVector<Plugin *> plugins();
 
     template <typename T>
     T plugin()
     {
-        Q_FOREACH (Plugin *plugin, plugins()) {
-            if (qobject_cast<T>(plugin)) {
-                return qobject_cast<T>(plugin);
+        const auto pluginsConst = plugins();
+        for (Plugin *plugin : pluginsConst) {
+            auto p = qobject_cast<T>(plugin);
+            if (p) {
+                return p;
             }
         }
         return 0;

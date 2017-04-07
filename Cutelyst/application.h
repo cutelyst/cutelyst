@@ -20,9 +20,10 @@
 #ifndef CUTELYST_APPLICATION_H
 #define CUTELYST_APPLICATION_H
 
-#include <QtCore/qobject.h>
-#include <QtCore/qvariant.h>
-#include <QtCore/qlocale.h>
+#include <QtCore/QObject>
+#include <QtCore/QVariant>
+#include <QtCore/QLocale>
+#include <QtCore/QVector>
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -103,6 +104,9 @@ public:
      */
     QVector<DispatchType *> dispatchers() const;
 
+    /**
+     * Returns all registered plugins
+     */
     QVector<Plugin *> plugins() const;
     template <typename T>
     T plugin()
