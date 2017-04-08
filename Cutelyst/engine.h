@@ -162,15 +162,16 @@ protected:
         // case sensitive, however several tools fail
         // if the headers are not on camel case form.
         QString key = headerKey;
-        bool lastWasDash = true;
+        bool lastWasLetter = false;
         for (int i = 0 ; i < key.size() ; ++i) {
             QCharRef c = key[i];
             if (c == QLatin1Char('_')) {
                 c = QLatin1Char('-');
-                lastWasDash = true;
-            } else if (lastWasDash) {
-                lastWasDash = false;
+                lastWasLetter = false;
+            } else if (lastWasLetter) {
                 c = c.toLower();
+            } else if (c.isLetter()) {
+                lastWasLetter = true;
             }
         }
         return key;
@@ -180,15 +181,16 @@ protected:
         // The RFC 2616 and 7230 states keys are not case
         // case sensitive, however several tools fail
         // if the headers are not on camel case form.
-        bool lastWasDash = true;
+        bool lastWasLetter = false;
         for (int i = 0 ; i < key.size() ; ++i) {
             QByteRef c = key[i];
             if (c == '_') {
                 c = '-';
-                lastWasDash = true;
-            } else if (lastWasDash) {
-                lastWasDash = false;
+                lastWasLetter = false;
+            } else if (lastWasLetter) {
                 c = QChar::toLower(c);
+            } else if (QChar::isLetter(c)) {
+                lastWasLetter = true;
             }
         }
     }
