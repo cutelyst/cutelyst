@@ -1,6 +1,6 @@
 find_package(PkgConfig QUIET)
 
-if (NOT PkgConfig_FOUND)
+if (NOT PkgConfig_FOUND AND NOT PKG_CONFIG_FOUND)
     message(WARNING "pkg-config not found, not building uWSGI plugin")
     return()
 endif ()
