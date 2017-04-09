@@ -122,7 +122,7 @@ bool Engine::finalizeHeaders(Context *c)
 
     // Fix missing content length
     if (headers.contentLength() < 0) {
-        qint16 size = response->size();
+        qint64 size = response->size();
         if (size >= 0) {
             headers.setContentLength(size);
         }

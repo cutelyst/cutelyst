@@ -93,6 +93,16 @@ public:
         c->response()->setJsonBody(QJsonDocument(obj));
     }
 
+    C_ATTR(largeSetBody, :Local :AutoArgs)
+    void largeSetBody(Context *c) {
+        c->response()->setBody(QByteArrayLiteral("abcd").repeated(1024 * 1024));
+    }
+
+    C_ATTR(largeBody, :Local :AutoArgs)
+    void largeBody(Context *c) {
+        c->response()->body() = QByteArrayLiteral("abcd").repeated(1024 * 1024);
+    }
+
     C_ATTR(redirect, :Local :AutoArgs)
     void redirect(Context *c) {
         c->response()->redirect(c->request()->queryParam(QStringLiteral("url")));
@@ -292,6 +302,18 @@ void TestResponse::testController_data()
                                                << QByteArrayLiteral("200 OK")
                                                << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("5")}, {QStringLiteral("Content-Type"), QStringLiteral("TEXT/PLAIN; charset=utf-8")} }
                                                << QByteArrayLiteral("UTF-8");
+
+    query.clear();
+    QTest::newRow("largeBody-test00") << get << QStringLiteral("/response/test/largeBody") << headers << QByteArray()
+                                        << QByteArrayLiteral("200 OK")
+                                        << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("4194304")} }
+                                        << QByteArrayLiteral("abcd").repeated(1024 * 1024);
+
+    query.clear();
+    QTest::newRow("largeSetBody-test01") << get << QStringLiteral("/response/test/largeSetBody") << headers << QByteArray()
+                                         << QByteArrayLiteral("200 OK")
+                                         << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("4194304")} }
+                                         << QByteArrayLiteral("abcd").repeated(1024 * 1024);
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
