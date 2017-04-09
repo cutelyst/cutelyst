@@ -213,10 +213,10 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     if (sock->headerClose == Socket::HeaderCloseNotSet) {
         if (fallbackConnection == Socket::HeaderCloseKeep) {
             sock->headerClose = Socket::HeaderCloseKeep;
-            io->write("\r\nConnection: keep-alive");
+            io->write("\r\nConnection: keep-alive", 24);
         } else {
             sock->headerClose = Socket::HeaderCloseClose;
-            io->write("\r\nConnection: close");
+            io->write("\r\nConnection: close", 19);
         }
     }
 
