@@ -37,6 +37,7 @@ public:
     static inline void setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm);
     static inline void setUser(Context *c, const AuthenticationUser &user, const QString &realmName = QString());
     static inline void persistUser(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm);
+    static void _q_postFork(Application*app);
 
     QString defaultRealm;
     QMap<QString, AuthenticationRealm *> realms;

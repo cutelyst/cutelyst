@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,12 +16,13 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "authentication_p.h"
 
 #include "authenticationstore.h"
 #include "authenticationrealm.h"
+
 #include "context.h"
+#include "application.h"
 
 #include <Cutelyst/Plugins/Session/session.h>
 
@@ -44,8 +45,6 @@ Authentication::Authentication(Application *parent) : Plugin(parent)
 {
     qRegisterMetaType<AuthenticationUser>();
     qRegisterMetaTypeStreamOperators<AuthenticationUser>();
-
-    auth = this;
 }
 
 Authentication::~Authentication()
@@ -265,6 +264,11 @@ void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &us
             realm->persistUser(c, user);
         }
     }
+}
+
+void AuthenticationPrivate::_q_postFork(Application *app)
+{
+    auth = app->plugin<Authentication *>();;
 }
 
 Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)

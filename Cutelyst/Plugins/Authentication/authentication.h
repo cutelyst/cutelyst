@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef AUTHENTICATION_H
 #define AUTHENTICATION_H
 
@@ -98,6 +97,9 @@ public:
 
 protected:
     AuthenticationPrivate *d_ptr;
+
+private:
+    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
 };
 
 inline bool Authentication::authenticate(Context *c, const QString &realm) {
