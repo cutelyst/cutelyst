@@ -457,7 +457,6 @@ int WSGI::exec(Cutelyst::Application *app)
 
     connect(d->genericFork, &AbstractFork::forked, d, &WSGIPrivate::postFork, Qt::DirectConnection);
     connect(d->genericFork, &AbstractFork::shutdown, d, &WSGIPrivate::shutdown, Qt::DirectConnection);
-    connect(d->genericFork, &AbstractFork::setupApplication, d, &WSGIPrivate::setupApplication, Qt::DirectConnection);
 
     if (d->master && d->lazy) {
         if (d->autoReload && !d->application.isEmpty()) {
@@ -525,6 +524,10 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 
     d->app = app;
+
+    if (!d->lazy) {
+        d->setupApplication();
+    }
 
     ret = d->genericFork->exec(d->lazy, d->master);
 
@@ -1173,6 +1176,10 @@ void WSGIPrivate::workerStarted()
 
 void WSGIPrivate::postFork(int workerId)
 {
+    if (lazy) {
+        setupApplication();
+    }
+
     qCDebug(CUTELYST_WSGI) << "Starting threads";
     for (CWsgiEngine *engine : engines) {
         QThread *thread = engine->thread();

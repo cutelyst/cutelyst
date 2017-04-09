@@ -66,7 +66,6 @@ public:
 Q_SIGNALS:
     void forked(int workerId);
     void shutdown();
-    void setupApplication();
 
 protected:
     void fileChanged(const QString &path);
