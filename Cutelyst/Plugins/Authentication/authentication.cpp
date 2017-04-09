@@ -178,6 +178,7 @@ void Authentication::logout(Context *c)
 bool Authentication::setup(Application *app)
 {
     connect(app, &Application::postForked, this, &AuthenticationPrivate::_q_postFork);
+    return true;
 }
 
 AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const

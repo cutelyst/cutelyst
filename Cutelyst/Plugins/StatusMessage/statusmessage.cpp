@@ -216,6 +216,7 @@ QString StatusMessage::setStatus(Context *c, const QString &msg)
 bool StatusMessage::setup(Application *app)
 {
     connect(app, &Application::postForked, this, &StatusMessagePrivate::_q_postFork);
+    return true;
 }
 
 #include "moc_statusmessage.cpp"
