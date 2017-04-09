@@ -96,6 +96,8 @@ public:
     static void logout(Context *c);
 
 protected:
+    virtual bool setup(Application *app) override;
+
     AuthenticationPrivate *d_ptr;
 
 private:

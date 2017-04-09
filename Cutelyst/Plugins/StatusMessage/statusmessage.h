@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -94,7 +94,12 @@ public:
     static Q_DECL_DEPRECATED QString setStatus(Context *c, const QString &msg);
 
 protected:
+    virtual bool setup(Application *app) override;
+
     StatusMessagePrivate *d_ptr;
+
+private:
+    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
 };
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,20 +28,27 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATUSMESSAGE, "cutelyst.plugins.statusmessage")
 
+static thread_local StatusMessage *m_instance = nullptr;
+
 namespace Cutelyst {
 
 class StatusMessagePrivate
 {
 public:
+    static void _q_postFork(Application *app);
+
     QString sessionPrefix = QStringLiteral("status_msg");
     QString tokenParam = QStringLiteral("mid");
     QString statusMsgStashKey = QStringLiteral("status_msg");
     QString errorMsgStashKey = QStringLiteral("error_msg");
 };
 
+void StatusMessagePrivate::_q_postFork(Application *app)
+{
+    m_instance = app->plugin<StatusMessage *>();
 }
 
-static thread_local StatusMessage *m_instance = nullptr;
+}
 
 StatusMessage::StatusMessage(Application *parent) : Plugin(parent), d_ptr(new StatusMessagePrivate)
 {
@@ -204,6 +211,11 @@ QString StatusMessage::setError(Context *c, const QString &msg)
 QString StatusMessage::setStatus(Context *c, const QString &msg)
 {
     return status(c, msg);
+}
+
+bool StatusMessage::setup(Application *app)
+{
+    connect(app, &Application::postForked, this, &StatusMessagePrivate::_q_postFork);
 }
 
 #include "moc_statusmessage.cpp"
