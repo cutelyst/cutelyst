@@ -82,7 +82,7 @@ public:
     quint32 buf_size = 0;
     quint32 last = 0;
     int beginLine = 0;
-    int headerClose = HeaderCloseNotSet;
+    HeaderClose headerClose = HeaderCloseNotSet;
     quint16 pktsize = 0;// FGCI
     bool headerHost = false;
     bool processing = false;

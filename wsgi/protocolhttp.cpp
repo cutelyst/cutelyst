@@ -185,7 +185,7 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     io->write(msg, msgLen);
 
     const auto headersData = headers.data();
-    int fallbackConnection = sock->headerClose;
+    Socket::HeaderClose fallbackConnection = sock->headerClose;
     sock->headerClose = Socket::HeaderCloseNotSet;
 
     bool hasDate = false;
