@@ -185,9 +185,8 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     io->write(msg, msgLen);
 
     const auto headersData = headers.data();
-    if (sock->headerClose == Socket::HeaderCloseKeep) {
-        sock->headerClose = Socket::HeaderCloseNotSet;
-    }
+    int fallbackConnection = sock->headerClose;
+    sock->headerClose = Socket::HeaderCloseNotSet;
 
     bool hasDate = false;
     auto it = headersData.constBegin();
@@ -209,6 +208,16 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
         io->write(ret.toLatin1());
 
         ++it;
+    }
+
+    if (sock->headerClose == Socket::HeaderCloseNotSet) {
+        if (fallbackConnection == Socket::HeaderCloseKeep) {
+            sock->headerClose = Socket::HeaderCloseKeep;
+            io->write("\r\nConnection: keep-alive");
+        } else {
+            sock->headerClose = Socket::HeaderCloseClose;
+            io->write("\r\nConnection: close");
+        }
     }
 
     if (!hasDate) {
