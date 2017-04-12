@@ -257,6 +257,12 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     parser.addOption(cpuAffinityOption);
 #endif // Q_OS_UNIX
 
+#ifdef Q_OS_LINUX
+    QCommandLineOption reusePortOption(QStringLiteral("reuse-port"),
+                                       QCoreApplication::translate("main", "enable SO_REUSEPORT flag on socket (Linux 3.9+)"));
+    parser.addOption(reusePortOption);
+#endif
+
     QCommandLineOption threadBalancerOpt(QStringLiteral("experimental-thread-balancer"),
                                          QCoreApplication::translate("main", "balances new connections to threads using round-robin"));
     parser.addOption(threadBalancerOpt);
@@ -337,6 +343,12 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         }
     }
 #endif // Q_OS_UNIX
+
+#ifdef Q_OS_LINUX
+    if (parser.isSet(reusePortOption)) {
+        setReusePort(true);
+    }
+#endif
 
     if (parser.isSet(lazyOption)) {
         setLazy(true);
@@ -1080,6 +1092,20 @@ int WSGI::cpuAffinity() const
 {
     Q_D(const WSGI);
     return d->cpuAffinity;
+}
+#endif
+
+#ifdef Q_OS_LINUX
+void WSGI::setReusePort(bool enable)
+{
+    Q_D(WSGI);
+    d->reusePort = enable;
+}
+
+bool WSGI::reusePort() const
+{
+    Q_D(const WSGI);
+    return d->reusePort;
 }
 #endif
 

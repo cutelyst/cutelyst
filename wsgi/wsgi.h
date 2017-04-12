@@ -311,6 +311,16 @@ public:
     int cpuAffinity() const;
 #endif
 
+#ifdef Q_OS_LINUX
+    /**
+     * Defines file mode creation mask
+     * @accessors umask(), setUmask()
+     */
+    Q_PROPERTY(bool reuse_port READ reusePort WRITE setReusePort)
+    void setReusePort(bool enable);
+    bool reusePort() const;
+#endif
+
     /**
      * Defines is the Application should be lazy loaded.
      * @accessors lazy(), setLazy()

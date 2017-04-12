@@ -20,6 +20,7 @@
 #define TCPSERVERBALANCER_H
 
 #include <QTcpServer>
+#include <QtGlobal>
 
 class QSslConfiguration;
 
@@ -46,8 +47,11 @@ public:
     TcpServer *createServer(CWsgiEngine *engine) const;
 
     void serverReady(TcpServer *server);
+    void serverReadyResume(TcpServer *server);
 
 private:
+    QHostAddress m_address;
+    quint16 m_port;
     QString m_serverName;
     std::vector<TcpServer *> m_servers;
     WSGI *m_wsgi;

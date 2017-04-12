@@ -80,6 +80,9 @@ public:
     QString umask;
     int cpuAffinity = 0;
 #endif
+#ifdef Q_OS_LINUX
+    bool reusePort = false;
+#endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     Protocol *protoHTTP = nullptr;
