@@ -38,7 +38,7 @@ class CWsgiEngine : public Cutelyst::Engine
 public:
     CWsgiEngine(Cutelyst::Application *localApp, int workerCore, const QVariantMap &opts, WSGI *wsgi);
 
-    virtual int workerId() const;
+    virtual int workerId() const override;
 
     inline void processSocket(Cutelyst::EngineRequest *sock) {
         processRequest(*sock);
@@ -58,9 +58,9 @@ Q_SIGNALS:
     void shutdownCompleted(CWsgiEngine *engine);
 
 protected:
-    virtual bool finalizeHeadersWrite(Cutelyst::Context *c, quint16 status,  const Cutelyst::Headers &headers, void *engineData);
+    virtual bool finalizeHeadersWrite(Cutelyst::Context *c, quint16 status,  const Cutelyst::Headers &headers, void *engineData) override;
 
-    virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData);
+    virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData) override;
 
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
