@@ -24,6 +24,7 @@
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
+#include <Cutelyst/Engine>
 
 #include <QUuid>
 #include <QHostAddress>
@@ -62,7 +63,7 @@ bool Session::setup(Application *app)
     Q_D(Session);
     d->sessionName = QCoreApplication::applicationName() + QLatin1String("_session");
 
-    const QVariantMap config = app->config(QLatin1String("Session_Plugin")).toMap();
+    const QVariantMap config = app->engine()->config(QLatin1String("Session_Plugin"));
     d->sessionExpires = config.value(QLatin1String("expires"), 7200).toULongLong();
     d->expiryThreshold = config.value(QLatin1String("expiry_threshold"), 0).toULongLong();
     d->verifyAddress = config.value(QLatin1String("verify_address"), false).toBool();
