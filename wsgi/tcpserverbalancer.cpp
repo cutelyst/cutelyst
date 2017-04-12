@@ -31,10 +31,12 @@
 
 #include <iostream>
 
+#ifdef Q_OS_LINUX
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <fcntl.h>
+#endif
 
 using namespace CWSGI;
 
