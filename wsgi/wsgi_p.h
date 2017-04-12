@@ -31,6 +31,7 @@ class AbstractFork;
 
 namespace CWSGI {
 
+class Protocol;
 class WSGIPrivate : public QObject
 {
     Q_OBJECT
@@ -55,7 +56,7 @@ public:
     void loadLoggingRules(QSettings &settings);
 
     WSGI *q_ptr;
-    std::vector<SocketInfo> sockets;
+    std::vector<QObject *> servers;
     std::vector<CWsgiEngine *> engines;
     Cutelyst::Application *app = nullptr;
     CWsgiEngine *engine;

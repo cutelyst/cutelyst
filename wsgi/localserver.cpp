@@ -40,33 +40,25 @@ bool LocalServer::setSocketDescriptor(qintptr socketDescriptor)
 {
     bool ret = false;
     if (listen(socketDescriptor)) {
-        // THIS IS A HACK
-        // QLocalServer does not expose the socket
-        // descriptor, so we get it from it's QSocketNotifier child
-        // if this breaks it we fail with an error.
-        const auto childrenL = children();
-        for (auto child : childrenL) {
-            auto notifier = qobject_cast<QSocketNotifier*>(child);
-            if (notifier) {
-                m_notifier = notifier;
-                ret = true;
-                break;
-            }
-        }
+
     }
     return ret;
 }
 
 void LocalServer::pauseAccepting()
 {
-    Q_ASSERT(m_notifier);
-    m_notifier->setEnabled(false);
+    auto notifier = socketDescriptorNotifier();
+    if (notifier) {
+        notifier->setEnabled(false);
+    }
 }
 
 void LocalServer::resumeAccepting()
 {
-    Q_ASSERT(m_notifier);
-    m_notifier->setEnabled(true);
+    auto notifier = socketDescriptorNotifier();
+    if (notifier) {
+        notifier->setEnabled(true);
+    }
 }
 
 void LocalServer::incomingConnection(quintptr handle)
@@ -101,6 +93,16 @@ void LocalServer::incomingConnection(quintptr handle)
     } else {
         m_socks.push_back(sock);
     }
+}
+
+qintptr LocalServer::socket()
+{
+    QSocketNotifier *notifier = socketDescriptorNotifier();
+    if (!notifier) {
+        return notifier->socket();
+    }
+
+    return 0;
 }
 
 void LocalServer::shutdown()
@@ -140,6 +142,30 @@ void LocalServer::timeoutConnections()
             }
         }
     }
+}
+
+Protocol *LocalServer::protocol() const
+{
+    return m_protocol;
+}
+
+QSocketNotifier *LocalServer::socketDescriptorNotifier() const
+{
+    QSocketNotifier *ret = nullptr;
+    // THIS IS A HACK
+    // QLocalServer does not expose the socket
+    // descriptor, so we get it from it's QSocketNotifier child
+    // if this breaks it we fail with an error.
+    const auto childrenL = children();
+    for (auto child : childrenL) {
+        auto notifier = qobject_cast<QSocketNotifier*>(child);
+        if (notifier) {
+            ret = notifier;
+            break;
+        }
+    }
+
+    return ret;
 }
 
 #include "moc_localserver.cpp"

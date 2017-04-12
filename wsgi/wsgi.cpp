@@ -25,6 +25,7 @@
 #include "socket.h"
 #include "tcpserverbalancer.h"
 #include "tcpsslserver.h"
+#include "localserver.h"
 
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
@@ -40,9 +41,6 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QUrl>
-#include <QHostAddress>
-#include <QLocalServer>
-#include <QTcpServer>
 #include <QPluginLoader>
 #include <QThread>
 #include <QLoggingCategory>
@@ -81,10 +79,6 @@ WSGI::~WSGI()
 
     delete d->protoHTTP;
     delete d->protoFCGI;
-
-    for (const SocketInfo &info : d->sockets) {
-        delete info.tcpServer;
-    }
 
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
 }
@@ -521,7 +515,7 @@ int WSGI::exec(Cutelyst::Application *app)
         d->listenLocalSockets();
     }
 
-    if (!d->sockets.size()) {
+    if (!d->servers.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
         return 1;
     }
@@ -590,23 +584,16 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure
 
     bool ret = true;
     if (!line.startsWith(QLatin1Char('/'))) {
-
-
         auto server = new TcpServerBalancer(q);
         server->setBalancer(threadBalancer);
         ret = server->listen(line, protocol, secure);
 
-        SocketInfo info;
-
-        info.socketDescriptor = server->socketDescriptor();
-        info.tcpServer = server;
-
         if (ret && server->socketDescriptor()) {
-            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
-                      << " bound to TCP address " << server->serverName().toLatin1().constData()
+            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+                      << " bound to TCP address " << server->serverName().toLocal8Bit().constData()
                       << " fd " << QByteArray::number(server->socketDescriptor()).constData()
                       << std::endl;
-            sockets.push_back(info);
+            servers.push_back(server);
         }
     }
 
@@ -642,9 +629,11 @@ void WSGIPrivate::listenLocalSockets()
 
 bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
 {
+    Q_Q(WSGI);
+
     bool ret = true;
     if (line.startsWith(QLatin1Char('/'))) {
-        auto server = new QLocalServer(this);
+        auto server = new LocalServer(line, protocol, q, this);
         if (!socketAccess.isEmpty()) {
             QLocalServer::SocketOptions options;
             if (socketAccess.contains(QLatin1Char('u'))) {
@@ -662,30 +651,11 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         }
         server->removeServer(line);
         ret = server->listen(line);
-        //        server->pauseAccepting(); // TODO
+        server->pauseAccepting();
 
-        SocketInfo info;
-        info.protocol = protocol;
-        info.serverName = line;
-
-        // THIS IS A HACK
-        // QLocalServer does not expose the socket
-        // descriptor, so we get it from it's QSocketNotifier child
-        // if this breaks it we fail with an error.
-        const auto children = server->children();
-        for (auto child : children) {
-            auto notifier = qobject_cast<QSocketNotifier*>(child);
-            if (notifier) {
-                //                qDebug() << "found notifier" << notifier->socket();
-                info.socketDescriptor = notifier->socket();
-                notifier->setEnabled(false);
-                break;
-            }
-        }
-
-        if (!ret || !info.socketDescriptor) {
-            std::cout << "Failed to listen on LOCAL: " << line.toUtf8().constData()
-                      << " : " << server->errorString().toUtf8().constData() << std::endl;
+        if (!ret || !server->socket()) {
+            std::cout << "Failed to listen on LOCAL: " << line.toLocal8Bit().constData()
+                      << " : " << server->errorString().toLocal8Bit().constData() << std::endl;
             exit(1);
         }
 
@@ -695,11 +665,11 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         }
 #endif
 
-        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(sockets.size())).constData()
-                  << " bound to LOCAL address " << info.serverName.toLatin1().constData()
-                  << " fd " << QByteArray::number(info.socketDescriptor).constData()
+        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+                  << " bound to LOCAL address " << line.toLocal8Bit().constData()
+                  << " fd " << QByteArray::number(server->socket()).constData()
                   << std::endl;
-        sockets.push_back(info);
+        servers.push_back(server);
     }
 
     return ret;
@@ -1252,7 +1222,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
 
-    engine->setTcpSockets(sockets);
+    engine->setServers(servers);
     if (!engine->init()) {
         qCCritical(CUTELYST_WSGI) << "Failed to init engine for core:" << core;
         delete engine;

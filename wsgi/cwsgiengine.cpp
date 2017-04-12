@@ -77,9 +77,34 @@ int CWsgiEngine::workerId() const
     return m_workerId;
 }
 
-void CWsgiEngine::setTcpSockets(const std::vector<SocketInfo> &sockets)
+void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
 {
-    m_sockets = sockets;
+    for (QObject *server : servers) {
+        auto balancer = qobject_cast<TcpServerBalancer *>(server);
+        if (balancer) {
+            TcpServer *server = balancer->createServer(this);
+            if (server) {
+                if (m_socketTimeout) {
+                    connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+                }
+                m_tcpServers.push_back(server);
+            }
+        }
+
+        auto localServer = qobject_cast<LocalServer *>(server);
+        if (localServer) {
+            auto server = new LocalServer(QStringLiteral("localhost"), localServer->protocol(), m_wsgi, this);
+            if (server->setSocketDescriptor(localServer->socket())) {
+                server->pauseAccepting();
+                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
+                connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+                if (m_socketTimeout) {
+                    connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
+                }
+            }
+        }
+        ++m_runningServers;
+    }
 }
 
 void CWsgiEngine::postFork(int workerId)
@@ -140,31 +165,6 @@ bool CWsgiEngine::init()
     if (!initApplication()) {
         qCritical() << "Failed to init application, cheaping...";
         return false;
-    }
-
-    const auto sockets = m_sockets;
-    for (const SocketInfo &info : sockets) {
-        if (info.tcpServer) {
-            TcpServerBalancer *balancer = info.tcpServer;
-            TcpServer *server = balancer->createServer(this);
-            if (server) {
-                if (m_socketTimeout) {
-                    connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
-                }
-                m_tcpServers.push_back(server);
-            }
-        } else {
-            auto server = new LocalServer(QStringLiteral("localhost"), info.protocol, m_wsgi, this);
-            if (server->setSocketDescriptor(info.socketDescriptor)) {
-                server->pauseAccepting();
-                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
-                connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
-                if (m_socketTimeout) {
-                    connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
-                }
-            }
-        }
-        ++m_servers;
     }
 
     return true;

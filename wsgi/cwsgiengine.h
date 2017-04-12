@@ -29,15 +29,7 @@ class QTcpServer;
 
 namespace CWSGI {
 
-class TcpServerBalancer;
 class TcpServer;
-class Protocol;
-struct SocketInfo {
-    QString serverName;
-    Protocol *protocol;
-    TcpServerBalancer *tcpServer = nullptr;
-    qintptr socketDescriptor = 0;
-};
 
 class WSGI;
 class CWsgiEngine : public Cutelyst::Engine
@@ -52,13 +44,13 @@ public:
         processRequest(*sock);
     }
 
-    void setTcpSockets(const std::vector<SocketInfo> &sockets);
+    void setServers(const std::vector<QObject *> &servers);
 
     void postFork(int workerId);
 
     int m_workerId = 0;
 
-    virtual bool init();
+    virtual bool init() override;
 
 Q_SIGNALS:
     void started();
@@ -83,7 +75,7 @@ protected:
     }
 
     inline void serverShutdown() {
-        if (--m_servers == 0) {
+        if (--m_runningServers == 0) {
             Q_EMIT shutdownCompleted(this);
         }
     }
@@ -96,12 +88,11 @@ private:
     friend class TcpSslServer;
 
     std::vector<TcpServer *> m_tcpServers;
-    std::vector<SocketInfo> m_sockets;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     QTimer *m_socketTimeout = nullptr;
     WSGI *m_wsgi;
-    int m_servers = 0;
+    int m_runningServers = 0;
     int m_serversTimeout = 0;
 };
 

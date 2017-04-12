@@ -41,14 +41,19 @@ public:
 
     virtual void incomingConnection(quintptr handle) override;
 
+    qintptr socket();
+
     void shutdown();
     void timeoutConnections();
 
+    Protocol *protocol() const;
+
 private:
+    QSocketNotifier *socketDescriptorNotifier() const;
+
     QString m_serverAddress;
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
-    QSocketNotifier *m_notifier;
 
     std::vector<LocalSocket *> m_socks;
     Protocol *m_protocol;
