@@ -94,6 +94,34 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
     return ret;
 }
 
+QVariantMap Sql::queryToMap(QSqlQuery &query, const QString &key)
+{
+    QVariantMap ret;
+    QSqlRecord record = query.record();
+
+    if (!record.contains(key)) {
+      qCCritical(C_SQL) << "Field Name " << key << " not found in result set";
+      return ret;
+    }
+
+    int columns = record.count();
+    QStringList cols;
+
+    for (int i = 0; i < columns; ++i) {
+      cols.append(record.fieldName(i));
+    }
+
+    while (query.next()) {
+      QVariantHash h;
+      for (int i = 0; i < columns; ++i) {
+        h.insert(cols.at(i),query.value(i));
+      }
+      ret.insert(query.value(key).toString(), h);
+    }
+
+    return ret;
+}
+
 void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped)
 {
     auto it = params.constBegin();

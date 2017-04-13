@@ -60,6 +60,12 @@ namespace Sql
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToMapList(QSqlQuery &query);
 
     /**
+     * Returns a hash of QVariantMaps where the key table field name can
+     * be specified by the key parameter
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantMap queryToMap(QSqlQuery &query, const QString &key);
+
+    /**
      * Bind params to the query, using the param name as
      * the placeholder prebended with ':', if htmlEscaped
      * is true the bound values will be the return of toHtmlEscaped()
