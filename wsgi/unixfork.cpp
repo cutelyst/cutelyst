@@ -324,24 +324,27 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
 }
 
 #ifdef Q_OS_LINUX
-static int cpuSockets = -1;
-static int cpuCores = -1;
+//static int cpuSockets = -1;
 
-void parseProcCpuinfo() {
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
+// socket/cores
+int parseProcCpuinfo() {
+    int cpuSockets = 1;
+//    std::pair<int, int> ret;
+
+//    static QMutex mutex;
+//    QMutexLocker locker(&mutex);
     QFile file(QStringLiteral("/proc/cpuinfo"));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         qCWarning(WSGI_UNIX) << "Failed to open file" << file.errorString();
-        cpuSockets = 1;
-        cpuCores = QThread::idealThreadCount();
-        return;
+//        cpuSockets = 1;
+//        cpuCores = QThread::idealThreadCount();
+        return cpuSockets;
     }
 
     char buf[1024];
     qint64 lineLength;
     QByteArrayList physicalIds;
-    cpuCores = 0;
+//    cpuCores = 0;
     while ((lineLength = file.readLine(buf, sizeof(buf))) != -1) {
         const QByteArray line(buf, lineLength);
         if (line.startsWith("physical id\t: ")) {
@@ -349,29 +352,28 @@ void parseProcCpuinfo() {
             if (!physicalIds.contains(id)) {
                 physicalIds.push_back(id);
             }
-        } else if (line.startsWith("processor \t: ")) {
+        }/* else if (line.startsWith("processor \t: ")) {
             ++cpuCores;
-        }
+        }*/
     }
 
-    if (cpuCores == 0) {
-        cpuCores = QThread::idealThreadCount();
-    }
+//    if (cpuCores == 0) {
+//        cpuCores = QThread::idealThreadCount();
+//    }
 
     if (physicalIds.size()) {
         cpuSockets = physicalIds.size();
     } else {
         cpuSockets = 1;
     }
+    return cpuSockets;
 }
 #endif
 
 int UnixFork::idealProcessCount()
 {
 #ifdef Q_OS_LINUX
-    if (cpuSockets == -1) {
-        parseProcCpuinfo();
-    }
+    static int cpuSockets = parseProcCpuinfo();
 
     return cpuSockets;
 #else
@@ -382,13 +384,11 @@ int UnixFork::idealProcessCount()
 int UnixFork::idealThreadCount()
 {
 #ifdef Q_OS_LINUX
-    if (cpuCores == -1) {
-        parseProcCpuinfo();
-    }
+    static int cpuCores = qMax(1, QThread::idealThreadCount());
 
     return cpuCores;
 #else
-    return QThread::idealThreadCount();
+    return qMax(1, QThread::idealThreadCount());
 #endif
 }
 
