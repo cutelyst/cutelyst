@@ -60,10 +60,11 @@ namespace Sql
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToMapList(QSqlQuery &query);
 
     /**
-     * Returns a hash of QVariantMaps where the key table field name can
-     * be specified by the key parameter
+     * Returns a QVariantHash of QVariantHashes where the key parameter
+     * is the field name in the query result. This is useful when you
+     * want to access specific user by user name or user id.
      */
-    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantMap queryToMap(QSqlQuery &query, const QString &key);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedMap(QSqlQuery &query, const QString &key);
 
     /**
      * Bind params to the query, using the param name as

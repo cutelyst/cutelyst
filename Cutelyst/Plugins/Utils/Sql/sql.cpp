@@ -94,29 +94,31 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
     return ret;
 }
 
-QVariantMap Sql::queryToMap(QSqlQuery &query, const QString &key)
+QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
 {
-    QVariantMap ret;
+    QVariantHash ret;
     QSqlRecord record = query.record();
 
     if (!record.contains(key)) {
-      qCCritical(C_SQL) << "Field Name " << key << " not found in result set";
-      return ret;
+        qCCritical(C_SQL) << "Field Name " << key <<
+                             " not found in result set";
+        return ret;
     }
 
     int columns = record.count();
     QStringList cols;
 
     for (int i = 0; i < columns; ++i) {
-      cols.append(record.fieldName(i));
+        cols.append(record.fieldName(i));
     }
 
     while (query.next()) {
-      QVariantHash h;
-      for (int i = 0; i < columns; ++i) {
-        h.insert(cols.at(i),query.value(i));
-      }
-      ret.insert(query.value(key).toString(), h);
+        QVariantHash line;
+        for (int i = 0; i < columns; ++i) {
+            line.insertMulti(cols.at(i),query.value(i));
+        }
+
+        ret.insertMulti(query.value(key).toString(), line);
     }
 
     return ret;
