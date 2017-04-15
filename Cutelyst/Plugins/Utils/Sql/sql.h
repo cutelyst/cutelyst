@@ -64,7 +64,7 @@ namespace Sql
      * is the field name in the query result. This is useful when you
      * want to access specific user by user name or user id.
      */
-    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedMap(QSqlQuery &query, const QString &key);
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedHash(QSqlQuery &query, const QString &key);
 
     /**
      * Bind params to the query, using the param name as
