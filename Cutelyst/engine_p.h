@@ -28,7 +28,7 @@ class EnginePrivate
 {
 public:
     QVariantMap opts;
-    QMap<QString, QVariantMap> config;
+    QVariantMap config;
     Application *app;
     int workerCore;
 };

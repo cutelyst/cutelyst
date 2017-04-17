@@ -62,23 +62,6 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
     // Debug messages should be disabled by default
     QLoggingCategory::setFilterRules(QLatin1String("cutelyst.*.debug=false"));
 
-    // Load application configuration
-    if (qEnvironmentVariableIsSet("CUTELYST_CONFIG")) {
-        const QByteArray config = qgetenv("CUTELYST_CONFIG");
-        qCDebug(CUTELYST_CORE) << "Reading config file:" << config;
-        QSettings settings(QString::fromLatin1(config), QSettings::IniFormat);
-        const auto groups = settings.childGroups();
-        for (const QString &group : groups) {
-            settings.beginGroup(group);
-            const auto child = settings.childKeys();
-            for (const QString &key : child) {
-                d->config[group].insert(key, settings.value(key));
-            }
-            settings.endGroup();
-        }
-        qCDebug(CUTELYST_CORE) << "Configuration:" << d->config;
-    }
-
     d->opts = opts;
     d->workerCore = workerCore;
 
@@ -450,7 +433,32 @@ QVariantMap Engine::opts() const
 QVariantMap Engine::config(const QString &entity) const
 {
     Q_D(const Engine);
-    return d->config.value(entity);
+    return d->config.value(entity).toMap();
+}
+
+void Engine::setConfig(const QVariantMap &config)
+{
+    Q_D(Engine);
+    d->config = config;
+}
+
+QVariantMap Engine::loadIniConfig(const QString &filename)
+{
+    QVariantMap ret;
+    QSettings settings(filename, QSettings::IniFormat);
+    const auto groups = settings.childGroups();
+    for (const QString &group : groups) {
+        QVariantMap configGroup;
+        settings.beginGroup(group);
+        const auto child = settings.childKeys();
+        for (const QString &key : child) {
+            configGroup.insert(key, settings.value(key));
+        }
+        settings.endGroup();
+        ret.insert(group, configGroup);
+    }
+
+    return ret;
 }
 
 void Engine::finalize(Context *c)

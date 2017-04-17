@@ -81,6 +81,10 @@ public:
      */
     QVariantMap config(const QString &entity) const;
 
+    void setConfig(const QVariantMap &config);
+
+    static QVariantMap loadIniConfig(const QString &filename);
+
     virtual quint64 time();
 
 protected:

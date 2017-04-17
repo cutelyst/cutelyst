@@ -1222,6 +1222,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::started, this, &WSGIPrivate::workerStarted, Qt::QueuedConnection);
 
+    engine->setConfig(config);
     engine->setServers(servers);
     if (!engine->init()) {
         qCCritical(CUTELYST_WSGI) << "Failed to init engine for core:" << core;
@@ -1257,10 +1258,11 @@ bool WSGIPrivate::loadConfig(const QString &ini)
         return false;
     }
 
-    qputenv("CUTELYST_CONFIG", ini.toUtf8());
-
     loadConfigGroup(QStringLiteral("uwsgi"), settings);
     loadConfigGroup(QStringLiteral("wsgi"), settings);
+
+    QVariantMap iniConfig = Engine::loadIniConfig(ini);
+    config.unite(iniConfig);
 
     return true;
 }

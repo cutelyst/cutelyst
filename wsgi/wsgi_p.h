@@ -61,6 +61,7 @@ public:
     Cutelyst::Application *app = nullptr;
     CWsgiEngine *engine;
 
+    QVariantMap config;
     QStringList httpSockets;
     QStringList httpsSockets;
     QStringList fastcgiSockets;

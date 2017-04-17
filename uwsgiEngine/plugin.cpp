@@ -40,6 +40,7 @@ struct uwsgi_cutelyst {
 } options;
 
 static QVector<uWSGI *> *coreEngines = nullptr;
+static QVariantMap config;
 
 void cuteOutput(QtMsgType, const QMessageLogContext &, const QString &);
 void uwsgi_cutelyst_loop(void);
@@ -70,10 +71,11 @@ void uwsgi_cutelyst_on_load()
     // Set the configuration env
     auto it = opts.constFind(QLatin1String("ini"));
     if (it != opts.constEnd()) {
-        const QString config = cwd.absoluteFilePath(it.value().toString());
-        qputenv("CUTELYST_CONFIG", config.toUtf8());
+        const QString ini = cwd.absoluteFilePath(it.value().toString());
+        QVariantMap iniConfig = Engine::loadIniConfig(ini);
+        config.unite(iniConfig);
         if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
-            qputenv("QT_LOGGING_CONF", config.toUtf8());
+            qputenv("QT_LOGGING_CONF", ini.toUtf8());
         }
     }
 
@@ -207,6 +209,7 @@ void uwsgi_cutelyst_init_apps()
     QVariantMap opts = qApp->property("UWSGI_OPTS").toMap();
 
     auto mainEngine = new uWSGI(app, 0, opts);
+    mainEngine->setConfig(config);
     if (!mainEngine->init()) {
         qCCritical(CUTELYST_UWSGI) << "Failed to init application.";
         exit(1);
@@ -234,6 +237,7 @@ void uwsgi_cutelyst_init_apps()
                 // The engine can't have a parent otherwise
                 // we can't move it
                 engine = new uWSGI(app, i, opts);
+                engine->setConfig(config);
             }
 
             // the request must be added before moving threads
