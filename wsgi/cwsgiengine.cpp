@@ -84,10 +84,10 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
         if (balancer) {
             TcpServer *server = balancer->createServer(this);
             if (server) {
+                ++m_runningServers;
                 if (m_socketTimeout) {
                     connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
                 }
-                m_tcpServers.push_back(server);
             }
         }
 
@@ -95,12 +95,12 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
         if (localServer) {
             LocalServer *server = localServer->createServer(this);
             if (server) {
+                ++m_runningServers;
                 if (m_socketTimeout) {
                     connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
                 }
             }
         }
-        ++m_runningServers;
     }
 }
 
@@ -117,10 +117,6 @@ void CWsgiEngine::postFork(int workerId)
 #ifdef Q_OS_UNIX
     UnixFork::setSched(m_wsgi, workerId, workerCore());
 #endif
-
-    for (TcpServer *server : m_tcpServers) {
-        Q_EMIT server->engineReady(server);
-    }
 
     Q_EMIT started();
 }

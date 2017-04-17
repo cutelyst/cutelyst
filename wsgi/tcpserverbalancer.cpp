@@ -389,20 +389,20 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
     connect(engine, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
 
     if (m_balancer) {
-        connect(server, &TcpServer::engineReady, this, &TcpServerBalancer::serverReady, Qt::QueuedConnection);
+        connect(engine, &CWsgiEngine::started, this, &TcpServerBalancer::serverReady, Qt::QueuedConnection);
         connect(server, &TcpServer::createConnection, server, &TcpServer::incomingConnection, Qt::QueuedConnection);
     } else {
 
 #ifdef Q_OS_LINUX
         if (m_wsgi->reusePort()) {
-            connect(server, &TcpServer::engineReady, this, &TcpServerBalancer::serverReadyResume, Qt::DirectConnection);
+            connect(engine, &CWsgiEngine::started, this, &TcpServerBalancer::serverReadyResume, Qt::DirectConnection);
             return server;
         }
 #endif
 
         if (server->setSocketDescriptor(socketDescriptor())) {
             server->pauseAccepting();
-            connect(server, &TcpServer::engineReady, server, &TcpServer::resumeAccepting, Qt::DirectConnection);
+            connect(engine, &CWsgiEngine::started, server, &TcpServer::resumeAccepting, Qt::DirectConnection);
         } else {
             qFatal("Failed to set server socket descriptor");
         }
@@ -411,15 +411,17 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
     return server;
 }
 
-void TcpServerBalancer::serverReady(TcpServer *server)
+void TcpServerBalancer::serverReady()
 {
+    auto server = qobject_cast<TcpServer *>(sender());
     m_servers.push_back(server);
     resumeAccepting();
 }
 
-void TcpServerBalancer::serverReadyResume(TcpServer *server)
+void TcpServerBalancer::serverReadyResume()
 {
 #ifdef Q_OS_LINUX
+    auto server = qobject_cast<TcpServer *>(sender());
     int socket = listenReuse(m_address, m_port, true);
     if (!server->setSocketDescriptor(socket)) {
         qFatal("Failed to set server socket descriptor, reuse-port");

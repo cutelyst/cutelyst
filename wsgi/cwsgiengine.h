@@ -87,7 +87,6 @@ private:
     friend class TcpServer;
     friend class TcpSslServer;
 
-    std::vector<TcpServer *> m_tcpServers;
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     QTimer *m_socketTimeout = nullptr;

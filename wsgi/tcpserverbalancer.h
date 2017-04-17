@@ -46,8 +46,8 @@ public:
 
     TcpServer *createServer(CWsgiEngine *engine) const;
 
-    void serverReady(TcpServer *server);
-    void serverReadyResume(TcpServer *server);
+    void serverReady();
+    void serverReadyResume();
 
 private:
     QHostAddress m_address;
