@@ -36,13 +36,17 @@ LocalServer::LocalServer(const QString &serverAddress, Protocol *protocol, WSGI 
     m_engine = qobject_cast<CWsgiEngine*>(parent);
 }
 
-bool LocalServer::setSocketDescriptor(qintptr socketDescriptor)
+LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
 {
-    bool ret = false;
-    if (listen(socketDescriptor)) {
-
+    auto server = new LocalServer(QStringLiteral("localhost"), m_protocol, m_wsgi, engine);
+    if (server->listen(socket())) {
+        server->pauseAccepting();
+        connect(engine, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
+        connect(engine, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+    } else {
+        qFatal("Failed to set server socket descriptor");
     }
-    return ret;
+    return server;
 }
 
 void LocalServer::pauseAccepting()
@@ -95,7 +99,7 @@ void LocalServer::incomingConnection(quintptr handle)
     }
 }
 
-qintptr LocalServer::socket()
+qintptr LocalServer::socket() const
 {
     QSocketNotifier *notifier = socketDescriptorNotifier();
     if (notifier) {

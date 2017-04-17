@@ -93,11 +93,8 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
 
         auto localServer = qobject_cast<LocalServer *>(server);
         if (localServer) {
-            auto server = new LocalServer(QStringLiteral("localhost"), localServer->protocol(), m_wsgi, this);
-            if (server->setSocketDescriptor(localServer->socket())) {
-                server->pauseAccepting();
-                connect(this, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
-                connect(this, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+            LocalServer *server = localServer->createServer(this);
+            if (server) {
                 if (m_socketTimeout) {
                     connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
                 }

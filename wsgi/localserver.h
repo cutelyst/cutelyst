@@ -34,14 +34,14 @@ class LocalServer : public QLocalServer
 public:
     explicit LocalServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = 0);
 
-    bool setSocketDescriptor(qintptr socketDescriptor);
+    LocalServer *createServer(CWsgiEngine *engine) const;
 
     void pauseAccepting();
     void resumeAccepting();
 
     virtual void incomingConnection(quintptr handle) override;
 
-    qintptr socket();
+    qintptr socket() const;
 
     void shutdown();
     void timeoutConnections();
