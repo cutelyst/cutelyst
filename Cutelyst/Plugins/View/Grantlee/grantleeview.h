@@ -38,6 +38,13 @@ class GrantleeViewPrivate;
 /**
  * GrantleeView is a Cutelyst::View handler that renders templates
  * using Grantlee engine.
+ *
+ * This View also exports a Grantlee tag for dealing with
+ * Cutelyst::Context::uriFor():
+ *
+ * {% c_uri_for "/path" "arg1" "arg2" QUERY "foo=bar" c.req.queryParams %}
+ *
+ * Where only the path is required, and QUERY keyword must preceed query parameters
  */
 class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
 {

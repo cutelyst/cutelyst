@@ -33,3 +33,22 @@ install(FILES ${plugin_view_grantlee_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/Grantlee
         COMPONENT View::Grantlee
 )
+
+# urifor
+add_library(grantlee_cutelyst MODULE
+    urifor.cpp
+    urifor.h
+    cutelystgrantlee.cpp
+    metadata.json
+)
+set_property(TARGET grantlee_cutelyst PROPERTY EXPORT_NAME cutelyst)
+
+target_link_libraries(grantlee_cutelyst
+    PRIVATE Grantlee5::Templates
+    PRIVATE cutelyst-qt5
+)
+grantlee_adjust_plugin_name(grantlee_cutelyst)
+
+install(TARGETS grantlee_cutelyst EXPORT CutelystQt5Targets
+        LIBRARY DESTINATION "${CUTELYST_PLUGINS_DIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
+)

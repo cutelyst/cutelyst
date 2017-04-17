@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -23,6 +23,7 @@
 #include "context.h"
 #include "action.h"
 #include "response.h"
+#include "config.h"
 
 #include <grantlee/qtlocalizer.h>
 
@@ -43,6 +44,8 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
 
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
+    d->engine->addPluginPath(QStringLiteral(CUTELYST_PLUGINS_DIR));
+    d->engine->addDefaultLibrary(QStringLiteral("grantlee_cutelyst"));
 
     auto app = qobject_cast<Application *>(parent);
     if (app) {
