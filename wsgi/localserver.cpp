@@ -98,7 +98,7 @@ void LocalServer::incomingConnection(quintptr handle)
 qintptr LocalServer::socket()
 {
     QSocketNotifier *notifier = socketDescriptorNotifier();
-    if (!notifier) {
+    if (notifier) {
         return notifier->socket();
     }
 
