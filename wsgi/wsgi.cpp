@@ -271,13 +271,13 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     const auto inis = parser.values(iniOpt);
     for (const QString &ini : inis) {
-        d->loadIniConfig(ini);
+        d->loadConfig(ini, false);
     }
     setIni(inis);
 
     const auto jsons = parser.values(jsonOpt);
     for (const QString &json : jsons) {
-        d->loadJsonConfig(json);
+        d->loadConfig(json, true);
     }
     setJson(jsons);
 
@@ -1273,9 +1273,9 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     return engine;
 }
 
-void WSGIPrivate::loadIniConfig(const QString &ini)
+void WSGIPrivate::loadConfig(const QString &file, bool json)
 {
-    QString filename = ini;
+    QString filename = file;
 
     QString section = QStringLiteral("wsgi");
     if (filename.contains(QLatin1Char(':'))) {
@@ -1283,31 +1283,26 @@ void WSGIPrivate::loadIniConfig(const QString &ini)
         filename = filename.section(QLatin1Char(':'), 0, -2);
     }
 
-    std::cout << "Loading INI configuration: " << filename.toLocal8Bit().constData()
-              << " section: " << section.toLocal8Bit().constData() << std::endl;
-    const QVariantMap iniConfig = Engine::loadIniConfig(filename).value(section).toMap();
-    config.unite(iniConfig);
-}
-
-void WSGIPrivate::loadJsonConfig(const QString &json)
-{
-    QString filename = json;
-
-    QString section = QStringLiteral("wsgi");
-    if (filename.contains(QLatin1Char(':'))) {
-        section = filename.section(QLatin1Char(':'), -1, 1);
-        filename = filename.section(QLatin1Char(':'), 0, -2);
+    QVariantMap loadedConfig;
+    if (json) {
+        std::cout << "Loading JSON configuration: " << filename.toLocal8Bit().constData()
+                  << " section: " << section.toLocal8Bit().constData() << std::endl;
+        loadedConfig = Engine::loadJsonConfig(filename).value(section).toMap();
+    } else {
+        std::cout << "Loading INI configuration: " << filename.toLocal8Bit().constData()
+                  << " section: " << section.toLocal8Bit().constData() << std::endl;
+        loadedConfig = Engine::loadIniConfig(filename).value(section).toMap();
     }
-
-    std::cout << "Loading JSON configuration: " << filename.toLocal8Bit().constData()
-              << " section: " << section.toLocal8Bit().constData() << std::endl;
-    const QVariantMap iniConfig = Engine::loadJsonConfig(filename).value(section).toMap();
-    config.unite(iniConfig);
+    loadedConfig.unite(config);
+    config = loadedConfig;
 }
 
 void WSGIPrivate::applyConfig(const QVariantMap &config)
 {
     Q_Q(WSGI);
+
+    qDebug() << config;
+    qDebug() << config.values(QStringLiteral("application"));
 
     auto it = config.constBegin();
     while (it != config.constEnd()) {

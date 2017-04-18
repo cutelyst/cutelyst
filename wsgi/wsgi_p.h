@@ -51,8 +51,7 @@ public:
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
-    void loadIniConfig(const QString &ini);
-    void loadJsonConfig(const QString &json);
+    void loadConfig(const QString &file, bool json);
     void applyConfig(const QVariantMap &config);
     void loadLoggingRules(QSettings &settings);
 
