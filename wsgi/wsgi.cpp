@@ -281,7 +281,7 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     }
     setJson(jsons);
 
-    d->applyConfig(d->config);
+    d->applyConfig(d->opt);
 
     if (parser.isSet(chdir)) {
         setChdir(parser.value(chdir));
@@ -1241,7 +1241,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 {
     Q_Q(WSGI);
 
-    auto engine = new CWsgiEngine(app, core, QVariantMap(), q);
+    auto engine = new CWsgiEngine(app, core, opt, q);
     connect(this, &WSGIPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);
     connect(this, &WSGIPrivate::postForked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::shutdownCompleted, this, &WSGIPrivate::engineShutdown, Qt::QueuedConnection);
@@ -1287,12 +1287,29 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
     if (json) {
         std::cout << "Loading JSON configuration: " << filename.toLocal8Bit().constData()
                   << " section: " << section.toLocal8Bit().constData() << std::endl;
-        loadedConfig = Engine::loadJsonConfig(filename).value(section).toMap();
+        loadedConfig = Engine::loadJsonConfig(filename);
     } else {
         std::cout << "Loading INI configuration: " << filename.toLocal8Bit().constData()
                   << " section: " << section.toLocal8Bit().constData() << std::endl;
-        loadedConfig = Engine::loadIniConfig(filename).value(section).toMap();
+        loadedConfig = Engine::loadIniConfig(filename);
     }
+
+    QVariantMap sessionConfig = loadedConfig.value(section).toMap();
+    sessionConfig.unite(opt);
+    opt = sessionConfig;
+
+    auto it = config.begin();
+    while (it != config.end()) {
+        auto itLoaded = loadedConfig.find(it.key());
+        while (itLoaded == loadedConfig.end()) {
+            QVariantMap loadedMap = itLoaded.value().toMap();
+            loadedMap.unite(it.value().toMap());
+            it.value() = loadedMap;
+            loadedConfig.erase(itLoaded);
+        }
+        ++it;
+    }
+
     loadedConfig.unite(config);
     config = loadedConfig;
 }
@@ -1300,9 +1317,6 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
 void WSGIPrivate::applyConfig(const QVariantMap &config)
 {
     Q_Q(WSGI);
-
-    qDebug() << config;
-    qDebug() << config.values(QStringLiteral("application"));
 
     auto it = config.constBegin();
     while (it != config.constEnd()) {
