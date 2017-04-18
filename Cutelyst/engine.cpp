@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,7 +30,7 @@
 #include <QDir>
 #include <QThread>
 #include <QByteArray>
-#include <QDebug>
+#include <QJsonDocument>
 
 using namespace Cutelyst;
 
@@ -446,6 +446,11 @@ QVariantMap Engine::loadIniConfig(const QString &filename)
 {
     QVariantMap ret;
     QSettings settings(filename, QSettings::IniFormat);
+    if (settings.status() != QSettings::NoError) {
+        qCWarning(CUTELYST_ENGINE) << "Failed to load INI file:" << settings.status();
+        return ret;
+    }
+
     const auto groups = settings.childGroups();
     for (const QString &group : groups) {
         QVariantMap configGroup;
@@ -457,6 +462,20 @@ QVariantMap Engine::loadIniConfig(const QString &filename)
         settings.endGroup();
         ret.insert(group, configGroup);
     }
+
+    return ret;
+}
+
+QVariantMap Engine::loadJsonConfig(const QString &filename)
+{
+    QVariantMap ret;
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return ret;
+    }
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    ret = doc.toVariant().toMap();
 
     return ret;
 }

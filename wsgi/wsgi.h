@@ -151,9 +151,17 @@ public:
      * Load config from ini file
      * @accessors ini(), setIni()
      */
-    Q_PROPERTY(QString ini READ ini WRITE setIni)
-    void setIni(const QString &ini);
-    QString ini() const;
+    Q_PROPERTY(QStringList ini READ ini WRITE setIni)
+    void setIni(const QStringList &ini);
+    QStringList ini() const;
+
+    /**
+     * Load config from JSON file
+     * @accessors json(), setJson()
+     */
+    Q_PROPERTY(QStringList json READ json WRITE setJson)
+    void setJson(const QStringList &files);
+    QStringList json() const;
 
     /**
      * Map the mountpoint to static directory (or file)

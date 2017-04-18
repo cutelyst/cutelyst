@@ -92,10 +92,15 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption ini(QStringLiteral("ini"),
-                           QCoreApplication::translate("main", "load config from ini file"),
+    QCommandLineOption iniOpt(QStringLiteral("ini"),
+                              QCoreApplication::translate("main", "load config from ini file"),
+                              QCoreApplication::translate("main", "file"));
+    parser.addOption(iniOpt);
+
+    QCommandLineOption jsonOpt({ QStringLiteral("j"), QStringLiteral("json") },
+                           QCoreApplication::translate("main", "load config from JSON file"),
                            QCoreApplication::translate("main", "file"));
-    parser.addOption(ini);
+    parser.addOption(jsonOpt);
 
     QCommandLineOption chdir(QStringLiteral("chdir"),
                              QCoreApplication::translate("main", "chdir to specified directory before apps loading"),
@@ -264,11 +269,19 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     // Process the actual command line arguments given by the user
     parser.process(arguments);
 
-    const auto inis = parser.values(ini);
+    const auto inis = parser.values(iniOpt);
     for (const QString &ini : inis) {
-        d->loadConfig(ini);
-        setIni(ini);
+        d->loadIniConfig(ini);
     }
+    setIni(inis);
+
+    const auto jsons = parser.values(jsonOpt);
+    for (const QString &json : jsons) {
+        d->loadJsonConfig(json);
+    }
+    setJson(jsons);
+
+    d->applyConfig(d->config);
 
     if (parser.isSet(chdir)) {
         setChdir(parser.value(chdir));
@@ -811,16 +824,28 @@ QString WSGI::chdir2() const
     return d->chdir2;
 }
 
-void WSGI::setIni(const QString &ini)
+void WSGI::setIni(const QStringList &ini)
 {
     Q_D(WSGI);
     d->ini = ini;
 }
 
-QString WSGI::ini() const
+QStringList WSGI::ini() const
 {
     Q_D(const WSGI);
     return d->ini;
+}
+
+void WSGI::setJson(const QStringList &files)
+{
+    Q_D(WSGI);
+    d->json = files;
+}
+
+QStringList WSGI::json() const
+{
+    Q_D(const WSGI);
+    return d->json;
 }
 
 void WSGI::setStaticMap(const QStringList &staticMap)
@@ -1248,41 +1273,54 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     return engine;
 }
 
-bool WSGIPrivate::loadConfig(const QString &ini)
+void WSGIPrivate::loadIniConfig(const QString &ini)
 {
-    std::cout << "Loading configuration: " << ini.toLocal8Bit().constData() << std::endl;
+    QString filename = ini;
 
-    QSettings settings(ini, QSettings::IniFormat);
-    if (settings.status() != QSettings::NoError) {
-        qFatal("Failed to load config");
-        return false;
+    QString section = QStringLiteral("wsgi");
+    if (filename.contains(QLatin1Char(':'))) {
+        section = filename.section(QLatin1Char(':'), -1, 1);
+        filename = filename.section(QLatin1Char(':'), 0, -2);
     }
 
-    loadConfigGroup(QStringLiteral("uwsgi"), settings);
-    loadConfigGroup(QStringLiteral("wsgi"), settings);
-
-    QVariantMap iniConfig = Engine::loadIniConfig(ini);
+    std::cout << "Loading INI configuration: " << filename.toLocal8Bit().constData()
+              << " section: " << section.toLocal8Bit().constData() << std::endl;
+    const QVariantMap iniConfig = Engine::loadIniConfig(filename).value(section).toMap();
     config.unite(iniConfig);
-
-    return true;
 }
 
-void WSGIPrivate::loadConfigGroup(const QString &group, QSettings &settings)
+void WSGIPrivate::loadJsonConfig(const QString &json)
+{
+    QString filename = json;
+
+    QString section = QStringLiteral("wsgi");
+    if (filename.contains(QLatin1Char(':'))) {
+        section = filename.section(QLatin1Char(':'), -1, 1);
+        filename = filename.section(QLatin1Char(':'), 0, -2);
+    }
+
+    std::cout << "Loading JSON configuration: " << filename.toLocal8Bit().constData()
+              << " section: " << section.toLocal8Bit().constData() << std::endl;
+    const QVariantMap iniConfig = Engine::loadJsonConfig(filename).value(section).toMap();
+    config.unite(iniConfig);
+}
+
+void WSGIPrivate::applyConfig(const QVariantMap &config)
 {
     Q_Q(WSGI);
 
-    settings.beginGroup(group);
-    const auto keys = settings.allKeys();
-    for (const QString &key : keys) {
-        QString normKey = key;
+    auto it = config.constBegin();
+    while (it != config.constEnd()) {
+        QString normKey = it.key();
         normKey.replace(QLatin1Char('-'), QLatin1Char('_'));
 
         int ix = q->metaObject()->indexOfProperty(normKey.toLatin1().constData());
         if (ix == -1) {
+            ++it;
             continue;
         }
 
-        const QVariant value = settings.value(key);
+        const QVariant value = it.value();
         const QMetaProperty prop = q->metaObject()->property(ix);
         if (prop.type() == value.type()) {
             if (prop.type() == QVariant::StringList) {
@@ -1298,8 +1336,8 @@ void WSGIPrivate::loadConfigGroup(const QString &group, QSettings &settings)
             prop.write(q, value);
         }
 
+        ++it;
     }
-    settings.endGroup();
 }
 
 #include "moc_wsgi.cpp"

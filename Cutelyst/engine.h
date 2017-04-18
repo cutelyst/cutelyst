@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -84,6 +84,7 @@ public:
     void setConfig(const QVariantMap &config);
 
     static QVariantMap loadIniConfig(const QString &filename);
+    static QVariantMap loadJsonConfig(const QString &filename);
 
     virtual quint64 time();
 

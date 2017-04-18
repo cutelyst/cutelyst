@@ -51,8 +51,9 @@ public:
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
-    bool loadConfig(const QString &ini);
-    void loadConfigGroup(const QString &group, QSettings &settings);
+    void loadIniConfig(const QString &ini);
+    void loadJsonConfig(const QString &json);
+    void applyConfig(const QVariantMap &config);
     void loadLoggingRules(QSettings &settings);
 
     WSGI *q_ptr;
@@ -68,10 +69,11 @@ public:
     QStringList staticMaps;
     QStringList staticMaps2;
     QStringList touchReload;
+    QStringList ini;
+    QStringList json;
     QString application;
     QString chdir;
     QString chdir2;
-    QString ini;
     QString socketAccess;
     QString pidfile;
     QString pidfile2;
