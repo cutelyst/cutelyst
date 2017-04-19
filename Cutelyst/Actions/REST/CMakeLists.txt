@@ -1,11 +1,7 @@
-set(plugin_action_rest_SRC
+add_library(plugin_action_rest MODULE
     actionrest.cpp
     actionrest_p.h
     metadata.json
-)
-
-add_library(plugin_action_rest SHARED
-    ${plugin_action_rest_SRC}
 )
 
 target_link_libraries(plugin_action_rest

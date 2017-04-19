@@ -1,11 +1,7 @@
-set(plugin_action_roleacl_SRC
+add_library(plugin_action_roleacl MODULE
     roleacl.cpp
     roleacl_p.h
     metadata.json
-)
-
-add_library(plugin_action_roleacl SHARED
-    ${plugin_action_roleacl_SRC}
 )
 
 target_link_libraries(plugin_action_roleacl
