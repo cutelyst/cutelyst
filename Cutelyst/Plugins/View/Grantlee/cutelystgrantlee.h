@@ -30,7 +30,7 @@
 class CutelystGrantlee : public QObject, public Grantlee::TagLibraryInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.grantlee.TagLibraryInterface/1.0" FILE "metadata.json")
+    Q_PLUGIN_METADATA(IID "org.grantlee.TagLibraryInterface/1.0")
     Q_INTERFACES(Grantlee::TagLibraryInterface)
 public:
     explicit CutelystGrantlee(QObject *parent = nullptr);

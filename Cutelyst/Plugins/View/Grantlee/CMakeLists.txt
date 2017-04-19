@@ -39,7 +39,6 @@ add_library(grantlee_cutelyst MODULE
     urifor.cpp
     urifor.h
     cutelystgrantlee.cpp
-    metadata.json
 )
 set_property(TARGET grantlee_cutelyst PROPERTY EXPORT_NAME cutelyst)
 
