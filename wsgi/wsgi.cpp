@@ -251,8 +251,8 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     parser.addOption(umaskOption);
 
     QCommandLineOption cpuAffinityOption(QStringLiteral("cpu-affinity"),
-                                         QCoreApplication::translate("main", "set CPU affinity"),
-                                         QCoreApplication::translate("main", "number of CPUs available for each worker core"));
+                                         QCoreApplication::translate("main", "set CPU affinity with the number of CPUs available for each worker core"),
+                                         QCoreApplication::translate("main", "core count"));
     parser.addOption(cpuAffinityOption);
 #endif // Q_OS_UNIX
 
@@ -345,7 +345,7 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         bool ok;
         auto value = parser.value(cpuAffinityOption).toInt(&ok);
         setCpuAffinity(value);
-        if (!ok || value < 1) {
+        if (!ok || value < 0) {
             parser.showHelp(1);
         }
     }
