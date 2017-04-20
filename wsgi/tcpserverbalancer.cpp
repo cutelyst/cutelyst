@@ -24,9 +24,8 @@
 #include "tcpsslserver.h"
 
 #include <QFile>
-#include <QMutexLocker>
+#include <QLoggingCategory>
 
-#include <QSslKey>
 #include <QSslKey>
 
 #include <iostream>
@@ -37,6 +36,9 @@
 #include <sys/socket.h>
 #include <fcntl.h>
 #endif
+
+
+Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer")
 
 using namespace CWSGI;
 
@@ -193,33 +195,33 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
         case EPROTONOSUPPORT:
         case EAFNOSUPPORT:
         case EINVAL:
-            qDebug() << "setError(QAbstractSocket::UnsupportedSocketOperationError, ProtocolUnsupportedErrorString)";
+            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::UnsupportedSocketOperationError, ProtocolUnsupportedErrorString)";
             break;
         case ENFILE:
         case EMFILE:
         case ENOBUFS:
         case ENOMEM:
-            qDebug() << "setError(QAbstractSocket::SocketResourceError, ResourceErrorString)";
+            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::SocketResourceError, ResourceErrorString)";
             break;
         case EACCES:
-            qDebug() << "setError(QAbstractSocket::SocketAccessError, AccessErrorString)";
+            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::SocketAccessError, AccessErrorString)";
             break;
         default:
             break;
         }
 
 #if defined (QNATIVESOCKETENGINE_DEBUG)
-        qDebug("QNativeSocketEnginePrivate::createNewSocket(%d, %d) == false (%s)",
-               socketType, socketProtocol,
-               strerror(ecopy));
+        qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == false (%s)",
+                socketType, socketProtocol,
+                strerror(ecopy));
 #endif
 
         return false;
     }
 
 #if defined (QNATIVESOCKETENGINE_DEBUG)
-    qDebug("QNativeSocketEnginePrivate::createNewSocket(%d, %d) == true",
-           socketType, socketProtocol);
+    qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == true",
+            socketType, socketProtocol);
 #endif
 
     return socket;
@@ -318,16 +320,16 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
 //        }
 
 #if defined (QNATIVESOCKETENGINE_DEBUG)
-        qDebug("QNativeSocketEnginePrivate::nativeBind(%s, %i) == false (%s)",
-               address.toString().toLatin1().constData(), port, strerror(ecopy));
+        qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::nativeBind(%s, %i) == false (%s)",
+                address.toString().toLatin1().constData(), port, strerror(ecopy));
 #endif
 
         return false;
     }
 
 #if defined (QNATIVESOCKETENGINE_DEBUG)
-    qDebug("QNativeSocketEnginePrivate::nativeBind(%s, %i) == true",
-           address.toString().toLatin1().constData(), port);
+    qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::nativeBind(%s, %i) == true",
+            address.toString().toLatin1().constData(), port);
 #endif
 //    socketState = QAbstractSocket::BoundState;
     return true;
@@ -339,24 +341,23 @@ int listenReuse(const QHostAddress &address, quint16 port, bool startListening)
 
     int socket = createNewSocket(proto);
     if (socket < 0) {
-        qCritical() << "Failed to create new socket";
+        qCCritical(CWSGI_BALANCER) << "Failed to create new socket";
         return -1;
     }
 
     int optval = 1;
     if (::setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
-        qCritical() << "Failed to set SO_REUSEPORT on socket" << socket;
+        qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
         return -1;
     }
 
-    qCritical() << "Binding to socket" << socket;
     if (!nativeBind(socket, address, port)) {
-        qCritical() << "Failed to bind to socket" << socket;
+        qCCritical(CWSGI_BALANCER) << "Failed to bind to socket" << socket;
         return -1;
     }
 
     if (startListening && ::listen(socket, 100) < 0) {
-        qCritical() << "Failed to listen to socket" << socket;
+        qCCritical(CWSGI_BALANCER) << "Failed to listen to socket" << socket;
         return -1;
     }
 
@@ -376,7 +377,7 @@ void TcpServerBalancer::incomingConnection(qintptr handle)
     serverIdle->createConnection(handle);
 }
 
-TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
+TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 {
     TcpServer *server;
     if (m_sslConfiguration) {
@@ -389,13 +390,21 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
     connect(engine, &CWsgiEngine::shutdown, server, &TcpServer::shutdown);
 
     if (m_balancer) {
-        connect(engine, &CWsgiEngine::started, this, &TcpServerBalancer::serverReady, Qt::QueuedConnection);
+        connect(engine, &CWsgiEngine::started, this, [=] () {
+            m_servers.push_back(server);
+            resumeAccepting();
+        }, Qt::QueuedConnection);
         connect(server, &TcpServer::createConnection, server, &TcpServer::incomingConnection, Qt::QueuedConnection);
     } else {
 
 #ifdef Q_OS_LINUX
         if (m_wsgi->reusePort()) {
-            connect(engine, &CWsgiEngine::started, this, &TcpServerBalancer::serverReadyResume, Qt::DirectConnection);
+            connect(engine, &CWsgiEngine::started, this, [=] () {
+                int socket = listenReuse(m_address, m_port, true);
+                if (!server->setSocketDescriptor(socket)) {
+                    qFatal("Failed to set server socket descriptor, reuse-port");
+                }
+            }, Qt::DirectConnection);
             return server;
         }
 #endif
@@ -409,23 +418,4 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine) const
     }
 
     return server;
-}
-
-void TcpServerBalancer::serverReady()
-{
-    auto server = qobject_cast<TcpServer *>(sender());
-    m_servers.push_back(server);
-    resumeAccepting();
-}
-
-void TcpServerBalancer::serverReadyResume()
-{
-#ifdef Q_OS_LINUX
-    auto server = qobject_cast<TcpServer *>(sender());
-    int socket = listenReuse(m_address, m_port, true);
-    if (!server->setSocketDescriptor(socket)) {
-        qFatal("Failed to set server socket descriptor, reuse-port");
-    }
-    return;
-#endif
 }
