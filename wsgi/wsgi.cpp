@@ -1205,6 +1205,12 @@ void WSGIPrivate::postFork(int workerId)
     for (CWsgiEngine *engine : engines) {
         QThread *thread = engine->thread();
         if (thread != qApp->thread()) {
+#ifdef Q_OS_LINUX
+            if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+                thread->setEventDispatcher(new EventDispatcherEPoll);
+            }
+#endif
+
             thread->start();
         }
     }
@@ -1260,12 +1266,6 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     if (threads) {
         auto thread = new QThread(this);
         engine->moveToThread(thread);
-
-#ifdef Q_OS_LINUX
-        if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
-            thread->setEventDispatcher(new EventDispatcherEPoll);
-        }
-#endif
     } else {
         engine->setParent(this);
     }
