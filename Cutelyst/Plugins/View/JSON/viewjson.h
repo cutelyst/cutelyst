@@ -35,12 +35,16 @@ class CUTELYST_VIEW_JSON_EXPORT ViewJson : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewJson)
 public:
+    /**
+     * Main constructor
+     */
     explicit ViewJson(QObject *parent, const QString &name = QString());
     virtual ~ViewJson();
 
+    /**  This value defines the format of the JSON byte array produced when rendering the view */
     enum JsonFormat {
-        Indented,
-        Compact
+        Indented, /**< The output will be indented */
+        Compact /**< The output will be compact saving space */
     };
     Q_ENUM(JsonFormat)
 
@@ -55,6 +59,7 @@ public:
      */
     void setOutputFormat(JsonFormat format);
 
+    /**  This value defines which kind of exposition was defined */
     enum ExposeMode {
         All,
         String,

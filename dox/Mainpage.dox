@@ -16,17 +16,49 @@ namespace Cutelyst
   %Cutelyst is covered by the GNU Lesser General Public Licence version 2.1 or, at your option, any later version.
 
   <table class="main_api" >
-    <tr><th class="library" colspan="3">%Cutelyst</th></tr>
-    <tr><th class="section" >Application API</th><th class="section">%Plugin API</th></tr>
+    <tr>
+      <th class="section">Core API</th>
+      <th class="section">%Plugin API</th>
+      <th class="section">%View API</th>
+      <th class="section">%Action API</th>
+      <th class="section">%WSGI API</th>
+    </tr>
     <tr><td>
+      - Action
+      - ActionChain
+      - Application
+      - Component
       - Context
-      - Engine
       - Controller
+      - Dispatcher
+      - DispatchType
+      - DispatchTypeChained
+      - DispatchTypePath
+      - Engine
+      - Headers
+      - Plugin
+      - Request
+      - Response
+      - Upload
       - View
     </td><td>
-      - Session
       - Authentication
-    </tr>
+      - Session
+      - StatusMessage
+      - Pagination
+      - Validator
+    </td><td>
+      - ClearSilver
+      - ViewEmail
+      - GrantleeView
+      - ViewJson
+    </td><td>
+      - RenderView
+      - ActionREST
+      - RoleACL
+    </td><td>
+      - CWSGI::WSGI
+    </td></tr>
   </table>
 
   @section start_community Community

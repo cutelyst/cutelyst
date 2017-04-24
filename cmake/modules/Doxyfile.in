@@ -106,7 +106,7 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = .* \
                          *_p* \
 
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS        = d_ptr
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO

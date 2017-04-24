@@ -49,6 +49,9 @@ public:
      */
     ActionList chain() const;
 
+    /**
+     * Reimplemented from Action::numberOfCaptures()
+     */
     virtual qint8 numberOfCaptures() const override;
 
 protected:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,24 +38,35 @@ class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset)
     Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding)
 public:
+    /**  This value defines which kind of connection should be used */
     enum ConnectionType
     {
         TcpConnection,
         SslConnection,
         TlsConnection
     };
+    Q_ENUM(ConnectionType)
 
+    /**  This value defines which kind of authentication should be used */
     enum AuthMethod
     {
         AuthNone,
         AuthPlain,
         AuthLogin
     };
+    Q_ENUM(AuthMethod)
 
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
 
+    /**
+     * Returns the stash key that will contain the email data
+     */
     QString stashKey() const;
+
+    /**
+     * Defines the stash key that will contain the email data
+     */
     void setStashKey(const QString &stashKey);
 
     /**
@@ -84,27 +95,79 @@ public:
      */
     void setDefaultCharset(const QByteArray &charset);
 
+    /**
+     * Returns the default encoding set
+     */
     QByteArray defaultEncoding() const;
+
+    /**
+     * Defines the default encoding to be used when sending mails
+     */
     void setDefaultEncoding(const QByteArray &encoding);
 
+    /**
+     * Returns the hostname of the SMTP server
+     */
     QString senderHost() const;
+
+    /**
+     * Defines the hostname of the SMTP server
+     */
     void setSenderHost(const QString &host);
 
+    /**
+     * Returns the port of the SMTP server
+     */
     int senderPort() const;
+
+    /**
+     * Defines the port of the SMTP server
+     */
     void setSenderPort(int port);
 
+    /**
+     * Defines the connection type of the SMTP server
+     */
     ConnectionType senderConnectionType() const;
+
+    /**
+     * Returns the username that will authenticate on the SMTP server
+     */
     void setSenderConnectionType(ConnectionType ct);
 
+    /**
+     * Returns the authenticaion method of the SMTP server
+     */
     AuthMethod senderAuthMethod() const;
+
+    /**
+     * Defines the authenticaion method of the SMTP server
+     */
     void setSenderAuthMethod(AuthMethod method);
 
+    /**
+     * Returns the username that will authenticate on the SMTP server
+     */
     QString senderUser() const;
+
+    /**
+     * Defines the username that will authenticate on the SMTP server
+     */
     void setSenderUser(const QString &user);
 
+    /**
+     * Returns the password that will authenticate on the SMTP server
+     */
     QString senderPassword() const;
+
+    /**
+     * Defines the password that will authenticate on the SMTP server
+     */
     void setSenderPassword(const QString &password);
 
+    /**
+     * Renders the EMail
+     */
     QByteArray render(Context *c) const override;
 
 protected:

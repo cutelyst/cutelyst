@@ -32,10 +32,12 @@ class CUTELYST_LIBRARY View : public Component
 {
     Q_OBJECT
 public:
+    /**
+     * The base implementation for a View class, a name
+     * for the view should be set to be found by Context->view()
+     */
     explicit View(QObject *parent, const QString &name = QString());
     virtual ~View();
-
-    QString name() const;
 
     /**
      * The default implementation returns Component::OnlyExecute

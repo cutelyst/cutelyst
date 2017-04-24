@@ -43,6 +43,7 @@ class CUTELYST_LIBRARY Component : public QObject
     Q_DECLARE_PRIVATE(Component)
     Q_FLAGS(Modifiers)
 public:
+    /**  This value defines which kind of modifiers should be executed */
     enum Modifier {
         None          = 0 << 1,
         OnlyExecute   = 1 << 1,
@@ -53,25 +54,37 @@ public:
     Q_ENUM(Modifier)
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
+    /**
+     * This is the base class for many Cutelyst objects,
+     * prividing access to name and reverse for actions,
+     * and modifiers to customize execution.
+     */
     explicit Component(QObject *parent = nullptr);
     virtual ~Component();
 
+    /**
+     * Reimplement to return custom Modifiers, default is None
+     */
     virtual Modifiers modifiers() const;
 
     /**
-     * @brief name
-     * @return Returns the sub name of this Component.
+     * Returns the sub name of this Component.
      */
     QString name() const;
 
+    /**
+     * Defines the sub name of this Component.
+     */
     void setName(const QString &name);
 
     /**
-     * @brief name
-     * @return Returns the private name of this component.
+     * Returns the private name of this component.
      */
     inline QString reverse() const;
 
+    /**
+     * Defines the private name of this Component.
+     */
     inline void setReverse(const QString &reverse);
 
     /**
@@ -82,17 +95,36 @@ public:
      */
     virtual bool init(Application *application, const QVariantHash &args);
 
+    /**
+     * Executes this component agains the Context
+     */
     bool execute(Context *c);
 
 protected:
+    /**
+     * Reimplement this if you want to do processing before doExecute
+     */
     virtual bool beforeExecute(Context *c);
 
+    /**
+     * Reimplement this if you want to do processing around doExecute,
+     * you must call doExecute yourself then
+     */
     virtual bool aroundExecute(Context *c, QStack<Component *> stack);
 
+    /**
+     * Reimplement this if you want to do processing after doExecute
+     */
     virtual bool afterExecute(Context *c);
 
+    /**
+     * Reimplement this for the main processing
+     */
     virtual bool doExecute(Context *c);
 
+    /**
+     * Call this to install before, around and after roles
+     */
     void applyRoles(const QStack<Component *> &roles);
 
     /**
