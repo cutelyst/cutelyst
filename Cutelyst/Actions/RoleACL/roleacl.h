@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,18 +35,36 @@ class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL : public Component
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
 public:
+    /**
+     * Constructs a new role ACL object with the given parent.
+     */
     explicit RoleACL(QObject *parent = nullptr);
     virtual ~RoleACL();
 
+    /**
+     * Reimplemented from Component::modifiers().
+     */
     virtual Modifiers modifiers() const override;
 
+    /**
+     * Reimplemented from Component::init().
+     */
     virtual bool init(Application *application, const QVariantHash &args) override;
 
+    /**
+     * Reimplemented from Component::aroundExecute().
+     */
     virtual bool aroundExecute(Context *c, QStack<Component *> stack) override;
 
+    /**
+     * Returns true if the action can be visited by the context c.
+     */
     bool canVisit(Context *c) const;
 
 protected:
+    /**
+     * Reimplemented from Component::dispatcherReady().
+     */
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 
     RoleACLPrivate *d_ptr;

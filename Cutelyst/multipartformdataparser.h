@@ -29,10 +29,10 @@ class CUTELYST_LIBRARY MultiPartFormDataParser
 {
 public:
     /**
-     * @brief MultiPartFormDataInternal
-     * @param contentType can be the whole HTTP Content-Type
-     * header or just it's value
+     * @brief Parser for multipart/formdata
      * @param body
+     * @param contentType can be the whole HTTP Content-Type header or just it's value
+     * @param bufferSize is the internal buffer size used to parse
      */
     static Uploads parse(QIODevice *body, const QString &contentType, int bufferSize = 4096);
 };

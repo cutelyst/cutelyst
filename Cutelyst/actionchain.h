@@ -40,6 +40,9 @@ class CUTELYST_LIBRARY ActionChain : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionChain)
 public:
+    /**
+     * Constructs a ActionChain object with the folloing \p chain and the given \p parent.
+     */
     explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
     ~ActionChain();
 

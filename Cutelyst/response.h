@@ -37,6 +37,7 @@ class CUTELYST_LIBRARY Response : public QIODevice
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)
 public:
+    /** This enum type specifies the status response to be sent to the client */
     enum HttpStatus {
         Continue                     = 100,
         SwitchingProtocols           = 101,
@@ -258,11 +259,17 @@ public:
     /**
      * Writting to user-agent is always sequential
      */
-    bool isSequential() const override;
+    virtual bool isSequential() const override;
 
-    qint64 size() const override;
+    /**
+     * Reimplemented from QIODevice::readData().
+     */
+    virtual qint64 size() const override;
 
 protected:
+    /**
+     * Constructs a Response object, for this context c, engine and defaultHeaders.
+     */
     explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
 
     /**
@@ -273,6 +280,10 @@ protected:
      * not 1xx or 204 (NoContent) or 304 (NotModified)
      */
     virtual qint64 writeData(const char *data, qint64 len) override;
+
+    /**
+     * Reimplemented from QIODevice::readData().
+     */
     virtual qint64 readData(char *data, qint64 maxlen) override;
 
     ResponsePrivate *d_ptr;

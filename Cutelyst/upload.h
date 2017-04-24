@@ -30,11 +30,18 @@ class QTemporaryFile;
 namespace Cutelyst {
 
 class UploadPrivate;
+
+/*! \class Upload upload.h Cutelyst/Upload
+ * @brief %Cutelyst %Upload handles file upload request
+ */
 class CUTELYST_LIBRARY Upload : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Upload)
 public:
+    /**
+     * This class provides access to client upload requests
+     */
     Upload(UploadPrivate *prv);
     virtual ~Upload();
 
@@ -70,13 +77,35 @@ public:
      */
     QTemporaryFile *createTemporaryFile(const QString &templateName = QString());
 
-    virtual qint64 pos() const;
-    virtual qint64 size() const;
-    virtual bool seek(qint64 pos);
+    /**
+     * Reimplemented from QIODevice::pos().
+     */
+    virtual qint64 pos() const override;
+
+    /**
+     * Reimplemented from QIODevice::size().
+     */
+    virtual qint64 size() const override;
+
+    /**
+     * Reimplemented from QIODevice::seek().
+     */
+    virtual bool seek(qint64 pos) override;
 
 protected:
+    /**
+     * Reimplemented from QIODevice::readData().
+     */
     virtual qint64 readData(char *data, qint64 maxlen);
+
+    /**
+     * Reimplemented from QIODevice::readLineData().
+     */
     virtual qint64 readLineData(char *data, qint64 maxlen);
+
+    /**
+     * Reimplemented from QIODevice::writeData().
+     */
     virtual qint64 writeData(const char * data, qint64 maxSize);
 
     UploadPrivate *d_ptr;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,13 +29,31 @@ class CUTELYST_PLUGIN_SESSION_EXPORT SessionStoreFile : public SessionStore
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new session store file object with the given parent.
+     */
     explicit SessionStoreFile(QObject *parent = nullptr);
     ~SessionStoreFile();
 
-    QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
-    bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
-    bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
-    bool deleteExpiredSessions(Context *c, quint64 expires) final;
+    /**
+     * Reimplemented from SessionStore::getSessionData().
+     */
+    virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
+
+    /**
+     * Reimplemented from SessionStore::storeSessionData().
+     */
+    virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
+
+    /**
+     * Reimplemented from SessionStore::deleteSessionData().
+     */
+    virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
+
+    /**
+     * Reimplemented from SessionStore::deleteExpiredSessions().
+     */
+    virtual bool deleteExpiredSessions(Context *c, quint64 expires) final;
 };
 
 }

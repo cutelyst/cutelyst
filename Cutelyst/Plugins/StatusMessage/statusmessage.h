@@ -31,31 +31,50 @@ class CUTELYST_PLUGIN_STATUSMESSAGE_EXPORT StatusMessage : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(StatusMessage)
 public:
+    /**
+     * Constructs a new status message object with the given Application parent.
+     */
     StatusMessage(Application *parent);
     virtual ~StatusMessage();
 
     /**
-     * The key prefix inside Session where messages will be stored. Defaults to "status_msg".
+     * Returns the key prefix inside Session where messages will be stored.
      */
     QString sessionPrefix() const;
+
+    /**
+     * Sets the key prefix inside Session where messages will be stored. Defaults to "status_msg".
+     */
     void setSessionPrefix(const QString &sessionPrefix);
 
     /**
-     * The name of the URL param that holds the token on the page where you want to retrieve/display the status message. Defaults to "mid".
+     * Returns the name of the URL param that holds the token on the page where you want to retrieve/display the status message.
      */
     QString tokenParam() const;
+
+    /**
+     * Sets the name of the URL param that holds the token on the page where you want to retrieve/display the status message. Defaults to "mid".
+     */
     void setTokenParam(const QString &tokenParam);
 
     /**
-     * The name of the stash key where "success" status messages are loaded when $c->load_status_msgs is called. Defaults to status_msg.
+     * Returns the name of the stash key where "success" status messages are loaded when load() is called. Defaults to status_msg.
      */
     QString statusMsgStashKey() const;
+
+    /**
+     * Sets the name of the stash key where "success" status messages are loaded when load() is called. Defaults to status_msg.
+     */
     void setStatusMsgStashKey(const QString &statusMsgStashKey);
 
     /**
-     * The name of the stash key where error messages are loaded when $c->load_status_msgs is called. Defaults to error_msg.
+     * Returns the name of the stash key where error messages are loaded when load() is called.
      */
     QString errorMgStashKey() const;
+
+    /**
+     * Sets the name of the stash key where error messages are loaded when load() is called. Defaults to error_msg.
+     */
     void setErrorMgStashKey(const QString &errorMgStashKey);
 
     /**
@@ -94,6 +113,9 @@ public:
     static Q_DECL_DEPRECATED QString setStatus(Context *c, const QString &msg);
 
 protected:
+    /**
+     * Reimplemented from Plugin::setup().
+     */
     virtual bool setup(Application *app) override;
 
     StatusMessagePrivate *d_ptr;

@@ -29,9 +29,9 @@ class SessionStoreMemcachedPrivate;
 /*!
  * \brief Memcached session store.
  *
- * This session store saves session data to a \link http://memcached.org/ Memcached \endlink server using \link http://libmemcached.org/libMemcached.html libMemcached \endlink.
+ * This session store saves session data to a <a href="http://memcached.org">Memcached</a> server using <a href="http://libmemcached.org/libMemcached.html">libMemcached</a>.
  *
- * This is completely optional. To build it, you need \link https://www.freedesktop.org/wiki/Software/pkg-config/ pkg-config \endlink and \link http://libmemcached.org/libMemcached.html libMemcached \endlink in your build environment. If pkg-config and libMemcached can not be found, this session store will be silently disabled and not be build.
+ * This is completely optional. To build it, you need <a href="https://www.freedesktop.org/wiki/Software/pkg-config">pkg-config</a> and <a href="http://libmemcached.org/libMemcached.html">libMemcached</a> in your build environment. If pkg-config and libMemcached can not be found, this session store will be silently disabled and not be build.
  *
  * \par Usage example with custom configuration
  *
@@ -67,7 +67,7 @@ public:
     /*!
      * \brief Constructs a SessionStoreMemcached object with given \a config and \a parent.
      *
-     * Use the \a config string as described by the \link http://docs.libmemcached.org/libmemcached_configuration.html libmemcached documentation \endlink to
+     * Use the \a config string as described by the <a href="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached documentation</a> to
      * construct a SessionStoreMemcached object with more specific configuration.
      */
     SessionStoreMemcached(const QString &config, QObject *parent = nullptr);
@@ -77,10 +77,25 @@ public:
      */
     ~SessionStoreMemcached();
 
-    QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
-    bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
-    bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
-    bool deleteExpiredSessions(Context *c, quint64 expires) final;
+    /**
+     * Reimplemented from SessionStore::getSessionData().
+     */
+    virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
+
+    /**
+     * Reimplemented from SessionStore::storeSessionData().
+     */
+    virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
+
+    /**
+     * Reimplemented from SessionStore::deleteSessionData().
+     */
+    virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
+
+    /**
+     * Reimplemented from SessionStore::deleteExpiredSessions().
+     */
+    virtual bool deleteExpiredSessions(Context *c, quint64 expires) final;
 
 protected:
     SessionStoreMemcachedPrivate *d_ptr;

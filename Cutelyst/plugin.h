@@ -33,6 +33,9 @@ class CUTELYST_LIBRARY Plugin : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new plugin object with the given Application parent.
+     */
     Plugin(Application *parent);
 
     /**

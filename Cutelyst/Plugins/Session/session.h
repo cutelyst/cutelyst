@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,11 +31,29 @@ class Context;
 class CUTELYST_PLUGIN_SESSION_EXPORT SessionStore : public QObject {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new session store object with the given parent.
+     */
     explicit SessionStore(QObject *parent = nullptr);
 
+    /**
+     * Returns the session data for the given session id sid and key, if key does not exist returns defaultValue.
+     */
     virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue = QVariant()) = 0;
+
+    /**
+     * Stores the session data for the given session id sid and key to value.
+     */
     virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) = 0;
+
+    /**
+     * Removes all session data for the given session id sid and key.
+     */
     virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) = 0;
+
+    /**
+     * Removes all expired sessions which are above expires.
+     */
     virtual bool deleteExpiredSessions(Context *c, quint64 expires) = 0;
 };
 
@@ -45,6 +63,9 @@ class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(Session)
 public:
+    /**
+     * Constructs a new session object with the given parent.
+     */
     Session(Application *parent);
     virtual ~Session();
 
@@ -56,7 +77,14 @@ public:
      */
     virtual bool setup(Application *app) final;
 
+    /**
+     * Sets the session storage
+     */
     void setStorage(SessionStore *store);
+
+    /**
+     * Returns the session storage
+     */
     SessionStore *storage() const;
 
     /**
@@ -94,11 +122,29 @@ public:
      */
     static QString deleteReason(Context *c);
 
+    /**
+     * Returns the value for session key. If the session key doesn't exist, returns defaultValue.
+     */
     static QVariant value(Context *c, const QString &key, const QVariant &defaultValue = QVariant());
+
+    /**
+     * Sets the value for session key to value. If the key already exists, the previous value is overwritten.
+     */
     static void setValue(Context *c, const QString &key, const QVariant &value);
+
+    /**
+     * Removes the session key.
+     */
     static void deleteValue(Context *c, const QString &key);
+
+    /**
+     * Removes all session keys.
+     */
     static void deleteValues(Context *c, const QStringList &keys);
 
+    /**
+     * Returns true if the session is valid.
+     */
     static bool isValid(Context *c);
 
 protected:

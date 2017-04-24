@@ -29,15 +29,30 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreHtpasswd : public Authenticatio
 {
     Q_OBJECT
 public:
-    explicit StoreHtpasswd(const QString &file, QObject *parent = nullptr);
+    /**
+     * Constructs a new htpasswd store object with the given parent to represent the file with the specified name.
+     */
+    explicit StoreHtpasswd(const QString &name, QObject *parent = nullptr);
     virtual ~StoreHtpasswd();
 
+    /**
+     * Appends the user to htpasswd storage
+     */
     void addUser(const ParamsMultiMap &user);
 
+    /**
+     * Reimplemented from AuthenticationStore::findUser().
+     */
     virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) final;
 
+    /**
+     * Reimplemented from AuthenticationStore::forSession().
+     */
     virtual QVariant forSession(Context *c, const AuthenticationUser &user) final;
 
+    /**
+     * Reimplemented from AuthenticationStore::fromSession().
+     */
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
 };
 

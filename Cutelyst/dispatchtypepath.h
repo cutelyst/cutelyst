@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef CUTELYST_DISPATCHTYPEPATH_H
 #define CUTELYST_DISPATCHTYPEPATH_H
 
@@ -32,6 +31,9 @@ class CUTELYST_LIBRARY DispatchTypePath : public DispatchType
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)
 public:
+    /**
+     * Constructs a DispatchTypePath object with the given \p parent.
+     */
     explicit DispatchTypePath(QObject *parent = nullptr);
     virtual ~DispatchTypePath();
 

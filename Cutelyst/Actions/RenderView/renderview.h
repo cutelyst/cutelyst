@@ -57,9 +57,15 @@ class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView : public Action
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)
 public:
+    /**
+     * Constructs a RenderView object with the given \arg parent.
+     */
     explicit RenderView(QObject *parent = nullptr);
     virtual ~RenderView();
 
+    /**
+     * Reimplemented from Plugin::init()
+     */
     virtual bool init(Application *application, const QVariantHash &args) override;
 
 protected:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -42,6 +42,9 @@ class CUTELYST_LIBRARY Dispatcher : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a Dispatcher object with the given \p parent.
+     */
     Dispatcher(QObject *parent = nullptr);
     ~Dispatcher();
 
@@ -56,8 +59,8 @@ public:
     Action* getActionByPath(const QString &path) const;
 
     /**
-     * Returns a list of actions that match \pa name on
-     * the desired namespace \pa nameSpace
+     * Returns a list of actions that match \p name on
+     * the desired namespace \p nameSpace
      */
     ActionList getActions(const QString &name, const QString &nameSpace) const;
 

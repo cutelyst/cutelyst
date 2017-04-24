@@ -31,13 +31,29 @@ class CUTELYST_PLUGIN_STATICSIMPLE_EXPORT StaticSimple : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(StaticSimple)
 public:
+    /**
+     * Constructs a new static simple object with the given parent.
+     */
     StaticSimple(Application *parent);
     virtual ~StaticSimple();
 
+    /**
+     * Sets a list of directories in which to search for your static files.
+     * The directories will be searched in order and will return the first file found.
+     * Note that your root directory is not automatically added to the search path when
+     * you specify an include_path.
+     */
     void setIncludePaths(const QStringList &paths);
 
+    /**
+     * Sets a list of top-level directories beneath your 'root' directory that should
+     * always be served in static mode.
+     */
     void setDirs(const QStringList &dirs);
 
+    /**
+     * Reimplemented from Plugin::setup().
+     */
     virtual bool setup(Application *app);
 
 protected:

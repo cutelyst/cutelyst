@@ -29,6 +29,9 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationStore : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new authentication store object with the given parent.
+     */
     explicit AuthenticationStore(QObject *parent = nullptr);
     virtual ~AuthenticationStore();
 

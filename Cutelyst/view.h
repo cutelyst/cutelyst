@@ -28,6 +28,10 @@
 namespace Cutelyst {
 
 class Context;
+
+/*! \class View view.h Cutelyst/View
+ * @brief %Cutelyst %View abstract view component
+ */
 class CUTELYST_LIBRARY View : public Component
 {
     Q_OBJECT

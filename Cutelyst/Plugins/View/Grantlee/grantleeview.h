@@ -51,6 +51,9 @@ class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
 public:
+    /**
+     * Constructs a GrantleeView object with the given parent and name.
+     */
     explicit GrantleeView(QObject *parent = nullptr, const QString &name = QString());
     ~GrantleeView();
 
@@ -70,10 +73,19 @@ public:
     bool isCaching() const;
     void setCache(bool enable);
 
+    /**
+     * Returns the Grantlee::Engine pointer that is used by this engine.
+     */
     Grantlee::Engine *engine() const;
 
+    /**
+     * When called cache is set to true and templates are loaded.
+     */
     void preloadTemplates();
 
+    /**
+     * Reimplemented from View::render().
+     */
     QByteArray render(Context *c) const final;
 
     /**

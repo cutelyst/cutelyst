@@ -34,11 +34,17 @@ class CUTELYST_LIBRARY DispatchType : public QObject
 {
     Q_OBJECT
 public:
+    /** This enum is used to describe the kind of a match  */
     enum MatchType {
         NoMatch = 0,
         PartialMatch,
         ExactMatch
     };
+    Q_ENUM(MatchType)
+
+    /**
+     * Construct a DispatchType object
+     */
     explicit DispatchType(QObject *parent = nullptr);
     virtual ~DispatchType();
 
@@ -58,6 +64,9 @@ public:
      */
     virtual QString uriForAction(Action *action, const QStringList &captures) const = 0;
 
+    /**
+     * Expand the action to a list of actions which is used in chained
+     */
     virtual Action *expandAction(Context *c, Action *action) const;
 
     /**
@@ -90,6 +99,9 @@ protected:
     friend class Dispatcher;
     friend class Application;
 
+    /**
+     * Sets the matched action to the Context
+     */
     void setupMatchedAction(Context *c, Action *action) const;
 };
 

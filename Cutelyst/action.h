@@ -50,6 +50,9 @@ class CUTELYST_LIBRARY Action : public Component
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a Action object with the given \p parent.
+     */
     explicit Action(QObject *parent = nullptr);
     virtual ~Action();
 
@@ -157,6 +160,7 @@ private:
     Q_DECLARE_PRIVATE(Action)
 };
 
+/** Defines a list (vector) of Action pointers */
 typedef QVector<Action*> ActionList;
 
 }

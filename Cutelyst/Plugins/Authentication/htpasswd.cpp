@@ -27,9 +27,9 @@
 
 using namespace Cutelyst;
 
-StoreHtpasswd::StoreHtpasswd(const QString &file, QObject *parent) : AuthenticationStore(parent)
+StoreHtpasswd::StoreHtpasswd(const QString &name, QObject *parent) : AuthenticationStore(parent)
 {
-    setProperty("_file", file);
+    setProperty("_file", name);
 }
 
 StoreHtpasswd::~StoreHtpasswd()

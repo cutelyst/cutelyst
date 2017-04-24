@@ -32,11 +32,25 @@ class CUTELYST_LIBRARY Stats
 {
     Q_DECLARE_PRIVATE(Stats)
 public:
+    /**
+     * Constructs a new stats object with the given parent.
+     */
     explicit Stats(Application *app);
     virtual ~Stats();
 
+    /**
+     * Called before an action is executed to start counting it's time
+     */
     virtual void profileStart(const QString &action);
+
+    /**
+     * Called after an action is executed to stop counting it's time
+     */
     virtual void profileEnd(const QString &action);
+
+    /**
+     * Returns a text report of collected timmings
+     */
     virtual QByteArray report();
 
 protected:

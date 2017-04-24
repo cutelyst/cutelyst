@@ -29,18 +29,32 @@
 namespace Cutelyst {
 
 struct EngineRequest {
+    /** The method used (GET, POST...) */
     QString method;
+    /** The path requested by the user agent '/index' */
     QString path;
+    /** The query string requested by the user agent 'foo=bar&baz' */
     QByteArray query;
+    /** The protocol requested by the user agent 'HTTP1/1' */
     QString protocol;
+    /** The server address which the server is listening to,
+     *  usually the 'Host' header but if that's not present should be filled with the server address */
     QString serverAddress;
+    /** The remote/client address */
     QHostAddress remoteAddress;
+    /** The remote user name set by a front web server */
     QString remoteUser;
+    /** The request headers */
     Headers headers;
+    /** The timestamp of the start of headers */
     quint64 startOfRequest;
+    /** The QIODevice containing the body (if any) of the request */
     QIODevice *body;
+    /** The internal pointer of the request, to be used for mapping this request to the real request */
     void *requestPtr;
+    /** The remote/client port */
     quint16 remotePort;
+    /** If the connection is secure HTTPS */
     bool isSecure;
 };
 
@@ -51,13 +65,28 @@ class CUTELYST_LIBRARY Engine : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs an Engine object, where \p app is the application that might be
+     * used to create new instances if \p workerCore is greater than 1, \p opts
+     * is the options loaded by the engine subclass.
+     */
     explicit Engine(Application *app, int workerCore, const QVariantMap &opts);
     virtual ~Engine();
 
+    /**
+     * Returns the application associated with this engine.
+     */
     Application *app() const;
 
+    /**
+     * Reimplement this to get the workerId of the engine subclass, this is
+     * the same as processes id.
+     */
     virtual int workerId() const = 0;
 
+    /**
+     * Returns the worker core set when constructing the engine
+     */
     int workerCore() const;
 
     /**
@@ -81,11 +110,26 @@ public:
      */
     QVariantMap config(const QString &entity) const;
 
+    /**
+     * Sets the configuration to be used by Application
+     */
     void setConfig(const QVariantMap &config);
 
+    /**
+     * Returns a QVariantMap with the INI parsed from \p filename.
+     */
     static QVariantMap loadIniConfig(const QString &filename);
+
+    /**
+     * Returns a QVariantMap with the JSON parsed from \p filename.
+     */
     static QVariantMap loadJsonConfig(const QString &filename);
 
+    /**
+     * @return current micro seconds time to be used for stats, the default implementation returns
+     * QDateTime::currentMSecsSinceEpoch() * 1000, to become micro seconds, so if the engine
+     * supports a more precise value it can reimplement this method.
+     */
     virtual quint64 time();
 
 protected:
@@ -96,8 +140,6 @@ protected:
      * calls init on the engine. It must be called on the
      * engine's thread
      *
-     * @param app the Application to init
-     * @param postFork when true it will call postFork on the application
      * @return true if succeded
      */
     bool initApplication();
@@ -121,6 +163,9 @@ protected:
      */
     qint64 write(Context *c, const char *data, qint64 len, void *engineData);
 
+    /**
+     * Reimplement this to do the RAW writting to the client
+     */
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
 
     /**
@@ -137,6 +182,9 @@ protected:
      */
     virtual bool finalizeHeaders(Context *c);
 
+    /**
+     * Reimplement this to write the headers back to the client
+     */
     virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData) = 0;
 
     /**
@@ -182,6 +230,9 @@ protected:
         return key;
     }
 
+    /**
+     * Convert Header key to camel case
+     */
     static inline void camelCaseByteArrayHeader(QByteArray &key) {
         // The RFC 2616 and 7230 states keys are not case
         // case sensitive, however several tools fail
@@ -200,6 +251,9 @@ protected:
         }
     }
 
+    /**
+     * Returns the HTTP status message for the give \p status.
+     */
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
     /**
@@ -207,9 +261,15 @@ protected:
      */
     Headers &defaultHeaders();
 
+    /**
+     * Process the EngineRequest \p req
+     */
     void processRequest(const EngineRequest &req);
 
     Q_DECL_DEPRECATED
+    /**
+     * Deprecated
+     */
     void processRequest(const QString &method,
                         const QString &path,
                         const QByteArray &query,

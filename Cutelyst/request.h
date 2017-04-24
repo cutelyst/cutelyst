@@ -35,6 +35,7 @@ namespace Cutelyst {
 class Engine;
 class Upload;
 
+/** A vector of Upload pointers */
 typedef QVector<Upload *> Uploads;
 
 class RequestPrivate;
@@ -204,6 +205,11 @@ public:
      */
     QVariant bodyData() const;
 
+    /**
+     * Returns a QVariantMap of body (POST) parameters, this method
+     * is expensive as it creates the map each time it's called, cache
+     * it's result instead of calling multiple times
+     */
     QVariantMap bodyParametersVariant() const;
 
     /**
@@ -245,7 +251,11 @@ public:
      */
     QString queryKeywords() const;
 
-
+    /**
+     * Returns a QVariantMap of query string (GET) parameters, this method
+     * is expensive as it creates the map each time it's called, cache
+     * it's result instead of calling multiple times
+     */
     QVariantMap queryParametersVariant() const;
 
     /**
@@ -278,6 +288,11 @@ public:
      */
     inline QStringList queryParams(const QString &key) const;
 
+    /**
+     * Returns a QVariantMap of both query string (GET) and body (POST) parameters, this method
+     * is expensive as it creates the map each time it's called, cache
+     * it's result instead of calling multiple times
+     */
     QVariantMap parametersVariant() const;
 
     /**
@@ -442,6 +457,9 @@ public:
      */
     void *engineData();
 
+    /**
+     * Constructs a new Request object.
+     */
     Request(RequestPrivate *prv);
 
 protected:

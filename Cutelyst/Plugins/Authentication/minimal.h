@@ -30,15 +30,30 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreMinimal : public Authentication
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a new minimal authentication store object with the given parent.
+     */
     explicit StoreMinimal(QObject *parent = nullptr);
     virtual ~StoreMinimal();
 
+    /**
+     * Appends the user to internal memory storage
+     */
     void addUser(const AuthenticationUser &user);
 
-    AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) final;
+    /**
+     * Reimplemented from AuthenticationStore::findUser().
+     */
+    virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userInfo) final;
 
+    /**
+     * Reimplemented from AuthenticationStore::forSession().
+     */
     virtual QVariant forSession(Context *c, const AuthenticationUser &user) final;
 
+    /**
+     * Reimplemented from AuthenticationStore::fromSession().
+     */
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
 
 private:

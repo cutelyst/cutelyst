@@ -105,6 +105,9 @@ class CUTELYST_LIBRARY Controller : public QObject
 {
     Q_OBJECT
 public:
+    /**
+     * Constructs a Controller object with the given \p parent.
+     */
     explicit Controller(QObject *parent = nullptr);
     virtual ~Controller();
 

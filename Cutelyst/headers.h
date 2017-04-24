@@ -30,8 +30,15 @@ namespace Cutelyst {
 class CUTELYST_LIBRARY Headers
 {
 public:
+    /**
+     * Construct an empty header object.
+     */
     Headers();
+
 #ifdef Q_COMPILER_INITIALIZER_LISTS
+    /**
+     * Construct a header from a std::initializer_list given by list.
+     */
     inline Headers(std::initializer_list<std::pair<QString,QString> > list)
     {
         for (std::initializer_list<std::pair<QString,QString> >::const_iterator it = list.begin(); it != list.end(); ++it)
@@ -181,12 +188,26 @@ public:
      */
     void setServer(const QString &value);
 
+    /**
+     * Returns the 'Connection' header field that indicates how it should be handled after a
+     * request has been processed, like 'close'.
+     */
     QString connection() const;
 
+    /**
+     * Returns the 'Host' header field used in request messages, containing information about which host the client
+     * would like to talk to, this is especially useful for building URIs and for VirtualHosts.
+     */
     QString host() const;
 
+    /**
+     * Returns the header field used in request messages, containing information about the user agent originating the request.
+     */
     QString userAgent() const;
 
+    /**
+     * Used to specify the address (URI) of the document from which the requested resource address was obtained.
+     */
     QString referer() const;
 
     /**
@@ -261,17 +282,29 @@ public:
      */
     QPair<QString, QString> proxyAuthorizationBasicPair() const;
 
+    /**
+     * Returns the value associated with \p field
+     */
     QString header(const QString &field) const;
 
+    /**
+     * Returns the value associated with \p field, if field is not set \p defaultValue is returned
+     */
     QString header(const QString &field, const QString &defaultValue) const;
 
     /**
-     * When setting a header always use setHeader instead of insert
+     * Sets the header field to value
      */
     void setHeader(const QString &field, const QString &value);
 
+    /**
+     * Sets the header field to the list of values
+     */
     void setHeader(const QString &field, const QStringList &values);
 
+    /**
+     * Appends the header field to values
+     */
     void pushHeader(const QString &field, const QString &value);
 
     /**
@@ -283,34 +316,71 @@ public:
      */
     inline void pushRawHeader(const QString &field, const QString &value);
 
+    /**
+     * This method appends a header to internal data normalizing the key.
+     */
     void pushHeader(const QString &field, const QStringList &values);
 
+    /**
+     * This method removes a header identified by \p field.
+     */
     void removeHeader(const QString &field);
 
+    /**
+     * Clears all headers.
+     */
     inline void clear() {
         m_data.clear();
     }
 
+    /**
+     * Returns the internal structure of headers, to be used by Engine subclasses.
+     */
     inline QHash<QString, QString> data() const {
         return m_data;
     }
 
+    /**
+     * Returns true if the header field is defined.
+     */
     bool contains(const QString &field);
 
+    /**
+     * Returns the value reference associated with key.
+     */
     QString &operator[](const QString &key);
+
+    /**
+     * Returns the const value associated with key.
+     */
     const QString operator[](const QString &key) const;
+
+    /**
+     * Assigns \p other to this Header and returns a reference to this Header.
+     */
     inline Headers &operator=(const Headers &other)
     {
         m_data = other.m_data;
         return *this;
     }
+
+    /**
+     * Compares if another Header object has the same data as this.
+     */
     inline bool operator==(const Headers &other) const {
         return m_data == other.m_data;
     }
+
+    /**
+     * Compares if another Header object does not have the same data as this.
+     */
     inline bool operator!=(const Headers &other) const {
         return m_data != other.m_data;
     }
 
+    /**
+     * Returns this Header internal data as a QVariant for easiness with Q_PROPERTY.
+     */
     inline operator QVariant() const {
         return QVariant::fromValue(m_data);
     }
