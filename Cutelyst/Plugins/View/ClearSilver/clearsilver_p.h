@@ -37,7 +37,7 @@ public:
     void renderError(Context *c, const QString &error) const;
 
     QStringList includePaths;
-    QString extension;
+    QString extension = QStringLiteral(".html");
     QString wrapper;
 };
 

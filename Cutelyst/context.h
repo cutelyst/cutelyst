@@ -65,8 +65,19 @@ class CUTELYST_LIBRARY Context : public QObject
 public:
     virtual ~Context();
 
+    /*!
+     * Returns true if an error was set.
+     */
     bool error() const;
+
+    /*!
+     * Sets an error string and try to stop
+     */
     void error(const QString &error);
+
+    /*!
+     * Returns a list of errors that were defined
+     */
     QStringList errors() const;
 
     /**
@@ -74,6 +85,10 @@ public:
      */
     bool state() const;
 
+    /*!
+     * Sets the state of the current executed action, setting to false
+     * will make the dispatcher skip non processed actions.
+     */
     void setState(bool state);
 
     /**
@@ -378,6 +393,9 @@ public:
     // TODO C2 mark as const
     QVector<Plugin *> plugins();
 
+    /*!
+     * Returns the registered plugin that casts to the template type \p T
+     */
     template <typename T>
     T plugin()
     {
@@ -453,6 +471,9 @@ public:
     QString translate(const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
 
 protected:
+    /*!
+     * Constructs a new Context object using private implementation.
+     */
     Context(ContextPrivate *priv);
 
     friend class Application;

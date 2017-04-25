@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef CLEARSILVER_H
 #define CLEARSILVER_H
 
@@ -33,19 +32,50 @@ class CUTELYST_VIEW_CLEARSILVER_EXPORT ClearSilver : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)
 public:
-    Q_INVOKABLE explicit ClearSilver(QObject *parent = nullptr);
+    /*!
+     * Constructs a ClearSilver object with the given parent.
+     */
+    // TODO Cutelyst2 remove
+    explicit ClearSilver(QObject *parent = nullptr);
+
+    /*!
+     * Constructs a ClearSilver object with the given parent and name.
+     */
+    explicit ClearSilver(QObject *parent = nullptr, const QString &name = QString());
     ~ClearSilver();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    /*!
+     * Returns the list of include paths
+     */
     QStringList includePaths() const;
+
+    /*!
+     * Sets the list of include paths which will be looked for when resolving templates files
+     */
     void setIncludePaths(const QStringList &paths);
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    /*!
+     * Returns the template extension
+     */
     QString templateExtension() const;
+
+    /*!
+     * Sets the template extension, defaults to ".html"
+     */
     void setTemplateExtension(const QString &extension);
 
     Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+    /*!
+     * Returns the template wrapper.
+     */
     QString wrapper() const;
+
+    /*!
+     * Sets the template wrapper name, the template will be rendered into
+     * content variable in which the wrapper template should render.
+     */
     void setWrapper(const QString &name);
 
     QByteArray render(Context *c) const final;

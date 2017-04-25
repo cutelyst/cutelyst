@@ -36,6 +36,12 @@ ClearSilver::ClearSilver(QObject *parent) : View(parent)
 {
 }
 
+ClearSilver::ClearSilver(QObject *parent, const QString &name) : View(parent, name)
+  , d_ptr(new ClearSilverPrivate)
+{
+
+}
+
 ClearSilver::~ClearSilver()
 {
     delete d_ptr;

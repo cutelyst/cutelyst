@@ -40,28 +40,87 @@ public:
         SelfCheck
     };
     Q_ENUM(Type)
+
+    /*!
+     * Constructs a new CredentialPassword object with the given parent.
+     */
     explicit CredentialPassword(QObject *parent = nullptr);
     virtual ~CredentialPassword();
 
     AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
+    /*!
+     * Returns the field to look for when authenticating the user. \sa authenticate().
+     */
     QString passwordField() const;
+
+    /*!
+     * Sets the field to look for when authenticating the user. \sa authenticate().
+     */
     void setPasswordField(const QString &fieldName);
 
+    /*!
+     * Returns the type of password this class will be dealing with.
+     */
     Type passwordType() const;
+
+    /*!
+     * Sets the type of password this class will be dealing with.
+     */
     void setPasswordType(Type type);
 
+    /*!
+     * Returns the salt string to be prepended to the password
+     */
     QString passwordPreSalt() const;
+
+    /*!
+     * Sets the salt string to be prepended to the password
+     */
     void setPasswordPreSalt(const QString &passwordPreSalt);
 
+    /*!
+     * Returns the salt string to be appended to the password
+     */
     QString passwordPostSalt() const;
+
+    /*!
+     * Sets the salt string to be appended to the password
+     */
     void setPasswordPostSalt(const QString &passwordPostSalt);
 
+    /*!
+     * Validates the given password against the correct hash.
+     */
     static bool validatePassword(const QByteArray &password, const QByteArray &correctHash);
+
+    /*!
+     * Creates a password hash string.
+     * \param password
+     * \param method
+     * \param iterations
+     * \param saltByteSize
+     * \param hashByteSize
+     * \return the pbkdf2 representation of the password
+     */
     static QByteArray createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize);
+
+    /*!
+     * \brief Generates a pbkdf2 string for the given \p password
+     * \param method
+     * \param password
+     * \param salt
+     * \param rounds
+     * \param keyLength
+     * \return
+     */
     static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
                              const QByteArray &password, const QByteArray &salt,
                              int rounds, int keyLength);
+
+    /*!
+     * Generates the Hash-based message authentication code.
+     */
     QByteArray hmac(QCryptographicHash::Algorithm method, QByteArray key, const QByteArray& message);
 
 protected:

@@ -33,19 +33,55 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Compone
 {
     Q_OBJECT
 public:
+    /*!
+     * Constructs a new AuthenticationRealm object with the given parent.
+     */
     explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent = nullptr);
     virtual ~AuthenticationRealm();
 
+    /*!
+     * Returns the authentication store object
+     */
     AuthenticationStore *store() const;
+
+    /*!
+     * Returns the authentication credential object
+     */
     AuthenticationCredential *credential() const;
 
+    /*!
+     * Tries to find the user with \p authinfo returning a non null AuthenticationUser on success
+     */
     virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
+
+    /*!
+     * Tries to authenticate the user with \p authinfo returning a non null AuthenticationUser on success
+     */
     virtual AuthenticationUser authenticate(Context *c, const ParamsMultiMap &authinfo);
 
 protected:
+    /*!
+     * Removes the user from the session
+     * TODO move out on Cutelyst2
+     */
     void removePersistedUser(Context *c);
+
+    /*!
+     * Stores the user on the session
+     * TODO move out on Cutelyst2
+     */
     AuthenticationUser persistUser(Context *c, const AuthenticationUser &user);
+
+    /*!
+     * Retrieves the user from the store
+     * TODO move out on Cutelyst2
+     */
     AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser);
+
+    /*!
+     * Checks if user can be retrieved
+     * TODO move out on Cutelyst2
+     */
     QVariant userIsRestorable(Context *c);
 
 private:

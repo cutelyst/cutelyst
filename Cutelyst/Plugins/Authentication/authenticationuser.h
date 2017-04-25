@@ -33,7 +33,14 @@ class AuthenticationRealm;
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public QVariantMap
 {
 public:
+    /*!
+     * Constructs a new AuthenticationUser object
+     */
     AuthenticationUser();
+
+    /*!
+     * Constructs a new AuthenticationUser object with the given id
+     */
     AuthenticationUser(const QString &id);
     virtual ~AuthenticationUser();
 
@@ -41,12 +48,31 @@ public:
      * A unique ID by which a AuthenticationUser can be retrieved from the store.
      */
     QString id() const;
+
+    /*!
+     * Sets the unique user id restored from the store
+     */
     void setId(const QString &id);
+
+    /*!
+     * Returns true if the object is null
+     */
     bool isNull() const;
 
+    /*!
+     * Returns the authentication realm from which this user was retrieved
+     */
     AuthenticationRealm *authRealm();
+
+    /*!
+     * Sets the authentication realm from which this user was retrieved
+     */
     void setAuthRealm(AuthenticationRealm *authRealm);
 
+    /*!
+     * Verifies the user password.
+     * UNUSED at the moment
+     */
     virtual bool checkPassword(const QString &password) const;
 
 private:

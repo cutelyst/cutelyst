@@ -311,8 +311,8 @@ public:
     QString umask() const;
 
     /**
-     * Defines file mode creation mask
-     * @accessors umask(), setUmask()
+     * Defines CPU affinity
+     * @accessors cpuAffinity(), setCpuAffinity()
      */
     Q_PROPERTY(int cpu_affinity READ cpuAffinity WRITE setCpuAffinity)
     void setCpuAffinity(int value);
@@ -321,8 +321,8 @@ public:
 
 #ifdef Q_OS_LINUX
     /**
-     * Defines file mode creation mask
-     * @accessors umask(), setUmask()
+     * Enable SO_REUSEPORT for the sockets
+     * @accessors reusePort(), setReusePort()
      */
     Q_PROPERTY(bool reuse_port READ reusePort WRITE setReusePort)
     void setReusePort(bool enable);

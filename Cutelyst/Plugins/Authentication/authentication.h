@@ -33,9 +33,16 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationCredential : public QO
 {
     Q_OBJECT
 public:
+    /*!
+     * Constructs a new AuthenticationCredential object with the given parent.
+     */
     explicit AuthenticationCredential(QObject *parent = nullptr);
     virtual ~AuthenticationCredential();
 
+    /*!
+     * Tries to authenticate the \p authinfo using the give \p realm.
+     * Returns a not null AuthenticationUser object in case of success.
+     */
     virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) = 0;
 };
 
@@ -45,14 +52,28 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Authentication : public Plugin
     Q_OBJECT
     Q_DECLARE_PRIVATE(Authentication)
 public:
+    /*! default realm name */
     static char *defaultRealm;
 
+    /*!
+     * Constructs a new Authentication object with the given parent.
+     */
     Authentication(Application *parent);
     virtual ~Authentication();
 
+    /*!
+     * Adds the \p realm with \p name.
+     */
     void addRealm(AuthenticationRealm *realm, const QString &name = QLatin1String(defaultRealm));
+
+    /*!
+     * Adds the a new AuthenticationRealm using \p store, \p credential and \p name to build it.
+     */
     void addRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm));
 
+    /*!
+     * Returns an AuthenticationRealm object that was registered with \p name.
+     */
     AuthenticationRealm *realm(const QString &name = QLatin1String(defaultRealm)) const;
 
     /**
@@ -65,6 +86,9 @@ public:
      */
     inline static bool authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
 
+    /*!
+     * Tries to find the user with \p userinfo using the \p realm, returning a non null AuthenticationUser on success
+     */
     static AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
 
     /**

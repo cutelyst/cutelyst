@@ -108,6 +108,10 @@ public:
      * Returns all registered plugins
      */
     QVector<Plugin *> plugins() const;
+
+    /*!
+     * Returns the registered plugin that casts to the template type \p T
+     */
     template <typename T>
     T plugin()
     {
@@ -337,8 +341,20 @@ protected:
     void setConfig(const QString &key, const QVariant &value);
 
     friend class Engine;
+
+    /*!
+     * Called by the Engine to setup the internal data
+     */
     bool setup(Engine *engine);
+
+    /*!
+     * Called by the Engine to handle a new Request object
+     */
     void handleRequest(Request *req);
+
+    /*!
+     * Called by the Engine once post fork happened
+     */
     bool enginePostFork();
 
     ApplicationPrivate *d_ptr;

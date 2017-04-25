@@ -56,6 +56,9 @@ public:
     };
     Q_ENUM(AuthMethod)
 
+    /*!
+     * Constructs a new ViewEmail object with the given \p parent and \p name.
+     */
     explicit ViewEmail(QObject *parent, const QString &name = QString());
     virtual ~ViewEmail();
 
@@ -171,6 +174,9 @@ public:
     QByteArray render(Context *c) const override;
 
 protected:
+    /*!
+     * Constructs a new ViewEmail object using the private class, \p parent and \p name.
+     */
     ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
 
     Q_DECLARE_PRIVATE(ViewEmail)

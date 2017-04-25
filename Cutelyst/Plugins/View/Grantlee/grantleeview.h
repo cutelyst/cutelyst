@@ -51,26 +51,57 @@ class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)
 public:
-    /**
+    /*!
      * Constructs a GrantleeView object with the given parent and name.
      */
     explicit GrantleeView(QObject *parent = nullptr, const QString &name = QString());
     ~GrantleeView();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    /*!
+     * Returns the list of include paths
+     */
     QStringList includePaths() const;
+
+    /*!
+     * Sets the list of include paths which will be looked for when resolving templates files
+     */
     void setIncludePaths(const QStringList &paths);
 
     Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    /*!
+     * Returns the template extension
+     */
     QString templateExtension() const;
+
+    /*!
+     * Sets the template extension, defaults to ".html"
+     */
     void setTemplateExtension(const QString &extension);
 
     Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+
+    /*!
+     * Returns the template wrapper.
+     */
     QString wrapper() const;
+
+    /*!
+     * Sets the template wrapper name, the template will be rendered into
+     * content variable in which the wrapper template should render.
+     */
     void setWrapper(const QString &name);
 
     Q_PROPERTY(bool cache READ isCaching WRITE setCache)
+    /*!
+     * Returns true if caching is enabled
+     */
     bool isCaching() const;
+
+    /*!
+     * Sets if template caching should be done, this increases
+     * performance at the cost of higher memory usage.
+     */
     void setCache(bool enable);
 
     /**
@@ -83,9 +114,6 @@ public:
      */
     void preloadTemplates();
 
-    /**
-     * Reimplemented from View::render().
-     */
     QByteArray render(Context *c) const final;
 
     /**

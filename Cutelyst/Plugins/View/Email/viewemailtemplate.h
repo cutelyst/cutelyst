@@ -36,6 +36,9 @@ class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
     Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix)
     Q_PROPERTY(QString defaultView READ defaultView WRITE setDefaultView)
 public:
+    /*!
+     * Constructs a new ViewEmailTemplate object with the given \p parent and \p name.
+     */
     explicit ViewEmailTemplate(QObject *parent, const QString &name = QString());
 
     /**

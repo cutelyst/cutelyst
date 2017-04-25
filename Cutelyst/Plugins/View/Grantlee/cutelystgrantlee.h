@@ -19,6 +19,8 @@
 #ifndef CUTELYSTGRANTLEE_H
 #define CUTELYSTGRANTLEE_H
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <grantlee/taglibraryinterface.h>
 
 #if defined(cutelyst_grantlee_urifor_EXPORTS)
@@ -39,5 +41,7 @@ public:
 
     virtual QHash<QString, Grantlee::Filter *> filters(const QString &name = QString()) override;
 };
+
+#endif
 
 #endif // CUTELYSTGRANTLEE_H

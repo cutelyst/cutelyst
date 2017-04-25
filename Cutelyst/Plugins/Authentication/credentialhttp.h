@@ -47,6 +47,10 @@ public:
         Basic
     };
     Q_ENUM(AuthType)
+
+    /*!
+     * Constructs a new CredentialHttp object with the given parent.
+     */
     explicit CredentialHttp(QObject *parent = nullptr);
     virtual ~CredentialHttp();
 
@@ -65,20 +69,55 @@ public:
      */
     void setAuthorizationRequiredMessage(const QString &message);
 
+    /*!
+     * Returns the field to look for when authenticating the user. \sa authenticate().
+     */
+    QString usernameField() const;
+
+    /*!
+     * Sets the field to look for when authenticating the user. \sa authenticate().
+     */
+    void setUsernameField(const QString &fieldName);
+
+    /*!
+     * Returns the field to look for when authenticating the user. \sa authenticate().
+     */
     QString passwordField() const;
+
+    /*!
+     * Sets the field to look for when authenticating the user. \sa authenticate().
+     */
     void setPasswordField(const QString &fieldName);
 
+    /*!
+     * Returns the type of password this class will be dealing with.
+     */
     PasswordType passwordType() const;
+
+    /*!
+     * Sets the type of password this class will be dealing with.
+     */
     void setPasswordType(PasswordType type);
 
+    /*!
+     * Returns the salt string to be prepended to the password
+     */
     QString passwordPreSalt() const;
+
+    /*!
+     * Sets the salt string to be prepended to the password
+     */
     void setPasswordPreSalt(const QString &passwordPreSalt);
 
+    /*!
+     * Returns the salt string to be appended to the password
+     */
     QString passwordPostSalt() const;
-    void setPasswordPostSalt(const QString &passwordPostSalt);
 
-    QString usernameField() const;
-    void setUsernameField(const QString &fieldName);
+    /*!
+     * Sets the salt string to be appended to the password
+     */
+    void setPasswordPostSalt(const QString &passwordPostSalt);
 
     /**
      * If this configuration is true then authentication

@@ -19,6 +19,8 @@
 #ifndef URIFOR_H
 #define URIFOR_H
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <grantlee/filter.h>
 #include <grantlee/safestring.h>
 #include <grantlee/util.h>
@@ -43,5 +45,7 @@ private:
     std::vector<Grantlee::FilterExpression> m_argsExpressions;
     std::vector<Grantlee::FilterExpression> m_queryExpressions;
 };
+
+#endif
 
 #endif // URIFOR_H
