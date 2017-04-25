@@ -96,17 +96,17 @@ protected:
     /**
      * Reimplemented from QIODevice::readData().
      */
-    virtual qint64 readData(char *data, qint64 maxlen);
+    virtual qint64 readData(char *data, qint64 maxlen) override;
 
     /**
      * Reimplemented from QIODevice::readLineData().
      */
-    virtual qint64 readLineData(char *data, qint64 maxlen);
+    virtual qint64 readLineData(char *data, qint64 maxlen) override;
 
     /**
      * Reimplemented from QIODevice::writeData().
      */
-    virtual qint64 writeData(const char * data, qint64 maxSize);
+    virtual qint64 writeData(const char * data, qint64 maxSize) override;
 
     UploadPrivate *d_ptr;
 };

@@ -38,6 +38,11 @@ View::~View()
 {
 }
 
+QString View::name() const
+{
+    return Component::name();
+}
+
 Component::Modifiers View::modifiers() const
 {
     return Component::OnlyExecute;

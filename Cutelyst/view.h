@@ -44,6 +44,12 @@ public:
     virtual ~View();
 
     /**
+     * Returns the name of the view
+     */
+    // TODO remove Cutelyst2
+    QString name() const;
+
+    /**
      * The default implementation returns Component::OnlyExecute
      */
     virtual Modifiers modifiers() const override;
