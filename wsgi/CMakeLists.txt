@@ -4,7 +4,7 @@ if (USE_JEMALLOC)
     find_package(JeMalloc REQUIRED)
 endif()
 
-set(httpEngine_SRC
+set(cutelyst_wsgi_SRC
     wsgi.cpp
     wsgi_p.h
     abstractfork.cpp
@@ -21,26 +21,30 @@ set(httpEngine_SRC
     staticmap.cpp
 )
 
+set(cutelyst_wsgi_HEADERS
+    wsgi.h
+)
+
 if (UNIX)
-    set(httpEngine_SRC
-        ${httpEngine_SRC}
+    set(cutelyst_wsgi_SRC
+        ${cutelyst_wsgi_SRC}
         unixfork.cpp
         )
 else ()
-    set(httpEngine_SRC
-        ${httpEngine_SRC}
+    set(cutelyst_wsgi_SRC
+        ${cutelyst_wsgi_SRC}
         windowsfork.cpp
         )
 endif ()
 
 if (LINUX)
-    set(httpEngine_SRC
-        ${httpEngine_SRC}
+    set(cutelyst_wsgi_SRC
+        ${cutelyst_wsgi_SRC}
         systemdnotify.cpp
         )
 endif ()
 
-add_library(cutelyst_wsgi_qt5 SHARED ${httpEngine_SRC})
+add_library(cutelyst_wsgi_qt5 SHARED ${cutelyst_wsgi_SRC})
 
 add_library(CutelystQt5::WSGI ALIAS cutelyst_wsgi_qt5)
 set_property(TARGET cutelyst_wsgi_qt5 PROPERTY EXPORT_NAME WSGI)
@@ -62,10 +66,10 @@ endif ()
 
 install(TARGETS cutelyst_wsgi_qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-#install(FILES ${cutelyst_wsgi_HEADERS}
-#        DESTINATION include/cutelyst-qt5/Cutelyst/WSGI
-#        COMPONENT WSGI
-#)
+install(FILES ${cutelyst_wsgi_HEADERS}
+        DESTINATION include/cutelyst-qt5/Cutelyst/WSGI
+        COMPONENT WSGI
+)
 
 set(cutelyst_wsgi_SRCS
     main.cpp
