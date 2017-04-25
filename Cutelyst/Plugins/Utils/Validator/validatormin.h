@@ -87,6 +87,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorMin object with the given private class.
+     */
     ValidatorMin(ValidatorMinPrivate &dd);
     
 private:

@@ -89,6 +89,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorUrl object with the given private class.
+     */
     ValidatorUrl(ValidatorUrlPrivate &dd);
     
 private:

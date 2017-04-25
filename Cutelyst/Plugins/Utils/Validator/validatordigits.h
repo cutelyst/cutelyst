@@ -77,6 +77,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorDigits object with the given private class.
+     */
     ValidatorDigits(ValidatorDigitsPrivate &dd);
     
 private:

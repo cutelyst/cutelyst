@@ -70,6 +70,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorEmail object with the given private class.
+     */
     ValidatorEmail(ValidatorEmailPrivate &dd);
     
 private:

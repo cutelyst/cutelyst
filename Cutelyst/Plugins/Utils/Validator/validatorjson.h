@@ -65,6 +65,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorJson object with the given private class.
+     */
     ValidatorJson(ValidatorJsonPrivate &dd);
     
 private:

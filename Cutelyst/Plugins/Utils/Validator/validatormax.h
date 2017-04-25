@@ -87,6 +87,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorMax object with the given private class.
+     */
     ValidatorMax(ValidatorMaxPrivate &dd);
     
 private:

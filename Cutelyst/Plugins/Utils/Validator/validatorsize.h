@@ -89,6 +89,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorSize object with the given private class.
+     */
     ValidatorSize(ValidatorSizePrivate &dd);
     
 private:

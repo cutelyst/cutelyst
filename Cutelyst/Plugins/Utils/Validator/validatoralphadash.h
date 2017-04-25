@@ -74,6 +74,9 @@ protected:
      */
     QString genericValidationError() const override;
 
+    /*!
+     * Constructs a new ValidatorAlphaDash object with the given private class.
+     */
     ValidatorAlphaDash(ValidatorAlphaDashPrivate &dd);
 
 private:

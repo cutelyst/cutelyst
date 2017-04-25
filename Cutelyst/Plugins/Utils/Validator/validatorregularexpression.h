@@ -72,6 +72,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorRegularExpression object with the given private class.
+     */
     ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd);
     
 private:

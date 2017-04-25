@@ -81,6 +81,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorDigitsBetween object with the given private class.
+     */
     ValidatorDigitsBetween(ValidatorDigitsBetweenPrivate &dd);
     
 private:

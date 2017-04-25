@@ -76,6 +76,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorDate object with the given private class.
+     */
     ValidatorDate(ValidatorDatePrivate &dd);
     
 private:

@@ -74,6 +74,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorRequiredWithout object with the given private class.
+     */
     ValidatorRequiredWithout(ValidatorRequiredWithoutPrivate &dd);
     
 private:

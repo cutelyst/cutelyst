@@ -258,7 +258,7 @@ public:
     /*!
      * \brief Set to \c false to not trim input value before validation.
      *
-     * By default, this value is set to \c true and all input values will be \link QString::trimmed() trimmed \endlink before validation to
+     * By default, this value is set to \c true and all input values will be QString::trimmed() trimmed before validation to
      * remove whitespaces from the beginning and the end.
      *
      * \sa trimBefore()
@@ -267,6 +267,9 @@ public:
 
 protected:
     const QScopedPointer<ValidatorRulePrivate> d_ptr;
+    /*!
+     * Constructs a new ValidatorRule object with the given private class.
+     */
     ValidatorRule(ValidatorRulePrivate &dd);
 
     /*!

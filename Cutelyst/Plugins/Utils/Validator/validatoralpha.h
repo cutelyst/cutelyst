@@ -75,6 +75,9 @@ protected:
      */
     QString genericValidationError() const override;
 
+    /*!
+     * Constructs a new ValidatorAlpha object with the given private class.
+     */
     ValidatorAlpha(ValidatorAlphaPrivate &dd);
 
 private:

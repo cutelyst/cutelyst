@@ -59,7 +59,7 @@ public:
     /*!
      * \brief Constructs a new ip validator.
      * \param field         Name of the input field to validate.
-     * \param constraint    Optional validation constraints.
+     * \param constraints    Optional validation constraints.
      * \param label         Human readable input field label, used for error messages.
      * \param customError   Custom errror message if validation fails.
      */
@@ -86,6 +86,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorIp object with the given private class.
+     */
     ValidatorIp(ValidatorIpPrivate &dd);
     
 private:

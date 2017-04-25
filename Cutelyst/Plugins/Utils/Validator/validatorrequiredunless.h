@@ -79,6 +79,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorRequiredUnless object with the given private class.
+     */
     ValidatorRequiredUnless(ValidatorRequiredUnlessPrivate &dd);
     
 private:

@@ -72,6 +72,9 @@ protected:
      */
     QString genericValidationError() const override;
     
+    /*!
+     * Constructs a new ValidatorSame object with the given private class.
+     */
     ValidatorSame(ValidatorSamePrivate &dd);
     
 private:
