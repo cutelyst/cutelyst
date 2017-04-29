@@ -164,7 +164,7 @@ protected:
     qint64 write(Context *c, const char *data, qint64 len, void *engineData);
 
     /**
-     * Reimplement this to do the RAW writting to the client
+     * Reimplement this to do the RAW writing to the client
      */
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
 

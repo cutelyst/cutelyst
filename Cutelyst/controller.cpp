@@ -527,7 +527,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
             qCCritical(CUTELYST_CONTROLLER)
                     << "Class name"
                     << instanceName
-                    << "is not registerd, you can register it with qRegisterMetaType<"
+                    << "is not registered, you can register it with qRegisterMetaType<"
                     << instanceName.toLatin1().data()
                     << ">();";
             exit(1);
