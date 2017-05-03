@@ -38,8 +38,8 @@ public:
     qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:
-    inline quint16 addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const;
-    inline int parseHeaders(Socket *wsgi_req, char *buf, size_t len) const;
+    inline quint16 addHeader(Socket *wsgi_req, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
+    inline int parseHeaders(Socket *wsgi_req, const char *buf, size_t len) const;
     inline int processPacket(Socket *sock) const;
     inline bool writeBody(Socket *sock, char *buf, qint64 len) const;
     // write a STDOUT packet

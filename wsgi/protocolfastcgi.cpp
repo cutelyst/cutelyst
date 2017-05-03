@@ -148,8 +148,8 @@ ProtocolFastCGI::~ProtocolFastCGI()
 {
 }
 
-quint32 wsgi_be32(char *buf) {
-    quint32 *src = reinterpret_cast<quint32 *>(buf);
+quint32 wsgi_be32(const char *buf) {
+    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
     quint32 ret = 0;
     quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
     ptr[0] = static_cast<quint8>((*src >> 24) & 0xff);
@@ -159,8 +159,8 @@ quint32 wsgi_be32(char *buf) {
     return ret;
 }
 
-quint16 wsgi_be16(char *buf) {
-    quint32 *src = reinterpret_cast<quint32 *>(buf);
+quint16 wsgi_be16(const char *buf) {
+    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
     quint16 ret = 0;
     quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
     ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
@@ -168,7 +168,7 @@ quint16 wsgi_be16(char *buf) {
     return ret;
 }
 
-quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, char *val, quint16 vallen) const
+quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, const char *key, quint16 keylen, const char *val, quint16 vallen) const
 {
     char *buffer = wsgi_req->buffer + wsgi_req->pktsize;
     char *watermark = wsgi_req->buffer + m_bufferSize;
@@ -190,11 +190,16 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
         }
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         wsgi_req->method = QString::fromLatin1(val, vallen);
-    } else if (memcmp(key, "DOCUMENT_URI", 12) == 0) {
-        // REQUEST_URI has query string which break things
-        wsgi_req->path = QString::fromLatin1(val + 1, vallen - 1);
-    } else if (memcmp(key, "QUERY_STRING", 12) == 0) {
-        wsgi_req->query = QByteArray(val, vallen);
+    } else if (memcmp(key, "REQUEST_URI", 11) == 0) {
+        const char *pch = static_cast<const char *>(memchr(val, '?', vallen));
+        if (pch) {
+            int pos = pch - val;
+            wsgi_req->path = QString::fromLatin1(val + 1, pos - 1);
+            wsgi_req->query = QByteArray(pch + 1, vallen - pos - 1);
+        } else {
+            wsgi_req->path = QString::fromLatin1(val + 1, vallen - 1);
+            wsgi_req->query = QByteArray();
+        }
     } else if (memcmp(key, "SERVER_PROTOCOL", 15) == 0) {
         wsgi_req->protocol = QString::fromLatin1(val, vallen);
     } else if (memcmp(key, "REMOTE_ADDR", 11) == 0) {
@@ -218,7 +223,7 @@ quint16 ProtocolFastCGI::addHeader(Socket *wsgi_req, char *key, quint16 keylen, 
     return keylen + vallen + 2 + 2;
 }
 
-int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, char *buf, size_t len) const
+int ProtocolFastCGI::parseHeaders(Socket *wsgi_req, const char *buf, size_t len) const
 {
     size_t j;
     quint8 octet;
@@ -274,7 +279,7 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
         if (sock->buf_size >= sizeof(struct fcgi_record)) {
             auto fr = reinterpret_cast<struct fcgi_record *>(sock->buffer);
 
-            quint16 fcgi_len = wsgi_be16(reinterpret_cast<char *>(&fr->cl1));
+            quint16 fcgi_len = wsgi_be16(reinterpret_cast<const char *>(&fr->cl1));
             quint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
             quint8 fcgi_type = fr->type;
             quint8 *sid = reinterpret_cast<quint8 *>(& sock->stream_id);
