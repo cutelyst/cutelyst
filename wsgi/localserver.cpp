@@ -39,17 +39,21 @@ static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrl
 using namespace CWSGI;
 
 
-LocalServer::LocalServer(const QString &serverAddress, Protocol *protocol, WSGI *wsgi, QObject *parent) : QLocalServer(parent)
+LocalServer::LocalServer(WSGI *wsgi, QObject *parent) : QLocalServer(parent)
   , m_wsgi(wsgi)
-  , m_protocol(protocol)
 {
-    m_serverAddress = serverAddress;
-    m_engine = qobject_cast<CWsgiEngine*>(parent);
+}
+
+void LocalServer::setProtocol(Protocol *protocol)
+{
+    m_protocol = protocol;
 }
 
 LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
 {
-    auto server = new LocalServer(QStringLiteral("localhost"), m_protocol, m_wsgi, engine);
+    auto server = new LocalServer(m_wsgi, engine);
+    server->setProtocol(m_protocol);
+    server->m_engine = engine;
 
 #ifdef Q_OS_UNIX
     server->m_socket = socket();
@@ -115,7 +119,7 @@ void LocalServer::incomingConnection(quintptr handle)
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
-        sock->serverAddress = m_serverAddress;
+        sock->serverAddress = QStringLiteral("localhost");
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }

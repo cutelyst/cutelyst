@@ -32,7 +32,9 @@ class LocalServer : public QLocalServer
 {
     Q_OBJECT
 public:
-    explicit LocalServer(const QString &serverAddress, Protocol *protocol,  WSGI *wsgi, QObject *parent = 0);
+    explicit LocalServer(WSGI *wsgi, QObject *parent = 0);
+
+    void setProtocol(Protocol *protocol);
 
     LocalServer *createServer(CWsgiEngine *engine) const;
 
@@ -54,13 +56,12 @@ private:
     void socketNotifierActivated();
 #endif
 
-    QString m_serverAddress;
     QSocketNotifier *m_socketNotifier;
-    CWsgiEngine *m_engine;
+    CWsgiEngine *m_engine = nullptr;
     WSGI *m_wsgi;
 
     std::vector<LocalSocket *> m_socks;
-    Protocol *m_protocol;
+    Protocol *m_protocol = nullptr;
     qintptr m_socket = -1;
     int m_processing = 0;
 };

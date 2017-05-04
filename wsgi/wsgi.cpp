@@ -612,26 +612,57 @@ void WSGIPrivate::listenLocalSockets()
 {
     Q_Q(WSGI);
 
-    if (!httpSockets.isEmpty()) {
-        if (!protoHTTP) {
-            protoHTTP = new ProtocolHttp(q);
-        }
+    QStringList http = httpsSockets;
+    QStringList fastcgi = fastcgiSockets;
 
-        const auto sockets = httpSockets;
-        for (const auto &socket : sockets) {
-            listenLocal(socket, protoHTTP);
-        }
+    if (!http.isEmpty() && !protoHTTP) {
+        protoHTTP = new ProtocolHttp(q);
     }
 
-    if (!fastcgiSockets.isEmpty()) {
-        if (!protoFCGI) {
-            protoFCGI = new ProtocolFastCGI(q);
-        }
+    if (!fastcgi.isEmpty() && !protoFCGI) {
+        protoFCGI = new ProtocolFastCGI(q);
+    }
 
-        const auto sockets = fastcgiSockets;
-        for (const auto &socket : sockets) {
-            listenLocal(socket, protoFCGI);
+#ifdef Q_OS_LINUX
+    std::vector<int> fds = systemdNotify::listenFds();
+    for (int fd : fds) {
+        auto server = new LocalServer(q, this);
+        if (server->listen(fd)) {
+            const QString name = server->serverName();
+            const QString fullName = server->fullServerName();
+
+            Protocol *protocol;
+            if (http.removeOne(fullName) || http.removeOne(name)) {
+                protocol = protoHTTP;
+            } else if (fastcgi.removeOne(fullName)  || fastcgi.removeOne(name)) {
+                protocol = protoFCGI;
+            } else {
+                qFatal("systemd activated socket does not match any configured socket");
+            }
+            server->setProtocol(protocol);
+            server->pauseAccepting();
+
+            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+                      << " bound to LOCAL address " << fullName.toLocal8Bit().constData()
+                      << " fd " << QByteArray::number(server->socket()).constData()
+                      << std::endl;
+            servers.push_back(server);
+        } else {
+            std::cout << "Failed to listen on activated LOCAL FD: " << QByteArray::number(fd).constData()
+                      << " : " << server->errorString().toLocal8Bit().constData() << std::endl;
+            exit(1);
         }
+    }
+#endif
+
+    const auto httpConst = http;
+    for (const auto &socket : httpConst) {
+        listenLocal(socket, protoHTTP);
+    }
+
+    const auto fastcgiConst = fastcgi;
+    for (const auto &socket : fastcgiConst) {
+        listenLocal(socket, protoFCGI);
     }
 }
 
@@ -641,7 +672,8 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
 
     bool ret = true;
     if (line.startsWith(QLatin1Char('/'))) {
-        auto server = new LocalServer(line, protocol, q, this);
+        auto server = new LocalServer(q, this);
+        server->setProtocol(protocol);
         if (!socketAccess.isEmpty()) {
             QLocalServer::SocketOptions options;
             if (socketAccess.contains(QLatin1Char('u'))) {
