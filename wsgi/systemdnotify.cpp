@@ -18,6 +18,8 @@
  */
 #include "systemdnotify.h"
 
+#include "wsgi.h"
+
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <string.h>
@@ -130,6 +132,18 @@ void systemdNotify::ready()
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
         qWarning("sendmsg()");
     }
+}
+
+void systemdNotify::install_systemd_notifier(WSGI *wsgi)
+{
+    if (!qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
+        return;
+    }
+
+    const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
+    qDebug() << "systemd notify detected" << notifySocket;
+    auto notify = new systemdNotify(notifySocket.constData(), wsgi);
+    connect(wsgi, &WSGI::ready, notify, &systemdNotify::ready);
 }
 
 int fd_cloexec(int fd, bool cloexec) {

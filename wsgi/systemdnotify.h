@@ -24,6 +24,7 @@
 
 namespace CWSGI {
 
+class WSGI;
 class systemdNotifyPrivate;
 class systemdNotify : public QObject
 {
@@ -35,6 +36,9 @@ public:
 
     void notify(const QByteArray &data);
     void ready();
+
+    static void install_systemd_notifier(WSGI *wsgi);
+
     static std::vector<int> listenFds(bool unsetEnvironment = true);
 
 private:

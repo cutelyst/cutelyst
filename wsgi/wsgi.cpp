@@ -490,12 +490,7 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 
 #ifdef Q_OS_LINUX
-    if (qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
-        const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
-        qCDebug(CUTELYST_WSGI) << "systemd notify detected" << notifySocket;
-        auto notify = new systemdNotify(notifySocket.constData(), this);
-        connect(this, &WSGI::ready, notify, &systemdNotify::ready);
-    }
+    systemdNotify::install_systemd_notifier(this);
 #endif
 
     // TCP needs root privileges
@@ -1201,7 +1196,10 @@ void WSGIPrivate::postFork(int workerId)
         setupApplication();
     }
 
-    qCDebug(CUTELYST_WSGI) << "Starting threads";
+    if (engines.size() > 1) {
+        qCDebug(CUTELYST_WSGI) << "Starting threads";
+    }
+
     for (CWsgiEngine *engine : engines) {
         QThread *thread = engine->thread();
         if (thread != qApp->thread()) {
