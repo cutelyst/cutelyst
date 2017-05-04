@@ -50,13 +50,18 @@ public:
 
 private:
     QSocketNotifier *socketDescriptorNotifier() const;
+#ifdef Q_OS_UNIX
+    void socketNotifierActivated();
+#endif
 
     QString m_serverAddress;
+    QSocketNotifier *m_socketNotifier;
     CWsgiEngine *m_engine;
     WSGI *m_wsgi;
 
     std::vector<LocalSocket *> m_socks;
     Protocol *m_protocol;
+    qintptr m_socket = -1;
     int m_processing = 0;
 };
 

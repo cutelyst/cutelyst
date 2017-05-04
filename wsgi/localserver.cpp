@@ -26,7 +26,18 @@
 #include <QSocketNotifier>
 #include <QDateTime>
 
+#ifdef Q_OS_UNIX
+//#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+//#include <netinet/in.h>
+#include <fcntl.h>
+
+static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags = 0);
+#endif
+
 using namespace CWSGI;
+
 
 LocalServer::LocalServer(const QString &serverAddress, Protocol *protocol, WSGI *wsgi, QObject *parent) : QLocalServer(parent)
   , m_wsgi(wsgi)
@@ -39,13 +50,23 @@ LocalServer::LocalServer(const QString &serverAddress, Protocol *protocol, WSGI 
 LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
 {
     auto server = new LocalServer(QStringLiteral("localhost"), m_protocol, m_wsgi, engine);
+
+#ifdef Q_OS_UNIX
+    server->m_socket = socket();
+    server->m_socketNotifier = new QSocketNotifier(server->m_socket, QSocketNotifier::Read, server);
+    server->m_socketNotifier->setEnabled(false);
+    connect(server->m_socketNotifier, &QSocketNotifier::activated, server, &LocalServer::socketNotifierActivated);
+#else
     if (server->listen(socket())) {
         server->pauseAccepting();
-        connect(engine, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
-        connect(engine, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
     } else {
         qFatal("Failed to set server socket descriptor");
     }
+#endif
+
+    connect(engine, &CWsgiEngine::started, server, &LocalServer::resumeAccepting);
+    connect(engine, &CWsgiEngine::shutdown, server, &LocalServer::shutdown);
+
     return server;
 }
 
@@ -59,10 +80,14 @@ void LocalServer::pauseAccepting()
 
 void LocalServer::resumeAccepting()
 {
+#ifdef Q_OS_UNIX
+    m_socketNotifier->setEnabled(true);
+#else
     auto notifier = socketDescriptorNotifier();
     if (notifier) {
         notifier->setEnabled(true);
     }
+#endif
 }
 
 void LocalServer::incomingConnection(quintptr handle)
@@ -171,5 +196,52 @@ QSocketNotifier *LocalServer::socketDescriptorNotifier() const
 
     return ret;
 }
+
+#ifdef Q_OS_UNIX
+void LocalServer::socketNotifierActivated()
+{
+    if (-1 == m_socket)
+        return;
+
+    ::sockaddr_un addr;
+    uint length = sizeof(sockaddr_un);
+    int connectedSocket = cutelyst_safe_accept(m_socket, (sockaddr *)&addr, &length);
+    if (-1 != connectedSocket) {
+        incomingConnection(connectedSocket);
+    }
+}
+
+// Tru64 redefines accept -> _accept with _XOPEN_SOURCE_EXTENDED
+static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags)
+{
+    Q_ASSERT((flags & ~O_NONBLOCK) == 0);
+
+    int fd;
+#ifdef QT_THREADSAFE_CLOEXEC
+    // use accept4
+    int sockflags = SOCK_CLOEXEC;
+    if (flags & O_NONBLOCK)
+        sockflags |= SOCK_NONBLOCK;
+# if defined(Q_OS_NETBSD)
+    fd = ::paccept(s, addr, static_cast<socklen_t *>(addrlen), NULL, sockflags);
+# else
+    fd = ::accept4(s, addr, static_cast<socklen_t *>(addrlen), sockflags);
+# endif
+    return fd;
+#else
+    fd = ::accept(s, addr, static_cast<socklen_t *>(addrlen));
+    if (fd == -1)
+        return -1;
+
+    ::fcntl(fd, F_SETFD, FD_CLOEXEC);
+
+    // set non-block too?
+    if (flags & O_NONBLOCK)
+        ::fcntl(fd, F_SETFL, ::fcntl(fd, F_GETFL) | O_NONBLOCK);
+
+    return fd;
+#endif
+}
+#endif // Q_OS_UNIX
 
 #include "moc_localserver.cpp"
