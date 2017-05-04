@@ -66,6 +66,7 @@ LocalSocket::LocalSocket(WSGI *wsgi, QObject *parent) : QLocalSocket(parent), So
 
 void LocalSocket::connectionClose()
 {
+    flush();
     disconnectFromServer();
 }
 
