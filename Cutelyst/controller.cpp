@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "controller_p.h"
 
 #include "application.h"
@@ -530,7 +529,6 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
                     << "is not registered, you can register it with qRegisterMetaType<"
                     << instanceName.toLatin1().data()
                     << ">();";
-            exit(1);
         }
     }
     return nullptr;

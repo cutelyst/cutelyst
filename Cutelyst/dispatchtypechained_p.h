@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #ifndef DISPATCHTYPECHAINED_P_H
 #define DISPATCHTYPECHAINED_P_H
 
@@ -42,7 +41,7 @@ class DispatchTypeChainedPrivate
 {
 public:
     BestActionMatch recurseMatch(int reqArgsSize, const QString &parent, const QStringList &pathParts) const;
-    void checkArgsAttr(Action *action, const QString &name);
+    bool checkArgsAttr(Action *action, const QString &name) const;
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);
 

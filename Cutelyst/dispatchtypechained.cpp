@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,7 +16,6 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-
 #include "dispatchtypechained_p.h"
 #include "common.h"
 #include "actionchain.h"
@@ -207,14 +206,14 @@ bool DispatchTypeChained::registerAction(Action *action)
     if (chainedList.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Multiple Chained attributes not supported registering" << action->reverse();
-        exit(1);
+        return false;
     }
 
     const QString chainedTo = chainedList.first();
     if (chainedTo == QLatin1Char('/') + action->name()) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Actions cannot chain to themselves registering /" << action->name();
-        exit(1);
+        return false;
     }
 
     const QStringList pathPart = attributes.values(QLatin1String("PathPart"));
@@ -227,14 +226,14 @@ bool DispatchTypeChained::registerAction(Action *action)
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Multiple PathPart attributes not supported registering"
                 << action->reverse();
-        exit(1);
+        return false;
     }
 
     if (part.startsWith(QLatin1Char('/'))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Absolute parameters to PathPart not allowed registering"
                 << action->reverse();
-        exit(1);
+        return false;
     }
 
     attributes.insert(QStringLiteral("PathPart"), part);
@@ -245,14 +244,16 @@ bool DispatchTypeChained::registerAction(Action *action)
 
     d->actions[QLatin1Char('/') + action->reverse()] = action;
 
-    d->checkArgsAttr(action, QLatin1String("Args"));
-    d->checkArgsAttr(action, QLatin1String("CaptureArgs"));
+    if (!d->checkArgsAttr(action, QLatin1String("Args")) ||
+            !d->checkArgsAttr(action, QLatin1String("CaptureArgs"))) {
+        return false;
+    }
 
     if (attributes.contains(QLatin1String("Args")) && attributes.contains(QLatin1String("CaptureArgs"))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
                 << "Combining Args and CaptureArgs attributes not supported registering"
                 << action->reverse();
-        exit(1);
+        return false;
     }
 
     if (!attributes.contains(QLatin1String("CaptureArgs"))) {
@@ -458,11 +459,11 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
     return bestAction;
 }
 
-void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name)
+bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name) const
 {
     const QMap<QString, QString> attributes = action->attributes();
     if (!attributes.contains(name)) {
-        return;
+        return true;
     }
 
     const QStringList values = attributes.values(name);
@@ -472,7 +473,7 @@ void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
                 << name
                 << "attributes not supported registering"
                 << action->reverse();
-        exit(1);
+        return false;
     }
 
     QString args = values[0];
@@ -483,8 +484,10 @@ void DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
                 << name << "(" << args << ") for action"
                 << action->reverse()
                 << "(use '" << name << "' or '" << name << "(<number>)')";
-        exit(1);
+        return false;
     }
+
+    return true;
 }
 
 QString DispatchTypeChainedPrivate::listExtraHttpMethods(Action *action)
