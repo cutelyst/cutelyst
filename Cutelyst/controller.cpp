@@ -198,7 +198,7 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
     if (object) {
         Action *action = qobject_cast<Action*>(object);
         if (action) {
-            return qobject_cast<Action*>(object);
+            return action;
         }
         qCWarning(CUTELYST_CONTROLLER) << "ActionClass"
                                        << actionClass
@@ -533,7 +533,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
             exit(1);
         }
     }
-    return 0;
+    return nullptr;
 }
 
 bool ControllerPrivate::superIsClassName(const QMetaObject *super, const QByteArray &className)
