@@ -82,6 +82,7 @@ public:
     QString gid;
     QString chownSocket;
     QString umask;
+    bool noInitgroups = false;
     int cpuAffinity = 0;
 #endif
 #ifdef Q_OS_LINUX

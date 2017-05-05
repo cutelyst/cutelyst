@@ -240,6 +240,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                  QCoreApplication::translate("main", "group/gid"));
     parser.addOption(gidOption);
 
+    QCommandLineOption noInitgroupsOption(QStringLiteral("no-initgroups"),
+                                          QCoreApplication::translate("main", "disable additional groups set via initgroups()"));
+    parser.addOption(noInitgroupsOption);
+
     QCommandLineOption chownSocketOption(QStringLiteral("chown-socket"),
                                          QCoreApplication::translate("main", "chown unix sockets"),
                                          QCoreApplication::translate("main", "uid:gid"));
@@ -331,6 +335,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     if (parser.isSet(gidOption)) {
         setGid(parser.value(gidOption));
+    }
+
+    if (parser.isSet(noInitgroupsOption)) {
+        setNoInitgroups(true);
     }
 
     if (parser.isSet(chownSocketOption)) {
@@ -510,13 +518,7 @@ int WSGI::exec(Cutelyst::Application *app)
         return 1;
     }
 
-    if (!d->gid.isEmpty()) {
-        UnixFork::setGid(d->gid);
-    }
-
-    if (!d->uid.isEmpty()) {
-        UnixFork::setUid(d->uid);
-    }
+    UnixFork::setGidUid(d->gid, d->uid, d->noInitgroups);
 #endif
 
     if (!isListeningLocalSockets) {
@@ -1078,6 +1080,18 @@ QString WSGI::gid() const
 {
     Q_D(const WSGI);
     return d->gid;
+}
+
+void WSGI::setNoInitgroups(bool enable)
+{
+    Q_D(WSGI);
+    d->noInitgroups = enable;
+}
+
+bool WSGI::noInitgroups() const
+{
+    Q_D(const WSGI);
+    return d->noInitgroups;
 }
 
 void WSGI::setChownSocket(const QString &chownSocket)

@@ -63,8 +63,7 @@ public:
     static void stopWSGI(const QString &pidfile);
 
     static bool setUmask(const QString &valueStr);
-    static void setGid(const QString &gid);
-    static void setUid(const QString &uid);
+    static void setGidUid(const QString &gid, const QString &uid, bool noInitgroups);
     static void chownSocket(const QString &filename, const QString &uidGid);
 
     static int idealProcessCount();

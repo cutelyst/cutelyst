@@ -248,42 +248,64 @@ void UnixFork::postFork(int workerId)
     Q_EMIT forked(workerId - 1);
 }
 
-void UnixFork::setGid(const QString &gid)
+void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgroups)
 {
     bool ok;
-    int gidInt = gid.toInt(&ok);
-    if (!ok) {
-        struct group *ugroup = getgrnam(gid.toUtf8().constData());
-        if (ugroup) {
-            gidInt = ugroup->gr_gid;
+
+    if (!gid.isEmpty()) {
+        int gidInt = gid.toInt(&ok);
+        if (!ok) {
+            struct group *ugroup = getgrnam(gid.toUtf8().constData());
+            if (ugroup) {
+                gidInt = ugroup->gr_gid;
+            } else {
+                qFatal("setgid group %s not found.", gid.toUtf8().constData());
+            }
+        }
+
+        if (setgid(gidInt)) {
+            qFatal("Failed to set gid '%s'", strerror(errno));
+        }
+        std::cout << "setgid() to " << gidInt << std::endl;
+
+        if (noInitgroups || uid.isEmpty()) {
+            if (setgroups(0, NULL)) {
+                qFatal("Failed to setgroups()");
+            }
         } else {
-            qFatal("setgid group %s not found.", gid.toUtf8().constData());
+            char *uidname = nullptr;
+            int uidInt = uid.toInt(&ok);
+            if (ok) {
+                struct passwd *pw = getpwuid(uidInt);
+                if (pw) {
+                    uidname = pw->pw_name;
+                }
+            } else {
+                uidname = uid.toUtf8().data();
+            }
+
+            if (initgroups(uidname, gidInt)) {
+                qFatal("Failed to setgroups()");
+            }
         }
     }
 
-    if (setgid(gidInt)) {
-        qFatal("Failed to set gid '%s'", strerror(errno));
-    }
-    std::cout << "setgid() " << gidInt << std::endl;
-}
-
-void UnixFork::setUid(const QString &uid)
-{
-    bool ok;
-    int uidInt = uid.toInt(&ok);
-    if (!ok) {
-        struct passwd *upasswd = getpwnam(uid.toUtf8().constData());
-        if (upasswd) {
-            uidInt = upasswd->pw_uid;
-        } else {
-            qFatal("setuid user %s not found.", uid.toUtf8().constData());
+    if (!uid.isEmpty()) {
+        int uidInt = uid.toInt(&ok);
+        if (!ok) {
+            struct passwd *upasswd = getpwnam(uid.toUtf8().constData());
+            if (upasswd) {
+                uidInt = upasswd->pw_uid;
+            } else {
+                qFatal("setuid user %s not found.", uid.toUtf8().constData());
+            }
         }
-    }
 
-    if (setuid(uidInt)) {
-        qFatal("Failed to set uid: '%s'", strerror(errno));
+        if (setuid(uidInt)) {
+            qFatal("Failed to set uid: '%s'", strerror(errno));
+        }
+        std::cout << "setuid() to " << uidInt << std::endl;
     }
-    std::cout << "setuid() " << uidInt << std::endl;
 }
 
 void UnixFork::chownSocket(const QString &filename, const QString &uidGid)

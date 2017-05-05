@@ -295,6 +295,14 @@ public:
     QString gid() const;
 
     /**
+     * Disable additional groups set via initgroups()
+     * @accessors noInitgroups(), setNoInitgroups()
+     */
+    Q_PROPERTY(bool no_initgroups READ noInitgroups WRITE setNoInitgroups)
+    void setNoInitgroups(bool enable);
+    bool noInitgroups() const;
+
+    /**
      * Defines owner of UNIX sockets.
      * @accessors chownSocket(), setChownSocket()
      */
