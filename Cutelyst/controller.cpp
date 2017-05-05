@@ -99,7 +99,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     q->setObjectName(className);
 
     bool namespaceFound = false;
-    for (int i = 0; i < meta->classInfoCount(); ++i) {
+    for (int i = meta->classInfoCount() - 1; i >= 0; --i) {
         if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
             pathPrefix = QString::fromLatin1(meta->classInfo(i).value());
             while (pathPrefix.startsWith(QLatin1Char('/'))) {
@@ -247,7 +247,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 
             // Build up the list of attributes for the class info
             QByteArray attributeArray;
-            for (int i = 0; i < meta->classInfoCount(); ++i) {
+            for (int i = meta->classInfoCount() - 1; i >= 0; --i) {
                 QMetaClassInfo classInfo = meta->classInfo(i);
                 if (name == classInfo.name()) {
                     attributeArray.append(classInfo.value());
