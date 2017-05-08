@@ -25,7 +25,7 @@ execute_process(COMMAND ${UWSGI_EXEC_PATH} --cflags
 )
 add_definitions(${UWSGI_CFLAGS})
 
-add_library(cutelyst SHARED ${uswgi_engine_SRC})
+add_library(cutelyst MODULE ${uswgi_engine_SRC})
 target_link_libraries(cutelyst
     PRIVATE CutelystQt5::Core
     PRIVATE Qt5::Core
