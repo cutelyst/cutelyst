@@ -81,6 +81,7 @@ set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "O
 find_program(UWSGI_EXEC_PATH NAMES uwsgi)
 set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
+set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 

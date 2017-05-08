@@ -157,6 +157,7 @@ ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NONE
 TREEVIEW_WIDTH         = 250
 FORMULA_FONTSIZE       = 10
+HTML_TIMESTAMP         = @DOXYGEN_TIMESTAMP@
 #---------------------------------------------------------------------------
 # configuration options related to the Qt Docs output
 #---------------------------------------------------------------------------
