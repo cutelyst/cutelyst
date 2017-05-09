@@ -165,7 +165,7 @@ GENERATE_QHP       = @GENERATE_QHP@
 QHP_NAMESPACE      = "org.cutelyst.@CUTELYST_VERSION_MAJOR@@CUTELYST_VERSION_MINOR@@CUTELYST_VERSION_PATCH@"
 QHP_VIRTUAL_FOLDER = "cutelyst-@CUTELYST_VERSION_MAJOR@.@CUTELYST_VERSION_MINOR@"
 QCH_FILE           = @CMAKE_BINARY_DIR@/"cutelyst-@CUTELYST_VERSION_MAJOR@@CUTELYST_VERSION_MINOR@@CUTELYST_VERSION_PATCH@.qch"
-QHG_LOCATION       = "qhelpgenerator"
+QHG_LOCATION       = @QHG_LOCATION@
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
@@ -232,7 +232,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = @TAGFILES@
-GENERATE_TAGFILE       =
+GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/"cutelyst.tags"
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 PERL_PATH              = /usr/bin/perl
