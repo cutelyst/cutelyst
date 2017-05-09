@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,9 @@
 #include "common.h"
 
 #include <QtCore/QJsonDocument>
+
+#include <QCryptographicHash>
+#include <QEventLoop>
 
 using namespace Cutelyst;
 
@@ -291,6 +294,12 @@ qint64 Response::size() const
     } else {
         return d->bodyData.size();
     }
+}
+
+bool Response::websocketHandshake(const QString &key, const QString &origin, const QString &protocol)
+{
+    Q_D(Response);
+    return d->engine->websocketHandshake(d->context, key, origin, protocol);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)

@@ -153,6 +153,40 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
     return ret;
 }
 
+bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+{
+    const Headers requestHeaders = c->request()->headers();
+    Response *response = c->response();
+    Headers &headers = response->headers();
+
+    response->setStatus(Response::SwitchingProtocols);
+    headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
+    headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
+    const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("Origin")) : origin;
+    if (localOrigin.isEmpty()) {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), QStringLiteral("*"));
+    } else {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), localOrigin);
+    }
+
+    const QString wsProtocol = protocol.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_PROTOCOL")) : protocol;
+    if (!wsProtocol.isEmpty()) {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_PROTOCOL"), wsProtocol);
+    }
+
+    const QString localKey = key.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_KEY")) : key;
+    const QString wsKey = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+    if (wsKey.length() == 36) {
+        qWarning() << "Missing websocket key";
+        return false;
+    }
+
+    const QByteArray wsAccept = QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
+    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
+
+    return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
+}
+
 bool CWsgiEngine::init()
 {
     if (!initApplication()) {

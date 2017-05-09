@@ -55,6 +55,8 @@ public:
 
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) final;
 
+    virtual bool websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
+
     void readRequestUWSGI(wsgi_request *req);
 
     void processRequest(wsgi_request *req);

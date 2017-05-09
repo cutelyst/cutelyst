@@ -62,6 +62,8 @@ protected:
 
     virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData) override;
 
+    virtual bool websocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
+
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();

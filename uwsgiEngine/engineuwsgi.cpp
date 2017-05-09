@@ -77,6 +77,22 @@ qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData
     return len;
 }
 
+bool uWSGI::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+{
+    const QByteArray keyBA = key.toLatin1();
+    const QByteArray originBA = origin.toLatin1();
+    const QByteArray protocolBA = protocol.toLatin1();
+
+    if (uwsgi_websocket_handshake(static_cast<wsgi_request*>(engineData),
+                                  const_cast<char*>(keyBA.constData()), keyBA.size(),
+                                  const_cast<char*>(originBA.constData()), originBA.size(),
+                                  const_cast<char*>(protocolBA.constData()), protocolBA.size())) {
+        return false;
+    }
+
+    return true;
+}
+
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
     Q_FOREVER {
@@ -364,13 +380,13 @@ bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &head
     auto it = headersData.constBegin();
     const auto endIt = headersData.constEnd();
     while (it != endIt) {
-        QByteArray key = camelCaseHeader(it.key()).toLatin1();
-        QByteArray value = it.value().toLatin1();
+        const QByteArray key = camelCaseHeader(it.key()).toLatin1();
+        const QByteArray value = it.value().toLatin1();
 
         if (uwsgi_response_add_header(wsgi_req,
-                                      key.data(),
+                                      const_cast<char*>(key.constData()),
                                       key.size(),
-                                      value.data(),
+                                      const_cast<char*>(value.constData()),
                                       value.size())) {
             return false;
         }

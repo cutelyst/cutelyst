@@ -488,6 +488,31 @@ void Engine::finalize(Context *c)
     finalizeBody(c);
 }
 
+bool Engine::websocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
+{
+    ResponsePrivate *priv = c->response()->d_ptr;
+    if (priv->flags & ResponsePrivate::FinalizedHeaders) {
+        return false;
+    }
+
+    if (websocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
+        priv->flags |= ResponsePrivate::FinalizedHeaders;
+        return true;
+    }
+
+    return false;
+}
+
+bool Engine::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(key)
+    Q_UNUSED(origin)
+    Q_UNUSED(protocol)
+    Q_UNUSED(engineData)
+    return false;
+}
+
 void Engine::processRequest(const QString &method,
                             const QString &path,
                             const QByteArray &query,

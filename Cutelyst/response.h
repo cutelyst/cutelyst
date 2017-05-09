@@ -266,6 +266,9 @@ public:
      */
     virtual qint64 size() const override;
 
+
+    bool websocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
+
 protected:
     /**
      * Constructs a Response object, for this context c, engine and defaultHeaders.

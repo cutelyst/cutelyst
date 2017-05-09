@@ -207,6 +207,10 @@ protected:
      */
     void finalize(Context *c);
 
+    bool websocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
+
+    virtual bool websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
+
     /**
      * Returns the header key in camel case form
      */
