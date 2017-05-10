@@ -79,7 +79,7 @@ void TcpSslServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
-                socket->headerClose = Socket::HeaderCloseClose;
+                socket->headerConnection = Socket::HeaderConnectionClose;
                 connect(socket, &TcpSocket::finished, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();

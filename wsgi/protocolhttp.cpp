@@ -185,8 +185,8 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     io->write(msg, msgLen);
 
     const auto headersData = headers.data();
-    Socket::HeaderClose fallbackConnection = sock->headerClose;
-    sock->headerClose = Socket::HeaderCloseNotSet;
+    Socket::HeaderConnection fallbackConnection = sock->headerConnection;
+    sock->headerConnection = Socket::HeaderConnectionNotSet;
 
     bool hasDate = false;
     auto it = headersData.constBegin();
@@ -194,11 +194,11 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     while (it != endIt) {
         const QString key = it.key();
         const QString value = it.value();
-        if (sock->headerClose == Socket::HeaderCloseNotSet && key == QLatin1String("connection")) {
+        if (sock->headerConnection == Socket::HeaderConnectionNotSet && key == QLatin1String("connection")) {
             if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-                sock->headerClose = Socket::HeaderCloseClose;
+                sock->headerConnection = Socket::HeaderConnectionClose;
             } else {
-                sock->headerClose = Socket::HeaderCloseKeep;
+                sock->headerConnection = Socket::HeaderConnectionKeep;
             }
         } else if (!hasDate && key == QLatin1String("date")) {
             hasDate = true;
@@ -210,12 +210,12 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
         ++it;
     }
 
-    if (sock->headerClose == Socket::HeaderCloseNotSet) {
-        if (fallbackConnection == Socket::HeaderCloseKeep) {
-            sock->headerClose = Socket::HeaderCloseKeep;
+    if (sock->headerConnection == Socket::HeaderConnectionNotSet) {
+        if (fallbackConnection == Socket::HeaderConnectionKeep) {
+            sock->headerConnection = Socket::HeaderConnectionKeep;
             io->write("\r\nConnection: keep-alive", 24);
         } else {
-            sock->headerClose = Socket::HeaderCloseClose;
+            sock->headerConnection = Socket::HeaderConnectionClose;
             io->write("\r\nConnection: close", 19);
         }
     }
@@ -237,7 +237,7 @@ bool ProtocolHttp::processRequest(Socket *sock) const
     sock->engine->processSocket(sock);
     sock->processing = false;
 
-    if (sock->headerClose == Socket::HeaderCloseClose) {
+    if (sock->headerConnection == Socket::HeaderConnectionClose) {
         sock->connectionClose();
         return false;
     } else if (sock->last < sock->buf_size) {
@@ -334,11 +334,11 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     }
     const QString value = QString::fromLatin1(word_boundary, end - word_boundary);
 
-    if (sock->headerClose == Socket::HeaderCloseNotSet && key == QLatin1String("CONNECTION")) {
+    if (sock->headerConnection == Socket::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
         if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-            sock->headerClose = Socket::HeaderCloseClose;
+            sock->headerConnection = Socket::HeaderConnectionClose;
         } else {
-            sock->headerClose = Socket::HeaderCloseKeep;
+            sock->headerConnection = Socket::HeaderConnectionKeep;
         }
     } else if (sock->contentLength < 0 && key == QLatin1String("CONTENT_LENGTH")) {
         bool ok;

@@ -41,12 +41,13 @@ public:
     Socket(WSGI *wsgi);
     virtual ~Socket();
 
-    enum HeaderClose {
-        HeaderCloseNotSet = 0,
-        HeaderCloseKeep,
-        HeaderCloseClose
+    enum HeaderConnection {
+        HeaderConnectionNotSet = 0,
+        HeaderConnectionKeep,
+        HeaderConnectionClose,
+        HeaderConnectionUpgrade
     };
-    Q_ENUM(HeaderClose)
+    Q_ENUM(HeaderConnection)
 
     enum ParserState {
         MethodLine = 0,
@@ -62,7 +63,7 @@ public:
         beginLine = 0;
         last = 0;
         startOfRequest = 0;
-        headerClose = HeaderCloseNotSet;
+        headerConnection = HeaderConnectionNotSet;
         pktsize = 0;
         processing = false;
         headerHost = false;
@@ -82,7 +83,7 @@ public:
     quint32 buf_size = 0;
     quint32 last = 0;
     int beginLine = 0;
-    HeaderClose headerClose = HeaderCloseNotSet;
+    HeaderConnection headerConnection = HeaderConnectionNotSet;
     quint16 pktsize = 0;// FGCI
     bool headerHost = false;
     bool processing = false;

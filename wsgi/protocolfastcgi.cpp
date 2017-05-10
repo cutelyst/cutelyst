@@ -318,7 +318,7 @@ int ProtocolFastCGI::processPacket(Socket *sock) const
                     }
                 } else if (fcgi_type == FCGI_BEGIN_REQUEST) {
                     auto brb = reinterpret_cast<struct fcgi_begin_request_body *>(sock->buffer + sizeof(struct fcgi_begin_request_body));
-                    sock->headerClose = (brb->flags & FCGI_KEEP_CONN) ? Socket::HeaderCloseKeep : Socket::HeaderCloseClose;
+                    sock->headerConnection = (brb->flags & FCGI_KEEP_CONN) ? Socket::HeaderConnectionKeep : Socket::HeaderConnectionClose;
                     sock->contentLength = -1;
                     sock->headers = Cutelyst::Headers();
                     sock->connState = Socket::MethodLine;
@@ -505,7 +505,7 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
                 wsgi_proto_fastcgi_endrequest(sock, io);
                 sock->processing = false;
 
-                if (sock->headerClose == Socket::HeaderCloseClose) {
+                if (sock->headerConnection == Socket::HeaderConnectionClose) {
                     // Web server did not set FCGI_KEEP_CONN
                     sock->connectionClose();
                     return;
