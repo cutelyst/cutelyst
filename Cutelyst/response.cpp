@@ -302,6 +302,18 @@ bool Response::websocketHandshake(const QString &key, const QString &origin, con
     return d->engine->websocketHandshake(d->context, key, origin, protocol);
 }
 
+bool Response::websocketTextMessage(const QString &message)
+{
+    Q_D(Response);
+    return d->engine->websocketSendTextMessage(d->context, message);
+}
+
+bool Response::websocketBinaryMessage(const QByteArray &message)
+{
+    Q_D(Response);
+    return d->engine->websocketSendBinaryMessage(d->context, message);
+}
+
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
     if (!(flags & ResponsePrivate::IOWrite)) {

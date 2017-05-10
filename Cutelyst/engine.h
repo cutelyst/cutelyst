@@ -211,6 +211,11 @@ protected:
 
     virtual bool websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
 
+    virtual bool websocketSendTextMessage(Context *c, const QString &message);
+
+    virtual bool websocketSendBinaryMessage(Context *c, const QByteArray &message);
+
+
     /**
      * Returns the header key in camel case form
      */

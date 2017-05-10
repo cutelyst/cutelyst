@@ -190,6 +190,16 @@ bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QSt
     return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
 }
 
+bool CWsgiEngine::websocketSendTextMessage(Context *c, const QString &message)
+{
+//    auto sock = static_cast<TcpSocket*>(engineData);
+}
+
+bool CWsgiEngine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
+{
+
+}
+
 bool CWsgiEngine::init()
 {
     if (!initApplication()) {

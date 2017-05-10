@@ -34,6 +34,7 @@ namespace Cutelyst {
 
 class Engine;
 class Upload;
+class Context;
 
 /** A vector of Upload pointers */
 typedef QVector<Upload *> Uploads;
@@ -461,6 +462,10 @@ public:
      * Constructs a new Request object.
      */
     Request(RequestPrivate *prv);
+
+Q_SIGNALS:
+    void websocketTextMessage(Context *c, const QString &message);
+    void websocketBinaryMessage(Context *c, const QByteArray &message);
 
 protected:
     RequestPrivate *d_ptr;

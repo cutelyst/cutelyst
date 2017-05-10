@@ -57,6 +57,7 @@ void TcpServer::incomingConnection(qintptr handle)
         sock = new TcpSocket(m_wsgi, this);
         sock->engine = m_engine;
         sock->proto = m_protocol;
+        sock->mainProto = m_protocol;
 
         connect(sock, &QIODevice::readyRead, [sock] () {
             sock->timeout = false;

@@ -517,6 +517,16 @@ bool Engine::websocketHandshakeDo(Context *c, const QString &key, const QString 
     return false;
 }
 
+bool Engine::websocketSendTextMessage(Context *c, const QString &message)
+{
+    return false;
+}
+
+bool Engine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
+{
+    return false;
+}
+
 void Engine::processRequest(const QString &method,
                             const QString &path,
                             const QByteArray &query,

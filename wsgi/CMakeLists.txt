@@ -9,6 +9,7 @@ set(cutelyst_wsgi_SRC
     wsgi_p.h
     abstractfork.cpp
     protocol.cpp
+    protocolwebsocket.cpp
     protocolhttp.cpp
     protocolfastcgi.cpp
     postunbuffered.cpp

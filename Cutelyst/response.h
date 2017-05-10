@@ -269,6 +269,9 @@ public:
 
     bool websocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
 
+    bool websocketTextMessage(const QString &message);
+    bool websocketBinaryMessage(const QByteArray &message);
+
 protected:
     /**
      * Constructs a Response object, for this context c, engine and defaultHeaders.

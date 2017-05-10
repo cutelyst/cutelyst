@@ -64,6 +64,10 @@ protected:
 
     virtual bool websocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
 
+    virtual bool websocketSendTextMessage(Cutelyst::Context *c, const QString &message) override;
+
+    virtual bool websocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) override;
+
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();
