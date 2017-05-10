@@ -40,8 +40,8 @@ public:
 
     virtual int workerId() const override;
 
-    inline void processSocket(Cutelyst::EngineRequest *sock) {
-        processRequest(*sock);
+    inline Cutelyst::Context *processSocket(Cutelyst::EngineRequest *sock) {
+        return processRequest2(*sock);
     }
 
     void setServers(const std::vector<QObject *> &servers);

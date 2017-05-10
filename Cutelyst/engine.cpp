@@ -410,13 +410,17 @@ Headers &Engine::defaultHeaders()
     return d->app->defaultHeaders();
 }
 
-void Engine::processRequest(const EngineRequest &req)
+Context *Engine::processRequest2(const EngineRequest &req)
 {
     Q_D(Engine);
 
     auto request = new Request(new RequestPrivate(req, this));
-    d->app->handleRequest(request);
-    delete request;
+    return d->app->handleRequest2(request);
+}
+
+void Engine::processRequest(const EngineRequest &req)
+{
+    delete processRequest2(req);
 }
 
 QVariantMap Engine::opts() const
@@ -545,8 +549,7 @@ void Engine::processRequest(const QString &method,
     req.requestPtr = requestPtr;
 
     auto request = new Request(new RequestPrivate(req, this));
-    d->app->handleRequest(request);
-    delete request;
+    delete d->app->handleRequest2(request);
 }
 
 #include "moc_engine.cpp"

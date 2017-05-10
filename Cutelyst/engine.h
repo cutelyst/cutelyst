@@ -266,8 +266,18 @@ protected:
     Headers &defaultHeaders();
 
     /**
-     * Process the EngineRequest \p req
+     * Process the EngineRequest \p req, the caller
+     * must delete the context when the request is finished.
+     *
+     * This method allows for engines to keep the Context alive
+     * while processing websocket data.
      */
+    Context *processRequest2(const EngineRequest &req);
+
+    /**
+     * Deprecated
+     */
+    Q_DECL_DEPRECATED
     void processRequest(const EngineRequest &req);
 
     Q_DECL_DEPRECATED

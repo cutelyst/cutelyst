@@ -184,6 +184,9 @@ bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QSt
     const QByteArray wsAccept = QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
     headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
 
+    auto sock = static_cast<TcpSocket*>(engineData);
+    sock->headerConnection = Socket::HeaderConnectionUpgrade;
+
     return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
 }
 

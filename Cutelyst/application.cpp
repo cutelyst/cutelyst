@@ -367,6 +367,11 @@ bool Application::setup(Engine *engine)
 
 void Application::handleRequest(Request *req)
 {
+    delete handleRequest2(req);
+}
+
+Context *Application::handleRequest2(Request *req)
+{
     Q_D(Application);
 
     Engine *engine = d->engine;
@@ -375,6 +380,7 @@ void Application::handleRequest(Request *req)
     priv->response = new Response(c, engine, d->headers);
     priv->request = req;
     priv->requestPtr = req->d_ptr->requestPtr;
+    req->setParent(c);
 
     Stats *stats = nullptr;
     if (d->useStats) {
@@ -425,7 +431,7 @@ void Application::handleRequest(Request *req)
         delete stats;
     }
 
-    delete c;
+    return c;
 }
 
 bool Application::enginePostFork()

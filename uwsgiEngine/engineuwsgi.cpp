@@ -190,7 +190,7 @@ void uWSGI::processRequest(wsgi_request *req)
     }
     request.body = body;
 
-    Engine::processRequest(request);
+    delete Engine::processRequest2(request);
 
     delete body;
 }
