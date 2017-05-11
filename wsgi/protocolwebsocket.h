@@ -29,6 +29,8 @@ class ProtocolWebSocket : public Protocol
 public:
     ProtocolWebSocket(WSGI *wsgi);
 
+    static QByteArray createWebsocketReply(const QByteArray &msg, quint8 opcode);
+
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 

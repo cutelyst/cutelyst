@@ -215,6 +215,7 @@ protected:
 
     virtual bool websocketSendBinaryMessage(Context *c, const QByteArray &message);
 
+    virtual bool websocketSendPing(Context *c, const QByteArray &payload);
 
     /**
      * Returns the header key in camel case form

@@ -68,6 +68,8 @@ protected:
 
     virtual bool websocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) override;
 
+    virtual bool websocketSendPing(Cutelyst::Context *c, const QByteArray &payload) override;
+
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();

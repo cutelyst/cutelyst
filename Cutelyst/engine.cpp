@@ -519,11 +519,22 @@ bool Engine::websocketHandshakeDo(Context *c, const QString &key, const QString 
 
 bool Engine::websocketSendTextMessage(Context *c, const QString &message)
 {
+    Q_UNUSED(c)
+    Q_UNUSED(message)
     return false;
 }
 
 bool Engine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
 {
+    Q_UNUSED(c)
+    Q_UNUSED(message)
+    return false;
+}
+
+bool Engine::websocketSendPing(Context *c, const QByteArray &payload)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(payload)
     return false;
 }
 

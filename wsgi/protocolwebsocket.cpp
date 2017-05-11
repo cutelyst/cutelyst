@@ -35,6 +35,40 @@ ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
 
 }
 
+QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8 opcode)
+{
+    QByteArray ret;
+    ret.append(0x80 + opcode);
+
+    quint64 len = msg.length();
+    if (len < 126) {
+        ret.append(static_cast<quint8>(len));
+    } else if (len <= static_cast<quint16>(0xffff)) {
+        ret.append(126);
+
+        quint8 buf[2];
+        buf[1] = (uint8_t) (len & 0xff);
+        buf[0] = (uint8_t) ((len >> 8) & 0xff);
+        ret.append((char*) buf, 2);
+    } else {
+        ret.append(127);
+
+        quint8 buf[8];
+        buf[7] = (uint8_t) (len & 0xff);
+        buf[6] = (uint8_t) ((len >> 8) & 0xff);
+        buf[5] = (uint8_t) ((len >> 16) & 0xff);
+        buf[4] = (uint8_t) ((len >> 24) & 0xff);
+        buf[3] = (uint8_t) ((len >> 32) & 0xff);
+        buf[2] = (uint8_t) ((len >> 40) & 0xff);
+        buf[1] = (uint8_t) ((len >> 48) & 0xff);
+        buf[0] = (uint8_t) ((len >> 56) & 0xff);
+        ret.append((char*) buf, 8);
+    }
+    ret.append(msg);
+
+    return ret;
+}
+
 quint16 ws_be16(const char *buf) {
     const quint32 *src = reinterpret_cast<const quint32 *>(buf);
     quint16 ret = 0;
@@ -67,55 +101,8 @@ static void websocket_parse_header(Socket *sock) {
     sock->websocket_size = byte2 & 0x7f;
 }
 
-QByteArray createReply(const QByteArray &data, quint8 opcode) {
-    QByteArray ub;
-    ub.append(opcode);
-
-    quint64 len = data.length();
-//    auto len = static_cast<quint8>(data.length());
-    if (len < 126) {
-        ub.append(static_cast<quint8>(len));
-    } else if (len <= static_cast<quint16>(0xffff)) {
-        ub.append(126);
-
-        quint8 buf[2];
-        buf[1] = (uint8_t) (len & 0xff);
-        buf[0] = (uint8_t) ((len >> 8) & 0xff);
-        ub.append((char*) buf, 2);
-    } else {
-        ub.append(127);
-
-        quint8 buf[8];
-        buf[7] = (uint8_t) (len & 0xff);
-        buf[6] = (uint8_t) ((len >> 8) & 0xff);
-        buf[5] = (uint8_t) ((len >> 16) & 0xff);
-        buf[4] = (uint8_t) ((len >> 24) & 0xff);
-        buf[3] = (uint8_t) ((len >> 32) & 0xff);
-        buf[2] = (uint8_t) ((len >> 40) & 0xff);
-        buf[1] = (uint8_t) ((len >> 48) & 0xff);
-        buf[0] = (uint8_t) ((len >> 56) & 0xff);
-        ub.append((char*) buf, 8);
-    }
-    ub.append(data);
-
-//    if (uwsgi_buffer_u8(ub, opcode)) goto error;
-//    if (len < 126) {
-//        if (uwsgi_buffer_u8(ub, len)) goto error;
-//    }
-//    else if (len <= (uint16_t) 0xffff) {
-//        if (uwsgi_buffer_u8(ub, 126)) goto error;
-//        if (uwsgi_buffer_u16be(ub, len)) goto error;
-//    }
-//    else {
-//        if (uwsgi_buffer_u8(ub, 127)) goto error;
-//        if (uwsgi_buffer_u64be(ub, len)) goto error;
-//    }
-
-//    if (uwsgi_buffer_append(ub, msg, len)) goto error;
-    return ub;
-}
-
-static QByteArray websockets_parse(Socket *sock) {
+static QByteArray websockets_parse(Socket *sock)
+{
     // de-mask buffer
     uint8_t *ptr = (uint8_t *) (sock->buffer + (sock->websocket_pktsize - sock->websocket_size));
     size_t i;
@@ -128,19 +115,13 @@ static QByteArray websockets_parse(Socket *sock) {
     }
 
     auto ub = QByteArray((char *) ptr, sock->websocket_size);
-    qDebug() << "UB" << ub << QString::fromUtf8(ub);
 
-    //    struct uwsgi_buffer *ub = uwsgi_buffer_new(sock->websocket_size);
-    //    if (uwsgi_buffer_append(ub, (char *) ptr, sock->websocket_size)) goto error;
-    //    if (uwsgi_buffer_decapitate(sock->websocket_buf, sock->websocket_pktsize)) goto error;
     sock->buf_size -= sock->websocket_pktsize;
     memmove(sock->buffer, sock->buffer + sock->websocket_pktsize, sock->buf_size);
     sock->websocket_phase = 0;
     sock->websocket_need = 2;
-        return ub;
-    //error:
-    //    uwsgi_buffer_destroy(ub);
-    //    return NULL;
+
+    return ub;
 }
 
 void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
@@ -226,22 +207,29 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                 switch (sock->websocket_opcode) {
                 // message
                 case Socket::OpCodeContinue:
+                    qDebug() << "CONTINUE" << websockets_parse(sock);
+                    return;
                 case Socket::OpCodeText:
+                    sock->websocketContext->request()->websocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
+                                                                            sock->websocketContext);
+                    return;
                 case Socket::OpCodeBinary:
-                    /*return*/ io->write(createReply(websockets_parse(sock), 0x81));
+                    sock->websocketContext->request()->websocketBinaryMessage(websockets_parse(sock),
+                                                                              sock->websocketContext);
+                    return;
                     // close
                 case Socket::OpCodeClose:
                     return ;
                     // ping
                 case Socket::OpCodePing:
-                    //                    if (uwsgi_websockets_pong(sock)) {
-                    return ;
-                    //                    }
-                    break;
+                    io->write(createWebsocketReply(websockets_parse(sock).left(125), Socket::OpCodePong));
+                    return;
                     // pong
                 case Socket::OpCodePong:
-                    //                    sock->websocket_last_pong = uwsgi_now();
-                    break;
+                    sock->websocketContext->request()->websocketPong(websockets_parse(sock),
+                                                                     0, // TODO
+                                                                     sock->websocketContext);
+                    return;
                 default:
                     break;
                 }
@@ -263,6 +251,8 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
         }
         // need more data
         else {
+            qDebug() << "need more data";
+            return;
             //            if (uwsgi_buffer_ensure(sock->websocket_buf, uwsgi.page_size)) return NULL;
             //            ssize_t len = uwsgi_websockets_recv_pkt(sock, nb);
             //            if (len <= 0) {

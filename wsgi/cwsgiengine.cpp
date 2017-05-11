@@ -28,6 +28,8 @@
 #include "staticmap.h"
 #include "socket.h"
 
+#include "protocolwebsocket.h"
+
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
 #endif
@@ -192,12 +194,20 @@ bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QSt
 
 bool CWsgiEngine::websocketSendTextMessage(Context *c, const QString &message)
 {
-//    auto sock = static_cast<TcpSocket*>(engineData);
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message.toUtf8(), Socket::OpCodeText);
+    return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
 }
 
 bool CWsgiEngine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
 {
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message, Socket::OpCodeBinary);
+    return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
+}
 
+bool CWsgiEngine::websocketSendPing(Context *c, const QByteArray &payload)
+{
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload.left(125), Socket::OpCodePing);
+    return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
 }
 
 bool CWsgiEngine::init()

@@ -314,6 +314,12 @@ bool Response::websocketBinaryMessage(const QByteArray &message)
     return d->engine->websocketSendBinaryMessage(d->context, message);
 }
 
+bool Response::websocketPing(const QByteArray &payload)
+{
+    Q_D(Response);
+    return d->engine->websocketSendPing(d->context, payload);
+}
+
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
     if (!(flags & ResponsePrivate::IOWrite)) {

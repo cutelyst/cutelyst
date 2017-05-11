@@ -271,6 +271,7 @@ public:
 
     bool websocketTextMessage(const QString &message);
     bool websocketBinaryMessage(const QByteArray &message);
+    bool websocketPing(const QByteArray &payload = QByteArray());
 
 protected:
     /**
