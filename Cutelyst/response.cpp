@@ -296,28 +296,28 @@ qint64 Response::size() const
     }
 }
 
-bool Response::websocketHandshake(const QString &key, const QString &origin, const QString &protocol)
+bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
 {
     Q_D(Response);
-    return d->engine->websocketHandshake(d->context, key, origin, protocol);
+    return d->engine->webSocketHandshake(d->context, key, origin, protocol);
 }
 
-bool Response::websocketTextMessage(const QString &message)
+bool Response::webSocketTextMessage(const QString &message)
 {
     Q_D(Response);
-    return d->engine->websocketSendTextMessage(d->context, message);
+    return d->engine->webSocketSendTextMessage(d->context, message);
 }
 
-bool Response::websocketBinaryMessage(const QByteArray &message)
+bool Response::webSocketBinaryMessage(const QByteArray &message)
 {
     Q_D(Response);
-    return d->engine->websocketSendBinaryMessage(d->context, message);
+    return d->engine->webSocketSendBinaryMessage(d->context, message);
 }
 
-bool Response::websocketPing(const QByteArray &payload)
+bool Response::webSocketPing(const QByteArray &payload)
 {
     Q_D(Response);
-    return d->engine->websocketSendPing(d->context, payload);
+    return d->engine->webSocketSendPing(d->context, payload);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)

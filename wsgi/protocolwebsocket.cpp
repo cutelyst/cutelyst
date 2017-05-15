@@ -210,11 +210,11 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                     qDebug() << "CONTINUE" << websockets_parse(sock);
                     return;
                 case Socket::OpCodeText:
-                    sock->websocketContext->request()->websocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
+                    sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
                                                                             sock->websocketContext);
                     return;
                 case Socket::OpCodeBinary:
-                    sock->websocketContext->request()->websocketBinaryMessage(websockets_parse(sock),
+                    sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
                                                                               sock->websocketContext);
                     return;
                     // close
@@ -226,8 +226,7 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                     return;
                     // pong
                 case Socket::OpCodePong:
-                    sock->websocketContext->request()->websocketPong(websockets_parse(sock),
-                                                                     0, // TODO
+                    sock->websocketContext->request()->webSocketPong(websockets_parse(sock),
                                                                      sock->websocketContext);
                     return;
                 default:

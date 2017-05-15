@@ -155,7 +155,7 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
     return ret;
 }
 
-bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
 {
     const Headers requestHeaders = c->request()->headers();
     Response *response = c->response();
@@ -192,19 +192,19 @@ bool CWsgiEngine::websocketHandshakeDo(Context *c, const QString &key, const QSt
     return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
 }
 
-bool CWsgiEngine::websocketSendTextMessage(Context *c, const QString &message)
+bool CWsgiEngine::webSocketSendTextMessage(Context *c, const QString &message)
 {
     const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message.toUtf8(), Socket::OpCodeText);
     return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
 }
 
-bool CWsgiEngine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
+bool CWsgiEngine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
 {
     const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message, Socket::OpCodeBinary);
     return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
 }
 
-bool CWsgiEngine::websocketSendPing(Context *c, const QByteArray &payload)
+bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
 {
     const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload.left(125), Socket::OpCodePing);
     return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();

@@ -267,11 +267,11 @@ public:
     virtual qint64 size() const override;
 
 
-    bool websocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
+    bool webSocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
 
-    bool websocketTextMessage(const QString &message);
-    bool websocketBinaryMessage(const QByteArray &message);
-    bool websocketPing(const QByteArray &payload = QByteArray());
+    bool webSocketTextMessage(const QString &message);
+    bool webSocketBinaryMessage(const QByteArray &message);
+    bool webSocketPing(const QByteArray &payload = QByteArray());
 
 protected:
     /**

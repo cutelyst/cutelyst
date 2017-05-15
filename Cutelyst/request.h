@@ -464,9 +464,9 @@ public:
     Request(RequestPrivate *prv);
 
 Q_SIGNALS:
-    void websocketTextMessage(const QString &message, Context *c);
-    void websocketBinaryMessage(const QByteArray &message, Context *c);
-    void websocketPong(const QByteArray &payload, quint64 elapsedTime, Context *c);
+    void webSocketTextMessage(const QString &message, Context *c);
+    void webSocketBinaryMessage(const QByteArray &message, Context *c);
+    void webSocketPong(const QByteArray &payload, Context *c);
 
 protected:
     RequestPrivate *d_ptr;

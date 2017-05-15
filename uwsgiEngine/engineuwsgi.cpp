@@ -77,7 +77,7 @@ qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData
     return len;
 }
 
-bool uWSGI::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+bool uWSGI::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
 {
     const QByteArray keyBA = key.toLatin1();
     const QByteArray originBA = origin.toLatin1();

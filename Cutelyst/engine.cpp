@@ -492,14 +492,14 @@ void Engine::finalize(Context *c)
     finalizeBody(c);
 }
 
-bool Engine::websocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
+bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
     ResponsePrivate *priv = c->response()->d_ptr;
     if (priv->flags & ResponsePrivate::FinalizedHeaders) {
         return false;
     }
 
-    if (websocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
+    if (webSocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
         priv->flags |= ResponsePrivate::FinalizedHeaders;
         return true;
     }
@@ -507,7 +507,7 @@ bool Engine::websocketHandshake(Context *c, const QString &key, const QString &o
     return false;
 }
 
-bool Engine::websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
 {
     Q_UNUSED(c)
     Q_UNUSED(key)
@@ -517,21 +517,21 @@ bool Engine::websocketHandshakeDo(Context *c, const QString &key, const QString 
     return false;
 }
 
-bool Engine::websocketSendTextMessage(Context *c, const QString &message)
+bool Engine::webSocketSendTextMessage(Context *c, const QString &message)
 {
     Q_UNUSED(c)
     Q_UNUSED(message)
     return false;
 }
 
-bool Engine::websocketSendBinaryMessage(Context *c, const QByteArray &message)
+bool Engine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
 {
     Q_UNUSED(c)
     Q_UNUSED(message)
     return false;
 }
 
-bool Engine::websocketSendPing(Context *c, const QByteArray &payload)
+bool Engine::webSocketSendPing(Context *c, const QByteArray &payload)
 {
     Q_UNUSED(c)
     Q_UNUSED(payload)

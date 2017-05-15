@@ -207,15 +207,15 @@ protected:
      */
     void finalize(Context *c);
 
-    bool websocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
+    bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
 
-    virtual bool websocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
+    virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
 
-    virtual bool websocketSendTextMessage(Context *c, const QString &message);
+    virtual bool webSocketSendTextMessage(Context *c, const QString &message);
 
-    virtual bool websocketSendBinaryMessage(Context *c, const QByteArray &message);
+    virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
 
-    virtual bool websocketSendPing(Context *c, const QByteArray &payload);
+    virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
 
     /**
      * Returns the header key in camel case form

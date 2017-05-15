@@ -62,13 +62,13 @@ protected:
 
     virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData) override;
 
-    virtual bool websocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
+    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
 
-    virtual bool websocketSendTextMessage(Cutelyst::Context *c, const QString &message) override;
+    virtual bool webSocketSendTextMessage(Cutelyst::Context *c, const QString &message) override;
 
-    virtual bool websocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) override;
+    virtual bool webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) override;
 
-    virtual bool websocketSendPing(Cutelyst::Context *c, const QByteArray &payload) override;
+    virtual bool webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload) override;
 
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
