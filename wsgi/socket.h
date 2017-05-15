@@ -94,6 +94,8 @@ public:
         websocketContext = nullptr;
         proto = mainProto;
         websocket_phase = 0;
+        websocket_size = 0;
+        websocket_buf_size = 0;
     }
 
     virtual void connectionClose() = 0;
@@ -117,6 +119,8 @@ public:
 
     quint32 websocket_need;
     int websocket_phase = 0;
+    char *websocket_buf = nullptr;
+    quint32 websocket_buf_size = 0;
     quint8 websocket_opcode;
     quint32 websocket_has_mask;
     quint32 websocket_size;

@@ -94,8 +94,8 @@ quint64 ws_be64(const char *buf) {
 }
 
 static void websocket_parse_header(Socket *sock) {
-    quint8 byte1 = sock->buffer[0];
-    quint8 byte2 = sock->buffer[1];
+    quint8 byte1 = sock->websocket_buf[0];
+    quint8 byte2 = sock->websocket_buf[1];
     sock->websocket_opcode = byte1 & 0xf;
     sock->websocket_has_mask = byte2 >> 7;
     sock->websocket_size = byte2 & 0x7f;
@@ -104,7 +104,7 @@ static void websocket_parse_header(Socket *sock) {
 static QByteArray websockets_parse(Socket *sock)
 {
     // de-mask buffer
-    uint8_t *ptr = (uint8_t *) (sock->buffer + (sock->websocket_pktsize - sock->websocket_size));
+    uint8_t *ptr = (uint8_t *) (sock->websocket_buf + (sock->websocket_pktsize - sock->websocket_size));
     size_t i;
 
     if (sock->websocket_has_mask) {
@@ -116,8 +116,8 @@ static QByteArray websockets_parse(Socket *sock)
 
     auto ub = QByteArray((char *) ptr, sock->websocket_size);
 
-    sock->buf_size -= sock->websocket_pktsize;
-    memmove(sock->buffer, sock->buffer + sock->websocket_pktsize, sock->buf_size);
+    sock->websocket_buf_size -= sock->websocket_pktsize;
+    memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
     sock->websocket_phase = 0;
     sock->websocket_need = 2;
 
@@ -128,21 +128,21 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
 {
     qCDebug(CWSGI_WS) << "ProtocolWebSocket::readyRead";
 
-    int len = io->read(sock->buffer + sock->buf_size, m_bufferSize - sock->buf_size);
+    int len = io->read(sock->websocket_buf + sock->websocket_buf_size, m_webSocketBufferSize - sock->websocket_buf_size);
     if (len == -1) {
         qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
         sock->connectionClose();
         return;
     }
-    qCDebug(CWSGI_WS) << "m_bufferSize" << m_bufferSize ;
+    qCDebug(CWSGI_WS) << "m_webSocketBufferSize" << m_webSocketBufferSize ;
     qCDebug(CWSGI_WS) << "len" << len ;
-    qCDebug(CWSGI_WS) << "sock->buf_size" << sock->buf_size ;
-    sock->buf_size += len;
+    qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size ;
+    sock->websocket_buf_size += len;
 
     Q_FOREVER {
-        quint32 remains = sock->buf_size;
+        quint32 remains = sock->websocket_buf_size;
         // i have data;
-        //        qCDebug(CWSGI_WS) << "sock->buf_size" << sock->buf_size << remains << sock->websocket_need;
+        //        qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size << remains << sock->websocket_need;
         if (remains >= sock->websocket_need) {
             qCDebug(CWSGI_WS) << "sock->websocket_phase" << sock->websocket_phase << remains << sock->websocket_need;
             switch(sock->websocket_phase) {
@@ -168,16 +168,16 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                 // size
             case 1:
                 if (sock->websocket_size == 126) {
-                    sock->websocket_size = ws_be16(sock->buffer + 2);
+                    sock->websocket_size = ws_be16(sock->websocket_buf + 2);
                 }
                 else if (sock->websocket_size == 127) {
-                    sock->websocket_size = ws_be64(sock->buffer + 2);
+                    sock->websocket_size = ws_be64(sock->websocket_buf + 2);
                 }
                 else {
                     qCDebug(CWSGI_WS,  " BUG error in websocket parser");
                     return;
                 }
-                if (sock->websocket_size > (sock->buf_size)) {
+                if (sock->websocket_size > (sock->websocket_buf_size)) {
                     qCDebug(CWSGI_WS,  " invalid packet size received");
 
                     //                    uwsgi_log("[uwsgi-websocket] \"%.*s %.*s\" (%.*s) invalid packet size received: %llu, max allowed: %llu\n", REQ_DATA, sock->websocket_size, uwsgi.websockets_max_size * 1024);
@@ -205,30 +205,26 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                 // message
             case 4:
                 switch (sock->websocket_opcode) {
-                // message
                 case Socket::OpCodeContinue:
                     qDebug() << "CONTINUE" << websockets_parse(sock);
-                    return;
+                    continue;
                 case Socket::OpCodeText:
                     sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
                                                                             sock->websocketContext);
-                    return;
+                    continue;
                 case Socket::OpCodeBinary:
                     sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
                                                                               sock->websocketContext);
-                    return;
-                    // close
+                    continue;
                 case Socket::OpCodeClose:
                     return ;
-                    // ping
                 case Socket::OpCodePing:
                     io->write(createWebsocketReply(websockets_parse(sock).left(125), Socket::OpCodePong));
-                    return;
-                    // pong
+                    continue;
                 case Socket::OpCodePong:
                     sock->websocketContext->request()->webSocketPong(websockets_parse(sock),
                                                                      sock->websocketContext);
-                    return;
+                    continue;
                 default:
                     break;
                 }
@@ -237,8 +233,8 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
                 sock->websocket_need = 2;
                 // decapitate the buffer
             {
-                sock->buf_size -= sock->websocket_pktsize;
-                memmove(sock->buffer, sock->buffer + sock->websocket_pktsize, sock->buf_size);
+                sock->websocket_buf_size -= sock->websocket_pktsize;
+                memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
             }
                 //                if (uwsgi_buffer_decapitate(sock->websocket_buf, sock->websocket_pktsize)) return NULL;
                 break;

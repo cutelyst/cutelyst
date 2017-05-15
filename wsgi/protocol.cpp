@@ -27,6 +27,7 @@ Protocol::Protocol(WSGI *wsgi)
     m_postBufferSize = wsgi->postBufferingBufsize();
     m_bufferSize = wsgi->bufferSize();
     m_postBuffering = wsgi->postBuffering();
+    m_webSocketBufferSize = wsgi->bufferSize();
     m_postBuffer = new char[wsgi->postBufferingBufsize()];
 }
 
