@@ -34,6 +34,7 @@ public:
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
+    quint32 m_websockets_max_size;
 };
 
 }

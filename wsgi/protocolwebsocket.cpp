@@ -32,7 +32,7 @@ Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket")
 
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
 {
-
+    m_websockets_max_size = 1024 * 1024;
 }
 
 QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8 opcode)
@@ -134,9 +134,9 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
         sock->connectionClose();
         return;
     }
-    qCDebug(CWSGI_WS) << "m_webSocketBufferSize" << m_webSocketBufferSize ;
-    qCDebug(CWSGI_WS) << "len" << len ;
-    qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size ;
+//    qCDebug(CWSGI_WS) << "m_webSocketBufferSize" << m_webSocketBufferSize ;
+//    qCDebug(CWSGI_WS) << "len" << len ;
+//    qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size ;
     sock->websocket_buf_size += len;
 
     Q_FOREVER {
@@ -169,18 +169,18 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
             case 1:
                 if (sock->websocket_size == 126) {
                     sock->websocket_size = ws_be16(sock->websocket_buf + 2);
-                }
-                else if (sock->websocket_size == 127) {
+                } else if (sock->websocket_size == 127) {
                     sock->websocket_size = ws_be64(sock->websocket_buf + 2);
-                }
-                else {
-                    qCDebug(CWSGI_WS,  " BUG error in websocket parser");
+                } else {
+                    qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << sock->websocket_size;
+                    sock->connectionClose();
                     return;
                 }
-                if (sock->websocket_size > (sock->websocket_buf_size)) {
-                    qCDebug(CWSGI_WS,  " invalid packet size received");
 
-                    //                    uwsgi_log("[uwsgi-websocket] \"%.*s %.*s\" (%.*s) invalid packet size received: %llu, max allowed: %llu\n", REQ_DATA, sock->websocket_size, uwsgi.websockets_max_size * 1024);
+                if (sock->websocket_size > m_websockets_max_size) {
+                    qCCritical(CWSGI_WS) << "Invalid packet size received:" << sock->websocket_size
+                                         << ", max allowed:" << m_websockets_max_size;
+                    sock->connectionClose();
                     return;
                 }
                 sock->websocket_phase = 2;
