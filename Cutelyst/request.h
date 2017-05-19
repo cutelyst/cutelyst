@@ -464,7 +464,9 @@ public:
     Request(RequestPrivate *prv);
 
 Q_SIGNALS:
+    void webSocketTextFrame(const QString &message, bool isLastFrame, Context *c);
     void webSocketTextMessage(const QString &message, Context *c);
+    void webSocketBinaryFrame(const QByteArray &message, bool isLastFrame, Context *c);
     void webSocketBinaryMessage(const QByteArray &message, Context *c);
     void webSocketPong(const QByteArray &payload, Context *c);
 

@@ -77,6 +77,15 @@ public:
     };
     Q_ENUM(OpCode)
 
+    enum WebSocketPhase
+    {
+        WebSocketPhaseHeaders,
+        WebSocketPhaseSize,
+        WebSocketPhaseMask,
+        WebSocketPhasePayload,
+    };
+    Q_ENUM(WebSocketPhase)
+
     inline void resetSocket() {
         connState = MethodLine;
         stream_id = 0; //FCGI
@@ -93,8 +102,9 @@ public:
         body = nullptr;
         websocketContext = nullptr;
         proto = mainProto;
-        websocket_phase = 0;
-        websocket_size = 0;
+        websocket_phase = WebSocketPhaseHeaders;
+        websocket_need = 2;
+        websocket_payload_size = 0;
         websocket_buf_size = 0;
     }
 
@@ -120,11 +130,13 @@ public:
     quint32 websocket_need;
     int websocket_phase = 0;
     char *websocket_buf = nullptr;
+    quint64 websocket_payload_size;
+    quint64 websocket_pktsize;
     quint32 websocket_buf_size = 0;
-    quint8 websocket_opcode;
-    quint32 websocket_has_mask;
-    quint32 websocket_size;
-    quint32 websocket_pktsize;
+    quint32 websocket_mask;
+    quint8 websocket_continue_opcode;
+    quint8 websocket_finn_opcode;
+    bool websocket_has_mask;
     int websocket_closed;
 };
 
