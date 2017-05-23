@@ -42,13 +42,11 @@ Socket::Socket(WSGI *wsgi)
 {
     body = nullptr;
     buffer = new char[wsgi->bufferSize()];
-    websocket_buf = new char[wsgi->bufferSize()];
 }
 
 Socket::~Socket()
 {
     delete [] buffer;
-    delete [] websocket_buf;
 }
 
 void TcpSocket::socketDisconnected()

@@ -127,16 +127,16 @@ public:
     bool processing = false;
     bool timeout = false;
 
+    QByteArray websocket_message;
+    QByteArray websocket_payload;
     quint32 websocket_need;
     int websocket_phase = 0;
-    char *websocket_buf = nullptr;
     quint64 websocket_payload_size;
     quint64 websocket_pktsize;
     quint32 websocket_buf_size = 0;
     quint32 websocket_mask;
     quint8 websocket_continue_opcode;
     quint8 websocket_finn_opcode;
-    bool websocket_has_mask;
     int websocket_closed;
 };
 

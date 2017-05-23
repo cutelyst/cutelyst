@@ -28,6 +28,7 @@ class ProtocolWebSocket : public Protocol
 {
 public:
     ProtocolWebSocket(WSGI *wsgi);
+    ~ProtocolWebSocket();
 
     static QByteArray createWebsocketReply(const QByteArray &msg, quint8 opcode);
 
@@ -35,6 +36,8 @@ public:
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
     quint32 m_websockets_max_size;
+    quint32 m_wsBufferSize = 0;
+    char *m_wsBuffer = nullptr;
 };
 
 }

@@ -33,6 +33,13 @@ Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket")
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
 {
     m_websockets_max_size = 1024 * 1024;
+    m_wsBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
+    m_wsBuffer = new char[m_wsBufferSize];
+}
+
+ProtocolWebSocket::~ProtocolWebSocket()
+{
+    delete [] m_wsBuffer;
 }
 
 QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8 opcode)
@@ -93,207 +100,208 @@ quint64 ws_be64(const char *buf) {
     return ret;
 }
 
-static void websocket_parse_header(Socket *sock)
+static bool websocket_parse_header(Socket *sock, const char *buf)
 {
-    quint8 byte1 = sock->websocket_buf[0];
-    quint8 byte2 = sock->websocket_buf[1];
-    qDebug() << "byte FINN" << (byte1 & 0x80) << QByteArray(sock->websocket_buf, sock->websocket_buf_size);
+    quint8 byte1 = buf[0];
     sock->websocket_finn_opcode = byte1;
     quint8 opcode = byte1 & 0xf;
     if (!(byte1 & 0x80) && (opcode == Socket::OpCodeText || opcode == Socket::OpCodeBinary)) {
         // FINN byte not set, store opcode for continue
         sock->websocket_continue_opcode = opcode;
     }
-    sock->websocket_has_mask = byte2 >> 7;
-    sock->websocket_payload_size = byte2 & 0x7f;
-}
 
-static void websockets_parse_mask(Socket *sock)
-{
-    quint32 *ptr = reinterpret_cast<quint32 *>(sock->websocket_buf + sock->websocket_pktsize - 4);
-    sock->websocket_mask = *ptr;
-}
-
-static QByteArray websockets_parse(Socket *sock)
-{
-    // de-mask buffer
-    char *ptr = sock->websocket_buf + (sock->websocket_pktsize - sock->websocket_payload_size);
-
-    if (sock->websocket_has_mask) {
-        quint8 *mask = reinterpret_cast<quint8 *>(&sock->websocket_mask);
-        for (quint64 i = 0; i < sock->websocket_payload_size; ++i) {
-            ptr[i] = ptr[i] ^ mask[i % 4];
-        }
+    quint8 byte2 = buf[1];
+    bool websocket_has_mask = byte2 >> 7;
+    if (!websocket_has_mask) {
+        // RFC states that client to server MUST have a mask
+        qCCritical(CWSGI_WS) << "Client did not set MASK bit" << sock;
+        sock->connectionClose();
+        return false;
     }
 
-    auto ub = QByteArray(ptr, sock->websocket_payload_size);
+    sock->websocket_pktsize = 6;
+    sock->websocket_payload_size = byte2 & 0x7f;
+    if (sock->websocket_payload_size == 126) {
+        sock->websocket_need = 2;
+        sock->websocket_phase = Socket::WebSocketPhaseSize;
+        sock->websocket_pktsize += 2;
+    } else if (sock->websocket_payload_size == 127) {
+        sock->websocket_need = 8;
+        sock->websocket_phase = Socket::WebSocketPhaseSize;
+        sock->websocket_pktsize += 8;
+    } else {
+        sock->websocket_need = 4;
+        sock->websocket_phase = Socket::WebSocketPhaseMask;
+    }
 
-    sock->websocket_buf_size -= sock->websocket_pktsize;
-    memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
+    return true;
+}
+
+static bool websocket_parse_size(Socket *sock, const char *buf, bool websockets_max_message_size)
+{
+    if (sock->websocket_payload_size == 126) {
+        sock->websocket_payload_size = ws_be16(buf);
+    } else if (sock->websocket_payload_size == 127) {
+        sock->websocket_payload_size = ws_be64(buf);
+    } else {
+        qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << sock->websocket_payload_size;
+        sock->connectionClose();
+        return false;
+    }
+
+    if (sock->websocket_payload_size > websockets_max_message_size) {
+        qCCritical(CWSGI_WS) << "Invalid packet size received:" << sock->websocket_payload_size
+                             << ", max allowed:" << websockets_max_message_size;
+        sock->connectionClose();
+        return false;
+    }
+
+    sock->websocket_need = 4;
+    sock->websocket_phase = Socket::WebSocketPhaseMask;
+
+    return true;
+}
+
+static void websockets_parse_mask(Socket *sock, const char *buf)
+{
+    const quint32 *ptr = reinterpret_cast<const quint32 *>(buf);
+    sock->websocket_mask = *ptr;
+
+    sock->websocket_pktsize += sock->websocket_payload_size;
+    sock->websocket_need = sock->websocket_payload_size;
+    sock->websocket_phase = Socket::WebSocketPhasePayload;
+}
+
+static bool websockets_parse_payload(Socket *sock, char *buf, int len)
+{
+    quint8 *mask = reinterpret_cast<quint8 *>(&sock->websocket_mask);
+    for (uint i = 0, maskIx = sock->websocket_payload.size(); i < len; ++i, ++maskIx) {
+        buf[i] = buf[i] ^ mask[maskIx % 4];
+    }
+
+    sock->websocket_payload.append(buf, len);
+    if (sock->websocket_payload_size < sock->websocket_payload.size()) {
+        // need more data
+        return true;
+    }
+
+    auto ub = QByteArray(buf, sock->websocket_payload_size);
+//    ub.mid()
+
+//    sock->websocket_buf_size -= sock->websocket_pktsize;
+//    memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
     sock->websocket_phase = Socket::WebSocketPhaseHeaders;
     sock->websocket_need = 2;
 
-    return ub;
+    switch (sock->websocket_finn_opcode & 0xf) {
+    case Socket::OpCodeContinue:
+        qDebug() << "CONTINUE" << websockets_parse(sock);
+        switch (sock->websocket_continue_opcode) {
+        case Socket::OpCodeText:
+            sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
+                                                                  sock->websocket_finn_opcode & 0x80,
+                                                                  sock->websocketContext);
+            sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
+                                                                    sock->websocketContext);
+            continue;
+        case Socket::OpCodeBinary:
+            sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
+                                                                    sock->websocket_finn_opcode & 0x80,
+                                                                    sock->websocketContext);
+            sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
+                                                                      sock->websocketContext);
+            continue;
+        default:
+            break;
+        }
+        break;
+    case Socket::OpCodeText:
+        sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
+                                                              sock->websocket_finn_opcode & 0x80,
+                                                              sock->websocketContext);
+        sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
+                                                                sock->websocketContext);
+        continue;
+    case Socket::OpCodeBinary:
+        sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
+                                                                sock->websocket_finn_opcode & 0x80,
+                                                                sock->websocketContext);
+        sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
+                                                                  sock->websocketContext);
+        continue;
+    case Socket::OpCodeClose:
+        sock->connectionClose();
+        return;
+    case Socket::OpCodePing:
+        io->write(createWebsocketReply(websockets_parse(sock).left(125), Socket::OpCodePong));
+        continue;
+    case Socket::OpCodePong:
+        sock->websocketContext->request()->webSocketPong(websockets_parse(sock),
+                                                         sock->websocketContext);
+        continue;
+    default:
+        break;
+    }
+
+    // reset the status
+    sock->websocket_phase = Socket::WebSocketPhaseHeaders;
+    sock->websocket_need = 2;
+
+
+    return true;
 }
 
 void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
 {
-    qCDebug(CWSGI_WS) << "ProtocolWebSocket::readyRead";
+    qint64 bytesAvailable = io->bytesAvailable();
+    qCDebug(CWSGI_WS) << "ProtocolWebSocket::readyRead" << bytesAvailable;
 
-    int len = io->read(sock->websocket_buf + sock->websocket_buf_size, m_webSocketBufferSize - sock->websocket_buf_size);
-    if (len == -1) {
-        qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
-        sock->connectionClose();
-        return;
-    }
+//    int len = io->read(sock->websocket_buf + sock->websocket_buf_size, m_webSocketBufferSize - sock->websocket_buf_size);
+//    if (len == -1) {
+//        qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
+//        sock->connectionClose();
+//        return;
+//    }
 //    qCDebug(CWSGI_WS) << "m_webSocketBufferSize" << m_webSocketBufferSize ;
 //    qCDebug(CWSGI_WS) << "len" << len ;
 //    qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size ;
-    sock->websocket_buf_size += len;
+//    sock->websocket_buf_size += len;
 
     Q_FOREVER {
-        quint32 remains = sock->websocket_buf_size;
-        // i have data;
-        //        qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size << remains << sock->websocket_need;
-        if (remains >= sock->websocket_need) {
-            qCDebug(CWSGI_WS) << "sock->websocket_phase" << sock->websocket_phase
-                              << remains << sock->websocket_need
-                              << "pktsize" << sock->websocket_pktsize
-                              << "payload_size" << sock->websocket_payload_size;
-            switch(sock->websocket_phase) {
-            case Socket::WebSocketPhaseHeaders:
-                websocket_parse_header(sock);
-                sock->websocket_pktsize = 2 + (sock->websocket_has_mask * 4);
-                if (sock->websocket_payload_size == 126) {
-                    sock->websocket_need += 2;
-                    sock->websocket_phase = Socket::WebSocketPhaseSize;
-                    sock->websocket_pktsize += 2;
-                }
-                else if (sock->websocket_payload_size == 127) {
-                    sock->websocket_need += 8;
-                    sock->websocket_phase = Socket::WebSocketPhaseSize;
-                    sock->websocket_pktsize += 8;
-                }
-                else {
-                    sock->websocket_need += sock->websocket_has_mask * 4;
-                    sock->websocket_phase = Socket::WebSocketPhaseMask;
-                }
-                qCDebug(CWSGI_WS) << 0 << sock->websocket_need << sock->websocket_phase << sock->websocket_pktsize;
-                break;
-            case Socket::WebSocketPhaseSize:
-                if (sock->websocket_payload_size == 126) {
-                    sock->websocket_payload_size = ws_be16(sock->websocket_buf + 2);
-                } else if (sock->websocket_payload_size == 127) {
-                    sock->websocket_payload_size = ws_be64(sock->websocket_buf + 2);
-                } else {
-                    qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << sock->websocket_payload_size;
-                    sock->connectionClose();
-                    return;
-                }
-
-                if (sock->websocket_payload_size > m_websockets_max_size) {
-                    qCCritical(CWSGI_WS) << "Invalid packet size received:" << sock->websocket_payload_size
-                                         << ", max allowed:" << m_websockets_max_size;
-                    sock->connectionClose();
-                    return;
-                }
-
-                if (sock->websocket_has_mask) {
-                    sock->websocket_need += sock->websocket_has_mask * 4;
-                    sock->websocket_phase = Socket::WebSocketPhaseMask;
-                } else {
-                    sock->websocket_need += sock->websocket_payload_size;
-                    sock->websocket_phase = Socket::WebSocketPhasePayload;
-                }
-
-                break;
-            case Socket::WebSocketPhaseMask:
-                websockets_parse_mask(sock);
-                sock->websocket_pktsize += sock->websocket_payload_size;
-                sock->websocket_need += sock->websocket_payload_size;
-                sock->websocket_phase = Socket::WebSocketPhasePayload;
-                break;
-            case Socket::WebSocketPhasePayload:
-                switch (sock->websocket_finn_opcode & 0xf) {
-                case Socket::OpCodeContinue:
-                    qDebug() << "CONTINUE" << websockets_parse(sock);
-                    switch (sock->websocket_continue_opcode) {
-                    case Socket::OpCodeText:
-                        sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
-                                                                              sock->websocket_finn_opcode & 0x80,
-                                                                              sock->websocketContext);
-                        sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
-                                                                                sock->websocketContext);
-                        continue;
-                    case Socket::OpCodeBinary:
-                        sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
-                                                                                sock->websocket_finn_opcode & 0x80,
-                                                                                sock->websocketContext);
-                        sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
-                                                                                  sock->websocketContext);
-                        continue;
-                    default:
-                        break;
-                    }
-                    break;
-                case Socket::OpCodeText:
-                    sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
-                                                                          sock->websocket_finn_opcode & 0x80,
-                                                                          sock->websocketContext);
-                    sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
-                                                                            sock->websocketContext);
-                    continue;
-                case Socket::OpCodeBinary:
-                    sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
-                                                                            sock->websocket_finn_opcode & 0x80,
-                                                                            sock->websocketContext);
-                    sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
-                                                                              sock->websocketContext);
-                    continue;
-                case Socket::OpCodeClose:
-                    sock->connectionClose();
-                    return;
-                case Socket::OpCodePing:
-                    io->write(createWebsocketReply(websockets_parse(sock).left(125), Socket::OpCodePong));
-                    continue;
-                case Socket::OpCodePong:
-                    sock->websocketContext->request()->webSocketPong(websockets_parse(sock),
-                                                                     sock->websocketContext);
-                    continue;
-                default:
-                    break;
-                }
-                // reset the status
-                sock->websocket_phase = Socket::WebSocketPhaseHeaders;
-                sock->websocket_need = 2;
-                // decapitate the buffer
-            {
-                sock->websocket_buf_size -= sock->websocket_pktsize;
-                memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
-            }
-                //                if (uwsgi_buffer_decapitate(sock->websocket_buf, sock->websocket_pktsize)) return NULL;
-                break;
-                // oops
-            default:
-                //                uwsgi_log("[uwsgi-websocket] \"%.*s %.*s\" (%.*s) BUG error in websocket parser\n", REQ_DATA);
-                return ;
-            }
-        }
-        // need more data
-        else {
-            qDebug() << "need more data";
+        if (bytesAvailable < sock->websocket_need && sock->websocket_phase != Socket::WebSocketPhasePayload) {
+            // Need more data
             return;
-            //            if (uwsgi_buffer_ensure(sock->websocket_buf, uwsgi.page_size)) return NULL;
-            //            ssize_t len = uwsgi_websockets_recv_pkt(sock, nb);
-            //            if (len <= 0) {
-            //                if (nb == 1 && len == 0) {
-            //                    // return an empty buffer to signal blocking event
-            //                    return uwsgi_buffer_new(0);
-            //                }
-            //                return NULL;
-            //            }
-            //            // update buffer size
-            //            sock->websocket_buf->pos+=len;
+        }
+
+        quint32 maxlen = qMin(sock->websocket_need, m_wsBufferSize);
+        qint64 len = io->read(m_wsBuffer, maxlen);
+        if (len != maxlen) {
+            qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
+            sock->connectionClose();
+            return;
+        }
+        bytesAvailable -= maxlen;
+        qCDebug(CWSGI_WS) << "ProtocolWebSocket::loop" << bytesAvailable << sock->websocket_phase;
+
+        switch(sock->websocket_phase) {
+        case Socket::WebSocketPhaseHeaders:
+            if (!websocket_parse_header(sock, m_wsBuffer)) {
+                return;
+            }
+            break;
+        case Socket::WebSocketPhaseSize:
+            if (!websocket_parse_size(sock, m_wsBuffer, m_websockets_max_size)) {
+                return;
+            }
+            break;
+        case Socket::WebSocketPhaseMask:
+            websockets_parse_mask(sock, m_wsBuffer);
+            break;
+        case Socket::WebSocketPhasePayload:
+            if (!websockets_parse_payload(sock, m_wsBuffer, len)) {
+                return;
+            }
+            break;
         }
     }
 }
