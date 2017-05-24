@@ -105,7 +105,6 @@ public:
         websocket_phase = WebSocketPhaseHeaders;
         websocket_need = 2;
         websocket_payload_size = 0;
-        websocket_buf_size = 0;
     }
 
     virtual void connectionClose() = 0;
@@ -131,9 +130,7 @@ public:
     QByteArray websocket_payload;
     quint32 websocket_need;
     int websocket_phase = 0;
-    quint64 websocket_payload_size;
-    quint64 websocket_pktsize;
-    quint32 websocket_buf_size = 0;
+    int websocket_payload_size;
     quint32 websocket_mask;
     quint8 websocket_continue_opcode;
     quint8 websocket_finn_opcode;

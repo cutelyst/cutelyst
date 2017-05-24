@@ -105,30 +105,31 @@ static bool websocket_parse_header(Socket *sock, const char *buf)
     quint8 byte1 = buf[0];
     sock->websocket_finn_opcode = byte1;
     quint8 opcode = byte1 & 0xf;
-    if (!(byte1 & 0x80) && (opcode == Socket::OpCodeText || opcode == Socket::OpCodeBinary)) {
-        // FINN byte not set, store opcode for continue
-        sock->websocket_continue_opcode = opcode;
+    if (opcode == Socket::OpCodeText || opcode == Socket::OpCodeBinary) {
+        sock->websocket_message = QByteArray();
+        if (!(byte1 & 0x80)) {
+            // FINN byte not set, store opcode for continue
+            sock->websocket_continue_opcode = opcode;
+        }
     }
 
     quint8 byte2 = buf[1];
     bool websocket_has_mask = byte2 >> 7;
     if (!websocket_has_mask) {
         // RFC states that client to server MUST have a mask
-        qCCritical(CWSGI_WS) << "Client did not set MASK bit" << sock;
+        qCCritical(CWSGI_WS) << "Client did not set MASK bit" << sock << opcode << sock->websocket_continue_opcode;
         sock->connectionClose();
         return false;
     }
 
-    sock->websocket_pktsize = 6;
+    qDebug() << "HEADER" << opcode << (byte2 & 0x7f);
     sock->websocket_payload_size = byte2 & 0x7f;
     if (sock->websocket_payload_size == 126) {
         sock->websocket_need = 2;
         sock->websocket_phase = Socket::WebSocketPhaseSize;
-        sock->websocket_pktsize += 2;
     } else if (sock->websocket_payload_size == 127) {
         sock->websocket_need = 8;
         sock->websocket_phase = Socket::WebSocketPhaseSize;
-        sock->websocket_pktsize += 8;
     } else {
         sock->websocket_need = 4;
         sock->websocket_phase = Socket::WebSocketPhaseMask;
@@ -137,12 +138,24 @@ static bool websocket_parse_header(Socket *sock, const char *buf)
     return true;
 }
 
-static bool websocket_parse_size(Socket *sock, const char *buf, bool websockets_max_message_size)
+static bool websocket_parse_size(Socket *sock, const char *buf, int websockets_max_message_size)
 {
     if (sock->websocket_payload_size == 126) {
-        sock->websocket_payload_size = ws_be16(buf);
+        quint16 ret = ws_be16(buf);
+        if (ret > INT_MAX) {
+            qCCritical(CWSGI_WS) << "Payload size too big" << ret << "max allowed" << INT_MAX;
+            sock->connectionClose();
+            return false;
+        }
+        sock->websocket_payload_size = ret;
     } else if (sock->websocket_payload_size == 127) {
-        sock->websocket_payload_size = ws_be64(buf);
+        quint64 ret = ws_be64(buf);
+        if (ret > INT_MAX) {
+            qCCritical(CWSGI_WS) << "Payload size too big" << ret << "max allowed" << INT_MAX;
+            sock->connectionClose();
+            return false;
+        }
+        sock->websocket_payload_size = ret;
     } else {
         qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << sock->websocket_payload_size;
         sock->connectionClose();
@@ -167,12 +180,54 @@ static void websockets_parse_mask(Socket *sock, const char *buf)
     const quint32 *ptr = reinterpret_cast<const quint32 *>(buf);
     sock->websocket_mask = *ptr;
 
-    sock->websocket_pktsize += sock->websocket_payload_size;
     sock->websocket_need = sock->websocket_payload_size;
     sock->websocket_phase = Socket::WebSocketPhasePayload;
+
+    sock->websocket_payload = QByteArray();
+    sock->websocket_payload.reserve(sock->websocket_payload_size);
 }
 
-static bool websockets_parse_payload(Socket *sock, char *buf, int len)
+static void send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
+{
+    Cutelyst::Request *request = c->request();
+
+    const QString frame = QString::fromUtf8(sock->websocket_payload);
+    request->webSocketTextFrame(frame,
+                                sock->websocket_finn_opcode & 0x80,
+                                sock->websocketContext);
+
+    if (sock->websocket_finn_opcode & 0x80) {
+        if (singleFrame || sock->websocket_payload == sock->websocket_message) {
+            request->webSocketTextMessage(frame,
+                                          sock->websocketContext);
+        } else {
+            request->webSocketTextMessage(QString::fromUtf8(sock->websocket_message),
+                                          sock->websocketContext);
+        }
+    }
+}
+
+static void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame)
+{
+    Cutelyst::Request *request = c->request();
+
+    const QByteArray frame = sock->websocket_payload;
+    request->webSocketBinaryFrame(frame,
+                                  sock->websocket_finn_opcode & 0x80,
+                                  sock->websocketContext);
+
+    if (sock->websocket_finn_opcode & 0x80) {
+        if (singleFrame || sock->websocket_payload == sock->websocket_message) {
+            request->webSocketBinaryMessage(frame,
+                                            sock->websocketContext);
+        } else {
+            request->webSocketBinaryMessage(sock->websocket_message,
+                                            sock->websocketContext);
+        }
+    }
+}
+
+static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io)
 {
     quint8 *mask = reinterpret_cast<quint8 *>(&sock->websocket_mask);
     for (uint i = 0, maskIx = sock->websocket_payload.size(); i < len; ++i, ++maskIx) {
@@ -180,73 +235,52 @@ static bool websockets_parse_payload(Socket *sock, char *buf, int len)
     }
 
     sock->websocket_payload.append(buf, len);
-    if (sock->websocket_payload_size < sock->websocket_payload.size()) {
+    if (sock->websocket_payload.size() < sock->websocket_payload_size) {
         // need more data
+        sock->websocket_need -= len;
         return true;
     }
+    sock->websocket_message.append(sock->websocket_payload);
 
-    auto ub = QByteArray(buf, sock->websocket_payload_size);
-//    ub.mid()
-
-//    sock->websocket_buf_size -= sock->websocket_pktsize;
-//    memmove(sock->websocket_buf, sock->websocket_buf + sock->websocket_pktsize, sock->websocket_buf_size);
-    sock->websocket_phase = Socket::WebSocketPhaseHeaders;
     sock->websocket_need = 2;
+    sock->websocket_phase = Socket::WebSocketPhaseHeaders;
+
+    Cutelyst::Request *request = sock->websocketContext->request();
 
     switch (sock->websocket_finn_opcode & 0xf) {
     case Socket::OpCodeContinue:
-        qDebug() << "CONTINUE" << websockets_parse(sock);
         switch (sock->websocket_continue_opcode) {
         case Socket::OpCodeText:
-            sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
-                                                                  sock->websocket_finn_opcode & 0x80,
-                                                                  sock->websocketContext);
-            sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
-                                                                    sock->websocketContext);
-            continue;
-        case Socket::OpCodeBinary:
-            sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
-                                                                    sock->websocket_finn_opcode & 0x80,
-                                                                    sock->websocketContext);
-            sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
-                                                                      sock->websocketContext);
-            continue;
-        default:
+            send_text(sock->websocketContext, sock, false);
             break;
+        case Socket::OpCodeBinary:
+            send_binary(sock->websocketContext, sock, false);
+            break;
+        default:
+            qCCritical(CWSGI_WS) << "Invalid CONTINUE opcode:" << (sock->websocket_finn_opcode & 0xf);
+            sock->connectionClose();
+            return false;
         }
         break;
     case Socket::OpCodeText:
-        sock->websocketContext->request()->webSocketTextFrame(QString::fromUtf8(websockets_parse(sock)),
-                                                              sock->websocket_finn_opcode & 0x80,
-                                                              sock->websocketContext);
-        sock->websocketContext->request()->webSocketTextMessage(QString::fromUtf8(websockets_parse(sock)),
-                                                                sock->websocketContext);
-        continue;
+        send_text(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80);
+        break;
     case Socket::OpCodeBinary:
-        sock->websocketContext->request()->webSocketBinaryFrame(websockets_parse(sock),
-                                                                sock->websocket_finn_opcode & 0x80,
-                                                                sock->websocketContext);
-        sock->websocketContext->request()->webSocketBinaryMessage(websockets_parse(sock),
-                                                                  sock->websocketContext);
-        continue;
+        send_binary(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80);
+        break;
     case Socket::OpCodeClose:
         sock->connectionClose();
-        return;
+        return false;
     case Socket::OpCodePing:
-        io->write(createWebsocketReply(websockets_parse(sock).left(125), Socket::OpCodePong));
-        continue;
+        io->write(ProtocolWebSocket::createWebsocketReply(sock->websocket_payload.left(125), Socket::OpCodePong));
+        break;
     case Socket::OpCodePong:
-        sock->websocketContext->request()->webSocketPong(websockets_parse(sock),
-                                                         sock->websocketContext);
-        continue;
+        request->webSocketPong(sock->websocket_payload,
+                               sock->websocketContext);
+        break;
     default:
         break;
     }
-
-    // reset the status
-    sock->websocket_phase = Socket::WebSocketPhaseHeaders;
-    sock->websocket_need = 2;
-
 
     return true;
 }
@@ -256,32 +290,20 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
     qint64 bytesAvailable = io->bytesAvailable();
     qCDebug(CWSGI_WS) << "ProtocolWebSocket::readyRead" << bytesAvailable;
 
-//    int len = io->read(sock->websocket_buf + sock->websocket_buf_size, m_webSocketBufferSize - sock->websocket_buf_size);
-//    if (len == -1) {
-//        qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
-//        sock->connectionClose();
-//        return;
-//    }
-//    qCDebug(CWSGI_WS) << "m_webSocketBufferSize" << m_webSocketBufferSize ;
-//    qCDebug(CWSGI_WS) << "len" << len ;
-//    qCDebug(CWSGI_WS) << "sock->websocket_buf_size" << sock->websocket_buf_size ;
-//    sock->websocket_buf_size += len;
-
     Q_FOREVER {
-        if (bytesAvailable < sock->websocket_need && sock->websocket_phase != Socket::WebSocketPhasePayload) {
+        if (!bytesAvailable || (bytesAvailable < sock->websocket_need && sock->websocket_phase != Socket::WebSocketPhasePayload)) {
             // Need more data
             return;
         }
 
         quint32 maxlen = qMin(sock->websocket_need, m_wsBufferSize);
         qint64 len = io->read(m_wsBuffer, maxlen);
-        if (len != maxlen) {
+        if (len == -1) {
             qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
             sock->connectionClose();
             return;
         }
-        bytesAvailable -= maxlen;
-        qCDebug(CWSGI_WS) << "ProtocolWebSocket::loop" << bytesAvailable << sock->websocket_phase;
+        bytesAvailable -= len;
 
         switch(sock->websocket_phase) {
         case Socket::WebSocketPhaseHeaders:
@@ -298,7 +320,7 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
             websockets_parse_mask(sock, m_wsBuffer);
             break;
         case Socket::WebSocketPhasePayload:
-            if (!websockets_parse_payload(sock, m_wsBuffer, len)) {
+            if (!websockets_parse_payload(sock, m_wsBuffer, len, io)) {
                 return;
             }
             break;
