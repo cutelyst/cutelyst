@@ -538,6 +538,14 @@ bool Engine::webSocketSendPing(Context *c, const QByteArray &payload)
     return false;
 }
 
+bool Engine::webSocketClose(Context *c, quint16 code, const QString &reason)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(code)
+    Q_UNUSED(reason)
+    return false;
+}
+
 void Engine::processRequest(const QString &method,
                             const QString &path,
                             const QByteArray &query,

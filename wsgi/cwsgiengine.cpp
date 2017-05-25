@@ -210,6 +210,21 @@ bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
     return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
 }
 
+bool CWsgiEngine::webSocketClose(Context *c, quint16 code, const QString &reason)
+{
+    QByteArray payload;
+
+    quint8 buf[2];
+    buf[1] = (quint8) (code & 0xff);
+    buf[0] = (quint8) ((code >> 8) & 0xff);
+    payload.append((char*) buf, 2);
+
+    payload.append(reason.toUtf8());
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload, Socket::OpCodeClose);
+    return doWrite(c, reply.data(), reply.size(), c->engineData()) == reply.size();
+}
+
 bool CWsgiEngine::init()
 {
     if (!initApplication()) {

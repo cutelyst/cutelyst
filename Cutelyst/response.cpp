@@ -320,6 +320,12 @@ bool Response::webSocketPing(const QByteArray &payload)
     return d->engine->webSocketSendPing(d->context, payload);
 }
 
+bool Response::webSocketClose(quint16 code, const QString &reason)
+{
+    Q_D(Response);
+    return d->engine->webSocketClose(d->context, code, reason);
+}
+
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
     if (!(flags & ResponsePrivate::IOWrite)) {

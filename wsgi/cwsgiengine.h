@@ -70,6 +70,8 @@ protected:
 
     virtual bool webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload) override;
 
+    virtual bool webSocketClose(Cutelyst::Context *c, quint16 code, const QString &reason) override;
+
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();

@@ -217,6 +217,8 @@ protected:
 
     virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
 
+    virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
+
     /**
      * Returns the header key in camel case form
      */
