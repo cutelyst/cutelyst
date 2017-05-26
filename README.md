@@ -11,6 +11,7 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
  * Pluggable Engines
    * uWSGI - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
    * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 and FastCGI both with Pipelining and Keep-Alive support)
+ * WebSockets
  * REST with ActionREST
  * Plugin based views
    * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)

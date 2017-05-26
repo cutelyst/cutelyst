@@ -174,7 +174,7 @@ void uWSGI::processRequest(wsgi_request *req)
     }
     request.body = body;
 
-    Engine::processRequest(request);
+    delete Engine::processRequest2(request);
 
     delete body;
 }
@@ -364,13 +364,13 @@ bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &head
     auto it = headersData.constBegin();
     const auto endIt = headersData.constEnd();
     while (it != endIt) {
-        QByteArray key = camelCaseHeader(it.key()).toLatin1();
-        QByteArray value = it.value().toLatin1();
+        const QByteArray key = camelCaseHeader(it.key()).toLatin1();
+        const QByteArray value = it.value().toLatin1();
 
         if (uwsgi_response_add_header(wsgi_req,
-                                      key.data(),
+                                      const_cast<char*>(key.constData()),
                                       key.size(),
-                                      value.data(),
+                                      const_cast<char*>(value.constData()),
                                       value.size())) {
             return false;
         }

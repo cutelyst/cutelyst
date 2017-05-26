@@ -410,13 +410,17 @@ Headers &Engine::defaultHeaders()
     return d->app->defaultHeaders();
 }
 
-void Engine::processRequest(const EngineRequest &req)
+Context *Engine::processRequest2(const EngineRequest &req)
 {
     Q_D(Engine);
 
     auto request = new Request(new RequestPrivate(req, this));
-    d->app->handleRequest(request);
-    delete request;
+    return d->app->handleRequest2(request);
+}
+
+void Engine::processRequest(const EngineRequest &req)
+{
+    delete processRequest2(req);
 }
 
 QVariantMap Engine::opts() const
@@ -488,6 +492,60 @@ void Engine::finalize(Context *c)
     finalizeBody(c);
 }
 
+bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
+{
+    ResponsePrivate *priv = c->response()->d_ptr;
+    if (priv->flags & ResponsePrivate::FinalizedHeaders) {
+        return false;
+    }
+
+    if (webSocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
+        priv->flags |= ResponsePrivate::FinalizedHeaders;
+        return true;
+    }
+
+    return false;
+}
+
+bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(key)
+    Q_UNUSED(origin)
+    Q_UNUSED(protocol)
+    Q_UNUSED(engineData)
+    return false;
+}
+
+bool Engine::webSocketSendTextMessage(Context *c, const QString &message)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(message)
+    return false;
+}
+
+bool Engine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(message)
+    return false;
+}
+
+bool Engine::webSocketSendPing(Context *c, const QByteArray &payload)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(payload)
+    return false;
+}
+
+bool Engine::webSocketClose(Context *c, quint16 code, const QString &reason)
+{
+    Q_UNUSED(c)
+    Q_UNUSED(code)
+    Q_UNUSED(reason)
+    return false;
+}
+
 void Engine::processRequest(const QString &method,
                             const QString &path,
                             const QByteArray &query,
@@ -520,8 +578,7 @@ void Engine::processRequest(const QString &method,
     req.requestPtr = requestPtr;
 
     auto request = new Request(new RequestPrivate(req, this));
-    d->app->handleRequest(request);
-    delete request;
+    delete d->app->handleRequest2(request);
 }
 
 #include "moc_engine.cpp"

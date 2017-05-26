@@ -18,9 +18,11 @@
  */
 #include "protocolhttp.h"
 #include "socket.h"
+#include "protocolwebsocket.h"
 #include "wsgi.h"
 
 #include <Cutelyst/Headers>
+#include <Cutelyst/Context>
 
 #include <QVariant>
 #include <QIODevice>
@@ -36,7 +38,9 @@ using namespace CWSGI;
 Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http")
 
 ProtocolHttp::ProtocolHttp(WSGI *wsgi) : Protocol(wsgi)
+  , m_websocketProto(new ProtocolWebSocket(wsgi))
 {
+
 }
 
 ProtocolHttp::~ProtocolHttp()
@@ -194,13 +198,15 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     while (it != endIt) {
         const QString key = it.key();
         const QString value = it.value();
-        if (sock->headerConnection == Socket::HeaderConnectionNotSet && key == QLatin1String("connection")) {
+        if (sock->headerConnection == Socket::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
             if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
                 sock->headerConnection = Socket::HeaderConnectionClose;
+            } else if (value.compare(QLatin1String("upgrade"), Qt::CaseInsensitive) == 0) {
+                sock->headerConnection = Socket::HeaderConnectionUpgrade;
             } else {
                 sock->headerConnection = Socket::HeaderConnectionKeep;
             }
-        } else if (!hasDate && key == QLatin1String("date")) {
+        } else if (!hasDate && key == QLatin1String("DATE")) {
             hasDate = true;
         }
 
@@ -234,13 +240,29 @@ bool ProtocolHttp::processRequest(Socket *sock) const
     if (sock->body) {
         sock->body->seek(0);
     }
-    sock->engine->processSocket(sock);
+
+    Cutelyst::Context *c = sock->engine->processSocket(sock);
     sock->processing = false;
+
+    if (sock->headerConnection == Socket::HeaderConnectionUpgrade) {
+        sock->websocketContext = c;
+        // need 2 byte header
+        sock->websocket_need = 2;
+        sock->websocket_phase = Socket::WebSocketPhaseHeaders;
+        sock->processing = true;
+        sock->buf_size = 0;
+        sock->proto = m_websocketProto;
+
+        return false; // Must read remaining data
+    }
+    delete c;
 
     if (sock->headerConnection == Socket::HeaderConnectionClose) {
         sock->connectionClose();
         return false;
-    } else if (sock->last < sock->buf_size) {
+    }
+
+    if (sock->last < sock->buf_size) {
         // move pipelined request to 0
         int remaining = sock->buf_size - sock->last;
         memmove(sock->buffer, sock->buffer + sock->last, remaining);

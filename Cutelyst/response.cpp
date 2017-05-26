@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,9 @@
 #include "common.h"
 
 #include <QtCore/QJsonDocument>
+
+#include <QCryptographicHash>
+#include <QEventLoop>
 
 using namespace Cutelyst;
 
@@ -291,6 +294,36 @@ qint64 Response::size() const
     } else {
         return d->bodyData.size();
     }
+}
+
+bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
+{
+    Q_D(Response);
+    return d->engine->webSocketHandshake(d->context, key, origin, protocol);
+}
+
+bool Response::webSocketTextMessage(const QString &message)
+{
+    Q_D(Response);
+    return d->engine->webSocketSendTextMessage(d->context, message);
+}
+
+bool Response::webSocketBinaryMessage(const QByteArray &message)
+{
+    Q_D(Response);
+    return d->engine->webSocketSendBinaryMessage(d->context, message);
+}
+
+bool Response::webSocketPing(const QByteArray &payload)
+{
+    Q_D(Response);
+    return d->engine->webSocketSendPing(d->context, payload);
+}
+
+bool Response::webSocketClose(quint16 code, const QString &reason)
+{
+    Q_D(Response);
+    return d->engine->webSocketClose(d->context, code, reason);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)

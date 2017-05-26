@@ -36,7 +36,6 @@ void TcpSslServer::incomingConnection(qintptr handle)
     auto sock = new SslSocket(m_wsgi, this);
     sock->setSslConfiguration(m_sslConfiguration);
     sock->engine = m_engine;
-    sock->proto = m_protocol;
 
     connect(sock, &QIODevice::readyRead, [sock] () {
         sock->timeout = false;
@@ -50,6 +49,7 @@ void TcpSslServer::incomingConnection(qintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
 
+        sock->proto = m_protocol;
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();

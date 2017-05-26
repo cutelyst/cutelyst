@@ -39,6 +39,7 @@ public:
 
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
+    qint64 m_webSocketBufferSize;
     qint64 m_postBuffering;
     char *m_postBuffer;
 };

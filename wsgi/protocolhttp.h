@@ -27,6 +27,7 @@ namespace CWSGI {
 
 class WSGI;
 class Socket;
+class ProtocolWebSocket;
 class ProtocolHttp : public Protocol
 {
 public:
@@ -40,6 +41,8 @@ private:
     inline bool processRequest(Socket *sock) const;
     inline void parseMethod(const char *ptr, const char *end, Socket *sock) const;
     inline void parseHeader(const char *ptr, const char *end, Socket *sock) const;
+
+    ProtocolWebSocket *m_websocketProto;
 };
 
 }

@@ -207,6 +207,18 @@ protected:
      */
     void finalize(Context *c);
 
+    bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
+
+    virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
+
+    virtual bool webSocketSendTextMessage(Context *c, const QString &message);
+
+    virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
+
+    virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
+
+    virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
+
     /**
      * Returns the header key in camel case form
      */
@@ -262,8 +274,18 @@ protected:
     Headers &defaultHeaders();
 
     /**
-     * Process the EngineRequest \p req
+     * Process the EngineRequest \p req, the caller
+     * must delete the context when the request is finished.
+     *
+     * This method allows for engines to keep the Context alive
+     * while processing websocket data.
      */
+    Context *processRequest2(const EngineRequest &req);
+
+    /**
+     * Deprecated
+     */
+    Q_DECL_DEPRECATED
     void processRequest(const EngineRequest &req);
 
     Q_DECL_DEPRECATED

@@ -56,6 +56,36 @@ public:
     };
     Q_ENUM(ParserState)
 
+    enum OpCode
+    {
+        OpCodeContinue    = 0x0,
+        OpCodeText        = 0x1,
+        OpCodeBinary      = 0x2,
+        OpCodeReserved3   = 0x3,
+        OpCodeReserved4   = 0x4,
+        OpCodeReserved5   = 0x5,
+        OpCodeReserved6   = 0x6,
+        OpCodeReserved7   = 0x7,
+        OpCodeClose       = 0x8,
+        OpCodePing        = 0x9,
+        OpCodePong        = 0xA,
+        OpCodeReservedB   = 0xB,
+        OpCodeReservedC   = 0xC,
+        OpCodeReservedD   = 0xD,
+        OpCodeReservedE   = 0xE,
+        OpCodeReservedF   = 0xF
+    };
+    Q_ENUM(OpCode)
+
+    enum WebSocketPhase
+    {
+        WebSocketPhaseHeaders,
+        WebSocketPhaseSize,
+        WebSocketPhaseMask,
+        WebSocketPhasePayload,
+    };
+    Q_ENUM(WebSocketPhase)
+
     inline void resetSocket() {
         connState = MethodLine;
         stream_id = 0; //FCGI
@@ -76,6 +106,7 @@ public:
 
     qint64 contentLength;
     CWsgiEngine *engine;
+    Cutelyst::Context *websocketContext = nullptr;
     Protocol *proto;
     char *buffer;
     ParserState connState = MethodLine;
@@ -88,6 +119,16 @@ public:
     bool headerHost = false;
     bool processing = false;
     bool timeout = false;
+
+    QByteArray websocket_message;
+    QByteArray websocket_payload;
+    quint32 websocket_need;
+    int websocket_phase = 0;
+    int websocket_payload_size;
+    quint32 websocket_mask;
+    quint8 websocket_continue_opcode;
+    quint8 websocket_finn_opcode;
+    int websocket_closed;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

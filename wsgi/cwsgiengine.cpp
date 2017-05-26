@@ -28,9 +28,14 @@
 #include "staticmap.h"
 #include "socket.h"
 
+#include "protocolwebsocket.h"
+#include "protocolhttp.h"
+
 #ifdef Q_OS_UNIX
 #include "unixfork.h"
 #endif
+
+#include <typeinfo>
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
@@ -38,6 +43,10 @@
 #include <Cutelyst/Application>
 
 #include <QCoreApplication>
+
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CWSGI_ENGINE, "cwsgi.engine")
 
 using namespace CWSGI;
 using namespace Cutelyst;
@@ -153,10 +162,110 @@ qint64 CWsgiEngine::doWrite(Context *c, const char *data, qint64 len, void *engi
     return ret;
 }
 
+bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
+{
+    auto sock = static_cast<TcpSocket*>(engineData);
+    if (sock->headerConnection == Socket::HeaderConnectionUpgrade) {
+        return true;
+    }
+
+//    if (!typeid(sock->proto)) {
+        // Websockets is only supported on HTTP protocol
+//        qCWarning(CWSGI_ENGINE) << "Upgrading a connection to websocket is only supported with the HTTP protocol" << typeid(sock->proto).name();
+//        return false;
+//    }
+
+    const Headers requestHeaders = c->request()->headers();
+    Response *response = c->response();
+    Headers &headers = response->headers();
+
+    response->setStatus(Response::SwitchingProtocols);
+    headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
+    headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
+    const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("Origin")) : origin;
+    if (localOrigin.isEmpty()) {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), QStringLiteral("*"));
+    } else {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), localOrigin);
+    }
+
+    const QString wsProtocol = protocol.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_PROTOCOL")) : protocol;
+    if (!wsProtocol.isEmpty()) {
+        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_PROTOCOL"), wsProtocol);
+    }
+
+    const QString localKey = key.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_KEY")) : key;
+    const QString wsKey = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+    if (wsKey.length() == 36) {
+        qCWarning(CWSGI_ENGINE) << "Missing websocket key";
+        return false;
+    }
+
+    const QByteArray wsAccept = QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
+    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
+
+    sock->headerConnection = Socket::HeaderConnectionUpgrade;
+
+    return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
+}
+
+bool CWsgiEngine::webSocketSendTextMessage(Context *c, const QString &message)
+{
+    auto sock = static_cast<TcpSocket*>(c->engineData());
+    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
+        return false;
+    }
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message.toUtf8(), Socket::OpCodeText);
+    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+}
+
+bool CWsgiEngine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
+{
+    auto sock = static_cast<TcpSocket*>(c->engineData());
+    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
+        return false;
+    }
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message, Socket::OpCodeBinary);
+    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+}
+
+bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
+{
+    auto sock = static_cast<TcpSocket*>(c->engineData());
+    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
+        return false;
+    }
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload.left(125), Socket::OpCodePing);
+    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+}
+
+bool CWsgiEngine::webSocketClose(Context *c, quint16 code, const QString &reason)
+{
+    auto sock = static_cast<TcpSocket*>(c->engineData());
+    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
+        return false;
+    }
+
+    QByteArray payload;
+
+    quint8 buf[2];
+    buf[1] = (quint8) (code & 0xff);
+    buf[0] = (quint8) ((code >> 8) & 0xff);
+    payload.append((char*) buf, 2);
+
+    payload.append(reason.toUtf8());
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload, Socket::OpCodeClose);
+    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+}
+
 bool CWsgiEngine::init()
 {
     if (!initApplication()) {
-        qCritical() << "Failed to init application, cheaping...";
+        qCCritical(CWSGI_ENGINE) << "Failed to init application, cheaping...";
         return false;
     }
 

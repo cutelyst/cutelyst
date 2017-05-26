@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,28 +16,30 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef PROTOCOLWEBSOCKET_H
+#define PROTOCOLWEBSOCKET_H
+
 #include "protocol.h"
 
-#include "wsgi.h"
+namespace CWSGI {
 
-using namespace CWSGI;
-
-Protocol::Protocol(WSGI *wsgi)
+class WSGI;
+class ProtocolWebSocket : public Protocol
 {
-    m_postBufferSize = wsgi->postBufferingBufsize();
-    m_bufferSize = wsgi->bufferSize();
-    m_postBuffering = wsgi->postBuffering();
-    m_webSocketBufferSize = wsgi->bufferSize();
-    m_postBuffer = new char[wsgi->postBufferingBufsize()];
+public:
+    ProtocolWebSocket(WSGI *wsgi);
+    ~ProtocolWebSocket();
+
+    static QByteArray createWebsocketReply(const QByteArray &msg, quint8 opcode);
+
+    virtual void readyRead(Socket *sock, QIODevice *io) const override;
+    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
+
+    quint32 m_websockets_max_size;
+    quint32 m_wsBufferSize = 0;
+    char *m_wsBuffer = nullptr;
+};
+
 }
 
-Protocol::~Protocol()
-{
-    delete [] m_postBuffer;
-}
-
-qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
-{
-    Q_UNUSED(sock)
-    return io->write(data, len);
-}
+#endif // PROTOCOLWEBSOCKET_H

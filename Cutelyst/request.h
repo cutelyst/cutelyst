@@ -34,6 +34,7 @@ namespace Cutelyst {
 
 class Engine;
 class Upload;
+class Context;
 
 /** A vector of Upload pointers */
 typedef QVector<Upload *> Uploads;
@@ -461,6 +462,39 @@ public:
      * Constructs a new Request object.
      */
     Request(RequestPrivate *prv);
+
+Q_SIGNALS:
+    /*!
+     * Emitted when the websocket receives a text frame, this is usefull for parsing
+     * big chunks of data without waiting till the whole message arives.
+     */
+    void webSocketTextFrame(const QString &message, bool isLastFrame, Context *c);
+
+    /*!
+     * Emitted when the websocket receives a text message, this accounts for all text frames till the last one.
+     */
+    void webSocketTextMessage(const QString &message, Context *c);
+
+    /*!
+     * Emitted when the websocket receives a binary frame, this is usefull for parsing
+     * big chunks of data without waiting till the whole message arives.
+     */
+    void webSocketBinaryFrame(const QByteArray &message, bool isLastFrame, Context *c);
+
+    /*!
+     * Emitted when the websocket receives a binary message, this accounts for all binary frames till the last one.
+     */
+    void webSocketBinaryMessage(const QByteArray &message, Context *c);
+
+    /*!
+     * Emitted when the websocket receives a pong frame, which might include a payload
+     */
+    void webSocketPong(const QByteArray &payload, Context *c);
+
+    /*!
+     * Emitted when the websocket receives a close frame, including a close code and a reason
+     */
+    void webSocketClosed(quint16 closeCode, const QString &reason);
 
 protected:
     RequestPrivate *d_ptr;

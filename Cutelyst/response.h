@@ -84,6 +84,24 @@ public:
     };
     Q_ENUM(HttpStatus)
 
+    /** This enum type specifies the status response to be sent to the client */
+    enum CloseCode {
+        CloseCodeNormal                 = 1000,
+        CloseCodeGoingAway              = 1001,
+        CloseCodeProtocolError          = 1002,
+        CloseCodeDatatypeNotSupported   = 1003,
+        CloseCodeReserved1004           = 1004,
+        CloseCodeMissingStatusCode      = 1005,
+        CloseCodeAbnormalDisconnection  = 1006,
+        CloseCodeWrongDatatype          = 1007,
+        CloseCodePolicyViolated         = 1008,
+        CloseCodeTooMuchData            = 1009,
+        CloseCodeMissingExtension       = 1010,
+        CloseCodeBadOperation           = 1011,
+        CloseCodeTlsHandshakeFailed     = 1015
+    };
+    Q_ENUM(CloseCode)
+
     virtual ~Response();
 
     /**
@@ -265,6 +283,35 @@ public:
      * Reimplemented from QIODevice::readData().
      */
     virtual qint64 size() const override;
+
+
+    /*!
+     * Sends the websocket handshake, if no parameters are defined it will use header data.
+     * Returns true in case of success, false otherwise, which can be due missing support on
+     * the engine or missing the appropriate headers.
+     */
+    bool webSocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
+
+    /*!
+     * Sends a WebSocket text message
+     */
+    bool webSocketTextMessage(const QString &message);
+
+    /*!
+     * Sends a WebSocket binary message
+     */
+    bool webSocketBinaryMessage(const QByteArray &message);
+
+    /*!
+     * Sends a WebSocket ping with an optional payload limited to 125 bytes,
+     * which will be truncated if larger.
+     */
+    bool webSocketPing(const QByteArray &payload = QByteArray());
+
+    /*!
+     * Sends a WebSocket close frame, with both optional close code and a string reason.
+     */
+    bool webSocketClose(quint16 code = Response::CloseCodeNormal, const QString &reason = QString());
 
 protected:
     /**

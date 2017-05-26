@@ -92,7 +92,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     req.startOfRequest = QDateTime::currentMSecsSinceEpoch();
     req.body = bodyDevice;
 
-    processRequest(req);
+    delete processRequest2(req);
 
     ret = {
         {QStringLiteral("body"), m_responseData},
