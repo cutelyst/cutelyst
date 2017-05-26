@@ -77,22 +77,6 @@ qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData
     return len;
 }
 
-bool uWSGI::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
-{
-    const QByteArray keyBA = key.toLatin1();
-    const QByteArray originBA = origin.toLatin1();
-    const QByteArray protocolBA = protocol.toLatin1();
-
-    if (uwsgi_websocket_handshake(static_cast<wsgi_request*>(engineData),
-                                  const_cast<char*>(keyBA.constData()), keyBA.size(),
-                                  const_cast<char*>(originBA.constData()), originBA.size(),
-                                  const_cast<char*>(protocolBA.constData()), protocolBA.size())) {
-        return false;
-    }
-
-    return true;
-}
-
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
     Q_FOREVER {
