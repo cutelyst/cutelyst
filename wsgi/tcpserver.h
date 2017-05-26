@@ -39,6 +39,9 @@ public:
     virtual void shutdown();
     virtual void timeoutConnections();
 
+    Protocol *protocol() const;
+    void setProtocol(Protocol *protocol);
+
 Q_SIGNALS:
     void createConnection(qintptr handle);
 

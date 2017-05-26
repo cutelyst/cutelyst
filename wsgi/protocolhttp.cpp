@@ -47,6 +47,11 @@ ProtocolHttp::~ProtocolHttp()
 {
 }
 
+Protocol::Type ProtocolHttp::type() const
+{
+    return Http11;
+}
+
 inline int CrLfIndexIn(const char *str, int len, int from)
 {
     do {

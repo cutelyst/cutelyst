@@ -30,8 +30,16 @@ class Socket;
 class Protocol
 {
 public:
+    enum Type {
+        Unknown,
+        Http11,
+        FastCGI1
+    };
+
     Protocol(WSGI *wsgi);
     virtual ~Protocol();
+
+    virtual Type type() const;
 
     virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) = 0;

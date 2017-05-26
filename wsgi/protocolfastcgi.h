@@ -32,6 +32,8 @@ public:
     ProtocolFastCGI(WSGI *wsgi);
     virtual ~ProtocolFastCGI();
 
+    virtual Type type() const;
+
     inline qint64 readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const;
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;

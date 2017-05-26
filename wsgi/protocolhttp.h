@@ -34,6 +34,8 @@ public:
     ProtocolHttp(WSGI *wsgi);
     ~ProtocolHttp();
 
+    virtual Type type() const;
+
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 

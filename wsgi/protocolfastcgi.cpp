@@ -148,6 +148,11 @@ ProtocolFastCGI::~ProtocolFastCGI()
 {
 }
 
+Protocol::Type ProtocolFastCGI::type() const
+{
+    return FastCGI1;
+}
+
 quint32 wsgi_be32(const char *buf) {
     const quint32 *src = reinterpret_cast<const quint32 *>(buf);
     quint32 ret = 0;

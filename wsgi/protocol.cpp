@@ -36,6 +36,11 @@ Protocol::~Protocol()
     delete [] m_postBuffer;
 }
 
+Protocol::Type Protocol::type() const
+{
+    return Unknown;
+}
+
 qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
 {
     Q_UNUSED(sock)

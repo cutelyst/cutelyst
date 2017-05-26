@@ -126,4 +126,14 @@ void TcpServer::timeoutConnections()
     }
 }
 
+Protocol *TcpServer::protocol() const
+{
+    return m_protocol;
+}
+
+void TcpServer::setProtocol(Protocol *protocol)
+{
+    m_protocol = protocol;
+}
+
 #include "moc_tcpserver.cpp"

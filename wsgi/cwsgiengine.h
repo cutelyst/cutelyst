@@ -30,7 +30,8 @@ class QTcpServer;
 namespace CWSGI {
 
 class TcpServer;
-
+class ProtocolFastCGI;
+class ProtocolHttp;
 class WSGI;
 class CWsgiEngine : public Cutelyst::Engine
 {
@@ -101,6 +102,8 @@ private:
     QElapsedTimer m_lastDateTimer;
     QTimer *m_socketTimeout = nullptr;
     WSGI *m_wsgi;
+    ProtocolHttp *m_protoHttp = nullptr;
+    ProtocolFastCGI *m_protoFcgi = nullptr;
     int m_runningServers = 0;
     int m_serversTimeout = 0;
 };
