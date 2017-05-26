@@ -100,11 +100,6 @@ public:
         timeout = false;
         delete body;
         body = nullptr;
-        websocketContext = nullptr;
-        proto = mainProto;
-        websocket_phase = WebSocketPhaseHeaders;
-        websocket_need = 2;
-        websocket_payload_size = 0;
     }
 
     virtual void connectionClose() = 0;
@@ -113,7 +108,6 @@ public:
     CWsgiEngine *engine;
     Cutelyst::Context *websocketContext = nullptr;
     Protocol *proto;
-    Protocol *mainProto;
     char *buffer;
     ParserState connState = MethodLine;
     quint64 stream_id = 0;// FGCI

@@ -248,10 +248,10 @@ bool ProtocolHttp::processRequest(Socket *sock) const
         sock->websocketContext = c;
         // need 2 byte header
         sock->websocket_need = 2;
+        sock->websocket_phase = Socket::WebSocketPhaseHeaders;
         sock->processing = true;
         sock->buf_size = 0;
         sock->proto = m_websocketProto;
-        qCDebug(CWSGI_HTTP) << "Switched protocols";
 
         return false; // Must read remaining data
     }

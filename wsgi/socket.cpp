@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,6 +19,8 @@
 #include "socket.h"
 
 #include "wsgi.h"
+
+#include <Cutelyst/Context>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -51,6 +53,15 @@ Socket::~Socket()
 
 void TcpSocket::socketDisconnected()
 {
+    if (websocketContext) {
+        if (websocket_finn_opcode != 0x88) {
+            websocketContext->request()->webSocketClosed(1005, QString());
+        }
+
+        delete websocketContext;
+        websocketContext = nullptr;
+    }
+
     if (!processing) {
         Q_EMIT finished(this);
     }
@@ -72,6 +83,15 @@ void LocalSocket::connectionClose()
 
 void LocalSocket::socketDisconnected()
 {
+    if (websocketContext) {
+        if (websocket_finn_opcode != 0x88) {
+            websocketContext->request()->webSocketClosed(1005, QString());
+        }
+
+        delete websocketContext;
+        websocketContext = nullptr;
+    }
+
     if (!processing) {
         Q_EMIT finished(this);
     }
@@ -92,6 +112,15 @@ void SslSocket::connectionClose()
 
 void SslSocket::socketDisconnected()
 {
+    if (websocketContext) {
+        if (websocket_finn_opcode != 0x88) {
+            websocketContext->request()->webSocketClosed(1005, QString());
+        }
+
+        delete websocketContext;
+        websocketContext = nullptr;
+    }
+
     if (!processing) {
         Q_EMIT finished(this);
     }

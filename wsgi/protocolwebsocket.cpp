@@ -30,6 +30,8 @@ using namespace CWSGI;
 
 Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket")
 
+static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io);
+
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
 {
     m_websockets_max_size = 1024 * 1024;
@@ -122,7 +124,6 @@ static bool websocket_parse_header(Socket *sock, const char *buf)
         return false;
     }
 
-    qDebug() << "HEADER" << opcode << (byte2 & 0x7f);
     sock->websocket_payload_size = byte2 & 0x7f;
     if (sock->websocket_payload_size == 126) {
         sock->websocket_need = 2;
@@ -175,16 +176,20 @@ static bool websocket_parse_size(Socket *sock, const char *buf, int websockets_m
     return true;
 }
 
-static void websockets_parse_mask(Socket *sock, const char *buf)
+static void websockets_parse_mask(Socket *sock, char *buf, QIODevice *io)
 {
     const quint32 *ptr = reinterpret_cast<const quint32 *>(buf);
     sock->websocket_mask = *ptr;
 
-    sock->websocket_need = sock->websocket_payload_size;
     sock->websocket_phase = Socket::WebSocketPhasePayload;
+    sock->websocket_need = sock->websocket_payload_size;
 
     sock->websocket_payload = QByteArray();
-    sock->websocket_payload.reserve(sock->websocket_payload_size);
+    if (sock->websocket_payload_size == 0) {
+        websockets_parse_payload(sock, buf, 0, io);
+    } else {
+        sock->websocket_payload.reserve(sock->websocket_payload_size);
+    }
 }
 
 static void send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
@@ -205,6 +210,22 @@ static void send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
                                           sock->websocketContext);
         }
     }
+}
+
+static void set_closed(Cutelyst::Context *c, Socket *sock, QIODevice *io)
+{
+    quint16 closeCode = 1005; // CloseCodeMissingStatusCode
+    QString reason;
+    if (sock->websocket_payload.size() >= 2) {
+        closeCode = ws_be16(sock->websocket_payload.data());
+        reason = QString::fromUtf8(sock->websocket_payload.data() + 2, sock->websocket_payload.size() - 2);
+    }
+    c->request()->webSocketClosed(closeCode, reason);
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(sock->websocket_payload, Socket::OpCodeClose);
+    io->write(reply);
+
+    sock->connectionClose();
 }
 
 static void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame)
@@ -269,7 +290,7 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
         send_binary(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80);
         break;
     case Socket::OpCodeClose:
-        sock->connectionClose();
+        set_closed(sock->websocketContext, sock, io);
         return false;
     case Socket::OpCodePing:
         io->write(ProtocolWebSocket::createWebsocketReply(sock->websocket_payload.left(125), Socket::OpCodePong));
@@ -288,10 +309,9 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
 void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
 {
     qint64 bytesAvailable = io->bytesAvailable();
-    qCDebug(CWSGI_WS) << "ProtocolWebSocket::readyRead" << bytesAvailable;
 
     Q_FOREVER {
-        if (!bytesAvailable || (bytesAvailable < sock->websocket_need && sock->websocket_phase != Socket::WebSocketPhasePayload)) {
+        if (!bytesAvailable || !sock->websocket_need || (bytesAvailable < sock->websocket_need && sock->websocket_phase != Socket::WebSocketPhasePayload)) {
             // Need more data
             return;
         }
@@ -317,7 +337,7 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
             }
             break;
         case Socket::WebSocketPhaseMask:
-            websockets_parse_mask(sock, m_wsBuffer);
+            websockets_parse_mask(sock, m_wsBuffer, io);
             break;
         case Socket::WebSocketPhasePayload:
             if (!websockets_parse_payload(sock, m_wsBuffer, len, io)) {
