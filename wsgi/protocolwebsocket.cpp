@@ -141,34 +141,23 @@ static bool websocket_parse_header(Socket *sock, const char *buf)
 
 static bool websocket_parse_size(Socket *sock, const char *buf, int websockets_max_message_size)
 {
+    quint64 size;
     if (sock->websocket_payload_size == 126) {
-        quint16 ret = ws_be16(buf);
-        if (ret > INT_MAX) {
-            qCCritical(CWSGI_WS) << "Payload size too big" << ret << "max allowed" << INT_MAX;
-            sock->connectionClose();
-            return false;
-        }
-        sock->websocket_payload_size = ret;
+        size = ws_be16(buf);
     } else if (sock->websocket_payload_size == 127) {
-        quint64 ret = ws_be64(buf);
-        if (ret > INT_MAX) {
-            qCCritical(CWSGI_WS) << "Payload size too big" << ret << "max allowed" << INT_MAX;
-            sock->connectionClose();
-            return false;
-        }
-        sock->websocket_payload_size = ret;
+        size = ws_be64(buf);
     } else {
         qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << sock->websocket_payload_size;
         sock->connectionClose();
         return false;
     }
 
-    if (sock->websocket_payload_size > websockets_max_message_size) {
-        qCCritical(CWSGI_WS) << "Invalid packet size received:" << sock->websocket_payload_size
-                             << ", max allowed:" << websockets_max_message_size;
+    if (size > static_cast<quint64>(websockets_max_message_size)) {
+        qCCritical(CWSGI_WS) << "Payload size too big" << size << "max allowed" << websockets_max_message_size;
         sock->connectionClose();
         return false;
     }
+    sock->websocket_payload_size = size;
 
     sock->websocket_need = 4;
     sock->websocket_phase = Socket::WebSocketPhaseMask;
