@@ -206,7 +206,7 @@ bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QSt
     response->setStatus(Response::SwitchingProtocols);
     headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
     headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
-    const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("Origin")) : origin;
+    const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("ORIGIN")) : origin;
     if (localOrigin.isEmpty()) {
         headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), QStringLiteral("*"));
     } else {
