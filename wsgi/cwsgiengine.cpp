@@ -194,11 +194,10 @@ bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QSt
         return true;
     }
 
-//    if (!typeid(sock->proto)) {
-        // Websockets is only supported on HTTP protocol
-//        qCWarning(CWSGI_ENGINE) << "Upgrading a connection to websocket is only supported with the HTTP protocol" << typeid(sock->proto).name();
-//        return false;
-//    }
+    if (sock->proto->type() != Protocol::Http11) {
+        qCWarning(CWSGI_ENGINE) << "Upgrading a connection to websocket is only supported with the HTTP protocol" << typeid(sock->proto).name();
+        return false;
+    }
 
     const Headers requestHeaders = c->request()->headers();
     Response *response = c->response();
@@ -230,6 +229,7 @@ bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QSt
     headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
 
     sock->headerConnection = Socket::HeaderConnectionUpgrade;
+    sock->websocketContext = c;
 
     return finalizeHeadersWrite(c, Response::SwitchingProtocols, headers, engineData);
 }

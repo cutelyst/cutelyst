@@ -250,7 +250,6 @@ bool ProtocolHttp::processRequest(Socket *sock) const
     sock->processing = false;
 
     if (sock->headerConnection == Socket::HeaderConnectionUpgrade) {
-        sock->websocketContext = c;
         // need 2 byte header
         sock->websocket_need = 2;
         sock->websocket_phase = Socket::WebSocketPhaseHeaders;
