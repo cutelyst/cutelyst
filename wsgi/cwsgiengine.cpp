@@ -121,6 +121,18 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                 if (m_socketTimeout) {
                     connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
                 }
+
+                if (server->protocol()->type() == Protocol::Http11) {
+                    if (!m_protoHttp) {
+                        m_protoHttp = new ProtocolHttp(m_wsgi);
+                    }
+                    server->setProtocol(m_protoHttp);
+                } else if (server->protocol()->type() == Protocol::FastCGI1) {
+                    if (!m_protoFcgi) {
+                        m_protoFcgi = new ProtocolFastCGI(m_wsgi);
+                    }
+                    server->setProtocol(m_protoFcgi);
+                }
             }
         }
     }

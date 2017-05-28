@@ -32,7 +32,7 @@ public:
     ProtocolFastCGI(WSGI *wsgi);
     virtual ~ProtocolFastCGI();
 
-    virtual Type type() const;
+    virtual Type type() const override;
 
     inline qint64 readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const;
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
