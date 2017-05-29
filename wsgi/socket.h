@@ -123,12 +123,12 @@ public:
     QByteArray websocket_message;
     QByteArray websocket_payload;
     quint32 websocket_need;
+    int websocket_start_of_frame = 0;
     int websocket_phase = 0;
     int websocket_payload_size;
     quint32 websocket_mask;
-    quint8 websocket_continue_opcode;
+    quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
-    int websocket_closed;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

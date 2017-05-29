@@ -31,6 +31,7 @@ public:
     ~ProtocolWebSocket();
 
     static QByteArray createWebsocketReply(const QByteArray &msg, quint8 opcode);
+    static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;

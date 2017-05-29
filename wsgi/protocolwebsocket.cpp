@@ -23,8 +23,11 @@
 
 #include <Cutelyst/Headers>
 #include <Cutelyst/Context>
+#include <Cutelyst/Response>
 
 #include <QLoggingCategory>
+
+#include <QTextCodec>
 
 using namespace CWSGI;
 
@@ -78,6 +81,21 @@ QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8
     return ret;
 }
 
+QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quint16 closeCode)
+{
+    QByteArray payload;
+
+    quint8 buf[2];
+    buf[1] = (quint8) (closeCode & 0xff);
+    buf[0] = (quint8) ((closeCode >> 8) & 0xff);
+    payload.append((char*) buf, 2);
+
+    // 125 is max payload - 2 of the above bytes
+    payload.append(msg.toUtf8().left(123));
+
+    return ProtocolWebSocket::createWebsocketReply(payload, Socket::OpCodeClose);
+}
+
 quint16 ws_be16(const char *buf) {
     const quint32 *src = reinterpret_cast<const quint32 *>(buf);
     quint16 ret = 0;
@@ -102,29 +120,47 @@ quint64 ws_be64(const char *buf) {
     return ret;
 }
 
-static bool websocket_parse_header(Socket *sock, const char *buf)
+static bool websocket_parse_header(Socket *sock, const char *buf, QIODevice *io)
 {
     quint8 byte1 = buf[0];
+    quint8 byte2 = buf[1];
+
     sock->websocket_finn_opcode = byte1;
+    sock->websocket_payload_size = byte2 & 0x7f;
+
     quint8 opcode = byte1 & 0xf;
+
+    bool websocket_has_mask = byte2 >> 7;
+    if (!websocket_has_mask ||
+            ((opcode == Socket::OpCodePing || opcode == Socket::OpCodeClose) && sock->websocket_payload_size > 125) ||
+            (byte1 & 0x70) ||
+            ((opcode >= Socket::OpCodeReserved3 && opcode <= Socket::OpCodeReserved7) ||
+             (opcode >= Socket::OpCodeReservedB && opcode <= Socket::OpCodeReservedF)) ||
+            (!(byte1 & 0x80) && opcode != Socket::OpCodeText && opcode != Socket::OpCodeBinary && opcode != Socket::OpCodeContinue) ||
+            (sock->websocket_continue_opcode && (opcode == Socket::OpCodeText || opcode == Socket::OpCodeBinary))) {
+        // RFC errors
+        // client to server MUST have a mask
+        // Control opcode cannot have payload bigger than 125
+        // RSV bytes MUST not be set
+        // reserved opcodes must not be set 3-7
+        // reserved opcodes must not be set B-F
+        // Only Text/Bynary/Coninue opcodes can be fragmented
+        // Continue opcode was set but was NOT followed by CONTINUE
+
+        io->write(ProtocolWebSocket::createWebsocketCloseReply(QString(), 1002)); // Protocol error
+        sock->connectionClose();
+        return false;
+    }
+
     if (opcode == Socket::OpCodeText || opcode == Socket::OpCodeBinary) {
         sock->websocket_message = QByteArray();
+        sock->websocket_start_of_frame = 0;
         if (!(byte1 & 0x80)) {
             // FINN byte not set, store opcode for continue
             sock->websocket_continue_opcode = opcode;
         }
     }
 
-    quint8 byte2 = buf[1];
-    bool websocket_has_mask = byte2 >> 7;
-    if (!websocket_has_mask) {
-        // RFC states that client to server MUST have a mask
-        qCCritical(CWSGI_WS) << "Client did not set MASK bit" << sock << opcode << sock->websocket_continue_opcode;
-        sock->connectionClose();
-        return false;
-    }
-
-    sock->websocket_payload_size = byte2 & 0x7f;
     if (sock->websocket_payload_size == 126) {
         sock->websocket_need = 2;
         sock->websocket_phase = Socket::WebSocketPhaseSize;
@@ -181,37 +217,96 @@ static void websockets_parse_mask(Socket *sock, char *buf, QIODevice *io)
     }
 }
 
-static void send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
+static bool send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
 {
     Cutelyst::Request *request = c->request();
 
-    const QString frame = QString::fromUtf8(sock->websocket_payload);
-    request->webSocketTextFrame(frame,
-                                sock->websocket_finn_opcode & 0x80,
-                                sock->websocketContext);
+    const int msg_size = sock->websocket_message.size();
+    sock->websocket_message.append(sock->websocket_payload);
+
+    QByteArray payload = sock->websocket_payload;
+    if (sock->websocket_start_of_frame != msg_size) {
+        payload = sock->websocket_message.mid(sock->websocket_start_of_frame);
+    }
+
+    QTextCodec::ConverterState state;
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+    const QString frame = codec->toUnicode(payload.data(), payload.size(), &state);
+    if (singleFrame && (state.invalidChars || (frame.isEmpty() && payload.size()))) {
+        sock->connectionClose();
+        return false;
+    } else if (!state.invalidChars) {
+        sock->websocket_start_of_frame = sock->websocket_message.size();
+        request->webSocketTextFrame(frame,
+                                    sock->websocket_finn_opcode & 0x80,
+                                    sock->websocketContext);
+    }
 
     if (sock->websocket_finn_opcode & 0x80) {
+        sock->websocket_continue_opcode = 0;
         if (singleFrame || sock->websocket_payload == sock->websocket_message) {
             request->webSocketTextMessage(frame,
                                           sock->websocketContext);
         } else {
-            request->webSocketTextMessage(QString::fromUtf8(sock->websocket_message),
+            const QString msg = codec->toUnicode(sock->websocket_message.data(), sock->websocket_message.size(), &state);
+            if (state.invalidChars) {
+                sock->connectionClose();
+                return false;
+            }
+            request->webSocketTextMessage(msg,
                                           sock->websocketContext);
         }
     }
+
+    return true;
 }
 
 static void set_closed(Cutelyst::Context *c, Socket *sock, QIODevice *io)
 {
-    quint16 closeCode = 1005; // CloseCodeMissingStatusCode
+    quint16 closeCode = Cutelyst::Response::CloseCodeMissingStatusCode;
     QString reason;
+    QTextCodec::ConverterState state;
     if (sock->websocket_payload.size() >= 2) {
         closeCode = ws_be16(sock->websocket_payload.data());
-        reason = QString::fromUtf8(sock->websocket_payload.data() + 2, sock->websocket_payload.size() - 2);
+        QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+        reason = codec->toUnicode(sock->websocket_payload.data() + 2, sock->websocket_payload.size() - 2, &state);
     }
     c->request()->webSocketClosed(closeCode, reason);
 
-    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(sock->websocket_payload, Socket::OpCodeClose);
+    if (state.invalidChars) {
+        reason = QString();
+        closeCode = Cutelyst::Response::CloseCodeProtocolError;
+    } else if (closeCode < 3000 || closeCode > 4999) {
+        switch (closeCode) {
+        case Cutelyst::Response::CloseCodeNormal:
+        case Cutelyst::Response::CloseCodeGoingAway:
+        case Cutelyst::Response::CloseCodeProtocolError:
+        case Cutelyst::Response::CloseCodeDatatypeNotSupported:
+            //    case Cutelyst::Response::CloseCodeReserved1004:
+            break;
+        case Cutelyst::Response::CloseCodeMissingStatusCode:
+            if (sock->websocket_payload.isEmpty()) {
+                closeCode = Cutelyst::Response::CloseCodeNormal;
+            } else {
+                closeCode = Cutelyst::Response::CloseCodeProtocolError;
+            }
+            break;
+            //    case Cutelyst::Response::CloseCodeAbnormalDisconnection:
+        case Cutelyst::Response::CloseCodeWrongDatatype:
+        case Cutelyst::Response::CloseCodePolicyViolated:
+        case Cutelyst::Response::CloseCodeTooMuchData:
+        case Cutelyst::Response::CloseCodeMissingExtension:
+        case Cutelyst::Response::CloseCodeBadOperation:
+            //    case Cutelyst::Response::CloseCodeTlsHandshakeFailed:
+            break;
+        default:
+            reason = QString();
+            closeCode = Cutelyst::Response::CloseCodeProtocolError;
+            break;
+        }
+    }
+
+    const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, closeCode);
     io->write(reply);
 
     sock->connectionClose();
@@ -221,12 +316,15 @@ static void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame)
 {
     Cutelyst::Request *request = c->request();
 
+    sock->websocket_message.append(sock->websocket_payload);
+
     const QByteArray frame = sock->websocket_payload;
     request->webSocketBinaryFrame(frame,
                                   sock->websocket_finn_opcode & 0x80,
                                   sock->websocketContext);
 
     if (sock->websocket_finn_opcode & 0x80) {
+        sock->websocket_continue_opcode = 0;
         if (singleFrame || sock->websocket_payload == sock->websocket_message) {
             request->webSocketBinaryMessage(frame,
                                             sock->websocketContext);
@@ -250,7 +348,6 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
         sock->websocket_need -= len;
         return true;
     }
-    sock->websocket_message.append(sock->websocket_payload);
 
     sock->websocket_need = 2;
     sock->websocket_phase = Socket::WebSocketPhaseHeaders;
@@ -261,7 +358,9 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
     case Socket::OpCodeContinue:
         switch (sock->websocket_continue_opcode) {
         case Socket::OpCodeText:
-            send_text(sock->websocketContext, sock, false);
+            if (!send_text(sock->websocketContext, sock, false)) {
+                return false;
+            }
             break;
         case Socket::OpCodeBinary:
             send_binary(sock->websocketContext, sock, false);
@@ -273,7 +372,9 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
         }
         break;
     case Socket::OpCodeText:
-        send_text(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80);
+        if (!send_text(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80)) {
+            return false;
+        }
         break;
     case Socket::OpCodeBinary:
         send_binary(sock->websocketContext, sock, sock->websocket_finn_opcode & 0x80);
@@ -316,7 +417,7 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
 
         switch(sock->websocket_phase) {
         case Socket::WebSocketPhaseHeaders:
-            if (!websocket_parse_header(sock, m_wsBuffer)) {
+            if (!websocket_parse_header(sock, m_wsBuffer, io)) {
                 return;
             }
             break;
