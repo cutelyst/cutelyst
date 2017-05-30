@@ -185,10 +185,11 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
 
     QTextCodec::ConverterState state;
     const QString frame = m_codec->toUnicode(payload.data(), payload.size(), &state);
-    if (singleFrame && (state.invalidChars || (frame.isEmpty() && payload.size()))) {
+    const bool failed = state.invalidChars || state.remainingChars;
+    if (singleFrame && (failed || (frame.isEmpty() && payload.size()))) {
         sock->connectionClose();
         return false;
-    } else if (!state.invalidChars) {
+    } else if (!failed) {
         sock->websocket_start_of_frame = sock->websocket_message.size();
         request->webSocketTextFrame(frame,
                                     sock->websocket_finn_opcode & 0x80,
@@ -203,7 +204,8 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         } else {
             QTextCodec::ConverterState stateMsg;
             const QString msg = m_codec->toUnicode(sock->websocket_message.data(), sock->websocket_message.size(), &stateMsg);
-            if (stateMsg.invalidChars) {
+            const bool failed = state.invalidChars || state.remainingChars;
+            if (failed) {
                 sock->connectionClose();
                 return false;
             }
@@ -259,7 +261,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     }
     c->request()->webSocketClosed(closeCode, reason);
 
-    if (state.invalidChars) {
+    if (state.invalidChars || state.remainingChars) {
         reason = QString();
         closeCode = Cutelyst::Response::CloseCodeProtocolError;
     } else if (closeCode < 3000 || closeCode > 4999) {
