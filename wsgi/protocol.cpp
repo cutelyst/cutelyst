@@ -24,10 +24,10 @@ using namespace CWSGI;
 
 Protocol::Protocol(WSGI *wsgi)
 {
-    m_postBufferSize = wsgi->postBufferingBufsize();
     m_bufferSize = wsgi->bufferSize();
     m_postBuffering = wsgi->postBuffering();
     m_webSocketBufferSize = wsgi->bufferSize();
+    m_postBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
     m_postBuffer = new char[wsgi->postBufferingBufsize()];
 }
 

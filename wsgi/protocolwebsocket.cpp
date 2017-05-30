@@ -37,14 +37,11 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
 
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
 {
-    m_websockets_max_size = 1024 * 1024;
-    m_wsBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
-    m_wsBuffer = new char[m_wsBufferSize];
+    m_websockets_max_size = wsgi->websocketMaxSize() * 1024;
 }
 
 ProtocolWebSocket::~ProtocolWebSocket()
 {
-    delete [] m_wsBuffer;
 }
 
 QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8 opcode)
@@ -406,8 +403,8 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
             return;
         }
 
-        quint32 maxlen = qMin(sock->websocket_need, m_wsBufferSize);
-        qint64 len = io->read(m_wsBuffer, maxlen);
+        quint32 maxlen = qMin(sock->websocket_need, static_cast<quint32>(m_postBufferSize));
+        qint64 len = io->read(m_postBuffer, maxlen);
         if (len == -1) {
             qCWarning(CWSGI_WS) << "Failed to read from socket" << io->errorString();
             sock->connectionClose();
@@ -417,20 +414,20 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
 
         switch(sock->websocket_phase) {
         case Socket::WebSocketPhaseHeaders:
-            if (!websocket_parse_header(sock, m_wsBuffer, io)) {
+            if (!websocket_parse_header(sock, m_postBuffer, io)) {
                 return;
             }
             break;
         case Socket::WebSocketPhaseSize:
-            if (!websocket_parse_size(sock, m_wsBuffer, m_websockets_max_size)) {
+            if (!websocket_parse_size(sock, m_postBuffer, m_websockets_max_size)) {
                 return;
             }
             break;
         case Socket::WebSocketPhaseMask:
-            websockets_parse_mask(sock, m_wsBuffer, io);
+            websockets_parse_mask(sock, m_postBuffer, io);
             break;
         case Socket::WebSocketPhasePayload:
-            if (!websockets_parse_payload(sock, m_wsBuffer, len, io)) {
+            if (!websockets_parse_payload(sock, m_postBuffer, len, io)) {
                 return;
             }
             break;

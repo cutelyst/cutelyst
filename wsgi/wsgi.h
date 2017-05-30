@@ -262,6 +262,14 @@ public:
     int socketRcvbuf() const;
 
     /**
+     * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024)
+     * @accessors %websocketMaxSize(), setWebsocketMaxSize()
+     */
+    Q_PROPERTY(int websocket_max_size READ websocketMaxSize WRITE setWebsocketMaxSize)
+    void setWebsocketMaxSize(int value);
+    int websocketMaxSize() const;
+
+    /**
      * Defines the pid file to be written before privileges drop
      * @accessors pidfile(), setPidfile()
      */

@@ -100,6 +100,7 @@ public:
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;
     int socketTimeout = 4;
+    int websocketMaxSize = 1024 * 1024;
     bool lazy = false;
     bool master = false;
     bool autoReload = false;

@@ -214,6 +214,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                     QCoreApplication::translate("main", "bytes"));
     parser.addOption(socketRcvbuf);
 
+    QCommandLineOption wsMaxSize(QStringLiteral("websocket-max-size"),
+                                 QCoreApplication::translate("main", "sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option"),
+                                 QCoreApplication::translate("main", "Kbytes"));
+    parser.addOption(wsMaxSize);
+
     QCommandLineOption pidfileOpt(QStringLiteral("pidfile"),
                                   QCoreApplication::translate("main", "create pidfile (before privileges drop)"),
                                   QCoreApplication::translate("main", "file"));
@@ -429,6 +434,15 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         bool ok;
         auto size = parser.value(socketRcvbuf).toInt(&ok);
         setSocketRcvbuf(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(wsMaxSize)) {
+        bool ok;
+        auto size = parser.value(wsMaxSize).toInt(&ok);
+        setWebsocketMaxSize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
@@ -1031,6 +1045,18 @@ int WSGI::socketRcvbuf() const
 {
     Q_D(const WSGI);
     return d->socketReceiveBuf;
+}
+
+void WSGI::setWebsocketMaxSize(int value)
+{
+    Q_D(WSGI);
+    d->websocketMaxSize = value * 1024;
+}
+
+int WSGI::websocketMaxSize() const
+{
+    Q_D(const WSGI);
+    return d->websocketMaxSize / 1024;
 }
 
 void WSGI::setPidfile(const QString &file)
