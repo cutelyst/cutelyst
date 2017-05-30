@@ -21,6 +21,8 @@
 
 #include "protocol.h"
 
+class QTextCodec;
+
 namespace CWSGI {
 
 class WSGI;
@@ -36,6 +38,17 @@ public:
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
+private:
+    bool send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame) const;
+    void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame) const;
+    void send_pong(QIODevice *io, const QByteArray data) const;
+    void send_closed(Cutelyst::Context *c, Socket *sock, QIODevice *io) const;
+    bool websocket_parse_header(Socket *sock, const char *buf, QIODevice *io) const;
+    bool websocket_parse_size(Socket *sock, const char *buf, int websockets_max_message_size) const;
+    void websocket_parse_mask(Socket *sock, char *buf, QIODevice *io) const;
+    bool websocket_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io) const;
+
+    QTextCodec *m_codec;
     quint32 m_websockets_max_size;
 };
 
