@@ -44,12 +44,11 @@ ProtocolWebSocket::~ProtocolWebSocket()
 {
 }
 
-QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8 opcode)
+QByteArray ProtocolWebSocket::createWebsocketHeader(quint8 opcode, quint64 len)
 {
     QByteArray ret;
     ret.append(0x80 + opcode);
 
-    quint64 len = msg.length();
     if (len < 126) {
         ret.append(static_cast<quint8>(len));
     } else if (len <= static_cast<quint16>(0xffff)) {
@@ -58,7 +57,7 @@ QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8
         quint8 buf[2];
         buf[1] = (quint8) (len & 0xff);
         buf[0] = (quint8) ((len >> 8) & 0xff);
-        ret.append((char*) buf, 2);
+        ret.append(reinterpret_cast<char*>(buf), 2);
     } else {
         ret.append(127);
 
@@ -71,9 +70,8 @@ QByteArray ProtocolWebSocket::createWebsocketReply(const QByteArray &msg, quint8
         buf[2] = (quint8) ((len >> 40) & 0xff);
         buf[1] = (quint8) ((len >> 48) & 0xff);
         buf[0] = (quint8) ((len >> 56) & 0xff);
-        ret.append((char*) buf, 8);
+        ret.append(reinterpret_cast<char*>(buf), 8);
     }
-    ret.append(msg);
 
     return ret;
 }
@@ -82,15 +80,19 @@ QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quin
 {
     QByteArray payload;
 
+    const QByteArray data = msg.toUtf8().left(123);
+
+    payload = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodeClose, data.size() + 2);
+
     quint8 buf[2];
     buf[1] = (quint8) (closeCode & 0xff);
     buf[0] = (quint8) ((closeCode >> 8) & 0xff);
-    payload.append((char*) buf, 2);
+    payload.append(reinterpret_cast<char*>(buf), 2);
 
     // 125 is max payload - 2 of the above bytes
-    payload.append(msg.toUtf8().left(123));
+    payload.append(data);
 
-    return ProtocolWebSocket::createWebsocketReply(payload, Socket::OpCodeClose);
+    return payload;
 }
 
 quint16 ws_be16(const char *buf) {
@@ -336,6 +338,12 @@ static void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame)
     }
 }
 
+static void send_pong(QIODevice *io, const QByteArray data)
+{
+    io->write(ProtocolWebSocket::createWebsocketHeader(Socket::OpCodePong, data.size()));
+    io->write(data);
+}
+
 static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io)
 {
     quint8 *mask = reinterpret_cast<quint8 *>(&sock->websocket_mask);
@@ -384,7 +392,7 @@ static bool websockets_parse_payload(Socket *sock, char *buf, uint len, QIODevic
         set_closed(sock->websocketContext, sock, io);
         return false;
     case Socket::OpCodePing:
-        io->write(ProtocolWebSocket::createWebsocketReply(sock->websocket_payload.left(125), Socket::OpCodePong));
+        send_pong(io, sock->websocket_payload.left(125));
         break;
     case Socket::OpCodePong:
         request->webSocketPong(sock->websocket_payload,

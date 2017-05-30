@@ -30,7 +30,7 @@ public:
     ProtocolWebSocket(WSGI *wsgi);
     ~ProtocolWebSocket();
 
-    static QByteArray createWebsocketReply(const QByteArray &msg, quint8 opcode);
+    static QByteArray createWebsocketHeader(quint8 opcode, quint64 len);
     static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;

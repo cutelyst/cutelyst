@@ -241,8 +241,10 @@ bool CWsgiEngine::webSocketSendTextMessage(Context *c, const QString &message)
         return false;
     }
 
-    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message.toUtf8(), Socket::OpCodeText);
-    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+    const QByteArray rawMessage = message.toUtf8();
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodeText, rawMessage.size());
+    doWrite(c, headers.data(), headers.size(), sock);
+    return doWrite(c, rawMessage.data(), rawMessage.size(), sock) == rawMessage.size();
 }
 
 bool CWsgiEngine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
@@ -252,8 +254,9 @@ bool CWsgiEngine::webSocketSendBinaryMessage(Context *c, const QByteArray &messa
         return false;
     }
 
-    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(message, Socket::OpCodeBinary);
-    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodeBinary, message.size());
+    doWrite(c, headers.data(), headers.size(), sock);
+    return doWrite(c, message.data(), message.size(), sock) == message.size();
 }
 
 bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
@@ -263,8 +266,10 @@ bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
         return false;
     }
 
-    const QByteArray reply = ProtocolWebSocket::createWebsocketReply(payload.left(125), Socket::OpCodePing);
-    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+    const QByteArray rawMessage = payload.left(125);
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodePing, rawMessage.size());
+    doWrite(c, headers.data(), headers.size(), sock);
+    return doWrite(c, rawMessage.data(), rawMessage.size(), sock) == rawMessage.size();
 }
 
 bool CWsgiEngine::webSocketClose(Context *c, quint16 code, const QString &reason)
