@@ -253,6 +253,8 @@ static bool send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame)
             request->webSocketTextMessage(msg,
                                           sock->websocketContext);
         }
+        sock->websocket_message = QByteArray();
+        sock->websocket_payload = QByteArray();
     }
 
     return true;
@@ -329,6 +331,8 @@ static void send_binary(Cutelyst::Context *c, Socket *sock, bool singleFrame)
             request->webSocketBinaryMessage(sock->websocket_message,
                                             sock->websocketContext);
         }
+        sock->websocket_message = QByteArray();
+        sock->websocket_payload = QByteArray();
     }
 }
 
