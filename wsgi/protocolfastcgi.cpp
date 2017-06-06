@@ -21,6 +21,8 @@
 #include "socket.h"
 #include "wsgi.h"
 
+#include <Cutelyst/Context>
+
 #include <QCoreApplication>
 #include <QLoggingCategory>
 #include <QTemporaryFile>
@@ -506,7 +508,7 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
                 continue;
             } else if (ret == WSGI_OK) {
                 sock->processing = true;
-                sock->engine->processSocket(sock);
+                delete sock->engine->processSocket(sock);
                 wsgi_proto_fastcgi_endrequest(sock, io);
                 sock->processing = false;
 
