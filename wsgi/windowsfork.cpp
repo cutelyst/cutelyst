@@ -61,6 +61,7 @@ int WindowsFork::exec(bool lazy, bool master)
     Q_UNUSED(lazy)
     Q_UNUSED(master)
 
+    Q_EMIT forked(0);
     return qApp->exec();
 }
 
