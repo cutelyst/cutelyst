@@ -1,8 +1,6 @@
 %{Cpp:LicenseTemplate}\
 #include "%{AppHdrFileName}"
 
-#include <Cutelyst/Plugins/StaticSimple/staticsimple.h>
-
 #include "root.h"
 
 using namespace Cutelyst;
@@ -18,8 +16,6 @@ using namespace Cutelyst;
 bool %{ProjectName}::init()
 {
     new Root(this);
-
-    new StaticSimple(this);
 
     return true;
 }

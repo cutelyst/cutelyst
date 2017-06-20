@@ -6,12 +6,11 @@ set(cutelyst_SRCS
 )
 
 # Create the application
-add_library(${PROJECT_NAME} SHARED ${cutelyst_SRCS})
+add_library(%{ProjectName} SHARED ${cutelyst_SRCS})
 
 # Link to Cutelyst
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(%{ProjectName}
     Cutelyst::Core
-    Cutelyst::StaticSimple
     Qt5::Core
     Qt5::Network
 )
