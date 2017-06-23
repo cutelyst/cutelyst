@@ -21,15 +21,15 @@ public:
     
 private Q_SLOTS:
 @if %{BeginMethod}
-    bool Begin(Context *c) override;
+    bool Begin(Context *c);
 
 @endif
 @if %{AutoMethod}
-    bool Auto(Context *c) override;
+    bool Auto(Context *c);
 
 @endif
 @if %{EndMethod}
-    bool End(Context *c) override;
+    bool End(Context *c);
 
 @endif
 };
