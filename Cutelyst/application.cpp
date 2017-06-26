@@ -229,6 +229,12 @@ QVariantMap Application::config() const
     return d->config;
 }
 
+QString Application::pathTo(const QString &path) const
+{
+    QDir home = config(QStringLiteral("home")).toString();
+    return home.absoluteFilePath(path);
+}
+
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
     QDir home = config(QStringLiteral("home")).toString();

@@ -132,7 +132,12 @@ public:
     QVariantMap config() const;
 
     /**
-     * Merges path with config("HOME") and returns a QDir object.
+     * Merges path with config("HOME") and returns an absolute path.
+     */
+    QString pathTo(const QString &path) const;
+
+    /**
+     * Merges path with config("HOME") and returns an absolute path.
      */
     QString pathTo(const QStringList &path) const;
 
