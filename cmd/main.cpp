@@ -306,6 +306,12 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "  cmake_policy(SET CMP0043 NEW)" << "\n";
         out << "endif()" << "\n";
         out << "\n";
+        out << "if(WIN32)\n";
+        out << "  if(MSVC)\n";
+        out << "    add_definitions(-D_SCL_SECURE_NO_WARNINGS)\n";
+        out << "    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)\n";
+        out << "  endif()\n";
+        out << "endif()\n\n";
         out << "find_package(Qt5 COMPONENTS Core Network REQUIRED)" << "\n";
         out << "find_package(CutelystQt5 REQUIRED)" << "\n";
         out << "\n";
