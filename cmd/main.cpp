@@ -518,7 +518,6 @@ int main(int argc, char *argv[])
             qDebug() << "Error: failed to find project";
             return false;
         }
-        wsgi.setChdir(projectDir.absolutePath());
 
         QString localFilename = parser.value(appFile);
         if (localFilename.isEmpty()) {
