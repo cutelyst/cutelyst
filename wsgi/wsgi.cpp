@@ -1213,6 +1213,13 @@ void WSGIPrivate::setupApplication()
         qCDebug(CUTELYST_WSGI) << "Loaded application: " << QCoreApplication::applicationName();
     }
 
+    if (!chdir2.isEmpty()) {
+        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData()  << std::endl;;
+        if (!QDir::setCurrent(chdir2)) {
+            qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
+        }
+    }
+
     std::cout << "Threads:" << threads << std::endl;
     if (threads) {
         engine = createEngine(localApp, 0);
@@ -1227,13 +1234,6 @@ void WSGIPrivate::setupApplication()
 
     if (!engine) {
         qFatal("Main engine failed to init");
-    }
-
-    if (!chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to" << chdir2.toLatin1().constData()  << std::endl;;
-        if (!QDir::setCurrent(chdir2)) {
-            qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
-        }
     }
 }
 
