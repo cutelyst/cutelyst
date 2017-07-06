@@ -519,6 +519,12 @@ int main(int argc, char *argv[])
             return false;
         }
 
+#ifdef Q_OS_WIN
+        wsgi.setChdir2(projectDir.absolutePath());
+#else
+        wsgi.setChdir(projectDir.absolutePath());
+#endif
+
         QString localFilename = parser.value(appFile);
         if (localFilename.isEmpty()) {
             localFilename = Helper::findApplication(projectDir);

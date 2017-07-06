@@ -1230,7 +1230,7 @@ void WSGIPrivate::setupApplication()
     }
 
     if (!chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to" << chdir2.toLatin1().constData()  << std::endl;;
+        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData()  << std::endl;;
         if (!QDir::setCurrent(chdir2)) {
             qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
         }
