@@ -84,13 +84,19 @@ set (BUILDDIR "${CMAKE_BINARY_DIR}")
 set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
 find_program(UWSGI_EXEC_PATH NAMES uwsgi)
 set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
-set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
+set (INSTALL_BIN_DIR ${CMAKE_INSTALL_PREFIX}/bin/)
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
-set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
+if(WIN32)
+  set(CMAKE_INSTALL_LIBDIR "${INSTALL_BIN_DIR}")
+  set (CUTELYST_PLUGINS_DIR "${INSTALL_BIN_DIR}")
+else()
+  set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
+  set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
+endif()
 
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
@@ -144,12 +150,11 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelystqt5-config.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cutelystqt5/
 )
 install(EXPORT CutelystQt5Targets
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/cutelystqt5/"
+    DESTINATION cmake
     FILE CutelystQt5Targets.cmake
     NAMESPACE Cutelyst::
     COMPONENT Devel
 )
-
 
 add_subdirectory(Cutelyst)
 
@@ -219,3 +224,5 @@ if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
     ${DOCS_ARGS}
   )
 endif()
+
+export(PACKAGE CutelystQt5)
