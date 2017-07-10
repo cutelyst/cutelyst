@@ -195,6 +195,12 @@ void Context::setStash(const QString &key, const QVariant &value)
     d->stash.insert(key, value);
 }
 
+void Context::setStash(const QString &key, const ParamsMultiMap &map)
+{
+    Q_D(Context);
+    d->stash.insert(key, QVariant::fromValue(map));
+}
+
 QStack<Component *> Context::stack() const
 {
     Q_D(const Context);

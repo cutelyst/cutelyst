@@ -234,6 +234,11 @@ public:
     void setStash(const QString &key, const QVariant &value);
 
     /**
+     * A convenient method to set a single ParamsMultiMap to the stash
+     */
+    void setStash(const QString &key, const ParamsMultiMap &map);
+
+    /**
      * Returns the internal execution stack (actions that are currently executing).
      */
     QStack<Component *> stack() const;
