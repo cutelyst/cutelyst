@@ -65,7 +65,7 @@ bool View::doExecute(Context *c)
     }
     response->setBody(output);
 
-    return c->error();
+    return !c->error();
 }
 
 #include "moc_view.cpp"
