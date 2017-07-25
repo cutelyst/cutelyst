@@ -183,14 +183,14 @@ void UnixFork::stopWSGI(const QString &pidfile)
 {
     QFile file(pidfile);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        std::cerr << "Failed open pid file " << pidfile.toLocal8Bit().constData() << std::endl;
+        std::cerr << "Failed open pid file " << qPrintable(pidfile)  << std::endl;
         exit(1);
     }
 
     QByteArray piddata = file.readLine().simplified();
     qint64 pid = piddata.toLongLong();
     if (pid < 2) {
-        std::cerr << "Failed read pid file " << pidfile.toLocal8Bit().constData() << std::endl;
+        std::cerr << "Failed read pid file " << qPrintable(pidfile) << std::endl;
         exit(1);
     }
 
@@ -255,11 +255,11 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
     if (!gid.isEmpty()) {
         int gidInt = gid.toInt(&ok);
         if (!ok) {
-            struct group *ugroup = getgrnam(gid.toUtf8().constData());
+            struct group *ugroup = getgrnam(qUtf8Printable(gid));
             if (ugroup) {
                 gidInt = ugroup->gr_gid;
             } else {
-                qFatal("setgid group %s not found.", gid.toUtf8().constData());
+                qFatal("setgid group %s not found.", qUtf8Printable(gid));
             }
         }
 
@@ -293,11 +293,11 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
     if (!uid.isEmpty()) {
         int uidInt = uid.toInt(&ok);
         if (!ok) {
-            struct passwd *upasswd = getpwnam(uid.toUtf8().constData());
+            struct passwd *upasswd = getpwnam(qUtf8Printable(uid));
             if (upasswd) {
                 uidInt = upasswd->pw_uid;
             } else {
-                qFatal("setuid user %s not found.", uid.toUtf8().constData());
+                qFatal("setuid user %s not found.", qUtf8Printable(uid));
             }
         }
 
@@ -321,9 +321,9 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
     new_uid = owner.toInt(&ok);
 
     if (!ok) {
-        new_user = getpwnam(owner.toUtf8().constData());
+        new_user = getpwnam(qUtf8Printable(owner));
         if (!new_user) {
-            qFatal("unable to find user '%s'", owner.toUtf8().constData());
+            qFatal("unable to find user '%s'", qUtf8Printable(owner));
         }
         new_uid = new_user->pw_uid;
     }
@@ -332,15 +332,15 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
     if (!group.isEmpty()) {
         new_gid = group.toInt(&ok);
         if (!ok) {
-            new_group = getgrnam(group.toUtf8().constData());
+            new_group = getgrnam(qUtf8Printable(group));
             if (!new_group) {
-                qFatal("unable to find group '%s'", group.toUtf8().constData());
+                qFatal("unable to find group '%s'", qUtf8Printable(group));
             }
             new_gid = new_group->gr_gid;
         }
     }
 
-    if (chown(filename.toUtf8().constData(), new_uid, new_gid)) {
+    if (chown(qUtf8Printable(filename), new_uid, new_gid)) {
         qFatal("chown() error '%s'", strerror(errno));
     }
 }

@@ -66,12 +66,12 @@ void AbstractFork::removeTouchReload()
 
 void AbstractFork::fileChanged(const QString &path)
 {
-    std::cout << "File changed restarting... " << path.toLocal8Bit().constData() << std::endl;
+    std::cout << "File changed restarting... " << qPrintable(path) << std::endl;
     m_restartTimer->start();
 }
 
 void AbstractFork::directoryChanged(const QString &path)
 {
-    std::cout << "Directory changed restarting... " << path.toLocal8Bit().constData() << std::endl;
+    std::cout << "Directory changed restarting... " << qPrintable(path) << std::endl;
     m_restartTimer->start();
 }

@@ -614,7 +614,7 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure
 
         if (ret && server->socketDescriptor()) {
             std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
-                      << " bound to TCP address " << server->serverName().toLocal8Bit().constData()
+                      << " bound to TCP address " << qPrintable(server->serverName())
                       << " fd " << QByteArray::number(server->socketDescriptor()).constData()
                       << std::endl;
             servers.push_back(server);
@@ -659,13 +659,13 @@ void WSGIPrivate::listenLocalSockets()
             server->pauseAccepting();
 
             std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
-                      << " bound to LOCAL address " << fullName.toLocal8Bit().constData()
+                      << " bound to LOCAL address " << qPrintable(fullName)
                       << " fd " << QByteArray::number(server->socket()).constData()
                       << std::endl;
             servers.push_back(server);
         } else {
             std::cout << "Failed to listen on activated LOCAL FD: " << QByteArray::number(fd).constData()
-                      << " : " << server->errorString().toLocal8Bit().constData() << std::endl;
+                      << " : " << qPrintable(server->errorString()) << std::endl;
             exit(1);
         }
     }
@@ -710,8 +710,8 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
         server->pauseAccepting();
 
         if (!ret || !server->socket()) {
-            std::cout << "Failed to listen on LOCAL: " << line.toLocal8Bit().constData()
-                      << " : " << server->errorString().toLocal8Bit().constData() << std::endl;
+            std::cout << "Failed to listen on LOCAL: " << qPrintable(line)
+                      << " : " << qPrintable(server->errorString()) << std::endl;
             exit(1);
         }
 
@@ -722,7 +722,7 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
 #endif
 
         std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
-                  << " bound to LOCAL address " << line.toLocal8Bit().constData()
+                  << " bound to LOCAL address " << qPrintable(line)
                   << " fd " << QByteArray::number(server->socket()).constData()
                   << std::endl;
         servers.push_back(server);
@@ -1305,11 +1305,11 @@ void WSGIPrivate::writePidFile(const QString &filename)
 
     QFile file(filename);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        std::cerr << "Failed write pid file " << filename.toLocal8Bit().constData() << std::endl;
+        std::cerr << "Failed write pid file " << qPrintable(filename) << std::endl;
         exit(1);
     }
 
-    std::cout << "Writting pidfile to " << filename.toLocal8Bit().constData() << std::endl;
+    std::cout << "Writting pidfile to " << qPrintable(filename) << std::endl;
     file.write(QByteArray::number(QCoreApplication::applicationPid()) + '\n');
 }
 
@@ -1355,12 +1355,12 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
 
     QVariantMap loadedConfig;
     if (json) {
-        std::cout << "Loading JSON configuration: " << filename.toLocal8Bit().constData()
-                  << " section: " << section.toLocal8Bit().constData() << std::endl;
+        std::cout << "Loading JSON configuration: " << qPrintable(filename)
+                  << " section: " << qPrintable(section) << std::endl;
         loadedConfig = Engine::loadJsonConfig(filename);
     } else {
-        std::cout << "Loading INI configuration: " << filename.toLocal8Bit().constData()
-                  << " section: " << section.toLocal8Bit().constData() << std::endl;
+        std::cout << "Loading INI configuration: " << qPrintable(filename)
+                  << " section: " << qPrintable(section) << std::endl;
         loadedConfig = Engine::loadIniConfig(filename);
     }
 

@@ -84,8 +84,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         const QString certPath = afterColon.section(QLatin1Char(','), 1, 1);
         auto certFile = new QFile(certPath);
         if (!certFile->open(QFile::ReadOnly)) {
-            std::cerr << "Failed to open SSL certificate" << certPath.toLocal8Bit().constData()
-                      << certFile->errorString().toLocal8Bit().constData() << std::endl;
+            std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
+                      << qPrintable(certFile->errorString()) << std::endl;
             exit(1);
         }
         QSslCertificate cert(certFile);
@@ -97,8 +97,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         const QString keyPath = afterColon.section(QLatin1Char(','), 2, 2);
         auto keyFile = new QFile(keyPath);
         if (!keyFile->open(QFile::ReadOnly)) {
-            std::cerr << "Failed to open SSL private key" << keyPath.toLocal8Bit().constData()
-                      << keyFile->errorString().toLocal8Bit().constData() << std::endl;
+            std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
+                      << qPrintable(keyFile->errorString()) << std::endl;
             exit(1);
         }
         QSslKey key(keyFile, QSsl::Rsa);
@@ -126,8 +126,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
             setSocketDescriptor(socket);
             pauseAccepting();
         } else {
-            std::cerr << "Failed to listen on TCP: " << line.toUtf8().constData()
-                      << " : " << errorString().toUtf8().constData() << std::endl;
+            std::cerr << "Failed to listen on TCP: " << qPrintable(line)
+                      << " : " << qPrintable(errorString()) << std::endl;
             exit(1);
         }
 #endif
@@ -136,8 +136,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         if (ret) {
             pauseAccepting();
         } else {
-            std::cerr << "Failed to listen on TCP: " << line.toUtf8().constData()
-                      << " : " << errorString().toUtf8().constData() << std::endl;
+            std::cerr << "Failed to listen on TCP: " << qPrintable(line)
+                      << " : " << qPrintable(errorString()) << std::endl;
             exit(1);
         }
     }
