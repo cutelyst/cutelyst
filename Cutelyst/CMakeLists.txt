@@ -102,7 +102,7 @@ target_compile_definitions(cutelyst-qt5
 )
 
 set_target_properties(cutelyst-qt5 PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 target_link_libraries(cutelyst-qt5

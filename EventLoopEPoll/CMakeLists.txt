@@ -18,7 +18,7 @@ add_library(CutelystQt5::EventLoopEPoll ALIAS cutelyst_qt_eventloop_epoll)
 set_property(TARGET cutelyst_qt_eventloop_epoll PROPERTY EXPORT_NAME EventLoopEPoll)
 
 set_target_properties(cutelyst_qt_eventloop_epoll PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

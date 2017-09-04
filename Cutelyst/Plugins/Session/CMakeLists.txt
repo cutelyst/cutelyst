@@ -30,7 +30,7 @@ add_library(CutelystQt5::Session ALIAS cutelyst_qt5_plugin_session)
 set_property(TARGET cutelyst_qt5_plugin_session PROPERTY EXPORT_NAME Session)
 
 set_target_properties(cutelyst_qt5_plugin_session PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

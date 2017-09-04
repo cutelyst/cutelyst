@@ -1,6 +1,6 @@
-project(cutelyst)
-
 cmake_minimum_required(VERSION 3.1)
+cmake_policy(SET CMP0048 NEW)
+
 if (POLICY CMP0043)
   cmake_policy(SET CMP0043 NEW)
 endif()
@@ -8,17 +8,13 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
+project(cutelyst VERSION 1.9.0)
+
 find_package(Qt5 5.6.0 COMPONENTS
     Core
     Network
     Sql
 )
-
-set(CUTELYST_VERSION_MAJOR  "1")
-set(CUTELYST_VERSION_MINOR  "9")
-set(CUTELYST_VERSION_PATCH  "0")
-set(CUTELYST_VERSION_SUFFIX "${VERSION_SUFFIX}")
-set(CUTELYST_VERSION "${CUTELYST_VERSION_MAJOR}.${CUTELYST_VERSION_MINOR}.${CUTELYST_VERSION_PATCH}")
 
 set(CUTELYST_API_LEVEL "0")
 

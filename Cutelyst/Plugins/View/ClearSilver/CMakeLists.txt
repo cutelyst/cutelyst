@@ -18,7 +18,7 @@ add_library(CutelystQt5::View::ClearSilver ALIAS cutelyst_view_clearsilver)
 set_property(TARGET cutelyst_view_clearsilver PROPERTY EXPORT_NAME View::ClearSilver)
 
 set_target_properties(cutelyst_view_clearsilver PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

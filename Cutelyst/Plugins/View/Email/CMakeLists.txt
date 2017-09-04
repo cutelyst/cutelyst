@@ -22,7 +22,7 @@ add_library(CutelystQt5::View::Email ALIAS cutelyst_qt5_plugin_view_email)
 set_property(TARGET cutelyst_qt5_plugin_view_email PROPERTY EXPORT_NAME View::Email)
 
 set_target_properties(cutelyst_qt5_plugin_view_email PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

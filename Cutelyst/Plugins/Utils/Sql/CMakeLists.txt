@@ -17,7 +17,7 @@ add_library(CutelystQt5::Utils::Sql ALIAS cutelyst_qt5_plugin_utils_sql)
 set_property(TARGET cutelyst_qt5_plugin_utils_sql PROPERTY EXPORT_NAME Utils::Sql)
 
 set_target_properties(cutelyst_qt5_plugin_utils_sql PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

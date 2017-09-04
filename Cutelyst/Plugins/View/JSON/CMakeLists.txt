@@ -15,7 +15,7 @@ add_library(CutelystQt5::View::JSON ALIAS cutelyst_qt5_plugin_view_json)
 set_property(TARGET cutelyst_qt5_plugin_view_json PROPERTY EXPORT_NAME View::JSON)
 
 set_target_properties(cutelyst_qt5_plugin_view_json PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

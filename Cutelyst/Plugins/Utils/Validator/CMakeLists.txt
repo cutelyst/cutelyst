@@ -177,7 +177,7 @@ add_library(CutelystQt5::Utils::Validator ALIAS cutelyst_qt5_plugin_utils_valida
 set_property(TARGET cutelyst_qt5_plugin_utils_validator PROPERTY EXPORT_NAME Utils::Validator)
 
 set_target_properties(cutelyst_qt5_plugin_utils_validator PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

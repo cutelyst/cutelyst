@@ -18,7 +18,7 @@ add_library(CutelystQt5::View::Grantlee ALIAS cutelyst_view_grantlee)
 set_property(TARGET cutelyst_view_grantlee PROPERTY EXPORT_NAME View::Grantlee)
 
 set_target_properties(cutelyst_view_grantlee PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

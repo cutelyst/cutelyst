@@ -51,7 +51,7 @@ add_library(CutelystQt5::WSGI ALIAS cutelyst_wsgi_qt5)
 set_property(TARGET cutelyst_wsgi_qt5 PROPERTY EXPORT_NAME WSGI)
 
 set_target_properties(cutelyst_wsgi_qt5 PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

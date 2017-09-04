@@ -16,7 +16,7 @@ add_library(CutelystQt5::StatusMessage ALIAS cutelyst_qt5_plugin_statusmessage)
 set_property(TARGET cutelyst_qt5_plugin_statusmessage PROPERTY EXPORT_NAME StatusMessage)
 
 set_target_properties(cutelyst_qt5_plugin_statusmessage PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

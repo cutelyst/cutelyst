@@ -16,7 +16,7 @@ add_library(CutelystQt5::Utils::Pagination ALIAS cutelyst_qt5_plugin_utils_pagin
 set_property(TARGET cutelyst_qt5_plugin_utils_pagination PROPERTY EXPORT_NAME Utils::Pagination)
 
 set_target_properties(cutelyst_qt5_plugin_utils_pagination PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

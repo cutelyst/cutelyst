@@ -31,7 +31,7 @@ add_library(CutelystQt5::Authentication ALIAS cutelyst_qt5_plugin_authentication
 set_property(TARGET cutelyst_qt5_plugin_authentication PROPERTY EXPORT_NAME Authentication)
 
 set_target_properties(cutelyst_qt5_plugin_authentication PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 

@@ -17,7 +17,7 @@ add_library(CutelystQt5::StaticSimple ALIAS cutelyst_qt5_plugin_staticsimple)
 set_property(TARGET cutelyst_qt5_plugin_staticsimple PROPERTY EXPORT_NAME StaticSimple)
 
 set_target_properties(cutelyst_qt5_plugin_staticsimple PROPERTIES
-    VERSION ${CUTELYST_VERSION}
+    VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
