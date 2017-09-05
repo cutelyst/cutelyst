@@ -20,7 +20,7 @@
 #define PACKAGE_NAME "cutelyst"
 
 /* Version number of package */
-#define VERSION "@VERSION@"
+#define VERSION "@PROJECT_VERSION@"
 
 /* Directory where the plugins are located */
 #define CUTELYST_PLUGINS_DIR "@CUTELYST_PLUGINS_DIR@"
