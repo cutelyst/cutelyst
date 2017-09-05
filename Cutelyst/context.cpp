@@ -33,11 +33,26 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QCoreApplication>
+#include <QBuffer>
 
 using namespace Cutelyst;
 
 Context::Context(ContextPrivate *priv) : d_ptr(priv)
 {
+}
+
+Context::Context(Application *app) :
+    d_ptr(new ContextPrivate(app, app->engine(), app->dispatcher(), app->plugins()))
+{
+    d_ptr->response = new Response(this, d_ptr->engine, app->defaultHeaders());
+
+    EngineRequest req;
+    req.body = new QBuffer(this);
+    req.body->open(QBuffer::ReadWrite);
+    req.requestPtr = nullptr;
+
+    d_ptr->request = new Request(new RequestPrivate(req, d_ptr->engine));
+    d_ptr->request->setParent(this);
 }
 
 Context::~Context()

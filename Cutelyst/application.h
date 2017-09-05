@@ -346,6 +346,7 @@ protected:
     void setConfig(const QString &key, const QVariant &value);
 
     friend class Engine;
+    friend class Context;
 
     /*!
      * Called by the Engine to setup the internal data
