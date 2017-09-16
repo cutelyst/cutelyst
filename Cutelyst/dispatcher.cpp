@@ -336,9 +336,8 @@ QString DispatcherPrivate::normalizePath(const QString &path)
         ++i;
     }
 
-    int last = ret.size() - 1;
-    if (last >= 0 && ret.at(last) == QLatin1Char('/')) {
-        ret.resize(last);
+    if (ret.endsWith(QLatin1Char('/'))) {
+        ret.resize(ret.size() - 1);
     }
     return ret;
 }
