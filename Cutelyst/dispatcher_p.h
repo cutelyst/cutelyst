@@ -39,6 +39,7 @@ public:
 
     static inline QString actionRel2Abs(Context *c, const QString &path);
     static inline QString cleanNamespace(const QString &ns);
+    static inline QString normalizePath(const QString &path);
 
     QMap<QString, Action*> actions;
     QMap<QString, ActionList> actionContainer;

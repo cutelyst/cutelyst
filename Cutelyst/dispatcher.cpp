@@ -177,11 +177,8 @@ void Dispatcher::prepareAction(Context *c)
 
 void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) const
 {
-    QStringList pathParts = requestPath.split(QLatin1Char('/'), QString::SkipEmptyParts);
-    const QString path = pathParts.join(QLatin1Char('/'));
+    QString path = normalizePath(requestPath);
     QStringList args;
-
-    int pos = path.size();
 
     //  "foo/bar"
     //  "foo/" skip
@@ -190,29 +187,22 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
     Q_FOREVER {
         // Check out the dispatch types to see if any
         // will handle the path at this level
-        const QString actionPath = path.mid(0, pos);
         for (DispatchType *type : dispatchers) {
-            if (type->match(c, actionPath, args) == DispatchType::ExactMatch) {
+            if (type->match(c, path, args) == DispatchType::ExactMatch) {
                 return;
             }
         }
 
         // leave the loop if we are at the root "/"
-        if (pos <= 0) {
+        if (path.isEmpty()) {
             break;
         }
 
-        pos = path.lastIndexOf(QLatin1Char('/'), --pos);
-        if (pos == -1) {
-            pos = 0;
-        }
+        int pos = path.lastIndexOf(QLatin1Char('/'));
 
-        // If not, move the last part path to args
-        if (pathParts.isEmpty()) {
-            args.prepend(QString());
-        } else {
-            args.prepend(QUrl::fromPercentEncoding(pathParts.takeLast().toLatin1()));
-        }
+        args.prepend(QUrl::fromPercentEncoding(path.midRef(pos + 1).toLatin1()));
+
+        path.resize(pos);
     }
 }
 
@@ -324,6 +314,31 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
         } else {
             lastWasSlash = false;
         }
+    }
+    return ret;
+}
+
+QString DispatcherPrivate::normalizePath(const QString &path)
+{
+    QString ret = path;
+    bool lastSlash = true;
+    int i = 0;
+    while (i < ret.size()) {
+        if (ret.at(i) == QLatin1Char('/')) {
+            if (lastSlash) {
+                ret.remove(i, 1);
+                continue;
+            }
+            lastSlash = true;
+        } else {
+            lastSlash = false;
+        }
+        ++i;
+    }
+
+    int last = ret.size() - 1;
+    if (ret.at(last) == QLatin1Char('/')) {
+        ret.resize(last);
     }
     return ret;
 }
