@@ -30,6 +30,8 @@ namespace Utils {
     CUTELYST_LIBRARY QByteArray buildTable(const QVector<QStringList> &table, const QStringList &headers = QStringList(), const QString &title = QString());
 
     CUTELYST_LIBRARY QString decodePercentEncoding(QString *s);
+
+    CUTELYST_LIBRARY QString decodePercentEncoding(QByteArray *ba);
 }
 
 }

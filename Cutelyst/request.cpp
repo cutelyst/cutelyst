@@ -20,6 +20,7 @@
 #include "engine.h"
 #include "common.h"
 #include "multipartformdataparser.h"
+#include "utils.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtNetwork/QHostInfo>
@@ -395,7 +396,7 @@ void RequestPrivate::parseUrlQuery() const
         // Check for keywords (no = signs)
         if (query.indexOf('=') < 0) {
             QByteArray aux = query;
-            queryKeywords = QUrl::fromPercentEncoding(aux.replace('+', ' '));
+            queryKeywords = Utils::decodePercentEncoding(&aux);
         } else {
             queryParam = parseUrlEncoded(query);
         }
@@ -572,18 +573,18 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
             continue;
         }
 
-        const QByteArray data = line.mid(pos + 1, len).replace('+', ' ');
+        QByteArray data = line.mid(pos + 1, len);
 
         int equal = data.indexOf('=');
         if (equal != -1) {
-            const QByteArray value = data.mid(equal + 1);
+            QByteArray value = data.mid(equal + 1);
             if (value.length()) {
-                const QByteArray key = data.mid(0, equal);
-                ret.insertMulti(QUrl::fromPercentEncoding(key),
-                                QUrl::fromPercentEncoding(value));
+                QByteArray key = data.mid(0, equal);
+                ret.insertMulti(Utils::decodePercentEncoding(&key),
+                                Utils::decodePercentEncoding(&value));
             }
         } else {
-            ret.insertMulti(QUrl::fromPercentEncoding(data),
+            ret.insertMulti(Utils::decodePercentEncoding(&data),
                             QString());
         }
     }
