@@ -121,3 +121,38 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
 
     return buffer;
 }
+
+QString Utils::decodePercentEncoding(QString *s)
+{
+    if (s->isEmpty()) {
+        return *s;
+    }
+
+    QChar *data = s->data();
+    int len = s->size();
+    int outlen = 0;
+    for (int i = 0 ; i < len ; ++i, ++outlen) {
+        QChar c = (*s)[i];
+        if (c == QLatin1Char('%') && i + 2 < len) {
+            int a = (*s)[++i].unicode();
+            int b = (*s)[++i].unicode();
+
+            if (a >= '0' && a <= '9') a -= '0';
+            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+
+            if (b >= '0' && b <= '9') b -= '0';
+            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+
+            *data++ = (ushort)((a << 4) | b);
+        } else {
+            *data++ = c;
+        }
+    }
+
+    if (outlen != len)
+        s->truncate(outlen);
+
+    return *s;
+}
