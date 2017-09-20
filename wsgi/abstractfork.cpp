@@ -75,3 +75,5 @@ void AbstractFork::directoryChanged(const QString &path)
     std::cout << "Directory changed restarting... " << qPrintable(path) << std::endl;
     m_restartTimer->start();
 }
+
+#include "moc_abstractfork.cpp"

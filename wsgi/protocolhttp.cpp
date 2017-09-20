@@ -378,3 +378,5 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     }
     sock->headers.pushRawHeader(key, value);
 }
+
+#include "moc_wsgi.cpp"

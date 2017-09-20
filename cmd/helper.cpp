@@ -46,3 +46,5 @@ QString Helper::findApplication(const QDir &projectDir)
     }
     return QString();
 }
+
+#include "moc_helper.cpp"

@@ -140,3 +140,5 @@ Grantlee::Node *UriForTag::getNode(const QString &tagContent, Grantlee::Parser *
 
     return new UriFor(parts.first(), parts.mid(1), p);
 }
+
+#include "moc_urifor.cpp"

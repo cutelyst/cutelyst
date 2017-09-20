@@ -111,3 +111,5 @@ void TcpSslServer::setSslConfiguration(const QSslConfiguration &conf)
 {
     m_sslConfiguration = conf;
 }
+
+#include "moc_tcpsslserver.cpp"

@@ -194,3 +194,5 @@ int MultiPartFormDataParserPrivate::findBoundary(char *buffer, int len, const QB
     }
     return len;
 }
+
+#include "moc_multipartformdataparser_p.cpp"

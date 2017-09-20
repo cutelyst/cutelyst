@@ -43,3 +43,5 @@ QHash<QString, Grantlee::Filter *> CutelystGrantlee::filters(const QString &name
 
     return ret;
 }
+
+#include "moc_cutelystgrantlee.cpp"

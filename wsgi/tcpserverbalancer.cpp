@@ -419,3 +419,5 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 
     return server;
 }
+
+#include "moc_tcpserverbalancer.cpp"
