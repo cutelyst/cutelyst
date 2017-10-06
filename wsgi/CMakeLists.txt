@@ -89,6 +89,12 @@ target_link_libraries(cutelyst-wsgi
 #    eventdispatcher_epoll
 )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5WSGI.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5WSGI.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5WSGI.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
 if (JEMALLOC_FOUND)
     target_link_libraries(cutelyst-wsgi ${JEMALLOC_LIBRARIES})
 endif()

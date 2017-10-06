@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst-qt5
+
+Name: Cutelyst Qt5
+Description: Cutelyst Web Framework core module
+Version: @PROJECT_VERSION@
+Requires: Qt5Core
+Libs: -L${libdir} -lcutelyst-qt5
+Cflags: -I${includedir}/Cutelyst -I${includedir}

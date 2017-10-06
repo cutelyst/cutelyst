@@ -110,13 +110,13 @@ target_link_libraries(cutelyst-qt5
     Qt5::Network
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst-qt5.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Core.pc
   @ONLY
 )
 
 install(TARGETS cutelyst-qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-qt5.pc
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Core.pc
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 install(FILES ${cutelystqt_HEADERS}
