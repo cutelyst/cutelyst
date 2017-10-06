@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst-qt5
+
+Name: Cutelyst Qt5 Grantlee
+Description: Cutelyst Grantlee View module
+Version: @PROJECT_VERSION@
+Requires: Qt5Core CutelystQt5Core
+Libs: -L${libdir} -lcutelyst_view_grantlee
+Cflags: -I${includedir}/Cutelyst -I${includedir}

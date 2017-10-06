@@ -51,3 +51,9 @@ grantlee_adjust_plugin_name(grantlee_cutelyst)
 install(TARGETS grantlee_cutelyst EXPORT CutelystQt5Targets
         LIBRARY DESTINATION "${CUTELYST_PLUGINS_DIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Grantlee.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Grantlee.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Grantlee.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
