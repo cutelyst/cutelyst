@@ -110,12 +110,12 @@ bool RoleACL::canVisit(Context *c) const
                 return false;
             }
         }
+
         for (const QString &role : allowed) {
             if (user_has.contains(role)) {
                 return true;
             }
         }
-        return false;
     }  else if (!required.isEmpty()) {
         for (const QString &role : required) {
             if (!user_has.contains(role)) {
@@ -129,7 +129,6 @@ bool RoleACL::canVisit(Context *c) const
                 return true;
             }
         }
-        return false;
     }
 
     return false;
