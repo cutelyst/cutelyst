@@ -274,7 +274,7 @@ void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &us
 
 void AuthenticationPrivate::_q_postFork(Application *app)
 {
-    auth = app->plugin<Authentication *>();;
+    auth = app->plugin<Authentication *>();
 }
 
 Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)

@@ -94,44 +94,42 @@ bool RoleACL::aroundExecute(Context *c, QStack<Cutelyst::Component *> stack)
     return false;
 }
 
+// TODO maybe mark this as static for 2.0
 bool RoleACL::canVisit(Context *c) const
 {
     Q_D(const RoleACL);
 
-    Authentication *auth = c->plugin<Authentication*>();
-    if (auth) {
-        const QStringList user_has = auth->user(c).value(QStringLiteral("roles")).toStringList();
+    const QStringList user_has = Authentication::user(c).value(QStringLiteral("roles")).toStringList();
 
-        const QStringList required = d->requiresRole;
-        const QStringList allowed = d->allowedRole;
+    const QStringList required = d->requiresRole;
+    const QStringList allowed = d->allowedRole;
 
-        if (!required.isEmpty() && !allowed.isEmpty()) {
-            for (const QString &role : required) {
-                if (!user_has.contains(role)) {
-                    return false;
-                }
+    if (!required.isEmpty() && !allowed.isEmpty()) {
+        for (const QString &role : required) {
+            if (!user_has.contains(role)) {
+                return false;
             }
-            for (const QString &role : allowed) {
-                if (user_has.contains(role)) {
-                    return true;
-                }
-            }
-            return false;
-        }  else if (!required.isEmpty()) {
-            for (const QString &role : required) {
-                if (!user_has.contains(role)) {
-                    return false;
-                }
-            }
-            return true;
-        } else if (!allowed.isEmpty()) {
-            for (const QString &role : allowed) {
-                if (user_has.contains(role)) {
-                    return true;
-                }
-            }
-            return false;
         }
+        for (const QString &role : allowed) {
+            if (user_has.contains(role)) {
+                return true;
+            }
+        }
+        return false;
+    }  else if (!required.isEmpty()) {
+        for (const QString &role : required) {
+            if (!user_has.contains(role)) {
+                return false;
+            }
+        }
+        return true;
+    } else if (!allowed.isEmpty()) {
+        for (const QString &role : allowed) {
+            if (user_has.contains(role)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     return false;
