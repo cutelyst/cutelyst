@@ -60,6 +60,7 @@ struct EngineRequest {
 
 class Application;
 class Context;
+class EngineConnection;
 class EnginePrivate;
 class CUTELYST_LIBRARY Engine : public QObject
 {
@@ -281,6 +282,8 @@ protected:
      * while processing websocket data.
      */
     Context *processRequest2(const EngineRequest &req);
+
+    Context *processRequest3(EngineConnection *conn);
 
     /**
      * Deprecated

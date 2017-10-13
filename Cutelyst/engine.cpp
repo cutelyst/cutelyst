@@ -418,6 +418,11 @@ Context *Engine::processRequest2(const EngineRequest &req)
     return d->app->handleRequest2(request);
 }
 
+Context *Engine::processRequest3(EngineConnection *conn)
+{
+
+}
+
 void Engine::processRequest(const EngineRequest &req)
 {
     delete processRequest2(req);
