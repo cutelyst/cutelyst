@@ -71,6 +71,7 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
     insert(QStringLiteral("pages"), QVariant::fromValue(pages));
     insert(QStringLiteral("last_page"), lastPage);
     insert(QStringLiteral("lastPage"), lastPage);
+    insert(QStringLiteral("numberOfItems"), numberOfItems);
 }
 
 Pagination::~Pagination()
@@ -96,6 +97,11 @@ int Pagination::currentPage() const
 int Pagination::lastPage() const
 {
     return value(QStringLiteral("lastPage")).toInt();
+}
+
+int Pagination::numberOfItems() const
+{
+    return value(QStringLiteral("numberOfItems")).toInt();
 }
 
 QVector<int> Pagination::pages() const

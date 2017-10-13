@@ -59,6 +59,11 @@ public:
     int lastPage() const;
 
     /**
+     * Returns the total number of items
+     */
+    int numberOfItems() const;
+
+    /**
      * Returns the list of pages, with each page number as the integer
      */
     QVector<int> pages() const;
