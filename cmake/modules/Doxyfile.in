@@ -97,9 +97,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = @CMAKE_SOURCE_DIR@/dox/Mainpage.dox @CMAKE_SOURCE_DIR@/Cutelyst @CMAKE_SOURCE_DIR@/wsgi/wsgi.h
 INPUT_ENCODING         = UTF-8
-FILE_PATTERNS          = *.h \
-                         *.dox \
-
+FILE_PATTERNS          = *.h *.dox *.cpp
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
