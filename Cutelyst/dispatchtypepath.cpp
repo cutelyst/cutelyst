@@ -173,12 +173,14 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         int actionNumberOfArgs = action->numberOfArgs();
         for (const Action *regAction : it.value()) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
-                qCCritical(CUTELYST_DISPATCHER) << "Not registering Action"
-                                                << action->name()
-                                                << "of controller"
-                                                << action->controller()->objectName()
-                                                << "because it conflicts with "
-                                                << regAction->name();
+                qCCritical(CUTELYST_DISPATCHER_PATH) << "Not registering Action"
+                                                     << action->name()
+                                                     << "of controller"
+                                                     << action->controller()->objectName()
+                                                     << "because it conflicts with"
+                                                     << regAction->name()
+                                                     << "of controller"
+                                                     << regAction->controller()->objectName();
                 return false;
             }
         }

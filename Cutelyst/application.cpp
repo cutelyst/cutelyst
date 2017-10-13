@@ -41,6 +41,7 @@
 #include <QtCore/QTranslator>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_PATH, "cutelyst.dispatcher.path")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
 Q_LOGGING_CATEGORY(CUTELYST_CONTROLLER, "cutelyst.controller")
 Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
