@@ -152,7 +152,6 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
 
     if (!attributes.contains(QLatin1String("RequiresRole")) && !attributes.contains(QLatin1String("AllowedRole"))) {
         qFatal("RoleACL: Action %s requires at least one RequiresRole or AllowedRole attribute", qPrintable(d->actionReverse));
-        return false;
     } else {
         const QStringList required = attributes.values(QLatin1String("RequiresRole"));
         for (const QString &role : required) {
@@ -168,7 +167,6 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     auto it = attributes.constFind(QLatin1String("ACLDetachTo"));
     if (it == attributes.constEnd() || it.value().isEmpty()) {
         qFatal("RoleACL: Action %s requires the ACLDetachTo(<action>) attribute", qPrintable(d->actionReverse));
-        return false;
     }
     d->aclDetachTo = it.value();
 

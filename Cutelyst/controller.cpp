@@ -386,7 +386,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
     if (!ret.contains(QStringLiteral("Args")) && !ret.contains(QStringLiteral("CaptureArgs")) &&
             (ret.contains(QStringLiteral("AutoArgs")) || ret.contains(QStringLiteral("AutoCaptureArgs")))) {
         if (ret.contains(QStringLiteral("AutoArgs")) && ret.contains(QStringLiteral("AutoCaptureArgs"))) {
-            qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed", name.data());
+            qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed", name.constData());
         } else {
             QString parameterName;
             if (ret.contains(QStringLiteral("AutoArgs"))) {
