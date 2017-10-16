@@ -151,7 +151,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     d->actionReverse = args.value(QLatin1String("reverse")).toString();
 
     if (!attributes.contains(QLatin1String("RequiresRole")) && !attributes.contains(QLatin1String("AllowedRole"))) {
-        qFatal("RoleACL: Action %s requires at least one RequiresRole or AllowedRole attribute", d->actionReverse.toLocal8Bit().constData());
+        qFatal("RoleACL: Action %s requires at least one RequiresRole or AllowedRole attribute", qPrintable(d->actionReverse));
         return false;
     } else {
         const QStringList required = attributes.values(QLatin1String("RequiresRole"));
@@ -167,7 +167,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
 
     auto it = attributes.constFind(QLatin1String("ACLDetachTo"));
     if (it == attributes.constEnd() || it.value().isEmpty()) {
-        qFatal("RoleACL: Action %s requires the ACLDetachTo(<action>) attribute", d->actionReverse.toLocal8Bit().constData());
+        qFatal("RoleACL: Action %s requires the ACLDetachTo(<action>) attribute", qPrintable(d->actionReverse));
         return false;
     }
     d->aclDetachTo = it.value();
@@ -235,12 +235,8 @@ bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller
 
     d->detachTo = dispatcher->getAction(d->aclDetachTo);
     if (!d->detachTo) {
-        qCCritical(CUTELYST_ROLEACL) << "Action"
-                                     << d->actionReverse
-                                     << "requires a valid action set on the ACLDetachTo("
-                                     << d->aclDetachTo.data()
-                                     << ") attribute";
-        return false;
+        qFatal("RoleACL: Action '%s' requires a valid action set on the ACLDetachTo(%s) attribute",
+               qPrintable(d->actionReverse), qPrintable(d->aclDetachTo));
     }
 
     return true;
