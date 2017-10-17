@@ -25,8 +25,6 @@
 #include <Cutelyst/Controller>
 #include <Cutelyst/Dispatcher>
 
-#include <QMap>
-
 using namespace Cutelyst;
 
 /*!
@@ -147,7 +145,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_D(RoleACL);
     Q_UNUSED(application)
 
-    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
     d->actionReverse = args.value(QLatin1String("reverse")).toString();
 
     if (!attributes.contains(QLatin1String("RequiresRole")) && !attributes.contains(QLatin1String("AllowedRole"))) {
@@ -229,9 +227,9 @@ bool RoleACL::canVisit(Context *c) const
 bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller *controller)
 {
     Q_D(RoleACL);
-    Q_UNUSED(controller)
+    Q_UNUSED(dispatcher)
 
-    d->detachTo = dispatcher->getAction(d->aclDetachTo);
+    d->detachTo = controller->actionFor(d->aclDetachTo);
     if (!d->detachTo) {
         qFatal("RoleACL: Action '%s' requires a valid action set on the ACLDetachTo(%s) attribute",
                qPrintable(d->actionReverse), qPrintable(d->aclDetachTo));

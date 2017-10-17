@@ -423,10 +423,11 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &args)
 {
     QStack<Component *> roles;
-    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QByteArray, QByteArray> >();
-    auto doesIt = attributes.constFind(QByteArrayLiteral("Does"));
+    const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
+
+    auto doesIt = attributes.constFind(QStringLiteral("Does"));
     while (doesIt != attributes.constEnd()) {
-        QObject *object = instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
+        QObject *object = instantiateClass(doesIt.value().toLatin1(), QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }
