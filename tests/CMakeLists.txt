@@ -47,6 +47,7 @@ cute_test(testvalidator CutelystQt5::Utils::Validator "" "")
 
 if (NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT CMAKE_GENERATOR MATCHES "Ninja")
     cute_test(testauthentication CutelystQt5::Authentication CutelystQt5::Session "")
+    cute_test(testactionroleacl CutelystQt5::Authentication CutelystQt5::Session "")
 endif()
 
 cute_test(testpbkdf2 CutelystQt5::Authentication CutelystQt5::Session "")
