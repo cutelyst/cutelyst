@@ -3,6 +3,7 @@
 
 #include <QtTest/QTest>
 #include <QtCore/QObject>
+#include <QDir>
 
 #include "headers.h"
 #include "coverageobject.h"
@@ -109,6 +110,10 @@ void TestActionRoleACL::initTestCase()
 TestEngine* TestActionRoleACL::getEngine()
 {
     qputenv("RECURSION", QByteArrayLiteral("10"));
+    QDir current = QDir::current();
+    current.cd(QStringLiteral("../Cutelyst/Actions/RoleACL"));
+    qDebug() << "setting CUTELYST_PLUGINS_DIR to" << current.absolutePath();
+    qputenv("CUTELYST_PLUGINS_DIR", current.absolutePath().toLocal8Bit());
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new ActionRoleACL(app);

@@ -193,7 +193,7 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
     const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
     const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
-    QObject *object = instantiateClass(actionClass.toLatin1(), "Cutelyst::Action");
+    QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
     if (object) {
         Action *action = qobject_cast<Action*>(object);
         if (action) {
@@ -424,10 +424,9 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
 {
     QStack<Component *> roles;
     const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
-
     auto doesIt = attributes.constFind(QStringLiteral("Does"));
-    while (doesIt != attributes.constEnd()) {
-        QObject *object = instantiateClass(doesIt.value().toLatin1(), QByteArrayLiteral("Cutelyst::Component"));
+    while (doesIt != attributes.constEnd() && doesIt.key() == QLatin1String("Does")) {
+        QObject *object = instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }
@@ -470,9 +469,9 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
     return ret;
 }
 
-QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByteArray &super)
+QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArray &super)
 {
-    QString instanceName = QString::fromLatin1(name);
+    QString instanceName = name;
     if (!instanceName.isEmpty()) {
         instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
 
@@ -512,7 +511,7 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
                 return object;
             }
         } else {
-            Component *component = application->createComponentPlugin(QString::fromLatin1(name));
+            Component *component = application->createComponentPlugin(name);
             if (component) {
                 return component;
             }
@@ -524,12 +523,8 @@ QObject *ControllerPrivate::instantiateClass(const QByteArray &name, const QByte
         }
 
         if (!id) {
-            qCCritical(CUTELYST_CONTROLLER)
-                    << "Class name"
-                    << instanceName
-                    << "is not registered, you can register it with qRegisterMetaType<"
-                    << instanceName.toLatin1().data()
-                    << ">();";
+            qFatal("Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                   qPrintable(instanceName), qPrintable(instanceName));
         }
     }
     return nullptr;

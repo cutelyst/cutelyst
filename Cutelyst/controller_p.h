@@ -42,7 +42,7 @@ public:
     QString parsePathAttr(const QString &value);
     QString parseChainedAttr(const QString &attr);
 
-    QObject *instantiateClass(const QByteArray &name, const QByteArray &super);
+    QObject *instantiateClass(const QString &name, const QByteArray &super);
     bool superIsClassName(const QMetaObject *super, const QByteArray &className);
 
     QString pathPrefix;
