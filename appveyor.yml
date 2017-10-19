@@ -15,6 +15,62 @@ clone_folder: c:\dev\cutelyst
 environment:
   matrix:
   - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.9\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.9\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Visual Studio 14"
+    QT5: C:\Qt\5.9\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Visual Studio 14 Win64"
+    QT5: C:\Qt\5.9\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    QT5: C:\Qt\5.9\msvc2017_64
+    PLATFORM: X64
+    VSVER: 17
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "MinGW Makefiles"
+    QT5: C:\Qt\5.9\mingw53_32
+    MINGW_PATH: C:\Qt\Tools\mingw530_32
+    ENABLE_MAINTAINER_CFLAGS: on
+
+  - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.8\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Ninja"
+    QT5: C:\Qt\5.8\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Visual Studio 14"
+    QT5: C:\Qt\5.8\msvc2015
+    PLATFORM: X86
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "Visual Studio 14 Win64"
+    QT5: C:\Qt\5.8\msvc2015_64
+    PLATFORM: X64
+    VSVER: 14
+    ENABLE_MAINTAINER_CFLAGS: off
+  - CMAKE_GENERATOR: "MinGW Makefiles"
+    QT5: C:\Qt\5.8\mingw53_32
+    MINGW_PATH: C:\Qt\Tools\mingw530_32
+    ENABLE_MAINTAINER_CFLAGS: on
+
+  - CMAKE_GENERATOR: "Ninja"
     QT5: C:\Qt\5.7\msvc2015
     PLATFORM: X86
     VSVER: 14
