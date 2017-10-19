@@ -110,10 +110,15 @@ void TestActionRoleACL::initTestCase()
 TestEngine* TestActionRoleACL::getEngine()
 {
     qputenv("RECURSION", QByteArrayLiteral("10"));
+
     QDir current = QDir::current();
-    current.cd(QStringLiteral("../Cutelyst/Actions/RoleACL"));
-    qDebug() << "setting CUTELYST_PLUGINS_DIR to" << current.absolutePath();
-    qputenv("CUTELYST_PLUGINS_DIR", current.absolutePath().toLocal8Bit());
+    current.cd(QStringLiteral(".."));
+    QString pluginPaths = current.absolutePath();
+    current.cd(QStringLiteral("Cutelyst/Actions/RoleACL"));
+    pluginPaths += QLatin1Char(';') + current.absolutePath();
+    qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;
+    qputenv("CUTELYST_PLUGINS_DIR", pluginPaths.toLocal8Bit());
+
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new ActionRoleACL(app);
