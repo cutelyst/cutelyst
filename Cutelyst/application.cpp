@@ -147,23 +147,19 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
         if (factory) {
             return factory->createComponent(parent);
         } else {
-            return 0;
+            return nullptr;
         }
     }
 
-    Component *component = d->createComponentPlugin(name, parent, QStringLiteral(CUTELYST_PLUGINS_DIR));
-    if (!component && qEnvironmentVariableIsSet("CUTELYST_PLUGINS_DIR")) {
-        const QByteArray dir = qgetenv("CUTELYST_PLUGINS_DIR");
-        const QByteArrayList dirs = dir.split(';');
-        for (const QByteArray &item : dirs) {
-            component = d->createComponentPlugin(name, parent, QString::fromLocal8Bit(item));
-            if (component) {
-                break;
-            }
+    const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+    for (const QByteArray &dir : dirs) {
+        Component *component = d->createComponentPlugin(name, parent, QString::fromLocal8Bit(dir));
+        if (component) {
+            return component;
         }
     }
 
-    return component;
+    return nullptr;
 }
 
 const char *Application::cutelystVersion()
