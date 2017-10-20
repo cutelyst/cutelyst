@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,6 +26,15 @@ namespace Cutelyst {
 
 class CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Pagination : public QVariantMap
 {
+    Q_GADGET
+    Q_PROPERTY(int limit READ limit)
+    Q_PROPERTY(int offset READ offset)
+    Q_PROPERTY(int currentPage READ currentPage)
+    Q_PROPERTY(int lastPage READ lastPage)
+    Q_PROPERTY(int numberOfItems READ numberOfItems)
+    Q_PROPERTY(bool enableFirst READ enableFirst)
+    Q_PROPERTY(bool enableLast READ enableLast)
+    Q_PROPERTY(QVector<int> pages READ pages)
 public:
     Pagination();
     /**
@@ -62,6 +71,16 @@ public:
      * Returns the total number of items
      */
     int numberOfItems() const;
+
+    /**
+     * Returns true if the first page link should be enabled
+     */
+    bool enableFirst() const;
+
+    /**
+     * Returns true if the last page link should be enabled
+     */
+    bool enableLast() const;
 
     /**
      * Returns the list of pages, with each page number as the integer

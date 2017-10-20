@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,18 +32,18 @@ Pagination::Pagination()
 Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
 {
     if (itemsPerPage <= 0) {
-        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 10";
-        itemsPerPage = 10;
+        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 1";
+        itemsPerPage = 1;
     }
 
-    if (currentPage < 0) {
-        qCWarning(C_PAGINATION) << "Invalid current page:" << currentPage  << "failing back to 0";
-        currentPage = 0;
+    if (currentPage <= 0) {
+        qCWarning(C_PAGINATION) << "Invalid current page:" << currentPage  << "failing back to 1";
+        currentPage = 1;
     }
 
-    if (pageLinks < 0) {
-        qCWarning(C_PAGINATION) << "Invalid number of page links:" << pageLinks << "failing back to 10";
-        pageLinks = 10;
+    if (pageLinks <= 0) {
+        qCWarning(C_PAGINATION) << "Invalid number of page links:" << pageLinks << "failing back to 1";
+        pageLinks = 1;
     }
 
     insert(QStringLiteral("limit"), itemsPerPage);
@@ -66,10 +66,9 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
     for (int i = startPage; i <= endPage; ++i) {
         pages.append(i);
     }
-    insert(QStringLiteral("enable_first"), currentPage > 1);
-    insert(QStringLiteral("enable_last"), currentPage < lastPage);
+    insert(QStringLiteral("enableFirst"), currentPage > 1);
+    insert(QStringLiteral("enableLast"), currentPage != lastPage);
     insert(QStringLiteral("pages"), QVariant::fromValue(pages));
-    insert(QStringLiteral("last_page"), lastPage);
     insert(QStringLiteral("lastPage"), lastPage);
     insert(QStringLiteral("numberOfItems"), numberOfItems);
 }
@@ -102,6 +101,16 @@ int Pagination::lastPage() const
 int Pagination::numberOfItems() const
 {
     return value(QStringLiteral("numberOfItems")).toInt();
+}
+
+bool Pagination::enableFirst() const
+{
+    return value(QStringLiteral("enableFirst")).toBool();
+}
+
+bool Pagination::enableLast() const
+{
+    return value(QStringLiteral("enableLast")).toBool();
 }
 
 QVector<int> Pagination::pages() const
