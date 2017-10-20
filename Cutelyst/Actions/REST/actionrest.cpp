@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,40 @@
 
 using namespace Cutelyst;
 
+/*!
+ * \class Cutelyst::ActionREST actionrest.h Cutelyst/Actions/REST/ActionREST
+ * \brief Automated REST Method Dispatching
+ *
+ * \code{.h}
+ * C_ATTR(foo, :Local :ActionClass(REST))
+ * void foo(Context *c); // do setup for HTTP method specific handlers
+ *
+ * C_ATTR(foo_GET, :Private)
+ * void foo_GET(Context *c); // do something for GET requests
+ *
+ * C_ATTR(foo_PUT, :Local :ActionClass(REST))
+ * void foo_PUT(Context *c); // do something for PUT requests
+ * \endcode
+ *
+ * This Action handles doing automatic method dispatching for REST requests. It takes a normal Cutelyst action, and changes
+ * the dispatch to append an underscore and method name. First it will try dispatching to an action with the generated name,
+ * and failing that it will try to dispatch to a regular method.
+ *
+ * For example, in the synopsis above, calling GET on "/foo" would result in the foo_GET method being dispatched.
+ *
+ * If a method is requested that is not implemented, this action will return a status 405 (Method Not Found). It will populate
+ * the "Allow" header with the list of implemented request methods. You can override this behavior by implementing a custom
+ * 405 handler like so:
+ *
+ * \code{.h}
+ * C_ATTR(foo_not_implemented, :Private)
+ * void foo_not_implemented(Context *c); // handle not implemented methods
+ * \endcode
+ *
+ * If you do not provide an _OPTIONS method, we will automatically respond with a 200 OK. The "Allow" header will be populated
+ * with the list of implemented request methods. If you do not provide an _HEAD either, we will auto dispatch to the _GET one
+ * in case it exists.
+ */
 ActionREST::ActionREST(QObject *parent) : Action(parent)
     , d_ptr(new ActionRESTPrivate)
 {
