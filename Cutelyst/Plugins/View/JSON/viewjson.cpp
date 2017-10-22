@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,12 @@
 
 using namespace Cutelyst;
 
+/*!
+ * \class Cutelyst::ViewJson viewjson.h Cutelyst/Plugins/JSON/viewjson.h
+ * \brief JSON view for your data
+ *
+ * Cutelyst::ViewJSON is a Cutelyst View handler that returns stash data in JSON format.
+ */
 ViewJson::ViewJson(QObject *parent, const QString &name) : View(parent, name)
   , d_ptr(new ViewJsonPrivate)
 {
