@@ -69,25 +69,40 @@ ViewJson::ExposeMode ViewJson::exposeStashMode() const
     return d->exposeMode;
 }
 
-void ViewJson::setExposeStashString(const QString &key)
+void ViewJson::setExposeStash(const QString &key)
 {
     Q_D(ViewJson);
     d->exposeMode = ViewJson::String;
     d->exposeKey = key;
 }
 
-void ViewJson::setExposeStashStringList(const QStringList &keys)
+void ViewJson::setExposeStash(const QStringList &keys)
 {
     Q_D(ViewJson);
     d->exposeMode = ViewJson::StringList;
     d->exposeKeys = keys;
 }
 
-void ViewJson::setExposeStashRegularExpression(const QRegularExpression &re)
+void ViewJson::setExposeStash(const QRegularExpression &re)
 {
     Q_D(ViewJson);
     d->exposeMode = ViewJson::RegularExpression;
     d->exposeRE = re;
+}
+
+void ViewJson::setExposeStashString(const QString &key)
+{
+    setExposeStash(key);
+}
+
+void ViewJson::setExposeStashStringList(const QStringList &keys)
+{
+    setExposeStash(keys);
+}
+
+void ViewJson::setExposeStashRegularExpression(const QRegularExpression &re)
+{
+    setExposeStash(re);
 }
 
 QByteArray ViewJson::render(Context *c) const

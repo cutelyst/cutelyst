@@ -78,20 +78,37 @@ public:
      * Specify which stash key is exposed as a JSON response,
      * this will change exposeStashMode() to ViewJson::String
      */
-    // TODO Cutelyst2 unify method name into setExposeStashMode(type)
-    void setExposeStashString(const QString &key);
+    void setExposeStash(const QString &key);
 
     /**
      * Specify which stash keys are exposed as a JSON response,
      * this will change exposeStashMode() to ViewJson::StringList
      */
-    void setExposeStashStringList(const QStringList &keys);
+    void setExposeStash(const QStringList &keys);
 
     /**
      * Specify which stash keys are exposed as a JSON response,
      * this will change exposeStashMode() to ViewJson::RegularExpression
      */
-    void setExposeStashRegularExpression(const QRegularExpression &re);
+    void setExposeStash(const QRegularExpression &re);
+
+    /**
+     * Specify which stash key is exposed as a JSON response,
+     * this will change exposeStashMode() to ViewJson::String
+     */
+    Q_DECL_DEPRECATED void setExposeStashString(const QString &key);
+
+    /**
+     * Specify which stash keys are exposed as a JSON response,
+     * this will change exposeStashMode() to ViewJson::StringList
+     */
+    Q_DECL_DEPRECATED void setExposeStashStringList(const QStringList &keys);
+
+    /**
+     * Specify which stash keys are exposed as a JSON response,
+     * this will change exposeStashMode() to ViewJson::RegularExpression
+     */
+    Q_DECL_DEPRECATED void setExposeStashRegularExpression(const QRegularExpression &re);
 
     QByteArray render(Context *c) const final;
 

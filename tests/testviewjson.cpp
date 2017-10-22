@@ -100,13 +100,13 @@ TestEngine* TestActionRenderView::getEngine()
 
     new ViewJson(app);
     auto v1 = new ViewJson(app, QStringLiteral("view1"));
-    v1->setExposeStashString(QStringLiteral("SingleKey"));
+    v1->setExposeStash(QStringLiteral("SingleKey"));
 
     auto v2 = new ViewJson(app, QStringLiteral("view2"));
-    v2->setExposeStashStringList({ QStringLiteral("One"), QStringLiteral("Two") });
+    v2->setExposeStash({ QStringLiteral("One"), QStringLiteral("Two") });
 
     auto v3 = new ViewJson(app, QStringLiteral("view3"));
-    v3->setExposeStashRegularExpression(QRegularExpression(QStringLiteral("\\d")));
+    v3->setExposeStash(QRegularExpression(QStringLiteral("\\d")));
 
     auto v4 = new ViewJson(app, QStringLiteral("view4"));
     v4->setOutputFormat(ViewJson::Indented);
