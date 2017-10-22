@@ -27,31 +27,6 @@
 namespace Cutelyst {
 
 class RenderViewPrivate;
-/**
- * The RenderView action allows to easily
- * call a renderer without including it's
- * header and add implementation code, all
- * that is needed is an anotation to the
- * Controller's method:
- * \code{.h}
- * class Users : public Cutelyst::Controller
- * {
- * public:
- *   C_ATTR(End, :ActionClass(RenderView))
- *   void End(Context *c);
- * };
- * \endcode
- * The above will render with the default
- * view added to Cutelyst::Application, if
- * you want it to render with another view
- * just add the View(name) keyword:
- * \code{.h}
- * ...
- *   C_ATTR(End, :ActionClass(RenderView) :View(ajax_view))
- *   void End(Context *c);
- * ...
- * \endcode
- */
 class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView : public Action
 {
     Q_OBJECT
