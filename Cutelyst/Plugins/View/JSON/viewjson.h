@@ -78,6 +78,7 @@ public:
      * Specify which stash key is exposed as a JSON response,
      * this will change exposeStashMode() to ViewJson::String
      */
+    // TODO Cutelyst2 unify method name into setExposeStashMode(type)
     void setExposeStashString(const QString &key);
 
     /**

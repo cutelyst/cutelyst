@@ -54,3 +54,4 @@ endif()
 
 cute_test(testpbkdf2 CutelystQt5::Authentication "" "")
 cute_test(testpagination CutelystQt5::Utils::Pagination "" "")
+cute_test(testviewjson CutelystQt5::View::JSON "" "")

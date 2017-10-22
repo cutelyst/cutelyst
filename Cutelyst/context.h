@@ -176,10 +176,9 @@ public:
     View *view() const;
 
     /**
-     * Returns the view set to be used
-     * for rendering this request, if one
-     * is set by setView() or 0 if none was set
+     * Returns the view with name name
      */
+    // TODO find a new name for the above method
     View *view(const QString &name) const;
 
     /**
