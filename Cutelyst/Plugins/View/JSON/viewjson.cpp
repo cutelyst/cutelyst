@@ -90,16 +90,16 @@ void ViewJson::setExposeStash(const QRegularExpression &re)
     d->exposeRE = re;
 }
 
-void ViewJson::setNoXJsonHeader(bool disable)
+void ViewJson::setXJsonHeader(bool enable)
 {
     Q_D(ViewJson);
-    d->noJsonXHeader = disable;
+    d->xJsonHeader = enable;
 }
 
-bool ViewJson::noXJsonHeader() const
+bool ViewJson::xJsonHeader() const
 {
     Q_D(const ViewJson);
-    return d->noJsonXHeader;
+    return d->xJsonHeader;
 }
 
 void ViewJson::setExposeStashString(const QString &key)
@@ -171,7 +171,7 @@ QByteArray ViewJson::render(Context *c) const
     }
 
     Response *res = c->response();
-    if (!d->noJsonXHeader && c->request()->headers().contains(QStringLiteral("X_PROTOTYPE_VERSION"))) {
+    if (d->xJsonHeader && c->request()->headers().contains(QStringLiteral("X_PROTOTYPE_VERSION"))) {
         res->setHeader(QStringLiteral("X_JSON"), QStringLiteral("eval(\"(\"+this.transport.responseText+\")\")"));
     }
 

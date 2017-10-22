@@ -101,10 +101,11 @@ TestEngine* TestActionRenderView::getEngine()
     new ViewJson(app);
     auto v1 = new ViewJson(app, QStringLiteral("view1"));
     v1->setExposeStash(QStringLiteral("SingleKey"));
-    v1->setNoXJsonHeader(true);
+    v1->setXJsonHeader(true);
 
     auto v2 = new ViewJson(app, QStringLiteral("view2"));
     v2->setExposeStash({ QStringLiteral("One"), QStringLiteral("Two") });
+    v2->setXJsonHeader(true);
 
     auto v3 = new ViewJson(app, QStringLiteral("view3"));
     v3->setExposeStash(QRegularExpression(QStringLiteral("\\d")));
@@ -162,13 +163,13 @@ void TestActionRenderView::testController_data()
     QTest::addColumn<bool>("hasXJson");
 
     QTest::newRow("viewjson-test-00") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test0") << true
-                                      << 200 << QByteArrayLiteral("{\"bar\":\"baz\",\"foo\":\"bar\"}") << QStringLiteral("application/json") << true;
+                                      << 200 << QByteArrayLiteral("{\"bar\":\"baz\",\"foo\":\"bar\"}") << QStringLiteral("application/json") << false;
     QTest::newRow("viewjson-test-01") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test1") << true
-                                      << 200 << QByteArrayLiteral("{\"SingleKey\":\"ok\"}") << QStringLiteral("application/json") << false;
-    QTest::newRow("viewjson-test-02") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test2") << true
-                                      << 200 << QByteArrayLiteral("{\"One\":1,\"Two\":2}") << QStringLiteral("application/json") << true;
+                                      << 200 << QByteArrayLiteral("{\"SingleKey\":\"ok\"}") << QStringLiteral("application/json") << true;
+    QTest::newRow("viewjson-test-02") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test2") << false
+                                      << 200 << QByteArrayLiteral("{\"One\":1,\"Two\":2}") << QStringLiteral("application/json") << false;
     QTest::newRow("viewjson-test-03") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test3") << true
-                                      << 200 << QByteArrayLiteral("{\"3\":3,\"4\":4}") << QStringLiteral("application/json") << true;
+                                      << 200 << QByteArrayLiteral("{\"3\":3,\"4\":4}") << QStringLiteral("application/json") << false;
     QTest::newRow("viewjson-test-04") << QStringLiteral("GET") << QStringLiteral("/test/view/json/test4") << false
                                       << 200 << QByteArrayLiteral("{\n    \"1\": 1\n}\n") << QStringLiteral("application/json") << false;
 }

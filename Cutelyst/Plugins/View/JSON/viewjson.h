@@ -93,15 +93,15 @@ public:
     void setExposeStash(const QRegularExpression &re);
 
     /**
-     * By default this plugin sets X-JSON header if the requested client is a Prototype.js with X-JSON support.
-     * By setting true, you can opt-out this behavior so that you can do eval() by your own.
+     * By default this plugin does \b NOT sets X-JSON header if the requested client is a Prototype.js with X-JSON support.
+     * By setting true, you can opt-out this behavior so that you do not need to do eval() by your own.
      */
-    void setNoXJsonHeader(bool disable);
+    void setXJsonHeader(bool enable);
 
     /**
-     * Returns true if the X-JSON header should not be sent
+     * Returns true if the X-JSON header should be sent
      */
-    bool noXJsonHeader() const;
+    bool xJsonHeader() const;
 
     /**
      * Specify which stash key is exposed as a JSON response,

@@ -36,7 +36,7 @@ public:
     QStringList exposeKeys;
     QRegularExpression exposeRE;
     QJsonDocument::JsonFormat format = QJsonDocument::Compact;
-    bool noJsonXHeader = false;
+    bool xJsonHeader = false;
 };
 
 }
