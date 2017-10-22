@@ -90,6 +90,18 @@ void ViewJson::setExposeStash(const QRegularExpression &re)
     d->exposeRE = re;
 }
 
+void ViewJson::setNoXJsonHeader(bool disable)
+{
+    Q_D(ViewJson);
+    d->noJsonXHeader = disable;
+}
+
+bool ViewJson::noXJsonHeader() const
+{
+    Q_D(const ViewJson);
+    return d->noJsonXHeader;
+}
+
 void ViewJson::setExposeStashString(const QString &key)
 {
     setExposeStash(key);
@@ -158,7 +170,12 @@ QByteArray ViewJson::render(Context *c) const
     }
     }
 
-    c->response()->setContentType(QStringLiteral("application/json"));
+    Response *res = c->response();
+    if (!d->noJsonXHeader && c->request()->headers().contains(QStringLiteral("X_PROTOTYPE_VERSION"))) {
+        res->setHeader(QStringLiteral("X_JSON"), QStringLiteral("eval(\"(\"+this.transport.responseText+\")\")"));
+    }
+
+    res->setContentType(QStringLiteral("application/json"));
 
     return QJsonDocument(obj).toJson(d->format);
 }
