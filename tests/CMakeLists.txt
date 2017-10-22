@@ -42,6 +42,7 @@ cutelyst_templates_unit_tests(
     testdispatcherpath
     testdispatcherchained
     testactionrest
+    testactionrenderview
 )
 
 cute_test(testvalidator CutelystQt5::Utils::Validator "" "")
