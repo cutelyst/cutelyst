@@ -162,15 +162,17 @@ QString Session::deleteReason(Context *c)
 
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
 {
+    QVariant ret = defaultValue;
     QVariant session = c->property(SESSION_VALUES);
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
-        if (session.isNull()) {
-            return defaultValue;
-        }
     }
 
-    return session.toHash().value(key, defaultValue);
+    if (!session.isNull()) {
+        ret = session.toHash().value(key, defaultValue);
+    }
+
+    return ret;
 }
 
 void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant &value)
