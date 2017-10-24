@@ -3,7 +3,6 @@
 #include <QMimeDatabase>
 #include <QDir>
 #include <QDirIterator>
-#include <QDebug>
 
 Helper::Helper(QObject *parent) : QObject(parent)
 {

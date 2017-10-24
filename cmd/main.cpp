@@ -5,7 +5,7 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QLibraryInfo>
-#include <QDebug>
+#include <QTextStream>
 
 #include <QRegularExpression>
 #include <QStringBuilder>
@@ -13,7 +13,7 @@
 
 #include <wsgi/wsgi.h>
 
-#include <ostream>
+#include <iostream>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -22,8 +22,8 @@
 #include "config.h"
 #include "helper.h"
 
-#define OUT_EXISTS  "  exists"
-#define OUT_CREATED " created"
+#define OUT_EXISTS  "  exists "
+#define OUT_CREATED " created "
 
 bool buildControllerHeader(const QString &filename, const QString &controllerName, bool helpers);
 bool buildControllerImplementation(const QString &filename, const QString &controllerName, bool helpers);
@@ -31,13 +31,13 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
 bool createController(const QString &controllerName)
 {
     if (controllerName.contains(QRegularExpression(QStringLiteral("\\W"))) || controllerName.contains(QRegularExpression(QStringLiteral("^\\d")))) {
-        qDebug() << "Error: Invalid Controller name.";
+        std::cerr << "Error: Invalid Controller name." << std::endl;
         return false;
     }
 
     QDir projectDir;
     if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
-        qDebug() << "Error: failed to find project";
+        std::cerr << "Error: failed to find project" << std::endl;
         return false;
     }
 
@@ -58,7 +58,7 @@ bool createController(const QString &controllerName)
     utime(projectDir.absoluteFilePath(QStringLiteral("CMakeLists.txt")).toLatin1().data(), NULL);
 #endif
 
-    qDebug() << "Now, on your application class include and instantiate the controller.";
+    std::cout << "Now, on your application class include and instantiate the controller." << std::endl;
 
     return true;
 }
@@ -67,7 +67,7 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
 {
     QFile data(filename);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << filename;
+        std::cerr << OUT_EXISTS << qPrintable(filename) << std::endl;
         return true;
     }
 
@@ -100,11 +100,11 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "}" << "\n";
         out << "\n";
 
-        qDebug() << OUT_CREATED << filename;
+        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << filename;
+    std::cerr << "Error: failed to create file" << qPrintable(filename) << std::endl;
 
     return false;
 }
@@ -113,7 +113,7 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
 {
     QFile data(filename);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << filename;
+        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
         return true;
     }
 
@@ -140,11 +140,11 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
         out << "#endif //" << appName.toUpper() << "_H" << "\n";
         out << "\n";
 
-        qDebug() << OUT_CREATED << filename;
+        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << filename;
+    std::cerr << "Error: failed to create file" << qPrintable(filename) << std::endl;
 
     return false;
 }
@@ -153,7 +153,7 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
 {
     QFile data(filename);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << filename;
+        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
         return true;
     }
 
@@ -190,11 +190,11 @@ bool buildControllerImplementation(const QString &filename, const QString &contr
             out << "\n";
         }
 
-        qDebug() << OUT_CREATED << filename;
+        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << filename;
+    std::cerr << "Error: failed to create file" << qPrintable(filename) << std::endl;
 
     return false;
 }
@@ -203,7 +203,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
 {
     QFile data(filename);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << filename;
+        std::cout << OUT_EXISTS << qPrintable(filename) << std::endl;
         return true;
     }
 
@@ -242,11 +242,11 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
         out << "#endif //" << controllerName.toUpper() << "_H" << "\n";
         out << "\n";
 
-        qDebug() << OUT_CREATED << filename;
+        std::cout << OUT_CREATED << qPrintable(filename) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << filename;
+    std::cerr << "Error: failed to create file" << qPrintable(filename) << std::endl;
 
     return false;
 }
@@ -255,7 +255,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
 {
     QFile data(name);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << name;
+        std::cout << OUT_EXISTS << qPrintable(name) << std::endl;
         return true;
     }
 
@@ -280,11 +280,11 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << ")" << "\n";
         out << "\n";
 
-        qDebug() << OUT_CREATED << name;
+        std::cout << OUT_CREATED << qPrintable(name) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << name;
+    std::cerr << "Error: failed to create file" << qPrintable(name) << std::endl;
 
     return false;
 }
@@ -293,7 +293,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
 {
     QFile data(name);
     if (data.exists()) {
-        qDebug() << OUT_EXISTS << name;
+        std::cout << OUT_EXISTS << qPrintable(name) << std::endl;
         return true;
     }
 
@@ -335,27 +335,27 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "\n";
         out << "add_subdirectory(src)" << "\n";
 
-        qDebug() << OUT_CREATED << name;
+        std::cout << OUT_CREATED << qPrintable(name) << std::endl;
 
         return true;
     }
-    qDebug() << "Error: failed to create file" << name;
+    std::cerr << "Error: failed to create file" << qPrintable(name) << std::endl;
 
     return false;
 }
 
 bool createDir(const QDir &parentDir, const QString &name)
 {
-    QString newDir = parentDir.relativeFilePath(name);
+    const QString newDir = parentDir.relativeFilePath(name);
     if (parentDir.exists(name)) {
-        qDebug() << OUT_EXISTS << newDir;
+        std::cout << OUT_EXISTS << qPrintable(newDir) << std::endl;
         return true;
     } else if (parentDir.mkdir(name)) {
-        qDebug() << OUT_CREATED << newDir;
+        std::cout << OUT_CREATED << qPrintable(newDir) << std::endl;
         return true;
     }
 
-    qDebug() << "Error: failed to create directory:" << newDir;
+    std::cerr << "Error: failed to create directory:" << qPrintable(newDir) << std::endl;
     return false;
 }
 
@@ -364,11 +364,11 @@ bool createApplication(const QString &name)
     QString nameWithUnderscore = name;
     nameWithUnderscore.replace(QLatin1Char('-'), QLatin1Char('_'));
     if (nameWithUnderscore.contains(QRegularExpression(QStringLiteral("\\W"))) || nameWithUnderscore.contains(QRegularExpression(QStringLiteral("^\\d")))) {
-        qDebug() << "Error: Invalid Application name.";
+        std::cerr << "Error: Invalid Application name." << std::endl;
         return false;
     }
 
-    QDir currentDir = QDir::current();
+    const QDir currentDir = QDir::current();
 
     if (!createDir(currentDir, name)) {
         return false;
@@ -381,7 +381,6 @@ bool createApplication(const QString &name)
     if (!createDir(currentDir, name % QStringLiteral("/build"))) {
         return false;
     }
-
 
     if (!createDir(currentDir, name % QStringLiteral("/root"))) {
         return false;
@@ -417,7 +416,7 @@ bool createApplication(const QString &name)
         return false;
     }
 
-    qDebug() << "Change to application directory, then build directory and Run \"cmake ..\" to make sure your install is complete";
+    std::cout << "Change to application directory, then build directory and Run \"cmake ..\" to make sure your install is complete" << std::endl;
 
     return true;
 }
@@ -521,7 +520,7 @@ int main(int argc, char *argv[])
 
         QDir projectDir;
         if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
-            qDebug() << "Error: failed to find project";
+            std::cerr << "Error: failed to find project" << std::endl;
             return false;
         }
         wsgi.setChdir2(projectDir.absolutePath());
@@ -530,7 +529,7 @@ int main(int argc, char *argv[])
         if (localFilename.isEmpty()) {
             localFilename = Helper::findApplication(projectDir);
             if (!QFile::exists(localFilename)) {
-                qDebug() << "Error: Application file not found";
+                std::cerr << "Error: Application file not found" << std::endl;
                 return 1;
             }
         }
