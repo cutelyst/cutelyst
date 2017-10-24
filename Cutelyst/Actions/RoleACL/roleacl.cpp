@@ -231,8 +231,11 @@ bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller
 
     d->detachTo = controller->actionFor(d->aclDetachTo);
     if (!d->detachTo) {
-        qFatal("RoleACL: Action '%s' requires a valid action set on the ACLDetachTo(%s) attribute",
-               qPrintable(d->actionReverse), qPrintable(d->aclDetachTo));
+        d->detachTo = dispatcher->getActionByPath(d->aclDetachTo);
+        if (!d->detachTo) {
+            qFatal("RoleACL: Action '%s' requires a valid action set on the ACLDetachTo(%s) attribute",
+                   qPrintable(d->actionReverse), qPrintable(d->aclDetachTo));
+        }
     }
 
     return true;

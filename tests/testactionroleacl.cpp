@@ -66,6 +66,17 @@ public:
         c->response()->body() += QByteArrayLiteral("Denied.");
     }
 
+    C_ATTR(acl_denied_detach_to_absolute,
+           :Local
+           :Does(RoleACL)
+           :AllowedRole(editor)
+           :AllowedRole(writer)
+           :ACLDetachTo('/denied/role/acl/denied')
+           :AutoArgs)
+    void acl_denied_detach_to_absolute(Context *c) {
+        c->response()->body() += QByteArrayLiteral("Ok.");
+    }
+
 private:
     C_ATTR(Auto,)
     bool Auto(Context *c) {
@@ -76,6 +87,20 @@ private:
             c->response()->body() += QByteArrayLiteral("Failed login.");
         }
         return ok;
+    }
+};
+
+class DeniedRoleACL : public Controller
+{
+    Q_OBJECT
+public:
+    DeniedRoleACL(QObject *parent) : Controller(parent) {}
+
+private Q_SLOTS:
+    void denied(Context *c) {
+        c->response()->setStatus(Response::Forbidden);
+        // We append the body to test if an action was visited that shouldn't
+        c->response()->body() += QByteArrayLiteral("Denied on absolute action.");
     }
 };
 
@@ -121,6 +146,7 @@ TestEngine* TestActionRoleACL::getEngine()
 
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
+    new DeniedRoleACL(app);
     new ActionRoleACL(app);
 
     auto clearStore = new StoreMinimal;
@@ -188,6 +214,7 @@ void TestActionRoleACL::testController_data()
     QTest::newRow("roleacl-test07") << QStringLiteral("/action/role/acl/acl_editor_writer?user=foo") << QByteArrayLiteral("Denied.");
     QTest::newRow("roleacl-test08") << QStringLiteral("/action/role/acl/acl_editor_writer?user=bar") << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test09") << QStringLiteral("/action/role/acl/acl_editor_writer?user=baz") << QByteArrayLiteral("Ok.");
+    QTest::newRow("roleacl-test10") << QStringLiteral("/action/role/acl/acl_denied_detach_to_absolute?user=foo") << QByteArrayLiteral("Denied on absolute action.");
 }
 
 QTEST_MAIN(TestActionRoleACL)
