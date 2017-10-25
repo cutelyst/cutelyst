@@ -29,6 +29,7 @@ typedef struct {
     bool null = true;
     int id;
     int restart = 0;
+    int respawn = 0;
 } Worker;
 
 namespace CWSGI {
@@ -53,6 +54,7 @@ public:
     int internalExec();
 
     bool createProcess(bool respawn);
+    void decreaseWorkerRespawn();
 
     virtual void killChild() override;
     void killChild(qint64 pid);

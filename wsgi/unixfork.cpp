@@ -151,6 +151,23 @@ bool UnixFork::createProcess(bool respawn)
     return !m_childs.empty();
 }
 
+void UnixFork::decreaseWorkerRespawn()
+{
+    int missingRespawn = 0;
+    auto it = m_childs.begin();
+    while (it != m_childs.end()) {
+        if (it.value().respawn > 0) {
+            --it.value().respawn;
+            missingRespawn += it.value().respawn;
+        }
+        ++it;
+    }
+
+    if (missingRespawn) {
+        QTimer::singleShot(1 * 1000, this, &UnixFork::decreaseWorkerRespawn);
+    }
+}
+
 void UnixFork::killChild()
 {
     const auto childs = m_childs.keys();
@@ -475,6 +492,8 @@ void UnixFork::handleSigChld()
 
         if (!worker.null && !m_terminating/* && status != SIGTERM*/) {
             std::cout << "DAMN ! worker " << worker.id << " (pid: " << p << ") died, killed by signal " << exitStatus << " :( trying respawn .." << std::endl;
+            ++worker.respawn;
+            QTimer::singleShot(1 * 1000, this, &UnixFork::decreaseWorkerRespawn);
             m_recreateWorker.push_back(worker);
             qApp->quit();
         } else if (!m_child && m_childs.isEmpty()) {
@@ -645,6 +664,11 @@ void UnixFork::setupSocketPair(bool closeSignalsFD)
 bool UnixFork::createChild(const Worker &worker, bool respawn)
 {
     if (m_child) {
+        return false;
+    }
+
+    if (worker.respawn >= 5) {
+        std::cout << "WSGI worker " << worker.id << " respawned too much!" << std::endl;
         return false;
     }
 
