@@ -96,6 +96,10 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
         }
     }
 
+    if (printActions) {
+        d->printActions();
+    }
+
     // Cache root actions, BEFORE the controllers set them
     d->rootActions = d->actionContainer.value(QLatin1String(""));
 
@@ -115,7 +119,10 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
     }
 
     if (printActions) {
-        d->printActions();
+        // List all public actions
+        for (DispatchType *dispatch : dispatchers) {
+            qCDebug(CUTELYST_DISPATCHER) << dispatch->list().constData();
+        }
     }
 }
 
@@ -369,11 +376,6 @@ void DispatcherPrivate::printActions() const
                                                            QLatin1String("Method")
                                                        },
                                                        QLatin1String("Loaded Private actions:")).constData();
-
-    // List all public actions
-    for (DispatchType *dispatch : dispatchers) {
-        qCDebug(CUTELYST_DISPATCHER) << dispatch->list().constData();
-    }
 }
 
 ActionList DispatcherPrivate::getContainers(const QString &ns) const
