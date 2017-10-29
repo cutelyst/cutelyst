@@ -238,6 +238,9 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     if (_path.startsWith(QLatin1Char('/'))) {
         _path.remove(0, 1);
     }
+    if (!_path.contains(QLatin1Char('/'))) {
+        _path.prepend(QLatin1Char('/'));
+    }
     return d->actions.value(_path);
 }
 
