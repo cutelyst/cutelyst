@@ -83,6 +83,12 @@ public:
         c->response()->setBody(c->actionName());
     }
 
+    C_ATTR(denied, :Local :AutoArgs)
+    void denied(Context *c) {
+        c->response()->setStatus(Response::Forbidden);
+        c->response()->setBody(c->actionName());
+    }
+
 private:
     C_ATTR(Begin,)
     bool Begin(Context *) { return true; }

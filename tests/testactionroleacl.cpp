@@ -77,6 +77,16 @@ public:
         c->response()->body() += QByteArrayLiteral("Ok.");
     }
 
+    C_ATTR(acl_denied_detach_to_global,
+           :Local
+           :Does(RoleACL)
+           :AllowedRole(nobody)
+           :ACLDetachTo('/denied')
+           :AutoArgs)
+    void acl_denied_detach_to_global(Context *c) {
+        c->response()->body() += QByteArrayLiteral("Denied.");
+    }
+
 private:
     C_ATTR(Auto,)
     bool Auto(Context *c) {
@@ -215,6 +225,7 @@ void TestActionRoleACL::testController_data()
     QTest::newRow("roleacl-test08") << QStringLiteral("/action/role/acl/acl_editor_writer?user=bar") << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test09") << QStringLiteral("/action/role/acl/acl_editor_writer?user=baz") << QByteArrayLiteral("Ok.");
     QTest::newRow("roleacl-test10") << QStringLiteral("/action/role/acl/acl_denied_detach_to_absolute?user=foo") << QByteArrayLiteral("Denied on absolute action.");
+    QTest::newRow("roleacl-test11") << QStringLiteral("/action/role/acl/acl_denied_detach_to_global?user=bar") << QByteArrayLiteral("acl_denied_detach_to_global");
 }
 
 QTEST_MAIN(TestActionRoleACL)
