@@ -235,11 +235,11 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     Q_D(const Dispatcher);
 
     QString _path = path;
-    if (_path.startsWith(QLatin1Char('/'))) {
-        _path.remove(0, 1);
-    }
-    if (!_path.contains(QLatin1Char('/'))) {
+    int slashes = _path.count(QLatin1Char('/'));
+    if (slashes == 0) {
         _path.prepend(QLatin1Char('/'));
+    } else if (_path.startsWith(QLatin1Char('/')) && slashes != 1) {
+        _path.remove(0, 1);
     }
     return d->actions.value(_path);
 }
