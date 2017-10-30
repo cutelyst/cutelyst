@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2016 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -90,7 +90,7 @@ NEOERR* cutelyst_render(void *user, char *data)
         body->append(data);
     }
 //    qDebug() << "_render" << body << data;
-    return 0;
+    return nullptr;
 }
 
 QByteArray ClearSilver::render(Context *c) const
@@ -150,7 +150,7 @@ NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
 
             *contents = qstrdup(file.readAll().constData());
             qCDebug(CUTELYST_CLEARSILVER) << "Rendering template:" << file.fileName();
-            return 0;
+            return nullptr;
         }
     }
 

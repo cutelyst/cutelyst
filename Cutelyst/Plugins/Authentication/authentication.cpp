@@ -232,7 +232,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 void AuthenticationPrivate::setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm)

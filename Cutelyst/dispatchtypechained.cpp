@@ -329,7 +329,7 @@ Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
 
     // The action must be chained to something
     if (!action->attributes().contains(QStringLiteral("Chained"))) {
-        return 0;
+        return nullptr;
     }
 
     ActionList chain;

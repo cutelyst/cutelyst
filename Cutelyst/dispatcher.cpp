@@ -438,7 +438,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
         pos = path.indexOf(QLatin1Char('/'), pos - 1);
     } while (pos != -1);
 
-    return 0;
+    return nullptr;
 }
 
 QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)

@@ -416,7 +416,7 @@ public:
                 return p;
             }
         }
-        return 0;
+        return nullptr;
     }
 
     /**

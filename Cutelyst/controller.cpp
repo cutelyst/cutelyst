@@ -212,7 +212,7 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
 {
     Action *action = actionClass(args);
     if (!action) {
-        return 0;
+        return nullptr;
     }
 
     QStack<Component *> roles = gatherActionRoles(args);

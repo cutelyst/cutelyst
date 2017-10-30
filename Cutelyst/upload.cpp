@@ -143,7 +143,7 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
     Q_UNUSED(templateName)
 #endif
 
-    return 0;
+    return nullptr;
 }
 
 qint64 Upload::pos() const
