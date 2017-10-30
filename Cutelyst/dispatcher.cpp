@@ -219,7 +219,7 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     Q_D(const Dispatcher);
 
     if (name.isEmpty()) {
-        return 0;
+        return nullptr;
     }
 
     if (nameSpace.isEmpty()) {
@@ -227,7 +227,7 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return d->actions.value(ns + QLatin1Char('/') + name);
+    return getActionByPath(ns + QLatin1Char('/') + name);
 }
 
 Action *Dispatcher::getActionByPath(const QString &path) const
