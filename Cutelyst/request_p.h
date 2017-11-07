@@ -49,6 +49,8 @@ public:
 
     RequestPrivate(const EngineRequest &req, Engine *_engine);
 
+    RequestPrivate(EngineConnection *conn, Engine *_engine);
+
     inline void parseUrlQuery() const;
     inline void parseBody() const;
     inline void parseCookies() const;

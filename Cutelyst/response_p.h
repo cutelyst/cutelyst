@@ -31,6 +31,7 @@ namespace Cutelyst {
 
 class Context;
 class Engine;
+class EngineConnection;
 class ResponsePrivate
 {
 public:
@@ -53,6 +54,7 @@ public:
     QIODevice *bodyIODevice = nullptr;
     Context *context;
     Engine *engine;
+    EngineConnection *engineConnection;
     ResponseStatus flags = InitialState;
     quint16 status = Response::OK;
 };

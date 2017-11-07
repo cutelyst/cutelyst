@@ -21,6 +21,7 @@
 
 #include "context_p.h"
 #include "engine.h"
+#include "engineconnection.h"
 #include "common.h"
 
 #include <QtCore/QJsonDocument>
@@ -65,7 +66,7 @@ qint64 Response::writeData(const char *data, qint64 len)
         d->bodyIODevice = nullptr;
         d->bodyData = QByteArray();
 
-        d->engine->finalizeHeaders(d->context);
+        d->engineConnection->finalizeHeaders(d->context);
     }
 
     return d->engine->write(d->context, data, len, d->context->engineData());
@@ -299,31 +300,31 @@ qint64 Response::size() const
 bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
 {
     Q_D(Response);
-    return d->engine->webSocketHandshake(d->context, key, origin, protocol);
+    return d->engineConnection->webSocketHandshake(d->context, key, origin, protocol);
 }
 
 bool Response::webSocketTextMessage(const QString &message)
 {
     Q_D(Response);
-    return d->engine->webSocketSendTextMessage(d->context, message);
+    return d->engineConnection->webSocketSendTextMessage(d->context, message);
 }
 
 bool Response::webSocketBinaryMessage(const QByteArray &message)
 {
     Q_D(Response);
-    return d->engine->webSocketSendBinaryMessage(d->context, message);
+    return d->engineConnection->webSocketSendBinaryMessage(d->context, message);
 }
 
 bool Response::webSocketPing(const QByteArray &payload)
 {
     Q_D(Response);
-    return d->engine->webSocketSendPing(d->context, payload);
+    return d->engineConnection->webSocketSendPing(d->context, payload);
 }
 
 bool Response::webSocketClose(quint16 code, const QString &reason)
 {
     Q_D(Response);
-    return d->engine->webSocketClose(d->context, code, reason);
+    return d->engineConnection->webSocketClose(d->context, code, reason);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)

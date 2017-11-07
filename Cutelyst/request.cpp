@@ -18,6 +18,7 @@
  */
 #include "request_p.h"
 #include "engine.h"
+#include "engineconnection.h"
 #include "common.h"
 #include "multipartformdataparser.h"
 #include "utils.h"
@@ -608,6 +609,25 @@ RequestPrivate::RequestPrivate(const EngineRequest &req, Engine *_engine)
     , remotePort(req.remotePort)
     , https(req.isSecure)
 {
+}
+
+RequestPrivate::RequestPrivate(EngineConnection *conn, Engine *_engine)
+    : engine(_engine)
+    , method(conn->method)
+    , path(conn->path)
+    , query(conn->query)
+    , protocol(conn->protocol)
+    , serverAddress(conn->serverAddress)
+    , remoteAddress(conn->remoteAddress)
+    , remoteUser(conn->remoteUser)
+    , headers(conn->headers)
+    , body(conn->body)
+    , startOfRequest(conn->startOfRequest)
+    , requestPtr(conn)
+    , remotePort(conn->remotePort)
+    , https(conn->isSecure)
+{
+
 }
 
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)

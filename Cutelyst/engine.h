@@ -181,6 +181,7 @@ protected:
      * doWriteHeader(), reimplemententions
      * must call this first
      */
+    Q_DECL_DEPRECATED
     virtual bool finalizeHeaders(Context *c);
 
     /**
@@ -206,18 +207,25 @@ protected:
      * Called by Application to deal
      * with finalizing cookies, headers and body
      */
+    Q_DECL_DEPRECATED
     void finalize(Context *c);
 
+    Q_DECL_DEPRECATED
     bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
 
+    Q_DECL_DEPRECATED
     virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
 
+    Q_DECL_DEPRECATED
     virtual bool webSocketSendTextMessage(Context *c, const QString &message);
 
+    Q_DECL_DEPRECATED
     virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
 
+    Q_DECL_DEPRECATED
     virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
 
+    Q_DECL_DEPRECATED
     virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
 
     /**
@@ -265,7 +273,7 @@ protected:
     }
 
     /**
-     * Returns the HTTP status message for the give \p status.
+     * Returns the HTTP status message for the given \p status.
      */
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 

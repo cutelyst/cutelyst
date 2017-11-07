@@ -336,6 +336,7 @@ protected:
     ResponsePrivate *d_ptr;
     friend class Application;
     friend class Engine;
+    friend class EngineConnection;
     friend class Context;
     friend class ContextPrivate;
 };

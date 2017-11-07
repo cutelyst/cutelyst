@@ -22,6 +22,7 @@
 #include "config.h"
 #include "common.h"
 #include "context_p.h"
+#include "engineconnection.h"
 #include "request.h"
 #include "request_p.h"
 #include "controller.h"
@@ -397,7 +398,7 @@ Context *Application::handleRequest2(Request *req)
         Q_EMIT afterDispatch(c);
     }
 
-    engine->finalize(c);
+    priv->response->d_ptr->engineConnection->finalize(c);
 
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",

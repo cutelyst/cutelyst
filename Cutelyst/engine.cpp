@@ -19,6 +19,8 @@
 
 #include "engine_p.h"
 
+#include "engineconnection.h"
+
 #include "common.h"
 #include "request_p.h"
 #include "application.h"
@@ -420,7 +422,10 @@ Context *Engine::processRequest2(const EngineRequest &req)
 
 Context *Engine::processRequest3(EngineConnection *conn)
 {
+    Q_D(Engine);
 
+    auto request = new Request(new RequestPrivate(conn, this));
+    return d->app->handleRequest2(request);
 }
 
 void Engine::processRequest(const EngineRequest &req)
@@ -490,7 +495,7 @@ void Engine::finalize(Context *c)
         finalizeError(c);
     }
 
-    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !finalizeHeaders(c)) {
+    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !c->response()->d_ptr->engineConnection->finalizeHeaders(c)) {
         return;
     }
 
@@ -500,16 +505,7 @@ void Engine::finalize(Context *c)
 bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
     ResponsePrivate *priv = c->response()->d_ptr;
-    if (priv->flags & ResponsePrivate::FinalizedHeaders) {
-        return false;
-    }
-
-    if (webSocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
-        priv->flags |= ResponsePrivate::FinalizedHeaders;
-        return true;
-    }
-
-    return false;
+    return priv->engineConnection->webSocketHandshake(c, key, origin, protocol);
 }
 
 bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)

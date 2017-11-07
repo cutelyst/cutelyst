@@ -26,38 +26,110 @@
 
 namespace Cutelyst {
 
+class Context;
 class EngineConnection : public QObject
 {
     Q_OBJECT
 public:
     explicit EngineConnection(QObject *parent = nullptr);
 
+    /**
+     * Engines must reimplement this to write the
+     * response body back to the caller
+     */
+    virtual void finalizeBody(Context *c);
+
+    /**
+     * Engines should overwrite this if they
+     * want to to make custom error messages.
+     * Default implementation render an html
+     * with errors.
+     */
+    virtual void finalizeError(Context *c);
+
+    /**
+     * Called by Application to deal
+     * with finalizing cookies, headers and body
+     */
+    void finalize(Context *c);
+
+    /**
+     * Reimplement if you need a custom way
+     * to Set-Cookie, the default implementation
+     * writes them to c->res()->headers()
+     */
+    virtual void finalizeCookies(Context *c);
+
+    /**
+     * Finalize the headers, and call
+     * doWriteHeader(), reimplemententions
+     * must call this first
+     */
+    virtual bool finalizeHeaders(Context *c);
+
+    /**
+     * Called by Response to manually write data
+     */
+    qint64 write(Context *c, const char *data, qint64 len);
+
+    bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
+
+    virtual bool webSocketSendTextMessage(Context *c, const QString &message);
+
+    virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
+
+    virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
+
+    virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
+
+protected:
+    /**
+     * Reimplement this to do the RAW writing to the client
+     */
+    virtual qint64 doWrite(Context *c, const char *data, qint64 len) = 0;
+
+    /**
+     * Reimplement this to write the headers back to the client
+     */
+    virtual bool writeHeaders(Context *c, quint16 status, const Headers &headers) = 0;
+
+    virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol);
+
 public:
     /** The method used (GET, POST...) */
     QString method;
+
     /** The path requested by the user agent '/index' */
     QString path;
+
     /** The query string requested by the user agent 'foo=bar&baz' */
     QByteArray query;
+
     /** The protocol requested by the user agent 'HTTP1/1' */
     QString protocol;
+
     /** The server address which the server is listening to,
      *  usually the 'Host' header but if that's not present should be filled with the server address */
     QString serverAddress;
+
     /** The remote/client address */
     QHostAddress remoteAddress;
+
     /** The remote user name set by a front web server */
     QString remoteUser;
+
     /** The request headers */
     Headers headers;
+
     /** The timestamp of the start of headers */
     quint64 startOfRequest;
+
     /** The QIODevice containing the body (if any) of the request */
     QIODevice *body;
-    /** The internal pointer of the request, to be used for mapping this request to the real request */
-    void *requestPtr;
+
     /** The remote/client port */
     quint16 remotePort;
+
     /** If the connection is secure HTTPS */
     bool isSecure;
 };
