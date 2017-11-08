@@ -1,6 +1,18 @@
+find_package(PkgConfig QUIET)
+if (PkgConfig_FOUND)
+    pkg_search_module(MEMCACHED QUIET libmemcached)
+endif (PkgConfig_FOUND)
+
 add_subdirectory(Session)
 add_subdirectory(View)
 add_subdirectory(StaticSimple)
 add_subdirectory(StatusMessage)
 add_subdirectory(Authentication)
 add_subdirectory(Utils)
+
+if (MEMCACHED_FOUND)
+    add_subdirectory(Memcached)
+    message(STATUS "PLUGIN: Memcached, enabled.")
+else (MEMCACHED_FOUND)
+    message(STATUS "PLUGIN: Memcached, disabled.")
+endif (MEMCACHED_FOUND)
