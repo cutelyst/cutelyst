@@ -266,6 +266,65 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
         qCWarning(C_MEMCACHED, "Failed to add key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::replace(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("replace"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_replace(mcd->d_ptr->memc,
+                                                    _key.constData(),
+                                                    _key.size(),
+                                                    value.constData(),
+                                                    value.size(),
+                                                    expiration,
+                                                    0);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok && (rt != MEMCACHED_NOTSTORED)) {
+        qCWarning(C_MEMCACHED, "Failed to replace key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("replace"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _groupKey = groupKey.toUtf8();
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_replace_by_key(mcd->d_ptr->memc,
+                                                           _groupKey.constData(),
+                                                           _groupKey.size(),
+                                                           _key.constData(),
+                                                           _key.size(),
+                                                           value.constData(),
+                                                           value.size(),
+                                                           expiration,
+                                                           0);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok && (rt != MEMCACHED_NOTSTORED)) {
+        qCWarning(C_MEMCACHED, "Failed to replace key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
     return ok;
 }
 
