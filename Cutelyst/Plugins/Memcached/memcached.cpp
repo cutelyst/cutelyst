@@ -24,6 +24,7 @@
 
 #include <utility>
 #include <QStringList>
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached")
 
@@ -365,6 +366,11 @@ bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnTy
     return ok;
 }
 
+bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
+{
+    return Memcached::remove(key, 0, returnType);
+}
+
 bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32 expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("remove"), returnType)) {
@@ -388,6 +394,11 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32
     }
 
     return ok;
+}
+
+bool Memcached::removeByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
+{
+    return Memcached::removeByKey(groupKey, key, 0, returnType);
 }
 
 bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
@@ -494,6 +505,63 @@ Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_ret
     case MEMCACHED_SERVER_MEMORY_ALLOCATION_FAILURE:    return Memcached::ServerMemoryAllocationFailure;
     case MEMCACHED_MAXIMUM_RETURN:                      return Memcached::MaximumReturn;
     default:                                            return Memcached::Success;
+    }
+}
+
+bool MemcachedPrivate::checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
+{
+    if (!ptr) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (rt) {
+            *rt = Memcached::Error;
+        }
+        return false;
+    }
+
+    if (key.isEmpty()) {
+        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
+        if (rt) {
+            *rt = Memcached::BadKeyProvided;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+bool MemcachedPrivate::checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
+{
+    if (!ptr) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (rt) {
+            *rt = Memcached::Error;
+        }
+        return false;
+    }
+
+    if (key.isEmpty()) {
+        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
+        if (rt) {
+            *rt = Memcached::BadKeyProvided;
+        }
+        return false;
+    }
+
+    if (groupKey.isEmpty()) {
+        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid group key name";
+        if (rt) {
+            *rt = Memcached::BadKeyProvided;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
+{
+    if (rt1) {
+        *rt1 = MemcachedPrivate::returnTypeConvert(rt2);
     }
 }
 
