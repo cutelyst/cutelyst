@@ -269,7 +269,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     return ok;
 }
 
-QByteArray Memcached::get(const QString &key, Cutelyst::Memcached::MemcachedReturnType *returnType)
+QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -277,22 +277,35 @@ QByteArray Memcached::get(const QString &key, Cutelyst::Memcached::MemcachedRetu
         return retData;
     }
 
-    quint32 _flags = 0;
     memcached_return_t rt;
-    size_t valueLength;
     const QByteArray _key = key.toUtf8();
+    bool ok = false;
 
-    char * value = memcached_get(mcd->d_ptr->memc,
-                                 _key.constData(),
-                                 _key.size(),
-                                 &valueLength,
-                                 &_flags,
-                                 &rt);
+    std::vector<const char *> keys;
+    std::vector<size_t> sizes;
+    keys.push_back(_key.constData());
+    sizes.push_back(_key.size());
+    rt = memcached_mget(mcd->d_ptr->memc,
+                        &keys[0],
+                        &sizes[0],
+                        keys.size());
 
-    if (value != NULL) {
-        retData = QByteArray(value, valueLength);
-        free(value);
-    } else if (rt != MEMCACHED_NOTFOUND) {
+    if (memcached_success(rt)) {
+        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+        if (result) {
+            retData = QByteArray(memcached_result_value(result), memcached_result_length(result));
+            if (cas) {
+                *cas = memcached_result_cas(result);
+            }
+            ok = true;
+            // fetch another result even if there is no one to get
+            // a NULL for the internal of libmemcached
+            memcached_fetch_result(mcd->d_ptr->memc, NULL, NULL);
+        }
+        memcached_result_free(result);
+    }
+
+    if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -301,7 +314,7 @@ QByteArray Memcached::get(const QString &key, Cutelyst::Memcached::MemcachedRetu
     return retData;
 }
 
-QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
+QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quint64 *cas, MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -309,25 +322,38 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, Memc
         return retData;
     }
 
-    quint32 _flags = 0;
     memcached_return_t rt;
-    size_t valueLength;
     const QByteArray _groupKey = groupKey.toUtf8();
     const QByteArray _key = key.toUtf8();
+    bool ok = false;
 
-    char * value = memcached_get_by_key(mcd->d_ptr->memc,
-                                        _groupKey.constData(),
-                                        _groupKey.size(),
-                                        _key.constData(),
-                                        _key.size(),
-                                        &valueLength,
-                                        &_flags,
-                                        &rt);
+    std::vector<const char *> keys;
+    std::vector<size_t> sizes;
+    keys.push_back(_key.constData());
+    sizes.push_back(_key.size());
+    rt = memcached_mget_by_key(mcd->d_ptr->memc,
+                               _groupKey.constData(),
+                               _groupKey.size(),
+                               &keys[0],
+                               &sizes[0],
+                               keys.size());
 
-    if (value != NULL) {
-        retData = QByteArray(value, valueLength);
-        free(value);
-    } else if (rt != MEMCACHED_NOTFOUND) {
+    if (memcached_success(rt)) {
+        memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+        if (result) {
+            retData = QByteArray(memcached_result_value(result), memcached_result_length(result));
+            if (cas) {
+                *cas = memcached_result_cas(result);
+            }
+            ok = true;
+            // fetch another result even if there is no one to get
+            // a NULL for the internal of libmemcached
+            memcached_fetch_result(mcd->d_ptr->memc, NULL, NULL);
+        }
+        memcached_result_free(result);
+    }
+
+    if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
