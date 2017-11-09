@@ -43,6 +43,7 @@ namespace Cutelyst
       - View
     </td><td>
       - Authentication
+      - Memcached
       - Session
       - StatusMessage
       - Pagination
