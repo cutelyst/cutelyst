@@ -182,6 +182,16 @@ public:
     template< typename T>
     static bool addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
+    static bool replace(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+
+    template< typename T>
+    static bool replace(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+
+    static bool replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+
+    template< typename T>
+    static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+
     static QByteArray get(const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     template< typename T>
@@ -247,6 +257,24 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &v
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
     return Memcached::addByKey(groupKey, key, data, expiration, returnType);
+}
+
+template< typename T>
+bool Memcached::replace(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << value;
+    return Memcached::replace(key, value, expiration, returnType);
+}
+
+template< typename T>
+bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << value;
+    return Memcached::replaceByKey(groupKey, key, data, expiration, returnType);
 }
 
 template< typename T>
