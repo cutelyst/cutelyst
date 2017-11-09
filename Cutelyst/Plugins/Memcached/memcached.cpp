@@ -132,6 +132,11 @@ bool Memcached::setup(Application *app)
         }
     }
 
+    d->compression = map.value(QStringLiteral("compression"), false).toBool();
+    d->compressionLevel = map.value(QStringLiteral("compression_level"), -1).toInt();
+    d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), 100).toInt();
+    qCDebug(C_MEMCACHED, "Compression: %s, Compression level: %i, Compression threshold: %i bytes", d->compression ? "enabled" : "disabled", d->compressionLevel, d->compressionThreshold);
+
     const QByteArray configString = config.join(QChar(QChar::Space)).toUtf8();
 
     bool ok = false;
@@ -165,13 +170,21 @@ bool Memcached::set(const QString &key, const QByteArray &value, quint32 expirat
 
     const QByteArray _key = key.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_set(mcd->d_ptr->memc,
                                                 _key.constData(),
                                                 _key.size(),
-                                                value.constData(),
-                                                value.size(),
+                                                _value.constData(),
+                                                _value.size(),
                                                 expiration,
-                                                0);
+                                                flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -193,15 +206,23 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
     const QByteArray _key = key.toUtf8();
     const QByteArray _groupKey = groupKey.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_set_by_key(mcd->d_ptr->memc,
                                                        _groupKey.constData(),
                                                        _groupKey.size(),
                                                        _key.constData(),
                                                        _key.size(),
-                                                       value.constData(),
-                                                       value.size(),
+                                                       _value.constData(),
+                                                       _value.size(),
                                                        expiration,
-                                                       0);
+                                                       flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -222,13 +243,21 @@ bool Memcached::add(const QString &key, const QByteArray &value, quint32 expirat
 
     const QByteArray _key = key.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_add(mcd->d_ptr->memc,
                                                 _key.constData(),
                                                 _key.size(),
-                                                value.constData(),
-                                                value.size(),
+                                                _value.constData(),
+                                                _value.size(),
                                                 expiration,
-                                                0);
+                                                flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -250,15 +279,23 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     const QByteArray _key = key.toUtf8();
     const QByteArray _groupKey = groupKey.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_add_by_key(mcd->d_ptr->memc,
                                                       _groupKey.constData(),
                                                       _groupKey.size(),
                                                       _key.constData(),
                                                       _key.size(),
-                                                      value.constData(),
-                                                      value.size(),
+                                                      _value.constData(),
+                                                      _value.size(),
                                                       expiration,
-                                                      0);
+                                                      flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -279,13 +316,21 @@ bool Memcached::replace(const QString &key, const QByteArray &value, quint32 exp
 
     const QByteArray _key = key.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_replace(mcd->d_ptr->memc,
                                                     _key.constData(),
                                                     _key.size(),
-                                                    value.constData(),
-                                                    value.size(),
+                                                    _value.constData(),
+                                                    _value.size(),
                                                     expiration,
-                                                    0);
+                                                    flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -307,15 +352,23 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
     const QByteArray _groupKey = groupKey.toUtf8();
     const QByteArray _key = key.toUtf8();
 
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
     const memcached_return_t rt = memcached_replace_by_key(mcd->d_ptr->memc,
                                                            _groupKey.constData(),
                                                            _groupKey.size(),
                                                            _key.constData(),
                                                            _key.size(),
-                                                           value.constData(),
-                                                           value.size(),
+                                                           _value.constData(),
+                                                           _value.size(),
                                                            expiration,
-                                                           0);
+                                                           flags);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -355,6 +408,10 @@ QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached:
             retData = QByteArray(memcached_result_value(result), memcached_result_length(result));
             if (cas) {
                 *cas = memcached_result_cas(result);
+            }
+            MemcachedPrivate::Flags flags = MemcachedPrivate::Flags(memcached_result_flags(result));
+            if (flags.testFlag(MemcachedPrivate::Compressed)) {
+                retData = qUncompress(retData);
             }
             ok = true;
             // fetch another result even if there is no one to get
@@ -403,6 +460,10 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
             retData = QByteArray(memcached_result_value(result), memcached_result_length(result));
             if (cas) {
                 *cas = memcached_result_cas(result);
+            }
+            MemcachedPrivate::Flags flags = MemcachedPrivate::Flags(memcached_result_flags(result));
+            if (flags.testFlag(MemcachedPrivate::Compressed)) {
+                retData = qUncompress(retData);
             }
             ok = true;
             // fetch another result even if there is no one to get

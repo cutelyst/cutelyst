@@ -39,6 +39,7 @@ class MemcachedPrivate;
  * files have to be present at build time.
  *
  * \par Configuration
+ * \parblock
  * The Memcached plugin can be configured in the cutelyst configuration file in the \a Cutelyst_Memcached_Plugin section.
  * It uses the same configuration strings as <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
  * but in lowercase and without the dashes in front and for consistence \a - replaced by \a _ . So \c --BINARY-PROTOCOL will be
@@ -46,14 +47,22 @@ class MemcachedPrivate;
  * weight, separated by \c , - multiple servers are separated by a \c ; . To add sockets, use a full path as name. If no configuration
  * has been set or if the \a servers configuration key is empty, a default server at localhost on port 11211 will be used.
  *
+ * Additional to the configuration options of libmemcached there are some plugin specific options:
+ * \li \a compression - boolean value, enables compression of input values based on qCompress / zlib (default: disabled)
+ * \li \a compression_level - integer value, the compression level used by qCompress (default: -1)
+ * \li \a compression_threshold - integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed (default: 100)
+ * \endparblock
+ *
+ * \note If you want to use non-ASCII key names you have to enable the binary protocol.
+ *
+ * \par Configuration example
+ *
  * \code{.ini}
  * [Cutelyst_Memcached_Plugin]
  * servers=cache.example.com,11211,2;/path/to/memcached.sock,1
  * binary_protocol=true
  * namespace=tritratrullala
  * \endcode
- *
- * \note If you want to use non-ASCII key names you have to enable the binary protocol.
  *
  * \par Usage example
  *
