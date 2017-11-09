@@ -43,12 +43,12 @@ class MemcachedPrivate;
  * It uses the same configuration strings as <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
  * but in lowercase and without the dashes in front and for consistence \a - replaced by \a _ . So \c --BINARY-PROTOCOL will be
  * \c binary_protocol. To add servers and/or sockets use the \a servers configuration key. Servers can be added with name, port and
- * weight, separated by \c : - multiple servers are separated by a \c |. To add sockets, use a full path as name. If no configuration
+ * weight, separated by \c , - multiple servers are separated by a \c ; . To add sockets, use a full path as name. If no configuration
  * has been set or if the \a servers configuration key is empty, a default server at localhost on port 11211 will be used.
  *
  * \code{.ini}
  * [Cutelyst_Memcached_Plugin]
- * servers=cache.example.com:11211:2|/path/to/memcached.sock:1
+ * servers=cache.example.com,11211,2;/path/to/memcached.sock,1
  * binary_protocol=true
  * namespace=tritratrullala
  * \endcode
