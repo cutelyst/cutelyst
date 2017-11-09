@@ -43,70 +43,13 @@ public:
     static void _q_postFork(Application *app);
 
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
-    inline static bool checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
-    inline static bool checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
-    inline static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
+    static bool checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
+    static bool checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
+    static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
 
     QMap<int,std::pair<QString,quint16>> servers;
     memcached_st *memc = nullptr;
 };
-
-inline bool MemcachedPrivate::checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
-{
-    if (!ptr) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (rt) {
-            *rt = Memcached::Error;
-        }
-        return false;
-    }
-
-    if (key.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    return true;
-}
-
-inline bool MemcachedPrivate::checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
-{
-    if (!ptr) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (rt) {
-            *rt = Memcached::Error;
-        }
-        return false;
-    }
-
-    if (key.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    if (groupKey.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid group key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    return true;
-}
-
-inline void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
-{
-    if (rt1) {
-        *rt1 = MemcachedPrivate::returnTypeConvert(rt2);
-    }
-}
 
 }
 
