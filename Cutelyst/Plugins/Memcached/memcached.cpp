@@ -157,7 +157,7 @@ bool Memcached::setup(Application *app)
     return ok;
 }
 
-bool Memcached::set(const QString &key, const QByteArray &value, quint32 expiration, quint32 flags, Cutelyst::Memcached::MemcachedReturnType *returnType)
+bool Memcached::set(const QString &key, const QByteArray &value, quint32 expiration, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("set"), returnType)) {
         return false;
@@ -171,7 +171,7 @@ bool Memcached::set(const QString &key, const QByteArray &value, quint32 expirat
                                                 value.constData(),
                                                 value.size(),
                                                 expiration,
-                                                flags);
+                                                0);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -184,7 +184,7 @@ bool Memcached::set(const QString &key, const QByteArray &value, quint32 expirat
     return ok;
 }
 
-bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("set"), returnType)) {
         return false;
@@ -201,7 +201,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
                                                        value.constData(),
                                                        value.size(),
                                                        expiration,
-                                                       flags);
+                                                       0);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -214,7 +214,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
     return ok;
 }
 
-bool Memcached::add(const QString &key, const QByteArray &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::add(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("add"), returnType)) {
         return false;
@@ -228,7 +228,7 @@ bool Memcached::add(const QString &key, const QByteArray &value, quint32 expirat
                                                 value.constData(),
                                                 value.size(),
                                                 expiration,
-                                                flags);
+                                                0);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -241,7 +241,7 @@ bool Memcached::add(const QString &key, const QByteArray &value, quint32 expirat
     return ok;
 }
 
-bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("add"), returnType)) {
         return false;
@@ -258,7 +258,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
                                                       value.constData(),
                                                       value.size(),
                                                       expiration,
-                                                      flags);
+                                                      0);
 
     const bool ok = (rt == MEMCACHED_SUCCESS);
 
@@ -269,7 +269,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     return ok;
 }
 
-QByteArray Memcached::get(const QString &key, quint32 *flags, Cutelyst::Memcached::MemcachedReturnType *returnType)
+QByteArray Memcached::get(const QString &key, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -291,9 +291,6 @@ QByteArray Memcached::get(const QString &key, quint32 *flags, Cutelyst::Memcache
 
     if (value != NULL) {
         retData = QByteArray(value, valueLength);
-        if (flags) {
-            *flags = _flags;
-        }
         free(value);
     } else if (rt != MEMCACHED_NOTFOUND) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -304,7 +301,7 @@ QByteArray Memcached::get(const QString &key, quint32 *flags, Cutelyst::Memcache
     return retData;
 }
 
-QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quint32 *flags, MemcachedReturnType *returnType)
+QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -329,9 +326,6 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
 
     if (value != NULL) {
         retData = QByteArray(value, valueLength);
-        if (flags) {
-            *flags = _flags;
-        }
         free(value);
     } else if (rt != MEMCACHED_NOTFOUND) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));

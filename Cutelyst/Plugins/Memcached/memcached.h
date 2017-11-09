@@ -33,14 +33,14 @@ class MemcachedPrivate;
  * \brief Cutelyst Memcached plugin.
  *
  * The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a
- * \link https://www.memcached.org/ memcached \endlink general-purpose distributed memory caching system.
- * It uses \link http://docs.libmemcached.org libmemcached \endlink to connect to a pool of memcached servers
+ * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching system.
+ * It uses <A HREF="http://docs.libmemcached.org">libmemcached</A>to connect to a pool of memcached servers
  * and to perform the caching operations. In order to build this plugin, the libmemcached development and header
  * files have to be present at build time.
  *
  * \par Configuration
  * The Memcached plugin can be configured in the cutelyst configuration file in the \a Cutelyst_Memcached_Plugin section.
- * It uses the same configuration strings as \link http://docs.libmemcached.org/libmemcached_configuration.html libmemcached \endlink
+ * It uses the same configuration strings as <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
  * but in lowercase and without the dashes in front and for consistence \a - replaced by \a _ . So \c --BINARY-PROTOCOL will be
  * \c binary_protocol. To add servers and/or sockets use the \a servers configuration key. Servers can be added with name, port and
  * weight, separated by \c : - multiple servers are separated by a \c |. To add sockets, use a full path as name. If no configuration
@@ -106,6 +106,9 @@ public:
      */
     virtual ~Memcached();
 
+    /*!
+     * Return types for memcached operations.
+     */
     enum MemcachedReturnType {
         Success,                                /**< The request was successfully executed. */
         Failure,                                /**< A unknown failure has occurred in the server. */
@@ -155,35 +158,35 @@ public:
     };
     Q_ENUM(MemcachedReturnType)
 
-    static bool set(const QString &key, const QByteArray &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
+    static bool set(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
     template< typename T>
-    static bool set(const QString &key, const T &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
+    static bool set(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
-    static bool setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
-
-    template< typename T>
-    static bool setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
-
-    static bool add(const QString &key, const QByteArray &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
+    static bool setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
     template< typename T>
-    static bool add(const QString &key, const T &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
+    static bool setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
-    static bool addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
-
-    template< typename T>
-    static bool addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, quint32 flags = 0, MemcachedReturnType *returnType = nullptr);
-
-    static QByteArray get(const QString &key, quint32 *flags = nullptr, MemcachedReturnType *returnType = nullptr);
+    static bool add(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
     template< typename T>
-    static T get(const QString &key, quint32 *flags = nullptr, MemcachedReturnType *returnType = nullptr);
+    static bool add(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
-    static QByteArray getByKey(const QString &groupKey, const QString &key, quint32 *flags = nullptr, MemcachedReturnType *returnType = nullptr);
+    static bool addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
     template< typename T>
-    static T getByKey(const QString &groupKey, const QString &key, quint32 *flags = nullptr, MemcachedReturnType *returnType = nullptr);
+    static bool addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+
+    static QByteArray get(const QString &key, MemcachedReturnType *returnType = nullptr);
+
+    template< typename T>
+    static T get(const QString &key, MemcachedReturnType *returnType = nullptr);
+
+    static QByteArray getByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
+
+    template< typename T>
+    static T getByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
     static bool remove(const QString &key, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
@@ -207,46 +210,46 @@ private:
 };
 
 template< typename T>
-bool Memcached::set(const QString &key, const T &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::set(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
-    return Memcached::set(key, data, expiration, flags, returnType);
+    return Memcached::set(key, data, expiration, returnType);
 }
 
 template< typename T>
-bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
-    return Memcached::setByKey(groupKey, key, data, expiration, flags, returnType);
+    return Memcached::setByKey(groupKey, key, data, expiration, returnType);
 }
 
 template< typename T>
-bool Memcached::add(const QString &key, const T &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::add(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
-    return Memcached::add(key, data, expiration, flags, returnType);
+    return Memcached::add(key, data, expiration, returnType);
 }
 
 template< typename T>
-bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, quint32 flags, MemcachedReturnType *returnType)
+bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
-    return Memcached::addByKey(groupKey, key, data, expiration, flags, returnType);
+    return Memcached::addByKey(groupKey, key, data, expiration, returnType);
 }
 
 template< typename T>
-T Memcached::get(const QString &key, quint32 *flags, MemcachedReturnType *returnType)
+T Memcached::get(const QString &key, MemcachedReturnType *returnType)
 {
     T retVal;
-    QByteArray ba = Memcached::get(key, flags, returnType);
+    QByteArray ba = Memcached::get(key, returnType);
     if (!ba.isEmpty()) {
         QDataStream in(&ba, QIODevice::ReadOnly);
         in >> retVal;
@@ -255,10 +258,10 @@ T Memcached::get(const QString &key, quint32 *flags, MemcachedReturnType *return
 }
 
 template< typename T>
-T Memcached::getByKey(const QString &groupKey, const QString &key, quint32 *flags, MemcachedReturnType *returnType)
+T Memcached::getByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
 {
     T retVal;
-    QByteArray ba = Memcached::getByKey(groupKey, key, flags, returnType);
+    QByteArray ba = Memcached::getByKey(groupKey, key, returnType);
     if (!ba.isEmpty()) {
         QDataStream in(&ba, QIODevice::ReadOnly);
         in >> retVal;
