@@ -50,10 +50,10 @@ bool Memcached::setup(Application *app)
     const QVariantMap map = app->engine()->config(QStringLiteral("Cutelyst_Memcached_Plugin"));
     QStringList config;
 
-    const QStringList serverList = map.value(QStringLiteral("servers")).toString().split(QLatin1Char('|'));
+    const QStringList serverList = map.value(QStringLiteral("servers")).toString().split(QLatin1Char(';'));
     if (!serverList.empty()) {
         for (const QString &server : serverList) {
-            const QStringList serverParts = server.split(QLatin1Char(';'));
+            const QStringList serverParts = server.split(QLatin1Char(','));
             QString name;
             QString port = QStringLiteral("11211");
             QString weight = QStringLiteral("1");
