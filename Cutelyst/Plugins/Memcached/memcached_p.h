@@ -25,6 +25,7 @@
 #include <libmemcached/memcached.h>
 #include <QString>
 #include <QMap>
+#include <QFlags>
 
 namespace Cutelyst {
 
@@ -40,6 +41,12 @@ public:
         }
     }
 
+    enum Flag : quint32 {
+        NoFlags = 0x0,
+        Compressed = 0x1
+    };
+    Q_DECLARE_FLAGS(Flags, Flag)
+
     static void _q_postFork(Application *app);
 
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
@@ -49,8 +56,14 @@ public:
 
     QMap<int,std::pair<QString,quint16>> servers;
     memcached_st *memc = nullptr;
+
+    bool compression = false;
+    int compressionThreshold = 100;
+    int compressionLevel = -1;
 };
 
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::MemcachedPrivate::Flags)
 
 #endif // CUTELYSTMEMCACHED_P_H
