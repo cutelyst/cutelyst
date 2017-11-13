@@ -930,6 +930,172 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
     return ok;
 }
 
+QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString, quint64> *casValues, MemcachedReturnType *returnType)
+{
+    QHash<QString,QByteArray> ret;
+
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::Error;
+        }
+        return ret;
+    }
+
+    if (keys.empty()) {
+        qCWarning(C_MEMCACHED, "Can not get multiple values without a list of keys.");
+        if (returnType) {
+            *returnType = Memcached::BadKeyProvided;
+        }
+        return ret;
+    }
+
+    std::vector<char *> _keys;
+    _keys.reserve(keys.size());
+    std::vector<size_t> _keysSizes;
+    _keysSizes.reserve(keys.size());
+
+    for (const QString &key : keys) {
+        const QByteArray _key = key.toUtf8();
+        char *data = new char[_key.size() + 1];
+        strcpy(data, _key.data());
+        _keys.push_back(data);
+        _keysSizes.push_back(_key.size());
+    }
+
+    memcached_return_t rt;
+    bool ok = false;
+
+    rt = memcached_mget(mcd->d_ptr->memc,
+                        &_keys[0],
+                        &_keysSizes[0],
+                        _keys.size());
+
+    if (memcached_success(rt)) {
+        ok = true;
+        memcached_result_st *result;
+        ret.reserve(keys.size());
+        while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
+            result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+            if (result) {
+                const QString rk = QString::fromUtf8(memcached_result_key_value(result), memcached_result_key_length(result));
+                QByteArray rd(memcached_result_value(result), memcached_result_length(result));
+                if (casValues) {
+                    casValues->insert(rk, memcached_result_cas(result));
+                }
+                MemcachedPrivate::Flags flags = MemcachedPrivate::Flags(memcached_result_flags(result));
+                if (flags.testFlag(MemcachedPrivate::Compressed)) {
+                    rd = qUncompress(rd);
+                }
+                ret.insert(rk, rd);
+            }
+            memcached_result_free(result);
+        }
+    }
+
+    for (char *c : _keys) {
+        delete [] c;
+    }
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to get values for multiple keys: %s", memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ret;
+}
+
+QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, quint64> *casValues, MemcachedReturnType *returnType)
+{
+    QHash<QString, QByteArray> ret;
+
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::Error;
+        }
+        return ret;
+    }
+
+    if (groupKey.isEmpty()) {
+        qCWarning(C_MEMCACHED, "Can not get multiple values from specific server when groupKey is empty.");
+        if (returnType) {
+            *returnType = Memcached::BadKeyProvided;
+        }
+        return ret;
+    }
+
+    if (keys.empty()) {
+        qCWarning(C_MEMCACHED, "Can not get multiple values without a list of keys.");
+        if (returnType) {
+            *returnType = Memcached::BadKeyProvided;
+        }
+        return ret;
+    }
+
+    const QByteArray _group = groupKey.toUtf8();
+
+    std::vector<char *> _keys;
+    _keys.reserve(keys.size());
+    std::vector<size_t> _keysSizes;
+    _keysSizes.reserve(keys.size());
+
+    for (const QString &key : keys) {
+        const QByteArray _key = key.toUtf8();
+        char *data = new char[_key.size() + 1];
+        strcpy(data, _key.data());
+        _keys.push_back(data);
+        _keysSizes.push_back(_key.size());
+    }
+
+    memcached_return_t rt;
+    bool ok = false;
+
+    rt = memcached_mget_by_key(mcd->d_ptr->memc,
+                               _group.constData(),
+                               _group.size(),
+                               &_keys[0],
+                               &_keysSizes[0],
+                               _keys.size());
+
+
+
+    if (memcached_success(rt)) {
+        ok = true;
+        memcached_result_st *result;
+        ret.reserve(keys.size());
+        while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
+            result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+            if (result) {
+                const QString rk = QString::fromUtf8(memcached_result_key_value(result), memcached_result_key_length(result));
+                QByteArray rd(memcached_result_value(result), memcached_result_length(result));
+                if (casValues) {
+                    casValues->insert(rk, memcached_result_cas(result));
+                }
+                MemcachedPrivate::Flags flags = MemcachedPrivate::Flags(memcached_result_flags(result));
+                if (flags.testFlag(MemcachedPrivate::Compressed)) {
+                    rd = qUncompress(rd);
+                }
+                ret.insert(rk, rd);
+            }
+            memcached_result_free(result);
+        }
+    }
+
+    for (char *c : _keys) {
+        delete [] c;
+    }
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to get values for multiple keys in group \"%s\": %s", _group.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ret;
+}
+
 void MemcachedPrivate::_q_postFork(Application *app)
 {
     mcd = app->plugin<Memcached *>();

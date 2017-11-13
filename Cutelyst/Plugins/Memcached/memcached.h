@@ -39,7 +39,7 @@ class MemcachedPrivate;
  * files have to be present at build time.
  *
  * Basically all values are stored as QByteArray. So, to store simple types, simply convert them into a QByteArray
- * and vice versa on retrieval. For more complex or custom types you can use QDataStream to srialize them into
+ * and vice versa on retrieval. For more complex or custom types you can use QDataStream to serialize them into
  * a QByteArray. For most methods in this plugin there are template functions for convenience that perform this
  * serialization. The requirement to use them is that the types to store and get provide stream operators for
  * QDataStream.
@@ -423,7 +423,7 @@ public:
      * will contain the data fetched from the server. If an error occured or if the \a key could not
      * be found, the returned type \a T will be default constructed.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type \a T has to be deserializable from a QByteArray using QDataStream.
      *
      * As this method returns a default constructed type \a T if an error occured as well if the \a key
      * could not be found, you can use the value of the \a returnType to determine the reason.
@@ -477,6 +477,8 @@ public:
      * a \a groupKey that is used for determining which server an object was stored if key partitioning
      * was used for storage.
      *
+     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     *
      * As this method returns a default constructed type \a T if an error occured as well if the \a key
      * could not be found, you can use the value of the \a returnType to determine the reason.
      * Other than with other errors, failing because of not found \a key will not be logged.
@@ -504,8 +506,8 @@ public:
 
     /**
      * Deletes a particular \a key. \a Expiration works by placing the item into a delete queue,
-     * which means that it won’t be possible to retrieve it by the “get” command. The “add”
-     * and “replace” commands with this key will also fail (the “set” command will succeed,
+     * which means that it won’t be possible to retrieve it by Memcached::get(). Memcached::add()
+     * and Memcached::replace() with this key will also fail (Memcached::set() will succeed,
      * however). After the time passes, the item is finally deleted from server memory.
      *
      * @param[in] key key of object to delete
@@ -529,8 +531,8 @@ public:
      * Memcached::remove(). The difference is that it takes a \a groupKey that is used for
      * determining which server an object was stored if key partitioning was used for storage.
      * \a Expiration works by placing the item into a delete queue,
-     * which means that it won’t be possible to retrieve it by the “get” command. The “add”
-     * and “replace” commands with this key will also fail (the “set” command will succeed,
+     * which means that it won’t be possible to retrieve it by Memcached::getByKey(). Memcached::addByKey()
+     * and Memcached::replaceByKey() with this key will also fail (Memcached::setByKey() will succeed,
      * however). After the time passes, the item is finally deleted from server memory.
      *
      * @param[in] groupKey key that specifies the server to delete from
@@ -821,6 +823,70 @@ public:
      */
     static bool flush(time_t expiration, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Fetch multiple values from the server identified by a list of \a keys. If a pointer for the \a casValues
+     * is provided, keys and their cas values will be written to it.
+     *
+     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * use the \a returnType pointer to determine the reason.
+     *
+     * @param[in] keys list of keys to fetch from the server
+     * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QHash containing the keys and values
+     */
+    static QHash<QString, QByteArray> mget(const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Fetch multiple values of type \a T from the server identified by a list of \a keys. If a pointer
+     * for the \a casValues is provided, keys and their cas values are written to it.
+     *
+     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * use the \a returnType pointer to determine the reason.
+     *
+     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     *
+     * @param[in] keys list of keys to fetch from the server
+     * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QHash containing the keys and values
+     */
+    template< typename T>
+    static QHash<QString, T> mget(const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Fetch multiple values from the server specified by \a groupKey identified by a list of \a keys.
+     * If a pointer for the \a casValues is provided, keys and their cas values will be written to it.
+     *
+     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * use the \a returnType pointer to determine the reason.
+     *
+     * @param[in] groupKey key to specify the server to fetch values from
+     * @param[in] keys list of keys to fetch from the server
+     * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QHash containing the keys and values
+     */
+    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Fetch multiple values of type \a T from the server specified by \a groupKey identified by a list of \a keys.
+     * If a pointer for the \a casValues is provided, keys and their cas values will be written to it.
+     *
+     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * use the \a returnType pointer to determine the reason.
+     *
+     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     *
+     * @param[in] groupKey key to specify the server to fetch values from
+     * @param[in] keys list of keys to fetch from the server
+     * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QHash containing the keys and values
+     */
+    template< typename T>
+    static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
@@ -927,6 +993,42 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &v
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
     return Memcached::casByKey(groupKey, key, data, expiration, cas, returnType);
+}
+
+template< typename T>
+QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString,quint64> *casValues, MemcachedReturnType *returnType)
+{
+    QHash<QString, T> hash;
+    QHash<QString,QByteArray> _data = Memcached::mget(keys, casValues, returnType);
+    if (!_data.empty()) {
+        auto i = _data.constBegin();
+        while (i != _data.constEnd()) {
+            T retVal;
+            QDataStream in(i.value());
+            in >> retVal;
+            hash.insert(i.key(), retVal);
+            ++i;
+        }
+    }
+    return hash;
+}
+
+template< typename T>
+QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues, MemcachedReturnType *returnType)
+{
+    QHash<QString, T> hash;
+    QHash<QString,QByteArray> _data = Memcached::mgetByKey(groupKey, keys, casValues, returnType);
+    if (!_data.empty()) {
+        auto i = _data.constBegin();
+        while (i != _data.constEnd()) {
+            T retVal;
+            QDataStream in(i.value());
+            in >> retVal;
+            hash.insert(i.key(), retVal);
+            ++i;
+        }
+    }
+    return hash;
 }
 
 }
