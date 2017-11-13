@@ -800,6 +800,15 @@ public:
     template< typename T>
     static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Used in conjunction with buffer requests enabled to flush all buffers by sending the buffered commands to the server
+     * for processing.
+     *
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool flushBuffers(MemcachedReturnType *returnType = nullptr);
+
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
