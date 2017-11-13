@@ -574,6 +574,92 @@ public:
      */
     static bool existByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Increments the value of \a key by \a offset. If there is a valid pointer to \a value, the incremented value
+     * will be returned to it.
+     *
+     * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @param[in] key key to increment
+     * @param[in] offset offset for increment
+     * @param[out] value optional pointer to a variable that takes the incremented value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool increment(const QString &key, uint32_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Increments the value of \a key in \a groupKey by \a offset. If there is a valid pointer to \a value, the
+     * incremented value will be returned to it. This method behaves in a similar nature as
+     * Memcached::increment(). The difference is that it takes a \a groupKey that is used for
+     * determining which server an object was stored if key partitioning was used for storage.
+     *
+     * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @param[in] groupKey key that specifies the server to increment the key on
+     * @param[in] key key to increment
+     * @param[in] offset offset for increment
+     * @param[out] value optional pointer to a variable that takes the incremented value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool incrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Expiration time constant that can be used in the increment/decrement with initial methods.
+     * \sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     */
+    static const time_t expirationNotAdd;
+
+    /**
+     * Increments the value of \a key by \a offset. If the object specified by \a key does not exist,
+     * one of two things will happen: if the expiration value is Memcached::expirationNotAdd, the
+     * operation will fail. For all other expiration values, the operation will succeed by seeding
+     * the value for that \a key with a \a initial value to expire with the provided expiration time.
+     * The flags will be set to zero. If there is a valid pointer to \a value, the created or incremented
+     * value will be returned to it.
+     *
+     * @note This method will only work when using the binary protocol.
+     *
+     * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @param[in] key key to increment or initialize
+     * @param[in] offset offset for increment
+     * @param[in] initial initial value if key does not exist
+     * @param[in] expiration expiration time in seconds
+     * @param[out] value optional pointer to a variable that takes the incremented or initialized value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool incrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Increments the value of \a key in \a groupKey by \a offset. If the object specified by \a key does not exist,
+     * one of two things will happen: if the expiration value is Memcached::expirationNotAdd, the
+     * operation will fail. For all other expiration values, the operation will succeed by seeding
+     * the value for that \a key with a \a initial value to expire with the provided expiration time.
+     * The flags will be set to zero. If there is a valid pointer to \a value, the created or incremented
+     * value will be returned to it.
+     *
+     * This method behaves in a similar nature as Memcached::incrementWithInitial(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
+     *
+     * @note This method will only work when using the binary protocol.
+     *
+     * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @param[in] groupKey key that specifies the server to increment the key on
+     * @param[in] key key to increment or initialize
+     * @param[in] offset offset for increment
+     * @param[in] initial initial value if key does not exist
+     * @param[in] expiration expiration time in seconds
+     * @param[out] value optional pointer to a variable that takes the incremented or initialized value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool incrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
+
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
