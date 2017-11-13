@@ -31,6 +31,7 @@ Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached")
 using namespace Cutelyst;
 
 static thread_local Memcached *mcd = nullptr;
+const time_t Memcached::expirationNotAdd = MEMCACHED_EXPIRATION_NOT_ADD;
 
 Memcached::Memcached(Application *parent) :
     Plugin(parent), d_ptr(new MemcachedPrivate)
@@ -583,6 +584,115 @@ bool Memcached::existByKey(const QString &groupKey, const QString &key, Memcache
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\" in group \"%s\": %s", _key.constData(), _groupKey.constData());
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::increment(const QString &key, uint32_t offset, uint64_t *value, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("increment"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_increment(mcd->d_ptr->memc,
+                                                      _key.constData(),
+                                                      _key.size(),
+                                                      offset,
+                                                      value);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to increment key \"%s\" by %lu: %s", _key.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("increment"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _group = groupKey.toUtf8();
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_increment_by_key(mcd->d_ptr->memc,
+                                                             _group.constData(),
+                                                             _group.size(),
+                                                             _key.constData(),
+                                                             _key.size(),
+                                                             offset,
+                                                             value);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to increment \"%s\" key on group \"%s\" by %lu: %s", _key.constData(), _group.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::incrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("increment with initial"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_increment_with_initial(mcd->d_ptr->memc,
+                                                                   _key.constData(),
+                                                                   _key.size(),
+                                                                   offset,
+                                                                   initial,
+                                                                   expiration,
+                                                                   value);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to increment or initialize key \"%s\" by offset %lu or initial %lu: %s", _key.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::incrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("increment or initialize"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _group = groupKey.toUtf8();
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_increment_with_initial_by_key(mcd->d_ptr->memc,
+                                                                          _group.constData(),
+                                                                          _group.size(),
+                                                                          _key.constData(),
+                                                                          _key.size(),
+                                                                          offset,
+                                                                          initial,
+                                                                          expiration,
+                                                                          value);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to increment or initialize key \"%s\" in group \"%s\" by offset %lu or initial %lu: %s", _key.constData(), _group.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
