@@ -163,7 +163,7 @@ bool Memcached::setup(Application *app)
     return ok;
 }
 
-bool Memcached::set(const QString &key, const QByteArray &value, quint32 expiration, Cutelyst::Memcached::MemcachedReturnType *returnType)
+bool Memcached::set(const QString &key, const QByteArray &value, time_t expiration, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("set"), returnType)) {
         return false;
@@ -198,7 +198,7 @@ bool Memcached::set(const QString &key, const QByteArray &value, quint32 expirat
     return ok;
 }
 
-bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("set"), returnType)) {
         return false;
@@ -236,7 +236,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
     return ok;
 }
 
-bool Memcached::add(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::add(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("add"), returnType)) {
         return false;
@@ -271,7 +271,7 @@ bool Memcached::add(const QString &key, const QByteArray &value, quint32 expirat
     return ok;
 }
 
-bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("add"), returnType)) {
         return false;
@@ -309,7 +309,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     return ok;
 }
 
-bool Memcached::replace(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::replace(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("replace"), returnType)) {
         return false;
@@ -344,7 +344,7 @@ bool Memcached::replace(const QString &key, const QByteArray &value, quint32 exp
     return ok;
 }
 
-bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("replace"), returnType)) {
         return false;
