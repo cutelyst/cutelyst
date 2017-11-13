@@ -907,6 +907,29 @@ bool Memcached::flushBuffers(MemcachedReturnType *returnType)
     return ok;
 }
 
+bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
+{
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::Error;
+        }
+        return false;
+    }
+
+    const memcached_return_t rt = memcached_flush(mcd->d_ptr->memc, expiration);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to wipe clean (flush) server content: %s", memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
 void MemcachedPrivate::_q_postFork(Application *app)
 {
     mcd = app->plugin<Memcached *>();
