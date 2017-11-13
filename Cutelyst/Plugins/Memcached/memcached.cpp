@@ -147,6 +147,16 @@ bool Memcached::setup(Application *app)
     memcached_st *new_memc = memcached(configString.constData(), configString.size());
 
     if (new_memc) {
+        const QString encKey = map.value(QStringLiteral("encryption_key")).toString();
+        if (!encKey.isEmpty()) {
+            const QByteArray encKeyBa = encKey.toUtf8();
+            const memcached_return_t rt = memcached_set_encoding_key(new_memc, encKeyBa.constData(), encKeyBa.size());
+            if (Q_LIKELY(memcached_success(rt))) {
+                qCDebug(C_MEMCACHED, "Enabled encryption.");
+            } else {
+                qCWarning(C_MEMCACHED, "Failed to enable encryption: %s", memcached_strerror(new_memc, rt));
+            }
+        }
         if (d->memc) {
             memcached_free(d->memc);
         }

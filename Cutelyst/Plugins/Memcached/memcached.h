@@ -53,10 +53,11 @@ class MemcachedPrivate;
  * weight, separated by \c , - multiple servers are separated by a \c ; . To add sockets, use a full path as name. If no configuration
  * has been set or if the \a servers configuration key is empty, a default server at localhost on port 11211 will be used.
  *
- * Additional to the configuration options of libmemcached there are some plugin specific options:
+ * Additional to the <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">configuration options of libmemcached</A> there are some plugin specific options:
  * \li \a compression - boolean value, enables compression of input values based on qCompress / zlib (default: disabled)
  * \li \a compression_level - integer value, the compression level used by qCompress (default: -1)
  * \li \a compression_threshold - integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed (default: 100)
+ * \li \a encryption_key - string value, if set and not empty, AES encryption will be enabled (default: empty)
  * \endparblock
  *
  * \note If you want to use non-ASCII key names you have to enable the binary protocol.
