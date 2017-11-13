@@ -809,6 +809,81 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString
     return ok;
 }
 
+bool Memcached::cas(const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("compare and set (cas)"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _key = key.toUtf8();
+
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
+    const memcached_return_t rt = memcached_cas(mcd->d_ptr->memc,
+                                                _key.constData(),
+                                                _key.size(),
+                                                _value.constData(),
+                                                _value.size(),
+                                                expiration,
+                                                flags,
+                                                cas);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
+bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("compare and set (cas)"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _group = groupKey.toUtf8();
+    const QByteArray _key = key.toUtf8();
+
+    MemcachedPrivate::Flags flags;
+    QByteArray _value = value;
+
+    if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
+        flags.setFlag(MemcachedPrivate::Compressed);
+        _value = qCompress(value, mcd->d_ptr->compressionLevel);
+    }
+
+    const memcached_return_t rt = memcached_cas_by_key(mcd->d_ptr->memc,
+                                                       _group.constData(),
+                                                       _group.size(),
+                                                       _key.constData(),
+                                                       _key.size(),
+                                                       _value.constData(),
+                                                       _value.size(),
+                                                       expiration,
+                                                       flags,
+                                                       cas);
+
+    const bool ok = (rt == MEMCACHED_SUCCESS);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\" in group \"%s\": %s", _key.constData(), _group.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    MemcachedPrivate::setReturnType(returnType, rt);
+
+    return ok;
+}
+
 void MemcachedPrivate::_q_postFork(Application *app)
 {
     mcd = app->plugin<Memcached *>();

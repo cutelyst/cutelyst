@@ -187,7 +187,7 @@ public:
      * does not exist it will be written.
      *
      * @param[in] key key of object whose value to set
-     * @param[in] value of type \a T of object to write to server
+     * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
@@ -202,7 +202,7 @@ public:
      * Type \a T has to be serializable into a QByteArray using QDataStream.
      *
      * @param[in] key key of object whose value to set
-     * @param[in] value value of object to write to server
+     * @param[in] value value of type \a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
@@ -740,6 +740,66 @@ public:
      */
     static bool decrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Overwrites data for \a key in the server as long as the \a cas value is still the same in the server.
+     * You can get the \a cas value by using the cas return value of Memcached::get()
+     *
+     * @param[in] key key of object whose value to compare and set
+     * @param[in] value value of object to write to server
+     * @param[in] expiration time in seconds to keep the object stored in the server
+     * @param[in] cas the cas value to compare
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool cas(const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Overwrites data for \a key in the server as long as the \a cas value is still the same in the server.
+     * You can get the \a cas value by using the cas return value of Memcached::get()
+     *
+     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     *
+     * @param[in] key key of object whose value to compare and set
+     * @param[in] value value of type \a T of object to write to server
+     * @param[in] expiration time in seconds to keep the object stored in the server
+     * @param[in] cas the cas value to compare
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    template< typename T>
+    static bool cas(const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
+     * You can get the \a cas value by using the cas return value of Memcached::getByKey()
+     *
+     * @param[in] groupkey key that specifies the server to write to
+     * @param[in] key key of object whose value to compare and set
+     * @param[in] value value of object to write to server
+     * @param[in] expiration time in seconds to keep the object stored in the server
+     * @param[in] cas the cas value to compare
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
+     * You can get the \a cas value by using the cas return value of Memcached::getByKey()
+     *
+     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     *
+     * @param[in] groupkey key that specifies the server to write to
+     * @param[in] key key of object whose value to compare and set
+     * @param[in] value value of type \a T of object to write to server
+     * @param[in] expiration time in seconds to keep the object stored in the server
+     * @param[in] cas the cas value to compare
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    template< typename T>
+    static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
@@ -828,6 +888,24 @@ T Memcached::getByKey(const QString &groupKey, const QString &key, quint64 *cas,
         in >> retVal;
     }
     return retVal;
+}
+
+template< typename T>
+bool Memcached::cas(const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << value;
+    return Memcached::cas(key, data, expiration, cas, returnType);
+}
+
+template< typename T>
+bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out << value;
+    return Memcached::casByKey(groupKey, key, data, expiration, cas, returnType);
 }
 
 }
