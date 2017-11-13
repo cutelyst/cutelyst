@@ -773,7 +773,11 @@ public:
 
     /**
      * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
-     * You can get the \a cas value by using the cas return value of Memcached::getByKey()
+     * You can get the \a cas value by using the cas return value of Memcached::getByKey().
+     *
+     * This method behaves in a similar nature as Memcached::cas(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
      *
      * @param[in] groupkey key that specifies the server to write to
      * @param[in] key key of object whose value to compare and set
@@ -790,6 +794,10 @@ public:
      * You can get the \a cas value by using the cas return value of Memcached::getByKey()
      *
      * Type \a T has to be serializable into a QByteArray using QDataStream.
+     *
+     * This method behaves in a similar nature as Memcached::cas(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
      *
      * @param[in] groupkey key that specifies the server to write to
      * @param[in] key key of object whose value to compare and set
@@ -861,6 +869,10 @@ public:
      * As this might return an empty QHash if nothing has been found or if an error occured, you can
      * use the \a returnType pointer to determine the reason.
      *
+     * This method behaves in a similar nature as Memcached::mget(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
+     *
      * @param[in] groupKey key to specify the server to fetch values from
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
@@ -878,6 +890,10 @@ public:
      *
      * Type \a T has to be deserializable from a QByteArray using QDataStream.
      *
+     * This method behaves in a similar nature as Memcached::mget(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
+     *
      * @param[in] groupKey key to specify the server to fetch values from
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
@@ -886,6 +902,31 @@ public:
      */
     template< typename T>
     static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Updates the \a expiration time on an existing \a key.
+     *
+     * @param[in] key key whose expiration time to update
+     * @param[in] expiration new expiration time in seconds
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool touch(const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
+
+    /**
+     * Updates the \a expiration time on an existing \a key in group \a groupKey.
+     *
+     * This method behaves in a similar nature as Memcached::touch(). The difference is that
+     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
+     *
+     * @param[in] groupKey key to specify the server to update the key on
+     * @param[in] key key whose expiration time to update
+     * @param[in] expiration new expiration time in seconds
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool touchByKey(const QString &groupKey, const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;

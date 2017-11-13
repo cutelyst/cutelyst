@@ -1096,6 +1096,53 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
     return ret;
 }
 
+bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("touch"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_touch(mcd->d_ptr->memc,
+                                                  _key.constData(),
+                                                  _key.size(),
+                                                  expiration);
+
+    const bool ok = memcached_success(rt);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to touch key \"%s\" with new expiration time %lu: %s", _key.constData(), expiration, memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    return ok;
+}
+
+bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t expiration, MemcachedReturnType *returnType)
+{
+    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("touch"), returnType)) {
+        return false;
+    }
+
+    const QByteArray _group = groupKey.toUtf8();
+    const QByteArray _key = key.toUtf8();
+
+    const memcached_return_t rt = memcached_touch_by_key(mcd->d_ptr->memc,
+                                                         _group.constData(),
+                                                         _group.size(),
+                                                         _key.constData(),
+                                                         _key.size(),
+                                                         expiration);
+
+    const bool ok = memcached_success(rt);
+
+    if (!ok) {
+        qCWarning(C_MEMCACHED, "Failed to touch key \"%s\" in group \"%s\" with new expiration time %lu: %s", _key.constData(), _group.constData(), expiration, memcached_strerror(mcd->d_ptr->memc, rt));
+    }
+
+    return ok;
+}
+
 void MemcachedPrivate::_q_postFork(Application *app)
 {
     mcd = app->plugin<Memcached *>();
