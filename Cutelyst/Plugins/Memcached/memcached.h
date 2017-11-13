@@ -192,7 +192,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool set(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool set(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Writes the \a value of type \a T to the memcached server using \a key. If
@@ -208,7 +208,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool set(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Writes the \a value to the memcached server using \a key. If the \a key already
@@ -225,7 +225,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool setByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool setByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Writes the \a value of type \a T to the memcached server using \a key. If the \a key
@@ -244,7 +244,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Adds the \a value to the memcached server using \a key. If the object is found on the server
@@ -260,7 +260,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool add(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool add(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Adds the \a value of type \a T to the memcached server using \a key. If the object is found
@@ -279,7 +279,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool add(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Adds the \a value to the memcached server using \a key. If the object is found on the server an
@@ -299,7 +299,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool addByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool addByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Adds the \a value of type \a T to the memcached server using \a key. If the object is found on
@@ -322,7 +322,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of \a key on the server with \a value. If the \a key ist not found on the
@@ -338,7 +338,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool replace(const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool replace(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of \a key on the server with \a value of type \a T. If the \a key ist not
@@ -357,7 +357,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool replace(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of \a key on the server with \a value. If the \a key ist not found on the
@@ -377,7 +377,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Replaces the data of \a key on the server with \a value of Type \a T. If the \a key ist not found
@@ -400,7 +400,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
+    static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by \a key. The returned QByteArray will
@@ -673,7 +673,7 @@ private:
 };
 
 template< typename T>
-bool Memcached::set(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -682,7 +682,7 @@ bool Memcached::set(const QString &key, const T &value, quint32 expiration, Memc
 }
 
 template< typename T>
-bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -691,7 +691,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &v
 }
 
 template< typename T>
-bool Memcached::add(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -700,7 +700,7 @@ bool Memcached::add(const QString &key, const T &value, quint32 expiration, Memc
 }
 
 template< typename T>
-bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -709,7 +709,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &v
 }
 
 template< typename T>
-bool Memcached::replace(const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -718,7 +718,7 @@ bool Memcached::replace(const QString &key, const T &value, quint32 expiration, 
 }
 
 template< typename T>
-bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
