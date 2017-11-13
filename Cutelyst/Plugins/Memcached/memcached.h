@@ -34,7 +34,7 @@ class MemcachedPrivate;
  *
  * The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a
  * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching system.
- * It uses <A HREF="http://docs.libmemcached.org">libmemcached</A>to connect to a pool of memcached servers
+ * It uses <A HREF="http://docs.libmemcached.org">libmemcached</A> to connect to a pool of memcached servers
  * and to perform the caching operations. In order to build this plugin, the libmemcached development and header
  * files have to be present at build time.
  *
@@ -386,6 +386,8 @@ public:
      * to a specific server. This allows related items to be grouped together on a single server for
      * efficiency.
      *
+     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     *
      * As this method returns \c false if the \a key can not be found on the server, you can use
      * the value of the \a returnType to determine the reason. Other than with other errors, failing
      * because of not found \a key will not be logged.
@@ -400,31 +402,184 @@ public:
     template< typename T>
     static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Fetch an individial value from the server identified by \a key. The returned QByteArray will
+     * contain the data fetched from the server. If an error occured or if the \a key could not
+     * be found, the returned QByteArray will be \c null. Use QByteArray::isNull() to check for this.
+     *
+     * As this method returns a \c null byte array if an error occured as well if the \a key could
+     * not be found, you can use the value of the \a returnType to determine the reason. Other than with
+     * other errors, failing because of not found \a key will not be logged.
+     *
+     * @param[in] key key of object whose value to fecth
+     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
+     */
     static QByteArray get(const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Fetch an individial value of type \a T from the server identified by \a key. The returned type \a T
+     * will contain the data fetched from the server. If an error occured or if the \a key could not
+     * be found, the returned type \a T will be default constructed.
+     *
+     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     *
+     * As this method returns a default constructed type \a T if an error occured as well if the \a key
+     * could not be found, you can use the value of the \a returnType to determine the reason.
+     * Other than with other errors, failing because of not found \a key will not be logged.
+     *
+     * \par Usage example
+     * \code{.cpp}
+     * void MyController::index(Context *c)
+     * {
+     *     //...
+     *
+     *     QVariantList list = Memcached::get<QVariantList>(QStringLiteral("MyKey"));
+     *
+     *     //...
+     * }
+     * \endcode
+     *
+     * @param[in] key key of object whose value to fecth
+     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
+     */
     template< typename T>
     static T get(const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Fetch an individial value from the server identified by \a key. The returned QByteArray will
+     * contain the data fetched from the server. If an error occured or if the \a key could not
+     * be found, the returned QByteArray will be \c null. Use QByteArray::isNull() to check for this.
+     * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
+     * a \a groupKey that is used for determining which server an object was stored if key partitioning
+     * was used for storage.
+     *
+     * As this method returns a \c null byte array if an error occured as well if the \a key could
+     * not be found, you can use the value of the \a returnType to determine the reason. Other than with
+     * other errors, failing because of not found \a key will not be logged.
+     *
+     * @param[in] groupKey key that specifies the server to fetch from
+     * @param[in] key key of object whose value to fecth
+     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
+     */
     static QByteArray getByKey(const QString &groupKey, const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Fetch an individial value from the server identified by \a key. The returned type \a T will
+     * contain the data fetched from the server. If an error occured or if the \a key could not
+     * be found, the returned type \a T will be default constructed.
+     * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
+     * a \a groupKey that is used for determining which server an object was stored if key partitioning
+     * was used for storage.
+     *
+     * As this method returns a default constructed type \a T if an error occured as well if the \a key
+     * could not be found, you can use the value of the \a returnType to determine the reason.
+     * Other than with other errors, failing because of not found \a key will not be logged.
+     *
+     * \par Usage example
+     * \code{.cpp}
+     * void MyController::index(Context *c)
+     * {
+     *     //...
+     *
+     *     QVariantList list = Memcached::getByKey<QVariantList>(QStringLiteral("MyGroup"), QStringLiteral("MyKey"));
+     *
+     *     //...
+     * }
+     * \endcode
+     *
+     * @param[in] groupKey key that specifies the server to fetch from
+     * @param[in] key key of object whose value to fecth
+     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
+     */
     template< typename T>
     static T getByKey(const QString &groupKey, const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Deletes a particular \a key. \a Expiration works by placing the item into a delete queue,
+     * which means that it won’t be possible to retrieve it by the “get” command. The “add”
+     * and “replace” commands with this key will also fail (the “set” command will succeed,
+     * however). After the time passes, the item is finally deleted from server memory.
+     *
+     * @param[in] key key of object to delete
+     * @param[in] expiration expiration time in seconds
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
     static bool remove(const QString &key, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Directly deletes a particular \a key by setting the expiration time to \c 0.
+     *
+     * @param[in] key key of object to delete
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
     static bool remove(const QString &key, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Deletes a particular \a key in \a groupkey. This method behaves in a similar nature as
+     * Memcached::remove(). The difference is that it takes a \a groupKey that is used for
+     * determining which server an object was stored if key partitioning was used for storage.
+     * \a Expiration works by placing the item into a delete queue,
+     * which means that it won’t be possible to retrieve it by the “get” command. The “add”
+     * and “replace” commands with this key will also fail (the “set” command will succeed,
+     * however). After the time passes, the item is finally deleted from server memory.
+     *
+     * @param[in] groupKey key that specifies the server to delete from
+     * @param[in] key key of object to delete
+     * @param[in] expiration expiration time in seconds
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
     static bool removeByKey(const QString &groupKey, const QString &key, quint32 expiration, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Directly deletes a particular \a key in \a groupKey by setting the expiration time to \c 0.
+     * This method behaves in a similar nature as Memcached::remove(). The difference is that it
+     * takes a \a groupKey that is used for determining which server an object was stored if key
+     * partitioning was used for storage.
+     *
+     * @param[in] groupKey key that specifies the server to delete from
+     * @param[in] key key of object to delete
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
     static bool removeByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Checks if the \a key exists.
+     * @param[in] key key to check
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true if the key exists; \c false otherwise
+     */
     static bool exist(const QString &key, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Checks if the \a key exists in \a groupKey. This method behaves in a similar nature as
+     * Memcached::exist(). The difference is that it takes a \a groupKey that is used for
+     * determining which server an object was stored if key partitioning was used for storage.
+     *
+     * @param groupKey key that specifies the server to check on
+     * @param key key to check
+     * @param returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true if the key exists; \c false otherwise
+     */
     static bool existByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
+    /**
+     * Reads the configuration and sets up the plugin.
+     */
     virtual bool setup(Application *app) override;
 
 private:
