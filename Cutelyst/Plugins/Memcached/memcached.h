@@ -809,6 +809,18 @@ public:
      */
     static bool flushBuffers(MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Wipe cleans the contents of memcached servers. It will either do this immediately or expire the content
+     * base on the \a expiration time passed to the method (a value of zero causes an immediate flush). The
+     * operation is not atomic to multiple servers, just atomic to a single server. That is, it will flush
+     * the servers in the order that they were added.
+     *
+     * @param[in] expiration time in seconds
+     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
+     * @return \c true on success; \c false otherwise
+     */
+    static bool flush(time_t expiration, MemcachedReturnType *returnType = nullptr);
+
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
 
