@@ -53,8 +53,6 @@ public:
     static void _q_postFork(Application *app);
 
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
-    static bool checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
-    static bool checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt);
     static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
 
     QMap<int,std::pair<QString,quint16>> servers;
