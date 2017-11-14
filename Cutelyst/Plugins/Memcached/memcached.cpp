@@ -133,30 +133,51 @@ bool Memcached::setup(Application *app)
         }
     }
 
-    d->compression = map.value(QStringLiteral("compression"), false).toBool();
-    d->compressionLevel = map.value(QStringLiteral("compression_level"), -1).toInt();
-    d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), 100).toInt();
-    qCDebug(C_MEMCACHED, "Compression: %s, Compression level: %i, Compression threshold: %i bytes", d->compression ? "enabled" : "disabled", d->compressionLevel, d->compressionThreshold);
-
     const QByteArray configString = config.join(QChar(QChar::Space)).toUtf8();
 
     bool ok = false;
 
-    qCDebug(C_MEMCACHED, "Setting up connection to memcached servers using libmemcached %s with the following configuration string: \"%s\"", memcached_lib_version(), configString.constData());
+    qCInfo(C_MEMCACHED, "Setting up connection to memcached servers using libmemcached %s with the following configuration string: \"%s\"", memcached_lib_version(), configString.constData());
 
     memcached_st *new_memc = memcached(configString.constData(), configString.size());
 
     if (new_memc) {
+        d->compression = map.value(QStringLiteral("compression"), false).toBool();
+        d->compressionLevel = map.value(QStringLiteral("compression_level"), -1).toInt();
+        d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), 100).toInt();
+        if (d->compression) {
+            qCInfo(C_MEMCACHED, "Compression: enabled (Compression level: %i, Compression threshold: %i bytes)", d->compressionLevel, d->compressionThreshold);
+        } else {
+            qCInfo(C_MEMCACHED, "Compression: disabled");
+        }
+
         const QString encKey = map.value(QStringLiteral("encryption_key")).toString();
         if (!encKey.isEmpty()) {
             const QByteArray encKeyBa = encKey.toUtf8();
             const memcached_return_t rt = memcached_set_encoding_key(new_memc, encKeyBa.constData(), encKeyBa.size());
             if (Q_LIKELY(memcached_success(rt))) {
-                qCDebug(C_MEMCACHED, "Enabled encryption.");
+                qCInfo(C_MEMCACHED, "Encryption: enabled");
             } else {
                 qCWarning(C_MEMCACHED, "Failed to enable encryption: %s", memcached_strerror(new_memc, rt));
             }
+        } else {
+            qCInfo(C_MEMCACHED, "Encryption: disabled");
         }
+
+        const QString saslUser = map.value(QStringLiteral("sasl_user")).toString();
+        const QString saslPass = map.value(QStringLiteral("sasl_password")).toString();
+        if (!saslUser.isEmpty() && !saslPass.isEmpty()) {
+            const memcached_return_t rt = memcached_set_sasl_auth_data(new_memc, saslUser.toUtf8().constData(), saslPass.toUtf8().constData());
+            if (Q_LIKELY(memcached_success(rt))) {
+                qCInfo(C_MEMCACHED, "SASL authentication: enabled");
+                d->saslEnabled = true;
+            } else {
+                qCWarning(C_MEMCACHED, "Failed to enable SASL authentication: %s", memcached_strerror(new_memc, rt));
+            }
+        } else {
+            qCInfo(C_MEMCACHED, "SASL authentication: disabled");
+        }
+
         if (d->memc) {
             memcached_free(d->memc);
         }
