@@ -218,7 +218,7 @@ bool Memcached::set(const QString &key, const QByteArray &value, time_t expirati
                                                 expiration,
                                                 flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to store key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -256,7 +256,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
                                                        expiration,
                                                        flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to store key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -291,7 +291,7 @@ bool Memcached::add(const QString &key, const QByteArray &value, time_t expirati
                                                 expiration,
                                                 flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED, "Failed to add key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -329,7 +329,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
                                                       expiration,
                                                       flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED, "Failed to add key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -364,7 +364,7 @@ bool Memcached::replace(const QString &key, const QByteArray &value, time_t expi
                                                     expiration,
                                                     flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED, "Failed to replace key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -402,7 +402,7 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
                                                            expiration,
                                                            flags);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED, "Failed to replace key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -527,7 +527,7 @@ bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnTy
                                                    _key.size(),
                                                    expiration);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to remove data for key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -559,7 +559,7 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32
                                                           _key.size(),
                                                           expiration);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to remove data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -585,7 +585,7 @@ bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
                                                   _key.constData(),
                                                   _key.size());
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -611,7 +611,7 @@ bool Memcached::existByKey(const QString &groupKey, const QString &key, Memcache
                                                          _key.constData(),
                                                          _key.size());
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\" in group \"%s\": %s", _key.constData(), _groupKey.constData());
@@ -636,7 +636,7 @@ bool Memcached::increment(const QString &key, uint32_t offset, uint64_t *value, 
                                                       offset,
                                                       value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to increment key \"%s\" by %lu: %s", _key.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -664,7 +664,7 @@ bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint
                                                              offset,
                                                              value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to increment \"%s\" key on group \"%s\" by %lu: %s", _key.constData(), _group.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -691,7 +691,7 @@ bool Memcached::incrementWithInitial(const QString &key, uint64_t offset, uint64
                                                                    expiration,
                                                                    value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to increment or initialize key \"%s\" by offset %lu or initial %lu: %s", _key.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -721,7 +721,7 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey, const QString
                                                                           expiration,
                                                                           value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to increment or initialize key \"%s\" in group \"%s\" by offset %lu or initial %lu: %s", _key.constData(), _group.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -745,7 +745,7 @@ bool Memcached::decrement(const QString &key, uint32_t offset, uint64_t *value, 
                                                       offset,
                                                       value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to decrement key \"%s\" by %lu: %s", _key.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -773,7 +773,7 @@ bool Memcached::decrementByKey(const QString &groupKey, const QString &key, uint
                                                              offset,
                                                              value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to decrement \"%s\" key on group \"%s\" by %lu: %s", _key.constData(), _group.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -800,7 +800,7 @@ bool Memcached::decrementWithInitial(const QString &key, uint64_t offset, uint64
                                                                    expiration,
                                                                    value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to decrement or initialize key \"%s\" by offset %lu or initial %lu: %s", _key.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
@@ -830,7 +830,7 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString
                                                                           expiration,
                                                                           value);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to increment or initialize key \"%s\" in group \"%s\" by offset %lu or initial %lu: %s", _key.constData(), _group.constData(), offset, initial, memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -865,7 +865,7 @@ bool Memcached::cas(const QString &key, const QByteArray &value, time_t expirati
                                                 flags,
                                                 cas);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -904,7 +904,7 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByt
                                                        flags,
                                                        cas);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\" in group \"%s\": %s", _key.constData(), _group.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
@@ -927,7 +927,7 @@ bool Memcached::flushBuffers(MemcachedReturnType *returnType)
 
     const memcached_return_t rt = memcached_flush_buffers(mcd->d_ptr->memc);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to flush buffers: %s", memcached_strerror(mcd->d_ptr->memc, rt));
@@ -950,7 +950,7 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
 
     const memcached_return_t rt = memcached_flush(mcd->d_ptr->memc, expiration);
 
-    const bool ok = (rt == MEMCACHED_SUCCESS);
+    const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED, "Failed to wipe clean (flush) server content: %s", memcached_strerror(mcd->d_ptr->memc, rt));
