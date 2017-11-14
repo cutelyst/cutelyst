@@ -37,6 +37,9 @@ public:
     ~MemcachedPrivate()
     {
         if (memc) {
+            if (saslEnabled) {
+                memcached_destroy_sasl_auth_data(memc);
+            }
             memcached_free(memc);
         }
     }
@@ -60,6 +63,7 @@ public:
     bool compression = false;
     int compressionThreshold = 100;
     int compressionLevel = -1;
+    bool saslEnabled = false;
 };
 
 }

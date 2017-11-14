@@ -58,6 +58,8 @@ class MemcachedPrivate;
  * \li \a compression_level - integer value, the compression level used by qCompress (default: -1)
  * \li \a compression_threshold - integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed (default: 100)
  * \li \a encryption_key - string value, if set and not empty, AES encryption will be enabled (default: empty)
+ * \li \a sasl_user - string value, if set and not empty, SASL authentication will be used (default: empty)
+ * \li \a sasl_password - string value, if set and not empty, SASL authentication will be used (default: empty)
  * \endparblock
  *
  * \note If you want to use non-ASCII key names you have to enable the binary protocol.
