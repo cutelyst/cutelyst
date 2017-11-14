@@ -481,7 +481,7 @@ QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached:
         memcached_result_free(result);
     }
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -537,7 +537,7 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
         memcached_result_free(result);
     }
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to get data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -565,7 +565,7 @@ bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to remove data for key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -596,7 +596,7 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, Memcach
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to remove data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
