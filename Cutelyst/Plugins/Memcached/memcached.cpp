@@ -546,7 +546,7 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
     return retData;
 }
 
-bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -561,7 +561,7 @@ bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnTy
     const memcached_return_t rt = memcached_delete(mcd->d_ptr->memc,
                                                    _key.constData(),
                                                    _key.size(),
-                                                   expiration);
+                                                   0);
 
     const bool ok = memcached_success(rt);
 
@@ -574,12 +574,7 @@ bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnTy
     return ok;
 }
 
-bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
-{
-    return Memcached::remove(key, 0, returnType);
-}
-
-bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32 expiration, MemcachedReturnType *returnType)
+bool Memcached::removeByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -597,7 +592,7 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32
                                                           _groupKey.size(),
                                                           _key.constData(),
                                                           _key.size(),
-                                                          expiration);
+                                                          0);
 
     const bool ok = memcached_success(rt);
 
@@ -606,11 +601,6 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32
     }
 
     return ok;
-}
-
-bool Memcached::removeByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
-{
-    return Memcached::removeByKey(groupKey, key, 0, returnType);
 }
 
 bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)

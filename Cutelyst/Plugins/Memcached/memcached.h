@@ -510,20 +510,7 @@ public:
     static T getByKey(const QString &groupKey, const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Deletes a particular \a key. \a Expiration works by placing the item into a delete queue,
-     * which means that it won’t be possible to retrieve it by Memcached::get(). Memcached::add()
-     * and Memcached::replace() with this key will also fail (Memcached::set() will succeed,
-     * however). After the time passes, the item is finally deleted from server memory.
-     *
-     * @param[in] key key of object to delete
-     * @param[in] expiration expiration time in seconds
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
-     */
-    static bool remove(const QString &key, quint32 expiration, MemcachedReturnType *returnType = nullptr);
-
-    /**
-     * Directly deletes a particular \a key by setting the expiration time to \c 0.
+     * Directly deletes a particular \a key.
      *
      * @param[in] key key of object to delete
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
@@ -532,24 +519,7 @@ public:
     static bool remove(const QString &key, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Deletes a particular \a key in \a groupkey. This method behaves in a similar nature as
-     * Memcached::remove(). The difference is that it takes a \a groupKey that is used for
-     * determining which server an object was stored if key partitioning was used for storage.
-     * \a Expiration works by placing the item into a delete queue,
-     * which means that it won’t be possible to retrieve it by Memcached::getByKey(). Memcached::addByKey()
-     * and Memcached::replaceByKey() with this key will also fail (Memcached::setByKey() will succeed,
-     * however). After the time passes, the item is finally deleted from server memory.
-     *
-     * @param[in] groupKey key that specifies the server to delete from
-     * @param[in] key key of object to delete
-     * @param[in] expiration expiration time in seconds
-     * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
-     */
-    static bool removeByKey(const QString &groupKey, const QString &key, quint32 expiration, MemcachedReturnType *returnType = nullptr);
-
-    /**
-     * Directly deletes a particular \a key in \a groupKey by setting the expiration time to \c 0.
+     * Directly deletes a particular \a key in \a groupKey.
      * This method behaves in a similar nature as Memcached::remove(). The difference is that it
      * takes a \a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
