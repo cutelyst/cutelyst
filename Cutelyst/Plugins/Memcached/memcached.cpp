@@ -44,6 +44,12 @@ Memcached::~Memcached()
 
 }
 
+void Memcached::setDefaultConfig(const QVariantMap &defaultConfig)
+{
+    Q_D(Memcached);
+    d->defaultConfig = defaultConfig;
+}
+
 bool Memcached::setup(Application *app)
 {
     Q_D(Memcached);
@@ -104,7 +110,7 @@ bool Memcached::setup(Application *app)
          QStringLiteral("tcp_nodelay"),
          QStringLiteral("tcp_keepalive")
     }) {
-        if (map.value(flag, false).toBool()) {
+        if (map.value(flag, d->defaultConfig.value(flag, false).toBool()).toBool()) {
             const QString flagStr = QLatin1String("--") + flag.toUpper().replace(QLatin1Char('_'), QLatin1Char('-'));
             config.push_back(flagStr);
         }
@@ -127,8 +133,9 @@ bool Memcached::setup(Application *app)
          QStringLiteral("io_msg_watermark"),
          QStringLiteral("rcv_timeout")
     }) {
-        if (map.contains(opt)) {
-            const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + map.value(opt).toString();
+        QString _val = map.value(opt, d->defaultConfig.value(opt).toString()).toString();
+        if (!_val.isEmpty()) {
+            const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + _val;
             config.push_back(optStr);
         }
     }

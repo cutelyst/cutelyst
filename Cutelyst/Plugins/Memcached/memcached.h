@@ -65,6 +65,9 @@ class MemcachedPrivate;
  *
  * \note If you want to use non-ASCII key names you have to enable the binary protocol.
  *
+ * To set default values directly in your application, use setDefaultConfig(). Configuration values that can not be found
+ * in the Cutelyst configuration file will be looked up for default values in that QVariantMap.
+ *
  * \par Configuration example
  *
  * \code{.ini}
@@ -185,6 +188,12 @@ public:
         PluginNotRegisterd                      /**< The Cutelyst Memcached plugin has not been registered to the application. */
     };
     Q_ENUM(MemcachedReturnType)
+
+    /**
+     * Sets default configuration values for configuration keys that are not set in
+     * the Cutelyst configuratoin file.
+     */
+    void setDefaultConfig(const QVariantMap &defaultConfig);
 
     /**
      * Writes the \a value to the memcached server using \a key. If the \a key

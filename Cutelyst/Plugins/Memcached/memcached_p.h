@@ -62,6 +62,8 @@ public:
     int compressionThreshold = 100;
     int compressionLevel = -1;
     bool saslEnabled = false;
+
+    QVariantMap defaultConfig;
 };
 
 }
