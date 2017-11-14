@@ -989,7 +989,7 @@ bool Memcached::replace(const QString &key, const T &value, time_t expiration, M
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out << value;
-    return Memcached::replace(key, value, expiration, returnType);
+    return Memcached::replace(key, data, expiration, returnType);
 }
 
 template< typename T>
