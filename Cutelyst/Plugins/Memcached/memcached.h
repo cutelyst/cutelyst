@@ -27,6 +27,7 @@
 
 namespace Cutelyst {
 
+class Context;
 class MemcachedPrivate;
 
 /*!
@@ -180,7 +181,8 @@ public:
         InProgress,
         ServerTemporaryDisabled,
         ServerMemoryAllocationFailure,
-        MaximumReturn
+        MaximumReturn,
+        PluginNotRegisterd                      /**< The Cutelyst Memcached plugin has not been registered to the application. */
     };
     Q_ENUM(MemcachedReturnType)
 
@@ -930,6 +932,8 @@ public:
      * @return \c true on success; \c false otherwise
      */
     static bool touchByKey(const QString &groupKey, const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
+
+    static QString errorString(Context *c, MemcachedReturnType rt);
 
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;

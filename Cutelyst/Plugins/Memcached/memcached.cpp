@@ -196,7 +196,11 @@ bool Memcached::setup(Application *app)
 
 bool Memcached::set(const QString &key, const QByteArray &value, time_t expiration, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("set"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -231,7 +235,11 @@ bool Memcached::set(const QString &key, const QByteArray &value, time_t expirati
 
 bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("set"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -269,7 +277,11 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
 
 bool Memcached::add(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("add"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -304,7 +316,11 @@ bool Memcached::add(const QString &key, const QByteArray &value, time_t expirati
 
 bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("add"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -342,7 +358,11 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
 
 bool Memcached::replace(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("replace"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -377,7 +397,11 @@ bool Memcached::replace(const QString &key, const QByteArray &value, time_t expi
 
 bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("replace"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -417,7 +441,11 @@ QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached:
 {
     QByteArray retData;
 
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("get"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return retData;
     }
 
@@ -466,7 +494,11 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
 {
     QByteArray retData;
 
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("get"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return retData;
     }
 
@@ -516,7 +548,11 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quin
 
 bool Memcached::remove(const QString &key, quint32 expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("remove"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -545,7 +581,11 @@ bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
 
 bool Memcached::removeByKey(const QString &groupKey, const QString &key, quint32 expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("remove"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -575,7 +615,11 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, Memcach
 
 bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("check for existing"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -598,7 +642,11 @@ bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
 
 bool Memcached::existByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("check for existing"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -624,7 +672,11 @@ bool Memcached::existByKey(const QString &groupKey, const QString &key, Memcache
 
 bool Memcached::increment(const QString &key, uint32_t offset, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("increment"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -649,7 +701,11 @@ bool Memcached::increment(const QString &key, uint32_t offset, uint64_t *value, 
 
 bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("increment"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -677,7 +733,11 @@ bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint
 
 bool Memcached::incrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("increment with initial"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -704,7 +764,11 @@ bool Memcached::incrementWithInitial(const QString &key, uint64_t offset, uint64
 
 bool Memcached::incrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("increment or initialize"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -733,7 +797,11 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey, const QString
 
 bool Memcached::decrement(const QString &key, uint32_t offset, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("decrement"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -758,7 +826,11 @@ bool Memcached::decrement(const QString &key, uint32_t offset, uint64_t *value, 
 
 bool Memcached::decrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("decrement"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -786,7 +858,11 @@ bool Memcached::decrementByKey(const QString &groupKey, const QString &key, uint
 
 bool Memcached::decrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("decrement with initial"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -813,7 +889,11 @@ bool Memcached::decrementWithInitial(const QString &key, uint64_t offset, uint64
 
 bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("decrement or initialize"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -842,7 +922,11 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString
 
 bool Memcached::cas(const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("compare and set (cas)"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -878,7 +962,11 @@ bool Memcached::cas(const QString &key, const QByteArray &value, time_t expirati
 
 bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("compare and set (cas)"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -920,7 +1008,7 @@ bool Memcached::flushBuffers(MemcachedReturnType *returnType)
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
         if (returnType) {
-            *returnType = Memcached::Error;
+            *returnType = Memcached::PluginNotRegisterd;
         }
         return false;
     }
@@ -943,7 +1031,7 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
         if (returnType) {
-            *returnType = Memcached::Error;
+            *returnType = Memcached::PluginNotRegisterd;
         }
         return false;
     }
@@ -968,7 +1056,7 @@ QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
         if (returnType) {
-            *returnType = Memcached::Error;
+            *returnType = Memcached::PluginNotRegisterd;
         }
         return ret;
     }
@@ -1044,7 +1132,7 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
         if (returnType) {
-            *returnType = Memcached::Error;
+            *returnType = Memcached::PluginNotRegisterd;
         }
         return ret;
     }
@@ -1129,7 +1217,11 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
 
 bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInput(mcd, key, QStringLiteral("touch"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -1146,12 +1238,18 @@ bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType
         qCWarning(C_MEMCACHED, "Failed to touch key \"%s\" with new expiration time %lu: %s", _key.constData(), expiration, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
+    MemcachedPrivate::setReturnType(returnType, rt);
+
     return ok;
 }
 
 bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t expiration, MemcachedReturnType *returnType)
 {
-    if (!MemcachedPrivate::checkInputByKey(mcd, groupKey, key, QStringLiteral("touch"), returnType)) {
+    if (!mcd) {
+        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
+        if (returnType) {
+            *returnType = Memcached::PluginNotRegisterd;
+        }
         return false;
     }
 
@@ -1171,7 +1269,26 @@ bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t e
         qCWarning(C_MEMCACHED, "Failed to touch key \"%s\" in group \"%s\" with new expiration time %lu: %s", _key.constData(), _group.constData(), expiration, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
+    MemcachedPrivate::setReturnType(returnType, rt);
+
     return ok;
+}
+
+QString Memcached::errorString(Context *c, MemcachedReturnType rt)
+{
+    Q_UNUSED(c)
+    switch(rt) {
+    case Memcached::Success:
+        return QStringLiteral("The request was successfully executed.");
+    case Memcached::Failure:
+        return QStringLiteral("An unknown failure has occurred in the server.");
+    case Memcached::HostLookupFailure:
+        return QStringLiteral("A DNS failure has occurred.");
+    case Memcached::ConnectionFailure:
+        return QStringLiteral("An unknown error has occured while trying to connect to a server.");
+    default:
+        return QStringLiteral("An unknown error has occured.");
+    }
 }
 
 void MemcachedPrivate::_q_postFork(Application *app)
@@ -1230,56 +1347,6 @@ Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_ret
     case MEMCACHED_MAXIMUM_RETURN:                      return Memcached::MaximumReturn;
     default:                                            return Memcached::Success;
     }
-}
-
-bool MemcachedPrivate::checkInput(Memcached *ptr, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
-{
-    if (!ptr) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (rt) {
-            *rt = Memcached::Error;
-        }
-        return false;
-    }
-
-    if (key.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    return true;
-}
-
-bool MemcachedPrivate::checkInputByKey(Memcached *ptr, const QString &groupKey, const QString &key, const QString &action, Memcached::MemcachedReturnType *rt)
-{
-    if (!ptr) {
-        qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
-        if (rt) {
-            *rt = Memcached::Error;
-        }
-        return false;
-    }
-
-    if (key.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    if (groupKey.isEmpty()) {
-        qCWarning(C_MEMCACHED) << "Can not" << action << "data without a valid group key name";
-        if (rt) {
-            *rt = Memcached::BadKeyProvided;
-        }
-        return false;
-    }
-
-    return true;
 }
 
 void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
