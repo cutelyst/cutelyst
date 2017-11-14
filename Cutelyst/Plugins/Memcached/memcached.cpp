@@ -687,7 +687,7 @@ bool Memcached::increment(const QString &key, uint32_t offset, uint64_t *value, 
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to increment key \"%s\" by %lu: %s", _key.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -719,7 +719,7 @@ bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to increment \"%s\" key on group \"%s\" by %lu: %s", _key.constData(), _group.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -812,7 +812,7 @@ bool Memcached::decrement(const QString &key, uint32_t offset, uint64_t *value, 
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to decrement key \"%s\" by %lu: %s", _key.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -844,7 +844,7 @@ bool Memcached::decrementByKey(const QString &groupKey, const QString &key, uint
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED, "Failed to decrement \"%s\" key on group \"%s\" by %lu: %s", _key.constData(), _group.constData(), offset, memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
