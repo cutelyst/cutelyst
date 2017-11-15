@@ -426,11 +426,11 @@ public:
      * other errors, failing because of not found \a key will not be logged.
      *
      * @param[in] key key of object whose value to fecth
-     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
      */
-    static QByteArray get(const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QByteArray get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value of type \a T from the server identified by \a key. The returned type \a T
@@ -461,7 +461,7 @@ public:
      * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
      */
     template< typename T>
-    static T get(const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+    static T get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by \a key. The returned QByteArray will
@@ -477,11 +477,11 @@ public:
      *
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
-     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
      */
-    static QByteArray getByKey(const QString &groupKey, const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QByteArray getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by \a key. The returned type \a T will
@@ -511,12 +511,12 @@ public:
      *
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
-     * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
+     * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
      */
     template< typename T>
-    static T getByKey(const QString &groupKey, const QString &key, quint64 *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+    static T getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Directly deletes a particular \a key.
@@ -737,7 +737,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool cas(const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+    static bool cas(const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for \a key in the server as long as the \a cas value is still the same in the server.
@@ -753,7 +753,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool cas(const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+    static bool cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
@@ -771,7 +771,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return \c true on success; \c false otherwise
      */
-    static bool casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+    static bool casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
@@ -792,7 +792,7 @@ public:
      * @return \c true on success; \c false otherwise
      */
     template< typename T>
-    static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType = nullptr);
+    static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Used in conjunction with buffer requests enabled to flush all buffers by sending the buffered commands to the server
@@ -805,7 +805,7 @@ public:
 
     /**
      * Wipe cleans the contents of memcached servers. It will either do this immediately or expire the content
-     * base on the \a expiration time passed to the method (a value of zero causes an immediate flush). The
+     * based on the \a expiration time passed to the method (a value of zero causes an immediate flush). The
      * operation is not atomic to multiple servers, just atomic to a single server. That is, it will flush
      * the servers in the order that they were added.
      *
@@ -827,7 +827,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QHash containing the keys and values
      */
-    static QHash<QString, QByteArray> mget(const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QHash<QString, QByteArray> mget(const QStringList &keys, QHash<QString, uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values of type \a T from the server identified by a list of \a keys. If a pointer
@@ -844,7 +844,7 @@ public:
      * @return QHash containing the keys and values
      */
     template< typename T>
-    static QHash<QString, T> mget(const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QHash<QString, T> mget(const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values from the server specified by \a groupKey identified by a list of \a keys.
@@ -863,7 +863,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QHash containing the keys and values
      */
-    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values of type \a T from the server specified by \a groupKey identified by a list of \a keys.
@@ -885,7 +885,7 @@ public:
      * @return QHash containing the keys and values
      */
     template< typename T>
-    static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Updates the \a expiration time on an existing \a key.
@@ -981,7 +981,7 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
 }
 
 template< typename T>
-T Memcached::get(const QString &key, quint64 *cas, MemcachedReturnType *returnType)
+T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
@@ -993,7 +993,7 @@ T Memcached::get(const QString &key, quint64 *cas, MemcachedReturnType *returnTy
 }
 
 template< typename T>
-T Memcached::getByKey(const QString &groupKey, const QString &key, quint64 *cas, MemcachedReturnType *returnType)
+T Memcached::getByKey(const QString &groupKey, const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::getByKey(groupKey, key, cas, returnType);
@@ -1005,7 +1005,7 @@ T Memcached::getByKey(const QString &groupKey, const QString &key, quint64 *cas,
 }
 
 template< typename T>
-bool Memcached::cas(const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+bool Memcached::cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -1014,7 +1014,7 @@ bool Memcached::cas(const QString &key, const T &value, time_t expiration, quint
 }
 
 template< typename T>
-bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
@@ -1023,7 +1023,7 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &v
 }
 
 template< typename T>
-QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString,quint64> *casValues, MemcachedReturnType *returnType)
+QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString, T> hash;
     QHash<QString,QByteArray> _data = Memcached::mget(keys, casValues, returnType);
@@ -1041,7 +1041,7 @@ QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString,quint64
 }
 
 template< typename T>
-QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,quint64> *casValues, MemcachedReturnType *returnType)
+QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString, T> hash;
     QHash<QString,QByteArray> _data = Memcached::mgetByKey(groupKey, keys, casValues, returnType);

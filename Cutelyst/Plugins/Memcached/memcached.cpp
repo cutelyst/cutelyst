@@ -444,7 +444,7 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
     return ok;
 }
 
-QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached::MemcachedReturnType *returnType)
+QByteArray Memcached::get(const QString &key, uint64_t *cas, Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -497,7 +497,7 @@ QByteArray Memcached::get(const QString &key, quint64 *cas, Cutelyst::Memcached:
     return retData;
 }
 
-QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, quint64 *cas, MemcachedReturnType *returnType)
+QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     QByteArray retData;
 
@@ -917,7 +917,7 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString
     return ok;
 }
 
-bool Memcached::cas(const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+bool Memcached::cas(const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -948,7 +948,7 @@ bool Memcached::cas(const QString &key, const QByteArray &value, time_t expirati
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_DATA_EXISTS)) {
         qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -957,7 +957,7 @@ bool Memcached::cas(const QString &key, const QByteArray &value, time_t expirati
     return ok;
 }
 
-bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, quint64 cas, MemcachedReturnType *returnType)
+bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -991,7 +991,7 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByt
 
     const bool ok = memcached_success(rt);
 
-    if (!ok) {
+    if (!ok && (rt != MEMCACHED_DATA_EXISTS)) {
         qCWarning(C_MEMCACHED, "Failed to compare and set (cas) key \"%s\" in group \"%s\": %s", _key.constData(), _group.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -1046,7 +1046,7 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
     return ok;
 }
 
-QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString, quint64> *casValues, MemcachedReturnType *returnType)
+QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString,QByteArray> ret;
 
@@ -1122,7 +1122,7 @@ QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString
     return ret;
 }
 
-QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, quint64> *casValues, MemcachedReturnType *returnType)
+QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString, QByteArray> ret;
 
