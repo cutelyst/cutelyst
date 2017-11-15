@@ -57,6 +57,11 @@ if (BUILD_TESTS)
   enable_testing()
 endif()
 
+#
+# Plugin options
+#
+option(PLUGIN_MEMCACHED "Enables the memcached plugin")
+
 # NONE
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
