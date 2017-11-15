@@ -21,6 +21,7 @@
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Engine>
+#include <Cutelyst/Context>
 
 #include <utility>
 #include <QStringList>
@@ -1273,18 +1274,93 @@ bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t e
 
 QString Memcached::errorString(Context *c, MemcachedReturnType rt)
 {
-    Q_UNUSED(c)
     switch(rt) {
     case Memcached::Success:
-        return QStringLiteral("The request was successfully executed.");
+        return c->translate("Cutelyst::Memcached", "The request was successfully executed.");
     case Memcached::Failure:
-        return QStringLiteral("An unknown failure has occurred in the server.");
+        return c->translate("Cutelyst::Memcached", "An unknown failure has occurred in the server.");
     case Memcached::HostLookupFailure:
-        return QStringLiteral("A DNS failure has occurred.");
+        return c->translate("Cutelyst::Memcached", "A DNS failure has occurred.");
     case Memcached::ConnectionFailure:
-        return QStringLiteral("An unknown error has occured while trying to connect to a server.");
+        return c->translate("Cutelyst::Memcached", "An unknown error has occured while trying to connect to a server.");
+    case Memcached::WriteFailure:
+        return c->translate("Cutelyst::Memcached", "An error has occured while trying to write to a server.");
+    case Memcached::ReadFailure:
+        return c->translate("Cutelyst::Memcached", "An error has occured while trying to read from a server.");
+    case Memcached::UnknownReadFailure:
+        return c->translate("Cutelyst::Memcached", "An unknown error has occured while trying to read from a server. This only occures when either there is a bug in the server, or in rare cases where an ethernet NIC is reporting dubious information.");
+    case Memcached::ProtocolError:
+        return c->translate("Cutelyst::Memcached", "An unknown error has occured in the protocol.");
+    case Memcached::ClientError:
+        return c->translate("Cutelyst::Memcached", "An unknown client error has occured internally.");
+    case Memcached::ServerError:
+        return c->translate("Cutelyst::Memcached", "An unknown error has occured in the server.");
+    case Memcached::Error:
+        return c->translate("Cutelyst::Memcached", "A general error occured.");
+    case Memcached::DataExists:
+        return c->translate("Cutelyst::Memcached", "The data for the given key alrey exists.");
+    case Memcached::DataDoesNotExist:
+        return c->translate("Cutelyst::Memcached", "The data requested with the key given was not found.");
+    case Memcached::NotStored:
+        return c->translate("Cutelyst::Memcached", "The request to store an object failed.");
+    case Memcached::Stored:
+        return c->translate("Cutelyst::Memcached", "The requested object has been successfully stored on the server.");
+    case Memcached::NotFound:
+        return c->translate("Cutelyst::Memcached", "The object requested was not found.");
+    case Memcached::MemoryAllocationFailure:
+        return c->translate("Cutelyst::Memcached", "An error has occurred while trying to allocate memory.");
+    case Memcached::PartialRead:
+        return c->translate("Cutelyst::Memcached", "The read operation was only partcially successful.");
+    case Memcached::SomeErrors:
+        return c->translate("Cutelyst::Memcached", "A multi request has been made, and some underterminate number of errors have occurred.");
+    case Memcached::NoServers:
+        return c->translate("Cutelyst::Memcached", "No servers have been added to the Memcached plugin.");
+    case Memcached::End:
+        return c->translate("Cutelyst::Memcached", "The server has completed returning all of the objects requested.");
+    case Memcached::Deleted:
+        return c->translate("Cutelyst::Memcached", "The object requested by the key has been deleted.");
+    case Memcached::Stat:
+        return c->translate("Cutelyst::Memcached", "A \"stat\" command has been returned in the protocol.");
+    case Memcached::Errno:
+        return c->translate("Cutelyst::Memcached", "An error has occurred in the driver which has set errno.");
+    case Memcached::NotSupported:
+        return c->translate("Cutelyst::Memcached", "The given method is not supported in the server.");
+    case Memcached::FetchNotFinished:
+        return c->translate("Cutelyst::Memcached", "A request has been made, but the server has not finished the fetch of the last request.");
+    case Memcached::Timeout:
+        return c->translate("Cutelyst::Memcached", "The operation has timed out.");
+    case Memcached::Buffered:
+        return c->translate("Cutelyst::Memcached", "The request has been buffered.");
+    case Memcached::BadKeyProvided:
+        return c->translate("Cutelyst::Memcached", "The key provided is not a valid key.");
+    case Memcached::InvalidHostProtocol:
+        return c->translate("Cutelyst::Memcached", "The server you are connecting to has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol.");
+    case Memcached::ServerMarkedDead:
+        return c->translate("Cutelyst::Memcached", "The requested server has been marked dead.");
+    case Memcached::UnknownStatKey:
+        return c->translate("Cutelyst::Memcached", "The server you are communicating with has a stat key which has not be defined in the protocol.");
+    case Memcached::E2Big:
+        return c->translate("Cutelyst::Memcached", "Item is too large for the server to store.");
+    case Memcached::InvalidArguments:
+        return c->translate("Cutelyst::Memcached", "The arguments supplied to the given function were not valid.");
+    case Memcached::KeyTooBig:
+        return c->translate("Cutelyst::Memcached", "The key that has been provided is too large for the given server.");
+    case Memcached::AuthProblem:
+        return c->translate("Cutelyst::Memcached", "An unknown issue has occured during SASL authentication.");
+    case Memcached::AuthFailure:
+        return c->translate("Cutelyst::Memcached", "The credentials provided are not valid for this server.");
+    case Memcached::AuthContinue:
+        return c->translate("Cutelyst::Memcached", "Authentication has been paused.");
+    case Memcached::ParseError:
+        return c->translate("Cutelyst::Memcached", "An error has occurred while trying to parse the configuration string.");
+    case Memcached::ParseUserError:
+        return c->translate("Cutelyst::Memcached", "An error has occurred in parsing the configuration string.");
+    case Memcached::Deprecated:
+        return c->translate("Cutelyst::Memcached", "The method that was requested has been deprecated.");
+    case Memcached::PluginNotRegisterd:
+        return c->translate("Cutelyst::Memcached", "The Cutelyst Memcached plugin has not been registered to the application.");
     default:
-        return QStringLiteral("An unknown error has occured.");
+        return c->translate("Cutelyst::Memcached", "An unknown error has occured.");
     }
 }
 
