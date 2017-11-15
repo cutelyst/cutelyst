@@ -635,6 +635,194 @@ public:
         setValidity(c, Memcached::decrementByKey(QStringLiteral("decGroup"), QStringLiteral("inc8"), 1, &val));
     }
 
+    // **** Start testing cas with a QByteArray valid ****
+    C_ATTR(casValid, :Local :AutoArgs)
+    void casValid(Context *c) {
+        uint64_t cas = 0;
+        Memcached::set(QStringLiteral("cas1"), QByteArrayLiteral("Lorem ipsum"), 60);
+        Memcached::set(QStringLiteral("cas1"), QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::get(QStringLiteral("cas1"), &cas);
+        if (Memcached::cas(QStringLiteral("cas1"), QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+            setValidity(c, Memcached::get(QStringLiteral("cas1")) == QByteArrayLiteral("Lorem ipsum"));
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas with a QByteArray invalid ****
+    C_ATTR(casInvalid, :Local :AutoArgs)
+    void casInvalid(Context *c) {
+        uint64_t cas = 0;
+        Memcached::set(QStringLiteral("cas2"), QByteArrayLiteral("Lorem ipsum"), 60);
+        Memcached::set(QStringLiteral("cas2"), QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::get(QStringLiteral("cas2"), &cas);
+        Memcached::set(QStringLiteral("cas2"), QByteArrayLiteral("Lorem ipsum 3"), 60);
+        if (Memcached::cas(QStringLiteral("cas2"), QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+            setValidity(c, Memcached::get(QStringLiteral("cas2")) == QByteArrayLiteral("Lorem ipsum"));
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas with a QVariantList valid ****
+    C_ATTR(casVariantValid, :Local :AutoArgs)
+    void casVariantValid(Context *c) {
+        const auto list1 = getTestVariantList();
+        const auto list2 = getTestVariantList2();
+        uint64_t cas = 0;
+        Memcached::set(QStringLiteral("cas3"), list1, 60);
+        Memcached::set(QStringLiteral("cas3"), list2, 60);
+        Memcached::get(QStringLiteral("cas3"), &cas);
+        if (Memcached::cas(QStringLiteral("cas3"), list1, 60, cas)) {
+            setValidity(c, Memcached::get<QVariantList>(QStringLiteral("cas3")) == list1);
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas with a QVariantList invalid ****
+    C_ATTR(casVariantInvalid, :Local :AutoArgs)
+    void casVariantInvalid(Context *c) {
+        const auto list1 = getTestVariantList();
+        const auto list2 = getTestVariantList2();
+        uint64_t cas = 0;
+        Memcached::set(QStringLiteral("cas4"), list1, 60);
+        Memcached::set(QStringLiteral("cas4"), list2, 60);
+        Memcached::get(QStringLiteral("cas4"), &cas);
+        Memcached::set(QStringLiteral("cas4"), list1, 60);
+        if (Memcached::cas(QStringLiteral("cas4"), list2, 60, cas)) {
+            setValidity(c, Memcached::get<QVariantList>(QStringLiteral("cas4")) == list2);
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas by key with a QByteArray valid ****
+    C_ATTR(casByKeyValid, :Local :AutoArgs)
+    void casByKeyValid(Context *c) {
+        uint64_t cas = 0;
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas5"), QByteArrayLiteral("Lorem ipsum"), 60);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas5"), QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas5"), &cas);
+        if (Memcached::casByKey(QStringLiteral("casGroup"), QStringLiteral("cas5"), QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+            setValidity(c, Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas5")) == QByteArrayLiteral("Lorem ipsum"));
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas by key with a QByteArray invalid ****
+    C_ATTR(casByKeyInvalid, :Local :AutoArgs)
+    void casByKeyInvalid(Context *c) {
+        uint64_t cas = 0;
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas6"), QByteArrayLiteral("Lorem ipsum"), 60);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas6"), QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas6"), &cas);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas6"), QByteArrayLiteral("Lorem ipsum 3"), 60);
+        if (Memcached::casByKey(QStringLiteral("casGroup"), QStringLiteral("cas6"), QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+            setValidity(c, Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas6")) == QByteArrayLiteral("Lorem ipsum"));
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas by key with a QVariantList valid ****
+    C_ATTR(casByKeyVariantValid, :Local :AutoArgs)
+    void casByKeyVariantValid(Context *c) {
+        const auto list1 = getTestVariantList();
+        const auto list2 = getTestVariantList2();
+        uint64_t cas = 0;
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas7"), list1, 60);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas7"), list2, 60);
+        Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas7"), &cas);
+        if (Memcached::casByKey(QStringLiteral("casGroup"), QStringLiteral("cas7"), list1, 60, cas)) {
+            setValidity(c, Memcached::getByKey<QVariantList>(QStringLiteral("casGroup"), QStringLiteral("cas7")) == list1);
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing cas by key with a QVariantList invalid ****
+    C_ATTR(casByKeyVariantInvalid, :Local :AutoArgs)
+    void casByKeyVariantInvalid(Context *c) {
+        const auto list1 = getTestVariantList();
+        const auto list2 = getTestVariantList2();
+        uint64_t cas = 0;
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas8"), list1, 60);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas8"), list2, 60);
+        Memcached::getByKey(QStringLiteral("casGroup"), QStringLiteral("cas8"), &cas);
+        Memcached::setByKey(QStringLiteral("casGroup"), QStringLiteral("cas8"), list1, 60);
+        if (Memcached::casByKey(QStringLiteral("casGroup"), QStringLiteral("cas8"), list2, 60, cas)) {
+            setValidity(c, Memcached::getByKey<QVariantList>(QStringLiteral("casGroup"), QStringLiteral("cas8")) == list2);
+        } else {
+            setInvalid(c);
+        }
+    }
+
+    // **** Start testing mget valid ****
+    C_ATTR(mgetValid, :Local :AutoArgs)
+    void mgetValid(Context *c) {
+        const auto h1 = getTestHash(QStringLiteral("vala"));
+        auto i = h1.constBegin();
+        while (i != h1.constEnd()) {
+            Memcached::set(i.key(), i.value(), 60);
+            ++i;
+        }
+        const auto h2 = Memcached::mget(h1.keys());
+        setValidity(c, h1 == h2);
+    }
+
+    // **** Start testing mget by key valid ****
+    C_ATTR(mgetByKeyValid, :Local :AutoArgs)
+    void mgetByKeyValid(Context *c) {
+        const auto h1 = getTestHash(QStringLiteral("valb"));
+        auto i = h1.constBegin();
+        while (i != h1.constEnd()) {
+            Memcached::setByKey(QStringLiteral("mgetGroup"), i.key(), i.value(), 60);
+            ++i;
+        }
+        const auto h2 = Memcached::mgetByKey(QStringLiteral("mgetGroup"), h1.keys());
+        setValidity(c, h1 == h2);
+    }
+
+    // **** Start testing mget variant valid
+    C_ATTR(mgetVariantValid, :Local :AutoArgs)
+    void mgetVariantValid(Context *c) {
+        const auto h1 = getTestHashList(QStringLiteral("valc"));
+        auto i = h1.constBegin();
+        while (i != h1.constEnd()) {
+            Memcached::set(i.key(), i.value(), 60);
+            ++i;
+        }
+        const auto h2 = Memcached::mget<QVariantList>(h1.keys());
+        setValidity(c, h1 == h2);
+    }
+
+    // **** Start testing mget by key variant valid
+    C_ATTR(mgetByKeyVariantValid, :Local :AutoArgs)
+    void mgetByKeyVariantValid(Context *c) {
+        const auto h1 = getTestHashList(QStringLiteral("vald"));
+        auto i = h1.constBegin();
+        while (i != h1.constEnd()) {
+            Memcached::setByKey(QStringLiteral("mgetGroup"), i.key(), i.value(), 60);
+            ++i;
+        }
+        const auto h2 = Memcached::mgetByKey<QVariantList>(QStringLiteral("mgetGroup"), h1.keys());
+        setValidity(c, h1 == h2);
+    }
+
+    // **** Start testing flush
+    C_ATTR(flush, :Local :AutoArgs)
+    void flush(Context *c) {
+        const QString key = QStringLiteral("flushKey");
+        Memcached::set(key, QByteArrayLiteral("Lorem ipsum"), 300);
+        if (Memcached::flush(0)) {
+            setValidity(c, Memcached::get(key).isNull());
+        } else {
+            setInvalid(c);
+        }
+    }
+
 private:
     std::pair<QString,QString> getKeyVal(Context *c) {
         std::pair<QString,QString> pair;
@@ -678,6 +866,34 @@ private:
         };
         list.append(QVariant::fromValue<QVariantMap>(map));
         return list;
+    }
+
+    QVariantList getTestVariantList2() {
+        QVariantList list;
+        list.append(QVariant::fromValue<quint64>(1232345234));
+        list.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum 2")));
+        list.append(QVariant::fromValue<float>(2342.23423f));
+        list.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 3")));
+        return list;
+    }
+
+    QHash<QString,QByteArray> getTestHash(const QString &prefix = QLatin1String("val")) {
+        QHash<QString,QByteArray> hash;
+        hash.insert(prefix + QLatin1Char('1'), QByteArrayLiteral("Lorem ipsum"));
+        hash.insert(prefix + QLatin1Char('2'), QByteArrayLiteral("dolor sit amet"));
+        hash.insert(prefix + QLatin1Char('3'), QByteArrayLiteral("consectetur adipiscing elit"));
+        hash.insert(prefix + QLatin1Char('4'), QByteArrayLiteral("sed do eiusmod tempor"));
+        hash.insert(prefix + QLatin1Char('5'), QByteArrayLiteral("incididunt ut labore et dolore"));
+        hash.insert(prefix + QLatin1Char('6'), QByteArrayLiteral("magna aliqua"));
+        return hash;
+    }
+
+    QHash<QString,QVariantList> getTestHashList(const QString &prefix = QLatin1String("val")) {
+        QHash<QString,QVariantList> hash;
+        for (int i = 0; i < 6; ++i) {
+            hash.insert(prefix + QString::number(i), getTestVariantList2());
+        }
+        return hash;
     }
 };
 
@@ -765,7 +981,7 @@ void TestMemcached::testController_data()
     while (sii!= simpleInput.constEnd()) {
         q.clear();
         q = makeKeyValQuery(sii.key(), sii.value());
-        QTest::newRow(QStringLiteral("setbytearray-%1").arg(count).toUtf8().constData())
+        QTest::newRow(QStringLiteral("setByteArray-%1").arg(count).toUtf8().constData())
                 << QStringLiteral("/memcached/test/setByteArray?") + q.toString(QUrl::FullyEncoded)
                 << headers << QByteArray() << QByteArrayLiteral("valid");
         ++sii;
@@ -778,7 +994,7 @@ void TestMemcached::testController_data()
     sii = simpleInput.constBegin();
     while (sii != simpleInput.constEnd()) {
         q = makeKeyValQuery(sii.key(), sii.value());
-        QTest::newRow(QStringLiteral("getbytearray-%1").arg(count).toUtf8().constData())
+        QTest::newRow(QStringLiteral("getByteArray-%1").arg(count).toUtf8().constData())
                 << QStringLiteral("/memcached/test/getByteArray?") + q.toString(QUrl::FullyDecoded)
                 << headers << QByteArray() << QByteArrayLiteral("valid");
         ++sii;
@@ -787,11 +1003,11 @@ void TestMemcached::testController_data()
 
     // **** Start testing set empty key ****
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr)
-    QTest::newRow("set-empty-key") << QStringLiteral("/memcached/test/setEmptyKey") << headers << QByteArray() << QByteArrayLiteral("invalid");
+    QTest::newRow("setEmptyKey") << QStringLiteral("/memcached/test/setEmptyKey") << headers << QByteArray() << QByteArrayLiteral("invalid");
 
     // **** Start testing set too long key ****
     // tests static bool Memcached::set(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr)
-    QTest::newRow("set-too-long-key") << QStringLiteral("/memcached/test/setTooLongKey") << headers << QByteArray() << QByteArrayLiteral("invalid");
+    QTest::newRow("setTooLongKey") << QStringLiteral("/memcached/test/setTooLongKey") << headers << QByteArray() << QByteArrayLiteral("invalid");
 
     // **** Start testing setting byte array by key ****
     // tests static bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr)
@@ -800,7 +1016,7 @@ void TestMemcached::testController_data()
     while (sii!= simpleInput.constEnd()) {
         q.clear();
         q = makeKeyValQuery(sii.key(), sii.value());
-        QTest::newRow(QStringLiteral("setbytearray-bykey-%1").arg(count).toUtf8().constData())
+        QTest::newRow(QStringLiteral("setByteArrayByKey-%1").arg(count).toUtf8().constData())
                 << QStringLiteral("/memcached/test/setByteArrayByKey?") + q.toString(QUrl::FullyEncoded)
                 << headers << QByteArray() << QByteArrayLiteral("valid");
         ++sii;
@@ -813,7 +1029,7 @@ void TestMemcached::testController_data()
     sii = simpleInput.constBegin();
     while (sii != simpleInput.constEnd()) {
         q = makeKeyValQuery(sii.key(), sii.value());
-        QTest::newRow(QStringLiteral("getbytearray-bykey-%1").arg(count).toUtf8().constData())
+        QTest::newRow(QStringLiteral("getByteArrayByKey-%1").arg(count).toUtf8().constData())
                 << QStringLiteral("/memcached/test/getByteArrayByKey?") + q.toString(QUrl::FullyDecoded)
                 << headers << QByteArray() << QByteArrayLiteral("valid");
         ++sii;
@@ -880,7 +1096,20 @@ void TestMemcached::testController_data()
         {QStringLiteral("decrementWithInitialByKeyAvailableValid"), QByteArrayLiteral("valid")},
         {QStringLiteral("decrementByKeyValid"), QByteArrayLiteral("valid")},
         {QStringLiteral("getAfterDecrementByKey"), QByteArrayLiteral("valid")},
-        {QStringLiteral("decrementByKeyInvalid"), QByteArrayLiteral("invalid")}
+        {QStringLiteral("decrementByKeyInvalid"), QByteArrayLiteral("invalid")},
+        {QStringLiteral("casValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("casInvalid"), QByteArrayLiteral("invalid")},
+        {QStringLiteral("casVariantValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("casVariantInvalid"), QByteArrayLiteral("invalid")},
+        {QStringLiteral("casByKeyValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("casByKeyInvalid"), QByteArrayLiteral("invalid")},
+        {QStringLiteral("casByKeyVariantValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("casByKeyVariantInvalid"), QByteArrayLiteral("invalid")},
+        {QStringLiteral("mgetValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("mgetByKeyValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("mgetVariantValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("mgetByKeyVariantValid"), QByteArrayLiteral("valid")},
+        {QStringLiteral("flush"), QByteArrayLiteral("valid")}
     };
 
     for (const QPair<QString,QByteArray> &test : testVect) {
