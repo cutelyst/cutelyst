@@ -30,8 +30,8 @@ namespace Cutelyst {
 class Context;
 class MemcachedPrivate;
 
-/*!
- * \brief Cutelyst Memcached plugin.
+/**
+ * @brief Cutelyst Memcached plugin.
  *
  * The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a
  * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching system.
@@ -45,49 +45,49 @@ class MemcachedPrivate;
  * serialization. The requirement to use them is that the types to store and get provide stream operators for
  * QDataStream.
  *
- * \par Configuration
- * \parblock
- * The Memcached plugin can be configured in the cutelyst configuration file in the \a Cutelyst_Memcached_Plugin section.
+ * @par Configuration
+ * @parblock
+ * The Memcached plugin can be configured in the cutelyst configuration file in the @a Cutelyst_Memcached_Plugin section.
  * It uses the same configuration strings as <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
- * but in lowercase and without the dashes in front and for consistence \a - replaced by \a _ . So \c --BINARY-PROTOCOL will be
- * \c binary_protocol. To add servers and/or sockets use the \a servers configuration key. Servers can be added with name, port and
- * weight, separated by \c , - multiple servers are separated by a \c ; . To add sockets, use a full path as name. If no configuration
- * has been set or if the \a servers configuration key is empty, a default server at localhost on port 11211 will be used.
+ * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _ . So @c --BINARY-PROTOCOL will be
+ * @c binary_protocol. To add servers and/or sockets use the @a servers configuration key. Servers can be added with name, port and
+ * weight, separated by @c , - multiple servers are separated by a @c ; . To add sockets, use a full path as name. If no configuration
+ * has been set or if the @a servers configuration key is empty, a default server at localhost on port 11211 will be used.
  *
  * Additional to the <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">configuration options of libmemcached</A> there are some plugin specific options:
- * \li \a compression - boolean value, enables compression of input values based on qCompress / zlib (default: disabled)
- * \li \a compression_level - integer value, the compression level used by qCompress (default: -1)
- * \li \a compression_threshold - integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed (default: 100)
- * \li \a encryption_key - string value, if set and not empty, AES encryption will be enabled (default: empty)
- * \li \a sasl_user - string value, if set and not empty, SASL authentication will be used (default: empty)
- * \li \a sasl_password - string value, if set and not empty, SASL authentication will be used (default: empty)
- * \endparblock
+ * @li @a compression - boolean value, enables compression of input values based on qCompress / zlib (default: disabled)
+ * @li @a compression_level - integer value, the compression level used by qCompress (default: -1)
+ * @li @a compression_threshold - integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed (default: 100)
+ * @li @a encryption_key - string value, if set and not empty, AES encryption will be enabled (default: empty)
+ * @li @a sasl_user - string value, if set and not empty, SASL authentication will be used (default: empty)
+ * @li @a sasl_password - string value, if set and not empty, SASL authentication will be used (default: empty)
+ * @endparblock
  *
- * \note If you want to use non-ASCII key names you have to enable the binary protocol.
+ * @note If you want to use non-ASCII key names you have to enable the binary protocol.
  *
  * To set default values directly in your application, use setDefaultConfig(). Configuration values that can not be found
  * in the Cutelyst configuration file will be looked up for default values in that QVariantMap.
  *
- * \par Configuration example
+ * @par Configuration example
  *
- * \code{.ini}
+ * @code{.ini}
  * [Cutelyst_Memcached_Plugin]
  * servers=cache.example.com,11211,2;/path/to/memcached.sock,1
  * binary_protocol=true
  * namespace=tritratrullala
- * \endcode
+ * @endcode
  *
- * \par Expiration times
+ * @par Expiration times
  * Expiration times are set in seconds. If the value is bigger than 30 days, it is interpreted as a unix timestamp.
  *
- * \par Logging and return types
- * Messages from this plugin are logged to the logging category \a cutelyst.plugin.memcached. All methods provide
+ * @par Logging and return types
+ * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All methods provide
  * the possibility to specify a pointer to an MemcachedReturnType variable that can provide further information
- * about occured errors if methods return \c false or empty results.
+ * about occured errors if methods return @c false or empty results.
  *
- * \par Usage example
+ * @par Usage example
  *
- * \code{.cpp}
+ * @code{.cpp}
  * #include <Cutelyst/Plugins/Memcached/Memcached>
  *
  * bool MyCutelystApp::init()
@@ -117,26 +117,30 @@ class MemcachedPrivate;
  *     // present your data
  *     // ...
  * }
- * \endcode
+ * @endcode
  *
- * \since Cutelyst 1.11.0
+ * @par Build requirements
+ * To build this plugin you need the development and header files for <A HREF="http://libmemcached.org">libmemcached</A>
+ * and run cmake with @c -DPLUGIN_MEMCACHED=On.
+ *
+ * @since Cutelyst 1.11.0
  */
 class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached : public Plugin
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Memcached)
 public:
-    /*!
-     * Constructs a new Memcached object with the given \a parent.
+    /**
+     * Constructs a new Memcached object with the given @a parent.
      */
     Memcached(Application *parent);
 
-    /*!
+    /**
      * Deconstructs the Memcached object.
      */
     virtual ~Memcached();
 
-    /*!
+    /**
      * Return types for memcached operations.
      */
     enum MemcachedReturnType {
@@ -196,7 +200,7 @@ public:
     void setDefaultConfig(const QVariantMap &defaultConfig);
 
     /**
-     * Writes the \a value to the memcached server using \a key. If the \a key
+     * Writes the @a value to the memcached server using @a key. If the @a key
      * already exists it will overwrite what is on the server. If the object
      * does not exist it will be written.
      *
@@ -204,31 +208,31 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool set(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Writes the \a value of type \a T to the memcached server using \a key. If
-     * the \a key already exists it will overwrite what is on the server. If the
+     * Writes the @a value of type @a T to the memcached server using @a key. If
+     * the @a key already exists it will overwrite what is on the server. If the
      * object does not exist it will be written.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
      * @param[in] key key of object whose value to set
-     * @param[in] value value of type \a T of object to write to server
+     * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Writes the \a value to the memcached server using \a key. If the \a key already
+     * Writes the @a value to the memcached server using @a key. If the @a key already
      * exists it will overwrite what is on the server. If the object does not exist it
      * will be written. This method is functionally equivalent to Memcached::set(),
-     * except that the free-form \a groupKey can be used to map the \a key to a specific
+     * except that the free-form @a groupKey can be used to map the @a key to a specific
      * server. This allows related items to be grouped together on a single server for
      * efficiency.
      *
@@ -237,214 +241,214 @@ public:
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool setByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Writes the \a value of type \a T to the memcached server using \a key. If the \a key
+     * Writes the @a value of type @a T to the memcached server using @a key. If the @a key
      * already exists it will overwrite what is on the server. If the object does not exist
      * it will be written. This method is functionally equivalent to Memcached::set(), except
-     * that the free-form \a groupKey can be used to map the \a key to a specific server.
+     * that the free-form @a groupKey can be used to map the @a key to a specific server.
      * This allows related items to be grouped together on a single server for efficiency.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
      * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to set
-     * @param[in] value value of type \a T of object to write to server
+     * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Adds the \a value to the memcached server using \a key. If the object is found on the server
-     * an error occurs and this method returns \c false, otherwise the value is stored.
+     * Adds the @a value to the memcached server using @a key. If the object is found on the server
+     * an error occurs and this method returns @c false, otherwise the value is stored.
      *
-     * As this method returns \c false if the \a key has already been set on the server, you can
-     * use the value of the \a returnType to determine the reason. Other than with other errors,
-     * failing because of already existing \a key will not be logged.
+     * As this method returns @c false if the @a key has already been set on the server, you can
+     * use the value of the @a returnType to determine the reason. Other than with other errors,
+     * failing because of already existing @a key will not be logged.
      *
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool add(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Adds the \a value of type \a T to the memcached server using \a key. If the object is found
-     * on the server an error occurs and this method returns \c false, otherwise the value is stored.
+     * Adds the @a value of type @a T to the memcached server using @a key. If the object is found
+     * on the server an error occurs and this method returns @c false, otherwise the value is stored.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
-     * As this method returns \c false if the \a key has already been set on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of already existing \a key will not be logged.
+     * As this method returns @c false if the @a key has already been set on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of already existing @a key will not be logged.
      *
      * @param[in] key key of object whose value to add
-     * @param[in] value value of type \a T of object to add to server
+     * @param[in] value value of type @a T of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Adds the \a value to the memcached server using \a key. If the object is found on the server an
-     * error occurs and this method returns \c false, otherwise the value is stored. This method is
-     * functionally equivalent to Memcached::add(), except that the free-form \a groupKey can be used
-     * to map the \a key to a specific server. This allows related items to be grouped together on a
+     * Adds the @a value to the memcached server using @a key. If the object is found on the server an
+     * error occurs and this method returns @c false, otherwise the value is stored. This method is
+     * functionally equivalent to Memcached::add(), except that the free-form @a groupKey can be used
+     * to map the @a key to a specific server. This allows related items to be grouped together on a
      * single server for efficiency.
      *
-     * As this method returns \c false if the \a key has already been set on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of already existing \a key will not be logged.
+     * As this method returns @c false if the @a key has already been set on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of already existing @a key will not be logged.
      *
      * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool addByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Adds the \a value of type \a T to the memcached server using \a key. If the object is found on
-     * the server an error occurs and this method returns \c false, otherwise the value is stored. This
-     * method is functionally equivalent to Memcached::add(), except that the free-form \a groupKey can
-     * be used to map the \a key to a specific server. This allows related items to be grouped together
+     * Adds the @a value of type @a T to the memcached server using @a key. If the object is found on
+     * the server an error occurs and this method returns @c false, otherwise the value is stored. This
+     * method is functionally equivalent to Memcached::add(), except that the free-form @a groupKey can
+     * be used to map the @a key to a specific server. This allows related items to be grouped together
      * on a single server for efficiency.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
-     * As this method returns \c false if the \a key has already been set on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of already existing \a key will not be logged.
+     * As this method returns @c false if the @a key has already been set on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of already existing @a key will not be logged.
      *
      * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to add
      * @param[in] value value of object to add to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Replaces the data of \a key on the server with \a value. If the \a key ist not found on the
-     * server an error occures and \c false will be returned.
+     * Replaces the data of @a key on the server with @a value. If the @a key ist not found on the
+     * server an error occures and @c false will be returned.
      *
-     * As this method returns \c false if the \a key can not be found on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of not found \a key will not be logged.
+     * As this method returns @c false if the @a key can not be found on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of not found @a key will not be logged.
      *
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool replace(const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Replaces the data of \a key on the server with \a value of type \a T. If the \a key ist not
-     * found on the server an error occures and \c false will be returned.
+     * Replaces the data of @a key on the server with @a value of type @a T. If the @a key ist not
+     * found on the server an error occures and @c false will be returned.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
-     * As this method returns \c false if the \a key can not be found on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of not found \a key will not be logged.
+     * As this method returns @c false if the @a key can not be found on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of not found @a key will not be logged.
      *
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Replaces the data of \a key on the server with \a value. If the \a key ist not found on the
-     * server an error occures and \c false will be returned. This method is functionally equivalent
-     * to Memcached::replace(), except that the free-form \a groupKey can be used to map the \a key
+     * Replaces the data of @a key on the server with @a value. If the @a key ist not found on the
+     * server an error occures and @c false will be returned. This method is functionally equivalent
+     * to Memcached::replace(), except that the free-form @a groupKey can be used to map the @a key
      * to a specific server. This allows related items to be grouped together on a single server for
      * efficiency.
      *
-     * As this method returns \c false if the \a key can not be found on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of not found \a key will not be logged.
+     * As this method returns @c false if the @a key can not be found on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of not found @a key will not be logged.
      *
      * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool replaceByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Replaces the data of \a key on the server with \a value of Type \a T. If the \a key ist not found
-     * on the server an error occures and \c false will be returned. This method is functionally equivalent
-     * to Memcached::replace(), except that the free-form \a groupKey can be used to map the \a key
+     * Replaces the data of @a key on the server with @a value of Type @a T. If the @a key ist not found
+     * on the server an error occures and @c false will be returned. This method is functionally equivalent
+     * to Memcached::replace(), except that the free-form @a groupKey can be used to map the @a key
      * to a specific server. This allows related items to be grouped together on a single server for
      * efficiency.
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
-     * As this method returns \c false if the \a key can not be found on the server, you can use
-     * the value of the \a returnType to determine the reason. Other than with other errors, failing
-     * because of not found \a key will not be logged.
+     * As this method returns @c false if the @a key can not be found on the server, you can use
+     * the value of the @a returnType to determine the reason. Other than with other errors, failing
+     * because of not found @a key will not be logged.
      *
      * @param[in] groupKey key that specifies the server to write to
      * @param[in] key key of object whose value to replace
      * @param[in] value value to replace object on server with
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch an individial value from the server identified by \a key. The returned QByteArray will
-     * contain the data fetched from the server. If an error occured or if the \a key could not
-     * be found, the returned QByteArray will be \c null. Use QByteArray::isNull() to check for this.
+     * Fetch an individial value from the server identified by @a key. The returned QByteArray will
+     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * be found, the returned QByteArray will be @c null. Use QByteArray::isNull() to check for this.
      *
-     * As this method returns a \c null byte array if an error occured as well if the \a key could
-     * not be found, you can use the value of the \a returnType to determine the reason. Other than with
-     * other errors, failing because of not found \a key will not be logged.
+     * As this method returns a @c null byte array if an error occured as well if the @a key could
+     * not be found, you can use the value of the @a returnType to determine the reason. Other than with
+     * other errors, failing because of not found @a key will not be logged.
      *
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
+     * @return QByteArray containing the data fetched from the server; if an error occured or the @a key has not been found, this will be @c null.
      */
     static QByteArray get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch an individial value of type \a T from the server identified by \a key. The returned type \a T
-     * will contain the data fetched from the server. If an error occured or if the \a key could not
-     * be found, the returned type \a T will be default constructed.
+     * Fetch an individial value of type @a T from the server identified by @a key. The returned type @a T
+     * will contain the data fetched from the server. If an error occured or if the @a key could not
+     * be found, the returned type @a T will be default constructed.
      *
-     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
-     * As this method returns a default constructed type \a T if an error occured as well if the \a key
-     * could not be found, you can use the value of the \a returnType to determine the reason.
-     * Other than with other errors, failing because of not found \a key will not be logged.
+     * As this method returns a default constructed type @a T if an error occured as well if the @a key
+     * could not be found, you can use the value of the @a returnType to determine the reason.
+     * Other than with other errors, failing because of not found @a key will not be logged.
      *
-     * \par Usage example
-     * \code{.cpp}
+     * @par Usage example
+     * @code{.cpp}
      * void MyController::index(Context *c)
      * {
      *     //...
@@ -453,52 +457,52 @@ public:
      *
      *     //...
      * }
-     * \endcode
+     * @endcode
      *
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
+     * @return type T containing the data fetched from the server; if an error occured or the @a key has not been found, this will be a default constructed value
      */
     template< typename T>
     static T get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch an individial value from the server identified by \a key. The returned QByteArray will
-     * contain the data fetched from the server. If an error occured or if the \a key could not
-     * be found, the returned QByteArray will be \c null. Use QByteArray::isNull() to check for this.
+     * Fetch an individial value from the server identified by @a key. The returned QByteArray will
+     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * be found, the returned QByteArray will be @c null. Use QByteArray::isNull() to check for this.
      * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
-     * a \a groupKey that is used for determining which server an object was stored if key partitioning
+     * a @a groupKey that is used for determining which server an object was stored if key partitioning
      * was used for storage.
      *
-     * As this method returns a \c null byte array if an error occured as well if the \a key could
-     * not be found, you can use the value of the \a returnType to determine the reason. Other than with
-     * other errors, failing because of not found \a key will not be logged.
+     * As this method returns a @c null byte array if an error occured as well if the @a key could
+     * not be found, you can use the value of the @a returnType to determine the reason. Other than with
+     * other errors, failing because of not found @a key will not be logged.
      *
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return QByteArray containing the data fetched from the server; if an error occured or the \a key has not been found, this will be \c null.
+     * @return QByteArray containing the data fetched from the server; if an error occured or the @a key has not been found, this will be @c null.
      */
     static QByteArray getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch an individial value from the server identified by \a key. The returned type \a T will
-     * contain the data fetched from the server. If an error occured or if the \a key could not
-     * be found, the returned type \a T will be default constructed.
+     * Fetch an individial value from the server identified by @a key. The returned type @a T will
+     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * be found, the returned type @a T will be default constructed.
      * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
-     * a \a groupKey that is used for determining which server an object was stored if key partitioning
+     * a @a groupKey that is used for determining which server an object was stored if key partitioning
      * was used for storage.
      *
-     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
-     * As this method returns a default constructed type \a T if an error occured as well if the \a key
-     * could not be found, you can use the value of the \a returnType to determine the reason.
-     * Other than with other errors, failing because of not found \a key will not be logged.
+     * As this method returns a default constructed type @a T if an error occured as well if the @a key
+     * could not be found, you can use the value of the @a returnType to determine the reason.
+     * Other than with other errors, failing because of not found @a key will not be logged.
      *
-     * \par Usage example
-     * \code{.cpp}
+     * @par Usage example
+     * @code{.cpp}
      * void MyController::index(Context *c)
      * {
      *     //...
@@ -507,107 +511,113 @@ public:
      *
      *     //...
      * }
-     * \endcode
+     * @endcode
      *
      * @param[in] groupKey key that specifies the server to fetch from
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return type T containing the data fetched from the server; if an error occured or the \a key has not been found, this will be a default constructed value
+     * @return type T containing the data fetched from the server; if an error occured or the @a key has not been found, this will be a default constructed value
      */
     template< typename T>
     static T getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Directly deletes a particular \a key.
+     * Directly deletes a particular @a key.
      *
      * @param[in] key key of object to delete
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool remove(const QString &key, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Directly deletes a particular \a key in \a groupKey.
+     * Directly deletes a particular @a key in @a groupKey.
      * This method behaves in a similar nature as Memcached::remove(). The difference is that it
-     * takes a \a groupKey that is used for determining which server an object was stored if key
+     * takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupKey key that specifies the server to delete from
      * @param[in] key key of object to delete
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool removeByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Checks if the \a key exists.
+     * Checks if the @a key exists.
      * @param[in] key key to check
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true if the key exists; \c false otherwise
+     * @return @c true if the key exists; @c false otherwise
      */
     static bool exist(const QString &key, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Checks if the \a key exists in \a groupKey. This method behaves in a similar nature as
-     * Memcached::exist(). The difference is that it takes a \a groupKey that is used for
+     * Checks if the @a key exists in @a groupKey. This method behaves in a similar nature as
+     * Memcached::exist(). The difference is that it takes a @a groupKey that is used for
      * determining which server an object was stored if key partitioning was used for storage.
      *
      * @param groupKey key that specifies the server to check on
      * @param key key to check
      * @param returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true if the key exists; \c false otherwise
+     * @return @c true if the key exists; @c false otherwise
      */
     static bool existByKey(const QString &groupKey, const QString &key, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Expiration time constant that can be used in the increment/decrement with initial methods.
-     * \sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     * @    sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
      */
     static const time_t expirationNotAdd;
 
     /**
-     * Increments the value of \a key by \a offset. If there is a valid pointer to \a value, the incremented value
+     * Increments the value of @a key by @a offset. If there is a valid pointer to @a value, the incremented value
      * will be returned to it.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] key key to increment
      * @param[in] offset offset for increment
      * @param[out] value optional pointer to a variable that takes the incremented value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool increment(const QString &key, uint32_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Increments the value of \a key in \a groupKey by \a offset. If there is a valid pointer to \a value, the
+     * Increments the value of @a key in @a groupKey by @a offset. If there is a valid pointer to @a value, the
      * incremented value will be returned to it. This method behaves in a similar nature as
-     * Memcached::increment(). The difference is that it takes a \a groupKey that is used for
+     * Memcached::increment(). The difference is that it takes a @a groupKey that is used for
      * determining which server an object was stored if key partitioning was used for storage.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] groupKey key that specifies the server to increment the key on
      * @param[in] key key to increment
      * @param[in] offset offset for increment
      * @param[out] value optional pointer to a variable that takes the incremented value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool incrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Increments the value of \a key by \a offset. If the object specified by \a key does not exist,
-     * one of two things will happen: if the \a expiration value is Memcached::expirationNotAdd, the
+     * Increments the value of @a key by @a offset. If the object specified by @a key does not exist,
+     * one of two things will happen: if the @a expiration value is Memcached::expirationNotAdd, the
      * operation will fail. For all other expiration values, the operation will succeed by seeding
-     * the value for that \a key with a \a initial value to expire with the provided \a expiration time.
-     * The flags will be set to zero. If there is a valid pointer to \a value, the created or incremented
+     * the value for that @a key with a @a initial value to expire with the provided @a expiration time.
+     * The flags will be set to zero. If there is a valid pointer to @a value, the created or incremented
      * value will be returned to it.
      *
      * @note This method will only work when using the binary protocol.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] key key to increment or initialize
      * @param[in] offset offset for increment
@@ -615,26 +625,28 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the incremented or initialized value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool incrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Increments the value of \a key in \a groupKey by \a offset. If the object specified by \a key does not exist,
+     * Increments the value of @a key in @a groupKey by @a offset. If the object specified by @a key does not exist,
      * one of two things will happen: if the expiration value is Memcached::expirationNotAdd, the
      * operation will fail. For all other expiration values, the operation will succeed by seeding
-     * the value for that \a key with a \a initial value to expire with the provided expiration time.
-     * The flags will be set to zero. If there is a valid pointer to \a value, the created or incremented
+     * the value for that @a key with a @a initial value to expire with the provided expiration time.
+     * The flags will be set to zero. If there is a valid pointer to @a value, the created or incremented
      * value will be returned to it.
      *
      * This method behaves in a similar nature as Memcached::incrementWithInitial(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @note This method will only work when using the binary protocol.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
      *
+     * @note This function does not work if encryption is enabled.
+     *
      * @param[in] groupKey key that specifies the server to increment the key on
      * @param[in] key key to increment or initialize
      * @param[in] offset offset for increment
@@ -642,52 +654,58 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the incremented or initialized value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool incrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Decrements the value of \a key by \a offset. If there is a valid pointer to \a value, the decremented value
+     * Decrements the value of @a key by @a offset. If there is a valid pointer to @a value, the decremented value
      * will be returned to it.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] key key to decrement
      * @param[in] offset offset for decrement
      * @param[out] value optional pointer to a variable that takes the decremented value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool decrement(const QString &key, uint32_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Drecrements the value of \a key in \a groupKey by \a offset. If there is a valid pointer to \a value, the
+     * Drecrements the value of @a key in @a groupKey by @a offset. If there is a valid pointer to @a value, the
      * decremented value will be returned to it. This method behaves in a similar nature as
-     * Memcached::decrement(). The difference is that it takes a \a groupKey that is used for
+     * Memcached::decrement(). The difference is that it takes a @a groupKey that is used for
      * determining which server an object was stored if key partitioning was used for storage.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] groupKey key that specifies the server to decrement the key on
      * @param[in] key key to decrement
      * @param[in] offset offset for decrement
      * @param[out] value optional pointer to a variable that takes the decremented value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool decrementByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Decrements the value of \a key by \a offset. If the object specified by \a key does not exist,
-     * one of two things will happen: if the \a expiration value is Memcached::expirationNotAdd, the
+     * Decrements the value of @a key by @a offset. If the object specified by @a key does not exist,
+     * one of two things will happen: if the @a expiration value is Memcached::expirationNotAdd, the
      * operation will fail. For all other expiration values, the operation will succeed by seeding
-     * the value for that \a key with a \a initial value to expire with the provided \a expiration time.
-     * The flags will be set to zero. If there is a valid pointer to \a value, the created or decremented
+     * the value for that @a key with a @a initial value to expire with the provided @a expiration time.
+     * The flags will be set to zero. If there is a valid pointer to @a value, the created or decremented
      * value will be returned to it.
      *
      * @note This method will only work when using the binary protocol.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] key key to decrement or initialize
      * @param[in] offset offset for decrement
@@ -695,25 +713,27 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the decremented or initialized value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool decrementWithInitial(const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Decrements the value of \a key in \a groupKey by \a offset. If the object specified by \a key does not exist,
-     * one of two things will happen: if the \a expiration value is Memcached::expirationNotAdd, the
+     * Decrements the value of @a key in @a groupKey by @a offset. If the object specified by @a key does not exist,
+     * one of two things will happen: if the @a expiration value is Memcached::expirationNotAdd, the
      * operation will fail. For all other expiration values, the operation will succeed by seeding
-     * the value for that \a key with a \a initial value to expire with the provided \a expiration time.
-     * The flags will be set to zero. If there is a valid pointer to \a value, the created or decremented
+     * the value for that @a key with a @a initial value to expire with the provided @a expiration time.
+     * The flags will be set to zero. If there is a valid pointer to @a value, the created or decremented
      * value will be returned to it.
      *
      * This method behaves in a similar nature as Memcached::decrementWithInitial(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @note This method will only work when using the binary protocol.
      *
      * @note Be aware that the memcached server does not detect overflow and underflow.
+     *
+     * @note This function does not work if encryption is enabled.
      *
      * @param[in] groupKey key that specifies the server to decrement or initialize the key on
      * @param[in] key key to decrement or initialize
@@ -722,45 +742,45 @@ public:
      * @param[in] expiration expiration time in seconds
      * @param[out] value optional pointer to a variable that takes the decremented or initialized value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool decrementWithInitialByKey(const QString &groupKey, const QString &key, uint64_t offset, uint64_t initial, time_t expiration, uint64_t *value = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Overwrites data for \a key in the server as long as the \a cas value is still the same in the server.
-     * You can get the \a cas value by using the cas return value of Memcached::get()
+     * Overwrites data for @a key in the server as long as the @a cas value is still the same in the server.
+     * You can get the @a cas value by using the cas return value of Memcached::get()
      *
      * @param[in] key key of object whose value to compare and set
      * @param[in] value value of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool cas(const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Overwrites data for \a key in the server as long as the \a cas value is still the same in the server.
-     * You can get the \a cas value by using the cas return value of Memcached::get()
+     * Overwrites data for @a key in the server as long as the @a cas value is still the same in the server.
+     * You can get the @a cas value by using the cas return value of Memcached::get()
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
      * @param[in] key key of object whose value to compare and set
-     * @param[in] value value of type \a T of object to write to server
+     * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
-     * You can get the \a cas value by using the cas return value of Memcached::getByKey().
+     * Overwrites data for @a key in @a groupKey in the server as long as the @a cas value is still the same in the server.
+     * You can get the @a cas value by using the cas return value of Memcached::getByKey().
      *
      * This method behaves in a similar nature as Memcached::cas(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupkey key that specifies the server to write to
@@ -769,27 +789,27 @@ public:
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool casByKey(const QString &groupKey, const QString &key, const QByteArray &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Overwrites data for \a key in \a groupKey in the server as long as the \a cas value is still the same in the server.
-     * You can get the \a cas value by using the cas return value of Memcached::getByKey()
+     * Overwrites data for @a key in @a groupKey in the server as long as the @a cas value is still the same in the server.
+     * You can get the @a cas value by using the cas return value of Memcached::getByKey()
      *
-     * Type \a T has to be serializable into a QByteArray using QDataStream.
+     * Type @a T has to be serializable into a QByteArray using QDataStream.
      *
      * This method behaves in a similar nature as Memcached::cas(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupkey key that specifies the server to write to
      * @param[in] key key of object whose value to compare and set
-     * @param[in] value value of type \a T of object to write to server
+     * @param[in] value value of type @a T of object to write to server
      * @param[in] expiration time in seconds to keep the object stored in the server
      * @param[in] cas the cas value to compare
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     template< typename T>
     static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
@@ -799,28 +819,28 @@ public:
      * for processing.
      *
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool flushBuffers(MemcachedReturnType *returnType = nullptr);
 
     /**
      * Wipe cleans the contents of memcached servers. It will either do this immediately or expire the content
-     * based on the \a expiration time passed to the method (a value of zero causes an immediate flush). The
+     * based on the @a expiration time passed to the method (a value of zero causes an immediate flush). The
      * operation is not atomic to multiple servers, just atomic to a single server. That is, it will flush
      * the servers in the order that they were added.
      *
      * @param[in] expiration time in seconds
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool flush(time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch multiple values from the server identified by a list of \a keys. If a pointer for the \a casValues
+     * Fetch multiple values from the server identified by a list of @a keys. If a pointer for the @a casValues
      * is provided, keys and their cas values will be written to it.
      *
      * As this might return an empty QHash if nothing has been found or if an error occured, you can
-     * use the \a returnType pointer to determine the reason.
+     * use the @a returnType pointer to determine the reason.
      *
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
@@ -830,13 +850,13 @@ public:
     static QHash<QString, QByteArray> mget(const QStringList &keys, QHash<QString, uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch multiple values of type \a T from the server identified by a list of \a keys. If a pointer
-     * for the \a casValues is provided, keys and their cas values are written to it.
+     * Fetch multiple values of type @a T from the server identified by a list of @a keys. If a pointer
+     * for the @a casValues is provided, keys and their cas values are written to it.
      *
      * As this might return an empty QHash if nothing has been found or if an error occured, you can
-     * use the \a returnType pointer to determine the reason.
+     * use the @a returnType pointer to determine the reason.
      *
-     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
      * @param[in] keys list of keys to fetch from the server
      * @param[out] casValues optional pointer to a QHash that will contain keys and their cas values
@@ -847,14 +867,14 @@ public:
     static QHash<QString, T> mget(const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch multiple values from the server specified by \a groupKey identified by a list of \a keys.
-     * If a pointer for the \a casValues is provided, keys and their cas values will be written to it.
+     * Fetch multiple values from the server specified by @a groupKey identified by a list of @a keys.
+     * If a pointer for the @a casValues is provided, keys and their cas values will be written to it.
      *
      * As this might return an empty QHash if nothing has been found or if an error occured, you can
-     * use the \a returnType pointer to determine the reason.
+     * use the @a returnType pointer to determine the reason.
      *
      * This method behaves in a similar nature as Memcached::mget(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupKey key to specify the server to fetch values from
@@ -866,16 +886,16 @@ public:
     static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Fetch multiple values of type \a T from the server specified by \a groupKey identified by a list of \a keys.
-     * If a pointer for the \a casValues is provided, keys and their cas values will be written to it.
+     * Fetch multiple values of type @a T from the server specified by @a groupKey identified by a list of @a keys.
+     * If a pointer for the @a casValues is provided, keys and their cas values will be written to it.
      *
      * As this might return an empty QHash if nothing has been found or if an error occured, you can
-     * use the \a returnType pointer to determine the reason.
+     * use the @a returnType pointer to determine the reason.
      *
-     * Type \a T has to be deserializable from a QByteArray using QDataStream.
+     * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
      * This method behaves in a similar nature as Memcached::mget(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupKey key to specify the server to fetch values from
@@ -888,30 +908,33 @@ public:
     static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Updates the \a expiration time on an existing \a key.
+     * Updates the @a expiration time on an existing @a key.
      *
      * @param[in] key key whose expiration time to update
      * @param[in] expiration new expiration time in seconds
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool touch(const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
-     * Updates the \a expiration time on an existing \a key in group \a groupKey.
+     * Updates the @a expiration time on an existing @a key in group @a groupKey.
      *
      * This method behaves in a similar nature as Memcached::touch(). The difference is that
-     * it takes a \a groupKey that is used for determining which server an object was stored if key
+     * it takes a @a groupKey that is used for determining which server an object was stored if key
      * partitioning was used for storage.
      *
      * @param[in] groupKey key to specify the server to update the key on
      * @param[in] key key whose expiration time to update
      * @param[in] expiration new expiration time in seconds
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return \c true on success; \c false otherwise
+     * @return @c true on success; @c false otherwise
      */
     static bool touchByKey(const QString &groupKey, const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
+    /**
+     * Converts the return type @a rt into human readable error string.
+     */
     static QString errorString(Context *c, MemcachedReturnType rt);
 
 protected:
