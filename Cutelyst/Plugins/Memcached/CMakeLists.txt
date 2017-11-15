@@ -1,3 +1,6 @@
+find_package(PkgConfig REQUIRED)
+pkg_search_module(MEMCACHED REQUIRED libmemcached)
+
 set(plugin_memcached_SRC
     memcached.cpp
     memcached_p.h

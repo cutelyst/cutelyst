@@ -1,3 +1,8 @@
+find_package(PkgConfig QUIET)
+if (PkgConfig_FOUND)
+    pkg_search_module(MEMCACHED QUIET libmemcached)
+endif (PkgConfig_FOUND)
+
 if (MEMCACHED_FOUND)
     message(STATUS "PLUGIN: Session, enabling SessionStoreMemcached.")
     set(sessionstorememcached_SRC sessionstorememcached.cpp sessionstorememcached_p.h)
