@@ -218,7 +218,7 @@ bool Memcached::set(const QString &key, const QByteArray &value, time_t expirati
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -258,7 +258,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -299,7 +299,7 @@ bool Memcached::add(const QString &key, const QByteArray &value, time_t expirati
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -339,7 +339,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -380,7 +380,7 @@ bool Memcached::replace(const QString &key, const QByteArray &value, time_t expi
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -420,7 +420,7 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -934,7 +934,7 @@ bool Memcached::cas(const QString &key, const QByteArray &value, time_t expirati
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
@@ -975,7 +975,7 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByt
     QByteArray _value = value;
 
     if (mcd->d_ptr->compression && (_value.size() > mcd->d_ptr->compressionThreshold)) {
-        flags.setFlag(MemcachedPrivate::Compressed);
+        flags |= MemcachedPrivate::Compressed;
         _value = qCompress(value, mcd->d_ptr->compressionLevel);
     }
 
