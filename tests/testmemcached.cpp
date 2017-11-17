@@ -910,7 +910,9 @@ TestEngine* TestMemcached::getEngine()
     auto engine = new TestEngine(app, QVariantMap());
     auto plugin = new Memcached(app);
     QVariantMap pluginConfig{
-        {QStringLiteral("binary_protocol"), true}
+        {QStringLiteral("binary_protocol"), true},
+        {QStringLiteral("compression"), true},
+        {QStringLiteral("compression_threshold"), 10}
     };
     plugin->setDefaultConfig(pluginConfig);
     new MemcachedTest(app);
