@@ -111,7 +111,7 @@ bool Memcached::setup(Application *app)
          QStringLiteral("tcp_nodelay"),
          QStringLiteral("tcp_keepalive")
     }) {
-        if (map.value(flag, d->defaultConfig.value(flag, false).toBool()).toBool()) {
+        if (map.value(flag, d->defaultConfig.value(flag, false)).toBool()) {
             const QString flagStr = QLatin1String("--") + flag.toUpper().replace(QLatin1Char('_'), QLatin1Char('-'));
             config.push_back(flagStr);
         }
@@ -134,7 +134,7 @@ bool Memcached::setup(Application *app)
          QStringLiteral("io_msg_watermark"),
          QStringLiteral("rcv_timeout")
     }) {
-        QString _val = map.value(opt, d->defaultConfig.value(opt).toString()).toString();
+        QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
         if (!_val.isEmpty()) {
             const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + _val;
             config.push_back(optStr);
@@ -150,9 +150,9 @@ bool Memcached::setup(Application *app)
     memcached_st *new_memc = memcached(configString.constData(), configString.size());
 
     if (new_memc) {
-        d->compression = map.value(QStringLiteral("compression"), false).toBool();
-        d->compressionLevel = map.value(QStringLiteral("compression_level"), -1).toInt();
-        d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), 100).toInt();
+        d->compression = map.value(QStringLiteral("compression"), d->defaultConfig.value(QStringLiteral("compression"), false)).toBool();
+        d->compressionLevel = map.value(QStringLiteral("compression_level"), d->defaultConfig.value(QStringLiteral("compression_level"),  -1)).toInt();
+        d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), d->defaultConfig.value(QStringLiteral("compression_threshold"), 100)).toInt();
         if (d->compression) {
             qCInfo(C_MEMCACHED, "Compression: enabled (Compression level: %i, Compression threshold: %i bytes)", d->compressionLevel, d->compressionThreshold);
         } else {
