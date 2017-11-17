@@ -100,6 +100,7 @@ public:
         timeout = false;
         delete body;
         body = nullptr;
+        status = InitialState;
     }
 
     virtual void connectionClose() = 0;
