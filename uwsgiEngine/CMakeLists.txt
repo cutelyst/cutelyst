@@ -12,7 +12,11 @@ find_package(CAP REQUIRED)
 
 set(uswgi_engine_SRC
     bodyuwsgi.cpp
+    bodyuwsgi.h
     engineuwsgi.cpp
+    engineuwsgi.h
+    uwsgiconnection.cpp
+    uwsgiconnection.h
     plugin.cpp
 )
 

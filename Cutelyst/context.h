@@ -463,6 +463,7 @@ public:
      * Pointer to internal engine data about the current request.
      * \note It's only used by Engines subclasses, Application code should not use it.
      */
+    Q_DECL_DEPRECATED
     void *engineData();
 
     /**

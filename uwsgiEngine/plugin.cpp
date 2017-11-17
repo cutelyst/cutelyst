@@ -19,6 +19,8 @@
 
 #include "engineuwsgi.h"
 
+#include <uwsgi.h>
+
 #include <Cutelyst/application.h>
 
 #include <QCoreApplication>

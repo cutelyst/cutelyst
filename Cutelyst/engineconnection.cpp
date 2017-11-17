@@ -28,16 +28,21 @@ Q_LOGGING_CATEGORY(CUTELYST_ENGINECONNECTION, "cutelyst.engineconnection")
 
 using namespace Cutelyst;
 
-EngineConnection::EngineConnection(QObject *parent) : QObject(parent)
+EngineConnection::EngineConnection()
 {
 
+}
+
+EngineConnection::~EngineConnection()
+{
+    delete body;
 }
 
 void EngineConnection::finalizeBody(Context *c)
 {
     Response *response = c->response();
 
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
+    if (!(status & EngineConnection::Chunked)) {
         QIODevice *body = response->bodyDevice();
 
         if (body) {
@@ -58,9 +63,9 @@ void EngineConnection::finalizeBody(Context *c)
             const QByteArray bodyByteArray = response->body();
             write(c, bodyByteArray.constData(), bodyByteArray.size());
         }
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
+    } else if (!(status & EngineConnection::ChunkedDone)) {
         // Write the final '0' chunk
-        doWrite(c, "0\r\n\r\n", 5);
+        doWrite("0\r\n\r\n", 5);
     }
 }
 
@@ -90,7 +95,7 @@ void EngineConnection::finalize(Context *c)
         finalizeError(c);
     }
 
-    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !finalizeHeaders(c)) {
+    if (!(status & EngineConnection::FinalizedHeaders) && !finalizeHeaders(c)) {
         return;
     }
 
@@ -110,7 +115,6 @@ void EngineConnection::finalizeCookies(Context *c)
 bool EngineConnection::finalizeHeaders(Context *c)
 {
     Response *response = c->response();
-    quint16 status = response->status();
     Headers &headers = response->headers();
 
     // Fix missing content length
@@ -124,27 +128,26 @@ bool EngineConnection::finalizeHeaders(Context *c)
     finalizeCookies(c);
 
     // Done
-    response->d_ptr->flags |= ResponsePrivate::FinalizedHeaders;
-    return writeHeaders(c, status, headers);
+    status |= EngineConnection::FinalizedHeaders;
+    return writeHeaders(response->status(), headers);
 }
 
 qint64 EngineConnection::write(Context *c, const char *data, qint64 len)
 {
-    Response *response = c->response();
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
-        return doWrite(c, data, len);
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
+    if (!(status & EngineConnection::Chunked)) {
+        return doWrite(data, len);
+    } else if (!(status & EngineConnection::ChunkedDone)) {
         const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
         chunk.reserve(len + chunkSize.size() + 4);
         chunk.append(chunkSize).append("\r\n", 2)
                 .append(data, len).append("\r\n", 2);
 
-        qint64 retWrite = doWrite(c, chunk.data(), chunk.size());
+        qint64 retWrite = doWrite(chunk.data(), chunk.size());
 
         // Flag if we wrote an empty chunk
         if (!len) {
-            response->d_ptr->flags |= ResponsePrivate::ChunkedDone;
+            status |= EngineConnection::ChunkedDone;
         }
 
         return retWrite == chunk.size() ? len : -1;
@@ -154,13 +157,12 @@ qint64 EngineConnection::write(Context *c, const char *data, qint64 len)
 
 bool EngineConnection::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
-    ResponsePrivate *priv = c->response()->d_ptr;
-    if (priv->flags & ResponsePrivate::FinalizedHeaders) {
+    if (status & EngineConnection::FinalizedHeaders) {
         return false;
     }
 
     if (webSocketHandshakeDo(c, key, origin, protocol)) {
-        priv->flags |= ResponsePrivate::FinalizedHeaders;
+        status |= EngineConnection::FinalizedHeaders;
         return true;
     }
 

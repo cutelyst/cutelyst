@@ -155,7 +155,7 @@ void CWsgiEngine::postFork(int workerId)
     Q_EMIT started();
 }
 
-QByteArray dateHeader()
+QByteArray CWsgiEngine::dateHeader()
 {
     QString ret;
     ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
@@ -236,51 +236,22 @@ bool CWsgiEngine::webSocketHandshakeDo(Context *c, const QString &key, const QSt
 
 bool CWsgiEngine::webSocketSendTextMessage(Context *c, const QString &message)
 {
-    auto sock = static_cast<TcpSocket*>(c->engineData());
-    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray rawMessage = message.toUtf8();
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodeText, rawMessage.size());
-    doWrite(c, headers.data(), headers.size(), sock);
-    return doWrite(c, rawMessage.data(), rawMessage.size(), sock) == rawMessage.size();
+    return false;
 }
 
 bool CWsgiEngine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
 {
-    auto sock = static_cast<TcpSocket*>(c->engineData());
-    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodeBinary, message.size());
-    doWrite(c, headers.data(), headers.size(), sock);
-    return doWrite(c, message.data(), message.size(), sock) == message.size();
+    return false;
 }
 
 bool CWsgiEngine::webSocketSendPing(Context *c, const QByteArray &payload)
 {
-    auto sock = static_cast<TcpSocket*>(c->engineData());
-    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray rawMessage = payload.left(125);
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(Socket::OpCodePing, rawMessage.size());
-    doWrite(c, headers.data(), headers.size(), sock);
-    return doWrite(c, rawMessage.data(), rawMessage.size(), sock) == rawMessage.size();
+    return false;
 }
 
 bool CWsgiEngine::webSocketClose(Context *c, quint16 code, const QString &reason)
 {
-    auto sock = static_cast<TcpSocket*>(c->engineData());
-    if (sock->headerConnection != Socket::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
-    return doWrite(c, reply.data(), reply.size(), sock) == reply.size();
+    return false;
 }
 
 bool CWsgiEngine::init()

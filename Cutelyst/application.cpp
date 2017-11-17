@@ -371,6 +371,7 @@ Context *Application::handleRequest2(Request *req)
     priv->response = new Response(c, engine, d->headers);
     priv->request = req;
     priv->requestPtr = req->d_ptr->requestPtr;
+    priv->response->d_ptr->engineConnection = static_cast<EngineConnection*>(req->d_ptr->requestPtr);
     req->setParent(c);
 
     Stats *stats = nullptr;

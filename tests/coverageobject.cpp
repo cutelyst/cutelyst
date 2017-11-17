@@ -1,4 +1,6 @@
 #include "coverageobject.h"
+#include "engineconnection.h"
+
 #include <QTest>
 #include <QMetaObject>
 #include <QString>
@@ -8,6 +10,22 @@
 #include <Cutelyst/context.h>
 
 using namespace Cutelyst;
+
+class TestEngineConnection : public EngineConnection
+{
+public:
+    TestEngineConnection() {}
+
+protected:
+    virtual qint64 doWrite(const char *data, qint64 len) final;
+    virtual bool writeHeaders(quint16 status, const Headers &headers) final;
+
+public:
+    QByteArray m_responseData;
+    QByteArray m_status;
+    Headers m_headers;
+    quint16 m_statusCode;
+};
 
 void CoverageObject::init()
 {
@@ -76,9 +94,8 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     }
 
     QVariantMap ret;
-    m_responseData = QByteArray();
 
-    EngineRequest req;
+    TestEngineConnection req;
     req.method = method;
     req.path = path;
     req.query = query;
@@ -92,37 +109,30 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     req.startOfRequest = QDateTime::currentMSecsSinceEpoch();
     req.body = bodyDevice;
 
-    delete processRequest2(req);
+    delete processRequest3(&req);
 
     ret = {
-        {QStringLiteral("body"), m_responseData},
-        {QStringLiteral("status"), m_status},
-        {QStringLiteral("statusCode"), m_statusCode},
-        {QStringLiteral("headers"), QVariant::fromValue(m_headers)}
+        {QStringLiteral("body"), req.m_responseData},
+        {QStringLiteral("status"), req.m_status},
+        {QStringLiteral("statusCode"), req.m_statusCode},
+        {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}
     };
 
-    delete bodyDevice;
+//    delete bodyDevice;
 
     return ret;
 }
 
 bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
 {
-    int len;
-    const auto *statusChar = httpStatusMessage(status, &len);
-    m_statusCode = status;
-    m_status = QByteArray(statusChar + 9, len - 9);
-    m_headers = headers;
-
-    return true;
+    return false;
 }
 
 qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(c)
     Q_UNUSED(engineData)
-    m_responseData.append(data, len);
-    return len;
+    return -1;
 }
 
 bool TestEngine::init()
@@ -160,3 +170,21 @@ qint64 SequentialBuffer::writeData(const char *data, qint64 len)
 
 #include "moc_coverageobject.cpp"
 
+
+qint64 TestEngineConnection::doWrite(const char *data, qint64 len)
+{
+    m_responseData.append(data, len);
+    return len;
+}
+
+bool TestEngineConnection::writeHeaders(quint16 status, const Headers &headers)
+{
+    qDebug() << "---------= " << status;
+    int len;
+    const auto *statusChar = TestEngine::httpStatusMessage(status, &len);
+    m_statusCode = status;
+    m_status = QByteArray(statusChar + 9, len - 9);
+    m_headers = headers;
+
+    return true;
+}

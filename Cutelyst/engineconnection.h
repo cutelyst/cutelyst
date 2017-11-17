@@ -27,11 +27,22 @@
 namespace Cutelyst {
 
 class Context;
-class EngineConnection : public QObject
+class CUTELYST_LIBRARY EngineConnection
 {
-    Q_OBJECT
+    Q_GADGET
 public:
-    explicit EngineConnection(QObject *parent = nullptr);
+    enum StatusFlag {
+        InitialState = 0x00,
+        FinalizedHeaders = 0x01,
+        IOWrite = 0x02,
+        Chunked = 0x04,
+        ChunkedDone = 0x08,
+    };
+    Q_DECLARE_FLAGS(Status, StatusFlag)
+
+    explicit EngineConnection();
+
+    virtual ~EngineConnection();
 
     /**
      * Engines must reimplement this to write the
@@ -86,12 +97,12 @@ protected:
     /**
      * Reimplement this to do the RAW writing to the client
      */
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len) = 0;
+    virtual qint64 doWrite(const char *data, qint64 len) = 0;
 
     /**
      * Reimplement this to write the headers back to the client
      */
-    virtual bool writeHeaders(Context *c, quint16 status, const Headers &headers) = 0;
+    virtual bool writeHeaders(quint16 status, const Headers &headers) = 0;
 
     virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol);
 
@@ -124,16 +135,21 @@ public:
     /** The timestamp of the start of headers */
     quint64 startOfRequest;
 
+    /** Connection status */
+    Status status = InitialState;
+
     /** The QIODevice containing the body (if any) of the request */
-    QIODevice *body;
+    QIODevice *body = nullptr;
 
     /** The remote/client port */
-    quint16 remotePort;
+    quint16 remotePort = 0;
 
     /** If the connection is secure HTTPS */
-    bool isSecure;
+    bool isSecure = false;
 };
 
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::EngineConnection::Status)
 
 #endif // ENGINECONNECTION_H

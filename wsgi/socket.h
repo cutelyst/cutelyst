@@ -24,7 +24,7 @@
 #include <QLocalSocket>
 #include <QHostAddress>
 #include <Cutelyst/Headers>
-#include <Cutelyst/Engine>
+#include <Cutelyst/engineconnection.h>
 
 #include "cwsgiengine.h"
 
@@ -34,7 +34,7 @@ namespace CWSGI {
 
 class WSGI;
 class Protocol;
-class Socket : public Cutelyst::EngineRequest
+class Socket : public Cutelyst::EngineConnection
 {
     Q_GADGET
 public:
@@ -105,6 +105,7 @@ public:
     virtual void connectionClose() = 0;
 
     qint64 contentLength;
+    QIODevice *io;
     CWsgiEngine *engine;
     Cutelyst::Context *websocketContext = nullptr;
     Protocol *proto;
@@ -129,6 +130,25 @@ public:
     quint32 websocket_mask;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
+
+    virtual bool webSocketSendTextMessage(Cutelyst::Context *c, const QString &message) final;
+
+    virtual bool webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) final;
+
+    virtual bool webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload) final;
+
+    virtual bool webSocketClose(Cutelyst::Context *c, quint16 code, const QString &reason) final;
+
+protected:
+    virtual qint64 doWrite(const char *data, qint64 len) final;
+
+    inline qint64 doWrite(const QByteArray &data) {
+        return doWrite(data.constData(), data.size());
+    }
+
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) final;
+
+    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) final;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

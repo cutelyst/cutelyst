@@ -22,13 +22,14 @@
 
 #include <Cutelyst/engine.h>
 
-#include <uwsgi.h>
-
 #include <QPluginLoader>
 #include <QLoggingCategory>
 #include <QThread>
 
 extern struct uwsgi_server uwsgi;
+
+struct wsgi_request;
+struct uwsgi_socket;
 
 namespace Cutelyst {
 class Dispatcher;
@@ -76,6 +77,8 @@ Q_SIGNALS:
     void enableSockets(bool enable);
 
 private:
+    friend class uwsgiConnection;
+
     inline void validateAndExecuteRequest(wsgi_request *wsgi_req, int status);
 
     std::vector<struct wsgi_request *> m_unusedReq;

@@ -19,7 +19,10 @@
 
 #include "engineuwsgi.h"
 
+#include "uwsgiconnection.h"
 #include "bodyuwsgi.h"
+
+#include <uwsgi.h>
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QCoreApplication>
@@ -98,85 +101,14 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
     validateAndExecuteRequest(wsgi_req, 0);
 }
 
-static inline uint16_t notSlash(char *str, uint16_t length) {
-    for (uint16_t i = 0; i < length; ++i) {
-        if (str[i] != '/') {
-            return i;
-        }
-    }
-    return length;
-}
-
 void uWSGI::processRequest(wsgi_request *req)
 {
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    EngineRequest request;
+    uwsgiConnection request(req);
 
-    uint16_t pos = notSlash(req->path_info, req->path_info_len);
-    request.path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
-
-    request.serverAddress = QString::fromLatin1(req->host, req->host_len);
-    request.query = QByteArray::fromRawData(req->query_string, req->query_string_len);
-
-    request.method = QString::fromLatin1(req->method, req->method_len);
-    request.protocol = QString::fromLatin1(req->protocol, req->protocol_len);
-    request.remoteAddress.setAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
-    request.remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
-    request.isSecure = req->https_len;
-    request.startOfRequest = req->start_of_request;
-    request.requestPtr = req;
-
-    request.remotePort = 0;
-    Headers &headers = request.headers;
-    // we scan the table in reverse, as updated values are at the end
-    for (int i = req->var_cnt - 1; i > 0; i -= 2) {
-        struct iovec &name = req->hvec[i - 1];
-        struct iovec &value = req->hvec[i];
-        if (!uwsgi_startswith(static_cast<char *>(name.iov_base),
-                              const_cast<char *>("HTTP_"), 5)) {
-            headers.pushRawHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
-                                  QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
-        } else if (!request.remotePort &&
-                   !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
-                                  static_cast<char *>(name.iov_base), name.iov_len)) {
-            request.remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len).toUInt();
-        }
-    }
-
-    if (req->content_type_len > 0) {
-        headers.setContentType(QString::fromLatin1(req->content_type, req->content_type_len));
-    }
-
-    if (req->encoding_len > 0) {
-        headers.setContentEncoding(QString::fromLatin1(req->encoding, req->encoding_len));
-    }
-
-    QIODevice *body = nullptr;
-    if (req->post_cl) {
-        if (req->post_file) {
-            //        qCDebug(CUTELYST_UWSGI) << "Post file available:" << req->post_file;
-            auto upload = new QFile;
-            if (upload->open(req->post_file, QIODevice::ReadOnly)) {
-                body = upload;
-            } else {
-                //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
-                body = new BodyUWSGI(req, !uwsgi.post_buffering);
-                body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
-            }
-        } else {
-            //        qCDebug(CUTELYST_UWSGI) << "Post buffering size:" << uwsgi.post_buffering;
-            body = new BodyUWSGI(req, !uwsgi.post_buffering);
-            body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
-        }
-        headers.setContentLength(req->post_cl);
-    }
-    request.body = body;
-
-    delete Engine::processRequest2(request);
-
-    delete body;
+    delete Engine::processRequest3(&request);
 }
 
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)

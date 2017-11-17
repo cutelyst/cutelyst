@@ -39,14 +39,12 @@ public:
 
     virtual bool init() override;
 
+    inline static const char *httpStatusMessage(quint16 status, int *len = nullptr) {
+        return Engine::httpStatusMessage(status, len);
+    }
+
 protected:
     virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) override;
-
-private:
-    QByteArray m_responseData;
-    QByteArray m_status;
-    Headers m_headers;
-    quint16 m_statusCode;
 };
 
 class SequentialBuffer : public QIODevice

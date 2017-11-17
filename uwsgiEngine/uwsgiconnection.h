@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -16,39 +16,34 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
+#ifndef UWSGICONNECTION_H
+#define UWSGICONNECTION_H
 
-#ifndef CUTELYST_RESPONSE_P_H
-#define CUTELYST_RESPONSE_P_H
+#include <QObject>
 
-#include "response.h"
-
-#include <QtCore/QUrl>
-#include <QtCore/QMap>
-#include <QtCore/QVariant>
-#include <QtNetwork/QNetworkCookie>
+#include <engineconnection.h>
 
 namespace Cutelyst {
-
 class Context;
-class Engine;
-class EngineConnection;
-class ResponsePrivate
-{
-public:
-    inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
-    inline void setBodyData(const QByteArray &body);
-
-    Headers headers;
-    QMap<QByteArray, QNetworkCookie> cookies;
-    QByteArray bodyData;
-    QUrl location;
-    QIODevice *bodyIODevice = nullptr;
-    Context *context;
-    Engine *engine;
-    EngineConnection *engineConnection;
-    quint16 status = Response::OK;
-};
-
+class Headers;
 }
 
-#endif // CUTELYST_RESPONSE_P_H
+struct wsgi_request;
+
+class uwsgiConnection : public Cutelyst::EngineConnection
+{
+public:
+    explicit uwsgiConnection(wsgi_request *req);
+
+    virtual ~uwsgiConnection();
+
+protected:
+    virtual qint64 doWrite(const char *data, qint64 len) final;
+
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) final;
+
+private:
+    wsgi_request *request;
+};
+
+#endif // UWSGICONNECTION_H

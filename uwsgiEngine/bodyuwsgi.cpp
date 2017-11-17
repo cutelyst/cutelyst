@@ -19,6 +19,8 @@
 
 #include "bodyuwsgi.h"
 
+#include <uwsgi.h>
+
 #include "engineuwsgi.h"
 
 BodyUWSGI::BodyUWSGI(wsgi_request *request, bool sequential, QObject *parent) : QIODevice(parent)

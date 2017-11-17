@@ -101,55 +101,14 @@ void Engine::finalizeCookies(Context *c)
 
 bool Engine::finalizeHeaders(Context *c)
 {
-    Response *response = c->response();
-    quint16 status = response->status();
-    Headers &headers = response->headers();
-
-    // Fix missing content length
-    if (headers.contentLength() < 0) {
-        qint64 size = response->size();
-        if (size >= 0) {
-            headers.setContentLength(size);
-        }
-    }
-
-    finalizeCookies(c);
-
-    // Done
-    response->d_ptr->flags |= ResponsePrivate::FinalizedHeaders;
-    return finalizeHeadersWrite(c, status, headers, c->request()->engineData());
+    EngineConnection *conn = c->response()->d_ptr->engineConnection;
+    return conn->finalizeHeaders(c);
 }
 
 void Engine::finalizeBody(Context *c)
 {
-    Response *response = c->response();
-    void *engineData = c->engineData();
-
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
-        QIODevice *body = response->bodyDevice();
-
-        if (body) {
-            body->seek(0);
-            char block[64 * 1024];
-            while (!body->atEnd()) {
-                qint64 in = body->read(block, sizeof(block));
-                if (in <= 0) {
-                    break;
-                }
-
-                if (write(c, block, in, engineData) != in) {
-                    qCWarning(CUTELYST_ENGINE) << "Failed to write body";
-                    break;
-                }
-            }
-        } else {
-            const QByteArray bodyByteArray = response->body();
-            write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
-        }
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
-        // Write the final '0' chunk
-        doWrite(c, "0\r\n\r\n", 5, engineData);
-    }
+    EngineConnection *conn = c->response()->d_ptr->engineConnection;
+    return conn->finalizeBody(c);
 }
 
 void Engine::finalizeError(Context *c)
@@ -246,26 +205,8 @@ quint64 Engine::time()
 
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
-    Response *response = c->response();
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
-        return doWrite(c, data, len, engineData);
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
-        const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
-        QByteArray chunk;
-        chunk.reserve(len + chunkSize.size() + 4);
-        chunk.append(chunkSize).append("\r\n", 2)
-                .append(data, len).append("\r\n", 2);
-
-        qint64 retWrite = doWrite(c, chunk.data(), chunk.size(), engineData);
-
-        // Flag if we wrote an empty chunk
-        if (!len) {
-            response->d_ptr->flags |= ResponsePrivate::ChunkedDone;
-        }
-
-        return retWrite == chunk.size() ? len : -1;
-    }
-    return -1;
+    Q_UNUSED(engineData)
+    return c->response()->d_ptr->engineConnection->write(c, data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -491,15 +432,7 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
 
 void Engine::finalize(Context *c)
 {
-    if (c->error()) {
-        finalizeError(c);
-    }
-
-    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !c->response()->d_ptr->engineConnection->finalizeHeaders(c)) {
-        return;
-    }
-
-    finalizeBody(c);
+    c->response()->d_ptr->engineConnection->finalize(c);
 }
 
 bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
