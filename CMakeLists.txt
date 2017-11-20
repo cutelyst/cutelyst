@@ -60,7 +60,9 @@ endif()
 #
 # Plugin options
 #
+include(CMakeDependentOption)
 option(PLUGIN_MEMCACHED "Enables the memcached plugin")
+cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" OFF)
 
 # NONE
 
