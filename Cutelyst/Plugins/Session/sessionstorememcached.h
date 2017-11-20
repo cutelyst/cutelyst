@@ -33,6 +33,8 @@ class SessionStoreMemcachedPrivate;
  *
  * This is completely optional. To build it, you need <a href="https://www.freedesktop.org/wiki/Software/pkg-config">pkg-config</a> and <a href="http://libmemcached.org/libMemcached.html">libMemcached</a> in your build environment. If pkg-config and libMemcached can not be found, this session store will be silently disabled and not be build.
  *
+ * @deprecated This class is deprecated. Use the new MemcachedSessionStore plugin instead.
+ *
  * \par Usage example with custom configuration
  *
  * \code{.cpp}
