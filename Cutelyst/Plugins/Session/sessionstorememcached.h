@@ -72,7 +72,7 @@ public:
      * Use the \a config string as described by the <a href="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached documentation</a> to
      * construct a SessionStoreMemcached object with more specific configuration.
      */
-    SessionStoreMemcached(const QString &config, QObject *parent = nullptr);
+    Q_DECL_DEPRECATED_X("Use MemcachedSessionStore plugin instead.") SessionStoreMemcached(const QString &config, QObject *parent = nullptr);
 
     /*!
      * \brief Deconstructs the SessionStoreMemcached object.
