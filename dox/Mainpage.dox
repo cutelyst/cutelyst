@@ -44,6 +44,7 @@ namespace Cutelyst
     </td><td>
       - Authentication
       - Memcached
+      - MemcachedSessionStore
       - Session
       - StatusMessage
       - Pagination
