@@ -64,7 +64,7 @@ public:
      * This default created session store will connect to the memcached server running
      * on localhost port 11211.
      */
-    explicit SessionStoreMemcached(QObject *parent = nullptr);
+    Q_DECL_DEPRECATED_X("Use MemcachedSessionStore plugin instead.") explicit SessionStoreMemcached(QObject *parent = nullptr);
 
     /*!
      * \brief Constructs a SessionStoreMemcached object with given \a config and \a parent.
