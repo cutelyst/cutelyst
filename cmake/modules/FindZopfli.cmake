@@ -13,11 +13,11 @@ SET(ZOPFLI_INCLUDE_DIRS ${ZOPFLI_INCLUDE_DIR})
 SET(ZOPFLI_LIBRARIES ${ZOPFLI_LIBRARY})
 
 IF(NOT ZOPFLI_INCLUDE_DIRS)
-  MESSAGE(FATAL "Zopfli include dirs cannot be found")
+  MESSAGE(FATAL_ERROR "Zopfli include dirs cannot be found")
 ENDIF(NOT ZOPFLI_INCLUDE_DIRS)
 
 IF(NOT ZOPFLI_LIBRARIES)
-  MESSAGE(FATAL "Zopfli library cannot be found")
+  MESSAGE(FATAL_ERROR "Zopfli library cannot be found")
 ENDIF(NOT ZOPFLI_LIBRARIES)
 
 #Functions
