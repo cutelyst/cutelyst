@@ -39,6 +39,10 @@
 #include <zopfli/gzip_container.h>
 #endif
 
+#ifdef BROTLI_ENABLED
+#include <brotli/encode.h>
+#endif
+
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed")
@@ -158,6 +162,16 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
                     const QString acceptEncoding = c->req()->header(QStringLiteral("Accept-Encoding"));
                     qCDebug(C_STATICCOMPRESSED) << "Accept-Encoding:" << acceptEncoding;
+
+#ifdef BROTLI_ENABLED
+                    if (acceptEncoding.contains(QLatin1String("br"), Qt::CaseInsensitive)) {
+                        compressedPath = locateCacheFile(path, currentDateTime, Brotli)                        ;
+                        if (!compressedPath.isEmpty()) {
+                            qCDebug(C_STATICCOMPRESSED, "Serving brotli compressed data from \"%s\".", qPrintable(compressedPath));
+                            contentEncoding = QLatin1String("br");
+                        }
+                    } else
+#endif
                     if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
@@ -221,8 +235,11 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
     case Gzip:
         suffix = QStringLiteral(".gz");
         break;
+#ifdef BROTLI_ENABLED
     case Brotli:
         suffix = QStringLiteral(".br");
+        break;
+#endif
     default:
         Q_ASSERT_X(false, "locate cache file", "invalid compression type");
         break;
@@ -255,6 +272,13 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
                     compressedPath = path;
                 }
                 break;
+#ifdef BROTLI_ENABLED
+            case Brotli:
+                if (compressBrotli(origPath, path)) {
+                    compressedPath = path;
+                }
+                break;
+#endif
             default:
                 break;
             }
@@ -449,6 +473,65 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
     }
 
     free(out);
+
+    return ok;
+}
+#endif
+
+#ifdef BROTLI_ENABLED
+bool StaticCompressedPrivate::compressBrotli(const QString &inputPath, const QString &outputPath) const
+{
+    qCDebug(C_STATICCOMPRESSED, "Compressing \"%s\" with brotli to \"%s\".", qPrintable(inputPath), qPrintable(outputPath));
+
+    QFile input(inputPath);
+    if (Q_UNLIKELY(!input.open(QIODevice::ReadOnly))) {
+        qCWarning(C_STATICCOMPRESSED) << "Can not open input file to compress with brotli:" << inputPath;
+        return false;
+    }
+
+    const QByteArray data = input.readAll();
+    if (Q_UNLIKELY(data.isEmpty())) {
+        qCWarning(C_STATICCOMPRESSED) << "Can not read input file or input file is empty:" << inputPath;
+        return false;
+    }
+
+    input.close();
+
+    bool ok = false;
+
+    size_t outSize = BrotliEncoderMaxCompressedSize(static_cast<size_t>(data.size()));
+    if (Q_LIKELY(outSize > 0)) {
+        const uint8_t *in = (const uint8_t *) data.constData();
+        uint8_t *out;
+        out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize+1));
+        if (Q_LIKELY(out != nullptr)) {
+            BROTLI_BOOL status = BrotliEncoderCompress(BROTLI_DEFAULT_QUALITY, BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE, data.size(), in, &outSize, out);
+            if (Q_LIKELY(status == BROTLI_TRUE)) {
+                QFile output(outputPath);
+                if (Q_LIKELY(output.open(QIODevice::WriteOnly))) {
+                    if (Q_LIKELY(output.write(reinterpret_cast<const char *>(out), outSize) > -1)) {
+                        ok = true;
+                    } else {
+                        qCWarning(C_STATICCOMPRESSED, "Failed to write brotli compressed data to output file \"%s\": %s", qPrintable(outputPath), qPrintable(output.errorString()));
+                        if (output.exists()) {
+                            if (Q_UNLIKELY(!output.remove())) {
+                                qCWarning(C_STATICCOMPRESSED) << "Can not remove invalid compressed brotli file:" << outputPath;
+                            }
+                        }
+                    }
+                } else {
+                    qCWarning(C_STATICCOMPRESSED, "Failed to open output file for brotli compression: %s", qPrintable(outputPath));
+                }
+            } else {
+                qCWarning(C_STATICCOMPRESSED, "Failed to compress \"%s\" with brotli.", qPrintable(inputPath));
+            }
+            free(out);
+        } else {
+            qCWarning(C_STATICCOMPRESSED, "Can not allocate needed output buffer of size %lu for brotli compression.", sizeof(uint8_t) * (outSize+1));
+        }
+    } else {
+        qCWarning(C_STATICCOMPRESSED, "Needed output buffer too large to compress input of size %lu with brotli.", static_cast<size_t>(data.size()));
+    }
 
     return ok;
 }

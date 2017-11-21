@@ -55,6 +55,9 @@ public:
 #ifdef ZOPFLI_ENABLED
     bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
 #endif
+#ifdef BROTLI_ENABLED
+    bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
+#endif
 };
 
 }
