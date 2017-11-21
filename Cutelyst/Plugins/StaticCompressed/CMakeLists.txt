@@ -9,14 +9,9 @@ set(plugin_staticcompressed_HEADERS
 )
 
 if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
-    find_library(ZOPFLI NAMES zopfli libzopfli)
-    if (ZOPFLI)
-        message(STATUS "PLUGIN: StaticCompressed, use zopfli")
-    else (ZOPFLI)
-        message(FATAL_ERROR "PLUGIN: StaticCompressed, failed to find zopfli")
-    endif (ZOPFLI)
+    message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
+    find_package(Zopfli REQUIRED)
     add_definitions(-DZOPFLI_ENABLED)
-    set(ZOPFLI_LIB zopfli)
 endif (PLUGIN_STATICCOMPRESSED_ZOPFLI)
 
 if (PLUGIN_STATICCOMPRESSED_BROTLI)
@@ -40,7 +35,7 @@ set_target_properties(cutelyst_qt5_plugin_staticcompressed PROPERTIES
 
 target_link_libraries(cutelyst_qt5_plugin_staticcompressed
     PRIVATE cutelyst-qt5
-    ${ZOPFLI}
+    ${ZOPFLI_LIBRARIES}
     ${BROTLI_LIBRARIES}
 )
 
