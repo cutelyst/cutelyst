@@ -39,6 +39,11 @@
 #else
 #  define CUTELYST_PLUGIN_STATICSIMPLE_EXPORT Q_DECL_IMPORT
 #endif
+#if defined(cutelyst_qt5_plugin_staticcompressed_EXPORTS)
+#  define CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT Q_DECL_IMPORT
+#endif
 #if defined(cutelyst_qt5_plugin_utils_pagination_EXPORTS)
 #  define CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Q_DECL_EXPORT
 #else

@@ -63,6 +63,8 @@ endif()
 include(CMakeDependentOption)
 option(PLUGIN_MEMCACHED "Enables the memcached plugin")
 cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" OFF)
+option(PLUGIN_STATICCOMPRESSED "Enables the StaticCompressed plugin")
+cmake_dependent_option(PLUGIN_STATICCOMPRESSED_ZOPFLI "Enables the use of zofpli instead of zlib for gzip compression" OFF "PLUGIN_STATICCOMPRESSED" OFF)
 
 # NONE
 
