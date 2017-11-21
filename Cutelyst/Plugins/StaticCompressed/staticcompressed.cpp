@@ -102,24 +102,24 @@ bool StaticCompressed::setup(Application *app)
     }
     qCInfo(C_STATICCOMPRESSED, "gzip compression level: %i", d->gzipCompressionLevel);
 
-    connect(app, &Application::beforePrepareAction, this, &StaticCompressed::beforePrepareAction);
+    connect(app, &Application::beforePrepareAction, [d](Context *c, bool *skipMethod) {
+        d->beforePrepareAction(c, skipMethod);
+    });
 
     return true;
 }
 
-void StaticCompressed::beforePrepareAction(Context *c, bool *skipMethod)
+void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
 {
-    Q_D(StaticCompressed);
-
     if (*skipMethod) {
         return;
     }
 
     const QString path = c->req()->path();
-    const QRegularExpression re = d->re; // Thread-safe
-    const QRegularExpressionMatch match = re.match(path);
+    const QRegularExpression _re = re; // Thread-safe
+    const QRegularExpressionMatch match = _re.match(path);
 
-    if (match.hasMatch() && d->locateCompressedFile(c, path)) {
+    if (match.hasMatch() && locateCompressedFile(c, path)) {
         *skipMethod = true;
     }
 }
@@ -146,6 +146,8 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
             if (mimeType.isValid()) {
 
+                // QMimeDatabase might not find the correct mime type for some specific types
+                // especially for map files for CSS and JS
                 if (mimeType.isDefault()) {
                     if (path.endsWith(QLatin1String("css.map"), Qt::CaseInsensitive) || path.endsWith(QLatin1String("js.map"), Qt::CaseInsensitive)) {
                         _mimeTypeName = QStringLiteral("application/json");
@@ -159,6 +161,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                     if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
+                            qCDebug(C_STATICCOMPRESSED, "Serving %s compressed data from \"%s\"", useZopfli ? "zopfli" : "gzip", qPrintable(compressedPath));
                             contentEncoding = QStringLiteral("gzip");
                         }
                     }
@@ -174,6 +177,8 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 // set our open file
                 res->setBody(file);
 
+                // if we have a mime type determine from the extension,
+                // do not use the name from the mime database
                 if (!_mimeTypeName.isEmpty()) {
                     headers.setContentType(_mimeTypeName);
                 } else if (mimeType.isValid()) {
@@ -209,21 +214,27 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
 {
     QString compressedPath;
 
-    QString fileName = QString::fromLatin1(QCryptographicHash::hash(origPath.toUtf8(), QCryptographicHash::Md5).toHex());
+    QString suffix;
 
     switch (compression) {
     case Zopfli:
     case Gzip:
-        fileName += QLatin1String(".gz");
+        suffix = QStringLiteral(".gz");
         break;
     case Brotli:
-        fileName += QLatin1String(".br");
+        suffix = QStringLiteral(".br");
     default:
         Q_ASSERT_X(false, "locate cache file", "invalid compression type");
         break;
     }
 
-    const QString path = cacheDir.absoluteFilePath(fileName);
+    const QFileInfo origCompressed(origPath + suffix);
+    if (origCompressed.exists()) {
+        compressedPath = origCompressed.absoluteFilePath();
+        return compressedPath;
+    }
+
+    const QString path = cacheDir.absoluteFilePath(QString::fromLatin1(QCryptographicHash::hash(origPath.toUtf8(), QCryptographicHash::Md5).toHex()) + suffix);
     const QFileInfo info(path);
 
     if (info.exists() && (info.lastModified() > origLastModified)) {
@@ -350,6 +361,8 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
         return false;
     }
 
+    // Strip the first six bytes (a 4-byte length put on by qCompress and a 2-byte zlib header)
+    // and the last four bytes (a zlib integrity check).
     compressedData.remove(0, 6);
     compressedData.chop(4);
 
@@ -373,6 +386,8 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
                  << quint16(0x00ff);
 #endif
 
+    // append a four-byte CRC-32 of the uncompressed data
+    // append 4 bytes uncompressed input size modulo 2^32
     QByteArray footer;
     QDataStream footerStream(&footer, QIODevice::WriteOnly);
     footerStream << crc32buf(data)

@@ -28,6 +28,8 @@
 
 namespace Cutelyst {
 
+class Context;
+
 class StaticCompressedPrivate
 {
 public:
@@ -46,6 +48,7 @@ public:
         Brotli
     };
 
+    void beforePrepareAction(Context *c, bool *skipMethod);
     bool locateCompressedFile(Context *c, const QString &relPath) const;
     QString locateCacheFile(const QString &origPath, const QDateTime &origLastModified, Compression compression) const;
     bool compressGzip(const QString &inputPath, const QString &outputPath, const QDateTime &origLastModified) const;

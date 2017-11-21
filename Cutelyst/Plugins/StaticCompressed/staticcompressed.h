@@ -24,7 +24,6 @@
 
 namespace Cutelyst {
 
-class Context;
 class StaticCompressedPrivate;
 
 class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed : public Plugin
@@ -46,9 +45,6 @@ public:
 
 protected:
     QScopedPointer<StaticCompressedPrivate> d_ptr;
-
-private:
-    void beforePrepareAction(Context *c, bool *skipMethod);
 };
 
 }
