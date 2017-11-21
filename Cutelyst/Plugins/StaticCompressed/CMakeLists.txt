@@ -19,6 +19,13 @@ if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
     set(ZOPFLI_LIB zopfli)
 endif (PLUGIN_STATICCOMPRESSED_ZOPFLI)
 
+if (PLUGIN_STATICCOMPRESSED_BROTLI)
+    message(STATUS "PLUGIN: StaticCompressed, enable brotli")
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(BROTLI REQUIRED libbrotlienc)
+    add_definitions(-DBROTLI_ENABLED)
+endif (PLUGIN_STATICCOMPRESSED_BROTLI)
+
 add_library(cutelyst_qt5_plugin_staticcompressed SHARED
     ${plugin_staticcompressed_SRC}
     ${plugin_staticcompressed_HEADERS}
@@ -34,6 +41,7 @@ set_target_properties(cutelyst_qt5_plugin_staticcompressed PROPERTIES
 target_link_libraries(cutelyst_qt5_plugin_staticcompressed
     PRIVATE cutelyst-qt5
     ${ZOPFLI}
+    ${BROTLI_LIBRARIES}
 )
 
 install(TARGETS cutelyst_qt5_plugin_staticcompressed EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
