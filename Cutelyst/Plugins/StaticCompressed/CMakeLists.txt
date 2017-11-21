@@ -1,3 +1,6 @@
+cmake_dependent_option(PLUGIN_STATICCOMPRESSED_ZOPFLI "Enables the use of zofpli instead of zlib for gzip compression" OFF "PLUGIN_STATICCOMPRESSED" OFF)
+cmake_dependent_option(PLUGIN_STATICCOMPRESSED_BROTLI "Enables the support of the brotli compression format" OFF "PLUGIN_STATICCOMPRESSED" OFF)
+
 set(plugin_staticcompressed_SRC
     staticcompressed.cpp
     staticcompressed_p.h
@@ -9,15 +12,15 @@ set(plugin_staticcompressed_HEADERS
 )
 
 if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
-    message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
     find_package(Zopfli REQUIRED)
+    message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
     add_definitions(-DZOPFLI_ENABLED)
 endif (PLUGIN_STATICCOMPRESSED_ZOPFLI)
 
 if (PLUGIN_STATICCOMPRESSED_BROTLI)
-    message(STATUS "PLUGIN: StaticCompressed, enable brotli")
     find_package(PkgConfig REQUIRED)
     pkg_search_module(BROTLI REQUIRED libbrotlienc)
+    message(STATUS "PLUGIN: StaticCompressed, enable brotli")
     add_definitions(-DBROTLI_ENABLED)
 endif (PLUGIN_STATICCOMPRESSED_BROTLI)
 
