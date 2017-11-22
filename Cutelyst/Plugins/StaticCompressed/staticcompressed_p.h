@@ -45,13 +45,15 @@ public:
     enum Compression {
         Gzip,
         Zopfli,
-        Brotli
+        Brotli,
+        Deflate
     };
 
     void beforePrepareAction(Context *c, bool *skipMethod);
     bool locateCompressedFile(Context *c, const QString &relPath) const;
     QString locateCacheFile(const QString &origPath, const QDateTime &origLastModified, Compression compression) const;
     bool compressGzip(const QString &inputPath, const QString &outputPath, const QDateTime &origLastModified) const;
+    bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
 #ifdef ZOPFLI_ENABLED
     bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
 #endif

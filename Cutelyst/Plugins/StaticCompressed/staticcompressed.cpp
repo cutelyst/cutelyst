@@ -184,8 +184,14 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                     if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
-                            qCDebug(C_STATICCOMPRESSED, "Serving %s compressed data from \"%s\"", useZopfli ? "zopfli" : "gzip", qPrintable(compressedPath));
+                            qCDebug(C_STATICCOMPRESSED, "Serving %s compressed data from \"%s\".", useZopfli ? "zopfli" : "gzip", qPrintable(compressedPath));
                             contentEncoding = QStringLiteral("gzip");
+                        }
+                    } else if (acceptEncoding.contains(QLatin1String("deflate"), Qt::CaseInsensitive)) {
+                        compressedPath = locateCacheFile(path, currentDateTime, Deflate);
+                        if (!compressedPath.isEmpty()) {
+                            qCDebug(C_STATICCOMPRESSED, "Serving deflate compressed data from \"%s\".", qPrintable(compressedPath));
+                            contentEncoding = QStringLiteral("deflate");
                         }
                     }
 
@@ -249,6 +255,9 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
         suffix = QStringLiteral(".br");
         break;
 #endif
+    case Deflate:
+        suffix = QStringLiteral(".deflate");
+        break;
     default:
         Q_ASSERT_X(false, "locate cache file", "invalid compression type");
         break;
@@ -269,6 +278,13 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
         QLockFile lock(path + QLatin1String(".lock"));
         if (lock.tryLock(10)) {
             switch (compression) {
+#ifdef BROTLI_ENABLED
+            case Brotli:
+                if (compressBrotli(origPath, path)) {
+                    compressedPath = path;
+                }
+                break;
+#endif
             case Zopfli:
 #ifdef ZOPFLI_ENABLED
                 if (compressZopfli(origPath, path)) {
@@ -281,13 +297,11 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
                     compressedPath = path;
                 }
                 break;
-#ifdef BROTLI_ENABLED
-            case Brotli:
-                if (compressBrotli(origPath, path)) {
+            case Deflate:
+                if (compressDeflate(origPath, path)) {
                     compressedPath = path;
                 }
                 break;
-#endif
             default:
                 break;
             }
@@ -428,6 +442,55 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
 
     if (Q_UNLIKELY(output.write(header + compressedData + footer) < 0)) {
         qCCritical(C_STATICCOMPRESSED, "Failed to write compressed gzip file \"%s\": %s", inputPath, output.errorString());
+        return false;
+    }
+
+    return true;
+}
+
+bool StaticCompressedPrivate::compressDeflate(const QString &inputPath, const QString &outputPath) const
+{
+    qCDebug(C_STATICCOMPRESSED, "Compressing \"%s\" with deflate to \"%s\".", qPrintable(inputPath), qPrintable(outputPath));
+
+    QFile input(inputPath);
+    if (Q_UNLIKELY(!input.open(QIODevice::ReadOnly))) {
+        qCWarning(C_STATICCOMPRESSED) << "Can not open input file to compress with deflate:" << inputPath;
+        return false;
+    }
+
+    const QByteArray data = input.readAll();
+    if (Q_UNLIKELY(data.isEmpty())) {
+        qCWarning(C_STATICCOMPRESSED) << "Can not read input file or input file is empty:" << inputPath;
+        input.close();
+        return false;
+    }
+
+    QByteArray compressedData = qCompress(data, gzipCompressionLevel);
+    input.close();
+
+    QFile output(outputPath);
+    if (Q_UNLIKELY(!output.open(QIODevice::WriteOnly))) {
+        qCWarning(C_STATICCOMPRESSED) << "Can not open output file to compress with deflate:" << outputPath;
+        return false;
+    }
+
+    if (Q_UNLIKELY(compressedData.isEmpty())) {
+        qCWarning(C_STATICCOMPRESSED) << "Failed to compress file with deflate, compressed data is empty:" << inputPath;
+        if (output.exists()) {
+            if (Q_UNLIKELY(!output.remove())) {
+                qCWarning(C_STATICCOMPRESSED) << "Can not remove invalid compressed deflate file:" << outputPath;
+            }
+        }
+        return false;
+    }
+
+    // Strip the first six bytes (a 4-byte length put on by qCompress and a 2-byte zlib header)
+    // and the last four bytes (a zlib integrity check).
+    compressedData.remove(0, 6);
+    compressedData.chop(4);
+
+    if (Q_UNLIKELY(output.write(compressedData) < 0)) {
+        qCCritical(C_STATICCOMPRESSED, "Failed to write compressed deflate file \"%s\": %s", inputPath, output.errorString());
         return false;
     }
 
