@@ -38,7 +38,8 @@ class StaticCompressedPrivate;
  * compression. Beside compressing the raw data on the fly and store the result in a cache directory,
  * it supports pre-compressed files distinguished by file extension in the static source directories.
  * The plugin uses the @a Accept-Encoding HTTP request header to determine the compression methods
- * supported by the user agent.
+ * supported by the user agent. If you do not need this, use the StaticSimple plugin to deliver your
+ * static files.
  *
  * <H3>Compression formats</H3>
  *
@@ -73,6 +74,12 @@ class StaticCompressedPrivate;
  * the plugin will deliver the compressed variant if the requesting user agent supports the gzip encoding. The
  * delivery of pre-compressed files can be disabled by setting @c check_pre_compressed to @c false in the
  * configuration file.
+ *
+ * <H3>Used file extensions/suffixes</H3>
+ *
+ * @li .br - Brotli compressed files
+ * @li .gz - gzip/Zopfli compressed files
+ * @li .deflate - DEFLATE compressed files
  *
  * <H3>Runtime configuration</H3>
  *
