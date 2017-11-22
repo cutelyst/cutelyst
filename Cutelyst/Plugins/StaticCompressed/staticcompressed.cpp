@@ -118,7 +118,7 @@ bool StaticCompressed::setup(Application *app)
 
 #ifdef BROTLI_ENABLED
     d->brotliQualityLevel = config.value(QStringLiteral("brotli_quality_level"), BROTLI_DEFAULT_QUALITY).toInt(&ok);
-    if (!ok || (d->brotliQualityLevel < 0) || (d->brotliQualityLevel > 11)) {
+    if (!ok || (d->brotliQualityLevel < BROTLI_MIN_QUALITY) || (d->brotliQualityLevel > BROTLI_MAX_QUALITY)) {
         d->brotliQualityLevel = BROTLI_DEFAULT_QUALITY;
     }
     supportedCompressions << QStringLiteral("brotli");
@@ -528,7 +528,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
 
     ZopfliOptions options;
     ZopfliInitOptions(&options);
-    options.numiterations = 15;
+    options.numiterations = zopfliIterations;
 
     unsigned char* out = 0;
     size_t outSize = 0;
@@ -589,7 +589,7 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath, const QSt
         uint8_t *out;
         out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize+1));
         if (Q_LIKELY(out != nullptr)) {
-            BROTLI_BOOL status = BrotliEncoderCompress(BROTLI_DEFAULT_QUALITY, BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE, data.size(), in, &outSize, out);
+            BROTLI_BOOL status = BrotliEncoderCompress(brotliQualityLevel, BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE, data.size(), in, &outSize, out);
             if (Q_LIKELY(status == BROTLI_TRUE)) {
                 QFile output(outputPath);
                 if (Q_LIKELY(output.open(QIODevice::WriteOnly))) {
