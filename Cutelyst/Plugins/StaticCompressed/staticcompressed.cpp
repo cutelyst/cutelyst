@@ -99,6 +99,15 @@ bool StaticCompressed::setup(Application *app)
     qCInfo(C_STATICCOMPRESSED, "Suffixes: %s", qPrintable(_suffixes));
     d->suffixes = _suffixes.split(QLatin1Char(','), QString::SkipEmptyParts);
 
+    QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
+#ifdef ZOPFLI_ENABLED
+    supportedCompressions << QStringLiteral("zopfli");
+#endif
+#ifdef BROTLI_ENABLED
+    supportedCompressions << QStringLiteral("brotli");
+#endif
+    qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
+
     bool ok = false;
     d->gzipCompressionLevel = config.value(QStringLiteral("gzip_compression_level"), -1).toInt(&ok);
     if (!ok || (d->gzipCompressionLevel < -1 || d->gzipCompressionLevel > 9)) {
@@ -445,6 +454,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
 
     ZopfliOptions options;
     ZopfliInitOptions(&options);
+    options.numiterations = 15;
 
     unsigned char* out = 0;
     size_t outSize = 0;
