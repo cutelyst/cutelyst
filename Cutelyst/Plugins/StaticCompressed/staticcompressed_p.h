@@ -40,7 +40,7 @@ public:
     int gzipCompressionLevel = -1;
     QStringList mimeTypes;
     QStringList suffixes;
-    bool useZopfli = true;
+    bool useZopfli = false;
 
     enum Compression {
         Gzip,
