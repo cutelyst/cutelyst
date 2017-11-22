@@ -100,19 +100,31 @@ bool StaticCompressed::setup(Application *app)
     d->suffixes = _suffixes.split(QLatin1Char(','), QString::SkipEmptyParts);
 
     QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
-#ifdef ZOPFLI_ENABLED
-    supportedCompressions << QStringLiteral("zopfli");
-#endif
-#ifdef BROTLI_ENABLED
-    supportedCompressions << QStringLiteral("brotli");
-#endif
-    qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
 
     bool ok = false;
-    d->zlibCompressionLevel = config.value(QStringLiteral("zlib_compression_level"), -1).toInt(&ok);
-    if (!ok || (d->zlibCompressionLevel < -1 || d->zlibCompressionLevel > 9)) {
+    d->zlibCompressionLevel = config.value(QStringLiteral("zlib_compression_level"), 9).toInt(&ok);
+    if (!ok || (d->zlibCompressionLevel < -1) || (d->zlibCompressionLevel > 9)) {
         d->zlibCompressionLevel = -1;
     }
+
+#ifdef ZOPFLI_ENABLED
+    d->zopfliIterations = config.value(QStringLiteral("zopfli_iterations"), 15).toInt(&ok);
+    if (!ok || (d->zopfliIterations > 15)) {
+        d->zopfliIterations = 15;
+    }
+    d->useZopfli = config.value(QStringLiteral("use_zopfli"), false).toBool();
+    supportedCompressions << QStringLiteral("zopfli");
+#endif
+
+#ifdef BROTLI_ENABLED
+    d->brotliQualityLevel = config.value(QStringLiteral("brotli_quality_level"), BROTLI_DEFAULT_QUALITY).toInt(&ok);
+    if (!ok || (d->brotliQualityLevel < 0) || (d->brotliQualityLevel > 11)) {
+        d->brotliQualityLevel = BROTLI_DEFAULT_QUALITY;
+    }
+    supportedCompressions << QStringLiteral("brotli");
+#endif
+
+    qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
 
     connect(app, &Application::beforePrepareAction, [d](Context *c, bool *skipMethod) {
         d->beforePrepareAction(c, skipMethod);

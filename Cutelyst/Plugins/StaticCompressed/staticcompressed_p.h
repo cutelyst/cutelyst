@@ -37,10 +37,12 @@ public:
     QStringList dirs;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
-    int zlibCompressionLevel = -1;
+    int zlibCompressionLevel = 9;
     QStringList mimeTypes;
     QStringList suffixes;
     bool useZopfli = false;
+    int zopfliIterations = 15;
+    int brotliQualityLevel = 11;
 
     enum Compression {
         Gzip,
