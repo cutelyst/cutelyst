@@ -46,6 +46,8 @@ namespace Cutelyst
       - Memcached
       - MemcachedSessionStore
       - Session
+      - StaticSimple
+      - StaticCompressed
       - StatusMessage
       - Pagination
       - Validator
