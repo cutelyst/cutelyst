@@ -133,6 +133,8 @@ public:
      */
     virtual quint64 time();
 
+    Context *processRequest3(EngineConnection *conn);
+
 protected:
     /**
      * @brief initApplication
@@ -290,8 +292,6 @@ protected:
      * while processing websocket data.
      */
     Context *processRequest2(const EngineRequest &req);
-
-    Context *processRequest3(EngineConnection *conn);
 
     /**
      * Deprecated

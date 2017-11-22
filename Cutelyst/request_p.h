@@ -47,9 +47,7 @@ public:
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
-    RequestPrivate(const EngineRequest &req, Engine *_engine);
-
-    RequestPrivate(EngineConnection *conn, Engine *_engine);
+    RequestPrivate(EngineConnection *_conn) : conn(_conn) { }
 
     inline void parseUrlQuery() const;
     inline void parseBody() const;
@@ -58,23 +56,8 @@ public:
     static inline ParamsMultiMap parseUrlEncoded(const QByteArray &line);
     static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
-    // Manually filled by the Engine
-    Engine *engine;
-    QString method;
-    // Path must not have a leading slash
-    QString path;
-    QByteArray query;
-    QString protocol;
-    QString serverAddress;
-    QHostAddress remoteAddress;
-    QString remoteUser;
-    Headers headers;
-    QIODevice *body = nullptr;
-    mutable QString remoteHostname;
-    quint64 startOfRequest;
-    quint64 endOfRequest;
     // Pointer to Engine data
-    void *requestPtr = nullptr;
+    EngineConnection *conn = nullptr;
 
     // Engines don't need to touch this
     QStringList args;
@@ -88,13 +71,11 @@ public:
     mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
+    mutable QString remoteHostname;
     mutable ParamsMultiMap param;
     mutable QMap<QString, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;
-
-    quint16 remotePort;
-    bool https = false;
 };
 
 }

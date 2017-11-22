@@ -508,7 +508,7 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
                 continue;
             } else if (ret == WSGI_OK) {
                 sock->processing = true;
-                delete sock->engine->processSocket(sock);
+                delete sock->engine->processRequest3(sock);
                 wsgi_proto_fastcgi_endrequest(sock, io);
                 sock->processing = false;
 

@@ -101,13 +101,13 @@ void Engine::finalizeCookies(Context *c)
 
 bool Engine::finalizeHeaders(Context *c)
 {
-    EngineConnection *conn = c->response()->d_ptr->engineConnection;
+    EngineConnection *conn = c->response()->d_ptr->conn;
     return conn->finalizeHeaders(c);
 }
 
 void Engine::finalizeBody(Context *c)
 {
-    EngineConnection *conn = c->response()->d_ptr->engineConnection;
+    EngineConnection *conn = c->response()->d_ptr->conn;
     return conn->finalizeBody(c);
 }
 
@@ -206,7 +206,7 @@ quint64 Engine::time()
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(engineData)
-    return c->response()->d_ptr->engineConnection->write(c, data, len);
+    return c->response()->d_ptr->conn->write(c, data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -357,7 +357,9 @@ Context *Engine::processRequest2(const EngineRequest &req)
 {
     Q_D(Engine);
 
-    auto request = new Request(new RequestPrivate(req, this));
+    Q_UNUSED(req)
+
+    auto request = new Request(new RequestPrivate(nullptr));
     return d->app->handleRequest2(request);
 }
 
@@ -365,7 +367,7 @@ Context *Engine::processRequest3(EngineConnection *conn)
 {
     Q_D(Engine);
 
-    auto request = new Request(new RequestPrivate(conn, this));
+    auto request = new Request(new RequestPrivate(conn));
     return d->app->handleRequest2(request);
 }
 
@@ -432,13 +434,13 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
 
 void Engine::finalize(Context *c)
 {
-    c->response()->d_ptr->engineConnection->finalize(c);
+    c->response()->d_ptr->conn->finalize(c);
 }
 
 bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
     ResponsePrivate *priv = c->response()->d_ptr;
-    return priv->engineConnection->webSocketHandshake(c, key, origin, protocol);
+    return priv->conn->webSocketHandshake(c, key, origin, protocol);
 }
 
 bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
@@ -511,7 +513,7 @@ void Engine::processRequest(const QString &method,
     req.body = body;
     req.requestPtr = requestPtr;
 
-    auto request = new Request(new RequestPrivate(req, this));
+    auto request = new Request(new RequestPrivate(nullptr));
     delete d->app->handleRequest2(request);
 }
 

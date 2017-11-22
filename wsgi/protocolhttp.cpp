@@ -246,7 +246,7 @@ bool ProtocolHttp::processRequest(Socket *sock) const
         sock->body->seek(0);
     }
 
-    Cutelyst::Context *c = sock->engine->processSocket(sock);
+    Cutelyst::Context *c = sock->engine->processRequest3(sock);
     sock->processing = false;
 
     if (sock->headerConnection == Socket::HeaderConnectionUpgrade) {

@@ -35,7 +35,7 @@ Q_LOGGING_CATEGORY(CWSGI_SOCK, "cwsgi.socket")
 
 using namespace CWSGI;
 
-TcpSocket::TcpSocket(WSGI *wsgi, QObject *parent) : QTcpSocket(parent), Socket(wsgi)
+TcpSocket::TcpSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent) : QTcpSocket(parent), Socket(wsgi, engine)
 {
     io = this;
     isSecure = false;
@@ -48,7 +48,7 @@ void TcpSocket::connectionClose()
     disconnectFromHost();
 }
 
-Socket::Socket(WSGI *wsgi)
+Socket::Socket(WSGI *wsgi, Cutelyst::Engine *_engine) : EngineConnection(_engine)
 {
     body = nullptr;
     buffer = new char[wsgi->bufferSize()];
@@ -112,7 +112,7 @@ qint64 Socket::doWrite(const char *data, qint64 len)
 
 bool Socket::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
-    return proto->sendHeaders(io, this, status, engine->lastDate(), headers);
+    return proto->sendHeaders(io, this, status, static_cast<CWsgiEngine *>(engine)->lastDate(), headers);
 }
 
 bool Socket::webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol)
@@ -177,7 +177,7 @@ void TcpSocket::socketDisconnected()
     }
 }
 
-LocalSocket::LocalSocket(WSGI *wsgi, QObject *parent) : QLocalSocket(parent), Socket(wsgi)
+LocalSocket::LocalSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent) : QLocalSocket(parent), Socket(wsgi, engine)
 {
     io = this;
     isSecure = false;
@@ -207,7 +207,7 @@ void LocalSocket::socketDisconnected()
     }
 }
 
-SslSocket::SslSocket(WSGI *wsgi, QObject *parent) : QSslSocket(parent), Socket(wsgi)
+SslSocket::SslSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent) : QSslSocket(parent), Socket(wsgi, engine)
 {
     io = this;
     isSecure = true;

@@ -42,7 +42,7 @@ Request::~Request()
 QHostAddress Request::address() const
 {
     Q_D(const Request);
-    return d->remoteAddress;
+    return d->conn->remoteAddress;
 }
 
 QString Request::addressString() const
@@ -50,11 +50,11 @@ QString Request::addressString() const
     Q_D(const Request);
 
     bool ok;
-    quint32 data = d->remoteAddress.toIPv4Address(&ok);
+    quint32 data = d->conn->remoteAddress.toIPv4Address(&ok);
     if (ok) {
         return QHostAddress(data).toString();
     } else {
-        return d->remoteAddress.toString();
+        return d->conn->remoteAddress.toString();
     }
 }
 
@@ -74,9 +74,9 @@ QString Request::hostname() const
         }
     }
 
-    const QHostInfo ptr = QHostInfo::fromName(d->remoteAddress.toString());
+    const QHostInfo ptr = QHostInfo::fromName(d->conn->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
-        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->remoteAddress;
+        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->conn->remoteAddress;
         d->remoteHostname = QStringLiteral("");
         return ret;
     }
@@ -89,7 +89,7 @@ QString Request::hostname() const
 quint16 Request::port() const
 {
     Q_D(const Request);
-    return d->remotePort;
+    return d->conn->remotePort;
 }
 
 QUrl Request::uri() const
@@ -99,19 +99,19 @@ QUrl Request::uri() const
     QUrl uri = d->url;
     if (!(d->parserStatus & RequestPrivate::UrlParsed)) {
         // This is a hack just in case remote is not set
-        if (d->serverAddress.isEmpty()) {
+        if (d->conn->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
-            uri.setAuthority(d->serverAddress);
+            uri.setAuthority(d->conn->serverAddress);
         }
 
-        uri.setScheme(d->https ? QStringLiteral("https") : QStringLiteral("http"));
+        uri.setScheme(d->conn->isSecure ? QStringLiteral("https") : QStringLiteral("http"));
 
         // if the path does not start with a slash it cleans the uri
-        uri.setPath(QLatin1Char('/') + d->path);
+        uri.setPath(QLatin1Char('/') + d->conn->path);
 
-        if (!d->query.isEmpty()) {
-            uri.setQuery(QString::fromLatin1(d->query));
+        if (!d->conn->query.isEmpty()) {
+            uri.setQuery(QString::fromLatin1(d->conn->query));
         }
 
         d->url = uri;
@@ -125,13 +125,13 @@ QString Request::base() const
     Q_D(const Request);
     QString base = d->base;
     if (!(d->parserStatus & RequestPrivate::BaseParsed)) {
-        base = d->https ? QStringLiteral("https://") : QStringLiteral("http://");
+        base = d->conn->isSecure ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
-        if (d->serverAddress.isEmpty()) {
+        if (d->conn->serverAddress.isEmpty()) {
             base.append(QHostInfo::localHostName());
         } else {
-            base.append(d->serverAddress);
+            base.append(d->conn->serverAddress);
         }
 
         // base always have a trailing slash
@@ -146,7 +146,7 @@ QString Request::base() const
 QString Request::path() const
 {
     Q_D(const Request);
-    return d->path;
+    return d->conn->path;
 }
 
 QString Request::match() const
@@ -188,13 +188,13 @@ void Request::setCaptures(const QStringList &captures)
 bool Request::secure() const
 {
     Q_D(const Request);
-    return d->https;
+    return d->conn->isSecure;
 }
 
 QIODevice *Request::body() const
 {
     Q_D(const Request);
-    return d->body;
+    return d->conn->body;
 }
 
 QVariant Request::bodyData() const
@@ -281,37 +281,37 @@ QMap<QString, QString> Request::cookies() const
 Headers Request::headers() const
 {
     Q_D(const Request);
-    return d->headers;
+    return d->conn->headers;
 }
 
 QString Request::method() const
 {
     Q_D(const Request);
-    return d->method;
+    return d->conn->method;
 }
 
 bool Request::isPost() const
 {
     Q_D(const Request);
-    return d->method == QStringLiteral("POST");
+    return d->conn->method == QStringLiteral("POST");
 }
 
 bool Request::isGet() const
 {
     Q_D(const Request);
-    return d->method == QStringLiteral("GET");
+    return d->conn->method == QStringLiteral("GET");
 }
 
 QString Request::protocol() const
 {
     Q_D(const Request);
-    return d->protocol;
+    return d->conn->protocol;
 }
 
 QString Request::remoteUser() const
 {
     Q_D(const Request);
-    return d->remoteUser;
+    return d->conn->remoteUser;
 }
 
 QVector<Upload *> Request::uploads() const
@@ -381,25 +381,25 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
 Engine *Request::engine() const
 {
     Q_D(const Request);
-    return d->engine;
+    return d->conn->engine;
 }
 
 void *Request::engineData()
 {
     Q_D(Request);
-    return d->requestPtr;
+    return d->conn;
 }
 
 void RequestPrivate::parseUrlQuery() const
 {
     // TODO move this to the asignment of query
-    if (query.size()) {
+    if (conn->query.size()) {
         // Check for keywords (no = signs)
-        if (query.indexOf('=') < 0) {
-            QByteArray aux = query;
+        if (conn->query.indexOf('=') < 0) {
+            QByteArray aux = conn->query;
             queryKeywords = Utils::decodePercentEncoding(&aux);
         } else {
-            queryParam = parseUrlEncoded(query);
+            queryParam = parseUrlEncoded(conn->query);
         }
     }
     parserStatus |= RequestPrivate::QueryParsed;
@@ -407,35 +407,35 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    if (!body) {
+    if (!conn->body) {
         parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
-    bool sequencial = body->isSequential();
-    qint64 posOrig = body->pos();
+    bool sequencial = conn->body->isSequential();
+    qint64 posOrig = conn->body->pos();
     if (sequencial && posOrig) {
         qCWarning(CUTELYST_REQUEST) << "Can not parse sequential post body out of beginning";
         parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
-    const QString contentType = headers.contentType();
+    const QString contentType = conn->headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
-            body->seek(0);
+            conn->body->seek(0);
         }
 
-        bodyParam = parseUrlEncoded(body->readLine());
+        bodyParam = parseUrlEncoded(conn->body->readLine());
         bodyData = QVariant::fromValue(bodyParam);
     } else if (contentType == QLatin1String("multipart/form-data")) {
         if (posOrig) {
-            body->seek(0);
+            conn->body->seek(0);
         }
 
-        uploads = MultiPartFormDataParser::parse(body, headers.header(QStringLiteral("CONTENT_TYPE")));
+        uploads = MultiPartFormDataParser::parse(conn->body, conn->headers.header(QStringLiteral("CONTENT_TYPE")));
         auto it = uploads.crbegin();
         while (it != uploads.crend()) {
             Upload *upload = *it;
@@ -445,14 +445,14 @@ void RequestPrivate::parseBody() const
         bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
         if (posOrig) {
-            body->seek(0);
+            conn->body->seek(0);
         }
 
-        bodyData = QJsonDocument::fromJson(body->readAll());
+        bodyData = QJsonDocument::fromJson(conn->body->readAll());
     }
 
     if (!sequencial) {
-        body->seek(posOrig);
+        conn->body->seek(posOrig);
     }
 
     parserStatus |= RequestPrivate::BodyParsed;
@@ -528,7 +528,7 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 void RequestPrivate::parseCookies() const
 {
     std::vector<std::pair<QString, QString> > ret;
-    const QString cookieString = headers.header(QStringLiteral("COOKIE"));
+    const QString cookieString = conn->headers.header(QStringLiteral("COOKIE"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {
@@ -591,43 +591,6 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
     }
 
     return ret;
-}
-
-RequestPrivate::RequestPrivate(const EngineRequest &req, Engine *_engine)
-    : engine(_engine)
-    , method(req.method)
-    , path(req.path)
-    , query(req.query)
-    , protocol(req.protocol)
-    , serverAddress(req.serverAddress)
-    , remoteAddress(req.remoteAddress)
-    , remoteUser(req.remoteUser)
-    , headers(req.headers)
-    , body(req.body)
-    , startOfRequest(req.startOfRequest)
-    , requestPtr(req.requestPtr)
-    , remotePort(req.remotePort)
-    , https(req.isSecure)
-{
-}
-
-RequestPrivate::RequestPrivate(EngineConnection *conn, Engine *_engine)
-    : engine(_engine)
-    , method(conn->method)
-    , path(conn->path)
-    , query(conn->query)
-    , protocol(conn->protocol)
-    , serverAddress(conn->serverAddress)
-    , remoteAddress(conn->remoteAddress)
-    , remoteUser(conn->remoteUser)
-    , headers(conn->headers)
-    , body(conn->body)
-    , startOfRequest(conn->startOfRequest)
-    , requestPtr(conn)
-    , remotePort(conn->remotePort)
-    , https(conn->isSecure)
-{
-
 }
 
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)

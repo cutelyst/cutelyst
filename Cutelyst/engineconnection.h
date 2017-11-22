@@ -26,6 +26,7 @@
 
 namespace Cutelyst {
 
+class Engine;
 class Context;
 class CUTELYST_LIBRARY EngineConnection
 {
@@ -40,7 +41,7 @@ public:
     };
     Q_DECLARE_FLAGS(Status, StatusFlag)
 
-    explicit EngineConnection();
+    explicit EngineConnection(Engine *_engine);
 
     virtual ~EngineConnection();
 
@@ -110,7 +111,7 @@ public:
     /** The method used (GET, POST...) */
     QString method;
 
-    /** The path requested by the user agent '/index' */
+    /** The path requested by the user agent '/index', MUST NOT have a leading slash */
     QString path;
 
     /** The query string requested by the user agent 'foo=bar&baz' */
@@ -140,6 +141,8 @@ public:
 
     /** The QIODevice containing the body (if any) of the request */
     QIODevice *body = nullptr;
+
+    Engine *engine;
 
     /** The remote/client port */
     quint16 remotePort = 0;

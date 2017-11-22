@@ -41,10 +41,6 @@ public:
 
     virtual int workerId() const override;
 
-    inline Cutelyst::Context *processSocket(Cutelyst::EngineConnection *sock) {
-        return processRequest3(sock);
-    }
-
     void setServers(const std::vector<QObject *> &servers);
 
     void postFork(int workerId);

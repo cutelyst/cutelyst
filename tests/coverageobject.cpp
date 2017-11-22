@@ -14,7 +14,7 @@ using namespace Cutelyst;
 class TestEngineConnection : public EngineConnection
 {
 public:
-    TestEngineConnection() {}
+    TestEngineConnection(Engine *engine) : EngineConnection(engine) {}
 
 protected:
     virtual qint64 doWrite(const char *data, qint64 len) final;
@@ -95,7 +95,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
 
     QVariantMap ret;
 
-    TestEngineConnection req;
+    TestEngineConnection req(this);
     req.method = method;
     req.path = path;
     req.query = query;
@@ -117,8 +117,6 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
         {QStringLiteral("statusCode"), req.m_statusCode},
         {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}
     };
-
-//    delete bodyDevice;
 
     return ret;
 }

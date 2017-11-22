@@ -366,12 +366,12 @@ Context *Application::handleRequest2(Request *req)
     Q_D(Application);
 
     Engine *engine = d->engine;
+    EngineConnection *conn = req->d_ptr->conn;
     auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
     auto c = new Context(priv);
-    priv->response = new Response(c, engine, d->headers);
+    priv->response = new Response(c, conn, d->headers);
     priv->request = req;
-    priv->requestPtr = req->d_ptr->requestPtr;
-    priv->response->d_ptr->engineConnection = static_cast<EngineConnection*>(req->d_ptr->requestPtr);
+    priv->conn = conn;
     req->setParent(c);
 
     Stats *stats = nullptr;
@@ -399,7 +399,7 @@ Context *Application::handleRequest2(Request *req)
         Q_EMIT afterDispatch(c);
     }
 
-    priv->response->d_ptr->engineConnection->finalize(c);
+    conn->finalize(c);
 
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
@@ -407,9 +407,8 @@ Context *Application::handleRequest2(Request *req)
                 c->response()->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown")).toLatin1().data(),
                 c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown")).toLatin1().data());
 
-        RequestPrivate *reqPriv = req->d_ptr;
-        reqPriv->endOfRequest = engine->time();
-        double enlapsed = (reqPriv->endOfRequest - reqPriv->startOfRequest) / 1000000.0;
+        quint64 endOfRequest = engine->time();
+        double enlapsed = (endOfRequest - conn->startOfRequest) / 1000000.0;
         QString average;
         if (enlapsed == 0.0) {
             average = QStringLiteral("??");

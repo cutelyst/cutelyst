@@ -106,7 +106,7 @@ void uWSGI::processRequest(wsgi_request *req)
     // wsgi_req->uri containg the whole URI it /foo/bar?query=null
     // so we use path_info, maybe it would be better to just build our
     // Request->uri() from it, but we need to run a performance test
-    uwsgiConnection request(req);
+    uwsgiConnection request(req, this);
 
     delete Engine::processRequest3(&request);
 }

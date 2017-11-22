@@ -55,7 +55,7 @@ public:
     Dispatcher *dispatcher;
 
     // Pointer to Engine data
-    void *requestPtr;
+    EngineConnection *conn;
 
     Request *request;
     Response *response;

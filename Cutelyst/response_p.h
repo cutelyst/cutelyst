@@ -35,7 +35,8 @@ class EngineConnection;
 class ResponsePrivate
 {
 public:
-    inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c), engine(e) { }
+    inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c) { Q_UNUSED(e) }
+    inline ResponsePrivate(Context *c, EngineConnection *_conn, const Headers &h) : headers(h), context(c), conn(_conn) { }
     inline void setBodyData(const QByteArray &body);
 
     Headers headers;
@@ -44,8 +45,7 @@ public:
     QUrl location;
     QIODevice *bodyIODevice = nullptr;
     Context *context;
-    Engine *engine;
-    EngineConnection *engineConnection;
+    EngineConnection *conn;
     quint16 status = Response::OK;
 };
 

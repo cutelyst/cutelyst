@@ -28,7 +28,7 @@ Q_LOGGING_CATEGORY(CUTELYST_ENGINECONNECTION, "cutelyst.engineconnection")
 
 using namespace Cutelyst;
 
-EngineConnection::EngineConnection()
+EngineConnection::EngineConnection(Engine *_engine) : engine(_engine)
 {
 
 }

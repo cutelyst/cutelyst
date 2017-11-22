@@ -33,12 +33,13 @@ class QIODevice;
 namespace CWSGI {
 
 class WSGI;
+
 class Protocol;
 class Socket : public Cutelyst::EngineConnection
 {
     Q_GADGET
 public:
-    Socket(WSGI *wsgi);
+    Socket(WSGI *wsgi, Cutelyst::Engine *_engine);
     virtual ~Socket();
 
     enum HeaderConnection {
@@ -107,7 +108,6 @@ public:
 
     qint64 contentLength;
     QIODevice *io;
-    CWsgiEngine *engine;
     Cutelyst::Context *websocketContext = nullptr;
     Protocol *proto;
     char *buffer;
@@ -156,7 +156,7 @@ class TcpSocket : public QTcpSocket, public Socket
 {
     Q_OBJECT
 public:
-    explicit TcpSocket(WSGI *wsgi, QObject *parent = 0);
+    explicit TcpSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent = nullptr);
 
     virtual void connectionClose() override;
     void socketDisconnected();
@@ -169,7 +169,7 @@ class SslSocket : public QSslSocket, public Socket
 {
     Q_OBJECT
 public:
-    explicit SslSocket(WSGI *wsgi, QObject *parent = 0);
+    explicit SslSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent = nullptr);
 
     virtual void connectionClose() override;
     void socketDisconnected();
@@ -182,7 +182,7 @@ class LocalSocket : public QLocalSocket, public Socket
 {
     Q_OBJECT
 public:
-    explicit LocalSocket(WSGI *wsgi, QObject *parent = 0);
+    explicit LocalSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent = nullptr);
 
     virtual void connectionClose() override;
     void socketDisconnected();

@@ -31,6 +31,7 @@ namespace Cutelyst {
 
 class Context;
 class Engine;
+class EngineConnection;
 class ResponsePrivate;
 class CUTELYST_LIBRARY Response : public QIODevice
 {
@@ -318,6 +319,8 @@ protected:
      * Constructs a Response object, for this context c, engine and defaultHeaders.
      */
     explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
+
+    explicit Response(Context *c, EngineConnection *conn, const Headers &defaultHeaders);
 
     /**
      * Writes data to the response body, this will flush

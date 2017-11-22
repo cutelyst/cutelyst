@@ -51,7 +51,7 @@ Context::Context(Application *app) :
     req.body->open(QBuffer::ReadWrite);
     req.requestPtr = nullptr;
 
-    d_ptr->request = new Request(new RequestPrivate(req, d_ptr->engine));
+    d_ptr->request = new Request(new RequestPrivate(nullptr));
     d_ptr->request->setParent(this);
 }
 
@@ -415,7 +415,7 @@ QVariantMap Context::config() const
 void *Context::engineData()
 {
     Q_D(const Context);
-    return d->requestPtr;
+    return d->conn;
 }
 
 QString Context::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
