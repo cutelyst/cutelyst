@@ -109,11 +109,10 @@ bool StaticCompressed::setup(Application *app)
     qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
 
     bool ok = false;
-    d->gzipCompressionLevel = config.value(QStringLiteral("gzip_compression_level"), -1).toInt(&ok);
-    if (!ok || (d->gzipCompressionLevel < -1 || d->gzipCompressionLevel > 9)) {
-        d->gzipCompressionLevel = -1;
+    d->zlibCompressionLevel = config.value(QStringLiteral("zlib_compression_level"), -1).toInt(&ok);
+    if (!ok || (d->zlibCompressionLevel < -1 || d->zlibCompressionLevel > 9)) {
+        d->zlibCompressionLevel = -1;
     }
-    qCInfo(C_STATICCOMPRESSED, "gzip compression level: %i", d->gzipCompressionLevel);
 
     connect(app, &Application::beforePrepareAction, [d](Context *c, bool *skipMethod) {
         d->beforePrepareAction(c, skipMethod);
@@ -389,7 +388,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
         return false;
     }
 
-    QByteArray compressedData = qCompress(data, gzipCompressionLevel);
+    QByteArray compressedData = qCompress(data, zlibCompressionLevel);
     input.close();
 
     QFile output(outputPath);
@@ -465,7 +464,7 @@ bool StaticCompressedPrivate::compressDeflate(const QString &inputPath, const QS
         return false;
     }
 
-    QByteArray compressedData = qCompress(data, gzipCompressionLevel);
+    QByteArray compressedData = qCompress(data, zlibCompressionLevel);
     input.close();
 
     QFile output(outputPath);

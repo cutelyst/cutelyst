@@ -37,7 +37,7 @@ public:
     QStringList dirs;
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
-    int gzipCompressionLevel = -1;
+    int zlibCompressionLevel = -1;
     QStringList mimeTypes;
     QStringList suffixes;
     bool useZopfli = false;
