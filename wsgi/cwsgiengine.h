@@ -41,10 +41,6 @@ public:
 
     virtual int workerId() const override;
 
-    inline Cutelyst::Context *processSocket(Cutelyst::EngineRequest *sock) {
-        return processRequest2(*sock);
-    }
-
     void setServers(const std::vector<QObject *> &servers);
 
     void postFork(int workerId);
@@ -91,12 +87,24 @@ protected:
         }
     }
 
+    inline QByteArray lastDate() {
+        if (m_lastDateTimer.hasExpired(1000)) {
+            m_lastDate = dateHeader();
+            m_lastDateTimer.restart();
+        }
+        return m_lastDate;
+    }
+
+    static QByteArray dateHeader();
+
 private:
     friend class ProtocolHttp;
     friend class ProtocolFastCGI;
     friend class LocalServer;
     friend class TcpServer;
     friend class TcpSslServer;
+    friend class Connection;
+    friend class Socket;
 
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;

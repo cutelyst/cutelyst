@@ -15,6 +15,7 @@ set(cutelyst_wsgi_SRC
     postunbuffered.cpp
     cwsgiengine.cpp
     socket.cpp
+    socket.h
     tcpserverbalancer.cpp
     tcpserver.cpp
     tcpsslserver.cpp

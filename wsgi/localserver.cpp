@@ -101,8 +101,7 @@ void LocalServer::incomingConnection(quintptr handle)
         sock = m_socks.back();
         m_socks.pop_back();
     } else {
-        sock = new LocalSocket(m_wsgi, this);
-        sock->engine = m_engine;
+        sock = new LocalSocket(m_wsgi, m_engine, this);
 
         connect(sock, &QIODevice::readyRead, [sock] () {
             sock->timeout = false;

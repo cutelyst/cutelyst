@@ -19,6 +19,8 @@
 
 #include "engine_p.h"
 
+#include "engineconnection.h"
+
 #include "common.h"
 #include "request_p.h"
 #include "application.h"
@@ -99,55 +101,14 @@ void Engine::finalizeCookies(Context *c)
 
 bool Engine::finalizeHeaders(Context *c)
 {
-    Response *response = c->response();
-    quint16 status = response->status();
-    Headers &headers = response->headers();
-
-    // Fix missing content length
-    if (headers.contentLength() < 0) {
-        qint64 size = response->size();
-        if (size >= 0) {
-            headers.setContentLength(size);
-        }
-    }
-
-    finalizeCookies(c);
-
-    // Done
-    response->d_ptr->flags |= ResponsePrivate::FinalizedHeaders;
-    return finalizeHeadersWrite(c, status, headers, c->request()->engineData());
+    EngineConnection *conn = c->response()->d_ptr->conn;
+    return conn->finalizeHeaders(c);
 }
 
 void Engine::finalizeBody(Context *c)
 {
-    Response *response = c->response();
-    void *engineData = c->engineData();
-
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
-        QIODevice *body = response->bodyDevice();
-
-        if (body) {
-            body->seek(0);
-            char block[64 * 1024];
-            while (!body->atEnd()) {
-                qint64 in = body->read(block, sizeof(block));
-                if (in <= 0) {
-                    break;
-                }
-
-                if (write(c, block, in, engineData) != in) {
-                    qCWarning(CUTELYST_ENGINE) << "Failed to write body";
-                    break;
-                }
-            }
-        } else {
-            const QByteArray bodyByteArray = response->body();
-            write(c, bodyByteArray.constData(), bodyByteArray.size(), engineData);
-        }
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
-        // Write the final '0' chunk
-        doWrite(c, "0\r\n\r\n", 5, engineData);
-    }
+    EngineConnection *conn = c->response()->d_ptr->conn;
+    return conn->finalizeBody(c);
 }
 
 void Engine::finalizeError(Context *c)
@@ -244,26 +205,8 @@ quint64 Engine::time()
 
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
-    Response *response = c->response();
-    if (!(response->d_ptr->flags & ResponsePrivate::Chunked)) {
-        return doWrite(c, data, len, engineData);
-    } else if (!(response->d_ptr->flags & ResponsePrivate::ChunkedDone)) {
-        const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
-        QByteArray chunk;
-        chunk.reserve(len + chunkSize.size() + 4);
-        chunk.append(chunkSize).append("\r\n", 2)
-                .append(data, len).append("\r\n", 2);
-
-        qint64 retWrite = doWrite(c, chunk.data(), chunk.size(), engineData);
-
-        // Flag if we wrote an empty chunk
-        if (!len) {
-            response->d_ptr->flags |= ResponsePrivate::ChunkedDone;
-        }
-
-        return retWrite == chunk.size() ? len : -1;
-    }
-    return -1;
+    Q_UNUSED(engineData)
+    return c->response()->d_ptr->conn->write(c, data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -414,7 +357,17 @@ Context *Engine::processRequest2(const EngineRequest &req)
 {
     Q_D(Engine);
 
-    auto request = new Request(new RequestPrivate(req, this));
+    Q_UNUSED(req)
+
+    auto request = new Request(new RequestPrivate(nullptr));
+    return d->app->handleRequest2(request);
+}
+
+Context *Engine::processRequest3(EngineConnection *conn)
+{
+    Q_D(Engine);
+
+    auto request = new Request(new RequestPrivate(conn));
     return d->app->handleRequest2(request);
 }
 
@@ -481,30 +434,13 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
 
 void Engine::finalize(Context *c)
 {
-    if (c->error()) {
-        finalizeError(c);
-    }
-
-    if (!(c->response()->d_ptr->flags & ResponsePrivate::FinalizedHeaders) && !finalizeHeaders(c)) {
-        return;
-    }
-
-    finalizeBody(c);
+    c->response()->d_ptr->conn->finalize(c);
 }
 
 bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
     ResponsePrivate *priv = c->response()->d_ptr;
-    if (priv->flags & ResponsePrivate::FinalizedHeaders) {
-        return false;
-    }
-
-    if (webSocketHandshakeDo(c, key, origin, protocol, c->engineData())) {
-        priv->flags |= ResponsePrivate::FinalizedHeaders;
-        return true;
-    }
-
-    return false;
+    return priv->conn->webSocketHandshake(c, key, origin, protocol);
 }
 
 bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
@@ -577,7 +513,7 @@ void Engine::processRequest(const QString &method,
     req.body = body;
     req.requestPtr = requestPtr;
 
-    auto request = new Request(new RequestPrivate(req, this));
+    auto request = new Request(new RequestPrivate(nullptr));
     delete d->app->handleRequest2(request);
 }
 

@@ -31,6 +31,7 @@ namespace Cutelyst {
 
 class Context;
 class Engine;
+class EngineConnection;
 class ResponsePrivate;
 class CUTELYST_LIBRARY Response : public QIODevice
 {
@@ -319,6 +320,8 @@ protected:
      */
     explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
 
+    explicit Response(Context *c, EngineConnection *conn, const Headers &defaultHeaders);
+
     /**
      * Writes data to the response body, this will flush
      * all response headers first and will enter in chunked
@@ -336,6 +339,7 @@ protected:
     ResponsePrivate *d_ptr;
     friend class Application;
     friend class Engine;
+    friend class EngineConnection;
     friend class Context;
     friend class ContextPrivate;
 };

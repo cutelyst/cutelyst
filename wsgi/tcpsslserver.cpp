@@ -33,9 +33,8 @@ TcpSslServer::TcpSslServer(const QString &serverAddress, CWSGI::Protocol *protoc
 
 void TcpSslServer::incomingConnection(qintptr handle)
 {
-    auto sock = new SslSocket(m_wsgi, this);
+    auto sock = new SslSocket(m_wsgi, m_engine, this);
     sock->setSslConfiguration(m_sslConfiguration);
-    sock->engine = m_engine;
 
     connect(sock, &QIODevice::readyRead, [sock] () {
         sock->timeout = false;

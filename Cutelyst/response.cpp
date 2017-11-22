@@ -21,6 +21,7 @@
 
 #include "context_p.h"
 #include "engine.h"
+#include "engineconnection.h"
 #include "common.h"
 
 #include <QtCore/QJsonDocument>
@@ -32,6 +33,12 @@ using namespace Cutelyst;
 
 Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QIODevice(c)
   , d_ptr(new ResponsePrivate(c, engine, defaultHeaders))
+{
+    open(QIODevice::WriteOnly);
+}
+
+Response::Response(Context *c, EngineConnection *conn, const Headers &defaultHeaders) : QIODevice(c)
+  , d_ptr(new ResponsePrivate(c, conn, defaultHeaders))
 {
     open(QIODevice::WriteOnly);
 }
@@ -52,23 +59,23 @@ qint64 Response::writeData(const char *data, qint64 len)
     }
 
     // Finalize headers if someone manually writes output
-    if (!(d->flags & ResponsePrivate::FinalizedHeaders)) {
+    if (!(d->conn->status & EngineConnection::FinalizedHeaders)) {
         if (d->headers.header(QStringLiteral("TRANSFER_ENCODING")) == QLatin1String("chunked")) {
-            d->flags |= ResponsePrivate::IOWrite | ResponsePrivate::Chunked;
+            d->conn->status |= EngineConnection::IOWrite | EngineConnection::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
             // that data is finished if we close the connection
             d->headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("close"));
-            d->flags |= ResponsePrivate::IOWrite;
+            d->conn->status |= EngineConnection::IOWrite;
         }
         delete d->bodyIODevice;
         d->bodyIODevice = nullptr;
         d->bodyData = QByteArray();
 
-        d->engine->finalizeHeaders(d->context);
+        d->conn->finalizeHeaders(d->context);
     }
 
-    return d->engine->write(d->context, data, len, d->context->engineData());
+    return d->conn->write(d->context, data, len);
 }
 
 Response::~Response()
@@ -91,7 +98,7 @@ void Response::setStatus(quint16 status)
 bool Response::hasBody() const
 {
     Q_D(const Response);
-    return !d->bodyData.isEmpty() || d->bodyIODevice || d->flags & ResponsePrivate::IOWrite;
+    return !d->bodyData.isEmpty() || d->bodyIODevice || d->conn->status & EngineConnection::IOWrite;
 }
 
 QByteArray &Response::body()
@@ -116,7 +123,7 @@ void Response::setBody(QIODevice *body)
     Q_D(Response);
     Q_ASSERT(body && body->isOpen() && body->isReadable());
 
-    if (!(d->flags & ResponsePrivate::IOWrite)) {
+    if (!(d->conn->status & EngineConnection::IOWrite)) {
         body->setParent(d->context);
 
         d->bodyData = QByteArray();
@@ -147,7 +154,7 @@ QString Response::contentEncoding() const
 void Cutelyst::Response::setContentEncoding(const QString &encoding)
 {
     Q_D(Response);
-    Q_ASSERT_X(!(d->flags & ResponsePrivate::FinalizedHeaders),
+    Q_ASSERT_X(!(d->conn->status & EngineConnection::FinalizedHeaders),
                "setContentEncoding",
                "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
 
@@ -163,7 +170,7 @@ qint64 Response::contentLength() const
 void Response::setContentLength(qint64 length)
 {
     Q_D(Response);
-    Q_ASSERT_X(!(d->flags & ResponsePrivate::FinalizedHeaders),
+    Q_ASSERT_X(!(d->conn->status & EngineConnection::FinalizedHeaders),
                "setContentLength",
                "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
 
@@ -266,7 +273,7 @@ QString Response::header(const QString &field) const
 void Response::setHeader(const QString &field, const QString &value)
 {
     Q_D(Response);
-    Q_ASSERT_X(!(d->flags & ResponsePrivate::FinalizedHeaders),
+    Q_ASSERT_X(!(d->conn->status & EngineConnection::FinalizedHeaders),
                "setHeader",
                "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
 
@@ -287,7 +294,7 @@ bool Response::isSequential() const
 qint64 Response::size() const
 {
     Q_D(const Response);
-    if (d->flags & ResponsePrivate::IOWrite) {
+    if (d->conn->status & EngineConnection::IOWrite) {
         return -1;
     } else if (d->bodyIODevice) {
         return d->bodyIODevice->size();
@@ -299,36 +306,36 @@ qint64 Response::size() const
 bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
 {
     Q_D(Response);
-    return d->engine->webSocketHandshake(d->context, key, origin, protocol);
+    return d->conn->webSocketHandshake(d->context, key, origin, protocol);
 }
 
 bool Response::webSocketTextMessage(const QString &message)
 {
     Q_D(Response);
-    return d->engine->webSocketSendTextMessage(d->context, message);
+    return d->conn->webSocketSendTextMessage(d->context, message);
 }
 
 bool Response::webSocketBinaryMessage(const QByteArray &message)
 {
     Q_D(Response);
-    return d->engine->webSocketSendBinaryMessage(d->context, message);
+    return d->conn->webSocketSendBinaryMessage(d->context, message);
 }
 
 bool Response::webSocketPing(const QByteArray &payload)
 {
     Q_D(Response);
-    return d->engine->webSocketSendPing(d->context, payload);
+    return d->conn->webSocketSendPing(d->context, payload);
 }
 
 bool Response::webSocketClose(quint16 code, const QString &reason)
 {
     Q_D(Response);
-    return d->engine->webSocketClose(d->context, code, reason);
+    return d->conn->webSocketClose(d->context, code, reason);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)
 {
-    if (!(flags & ResponsePrivate::IOWrite)) {
+    if (!(conn->status & EngineConnection::IOWrite)) {
         if (bodyIODevice) {
             delete bodyIODevice;
             bodyIODevice = nullptr;
