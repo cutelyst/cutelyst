@@ -79,7 +79,7 @@ bool StaticCompressed::setup(Application *app)
     Q_D(StaticCompressed);
 
     const QVariantMap config = app->engine()->config(QStringLiteral("Cutelyst_StaticCompressed_Plugin"));
-    const QString _defaultCacheDir = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + QCoreApplication::applicationName() + QLatin1String("/compressed-static");
+    const QString _defaultCacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/compressed-static");
     d->cacheDir.setPath(config.value(QStringLiteral("cache_directory"), _defaultCacheDir).toString());
 
     if (Q_UNLIKELY(!d->cacheDir.exists())) {
@@ -99,6 +99,12 @@ bool StaticCompressed::setup(Application *app)
     qCInfo(C_STATICCOMPRESSED, "Suffixes: %s", qPrintable(_suffixes));
     d->suffixes = _suffixes.split(QLatin1Char(','), QString::SkipEmptyParts);
 
+    d->checkPreCompressed = config.value(QStringLiteral("check_pre_compressed"), true).toBool();
+    qCInfo(C_STATICCOMPRESSED, "Check for pre-cmpressed files: %s", d->checkPreCompressed ? "true" : "false");
+
+    d->onTheFlyCompression = config.value(QStringLiteral("on_the_fly_compression"), true).toBool();
+    qCInfo(C_STATICCOMPRESSED, "Compress statif files on the fly: %s", d->onTheFlyCompression ? "true" : "false");
+
     QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
 
     bool ok = false;
@@ -109,7 +115,7 @@ bool StaticCompressed::setup(Application *app)
 
 #ifdef ZOPFLI_ENABLED
     d->zopfliIterations = config.value(QStringLiteral("zopfli_iterations"), 15).toInt(&ok);
-    if (!ok || (d->zopfliIterations > 15)) {
+    if (!ok || (d->zopfliIterations < 0)) {
         d->zopfliIterations = 15;
     }
     d->useZopfli = config.value(QStringLiteral("use_zopfli"), false).toBool();
@@ -274,49 +280,54 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
         break;
     }
 
-    const QFileInfo origCompressed(origPath + suffix);
-    if (origCompressed.exists()) {
-        compressedPath = origCompressed.absoluteFilePath();
-        return compressedPath;
+    if (checkPreCompressed) {
+        const QFileInfo origCompressed(origPath + suffix);
+        if (origCompressed.exists()) {
+            compressedPath = origCompressed.absoluteFilePath();
+            return compressedPath;
+        }
     }
 
-    const QString path = cacheDir.absoluteFilePath(QString::fromLatin1(QCryptographicHash::hash(origPath.toUtf8(), QCryptographicHash::Md5).toHex()) + suffix);
-    const QFileInfo info(path);
+    if (onTheFlyCompression) {
 
-    if (info.exists() && (info.lastModified() > origLastModified)) {
-        compressedPath = path;
-    } else {
-        QLockFile lock(path + QLatin1String(".lock"));
-        if (lock.tryLock(10)) {
-            switch (compression) {
+        const QString path = cacheDir.absoluteFilePath(QString::fromLatin1(QCryptographicHash::hash(origPath.toUtf8(), QCryptographicHash::Md5).toHex()) + suffix);
+        const QFileInfo info(path);
+
+        if (info.exists() && (info.lastModified() > origLastModified)) {
+            compressedPath = path;
+        } else {
+            QLockFile lock(path + QLatin1String(".lock"));
+            if (lock.tryLock(10)) {
+                switch (compression) {
 #ifdef BROTLI_ENABLED
-            case Brotli:
-                if (compressBrotli(origPath, path)) {
-                    compressedPath = path;
-                }
-                break;
+                case Brotli:
+                    if (compressBrotli(origPath, path)) {
+                        compressedPath = path;
+                    }
+                    break;
 #endif
-            case Zopfli:
+                case Zopfli:
 #ifdef ZOPFLI_ENABLED
-                if (compressZopfli(origPath, path)) {
-                    compressedPath = path;
-                }
-                break;
+                    if (compressZopfli(origPath, path)) {
+                        compressedPath = path;
+                    }
+                    break;
 #endif
-            case Gzip:
-                if (compressGzip(origPath, path, origLastModified)) {
-                    compressedPath = path;
+                case Gzip:
+                    if (compressGzip(origPath, path, origLastModified)) {
+                        compressedPath = path;
+                    }
+                    break;
+                case Deflate:
+                    if (compressDeflate(origPath, path)) {
+                        compressedPath = path;
+                    }
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case Deflate:
-                if (compressDeflate(origPath, path)) {
-                    compressedPath = path;
-                }
-                break;
-            default:
-                break;
+                lock.unlock();
             }
-            lock.unlock();
         }
     }
 

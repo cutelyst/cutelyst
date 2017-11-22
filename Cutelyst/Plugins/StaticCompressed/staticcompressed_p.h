@@ -43,6 +43,8 @@ public:
     bool useZopfli = false;
     int zopfliIterations = 15;
     int brotliQualityLevel = 11;
+    bool checkPreCompressed = true;
+    bool onTheFlyCompression = true;
 
     enum Compression {
         Gzip,
