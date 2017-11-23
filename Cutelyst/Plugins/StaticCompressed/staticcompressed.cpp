@@ -100,10 +100,10 @@ bool StaticCompressed::setup(Application *app)
     d->suffixes = _suffixes.split(QLatin1Char(','), QString::SkipEmptyParts);
 
     d->checkPreCompressed = config.value(QStringLiteral("check_pre_compressed"), true).toBool();
-    qCInfo(C_STATICCOMPRESSED, "Check for pre-cmpressed files: %s", d->checkPreCompressed ? "true" : "false");
+    qCInfo(C_STATICCOMPRESSED, "Check for pre-compressed files: %s", d->checkPreCompressed ? "true" : "false");
 
     d->onTheFlyCompression = config.value(QStringLiteral("on_the_fly_compression"), true).toBool();
-    qCInfo(C_STATICCOMPRESSED, "Compress statif files on the fly: %s", d->onTheFlyCompression ? "true" : "false");
+    qCInfo(C_STATICCOMPRESSED, "Compress static files on the fly: %s", d->onTheFlyCompression ? "true" : "false");
 
     QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
 
