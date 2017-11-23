@@ -24,7 +24,6 @@
 #include <QRegularExpression>
 #include <QVector>
 #include <QDir>
-#include <QThread>
 
 namespace Cutelyst {
 
