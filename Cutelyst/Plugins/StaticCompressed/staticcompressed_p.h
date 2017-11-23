@@ -32,19 +32,6 @@ class Context;
 class StaticCompressedPrivate
 {
 public:
-    QVector<QDir> includePaths;
-    QStringList dirs;
-    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
-    QDir cacheDir;
-    int zlibCompressionLevel = 9;
-    QStringList mimeTypes;
-    QStringList suffixes;
-    bool useZopfli = false;
-    int zopfliIterations = 15;
-    int brotliQualityLevel = 11;
-    bool checkPreCompressed = true;
-    bool onTheFlyCompression = true;
-
     enum Compression {
         Gzip,
         Zopfli,
@@ -63,6 +50,19 @@ public:
 #ifdef BROTLI_ENABLED
     bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
+
+    int zlibCompressionLevel = 9;
+    int zopfliIterations = 15;
+    int brotliQualityLevel = 11;
+    bool useZopfli = false;
+    bool checkPreCompressed = true;
+    bool onTheFlyCompression = true;
+    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
+    QDir cacheDir;
+    QVector<QDir> includePaths;
+    QStringList dirs;
+    QStringList mimeTypes;
+    QStringList suffixes;
 };
 
 }
