@@ -6,21 +6,34 @@ endif()
 
 set(cutelyst_wsgi_SRC
     wsgi.cpp
+    wsgi.h
     wsgi_p.h
     abstractfork.cpp
+    abstractfork.h
     protocol.cpp
+    protocol.h
     protocolwebsocket.cpp
+    protocolwebsocket.h
     protocolhttp.cpp
+    protocolhttp.h
     protocolfastcgi.cpp
+    protocolfastcgi.h
     postunbuffered.cpp
+    postunbuffered.h
     cwsgiengine.cpp
+    cwsgiengine.h
     socket.cpp
     socket.h
     tcpserverbalancer.cpp
+    tcpserverbalancer.h
     tcpserver.cpp
+    tcpserver.h
     tcpsslserver.cpp
+    tcpsslserver.h
     localserver.cpp
+    localserver.h
     staticmap.cpp
+    staticmap.h
 )
 
 set(cutelyst_wsgi_HEADERS
@@ -31,11 +44,13 @@ if (UNIX)
     set(cutelyst_wsgi_SRC
         ${cutelyst_wsgi_SRC}
         unixfork.cpp
+        unixfork.h
         )
 else ()
     set(cutelyst_wsgi_SRC
         ${cutelyst_wsgi_SRC}
         windowsfork.cpp
+        windowsfork.h
         )
 endif ()
 
@@ -43,6 +58,7 @@ if (LINUX)
     set(cutelyst_wsgi_SRC
         ${cutelyst_wsgi_SRC}
         systemdnotify.cpp
+        systemdnotify.h
         )
 endif ()
 

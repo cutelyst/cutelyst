@@ -4,6 +4,7 @@ include_directories(
 
 set(grantlee_plugin_SRC
     grantleeview.cpp
+    grantleeview.h
     grantleeview_p.h
 )
 
@@ -39,6 +40,7 @@ add_library(grantlee_cutelyst MODULE
     urifor.cpp
     urifor.h
     cutelystgrantlee.cpp
+    cutelystgrantlee.h
 )
 set_property(TARGET grantlee_cutelyst PROPERTY EXPORT_NAME cutelyst)
 

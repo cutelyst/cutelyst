@@ -1,5 +1,6 @@
 add_library(plugin_action_renderview MODULE
     renderview.cpp
+    renderview.h
     renderview_p.h
     metadata.json
 )

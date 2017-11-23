@@ -3,6 +3,7 @@ set(cutelystqt_SRC
     upload.cpp
     upload_p.h
     multipartformdataparser.cpp
+    multipartformdataparser.h
     multipartformdataparser_p.h
     stats.cpp
     stats_p.h
@@ -16,6 +17,7 @@ set(cutelystqt_SRC
     context_p.h
     action.cpp
     actionchain.cpp
+    actionchain.h
     actionchain_p.h
     action_p.h
     engineconnection.cpp
@@ -26,8 +28,10 @@ set(cutelystqt_SRC
     controller_p.h
     dispatchtype.cpp
     dispatchtypechained.cpp
+    dispatchtypechained.h
     dispatchtypechained_p.h
     dispatchtypepath.cpp
+    dispatchtypepath.h
     dispatchtypepath_p.h
     dispatcher.cpp
     dispatcher_p.h

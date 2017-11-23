@@ -4,6 +4,7 @@ include_directories(
 
 set(clearsilver_plugin_SRC
     clearsilver.cpp
+    clearsilver.h
     clearsilver_p.h
 )
 

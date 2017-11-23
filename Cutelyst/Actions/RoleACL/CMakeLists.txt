@@ -1,5 +1,6 @@
 add_library(plugin_action_roleacl MODULE
     roleacl.cpp
+    roleacl.h
     roleacl_p.h
     metadata.json
 )

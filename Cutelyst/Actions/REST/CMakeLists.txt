@@ -1,5 +1,6 @@
 add_library(plugin_action_rest MODULE
     actionrest.cpp
+    actionrest.h
     actionrest_p.h
     metadata.json
 )
