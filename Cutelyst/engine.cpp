@@ -206,7 +206,7 @@ quint64 Engine::time()
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(engineData)
-    return c->response()->d_ptr->conn->write(c, data, len);
+    return c->response()->d_ptr->conn->write(data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)

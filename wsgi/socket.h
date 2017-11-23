@@ -132,24 +132,24 @@ public:
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
 
-    virtual bool webSocketSendTextMessage(Cutelyst::Context *c, const QString &message) final;
+    virtual bool webSocketSendTextMessage(const QString &message) override final;
 
-    virtual bool webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) final;
+    virtual bool webSocketSendBinaryMessage(const QByteArray &message) override final;
 
-    virtual bool webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload) final;
+    virtual bool webSocketSendPing(const QByteArray &payload) override final;
 
-    virtual bool webSocketClose(Cutelyst::Context *c, quint16 code, const QString &reason) final;
+    virtual bool webSocketClose(quint16 code, const QString &reason) override final;
 
 protected:
-    virtual qint64 doWrite(const char *data, qint64 len) final;
+    virtual qint64 doWrite(const char *data, qint64 len) override final;
 
     inline qint64 doWrite(const QByteArray &data) {
         return doWrite(data.constData(), data.size());
     }
 
-    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) final;
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
-    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) final;
+    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

@@ -82,17 +82,17 @@ public:
     /**
      * Called by Response to manually write data
      */
-    qint64 write(Context *c, const char *data, qint64 len);
+    qint64 write(const char *data, qint64 len);
 
     bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
 
-    virtual bool webSocketSendTextMessage(Context *c, const QString &message);
+    virtual bool webSocketSendTextMessage(const QString &message);
 
-    virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
+    virtual bool webSocketSendBinaryMessage(const QByteArray &message);
 
-    virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
+    virtual bool webSocketSendPing(const QByteArray &payload);
 
-    virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
+    virtual bool webSocketClose(quint16 code, const QString &reason);
 
 protected:
     /**

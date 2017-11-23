@@ -59,7 +59,7 @@ Socket::~Socket()
     delete [] buffer;
 }
 
-bool Socket::webSocketSendTextMessage(Cutelyst::Context *c, const QString &message)
+bool Socket::webSocketSendTextMessage(const QString &message)
 {
     if (headerConnection != Socket::HeaderConnectionUpgrade) {
         return false;
@@ -71,7 +71,7 @@ bool Socket::webSocketSendTextMessage(Cutelyst::Context *c, const QString &messa
     return doWrite(rawMessage) == rawMessage.size();
 }
 
-bool Socket::webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message)
+bool Socket::webSocketSendBinaryMessage(const QByteArray &message)
 {
     if (headerConnection != Socket::HeaderConnectionUpgrade) {
         return false;
@@ -82,7 +82,7 @@ bool Socket::webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &
     return doWrite(message) == message.size();
 }
 
-bool Socket::webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload)
+bool Socket::webSocketSendPing(const QByteArray &payload)
 {
     if (headerConnection != Socket::HeaderConnectionUpgrade) {
         return false;
@@ -94,7 +94,7 @@ bool Socket::webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload)
     return doWrite(rawMessage) == rawMessage.size();
 }
 
-bool Socket::webSocketClose(Cutelyst::Context *c, quint16 code, const QString &reason)
+bool Socket::webSocketClose(quint16 code, const QString &reason)
 {
     if (headerConnection != Socket::HeaderConnectionUpgrade) {
         return false;

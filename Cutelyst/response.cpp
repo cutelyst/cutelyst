@@ -75,7 +75,7 @@ qint64 Response::writeData(const char *data, qint64 len)
         d->conn->finalizeHeaders(d->context);
     }
 
-    return d->conn->write(d->context, data, len);
+    return d->conn->write(data, len);
 }
 
 Response::~Response()
@@ -312,25 +312,25 @@ bool Response::webSocketHandshake(const QString &key, const QString &origin, con
 bool Response::webSocketTextMessage(const QString &message)
 {
     Q_D(Response);
-    return d->conn->webSocketSendTextMessage(d->context, message);
+    return d->conn->webSocketSendTextMessage(message);
 }
 
 bool Response::webSocketBinaryMessage(const QByteArray &message)
 {
     Q_D(Response);
-    return d->conn->webSocketSendBinaryMessage(d->context, message);
+    return d->conn->webSocketSendBinaryMessage(message);
 }
 
 bool Response::webSocketPing(const QByteArray &payload)
 {
     Q_D(Response);
-    return d->conn->webSocketSendPing(d->context, payload);
+    return d->conn->webSocketSendPing(payload);
 }
 
 bool Response::webSocketClose(quint16 code, const QString &reason)
 {
     Q_D(Response);
-    return d->conn->webSocketClose(d->context, code, reason);
+    return d->conn->webSocketClose(code, reason);
 }
 
 void ResponsePrivate::setBodyData(const QByteArray &body)

@@ -54,14 +54,14 @@ void EngineConnection::finalizeBody(Context *c)
                     break;
                 }
 
-                if (write(c, block, in) != in) {
+                if (write(block, in) != in) {
                     qCWarning(CUTELYST_ENGINECONNECTION) << "Failed to write body";
                     break;
                 }
             }
         } else {
             const QByteArray bodyByteArray = response->body();
-            write(c, bodyByteArray.constData(), bodyByteArray.size());
+            write(bodyByteArray.constData(), bodyByteArray.size());
         }
     } else if (!(status & EngineConnection::ChunkedDone)) {
         // Write the final '0' chunk
@@ -132,7 +132,7 @@ bool EngineConnection::finalizeHeaders(Context *c)
     return writeHeaders(response->status(), headers);
 }
 
-qint64 EngineConnection::write(Context *c, const char *data, qint64 len)
+qint64 EngineConnection::write(const char *data, qint64 len)
 {
     if (!(status & EngineConnection::Chunked)) {
         return doWrite(data, len);
@@ -169,30 +169,26 @@ bool EngineConnection::webSocketHandshake(Context *c, const QString &key, const 
     return false;
 }
 
-bool EngineConnection::webSocketSendTextMessage(Context *c, const QString &message)
+bool EngineConnection::webSocketSendTextMessage(const QString &message)
 {
-    Q_UNUSED(c)
     Q_UNUSED(message)
     return false;
 }
 
-bool EngineConnection::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
+bool EngineConnection::webSocketSendBinaryMessage(const QByteArray &message)
 {
-    Q_UNUSED(c)
     Q_UNUSED(message)
     return false;
 }
 
-bool EngineConnection::webSocketSendPing(Context *c, const QByteArray &payload)
+bool EngineConnection::webSocketSendPing(const QByteArray &payload)
 {
-    Q_UNUSED(c)
     Q_UNUSED(payload)
     return false;
 }
 
-bool EngineConnection::webSocketClose(Context *c, quint16 code, const QString &reason)
+bool EngineConnection::webSocketClose(quint16 code, const QString &reason)
 {
-    Q_UNUSED(c)
     Q_UNUSED(code)
     Q_UNUSED(reason)
     return false;
