@@ -51,18 +51,18 @@ public:
     bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
 
+    QStringList dirs;
+    QStringList mimeTypes;
+    QStringList suffixes;
+    QVector<QDir> includePaths;
+    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
+    QDir cacheDir;
     int zlibCompressionLevel = 9;
     int zopfliIterations = 15;
     int brotliQualityLevel = 11;
     bool useZopfli = false;
     bool checkPreCompressed = true;
     bool onTheFlyCompression = true;
-    QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
-    QDir cacheDir;
-    QVector<QDir> includePaths;
-    QStringList dirs;
-    QStringList mimeTypes;
-    QStringList suffixes;
 };
 
 }
