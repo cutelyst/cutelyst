@@ -463,7 +463,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
                  << quint32(data.size());
 
     if (Q_UNLIKELY(output.write(header + compressedData + footer) < 0)) {
-        qCCritical(C_STATICCOMPRESSED, "Failed to write compressed gzip file \"%s\": %s", inputPath, output.errorString());
+        qCCritical(C_STATICCOMPRESSED, "Failed to write compressed gzip file \"%s\": %s", qPrintable(inputPath), qPrintable(output.errorString()));
         return false;
     }
 
@@ -512,7 +512,7 @@ bool StaticCompressedPrivate::compressDeflate(const QString &inputPath, const QS
     compressedData.chop(4);
 
     if (Q_UNLIKELY(output.write(compressedData) < 0)) {
-        qCCritical(C_STATICCOMPRESSED, "Failed to write compressed deflate file \"%s\": %s", inputPath, output.errorString());
+        qCCritical(C_STATICCOMPRESSED, "Failed to write compressed deflate file \"%s\": %s", qPrintable(inputPath), qPrintable(output.errorString()));
         return false;
     }
 
@@ -553,7 +553,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
             qCWarning(C_STATICCOMPRESSED) << "Can not open output file to compress with zopfli:" << outputPath;
         } else {
             if (Q_UNLIKELY(output.write(reinterpret_cast<const char *>(out), outSize) < 0)) {
-                qCCritical(C_STATICCOMPRESSED, "Failed to write compressed zopfli file \"%s\": %s", inputPath, output.errorString());
+                qCCritical(C_STATICCOMPRESSED, "Failed to write compressed zopfli file \"%s\": %s", qPrintable(inputPath), qPrintable(output.errorString()));
                 if (output.exists()) {
                     if (Q_UNLIKELY(!output.remove())) {
                         qCWarning(C_STATICCOMPRESSED) << "Can not remove invalid compressed zopfli file:" << outputPath;
