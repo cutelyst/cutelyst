@@ -8,7 +8,6 @@ set(cutelystqt_SRC
     stats.cpp
     stats_p.h
     headers.cpp
-    headers_p.h
     request.cpp
     request_p.h
     response.cpp

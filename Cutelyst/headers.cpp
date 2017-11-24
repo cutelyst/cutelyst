@@ -15,13 +15,17 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "headers_p.h"
+#include "headers.h"
 
 #include "common.h"
 
 #include <QStringList>
 
 using namespace Cutelyst;
+
+inline QString normalizeHeaderKey(const QString &field);
+inline QByteArray decodeBasicAuth(const QString &auth);
+inline QPair<QString, QString> decodeBasicAuthPair(const QString &auth);
 
 Headers::Headers()
 {
@@ -297,12 +301,12 @@ QString Headers::authorization() const
 
 QString Headers::authorizationBasic() const
 {
-    return QString::fromLatin1(HeadersPrivate::decodeBasicAuth(authorization()));
+    return QString::fromLatin1(decodeBasicAuth(authorization()));
 }
 
 QPair<QString, QString> Headers::authorizationBasicPair() const
 {
-    return HeadersPrivate::decodeBasicAuthPair(authorization());
+    return decodeBasicAuthPair(authorization());
 }
 
 QString Headers::setAuthorizationBasic(const QString &username, const QString &password)
@@ -333,27 +337,27 @@ QString Headers::proxyAuthorization() const
 
 QString Headers::proxyAuthorizationBasic() const
 {
-    return QString::fromLatin1(HeadersPrivate::decodeBasicAuth(proxyAuthorization()));
+    return QString::fromLatin1(decodeBasicAuth(proxyAuthorization()));
 }
 
 QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
 {
-    return HeadersPrivate::decodeBasicAuthPair(proxyAuthorization());
+    return decodeBasicAuthPair(proxyAuthorization());
 }
 
 QString Headers::header(const QString &field) const
 {
-    return m_data.value(HeadersPrivate::normalizeHeaderKey(field));
+    return m_data.value(normalizeHeaderKey(field));
 }
 
 QString Headers::header(const QString &field, const QString &defaultValue) const
 {
-    return m_data.value(HeadersPrivate::normalizeHeaderKey(field), defaultValue);
+    return m_data.value(normalizeHeaderKey(field), defaultValue);
 }
 
 void Headers::setHeader(const QString &field, const QString &value)
 {
-    m_data.insert(HeadersPrivate::normalizeHeaderKey(field), value);
+    m_data.insert(normalizeHeaderKey(field), value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
@@ -363,22 +367,22 @@ void Headers::setHeader(const QString &field, const QStringList &values)
 
 void Headers::pushHeader(const QString &field, const QString &value)
 {
-    m_data.insertMulti(HeadersPrivate::normalizeHeaderKey(field), value);
+    m_data.insertMulti(normalizeHeaderKey(field), value);
 }
 
 void Headers::pushHeader(const QString &field, const QStringList &values)
 {
-    m_data.insertMulti(HeadersPrivate::normalizeHeaderKey(field), values.join(QStringLiteral(", ")));
+    m_data.insertMulti(normalizeHeaderKey(field), values.join(QStringLiteral(", ")));
 }
 
 void Headers::removeHeader(const QString &field)
 {
-    m_data.remove(HeadersPrivate::normalizeHeaderKey(field));
+    m_data.remove(normalizeHeaderKey(field));
 }
 
 bool Headers::contains(const QString &field)
 {
-    return m_data.contains(HeadersPrivate::normalizeHeaderKey(field));
+    return m_data.contains(normalizeHeaderKey(field));
 }
 
 QString &Headers::operator[](const QString &key)
@@ -391,7 +395,7 @@ const QString Headers::operator[](const QString &key) const
     return m_data[key];
 }
 
-QString HeadersPrivate::normalizeHeaderKey(const QString &field)
+QString normalizeHeaderKey(const QString &field)
 {
     QString key = field;
     int i = 0;
@@ -409,7 +413,7 @@ QString HeadersPrivate::normalizeHeaderKey(const QString &field)
     return key;
 }
 
-QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
+QByteArray decodeBasicAuth(const QString &auth)
 {
     QByteArray ret;
     if (!auth.isEmpty() && auth.startsWith(QLatin1String("Basic "))) {
@@ -421,7 +425,7 @@ QByteArray HeadersPrivate::decodeBasicAuth(const QString &auth)
     return ret;
 }
 
-QPair<QString, QString> HeadersPrivate::decodeBasicAuthPair(const QString &auth)
+QPair<QString, QString> decodeBasicAuthPair(const QString &auth)
 {
     QPair<QString, QString> ret;
     const QByteArray authorization = decodeBasicAuth(auth);
