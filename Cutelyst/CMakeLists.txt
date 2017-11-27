@@ -19,8 +19,8 @@ set(cutelystqt_SRC
     actionchain.h
     actionchain_p.h
     action_p.h
-    engineconnection.cpp
-    engineconnection.h
+    enginerequest.cpp
+    enginerequest.h
     engine.cpp
     engine_p.h
     controller.cpp

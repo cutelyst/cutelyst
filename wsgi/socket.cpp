@@ -47,7 +47,7 @@ void TcpSocket::connectionClose()
     disconnectFromHost();
 }
 
-Socket::Socket(WSGI *wsgi, Cutelyst::Engine *_engine) : EngineConnection(_engine)
+Socket::Socket(WSGI *wsgi, Cutelyst::Engine *_engine) : EngineRequest(_engine)
 {
     body = nullptr;
     buffer = new char[wsgi->bufferSize()];

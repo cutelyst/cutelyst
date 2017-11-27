@@ -29,12 +29,12 @@ namespace Cutelyst {
 
 class Context;
 class Engine;
-class EngineConnection;
+class EngineRequest;
 class ResponsePrivate
 {
 public:
     inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c) { Q_UNUSED(e) }
-    inline ResponsePrivate(Context *c, EngineConnection *_conn, const Headers &h) : headers(h), context(c), conn(_conn) { }
+    inline ResponsePrivate(Context *c, EngineRequest *er, const Headers &h) : headers(h), context(c), engineRequest(er) { }
     inline void setBodyData(const QByteArray &body);
 
     Headers headers;
@@ -43,7 +43,7 @@ public:
     QUrl location;
     QIODevice *bodyIODevice = nullptr;
     Context *context;
-    EngineConnection *conn;
+    EngineRequest *engineRequest;
     quint16 status = Response::OK;
 };
 

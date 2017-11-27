@@ -41,7 +41,7 @@ static inline uint16_t notSlash(char *str, uint16_t length) {
 }
 
 uwsgiConnection::uwsgiConnection(wsgi_request *req, Cutelyst::Engine *engine)
-  : EngineConnection(engine)
+  : EngineRequest(engine)
   , request(req)
 {
     uint16_t pos = notSlash(req->path_info, req->path_info_len);

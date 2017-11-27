@@ -17,7 +17,7 @@
  */
 #include "engine_p.h"
 
-#include "engineconnection.h"
+#include "context_p.h"
 
 #include "common.h"
 #include "request_p.h"
@@ -99,13 +99,13 @@ void Engine::finalizeCookies(Context *c)
 
 bool Engine::finalizeHeaders(Context *c)
 {
-    EngineConnection *conn = c->response()->d_ptr->conn;
+    EngineRequest *conn = c->response()->d_ptr->engineRequest;
     return conn->finalizeHeaders(c);
 }
 
 void Engine::finalizeBody(Context *c)
 {
-    EngineConnection *conn = c->response()->d_ptr->conn;
+    EngineRequest *conn = c->response()->d_ptr->engineRequest;
     return conn->finalizeBody(c);
 }
 
@@ -204,7 +204,7 @@ quint64 Engine::time()
 qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
 {
     Q_UNUSED(engineData)
-    return c->response()->d_ptr->conn->write(data, len);
+    return c->response()->d_ptr->engineRequest->write(data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -361,11 +361,11 @@ Context *Engine::processRequest2(const EngineRequest &req)
     return d->app->handleRequest2(request);
 }
 
-Context *Engine::processRequest3(EngineConnection *conn)
+Context *Engine::processRequest(EngineRequest *req)
 {
     Q_D(Engine);
 
-    auto request = new Request(new RequestPrivate(conn));
+    auto request = new Request(new RequestPrivate(req));
     return d->app->handleRequest2(request);
 }
 
@@ -432,13 +432,13 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
 
 void Engine::finalize(Context *c)
 {
-    c->response()->d_ptr->conn->finalize(c);
+    c->response()->d_ptr->engineRequest->finalize(c);
 }
 
 bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
 {
     ResponsePrivate *priv = c->response()->d_ptr;
-    return priv->conn->webSocketHandshake(c, key, origin, protocol);
+    return priv->engineRequest->webSocketHandshake(c, key, origin, protocol);
 }
 
 bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
@@ -496,7 +496,7 @@ void Engine::processRequest(const QString &method,
 {
     Q_D(Engine);
 
-    EngineRequest req;
+    DummyRequest req(this, this);
     req.method = method;
     req.path = path;
     req.query = query;

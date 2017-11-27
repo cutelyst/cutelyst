@@ -1,5 +1,5 @@
 #include "coverageobject.h"
-#include "engineconnection.h"
+#include "enginerequest.h"
 
 #include <QTest>
 #include <QMetaObject>
@@ -11,10 +11,10 @@
 
 using namespace Cutelyst;
 
-class TestEngineConnection : public EngineConnection
+class TestEngineConnection : public EngineRequest
 {
 public:
-    TestEngineConnection(Engine *engine) : EngineConnection(engine) {}
+    TestEngineConnection(Engine *engine) : EngineRequest(engine) {}
 
 protected:
     virtual qint64 doWrite(const char *data, qint64 len) final;
@@ -109,7 +109,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     req.startOfRequest = QDateTime::currentMSecsSinceEpoch();
     req.body = bodyDevice;
 
-    delete processRequest3(&req);
+    delete processRequest(&req);
 
     ret = {
         {QStringLiteral("body"), req.m_responseData},

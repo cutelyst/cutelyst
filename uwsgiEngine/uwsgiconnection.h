@@ -20,7 +20,7 @@
 
 #include <QObject>
 
-#include <engineconnection.h>
+#include "Cutelyst/enginerequest.h"
 
 namespace Cutelyst {
 class Context;
@@ -29,7 +29,7 @@ class Headers;
 
 struct wsgi_request;
 
-class uwsgiConnection : public Cutelyst::EngineConnection
+class uwsgiConnection : public Cutelyst::EngineRequest
 {
 public:
     explicit uwsgiConnection(wsgi_request *req, Cutelyst::Engine *engine);

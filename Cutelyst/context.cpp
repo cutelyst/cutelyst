@@ -25,6 +25,7 @@
 #include "controller.h"
 #include "application.h"
 #include "stats.h"
+#include "enginerequest.h"
 
 #include "config.h"
 
@@ -35,6 +36,8 @@
 
 using namespace Cutelyst;
 
+
+
 Context::Context(ContextPrivate *priv) : d_ptr(priv)
 {
 }
@@ -44,7 +47,7 @@ Context::Context(Application *app) :
 {
     d_ptr->response = new Response(this, d_ptr->engine, app->defaultHeaders());
 
-    EngineRequest req;
+    DummyRequest req(app->engine(), this);
     req.body = new QBuffer(this);
     req.body->open(QBuffer::ReadWrite);
     req.requestPtr = nullptr;
@@ -413,7 +416,7 @@ QVariantMap Context::config() const
 void *Context::engineData()
 {
     Q_D(const Context);
-    return d->conn;
+    return d->engineRequest;
 }
 
 QString Context::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const

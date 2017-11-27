@@ -36,7 +36,8 @@ AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, Authenticat
     , m_store(store)
     , m_credential(credential)
 {
-
+    m_store->setParent(this);
+    m_credential->setParent(this);
 }
 
 AuthenticationRealm::~AuthenticationRealm()

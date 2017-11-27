@@ -33,6 +33,7 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Compone
 public:
     /*!
      * Constructs a new AuthenticationRealm object with the given parent.
+     * \note This class will take ownership of store and credential.
      */
     explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent = nullptr);
     virtual ~AuthenticationRealm();

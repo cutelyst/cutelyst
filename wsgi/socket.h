@@ -23,7 +23,7 @@
 #include <QLocalSocket>
 #include <QHostAddress>
 #include <Cutelyst/Headers>
-#include <Cutelyst/engineconnection.h>
+#include "Cutelyst/enginerequest.h"
 
 #include "cwsgiengine.h"
 
@@ -34,7 +34,7 @@ namespace CWSGI {
 class WSGI;
 
 class Protocol;
-class Socket : public Cutelyst::EngineConnection
+class Socket : public Cutelyst::EngineRequest
 {
     Q_GADGET
 public:

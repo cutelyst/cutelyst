@@ -27,7 +27,6 @@
 #include <QtCore/QUrl>
 #include <QtNetwork/QHostAddress>
 
-
 namespace Cutelyst {
 
 class Engine;
@@ -45,7 +44,7 @@ public:
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
-    RequestPrivate(EngineConnection *_conn) : conn(_conn) { }
+    RequestPrivate(EngineRequest *er) : engineRequest(er) { }
 
     inline void parseUrlQuery() const;
     inline void parseBody() const;
@@ -55,7 +54,7 @@ public:
     static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
     // Pointer to Engine data
-    EngineConnection *conn = nullptr;
+    EngineRequest *engineRequest = nullptr;
 
     // Engines don't need to touch this
     QStringList args;

@@ -17,7 +17,7 @@
  */
 #include "request_p.h"
 #include "engine.h"
-#include "engineconnection.h"
+#include "enginerequest.h"
 #include "common.h"
 #include "multipartformdataparser.h"
 #include "utils.h"
@@ -41,7 +41,7 @@ Request::~Request()
 QHostAddress Request::address() const
 {
     Q_D(const Request);
-    return d->conn->remoteAddress;
+    return d->engineRequest->remoteAddress;
 }
 
 QString Request::addressString() const
@@ -49,11 +49,11 @@ QString Request::addressString() const
     Q_D(const Request);
 
     bool ok;
-    quint32 data = d->conn->remoteAddress.toIPv4Address(&ok);
+    quint32 data = d->engineRequest->remoteAddress.toIPv4Address(&ok);
     if (ok) {
         return QHostAddress(data).toString();
     } else {
-        return d->conn->remoteAddress.toString();
+        return d->engineRequest->remoteAddress.toString();
     }
 }
 
@@ -73,9 +73,9 @@ QString Request::hostname() const
         }
     }
 
-    const QHostInfo ptr = QHostInfo::fromName(d->conn->remoteAddress.toString());
+    const QHostInfo ptr = QHostInfo::fromName(d->engineRequest->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
-        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->conn->remoteAddress;
+        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->engineRequest->remoteAddress;
         d->remoteHostname = QStringLiteral("");
         return ret;
     }
@@ -88,7 +88,7 @@ QString Request::hostname() const
 quint16 Request::port() const
 {
     Q_D(const Request);
-    return d->conn->remotePort;
+    return d->engineRequest->remotePort;
 }
 
 QUrl Request::uri() const
@@ -98,19 +98,19 @@ QUrl Request::uri() const
     QUrl uri = d->url;
     if (!(d->parserStatus & RequestPrivate::UrlParsed)) {
         // This is a hack just in case remote is not set
-        if (d->conn->serverAddress.isEmpty()) {
+        if (d->engineRequest->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
-            uri.setAuthority(d->conn->serverAddress);
+            uri.setAuthority(d->engineRequest->serverAddress);
         }
 
-        uri.setScheme(d->conn->isSecure ? QStringLiteral("https") : QStringLiteral("http"));
+        uri.setScheme(d->engineRequest->isSecure ? QStringLiteral("https") : QStringLiteral("http"));
 
         // if the path does not start with a slash it cleans the uri
-        uri.setPath(QLatin1Char('/') + d->conn->path);
+        uri.setPath(QLatin1Char('/') + d->engineRequest->path);
 
-        if (!d->conn->query.isEmpty()) {
-            uri.setQuery(QString::fromLatin1(d->conn->query));
+        if (!d->engineRequest->query.isEmpty()) {
+            uri.setQuery(QString::fromLatin1(d->engineRequest->query));
         }
 
         d->url = uri;
@@ -124,13 +124,13 @@ QString Request::base() const
     Q_D(const Request);
     QString base = d->base;
     if (!(d->parserStatus & RequestPrivate::BaseParsed)) {
-        base = d->conn->isSecure ? QStringLiteral("https://") : QStringLiteral("http://");
+        base = d->engineRequest->isSecure ? QStringLiteral("https://") : QStringLiteral("http://");
 
         // This is a hack just in case remote is not set
-        if (d->conn->serverAddress.isEmpty()) {
+        if (d->engineRequest->serverAddress.isEmpty()) {
             base.append(QHostInfo::localHostName());
         } else {
-            base.append(d->conn->serverAddress);
+            base.append(d->engineRequest->serverAddress);
         }
 
         // base always have a trailing slash
@@ -145,7 +145,7 @@ QString Request::base() const
 QString Request::path() const
 {
     Q_D(const Request);
-    return d->conn->path;
+    return d->engineRequest->path;
 }
 
 QString Request::match() const
@@ -187,13 +187,13 @@ void Request::setCaptures(const QStringList &captures)
 bool Request::secure() const
 {
     Q_D(const Request);
-    return d->conn->isSecure;
+    return d->engineRequest->isSecure;
 }
 
 QIODevice *Request::body() const
 {
     Q_D(const Request);
-    return d->conn->body;
+    return d->engineRequest->body;
 }
 
 QVariant Request::bodyData() const
@@ -280,37 +280,37 @@ QMap<QString, QString> Request::cookies() const
 Headers Request::headers() const
 {
     Q_D(const Request);
-    return d->conn->headers;
+    return d->engineRequest->headers;
 }
 
 QString Request::method() const
 {
     Q_D(const Request);
-    return d->conn->method;
+    return d->engineRequest->method;
 }
 
 bool Request::isPost() const
 {
     Q_D(const Request);
-    return d->conn->method == QStringLiteral("POST");
+    return d->engineRequest->method == QStringLiteral("POST");
 }
 
 bool Request::isGet() const
 {
     Q_D(const Request);
-    return d->conn->method == QStringLiteral("GET");
+    return d->engineRequest->method == QStringLiteral("GET");
 }
 
 QString Request::protocol() const
 {
     Q_D(const Request);
-    return d->conn->protocol;
+    return d->engineRequest->protocol;
 }
 
 QString Request::remoteUser() const
 {
     Q_D(const Request);
-    return d->conn->remoteUser;
+    return d->engineRequest->remoteUser;
 }
 
 QVector<Upload *> Request::uploads() const
@@ -380,25 +380,25 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
 Engine *Request::engine() const
 {
     Q_D(const Request);
-    return d->conn->engine;
+    return d->engineRequest->engine;
 }
 
 void *Request::engineData()
 {
     Q_D(Request);
-    return d->conn;
+    return d->engineRequest;
 }
 
 void RequestPrivate::parseUrlQuery() const
 {
     // TODO move this to the asignment of query
-    if (conn->query.size()) {
+    if (engineRequest->query.size()) {
         // Check for keywords (no = signs)
-        if (conn->query.indexOf('=') < 0) {
-            QByteArray aux = conn->query;
+        if (engineRequest->query.indexOf('=') < 0) {
+            QByteArray aux = engineRequest->query;
             queryKeywords = Utils::decodePercentEncoding(&aux);
         } else {
-            queryParam = parseUrlEncoded(conn->query);
+            queryParam = parseUrlEncoded(engineRequest->query);
         }
     }
     parserStatus |= RequestPrivate::QueryParsed;
@@ -406,35 +406,35 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    if (!conn->body) {
+    if (!engineRequest->body) {
         parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
-    bool sequencial = conn->body->isSequential();
-    qint64 posOrig = conn->body->pos();
+    bool sequencial = engineRequest->body->isSequential();
+    qint64 posOrig = engineRequest->body->pos();
     if (sequencial && posOrig) {
         qCWarning(CUTELYST_REQUEST) << "Can not parse sequential post body out of beginning";
         parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
-    const QString contentType = conn->headers.contentType();
+    const QString contentType = engineRequest->headers.contentType();
     if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
-            conn->body->seek(0);
+            engineRequest->body->seek(0);
         }
 
-        bodyParam = parseUrlEncoded(conn->body->readLine());
+        bodyParam = parseUrlEncoded(engineRequest->body->readLine());
         bodyData = QVariant::fromValue(bodyParam);
     } else if (contentType == QLatin1String("multipart/form-data")) {
         if (posOrig) {
-            conn->body->seek(0);
+            engineRequest->body->seek(0);
         }
 
-        uploads = MultiPartFormDataParser::parse(conn->body, conn->headers.header(QStringLiteral("CONTENT_TYPE")));
+        uploads = MultiPartFormDataParser::parse(engineRequest->body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
         auto it = uploads.crbegin();
         while (it != uploads.crend()) {
             Upload *upload = *it;
@@ -444,14 +444,14 @@ void RequestPrivate::parseBody() const
         bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
         if (posOrig) {
-            conn->body->seek(0);
+            engineRequest->body->seek(0);
         }
 
-        bodyData = QJsonDocument::fromJson(conn->body->readAll());
+        bodyData = QJsonDocument::fromJson(engineRequest->body->readAll());
     }
 
     if (!sequencial) {
-        conn->body->seek(posOrig);
+        engineRequest->body->seek(posOrig);
     }
 
     parserStatus |= RequestPrivate::BodyParsed;
@@ -527,7 +527,7 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 void RequestPrivate::parseCookies() const
 {
     std::vector<std::pair<QString, QString> > ret;
-    const QString cookieString = conn->headers.header(QStringLiteral("COOKIE"));
+    const QString cookieString = engineRequest->headers.header(QStringLiteral("COOKIE"));
     int position = 0;
     const int length = cookieString.length();
     while (position < length) {

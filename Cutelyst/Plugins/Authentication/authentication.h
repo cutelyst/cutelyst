@@ -62,11 +62,13 @@ public:
 
     /*!
      * Adds the \p realm with \p name.
+     * \note This class will take ownership of realm.
      */
     void addRealm(AuthenticationRealm *realm, const QString &name = QLatin1String(defaultRealm));
 
     /*!
-     * Adds the a new AuthenticationRealm using \p store, \p credential and \p name to build it.
+     * Creates a new AuthenticationRealm using \p store, \p credential and \p name to build it.
+     * \note This class will take ownership of realm, store and credential.
      */
     void addRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm));
 

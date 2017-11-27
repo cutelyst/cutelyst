@@ -106,7 +106,7 @@ void uWSGI::processRequest(wsgi_request *req)
     // Request->uri() from it, but we need to run a performance test
     uwsgiConnection request(req, this);
 
-    delete Engine::processRequest3(&request);
+    delete Engine::processRequest(&request);
 }
 
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)

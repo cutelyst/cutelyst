@@ -22,6 +22,7 @@
 #include "plugin.h"
 #include "response.h"
 #include "request_p.h"
+#include "enginerequest.h"
 
 #include <QVariantHash>
 #include <QStack>
@@ -53,7 +54,7 @@ public:
     Dispatcher *dispatcher;
 
     // Pointer to Engine data
-    EngineConnection *conn;
+    EngineRequest *engineRequest;
 
     Request *request;
     Response *response;
@@ -62,6 +63,23 @@ public:
     Stats *stats = nullptr;
     bool detached = false;
     bool state = false;
+};
+
+class DummyRequest : public QObject, public EngineRequest
+{
+    Q_OBJECT
+public:
+    DummyRequest(Engine *engine, QObject *parent)
+        : QObject(parent), EngineRequest(engine) {
+
+    }
+
+    virtual qint64 doWrite(const char *, qint64) { return -1; }
+
+    /*!
+     * Reimplement this to write the headers back to the client
+     */
+    virtual bool writeHeaders(quint16 , const Headers &) { return false; }
 };
 
 }

@@ -26,39 +26,9 @@
 
 namespace Cutelyst {
 
-struct EngineRequest {
-    /** The method used (GET, POST...) */
-    QString method;
-    /** The path requested by the user agent '/index' */
-    QString path;
-    /** The query string requested by the user agent 'foo=bar&baz' */
-    QByteArray query;
-    /** The protocol requested by the user agent 'HTTP1/1' */
-    QString protocol;
-    /** The server address which the server is listening to,
-     *  usually the 'Host' header but if that's not present should be filled with the server address */
-    QString serverAddress;
-    /** The remote/client address */
-    QHostAddress remoteAddress;
-    /** The remote user name set by a front web server */
-    QString remoteUser;
-    /** The request headers */
-    Headers headers;
-    /** The timestamp of the start of headers */
-    quint64 startOfRequest;
-    /** The QIODevice containing the body (if any) of the request */
-    QIODevice *body;
-    /** The internal pointer of the request, to be used for mapping this request to the real request */
-    void *requestPtr;
-    /** The remote/client port */
-    quint16 remotePort;
-    /** If the connection is secure HTTPS */
-    bool isSecure;
-};
-
 class Application;
 class Context;
-class EngineConnection;
+class EngineRequest;
 class EnginePrivate;
 class CUTELYST_LIBRARY Engine : public QObject
 {
@@ -131,7 +101,7 @@ public:
      */
     virtual quint64 time();
 
-    Context *processRequest3(EngineConnection *conn);
+    Context *processRequest(EngineRequest *request);
 
 protected:
     /**
