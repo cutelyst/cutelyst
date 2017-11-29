@@ -161,6 +161,20 @@ public:
     void setJsonBody(const QJsonDocument &documment);
 
     /**
+     * Sets a QJsonObject on a QJsonDocument as the response body,
+     * using toJson(QJsonDocument::Compact) output and setting
+     * content-type to application/json.
+     */
+    void setJsonBody(const QJsonObject &object);
+
+    /**
+     * Sets a QJsonArray on a QJsonDocument as the response body,
+     * using toJson(QJsonDocument::Compact) output and setting
+     * content-type to application/json.
+     */
+    void setJsonBody(const QJsonArray &array);
+
+    /**
      * Short for headers().contentEncoding();
      */
     QString contentEncoding() const;
