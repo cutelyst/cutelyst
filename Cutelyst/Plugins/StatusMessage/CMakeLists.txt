@@ -31,3 +31,9 @@ install(FILES ${plugin_statusmessage_HEADERS}
     DESTINATION include/cutelyst-qt5/Cutelyst/Plugins
     COMPONENT StatusMessage
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5StatusMessage.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StatusMessage.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StatusMessage.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

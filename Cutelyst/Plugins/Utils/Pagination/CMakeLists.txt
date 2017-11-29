@@ -30,3 +30,9 @@ install(FILES ${plugin_pagination_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
         COMPONENT Utils::Pagination
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsPagination.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsPagination.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsPagination.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

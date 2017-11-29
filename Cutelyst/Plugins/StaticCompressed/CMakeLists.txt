@@ -48,3 +48,10 @@ install(FILES ${plugin_staticcompressed_HEADERS}
     DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/StaticCompressed
     COMPONENT StaticCompressed
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5StaticCompressed.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StaticCompressed.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StaticCompressed.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+

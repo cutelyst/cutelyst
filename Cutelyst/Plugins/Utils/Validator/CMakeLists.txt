@@ -191,3 +191,9 @@ install(FILES ${plugin_validator_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
         COMPONENT Utils::Validator
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsValidator.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsValidator.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

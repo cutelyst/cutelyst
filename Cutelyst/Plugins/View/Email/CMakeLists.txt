@@ -37,3 +37,9 @@ install(FILES ${plugin_view_email_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/Email
         COMPONENT View::Email
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewEmail.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewEmail.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewEmail.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

@@ -46,3 +46,9 @@ install(FILES ${plugin_authentication_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Authentication
         COMPONENT Authentication
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Authentication.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Authentication.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Authentication.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

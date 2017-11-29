@@ -35,3 +35,9 @@ install(FILES ${plugin_view_clearsilver_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/ClearSilver
         COMPONENT View::ClearSilver
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewClearSilver.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewClearSilver.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewClearSilver.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

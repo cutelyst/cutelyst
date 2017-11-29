@@ -32,3 +32,9 @@ install(FILES ${plugin_memcachedsessionstore_HEADERS}
     DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/MemcachedSessionStore
     COMPONENT MemcachedSessionStore
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5MemcachedSessionStore.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5MemcachedSessionStore.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

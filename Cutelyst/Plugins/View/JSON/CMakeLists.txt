@@ -29,3 +29,9 @@ install(FILES ${plugin_view_json_HEADERS}
         DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/JSON
         COMPONENT View::JSON
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewJSON.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewJSON.pc
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewJSON.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
