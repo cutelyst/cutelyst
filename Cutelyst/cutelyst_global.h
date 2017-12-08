@@ -64,6 +64,11 @@
 #else
 #  define CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT Q_DECL_IMPORT
 #endif
+#if defined(cutelyst_qt5_plugin_csrfprotection_EXPORTS)
+#  define CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT Q_DECL_IMPORT
+#endif
 #if defined(cutelyst_qt5_plugin_utils_sql_EXPORTS)
 #  define CUTELYST_PLUGIN_UTILS_SQL_EXPORT Q_DECL_EXPORT
 #else

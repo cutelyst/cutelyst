@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst-qt5
+
+Name: Cutelyst Qt5 CSRF Protection Plugin
+Description: Cutelyst CSRF Protection plugin
+Version: @PROJECT_VERSION@
+Requires: Qt5Core CutelystQt5Core CutelystQt5Session
+Libs: -L${libdir} -lcutelyst_qt5_plugin_csrfprotection
+Cflags: -I${includedir}/Cutelyst -I${includedir}
