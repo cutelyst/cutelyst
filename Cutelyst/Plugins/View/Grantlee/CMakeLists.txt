@@ -35,10 +35,16 @@ install(FILES ${plugin_view_grantlee_HEADERS}
         COMPONENT View::Grantlee
 )
 
-# urifor
+# urifor and csrf_token
+if (PLUGIN_CSRFPROTECTION)
+add_definitions(-DPLUGIN_CSRFPROTECTION_ENABLED)
+endif (PLUGIN_CSRFPROTECTION)
+
 add_library(grantlee_cutelyst MODULE
     urifor.cpp
     urifor.h
+    csrf.cpp
+    csrf.h
     cutelystgrantlee.cpp
     cutelystgrantlee.h
 )
@@ -48,6 +54,11 @@ target_link_libraries(grantlee_cutelyst
     PRIVATE Grantlee5::Templates
     PRIVATE cutelyst-qt5
 )
+if (PLUGIN_CSRFPROTECTION)
+    target_link_libraries(grantlee_cutelyst
+        PRIVATE cutelyst_qt5_plugin_csrfprotection
+    )
+endif (PLUGIN_CSRFPROTECTION)
 grantlee_adjust_plugin_name(grantlee_cutelyst)
 
 install(TARGETS grantlee_cutelyst EXPORT CutelystQt5Targets

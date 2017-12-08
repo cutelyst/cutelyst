@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,34 +15,33 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "cutelystgrantlee.h"
+#ifndef CSRF_H
+#define CSRF_H
 
-#include "urifor.h"
-#include "csrf.h"
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-CutelystGrantlee::CutelystGrantlee(QObject *parent) : QObject(parent)
+#include <grantlee/filter.h>
+#include <grantlee/safestring.h>
+#include <grantlee/util.h>
+#include <grantlee/node.h>
+
+class CSRFTag : public Grantlee::AbstractNodeFactory
 {
-}
+    Grantlee::Node *getNode(const QString &tagContent, Grantlee::Parser *p) const override;
+};
 
-QHash<QString, Grantlee::AbstractNodeFactory *> CutelystGrantlee::nodeFactories(const QString &name)
+class CSRF : public Grantlee::Node
 {
-    Q_UNUSED(name)
+    Q_OBJECT
+public:
+    explicit CSRF(Grantlee::Parser *parser = nullptr);
 
-    QHash<QString, Grantlee::AbstractNodeFactory *> ret;
+    void render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const override;
 
-    ret.insert(QStringLiteral("c_uri_for"), new UriForTag());
-    ret.insert(QStringLiteral("c_csrf_token"), new CSRFTag());
+private:
+    mutable QString m_cutelystContext = QStringLiteral("c");
+};
 
-    return ret;
-}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-QHash<QString, Grantlee::Filter *> CutelystGrantlee::filters(const QString &name)
-{
-    Q_UNUSED(name)
-
-    QHash<QString, Grantlee::Filter *> ret;
-
-    return ret;
-}
-
-#include "moc_cutelystgrantlee.cpp"
+#endif // CSRF_H
