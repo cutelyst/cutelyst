@@ -64,6 +64,7 @@ include(CMakeDependentOption)
 option(PLUGIN_MEMCACHED "Enables the memcached plugin")
 cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" OFF)
 option(PLUGIN_STATICCOMPRESSED "Enables the StaticCompressed plugin")
+option(PLUGIN_CSRFPROTECTION "Enables the CSRF protection plugin")
 
 # NONE
 
