@@ -137,10 +137,10 @@ void CSRFProtection::setErrorMsgStashKey(const QString &keyName)
     }
 }
 
-void CSRFProtection::setExemptedNamespaces(const QStringList &namespaces)
+void CSRFProtection::setIgnoredNamespaces(const QStringList &namespaces)
 {
     Q_D(CSRFProtection);
-    d->exemptedNamespaces = namespaces;
+    d->ignoredNamespaces = namespaces;
 }
 
 void CSRFProtection::setUseSessions(bool useSessions)
@@ -468,14 +468,14 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
         return;
     }
 
-    if (c->action()->attributes().contains(QStringLiteral("CSRFExempt"))) {
-        qCDebug(C_CSRFPROTECTION, "Action \"%s::%s\" has been exempted from CSRF protection.", qPrintable(c->action()->className()), qPrintable(c->action()->objectName()));
+    if (c->action()->attributes().contains(QStringLiteral("CSRFIgnore"))) {
+        qCDebug(C_CSRFPROTECTION, "Action \"%s::%s\" is ignored by the CSRF protection.", qPrintable(c->action()->className()), qPrintable(c->action()->objectName()));
         return;
     }
 
-    if (csrf->d_ptr->exemptedNamespaces.contains(c->action()->ns())) {
+    if (csrf->d_ptr->ignoredNamespaces.contains(c->action()->ns())) {
         if (!c->action()->attributes().contains(QStringLiteral("CSRFRequire"))) {
-            qCDebug(C_CSRFPROTECTION, "Namespace \"%s\" has been exempted from CSRF protection.", qPrintable(c->action()->ns()));
+            qCDebug(C_CSRFPROTECTION, "Namespace \"%s\" is ignored by the CSRF protection.", qPrintable(c->action()->ns()));
             return;
         }
     }
