@@ -134,7 +134,7 @@ class CSRFProtectionPrivate;
  * in the session is salted with another random value. The same secret with a different salt has than to be sent
  * to the application either via a hidden form field or via a HTTP request header.
  *
- * To geht the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Grantlee templates. If you
+ * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Grantlee templates. If you
  * are not using Grantlee or if you do not use a form but AJAX, you can use CSRFProtection::getToken() to place the
  * token somewhere in your DOM tree so that you can read it with JavaScript.
  *
@@ -308,7 +308,7 @@ public:
     static QString getTokenFormField(Context *c);
 
 protected:
-    const QScopedPointer<CSRFProtectionPrivate> d_ptr;
+    CSRFProtectionPrivate *d_ptr;
 
     virtual bool setup(Application *app) override;
 };

@@ -69,7 +69,7 @@ CSRFProtection::CSRFProtection(Application *parent) :
 
 CSRFProtection::~CSRFProtection()
 {
-
+    delete d_ptr;
 }
 
 bool CSRFProtection::setup(Application *app)
