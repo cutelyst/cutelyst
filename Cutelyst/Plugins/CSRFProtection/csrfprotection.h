@@ -85,7 +85,7 @@ class CSRFProtectionPrivate;
  * }
  * @endcode
  *
- * In your Grantlee template you should than use the <CODE>{% c_csrf_token %}</CODE> tag in your forms
+ * In your Grantlee template you should then use the <CODE>{% c_csrf_token %}</CODE> tag in your forms
  * to add a hidden input field that contains the CSRF protection token.
  *
  * @code{.html}
@@ -132,7 +132,7 @@ class CSRFProtectionPrivate;
  * If you are using ajax to submit form requests or if you use AJAX without a HTML form, you have to provide the
  * CSRF token too. If you are using the normal way by setting a cookie, you can read the CSRF token from that cookie.
  * If you use the session to store the token, you have to include the token somewhere into the DOM tree from where
- * you can read it. You can than add the extracted token to the POST data of every POST request or you can can set
+ * you can read it. You can then add the extracted token to the POST data of every POST request or you can can set
  * a custom X-CSRFToken header to the value of the CSRF token. The latter method is often easier, because many
  * JavaScript frameworks provide hooks that allow headers to be set on every request.
  *
@@ -141,7 +141,7 @@ class CSRFProtectionPrivate;
  *
  * On every request, a secret token is set that is stored in a cookie or in the user session and has to be send
  * back to the application when performing actions on unsafe methods like POST. The token stored in the cookie or
- * in the session is salted with another random value. The same secret with a different salt has than to be sent
+ * in the session is salted with another random value. The same secret with a different salt has then to be sent
  * to the application either via a hidden form field or via a HTTP request header.
  *
  * To get the form field you can use the <CODE>{% c_csrf_token %}</CODE> tag in your Grantlee templates. If you
