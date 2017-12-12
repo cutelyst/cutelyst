@@ -55,20 +55,20 @@ class CSRFProtectionPrivate;
  *     // other initialization stuff
  *
  *     auto csrfProtect = new CSRFProtection(this);
- *     // optional you can exempt complete namespaces from the protection
- *     csrfProtect->setExemptedNamespaces({QStringLiteral("foo")});
+ *     // optionally you can ignore complete namespaces from the protection
+ *     csrfProtect->setIgnoredNamespaces({QStringLiteral("foo")});
  *
  *     // more initialization stuff
  * }
  * @endcode
  *
- * To exempt an action from CSRF protection, add <CODE>:CSRFExempt</CODE> to the attributes.
+ * To ignore an action from CSRF protection, add <CODE>:CSRFIgnore</CODE> to the attributes.
  * @code{.cpp}
- * C_ATTR(index, :Path :AutoArgs :CSRFExempt)
+ * C_ATTR(index, :Path :AutoArgs :CSRFIgnore)
  * void index(Context *c);
  * @endcode
  *
- * If you have optionally exempted complete namespaces from the CSRF protection, you can require
+ * If you have optionally ignored complete namespaces from the CSRF protection, you can require
  * the protection for single namespace members by adding <CODE>:CSRFRequire</CODE> to the attributes.
  *
  * @code{.cpp}
@@ -136,7 +136,6 @@ class CSRFProtectionPrivate;
  * a custom X-CSRFToken header to the value of the CSRF token. The latter method is often easier, because many
  * JavaScript frameworks provide hooks that allow headers to be set on every request.
  *
- *
  * <H3>How it works</H3>
  *
  * On every request, a secret token is set that is stored in a cookie or in the user session and has to be send
@@ -172,8 +171,8 @@ class CSRFProtectionPrivate;
  *
  * Some browsers (specifically Internet Explorer) can disallow the use of persistent cookies or can have the indexes
  * to the cookie jar corrupted on disk, thereby causing CSRF protection checks to (sometimes intermittently) fail.
- * Change this setting to @c 0 to use session-based CSRF cookies, which keep the cookies in-memory instead of on persistent
- * storage.
+ * Change this setting to @c 0 to use session-based CSRF cookies, which keep the cookies in-memory instead of on
+ * persistent storage.
  * @endparblock
  *
  * @par cookie_domain
@@ -258,11 +257,11 @@ public:
     void setErrorMsgStashKey(const QString &keyName);
 
     /**
-     * Sets a list of namespaces that should be completely exempted from CSRF protection. If you
+     * Sets a list of namespaces that should be completely ignored by the CSRF protection. If you
      * have single methods in your namespaces that should still be protected, use the <CODE>:CSRFRequire</CODE>
      * attribute on this methods.
      */
-    void setExemptedNamespaces(const QStringList &namespaces);
+    void setIgnoredNamespaces(const QStringList &namespaces);
 
     /**
      * If this is set to @c true, the secret token will not be safed in a cookie but in the user's session.
@@ -308,7 +307,7 @@ public:
 
     /**
      * Returns HTML code for a hidden input field that contains the current token and has the name
-     * set by setFormInputName(). This method is also used by the Grantlee tag <CODE>{% c_csrf_token %}</CODE>
+     * set by setFormFieldName(). This method is also used by the Grantlee tag <CODE>{% c_csrf_token %}</CODE>
      *
      * @b Example output
      * @code{.html}
