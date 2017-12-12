@@ -127,6 +127,16 @@ class CSRFProtectionPrivate;
  * };
  * @endcode
  *
+ * <H4>AJAX and CSRF protection</H4>
+ *
+ * If you are using ajax to submit form requests or if you use AJAX without a HTML form, you have to provide the
+ * CSRF token too. If you are using the normal way by setting a cookie, you can read the CSRF token from that cookie.
+ * If you use the session to store the token, you have to include the token somewhere into the DOM tree from where
+ * you can read it. You can than add the extracted token to the POST data of every POST request or you can can set
+ * a custom X-CSRFToken header to the value of the CSRF token. The latter method is often easier, because many
+ * JavaScript frameworks provide hooks that allow headers to be set on every request.
+ *
+ *
  * <H3>How it works</H3>
  *
  * On every request, a secret token is set that is stored in a cookie or in the user session and has to be send
@@ -287,7 +297,7 @@ public:
 
     /**
      * The name of the request header used for CSRF authentication. The header can contain the token if you don't
-     * have a input form on your protected site.
+     * have a input form on your protected site. The default value is @a "X-CSRFTOKEN".
      */
     void setHeaderName(const QString &headerName);
 
