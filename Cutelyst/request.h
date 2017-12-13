@@ -212,7 +212,7 @@ public:
     QVariantMap bodyParametersVariant() const;
 
     /**
-     * Returns a QMultiHash of body (POST) parameters
+     * Returns a Map of body (POST) parameters when content type is application/x-www-form-urlencoded
      */
     ParamsMultiMap bodyParameters() const;
 
@@ -383,7 +383,7 @@ public:
     QString remoteUser() const;
 
     /**
-     * Returns a vector containing uploads
+     * Returns a vector containing uploads as provided by a multipart/form-data content type
      */
     QVector<Upload *> uploads() const;
 
