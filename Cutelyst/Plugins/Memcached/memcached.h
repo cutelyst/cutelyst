@@ -30,9 +30,9 @@ class Context;
 class MemcachedPrivate;
 
 /**
- * @brief Cutelyst Memcached plugin.
+ * @brief %Cutelyst %Memcached plugin.
  *
- * The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a
+ * The %Memcached plugin for %Cutelyst can be used to store, retrieve, delete and modify data on a
  * <A HREF="https://www.memcached.org/">memcached</A> general-purpose distributed memory caching system.
  * It uses <A HREF="http://docs.libmemcached.org">libmemcached</A> to connect to a pool of memcached servers
  * and to perform the caching operations. In order to build this plugin, the libmemcached development and header
@@ -44,9 +44,9 @@ class MemcachedPrivate;
  * serialization. The requirement to use them is that the types to store and get provide stream operators for
  * QDataStream.
  *
- * @par Configuration
- * @parblock
- * The Memcached plugin can be configured in the cutelyst configuration file in the @a Cutelyst_Memcached_Plugin section.
+ * <H3>Configuration</h3>
+
+ * The %Memcached plugin can be configured in the cutelyst configuration file in the @c Cutelyst_Memcached_Plugin section.
  * It uses the same configuration strings as <A HREF="http://docs.libmemcached.org/libmemcached_configuration.html">libmemcached</A>
  * but in lowercase and without the dashes in front and for consistence @a - replaced by @a _ . So @c --BINARY-PROTOCOL will be
  * @c binary_protocol. To add servers and/or sockets use the @a servers configuration key. Servers can be added with name, port and
@@ -60,14 +60,13 @@ class MemcachedPrivate;
  * @li @a encryption_key - string value, if set and not empty, AES encryption will be enabled (default: empty)
  * @li @a sasl_user - string value, if set and not empty, SASL authentication will be used (default: empty)
  * @li @a sasl_password - string value, if set and not empty, SASL authentication will be used (default: empty)
- * @endparblock
  *
  * @note If you want to use non-ASCII key names you have to enable the binary protocol.
  *
  * To set default values directly in your application, use setDefaultConfig(). Configuration values that can not be found
  * in the Cutelyst configuration file will be looked up for default values in that QVariantMap.
  *
- * @par Configuration example
+ * <H4>Configuration example</h4>
  *
  * @code{.ini}
  * [Cutelyst_Memcached_Plugin]
@@ -76,15 +75,16 @@ class MemcachedPrivate;
  * namespace=tritratrullala
  * @endcode
  *
- * @par Expiration times
+ * <H3>Expiration times</H3>
+ *
  * Expiration times are set in seconds. If the value is bigger than 30 days, it is interpreted as a unix timestamp.
  *
- * @par Logging and return types
+ * <H3>Logging and return types</H3>
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All methods provide
  * the possibility to specify a pointer to an MemcachedReturnType variable that can provide further information
  * about occured errors if methods return @c false or empty results.
  *
- * @par Usage example
+ * <H3>Usage example</H3>
  *
  * @code{.cpp}
  * #include <Cutelyst/Plugins/Memcached/Memcached>
@@ -118,9 +118,10 @@ class MemcachedPrivate;
  * }
  * @endcode
  *
- * @par Build requirements
+ * <H3>Build requirements</H3>
+ *
  * To build this plugin you need the development and header files for <A HREF="http://libmemcached.org">libmemcached</A>
- * and run cmake with @c -DPLUGIN_MEMCACHED=On.
+ * and run cmake with <CODE>-DPLUGIN_MEMCACHED:BOOL=ON</CODE>.
  *
  * @since Cutelyst 1.11.0
  */
