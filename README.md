@@ -27,6 +27,8 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
    * Authorization with RoleACL
    * StatusMessage
    * Validator (to validate user input)
+   * CSRF protection
+   * Memcached
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
@@ -58,7 +60,7 @@ Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutely
 ## OPTIONAL
 
   * uWSGI - to receive and parse protocols requests (>= 1.9 recommended)
-  
+
 ## LICENSE
 
 The library is under the LGPLv2+ and public header files, documentation and
