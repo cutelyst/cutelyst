@@ -521,7 +521,7 @@ int main(int argc, char *argv[])
         QDir projectDir;
         if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
             std::cerr << "Error: failed to find project" << std::endl;
-            return false;
+            return 1;
         }
         wsgi.setChdir2(projectDir.absolutePath());
 
