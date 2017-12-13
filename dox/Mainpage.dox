@@ -43,13 +43,14 @@ namespace Cutelyst
       - View
     </td><td>
       - Authentication
+      - CSRFProtection
       - Memcached
       - MemcachedSessionStore
+      - Pagination
       - Session
       - StaticSimple
       - StaticCompressed
       - StatusMessage
-      - Pagination
       - Validator
     </td><td>
       - ClearSilver
