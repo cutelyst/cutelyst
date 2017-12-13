@@ -1,6 +1,6 @@
 find_package(PkgConfig QUIET)
 if (PkgConfig_FOUND)
-    pkg_search_module(MEMCACHED QUIET libmemcached)
+    pkg_search_module(MEMCACHED QUIET libmemcached>=1.0.10)
 endif (PkgConfig_FOUND)
 
 if (MEMCACHED_FOUND)
