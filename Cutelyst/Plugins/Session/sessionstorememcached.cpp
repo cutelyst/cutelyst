@@ -30,7 +30,7 @@ Q_LOGGING_CATEGORY(C_SESSION_MEMCACHED, "cutelyst.plugin.sessionmemcached")
 #define SESSION_STORE_MEMCD_SAVE "__session_store_memcd_save"
 #define SESSION_STORE_MEMCD_DATA "__session_store_memcd_data"
 
-static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::__cxx11::string &config);
+static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const std::string &config);
 
 SessionStoreMemcached::SessionStoreMemcached(QObject *parent) :
     SessionStore(parent), d_ptr(new SessionStoreMemcachedPrivate)
