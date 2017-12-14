@@ -84,6 +84,8 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
                     data.active = false;
 
                     QTimerEvent event(it.key());
+                    // Single shot timers were crashing here, with suposedly invalid pointers
+                    // thus a regular timer is being registered
                     QCoreApplication::sendEvent(data.object, &event);
                     result = true;
 

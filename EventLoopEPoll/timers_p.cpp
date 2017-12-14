@@ -179,7 +179,8 @@ void calculateNextTimeout(TimerInfo* info, const struct timeval& now, struct tim
 
 void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::TimerType type, QObject* object)
 {
-    Q_ASSERT(interval > 0);
+    // Sigle shot timers were crashing, and it seems it's fine to create a 0 interval timer
+//    Q_ASSERT(interval > 0);
 
     int fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     if (Q_LIKELY(fd != -1)) {

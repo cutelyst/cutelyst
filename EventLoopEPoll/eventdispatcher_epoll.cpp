@@ -82,12 +82,12 @@ void EventDispatcherEPoll::registerTimer(
 #endif
 
     Q_D(EventDispatcherEPoll);
-    if (interval) {
+//    if (interval) {
         d->registerTimer(timerId, interval, timerType, object);
-    }
-    else {
-        d->registerZeroTimer(timerId, object);
-    }
+//    }
+//    else {
+//        d->registerZeroTimer(timerId, object);
+//    }
 }
 
 bool EventDispatcherEPoll::unregisterTimer(int timerId)
