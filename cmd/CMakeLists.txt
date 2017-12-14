@@ -20,4 +20,4 @@ target_link_libraries(cutelyst-skell
 )
 
 set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst)
-install(TARGETS cutelyst-skell DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS cutelyst-skell DESTINATION ${INSTALL_BIN_DIR})
