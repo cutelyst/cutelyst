@@ -39,6 +39,8 @@ public:
     virtual void interrupt(void);
     virtual void flush(void);
 
+    void postFork();
+
 private:
     Q_DISABLE_COPY(EventDispatcherEPoll)
     Q_DECLARE_PRIVATE(EventDispatcherEPoll)

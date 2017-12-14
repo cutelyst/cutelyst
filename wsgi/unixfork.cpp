@@ -18,6 +18,7 @@
 #include "unixfork.h"
 
 #include "wsgi.h"
+#include "EventLoopEPoll/eventdispatcher_epoll.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -37,6 +38,7 @@
 
 #include <QCoreApplication>
 #include <QSocketNotifier>
+#include <QAbstractEventDispatcher>
 #include <QTimer>
 #include <QMutex>
 #include <QThread>
@@ -580,7 +582,7 @@ void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
 
 int UnixFork::setupUnixSignalHandlers()
 {
-    setupSocketPair(false);
+    setupSocketPair(false, true);
 
 //    struct sigaction hup;
 //    hup.sa_handler = UnixFork::signalHandler;
@@ -628,14 +630,14 @@ int UnixFork::setupUnixSignalHandlers()
     return 0;
 }
 
-void UnixFork::setupSocketPair(bool closeSignalsFD)
+void UnixFork::setupSocketPair(bool closeSignalsFD, bool createPair)
 {
     if (closeSignalsFD) {
         close(signalsFd[0]);
         close(signalsFd[1]);
     }
 
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, signalsFd)) {
+    if (createPair && ::socketpair(AF_UNIX, SOCK_STREAM, 0, signalsFd)) {
         qFatal("Couldn't create SIGNALS socketpair");
     }
     delete m_signalNotifier;
@@ -671,11 +673,19 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
         return false;
     }
 
+    delete m_signalNotifier;
+    m_signalNotifier = nullptr;
+
     qint64 childPID = fork();
 
     if(childPID >= 0) {
         if(childPID == 0) {
-            setupSocketPair(true);
+            auto eventDispatcher = qobject_cast<EventDispatcherEPoll*>(QAbstractEventDispatcher::instance());
+            if (eventDispatcher) {
+                eventDispatcher->postFork();
+            }
+
+            setupSocketPair(true, true);
 
             m_child = true;
             postFork(worker.id);
@@ -683,6 +693,8 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
             int ret = qApp->exec();
             _exit(ret);
         } else {
+            setupSocketPair(false, false);
+
             if (respawn) {
                 std::cout << "Respawned WSGI worker " << worker.id << " (new pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
             } else {

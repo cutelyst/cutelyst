@@ -10,6 +10,23 @@
 EventDispatcherEPollPrivate::EventDispatcherEPollPrivate(EventDispatcherEPoll* const q)
     : q_ptr(q)
 {
+    createEpoll();
+}
+
+EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate(void)
+{
+    close(m_event_fd);
+    close(m_epoll_fd);
+
+    auto it = m_handles.constBegin();
+    while (it != m_handles.constEnd()) {
+        delete it.value();
+        ++it;
+    }
+}
+
+void EventDispatcherEPollPrivate::createEpoll()
+{
     m_epoll_fd = epoll_create1(EPOLL_CLOEXEC);
     if (Q_UNLIKELY(-1 == m_epoll_fd)) {
         qErrnoWarning("epoll_create1() failed");
@@ -27,18 +44,6 @@ EventDispatcherEPollPrivate::EventDispatcherEPollPrivate(EventDispatcherEPoll* c
     e.data.fd = m_event_fd;
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
-    }
-}
-
-EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate(void)
-{
-    close(m_event_fd);
-    close(m_epoll_fd);
-
-    auto it = m_handles.constBegin();
-    while (it != m_handles.constEnd()) {
-        delete it.value();
-        ++it;
     }
 }
 

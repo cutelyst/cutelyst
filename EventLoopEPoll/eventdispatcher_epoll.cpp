@@ -160,4 +160,10 @@ void EventDispatcherEPoll::flush(void)
 {
 }
 
+void EventDispatcherEPoll::postFork()
+{
+    Q_D(EventDispatcherEPoll);
+    d->createEpoll();
+}
+
 #include "moc_eventdispatcher_epoll.cpp"

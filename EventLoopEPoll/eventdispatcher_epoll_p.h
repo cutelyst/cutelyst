@@ -51,6 +51,7 @@ class Q_DECL_HIDDEN EventDispatcherEPollPrivate {
 public:
     EventDispatcherEPollPrivate(EventDispatcherEPoll* const q);
     ~EventDispatcherEPollPrivate(void);
+    void createEpoll();
     bool processEvents(QEventLoop::ProcessEventsFlags flags);
     void registerSocketNotifier(QSocketNotifier* notifier);
     void unregisterSocketNotifier(QSocketNotifier* notifier);

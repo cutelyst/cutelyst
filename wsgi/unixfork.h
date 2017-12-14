@@ -79,7 +79,7 @@ public:
 
 private:
     int setupUnixSignalHandlers();
-    void setupSocketPair(bool closeSignalsFD);
+    void setupSocketPair(bool closeSignalsFD, bool createPair);
     bool createChild(const Worker &worker, bool respawn);
     static void signalHandler(int signal);
     void setupCheckChildTimer();
