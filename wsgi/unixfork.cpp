@@ -680,10 +680,7 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
 
     if(childPID >= 0) {
         if(childPID == 0) {
-            auto eventDispatcher = qobject_cast<EventDispatcherEPoll*>(QAbstractEventDispatcher::instance());
-            if (eventDispatcher) {
-                eventDispatcher->postFork();
-            }
+            QAbstractEventDispatcher::instance()->flush();
 
             setupSocketPair(true, true);
 

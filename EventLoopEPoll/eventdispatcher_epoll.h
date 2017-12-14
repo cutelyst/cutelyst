@@ -14,32 +14,30 @@ class EventDispatcherEPollPrivate;
 class CUTELYST_EVENTLOOP_EPOLL_EXPORT EventDispatcherEPoll : public QAbstractEventDispatcher {
     Q_OBJECT
 public:
-    explicit EventDispatcherEPoll(QObject* parent = 0);
-    virtual ~EventDispatcherEPoll(void);
+    explicit EventDispatcherEPoll(QObject* parent = nullptr);
+    virtual ~EventDispatcherEPoll() override;
 
-    virtual bool processEvents(QEventLoop::ProcessEventsFlags flags);
-    virtual bool hasPendingEvents(void);
+    virtual bool processEvents(QEventLoop::ProcessEventsFlags flags) override;
+    virtual bool hasPendingEvents() override;
 
-    virtual void registerSocketNotifier(QSocketNotifier* notifier);
-    virtual void unregisterSocketNotifier(QSocketNotifier* notifier);
+    virtual void registerSocketNotifier(QSocketNotifier* notifier) override;
+    virtual void unregisterSocketNotifier(QSocketNotifier* notifier) override;
 
     virtual void registerTimer(
             int timerId,
             int interval,
             Qt::TimerType timerType,
             QObject* object
-            );
+            ) override;
 
-    virtual bool unregisterTimer(int timerId);
-    virtual bool unregisterTimers(QObject* object);
-    virtual QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const;
-    virtual int remainingTime(int timerId);
+    virtual bool unregisterTimer(int timerId) override;
+    virtual bool unregisterTimers(QObject* object) override;
+    virtual QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const override;
+    virtual int remainingTime(int timerId) override;
 
-    virtual void wakeUp(void);
-    virtual void interrupt(void);
-    virtual void flush(void);
-
-    void postFork();
+    virtual void wakeUp() override;
+    virtual void interrupt() override;
+    virtual void flush() override;
 
 private:
     Q_DISABLE_COPY(EventDispatcherEPoll)

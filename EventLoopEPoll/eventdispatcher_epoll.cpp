@@ -9,7 +9,7 @@ EventDispatcherEPoll::EventDispatcherEPoll(QObject* parent)
 {
 }
 
-EventDispatcherEPoll::~EventDispatcherEPoll(void)
+EventDispatcherEPoll::~EventDispatcherEPoll()
 {
     delete d_ptr;
 }
@@ -20,7 +20,7 @@ bool EventDispatcherEPoll::processEvents(QEventLoop::ProcessEventsFlags flags)
     return d->processEvents(flags);
 }
 
-bool EventDispatcherEPoll::hasPendingEvents(void)
+bool EventDispatcherEPoll::hasPendingEvents()
 {
     extern uint qGlobalPostedEventsCount();
     return qGlobalPostedEventsCount() > 0;
@@ -143,24 +143,20 @@ int EventDispatcherEPoll::remainingTime(int timerId)
     return d->remainingTime(timerId);
 }
 
-void EventDispatcherEPoll::wakeUp(void)
+void EventDispatcherEPoll::wakeUp()
 {
     Q_D(EventDispatcherEPoll);
     d->wakeup();
 }
 
-void EventDispatcherEPoll::interrupt(void)
+void EventDispatcherEPoll::interrupt()
 {
     Q_D(EventDispatcherEPoll);
     d->m_interrupt = true;
     wakeUp();
 }
 
-void EventDispatcherEPoll::flush(void)
-{
-}
-
-void EventDispatcherEPoll::postFork()
+void EventDispatcherEPoll::flush()
 {
     Q_D(EventDispatcherEPoll);
     d->createEpoll();
