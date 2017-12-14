@@ -106,6 +106,7 @@ public:
     bool tcpNodelay = false;
     bool soKeepalive = false;
     bool threadBalancer = false;
+    bool userEventLoop = false;
 
 Q_SIGNALS:
     void postForked(int workerId);

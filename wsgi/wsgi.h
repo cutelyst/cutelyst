@@ -63,6 +63,26 @@ public:
      */
     int exec(Cutelyst::Application *app = nullptr);
 
+    /*!
+     * This function will start the WSGI server in user application mode.
+     *
+     * Use this when you would like to embed the server in an
+     * application that is able to start/stop the server at will, for
+     * example with a push button.
+     *
+     * This method does not support forking which includes master, lazy or processes
+     * properties.
+     *
+     * Currentl
+     */
+    bool start(Cutelyst::Application *app = nullptr);
+
+    /*!
+     * Terminates the server execution, when started with start(),
+     * it does nothing when started by exec().
+     */
+    void stop();
+
     /**
      * Defines application file path to be loaded, an alternative is to provide
      * the Cutelyst::Application pointer to exec()
@@ -357,6 +377,11 @@ Q_SIGNALS:
      * It is emitted once the server is ready.
      */
     void ready();
+
+    /**
+     * It is emitted once the server shutdown is completed.
+     */
+    void stopped();
 
 protected:
     WSGIPrivate *d_ptr;

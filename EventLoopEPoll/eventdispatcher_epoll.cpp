@@ -84,6 +84,8 @@ void EventDispatcherEPoll::registerTimer(
     Q_D(EventDispatcherEPoll);
 //    if (interval) {
         d->registerTimer(timerId, interval, timerType, object);
+
+        // Sigle shot timers were crashing
 //    }
 //    else {
 //        d->registerZeroTimer(timerId, object);

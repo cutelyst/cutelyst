@@ -53,11 +53,13 @@ Q_LOGGING_CATEGORY(WSGI_UNIX, "wsgi.unix")
 
 static int signalsFd[2];
 
-UnixFork::UnixFork(int process, int threads, QObject *parent) : AbstractFork(parent)
+UnixFork::UnixFork(int process, int threads, bool setupSignals, QObject *parent) : AbstractFork(parent)
   , m_threads(threads)
   , m_processes(process)
 {
-    setupUnixSignalHandlers();
+    if (setupSignals) {
+        setupUnixSignalHandlers();
+    }
 }
 
 UnixFork::~UnixFork()

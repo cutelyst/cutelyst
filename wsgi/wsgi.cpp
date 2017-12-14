@@ -484,7 +484,7 @@ int WSGI::exec(Cutelyst::Application *app)
     if (d->processes == 0 && d->master) {
         d->processes = 1;
     }
-    d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), this);
+    d->genericFork = new UnixFork(d->processes, qMax(d->threads, 1), !d->userEventLoop, this);
 #else
     if (d->processes == -1) {
         d->processes = 1;
@@ -558,9 +558,41 @@ int WSGI::exec(Cutelyst::Application *app)
         d->setupApplication();
     }
 
+    if (d->userEventLoop) {
+        d->postFork(0);
+        return 0;
+    }
+
     ret = d->genericFork->exec(d->lazy, d->master);
 
     return ret;
+}
+
+bool WSGI::start(Application *app)
+{
+    Q_D(WSGI);
+
+    d->processes = 0;
+    d->master = false;
+    d->lazy = false;
+    d->userEventLoop = true;
+    d->uid = QString();
+    d->gid = QString();
+    qputenv("CUTELYST_WSGI_IGNORE_MASTER", QByteArrayLiteral("1"));
+
+    if (exec(app) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+void WSGI::stop()
+{
+    Q_D(WSGI);
+    if (d->userEventLoop) {
+        Q_EMIT d->shutdown();
+    }
 }
 
 void WSGIPrivate::listenTcpSockets()
@@ -1247,7 +1279,12 @@ void WSGIPrivate::engineShutdown(CWsgiEngine *engine)
     }
 
     if (engines.empty()) {
-        QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+        if (userEventLoop) {
+            Q_Q(WSGI);
+            Q_EMIT q->stopped();
+        } else {
+            QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+        }
     }
 }
 
@@ -1418,4 +1455,3 @@ void WSGIPrivate::applyConfig(const QVariantMap &config)
     }
 }
 
-#include "moc_wsgi_p.cpp"
