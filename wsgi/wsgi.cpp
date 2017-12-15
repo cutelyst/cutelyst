@@ -576,8 +576,10 @@ bool WSGI::start(Application *app)
     d->master = false;
     d->lazy = false;
     d->userEventLoop = true;
+#ifdef Q_OS_UNIX
     d->uid = QString();
     d->gid = QString();
+#endif
     qputenv("CUTELYST_WSGI_IGNORE_MASTER", QByteArrayLiteral("1"));
 
     if (exec(app) == 0) {
