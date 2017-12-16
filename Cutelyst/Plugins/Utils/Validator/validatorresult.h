@@ -23,6 +23,7 @@
 #include <QStringList>
 #include <QSharedDataPointer>
 #include <QVariantHash>
+#include <QJsonObject>
 
 namespace Cutelyst {
 
@@ -31,7 +32,7 @@ class ValidatorResultPrivate;
 /*!
  * \brief Contains the result of Validator.
  *
- * ValidatorResult will be returned by Validator when calling Validator::validate(). It contains information
+ * %ValidatorResult will be returned by Validator when calling Validator::validate(). It contains information
  * about occured validation errors, like the error strings of each failed validator and a list of fields where
  * validation failed.
  *
@@ -61,9 +62,9 @@ class ValidatorResultPrivate;
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorResult {
 public:
     /*!
-     * \brief Constructs a new ValidatorResult.
+     * \brief Constructs a new %ValidatorResult.
      *
-     * A newly constructed ValidatorResult willl be valid by default, because it
+     * A newly constructed %ValidatorResult willl be valid by default, because it
      * does not cotain any error information.
      */
     ValidatorResult();
@@ -79,19 +80,19 @@ public:
     ValidatorResult& operator =(const ValidatorResult &other);
 
     /*!
-     * \brief Deconstructs the ValidatorResult.
+     * \brief Deconstructs the %ValidatorResult.
      */
     ~ValidatorResult();
 
     /*!
      * \brief Returns \c true if the validation was successful.
      *
-     * \note A newly constructed ValidatorResult will be valid by default.
+     * \note A newly constructed %ValidatorResult will be valid by default.
      */
     bool isValid() const;
 
     /*!
-     * \brief Adds new error information to the
+     * \brief Adds new error information to the internal QHash.
      * \param field     Name of the input field that has input errors.
      * \param message   Error message shown to the user.
      */
@@ -112,6 +113,23 @@ public:
      * will be the list of errors for that field.
      */
     QHash<QString,QStringList> errors() const;
+
+    /*!
+     * \brief Returns the dictionray containing fields with errors as JSON object.
+     *
+     * This returns the same data as errors() does but converted into a JSON object
+     * that has the field names as \a keys and the values will be a JSON array of
+     * strings containing the errors for the field.
+     *
+     * \since Cutelyst 1.12.0
+     */
+    QJsonObject errorsJsonObject() const;
+
+    /*!
+     * \brief Returns a list of fields with errors.
+     * \since Cutelyst 1.12.0
+     */
+    QStringList failedFields() const;
 
     /*!
      * \brief Returns \c true if the validation was successful.
