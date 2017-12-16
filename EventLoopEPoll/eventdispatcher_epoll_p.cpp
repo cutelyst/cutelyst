@@ -1,7 +1,11 @@
 #include <QtCore/QCoreApplication>
+#include <QPointer>
+#include <QSocketNotifier>
+
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
+#include <sys/timerfd.h>
 #include <stdlib.h>
 #include <errno.h>
 #include "eventdispatcher_epoll.h"
@@ -41,9 +45,9 @@ void EventDispatcherEPollPrivate::createEpoll()
 
     struct epoll_event e;
     e.events  = EPOLLIN;
-    auto data = new HandleData;
+    auto data = new EventFdInfo;
+    data->epPriv = this;
     data->fd = m_event_fd;
-    data->type = htEventFd;
     e.data.ptr = data;
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
@@ -78,7 +82,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
     if (!m_interrupt) {
         int timeout = 0;
 
-        if (!exclude_timers && m_zero_timers.size() > 0) {
+        if (!exclude_timers && !m_zero_timers.isEmpty()) {
             auto it = m_zero_timers.begin();
             auto end = m_zero_timers.end();
             while (it != end) {
@@ -117,28 +121,10 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
             n_events = epoll_wait(m_epoll_fd, events, 1024, timeout);
         } while (Q_UNLIKELY(-1 == n_events && errno == EINTR));
 
-        for (int i=0; i<n_events; ++i) {
-            struct epoll_event& e = events[i];
-            auto data = static_cast<HandleData*>(e.data.ptr);
-
-            switch (data->type) {
-            case htSocketNotifier:
-                EventDispatcherEPollPrivate::socket_notifier_callback(data->sni, e.events);
-                break;
-
-            case htEventFd:
-                if (Q_LIKELY(e.events & EPOLLIN)) {
-                    wake_up_handler();
-                }
-                break;
-
-            case htTimer:
-                timer_callback(data->ti);
-                break;
-
-            default:
-                Q_UNREACHABLE();
-            }
+        for (int i = 0; i < n_events; ++i) {
+            struct epoll_event &e = events[i];
+            auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
+            data->process(e);
         }
     }
 
@@ -148,7 +134,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
     return result || n_events > 0;
 }
 
-void EventDispatcherEPollPrivate::wake_up_handler(void)
+void EventDispatcherEPollPrivate::wake_up_handler()
 {
     eventfd_t value;
     int res;
@@ -165,19 +151,62 @@ void EventDispatcherEPollPrivate::wake_up_handler(void)
     }
 }
 
-void EventDispatcherEPollPrivate::wakeup(void)
+void SocketNotifierInfo::process(epoll_event &ee)
 {
-    if (m_wakeups.testAndSetAcquire(0, 1))
-    {
-        const eventfd_t value = 1;
-        int res;
+    QEvent e(QEvent::SockAct);
 
-        do {
-            res = eventfd_write(m_event_fd, value);
-        } while (Q_UNLIKELY(-1 == res && EINTR == errno));
+    if (r && (ee.events & EPOLLIN)) {
+        QCoreApplication::sendEvent(r, &e);
+    }
 
-        if (Q_UNLIKELY(-1 == res)) {
-            qErrnoWarning("%s: eventfd_write() failed", Q_FUNC_INFO);
-        }
+    if (w && (ee.events & EPOLLOUT)) {
+        QCoreApplication::sendEvent(w, &e);
+    }
+
+    if (x && (ee.events & EPOLLPRI)) {
+        QCoreApplication::sendEvent(x, &e);
+    }
+}
+
+void EventFdInfo::process(epoll_event &e)
+{
+    if (Q_LIKELY(e.events & EPOLLIN)) {
+        epPriv->wake_up_handler();
+    }
+}
+
+void TimerInfo::process(epoll_event &e)
+{
+    Q_UNUSED(e)
+
+    uint64_t value;
+    int res;
+    do {
+        res = read(fd, &value, sizeof(value));
+    } while (-1 == res && EINTR == errno);
+
+    if (Q_UNLIKELY(-1 == res)) {
+        qErrnoWarning("%s: read() failed", Q_FUNC_INFO);
+    }
+
+    QTimerEvent event(timerId);
+    QCoreApplication::sendEvent(object, &event);
+
+    struct timeval now;
+    struct timeval delta;
+    struct itimerspec spec;
+
+    spec.it_interval.tv_sec  = 0;
+    spec.it_interval.tv_nsec = 0;
+
+    gettimeofday(&now, 0);
+    EventDispatcherEPollPrivate::calculateNextTimeout(this, now, delta);
+    TIMEVAL_TO_TIMESPEC(&delta, &spec.it_value);
+    if (0 == spec.it_value.tv_sec && 0 == spec.it_value.tv_nsec) {
+        spec.it_value.tv_nsec = 500;
+    }
+
+    if (-1 == timerfd_settime(fd, 0, &spec, 0)) {
+        qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
     }
 }

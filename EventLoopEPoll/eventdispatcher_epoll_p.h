@@ -7,45 +7,52 @@
 
 #include <QtCore/QAtomicInt>
 
-enum HandleType {
-    htEventFd,
-    htTimer,
-    htSocketNotifier
-};
-
-struct SocketNotifierInfo {
-    QSocketNotifier* r;
-    QSocketNotifier* w;
-    QSocketNotifier* x;
-    int events;
-};
-
-struct TimerInfo {
-    QObject* object;
-    struct timeval when;
-    int timerId;
-    int interval;
-    int fd;
-    Qt::TimerType type;
-};
-
 struct ZeroTimer {
     QObject* object;
     bool active;
 };
 
-struct HandleData {
-    HandleType type;
+class EpollAbastractEvent
+{
+public:
     int fd;
-    union {
-        SocketNotifierInfo sni;
-        TimerInfo ti;
-    };
+
+    virtual void process(struct epoll_event &e) = 0;
 };
 
-Q_DECLARE_TYPEINFO(SocketNotifierInfo, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(TimerInfo, Q_PRIMITIVE_TYPE);
-Q_DECLARE_TYPEINFO(HandleData, Q_PRIMITIVE_TYPE);
+class EventDispatcherEPollPrivate;
+class EventFdInfo : public EpollAbastractEvent
+{
+public:
+    EventDispatcherEPollPrivate *epPriv;
+    virtual void process(struct epoll_event &e);
+};
+
+class SocketNotifierInfo : public EpollAbastractEvent
+{
+public:
+    QSocketNotifier *r = nullptr;
+    QSocketNotifier *w = nullptr;
+    QSocketNotifier *x = nullptr;
+    int events;
+    virtual void process(struct epoll_event &ee);
+};
+
+class TimerInfo : public EpollAbastractEvent
+{
+public:
+    QObject* object;
+    struct timeval when;
+    int timerId;
+    int interval;
+    Qt::TimerType type;
+    EventDispatcherEPollPrivate *epPriv;
+    virtual void process(struct epoll_event &e);
+};
+
+//Q_DECLARE_TYPEINFO(SocketNotifierInfo, Q_PRIMITIVE_TYPE);
+//Q_DECLARE_TYPEINFO(TimerInfo, Q_PRIMITIVE_TYPE);
+//Q_DECLARE_TYPEINFO(HandleData, Q_PRIMITIVE_TYPE);
 
 class EventDispatcherEPoll;
 
@@ -63,11 +70,13 @@ public:
     bool unregisterTimers(QObject* object);
     QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const;
     int remainingTime(int timerId) const;
-    void wakeup(void);
+    void wake_up_handler();
 
-    typedef QHash<int, HandleData*> HandleHash;
-    typedef QHash<int, HandleData*> TimerHash;
-    typedef QHash<QSocketNotifier*, HandleData*> SocketNotifierHash;
+    static void calculateNextTimeout(TimerInfo* info, const struct timeval& now, struct timeval& delta);
+
+    typedef QHash<int, EpollAbastractEvent*> HandleHash;
+    typedef QHash<int, TimerInfo*> TimerHash;
+    typedef QHash<QSocketNotifier*, SocketNotifierInfo*> SocketNotifierHash;
     typedef QHash<int, ZeroTimer> ZeroTimerHash;
 
 private:
@@ -83,10 +92,6 @@ private:
     SocketNotifierHash m_notifiers;
     TimerHash m_timers;
     ZeroTimerHash m_zero_timers;
-
-    static void socket_notifier_callback(const SocketNotifierInfo& n, int events);
-    void timer_callback(const TimerInfo& info);
-    void wake_up_handler(void);
 
     bool disableSocketNotifiers(bool disable);
     bool disableTimers(bool disable);

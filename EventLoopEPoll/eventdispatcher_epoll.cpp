@@ -1,6 +1,8 @@
-#include <QtCore/QPair>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QThread>
+
+#include <sys/eventfd.h>
+
 #include "eventdispatcher_epoll.h"
 #include "eventdispatcher_epoll_p.h"
 
@@ -148,7 +150,19 @@ int EventDispatcherEPoll::remainingTime(int timerId)
 void EventDispatcherEPoll::wakeUp()
 {
     Q_D(EventDispatcherEPoll);
-    d->wakeup();
+
+    if (d->m_wakeups.testAndSetAcquire(0, 1)) {
+        const eventfd_t value = 1;
+        int res;
+
+        do {
+            res = eventfd_write(d->m_event_fd, value);
+        } while (Q_UNLIKELY(-1 == res && EINTR == errno));
+
+        if (Q_UNLIKELY(-1 == res)) {
+            qErrnoWarning("%s: eventfd_write() failed", Q_FUNC_INFO);
+        }
+    }
 }
 
 void EventDispatcherEPoll::interrupt()
