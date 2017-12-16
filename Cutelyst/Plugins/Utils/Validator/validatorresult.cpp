@@ -17,6 +17,8 @@
  */
 
 #include "validatorresult_p.h"
+#include <QJsonValue>
+#include <QJsonArray>
 
 using namespace Cutelyst;
 
@@ -61,4 +63,24 @@ QStringList ValidatorResult::errorStrings() const
 QHash<QString, QStringList> ValidatorResult::errors() const
 {
     return d->errors;
+}
+
+QJsonObject ValidatorResult::errorsJsonObject() const
+{
+    QJsonObject json;
+
+    if (!d->errors.empty()) {
+        QHash<QString,QStringList>::const_iterator i = d->errors.constBegin();
+        while (i != d->errors.constEnd()) {
+            json.insert(i.key(), QJsonValue(QJsonArray::fromStringList(i.value())));
+            ++i;
+        }
+    }
+
+    return json;
+}
+
+QStringList ValidatorResult::failedFields() const
+{
+    return QStringList(d->errors.keys());
 }
