@@ -16,13 +16,15 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
     int fd = static_cast<int>(notifier->socket());
 
     epoll_event e;
-    e.data.fd = fd;
+//    e.data.fd = fd;
 
     HandleData* data;
     HandleHash::Iterator it = m_handles.find(fd);
 
     if (it == m_handles.end()) {
         data        = new HandleData;
+        data->fd = fd;
+        e.data.ptr = data;
         data->type  = htSocketNotifier;
         data->sni.r = 0;
         data->sni.w = 0;
@@ -51,6 +53,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
     }
     else {
         data = it.value();
+        e.data.ptr = data;
 
         Q_ASSERT(data->type == htSocketNotifier);
         if (data->type == htSocketNotifier) {
@@ -105,7 +108,8 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier* noti
         Q_ASSERT(hi != m_handles.end());
 
         struct epoll_event e;
-        e.data.fd = fd;
+//        e.data.fd = fd;
+        e.data.ptr = info;
 
         if (info->sni.r == notifier) {
             info->sni.events &= ~EPOLLIN;
@@ -178,7 +182,8 @@ bool EventDispatcherEPollPrivate::disableSocketNotifiers(bool disable)
         int fd                    = static_cast<int>(notifier->socket());
 
         e.events  = disable ? 0 : info->sni.events;
-        e.data.fd = fd;
+//        e.data.fd = fd;
+        e.data.ptr = info;
         int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, fd, &e);
         if (Q_UNLIKELY(res != 0)) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);

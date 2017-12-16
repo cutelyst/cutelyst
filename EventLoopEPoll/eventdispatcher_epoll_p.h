@@ -8,6 +8,7 @@
 #include <QtCore/QAtomicInt>
 
 enum HandleType {
+    htEventFd,
     htTimer,
     htSocketNotifier
 };
@@ -35,6 +36,7 @@ struct ZeroTimer {
 
 struct HandleData {
     HandleType type;
+    int fd;
     union {
         SocketNotifierInfo sni;
         TimerInfo ti;

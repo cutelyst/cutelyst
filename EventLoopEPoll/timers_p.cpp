@@ -188,6 +188,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
         gettimeofday(&now, 0);
 
         auto data  = new HandleData();
+        data->fd = fd;
         data->type        = htTimer;
         data->ti.object   = object;
         data->ti.when     = now; // calculateNextTimeout() will take care of info->when
@@ -226,7 +227,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
 
         struct epoll_event event;
         event.events  = EPOLLIN;
-        event.data.fd = fd;
+        event.data.ptr = data;
 
         if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd, &event))) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);

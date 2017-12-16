@@ -41,7 +41,10 @@ void EventDispatcherEPollPrivate::createEpoll()
 
     struct epoll_event e;
     e.events  = EPOLLIN;
-    e.data.fd = m_event_fd;
+    auto data = new HandleData;
+    data->fd = m_event_fd;
+    data->type = htEventFd;
+    e.data.ptr = data;
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
     }
@@ -116,29 +119,25 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
 
         for (int i=0; i<n_events; ++i) {
             struct epoll_event& e = events[i];
-            int fd                = e.data.fd;
-            if (fd == m_event_fd) {
+            auto data = static_cast<HandleData*>(e.data.ptr);
+
+            switch (data->type) {
+            case htSocketNotifier:
+                EventDispatcherEPollPrivate::socket_notifier_callback(data->sni, e.events);
+                break;
+
+            case htEventFd:
                 if (Q_LIKELY(e.events & EPOLLIN)) {
                     wake_up_handler();
                 }
-            }
-            else {
-                auto it = m_handles.constFind(fd);
-                if (Q_LIKELY(it != m_handles.constEnd())) {
-                    HandleData* data = it.value();
-                    switch (data->type) {
-                    case htSocketNotifier:
-                        EventDispatcherEPollPrivate::socket_notifier_callback(data->sni, e.events);
-                        break;
+                break;
 
-                    case htTimer:
-                        timer_callback(data->ti);
-                        break;
+            case htTimer:
+                timer_callback(data->ti);
+                break;
 
-                    default:
-                        Q_UNREACHABLE();
-                    }
-                }
+            default:
+                Q_UNREACHABLE();
             }
         }
     }
