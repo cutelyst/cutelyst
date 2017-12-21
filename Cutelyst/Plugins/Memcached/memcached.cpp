@@ -58,41 +58,8 @@ bool Memcached::setup(Application *app)
     QStringList config;
 
     const QStringList serverList = map.value(QStringLiteral("servers")).toString().split(QLatin1Char(';'));
-    if (!serverList.empty()) {
-        for (const QString &server : serverList) {
-            const QStringList serverParts = server.split(QLatin1Char(','));
-            QString name;
-            QString port = QStringLiteral("11211");
-            QString weight = QStringLiteral("1");
-            if (!serverParts.empty()) {
-                const QString _name = serverParts.at(0);
-                if (!_name.isEmpty()) {
-                    name = _name;
-                }
-                if (serverParts.size() > 1) {
-                    const QString _port = serverParts.at(1);
-                    if (!_port.isEmpty()) {
-                        port = _port;
-                    }
-                    if (serverParts.size() > 2) {
-                        const QString _weight = serverParts.at(2);
-                        if (!_weight.isEmpty()) {
-                            weight = _weight;
-                        }
-                    }
-                }
-            }
-            if (!name.isEmpty()) {
-                if (name.startsWith(QLatin1Char('/'))) {
-                    config.push_back(QLatin1String("--SOCKET=\"") + name + QLatin1String("/?") + weight + QLatin1Char('"'));
-                } else {
-                    config.push_back(QLatin1String("--SERVER=") + name + QLatin1Char(':') + port + QLatin1String("/?") + weight);
-                }
-            }
-        }
-    }
 
-    if (config.empty()) {
+    if (serverList.empty()) {
         config.push_back(QStringLiteral("--SERVER=localhost"));
     }
 
@@ -116,6 +83,8 @@ bool Memcached::setup(Application *app)
         }
     }
 
+    const bool useUDP = map.value(QStringLiteral("use_udp"), d->defaultConfig.value(QStringLiteral("use_udp"), false)).toBool();
+
     for (const QString &opt : {
          QStringLiteral("connect_timeout"),
          QStringLiteral("distribution"),
@@ -133,7 +102,7 @@ bool Memcached::setup(Application *app)
          QStringLiteral("io_msg_watermark"),
          QStringLiteral("rcv_timeout")
     }) {
-        QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
+        const QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
         if (!_val.isEmpty()) {
             const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + _val;
             config.push_back(optStr);
@@ -149,6 +118,72 @@ bool Memcached::setup(Application *app)
     memcached_st *new_memc = memcached(configString.constData(), configString.size());
 
     if (new_memc) {
+
+        if (!serverList.empty()) {
+            for (const QString &server : serverList) {
+                const QStringList serverParts = server.split(QLatin1Char(','));
+                QString name;
+                uint port = 11211;
+                uint32_t weight = 1;
+                bool isSocket = false;
+                if (!serverParts.empty()) {
+                    const QString part0 = serverParts.at(0);
+                    if (!part0.isEmpty()) {
+                        name = part0;
+                        isSocket = name.startsWith(QLatin1Char('/'));
+                    }
+                    if (serverParts.size() > 1) {
+                        const QString part1 = serverParts.at(1);
+                        if (!part1.isEmpty()) {
+                            if (isSocket) {
+                                weight = part1.toUInt();
+                            } else {
+                                port = part1.toUInt();
+                            }
+                        }
+                        if (!isSocket && (serverParts.size() > 2)) {
+                            const QString part2 = serverParts.at(2);
+                            if (!part2.isEmpty()) {
+                                weight = part2.toUInt();
+                            }
+                        }
+                    }
+                }
+                if (!name.isEmpty()) {
+                    memcached_return_t rc;
+                    if (isSocket) {
+                        rc = memcached_server_add_unix_socket_with_weight(new_memc, name.toUtf8().constData(), weight);
+                        if (Q_LIKELY(memcached_success(rc))) {
+                            qCInfo(C_MEMCACHED, "Added memcached server on socket %s with weight %u.", qPrintable(name), weight);
+                        } else {
+                            qCWarning(C_MEMCACHED, "Failed to add memcached server on socket %s with weight %u: %s", qPrintable(name), weight, memcached_strerror(new_memc, rc));
+                        }
+                    } else {
+                        if (useUDP) {
+                            rc = memcached_server_add_udp_with_weight(new_memc, name.toUtf8().constData(), port, weight);
+                        } else {
+                            rc = memcached_server_add_with_weight(new_memc, name.toUtf8().constData(), port, weight);
+                        }
+                        if (Q_LIKELY(memcached_success(rc))) {
+                            qCInfo(C_MEMCACHED, "Added memcached server on host %s:%u with weight %u.", qPrintable(name), port, weight);
+                        } else {
+                            qCWarning(C_MEMCACHED, "Failed to add memcached server on host %s:%u with weight %u: %s", qPrintable(name), port, weight, memcached_strerror(new_memc, rc));
+                        }
+                    }
+                }
+            }
+
+            if (Q_UNLIKELY(memcached_server_count(new_memc) == 0)) {
+                qCWarning(C_MEMCACHED, "Failed to add any memcached server. Adding default server on localhost port 11211.");
+                memcached_return_t rc = memcached_server_add(new_memc, "localhost", 11211);
+                if (Q_UNLIKELY(!memcached_success(rc))) {
+                    qCCritical(C_MEMCACHED, "Failed to add default memcached server. Memcached plugin will not work without a configured server! %s", memcached_strerror(new_memc, rc));
+                    memcached_free(new_memc);
+                    return false;
+                }
+            }
+        }
+
         d->compression = map.value(QStringLiteral("compression"), d->defaultConfig.value(QStringLiteral("compression"), false)).toBool();
         d->compressionLevel = map.value(QStringLiteral("compression_level"), d->defaultConfig.value(QStringLiteral("compression_level"),  -1)).toInt();
         d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), d->defaultConfig.value(QStringLiteral("compression_threshold"), 100)).toInt();
