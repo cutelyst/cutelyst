@@ -84,7 +84,7 @@ bool Memcached::setup(Application *app)
             }
             if (!name.isEmpty()) {
                 if (name.startsWith(QLatin1Char('/'))) {
-                    config.push_back(QLatin1String("--SOCKET=") + name + QLatin1String("/?") + weight);
+                    config.push_back(QLatin1String("--SOCKET=\"") + name + QLatin1String("/?") + weight + QLatin1Char('"'));
                 } else {
                     config.push_back(QLatin1String("--SERVER=") + name + QLatin1Char(':') + port + QLatin1String("/?") + weight);
                 }
