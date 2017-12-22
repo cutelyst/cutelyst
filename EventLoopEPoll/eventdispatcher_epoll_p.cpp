@@ -84,8 +84,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
 
         if (!exclude_timers && !m_zero_timers.isEmpty()) {
             auto it = m_zero_timers.begin();
-            auto end = m_zero_timers.end();
-            while (it != end) {
+            while (it != m_zero_timers.end()) {
                 ZeroTimer &data = it.value();
                 if (data.active) {
                     data.active = false;
@@ -100,7 +99,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
                     // hash it's the only explanation to this:
                     auto i = m_zero_timers.find(it.key());
                     if (i != m_zero_timers.end()) {
-                        ZeroTimer& data = it.value();
+                        ZeroTimer &data = it.value();
                         if (!data.active) {
                             data.active = true;
                         }

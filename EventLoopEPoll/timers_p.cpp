@@ -188,8 +188,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
         struct timeval now;
         gettimeofday(&now, 0);
 
-        auto data  = new TimerInfo();
-        data->fd = fd;
+        auto data = new TimerInfo();
         data->object   = object;
         data->when     = now; // calculateNextTimeout() will take care of info->when
         data->timerId  = timerId;
@@ -226,7 +225,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
         }
 
         struct epoll_event event;
-        event.events  = EPOLLIN;
+        event.events = EPOLLIN;
         event.data.ptr = data;
 
         if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd, &event))) {
@@ -310,7 +309,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
 
     auto zit = m_zero_timers.begin();
     while (zit != m_zero_timers.end()) {
-        ZeroTimer& data = zit.value();
+        ZeroTimer &data = zit.value();
         if (object == data.object) {
             result = true;
             zit    = m_zero_timers.erase(zit);
@@ -329,7 +328,7 @@ QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::register
 
     auto it = m_timers.constBegin();
     while (it != m_timers.constEnd()) {
-        TimerInfo* data = it.value();
+        TimerInfo *data = it.value();
 
         if (object == data->object) {
             QAbstractEventDispatcher::TimerInfo ti(it.key(), data->interval, data->type);
@@ -341,7 +340,7 @@ QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::register
 
     auto zit = m_zero_timers.constBegin();
     while (zit != m_zero_timers.constEnd()) {
-        const ZeroTimer& data = zit.value();
+        const ZeroTimer &data = zit.value();
         if (object == data.object) {
             QAbstractEventDispatcher::TimerInfo ti(it.key(), 0, Qt::PreciseTimer);
             res.append(ti);
@@ -357,7 +356,7 @@ int EventDispatcherEPollPrivate::remainingTime(int timerId) const
 {
     auto it = m_timers.constFind(timerId);
     if (it != m_timers.constEnd()) {
-        TimerInfo* data = it.value();
+        TimerInfo *data = it.value();
 
         struct timeval when;
         struct itimerspec spec;
@@ -400,7 +399,7 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
 
     auto it = m_timers.constBegin();
     while (it != m_timers.constEnd()) {
-        TimerInfo* data = it.value();
+        TimerInfo *data = it.value();
 
         if (!disable) {
             struct timeval delta;

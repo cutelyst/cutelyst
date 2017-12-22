@@ -16,11 +16,10 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
 
     epoll_event e;
 
-    SocketNotifierInfo* data;
+    SocketNotifierInfo *data;
     HandleHash::Iterator it = m_handles.find(fd);
-
     if (it == m_handles.end()) {
-        data        = new SocketNotifierInfo;
+        data = new SocketNotifierInfo;
         data->fd = fd;
         e.data.ptr = data;
 
@@ -42,7 +41,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
         }
 
         data->events = events;
-        e.events    = events;
+        e.events = events;
 
         int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd, &e);
         if (Q_UNLIKELY(res != 0)) {
@@ -56,7 +55,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
         data = static_cast<SocketNotifierInfo*>(it.value());
         Q_ASSERT(data);
 
-        QSocketNotifier** n = 0;
+        QSocketNotifier **n = nullptr;
         if (data) {
             e.data.ptr = data;
             switch (notifier->type()) {
@@ -169,7 +168,7 @@ bool EventDispatcherEPollPrivate::disableSocketNotifiers(bool disable)
     while (it != m_notifiers.constEnd()) {
         SocketNotifierInfo *info  = it.value();
 
-        e.events  = disable ? 0 : info->events;
+        e.events = disable ? 0 : info->events;
         e.data.ptr = info;
         int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, info->fd, &e);
         if (Q_UNLIKELY(res != 0)) {
