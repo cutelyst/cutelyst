@@ -124,7 +124,19 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         for (int i = 0; i < n_events; ++i) {
             struct epoll_event &e = events[i];
             auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
-            data->process(e);
+            ++data->refs;
+        }
+
+        for (int i = 0; i < n_events; ++i) {
+            struct epoll_event &e = events[i];
+            auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
+            if (data->refs) {
+                data->process(e);
+            }
+
+            if (--data->refs == 0) {
+                delete data;
+            }
         }
     }
 
@@ -192,21 +204,24 @@ void TimerInfo::process(epoll_event &e)
     QTimerEvent event(timerId);
     QCoreApplication::sendEvent(object, &event);
 
-    struct timeval now;
-    struct timeval delta;
-    struct itimerspec spec;
+    // Check if we are NOT going to be deleted
+    if (refs > 1) {
+        struct timeval now;
+        struct timeval delta;
+        struct itimerspec spec;
 
-    spec.it_interval.tv_sec  = 0;
-    spec.it_interval.tv_nsec = 0;
+        spec.it_interval.tv_sec  = 0;
+        spec.it_interval.tv_nsec = 0;
 
-    gettimeofday(&now, 0);
-    EventDispatcherEPollPrivate::calculateNextTimeout(this, now, delta);
-    TIMEVAL_TO_TIMESPEC(&delta, &spec.it_value);
-    if (0 == spec.it_value.tv_sec && 0 == spec.it_value.tv_nsec) {
-        spec.it_value.tv_nsec = 500;
-    }
+        gettimeofday(&now, 0);
+        EventDispatcherEPollPrivate::calculateNextTimeout(this, now, delta);
+        TIMEVAL_TO_TIMESPEC(&delta, &spec.it_value);
+        if (0 == spec.it_value.tv_sec && 0 == spec.it_value.tv_nsec) {
+            spec.it_value.tv_nsec = 500;
+        }
 
-    if (-1 == timerfd_settime(fd, 0, &spec, 0)) {
-        qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
+        if (-1 == timerfd_settime(fd, 0, &spec, 0)) {
+            qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
+        }
     }
 }

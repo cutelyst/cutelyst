@@ -150,7 +150,9 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier* noti
             }
 
             m_handles.erase(hi);
-            delete info;
+            if (--info->refs == 0) {
+                delete info;
+            }
         }
 
         if (Q_UNLIKELY(res != 0)) {

@@ -18,6 +18,7 @@ public:
     virtual ~EpollAbastractEvent() {}
 
     int fd;
+    int refs = 1;
 
     virtual void process(struct epoll_event &e) = 0;
 };
@@ -27,6 +28,7 @@ class EventFdInfo : public EpollAbastractEvent
 {
 public:
     EventDispatcherEPollPrivate *epPriv;
+
     virtual void process(struct epoll_event &e);
 };
 
@@ -37,6 +39,7 @@ public:
     QSocketNotifier *w = nullptr;
     QSocketNotifier *x = nullptr;
     int events;
+
     virtual void process(struct epoll_event &ee);
 };
 
@@ -49,6 +52,7 @@ public:
     int interval;
     Qt::TimerType type;
     EventDispatcherEPollPrivate *epPriv;
+
     virtual void process(struct epoll_event &e);
 };
 

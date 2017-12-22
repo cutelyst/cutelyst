@@ -269,7 +269,10 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
         m_timers.erase(it); // Hash is not rehashed
         m_handles.remove(fd);
 
-        delete data;
+        if (--data->refs == 0) {
+            delete data;
+        }
+
         return true;
     }
 
@@ -292,7 +295,10 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
             }
 
             close(fd);
-            delete data;
+
+            if (--data->refs == 0) {
+                delete data;
+            }
 
             it = m_timers.erase(it); // Hash is not rehashed
             m_handles.remove(fd);
