@@ -15,6 +15,8 @@ struct ZeroTimer {
 class EpollAbastractEvent
 {
 public:
+    virtual ~EpollAbastractEvent() {}
+
     int fd;
 
     virtual void process(struct epoll_event &e) = 0;
