@@ -110,6 +110,10 @@ class CSRFProtectionPrivate;
  * that can be used to define a detach to action per method. If the detach to action is not set or could not be found
  * a default error page will be generated.
  *
+ * @note If you are using redirects, the default generated message will not work. Use either an action to detach to
+ * or check the result of the CSRF protection with CSRFProtection::checkPassed() to handle failed checks in your
+ * contoller methods.
+ *
  * @code{.cpp}
  * bool MyCutelystApp::init()
  * {
@@ -315,6 +319,14 @@ public:
      * @endcode
      */
     static QString getTokenFormField(Context *c);
+
+    /**
+     * Returns @c true if the CSRF protection check has successfully been passed. You can use this
+     * function in your contoller methods to handle CSRF protection results. For HTTP methods that
+     * are secure according to RFC 7231 (GET, HEAD, OPTIONS and TRACE) this will return always
+     * @c true. For all other methods it will return @c false if the CSRF protection check has failed.
+     */
+    static bool checkPassed(Context *c);
 
 protected:
     CSRFProtectionPrivate *d_ptr;

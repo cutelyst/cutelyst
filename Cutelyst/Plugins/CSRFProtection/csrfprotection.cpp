@@ -51,6 +51,7 @@
 #define CONTEXT_CSRF_COOKIE_NEEDS_RESET "_csrfcookieneedsreset"
 #define CONTEXT_CSRF_PROCESSING_DONE "_csrfprocessingdone"
 #define CONTEXT_CSRF_COOKIE_SET "_csrfcookieset"
+#define CONTEXT_CSRF_CHECK_PASSED "_csrfcheckpassed"
 
 Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection")
 
@@ -199,6 +200,15 @@ QString CSRFProtection::getTokenFormField(Context *c)
     form = QStringLiteral("<input type=\"hidden\" name=\"%1\" value=\"%2\">").arg(csrf->d_ptr->formInputName, QString::fromLatin1(CSRFProtection::getToken(c)));
 
     return form;
+}
+
+bool CSRFProtection::checkPassed(Context *c)
+{
+    if (CSRFProtectionPrivate::secureMethods.contains(c->req()->method())) {
+        return true;
+    } else {
+        return c->property(CONTEXT_CSRF_CHECK_PASSED).toBool();
+    }
 }
 
 //void CSRFProtection::rotateToken(Context *c)
@@ -389,6 +399,8 @@ void CSRFProtectionPrivate::setToken(Context *c)
  */
 void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const QString &displayReason)
 {
+    c->setProperty(CONTEXT_CSRF_CHECK_PASSED, false);
+
     if (!csrf) {
         qCCritical(C_CSRFPROTECTION) << "CSRFProtection plugin not registered";
         return;
@@ -426,6 +438,7 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
 
 void CSRFProtectionPrivate::accept(Context *c)
 {
+    c->setProperty(CONTEXT_CSRF_CHECK_PASSED, true);
     c->setProperty(CONTEXT_CSRF_PROCESSING_DONE, true);
 }
 
