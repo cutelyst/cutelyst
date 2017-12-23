@@ -57,7 +57,7 @@ bool Memcached::setup(Application *app)
     const QVariantMap map = app->engine()->config(QStringLiteral("Cutelyst_Memcached_Plugin"));
     QStringList config;
 
-    const QStringList serverList = map.value(QStringLiteral("servers")).toString().split(QLatin1Char(';'));
+    const QStringList serverList = map.value(QStringLiteral("servers"), d->defaultConfig(QStringLiteral("servers"))).toString().split(QLatin1Char(';'));
 
     if (serverList.empty()) {
         config.push_back(QStringLiteral("--SERVER=localhost"));
