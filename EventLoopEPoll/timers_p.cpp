@@ -252,8 +252,8 @@ void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject* object
 
 bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 {
-    auto it = m_timers.constFind(timerId);
-    if (it != m_timers.constEnd()) {
+    auto it = m_timers.find(timerId);
+    if (it != m_timers.end()) {
         TimerInfo* data = it.value();
 
         int fd = data->fd;
@@ -273,8 +273,8 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 
         return true;
     } else {
-        auto zit = m_zero_timers.constFind(timerId);
-        if (zit != m_zero_timers.constEnd()) {
+        auto zit = m_zero_timers.find(timerId);
+        if (zit != m_zero_timers.end()) {
             ZeroTimer *data = zit.value();
             if (--data->refs == 0) {
                 delete data;
