@@ -45,10 +45,7 @@ void EventDispatcherEPollPrivate::createEpoll()
 
     struct epoll_event e;
     e.events  = EPOLLIN;
-    auto data = new EventFdInfo;
-    data->epPriv = this;
-    data->fd = m_event_fd;
-    e.data.ptr = data;
+    e.data.ptr = new EventFdInfo(m_event_fd, this);
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
     }

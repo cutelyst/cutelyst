@@ -10,6 +10,7 @@
 class EpollAbastractEvent
 {
 public:
+    explicit EpollAbastractEvent(int _fd = 0) : fd(_fd) {}
     virtual ~EpollAbastractEvent() {}
 
     int fd;
@@ -22,25 +23,31 @@ class EventDispatcherEPollPrivate;
 class EventFdInfo : public EpollAbastractEvent
 {
 public:
-    EventDispatcherEPollPrivate *epPriv;
+    EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv) : EpollAbastractEvent(_fd), epPriv(prv) {}
 
     virtual void process(struct epoll_event &e);
+
+    EventDispatcherEPollPrivate *epPriv;
 };
 
 class SocketNotifierInfo : public EpollAbastractEvent
 {
 public:
+    SocketNotifierInfo(int _fd) : EpollAbastractEvent(_fd) { }
+
+    virtual void process(struct epoll_event &ee);
+
     QSocketNotifier *r = nullptr;
     QSocketNotifier *w = nullptr;
     QSocketNotifier *x = nullptr;
     int events;
-
-    virtual void process(struct epoll_event &ee);
 };
 
 class ZeroTimer : public EpollAbastractEvent
 {
 public:
+    ZeroTimer(QObject *obj) : object(obj) {}
+
     virtual void process(struct epoll_event &e);
 
     QObject *object;
@@ -50,14 +57,16 @@ public:
 class TimerInfo : public EpollAbastractEvent
 {
 public:
-    QObject* object;
+    TimerInfo(int fd, int _timerId, int _interval, QObject *obj)
+        : EpollAbastractEvent(fd), object(obj), timerId(_timerId), interval(_interval) {}
+
+    virtual void process(struct epoll_event &e);
+
+    QObject *object;
     struct timeval when;
     int timerId;
     int interval;
     Qt::TimerType type;
-    EventDispatcherEPollPrivate *epPriv;
-
-    virtual void process(struct epoll_event &e);
 };
 
 class EventDispatcherEPoll;

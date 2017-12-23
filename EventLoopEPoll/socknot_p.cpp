@@ -19,8 +19,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
     SocketNotifierInfo *data;
     HandleHash::Iterator it = m_handles.find(fd);
     if (it == m_handles.end()) {
-        data = new SocketNotifierInfo;
-        data->fd = fd;
+        data = new SocketNotifierInfo(fd);
         e.data.ptr = data;
 
         switch (notifier->type()) {

@@ -124,13 +124,14 @@ static void calculateCoarseTimerTimeout(TimerInfo* info, const struct timeval& n
 
 }
 
-void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo* info, const struct timeval& now, struct timeval& delta)
+void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta)
 {
     struct timeval tv_interval;
     struct timeval when;
     tv_interval.tv_sec  = info->interval / 1000;
     tv_interval.tv_usec = (info->interval % 1000) * 1000;
 
+    info->when = now;
     if (info->interval) {
         qlonglong tnow  = (qlonglong(now.tv_sec)        * 1000) + (now.tv_usec        / 1000);
         qlonglong twhen = (qlonglong(info->when.tv_sec) * 1000) + (info->when.tv_usec / 1000);
@@ -180,22 +181,16 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo* info, const st
 
 void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::TimerType type, QObject* object)
 {
-    // Sigle shot timers were crashing, and it seems it's fine to create a 0 interval timer
-//    Q_ASSERT(interval > 0);
+    Q_ASSERT(interval > 0);
 
     int fd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     if (Q_LIKELY(fd != -1)) {
         struct timeval now;
         gettimeofday(&now, 0);
 
-        auto data = new TimerInfo();
-        data->object   = object;
-        data->when     = now; // calculateNextTimeout() will take care of info->when
-        data->timerId  = timerId;
-        data->interval = interval;
-        data->fd       = fd;
-        data->type     = type;
-        data->epPriv   = this;
+        auto data = new TimerInfo(fd, timerId, interval, object);
+        data->when = now;
+        data->type = type;
 
         if (Qt::CoarseTimer == type) {
             if (interval >= 20000) {
@@ -237,17 +232,14 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
 
         m_timers.insert(timerId, data);
         m_handles.insert(fd, data);
-    }
-    else {
+    } else {
         qErrnoWarning("%s: timerfd_create() failed", Q_FUNC_INFO);
     }
 }
 
 void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject* object)
 {
-    auto data = new ZeroTimer;
-    data->object = object;
-    m_zero_timers.insert(timerId, data);
+    m_zero_timers.insert(timerId, new ZeroTimer(object));
 }
 
 bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
