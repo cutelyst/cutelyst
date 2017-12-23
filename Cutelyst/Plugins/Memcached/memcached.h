@@ -81,7 +81,7 @@ class MemcachedPrivate;
  *
  * <H3>Logging and return types</H3>
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All methods provide
- * the possibility to specify a pointer to an MemcachedReturnType variable that can provide further information
+ * the possibility to specify a pointer to a MemcachedReturnType variable that can provide further information
  * about occured errors if methods return @c false or empty results.
  *
  * <H3>Usage example</H3>
@@ -122,6 +122,19 @@ class MemcachedPrivate;
  *
  * To build this plugin you need the development and header files for <A HREF="http://libmemcached.org">libmemcached</A>
  * and run cmake with <CODE>-DPLUGIN_MEMCACHED:BOOL=ON</CODE>.
+ *
+ * <H4>Unit test</H4>
+ *
+ * Enabling the build of the %Memcached plugin will also enable the unit tests for this plugin. To perform the unit tests,
+ * there has to be at least one memcached server running. By default, the test uses a memcached server on localhost and
+ * default port 11211. To improve testing and/or to use other and/or multiple servers, you can set the @c CUTELYST_MEMCACHED_TEST_SERVERS
+ * environment variable in your build environment to define different servers. The syntax is the same as for adding servers
+ * in the configuration file. If you have for examble two servers, one on default location and another one on a unix socket,
+ * use the following for in bash:
+ *
+ * @code{.sh}
+ * export CUTELYST_MEMCACHED_TEST_SERVERS=localhost;/tmp/memcached.sock
+ * @endcode
  *
  * @since Cutelyst 1.11.0
  */
