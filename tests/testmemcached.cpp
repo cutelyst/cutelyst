@@ -909,10 +909,15 @@ TestEngine* TestMemcached::getEngine()
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     auto plugin = new Memcached(app);
+    QString servers = QString::fromLocal8Bit(qgetenv("CUTELYST_MEMCACHED_TEST_SERVERS"));
+    if (servers.isEmpty()) {
+        servers = QStringLiteral("localhost");
+    }
     QVariantMap pluginConfig{
         {QStringLiteral("binary_protocol"), true},
         {QStringLiteral("compression"), true},
-        {QStringLiteral("compression_threshold"), 10}
+        {QStringLiteral("compression_threshold"), 10},
+        {QStringLiteral("servers"), servers}
     };
     plugin->setDefaultConfig(pluginConfig);
     new MemcachedTest(app);
