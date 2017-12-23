@@ -83,27 +83,30 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         int timeout = 0;
 
         if (!exclude_timers && !m_zero_timers.isEmpty()) {
-            auto it = m_zero_timers.begin();
-            while (it != m_zero_timers.end()) {
-                ZeroTimer &data = it.value();
-                if (data.active) {
-                    data.active = false;
+            auto it = m_zero_timers.constBegin();
+            while (it != m_zero_timers.constEnd()) {
+                ZeroTimer *data = it.value();
+                ++data->refs;
+                ++it;
+            }
+
+            it = m_zero_timers.constBegin();
+            while (it != m_zero_timers.constEnd()) {
+                ZeroTimer *data = it.value();
+                if (data->refs && data->active) {
+                    data->active = false;
 
                     QTimerEvent event(it.key());
-                    // Single shot timers were crashing here, with suposedly invalid pointers
-                    // thus a regular timer is being registered
-                    QCoreApplication::sendEvent(data.object, &event);
-                    result = true;
+                    QCoreApplication::sendEvent(data->object, &event);
 
-                    // I believe the send event might change the m_zero_timers
-                    // hash it's the only explanation to this:
-                    auto i = m_zero_timers.find(it.key());
-                    if (i != m_zero_timers.end()) {
-                        ZeroTimer &data = it.value();
-                        if (!data.active) {
-                            data.active = true;
-                        }
+                    result = true;
+                    if (!data->active) {
+                        data->active = true;
                     }
+                }
+
+                if (--data->refs == 0) {
+                    delete data;
                 }
 
                 ++it;
@@ -223,4 +226,9 @@ void TimerInfo::process(epoll_event &e)
             qErrnoWarning("%s: timerfd_settime() failed", Q_FUNC_INFO);
         }
     }
+}
+
+void ZeroTimer::process(epoll_event &e)
+{
+    Q_UNUSED(e)
 }

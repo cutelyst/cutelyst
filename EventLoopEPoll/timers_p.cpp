@@ -245,16 +245,15 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
 
 void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject* object)
 {
-    ZeroTimer data;
-    data.object = object;
-    data.active = true;
+    auto data = new ZeroTimer;
+    data->object = object;
     m_zero_timers.insert(timerId, data);
 }
 
 bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 {
-    auto it = m_timers.find(timerId);
-    if (it != m_timers.end()) {
+    auto it = m_timers.constFind(timerId);
+    if (it != m_timers.constEnd()) {
         TimerInfo* data = it.value();
 
         int fd = data->fd;
@@ -273,9 +272,20 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
         }
 
         return true;
+    } else {
+        auto zit = m_zero_timers.constFind(timerId);
+        if (zit != m_zero_timers.constEnd()) {
+            ZeroTimer *data = zit.value();
+            if (--data->refs == 0) {
+                delete data;
+            }
+
+            m_zero_timers.erase(zit);
+            return true;
+        }
     }
 
-    return m_zero_timers.remove(timerId) > 0;
+    return false;
 }
 
 bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
@@ -309,12 +319,14 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
 
     auto zit = m_zero_timers.begin();
     while (zit != m_zero_timers.end()) {
-        ZeroTimer &data = zit.value();
-        if (object == data.object) {
+        ZeroTimer *data = zit.value();
+        if (object == data->object) {
             result = true;
-            zit    = m_zero_timers.erase(zit);
-        }
-        else {
+            zit = m_zero_timers.erase(zit);
+            if (--data->refs == 0) {
+                delete data;
+            }
+        } else {
             ++zit;
         }
     }
@@ -340,8 +352,8 @@ QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::register
 
     auto zit = m_zero_timers.constBegin();
     while (zit != m_zero_timers.constEnd()) {
-        const ZeroTimer &data = zit.value();
-        if (object == data.object) {
+        const ZeroTimer *data = zit.value();
+        if (object == data->object) {
             QAbstractEventDispatcher::TimerInfo ti(it.key(), 0, Qt::PreciseTimer);
             res.append(ti);
         }

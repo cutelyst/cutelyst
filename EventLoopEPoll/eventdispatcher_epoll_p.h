@@ -7,11 +7,6 @@
 
 #include <QtCore/QAtomicInt>
 
-struct ZeroTimer {
-    QObject* object;
-    bool active;
-};
-
 class EpollAbastractEvent
 {
 public:
@@ -43,6 +38,15 @@ public:
     virtual void process(struct epoll_event &ee);
 };
 
+class ZeroTimer : public EpollAbastractEvent
+{
+public:
+    virtual void process(struct epoll_event &e);
+
+    QObject *object;
+    bool active = true;
+};
+
 class TimerInfo : public EpollAbastractEvent
 {
 public:
@@ -55,10 +59,6 @@ public:
 
     virtual void process(struct epoll_event &e);
 };
-
-//Q_DECLARE_TYPEINFO(SocketNotifierInfo, Q_PRIMITIVE_TYPE);
-//Q_DECLARE_TYPEINFO(TimerInfo, Q_PRIMITIVE_TYPE);
-//Q_DECLARE_TYPEINFO(HandleData, Q_PRIMITIVE_TYPE);
 
 class EventDispatcherEPoll;
 
@@ -83,7 +83,7 @@ public:
     typedef QHash<int, EpollAbastractEvent*> HandleHash;
     typedef QHash<int, TimerInfo*> TimerHash;
     typedef QHash<QSocketNotifier*, SocketNotifierInfo*> SocketNotifierHash;
-    typedef QHash<int, ZeroTimer> ZeroTimerHash;
+    typedef QHash<int, ZeroTimer*> ZeroTimerHash;
 
 private:
     Q_DISABLE_COPY(EventDispatcherEPollPrivate)
