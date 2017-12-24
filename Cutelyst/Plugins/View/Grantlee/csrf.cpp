@@ -70,3 +70,5 @@ void CSRF::render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const
     qWarning("%s", "The CSRF protection plugin has not been built.");
 #endif
 }
+
+#include "moc_csrf.cpp"

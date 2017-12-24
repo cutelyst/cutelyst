@@ -455,3 +455,4 @@ void ContextPrivate::statsFinishExecute(const QString &statsInfo)
 }
 
 #include "moc_context.cpp"
+#include "moc_context_p.cpp"

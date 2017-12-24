@@ -118,4 +118,3 @@ Q_SIGNALS:
 }
 
 #endif // WSGI_P_H
-

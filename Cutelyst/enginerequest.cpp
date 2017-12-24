@@ -201,3 +201,5 @@ bool EngineRequest::webSocketHandshakeDo(Context *c, const QString &key, const Q
     Q_UNUSED(protocol)
     return false;
 }
+
+#include "moc_enginerequest.cpp"

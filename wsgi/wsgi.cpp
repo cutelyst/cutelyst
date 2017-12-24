@@ -1456,4 +1456,3 @@ void WSGIPrivate::applyConfig(const QVariantMap &config)
         ++it;
     }
 }
-

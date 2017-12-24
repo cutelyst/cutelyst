@@ -116,3 +116,5 @@ QVector<int> Pagination::pages() const
 {
     return value(QStringLiteral("pages")).value<QVector<int> >();
 }
+
+#include "moc_pagination.cpp"

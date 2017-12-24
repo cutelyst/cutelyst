@@ -126,7 +126,7 @@ bool EventDispatcherEPoll::unregisterTimer(int timerId)
     return d->unregisterTimer(timerId);
 }
 
-bool EventDispatcherEPoll::unregisterTimers(QObject* object)
+bool EventDispatcherEPoll::unregisterTimers(QObject *object)
 {
 #ifndef QT_NO_DEBUG
     if (!object) {
@@ -144,7 +144,7 @@ bool EventDispatcherEPoll::unregisterTimers(QObject* object)
     return d->unregisterTimers(object);
 }
 
-QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPoll::registeredTimers(QObject* object) const
+QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPoll::registeredTimers(QObject *object) const
 {
     if (!object) {
         qWarning("%s: invalid argument", Q_FUNC_INFO);
