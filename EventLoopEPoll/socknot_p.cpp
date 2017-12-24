@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #include <QtCore/QCoreApplication>
 #include <QtCore/QEvent>
 #include <QtCore/QPointer>
@@ -6,7 +23,7 @@
 #include <errno.h>
 #include "eventdispatcher_epoll_p.h"
 
-void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifier)
+void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifier)
 {
     Q_ASSERT(notifier != 0);
     Q_ASSUME(notifier != 0);
@@ -51,7 +68,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
 
         m_handles.insert(fd, data);
     } else {
-        data = static_cast<SocketNotifierInfo*>(it.value());
+        data = static_cast<SocketNotifierInfo *>(it.value());
         Q_ASSERT(data);
 
         QSocketNotifier **n = nullptr;
@@ -101,7 +118,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier* notifi
     m_notifiers.insert(notifier, data);
 }
 
-void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier* notifier)
+void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *notifier)
 {
     Q_ASSERT(notifier != 0);
     Q_ASSUME(notifier != 0);
@@ -148,9 +165,7 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier* noti
             }
 
             m_handles.erase(hi);
-            if (--info->refs == 0) {
-                delete info;
-            }
+            info->deref();
         }
 
         if (Q_UNLIKELY(res != 0)) {

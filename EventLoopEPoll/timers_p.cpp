@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #include <QtCore/QCoreApplication>
 #include <QtCore/QEvent>
 #include <QtCore/QPair>
@@ -10,7 +27,7 @@
 
 namespace {
 
-static void calculateCoarseTimerTimeout(TimerInfo* info, const struct timeval& now, struct timeval& when)
+static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, struct timeval &when)
 {
     Q_ASSERT(info->interval > 20);
     // The coarse timer works like this:
@@ -179,7 +196,7 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
     timersub(&when, &now, &delta);
 }
 
-void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::TimerType type, QObject* object)
+void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::TimerType type, QObject *object)
 {
     Q_ASSERT(interval > 0);
 
@@ -237,16 +254,16 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
     }
 }
 
-void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject* object)
+void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject *object)
 {
-    m_zero_timers.insert(timerId, new ZeroTimer(object));
+    m_zero_timers.insert(timerId, new ZeroTimer(timerId, object));
 }
 
 bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 {
     auto it = m_timers.find(timerId);
     if (it != m_timers.end()) {
-        TimerInfo* data = it.value();
+        TimerInfo *data = it.value();
 
         int fd = data->fd;
 
@@ -255,22 +272,16 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
         }
 
         close(fd);
+        data->deref();
 
         m_timers.erase(it); // Hash is not rehashed
         m_handles.remove(fd);
-
-        if (--data->refs == 0) {
-            delete data;
-        }
-
         return true;
     } else {
         auto zit = m_zero_timers.find(timerId);
         if (zit != m_zero_timers.end()) {
             ZeroTimer *data = zit.value();
-            if (--data->refs == 0) {
-                delete data;
-            }
+            data->deref();
 
             m_zero_timers.erase(zit);
             return true;
@@ -280,12 +291,12 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
     return false;
 }
 
-bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
+bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
 {
     bool result = false;
     auto it = m_timers.begin();
     while (it != m_timers.end()) {
-        TimerInfo* data = it.value();
+        TimerInfo *data = it.value();
 
         if (object == data->object) {
             result = true;
@@ -297,9 +308,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
 
             close(fd);
 
-            if (--data->refs == 0) {
-                delete data;
-            }
+            data->deref();
 
             it = m_timers.erase(it); // Hash is not rehashed
             m_handles.remove(fd);
@@ -315,9 +324,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
         if (object == data->object) {
             result = true;
             zit = m_zero_timers.erase(zit);
-            if (--data->refs == 0) {
-                delete data;
-            }
+            data->deref();
         } else {
             ++zit;
         }
@@ -326,9 +333,10 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject* object)
     return result;
 }
 
-QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::registeredTimers(QObject* object) const
+QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::registeredTimers(QObject *object) const
 {
     QList<QAbstractEventDispatcher::TimerInfo> res;
+    res.reserve(m_timers.size() + m_zero_timers.size());
 
     auto it = m_timers.constBegin();
     while (it != m_timers.constEnd()) {

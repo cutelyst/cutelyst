@@ -1,6 +1,24 @@
+/*
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #include <QtCore/QCoreApplication>
 #include <QPointer>
 #include <QSocketNotifier>
+#include <QVector>
 
 #include <unistd.h>
 #include <sys/epoll.h>
@@ -17,7 +35,7 @@ EventDispatcherEPollPrivate::EventDispatcherEPollPrivate(EventDispatcherEPoll* c
     createEpoll();
 }
 
-EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate(void)
+EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate()
 {
     close(m_event_fd);
     close(m_epoll_fd);
@@ -44,7 +62,7 @@ void EventDispatcherEPollPrivate::createEpoll()
     }
 
     struct epoll_event e;
-    e.events  = EPOLLIN;
+    e.events = EPOLLIN;
     e.data.ptr = new EventFdInfo(m_event_fd, this);
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
@@ -80,20 +98,20 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         int timeout = 0;
 
         if (!exclude_timers && !m_zero_timers.isEmpty()) {
+            QVector<ZeroTimer*> timers;
             auto it = m_zero_timers.constBegin();
             while (it != m_zero_timers.constEnd()) {
                 ZeroTimer *data = it.value();
-                ++data->refs;
+                data->ref();
+                timers.push_back(data);
                 ++it;
             }
 
-            it = m_zero_timers.constBegin();
-            while (it != m_zero_timers.constEnd()) {
-                ZeroTimer *data = it.value();
-                if (data->refs && data->active) {
+            for (ZeroTimer *data : timers) {
+                if (data->canProcess() && data->active) {
                     data->active = false;
 
-                    QTimerEvent event(it.key());
+                    QTimerEvent event(data->timerId);
                     QCoreApplication::sendEvent(data->object, &event);
 
                     result = true;
@@ -102,11 +120,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
                     }
                 }
 
-                if (--data->refs == 0) {
-                    delete data;
-                }
-
-                ++it;
+                data->deref();
             }
         }
 
@@ -123,19 +137,17 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         for (int i = 0; i < n_events; ++i) {
             struct epoll_event &e = events[i];
             auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
-            ++data->refs;
+            data->ref();
         }
 
         for (int i = 0; i < n_events; ++i) {
             struct epoll_event &e = events[i];
             auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
-            if (data->refs) {
+            if (data->canProcess()) {
                 data->process(e);
             }
 
-            if (--data->refs == 0) {
-                delete data;
-            }
+            data->deref();
         }
     }
 
@@ -204,7 +216,7 @@ void TimerInfo::process(epoll_event &e)
     QCoreApplication::sendEvent(object, &event);
 
     // Check if we are NOT going to be deleted
-    if (refs > 1) {
+    if (canProcess()) {
         struct timeval now;
         struct timeval delta;
         struct itimerspec spec;

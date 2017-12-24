@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 #ifndef EVENTDISPATCHER_EPOLL_P_H
 #define EVENTDISPATCHER_EPOLL_P_H
 
@@ -13,10 +30,14 @@ public:
     explicit EpollAbastractEvent(int _fd = 0) : fd(_fd) {}
     virtual ~EpollAbastractEvent() {}
 
+    virtual void process(struct epoll_event &e) = 0;
+
+    inline bool canProcess() { return refs > 1; }
+    inline void ref() { ++refs; }
+    inline void deref() { if (--refs == 0) delete this; }
+
     int fd;
     int refs = 1;
-
-    virtual void process(struct epoll_event &e) = 0;
 };
 
 class EventDispatcherEPollPrivate;
@@ -46,11 +67,12 @@ public:
 class ZeroTimer : public EpollAbastractEvent
 {
 public:
-    ZeroTimer(QObject *obj) : object(obj) {}
+    ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
 
     virtual void process(struct epoll_event &e);
 
     QObject *object;
+    int timerId;
     bool active = true;
 };
 
@@ -74,20 +96,20 @@ class EventDispatcherEPoll;
 class Q_DECL_HIDDEN EventDispatcherEPollPrivate {
 public:
     EventDispatcherEPollPrivate(EventDispatcherEPoll* const q);
-    ~EventDispatcherEPollPrivate(void);
+    ~EventDispatcherEPollPrivate();
     void createEpoll();
     bool processEvents(QEventLoop::ProcessEventsFlags flags);
-    void registerSocketNotifier(QSocketNotifier* notifier);
-    void unregisterSocketNotifier(QSocketNotifier* notifier);
+    void registerSocketNotifier(QSocketNotifier *notifier);
+    void unregisterSocketNotifier(QSocketNotifier *notifier);
     void registerTimer(int timerId, int interval, Qt::TimerType type, QObject* object);
-    void registerZeroTimer(int timerId, QObject* object);
+    void registerZeroTimer(int timerId, QObject *object);
     bool unregisterTimer(int timerId);
-    bool unregisterTimers(QObject* object);
-    QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject* object) const;
+    bool unregisterTimers(QObject *object);
+    QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject *object) const;
     int remainingTime(int timerId) const;
     void wake_up_handler();
 
-    static void calculateNextTimeout(TimerInfo* info, const struct timeval& now, struct timeval& delta);
+    static void calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta);
 
     typedef QHash<int, EpollAbastractEvent*> HandleHash;
     typedef QHash<int, TimerInfo*> TimerHash;
