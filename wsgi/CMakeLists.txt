@@ -1,4 +1,4 @@
-option(USE_JEMALLOC "Use jemalloc memory allocator" OFF)
+option(USE_JEMALLOC "Use jemalloc memory allocator" ${BUILD_ALL})
 
 if (USE_JEMALLOC)
     find_package(JeMalloc REQUIRED)
@@ -96,6 +96,7 @@ set(cutelyst_wsgi_SRCS
 add_executable(cutelyst-wsgi
     ${cutelyst_wsgi_SRCS}
 )
+
 target_compile_features(cutelyst-wsgi
   PUBLIC
     cxx_generalized_initializers

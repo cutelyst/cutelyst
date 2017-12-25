@@ -61,10 +61,15 @@ endif()
 # Plugin options
 #
 include(CMakeDependentOption)
-option(PLUGIN_MEMCACHED "Enables the memcached plugin")
-cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" OFF)
-option(PLUGIN_STATICCOMPRESSED "Enables the StaticCompressed plugin")
-option(PLUGIN_CSRFPROTECTION "Enables the CSRF protection plugin")
+option(BUILD_ALL "Build all available modules/plugins" OFF)
+option(PLUGIN_MEMCACHED "Enables the memcached plugin" ${BUILD_ALL})
+cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" ${BUILD_ALL})
+option(PLUGIN_STATICCOMPRESSED "Enables the StaticCompressed plugin" ${BUILD_ALL})
+option(PLUGIN_CSRFPROTECTION "Enables the CSRF protection plugin" ${BUILD_ALL})
+option(PLUGIN_VIEW_EMAIL "Enables View::Email plugin" ${BUILD_ALL})
+option(PLUGIN_VIEW_GRANTLEE "Enables View::Grantlee plugin" ${BUILD_ALL})
+option(PLUGIN_VIEW_CLEARSILVER "Enables View::ClearSilver plugin" ${BUILD_ALL})
+option(PLUGIN_UWSGI "Enables uWSGI plugin" ${BUILD_ALL})
 
 # NONE
 
@@ -86,9 +91,6 @@ set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
-set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
-find_program(UWSGI_EXEC_PATH NAMES uwsgi)
-set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
@@ -165,10 +167,14 @@ endif()
 
 add_subdirectory(wsgi)
 
-find_program(UWSGI_BIN NAMES uwsgi)
-if (UWSGI_EXEC_PATH)
+if (PLUGIN_UWSGI)
+    find_program(UWSGI_EXEC_PATH NAMES uwsgi)
+    set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
+    find_program(UWSGI_BIN NAMES uwsgi)
+    set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
     add_subdirectory(uwsgiEngine)
-endif()
+    message(STATUS "PLUGIN: uWSGI, enabled.")
+endif ()
 
 add_subdirectory(cmd)
 
