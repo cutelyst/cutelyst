@@ -114,6 +114,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5WSGI.pc.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5WSGI.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 if (JEMALLOC_FOUND)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} " -Wl,--no-as-needed")
     target_link_libraries(cutelyst-wsgi ${JEMALLOC_LIBRARIES})
 endif()
 
