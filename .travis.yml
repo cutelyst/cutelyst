@@ -48,6 +48,7 @@ before_script:
        -DPLUGIN_VIEW_GRANTLEE=off
        -DPLUGIN_VIEW_CLEARSILVER=off
        -DPLUGIN_MEMCACHED=off
+       -DPLUGIN_UWSGI=off
        -DUSE_JEMALLOC=off
      ;fi
    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
