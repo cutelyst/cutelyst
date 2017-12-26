@@ -55,7 +55,6 @@ before_script:
        cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DENABLE_MAINTAINER_CFLAGS=on -DBUILD_ALL=on
        -DPLUGIN_VIEW_EMAIL=off
        -DPLUGIN_VIEW_GRANTLEE=off
-       -
      ;fi
 
 script:
