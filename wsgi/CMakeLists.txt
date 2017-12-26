@@ -1,8 +1,6 @@
-if (LINUX)
-    option(USE_JEMALLOC "Use jemalloc memory allocator" ${BUILD_ALL})
-    if (USE_JEMALLOC)
-        find_package(JeMalloc REQUIRED)
-    endif ()
+option(USE_JEMALLOC "Use jemalloc memory allocator" ${BUILD_ALL})
+if (USE_JEMALLOC)
+    find_package(JeMalloc REQUIRED)
 endif ()
 
 set(cutelyst_wsgi_SRC
