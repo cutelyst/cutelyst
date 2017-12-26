@@ -47,12 +47,14 @@ before_script:
        -DPLUGIN_VIEW_EMAIL=off
        -DPLUGIN_VIEW_GRANTLEE=off
        -DPLUGIN_VIEW_CLEARSILVER=off
+       -DPLUGIN_MEMCACHED=off
        -DUSE_JEMALLOC=off
      ;fi
    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
        cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DENABLE_MAINTAINER_CFLAGS=on -DBUILD_ALL=on
        -DPLUGIN_VIEW_EMAIL=off
        -DPLUGIN_VIEW_GRANTLEE=off
+       -
      ;fi
 
 script:
