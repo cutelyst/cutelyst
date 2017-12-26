@@ -59,8 +59,8 @@ before_script:
      ;fi
 
 script:
-   - cmake --build . --config $CONFIG
-   - ctest --output-on-failure
+   - cmake --build . --config $CONFIG &&
+     ctest --output-on-failure
 
 notifications:
   email:
