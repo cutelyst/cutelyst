@@ -664,7 +664,7 @@ bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
-        qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\"", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
+        qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\": %s", _key.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
@@ -694,7 +694,7 @@ bool Memcached::existByKey(const QString &groupKey, const QString &key, Memcache
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
-        qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\" in group \"%s\": %s", _key.constData(), _groupKey.constData());
+        qCWarning(C_MEMCACHED, "Failed to check existence of key \"%s\" in group \"%s\"", _key.constData(), _groupKey.constData());
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
