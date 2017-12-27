@@ -36,9 +36,13 @@ public:
     ~MemcachedPrivate()
     {
         if (memc) {
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+#if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
             if (saslEnabled) {
                 memcached_destroy_sasl_auth_data(memc);
             }
+#endif
+#endif
             memcached_free(memc);
         }
     }
