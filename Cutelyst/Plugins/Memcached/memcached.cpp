@@ -206,6 +206,8 @@ bool Memcached::setup(Application *app)
             qCInfo(C_MEMCACHED, "Encryption: disabled");
         }
 
+#ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
+#if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
         const QString saslUser = map.value(QStringLiteral("sasl_user")).toString();
         const QString saslPass = map.value(QStringLiteral("sasl_password")).toString();
         if (!saslUser.isEmpty() && !saslPass.isEmpty()) {
@@ -219,6 +221,8 @@ bool Memcached::setup(Application *app)
         } else {
             qCInfo(C_MEMCACHED, "SASL authentication: disabled");
         }
+#endif
+#endif
 
         if (d->memc) {
             memcached_free(d->memc);
