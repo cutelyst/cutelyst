@@ -35,16 +35,11 @@ public:
 
     QVariantMap createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body);
 
-    virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
-
     virtual bool init() override;
 
     inline static const char *httpStatusMessage(quint16 status, int *len = nullptr) {
         return Engine::httpStatusMessage(status, len);
     }
-
-protected:
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) override;
 };
 
 class SequentialBuffer : public QIODevice

@@ -97,24 +97,6 @@ public:
      */
     bool xJsonHeader() const;
 
-    /**
-     * Specify which stash key is exposed as a JSON response,
-     * this will change exposeStashMode() to ViewJson::String
-     */
-    Q_DECL_DEPRECATED void setExposeStashString(const QString &key);
-
-    /**
-     * Specify which stash keys are exposed as a JSON response,
-     * this will change exposeStashMode() to ViewJson::StringList
-     */
-    Q_DECL_DEPRECATED void setExposeStashStringList(const QStringList &keys);
-
-    /**
-     * Specify which stash keys are exposed as a JSON response,
-     * this will change exposeStashMode() to ViewJson::RegularExpression
-     */
-    Q_DECL_DEPRECATED void setExposeStashRegularExpression(const QRegularExpression &re);
-
     QByteArray render(Context *c) const final;
 
 protected:

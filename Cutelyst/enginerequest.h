@@ -135,23 +135,20 @@ public:
     /*! The timestamp of the start of headers */
     quint64 startOfRequest;
 
+    /*! Connection status */
+    Status status = InitialState;
+
+    /*! Pointer to parent Engine class */
+    Engine *engine;
+
     /*! The QIODevice containing the body (if any) of the request */
     QIODevice *body = nullptr;
-
-    /*! The internal pointer of the request, to be used for mapping this request to the real request */
-    void *requestPtr;// TODO remove on CUTELYST2
 
     /*! The remote/client port */
     quint16 remotePort = 0;
 
     /*! If the connection is secure HTTPS */
     bool isSecure = false;
-
-    /*! Pointer to parent Engine class */
-    Engine *engine;// TODO REORDER on CUTELYST2
-
-    /*! Connection status */
-    Status status = InitialState;// TODO REORDER on CUTELYST2
 };
 
 }

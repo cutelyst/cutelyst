@@ -29,11 +29,6 @@ Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver")
 
 using namespace Cutelyst;
 
-ClearSilver::ClearSilver(QObject *parent) : View(parent)
-  , d_ptr(new ClearSilverPrivate)
-{
-}
-
 ClearSilver::ClearSilver(QObject *parent, const QString &name) : View(parent, name)
   , d_ptr(new ClearSilverPrivate)
 {

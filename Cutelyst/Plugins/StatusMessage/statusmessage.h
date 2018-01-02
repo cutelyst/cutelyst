@@ -101,16 +101,6 @@ public:
      */
     static ParamsMultiMap statusQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
 
-    /**
-     * DEPRECATED \sa error Saves an error message returning the generated message id (mid)
-     */
-    static Q_DECL_DEPRECATED QString setError(Context *c, const QString &msg);
-
-    /**
-     * DEPRECATED \sa status Saves a status message returning the generated message id (mid)
-     */
-    static Q_DECL_DEPRECATED QString setStatus(Context *c, const QString &msg);
-
 protected:
     /**
      * Reimplemented from Plugin::setup().

@@ -121,18 +121,6 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     return ret;
 }
 
-bool TestEngine::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
-{
-    return false;
-}
-
-qint64 TestEngine::doWrite(Context *c, const char *data, qint64 len, void *engineData)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(engineData)
-    return -1;
-}
-
 bool TestEngine::init()
 {
     return initApplication() && postForkApplication();

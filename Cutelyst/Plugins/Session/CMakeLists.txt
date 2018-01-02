@@ -1,23 +1,10 @@
-find_package(PkgConfig QUIET)
-if (PkgConfig_FOUND)
-    pkg_search_module(MEMCACHED QUIET libmemcached>=1.0.10)
-endif (PkgConfig_FOUND)
-
-if (MEMCACHED_FOUND)
-    message(STATUS "PLUGIN: Session, enabling SessionStoreMemcached.")
-    set(sessionstorememcached_SRC sessionstorememcached.cpp sessionstorememcached_p.h)
-    set(sessionstorememcached_HEADERS sessionstorememcached.h)
-endif (MEMCACHED_FOUND)
-
 set(plugin_session_SRC
-    ${sessionstorememcached_SRC}
     sessionstorefile.cpp
     session.cpp
     session_p.h
 )
 
 set(plugin_session_HEADERS
-    ${sessionstorememcached_HEADERS}
     sessionstorefile.h
     session.h
     Session
@@ -35,15 +22,8 @@ set_target_properties(Cutelyst2Qt5Session PROPERTIES
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-if (MEMCACHED_FOUND)
-    target_include_directories(Cutelyst2Qt5Session
-        PUBLIC ${MEMCACHED_INCLUDE_DIRS}
-    )
-endif (MEMCACHED_FOUND)
-
 target_link_libraries(Cutelyst2Qt5Session
     PRIVATE Cutelyst2Qt5::Core
-    ${MEMCACHED_LIBRARIES}
 )
 
 set_property(TARGET Cutelyst2Qt5Session PROPERTY PUBLIC_HEADER ${plugin_session_HEADERS})

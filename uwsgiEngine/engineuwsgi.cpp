@@ -67,17 +67,6 @@ void uWSGI::setThread(QThread *thread)
     }
 }
 
-qint64 uWSGI::doWrite(Context *c, const char *data, qint64 len, void *engineData)
-{
-    if (uwsgi_response_write_body_do(static_cast<wsgi_request*>(engineData),
-                                     const_cast<char *>(data),
-                                     len) != UWSGI_OK) {
-        qCWarning(CUTELYST_UWSGI) << "Failed to write body";
-        return -1;
-    }
-    return len;
-}
-
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
     Q_FOREVER {
@@ -280,35 +269,6 @@ void uWSGI::stop()
 quint64 uWSGI::time()
 {
     return uwsgi_micros();
-}
-
-bool uWSGI::finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData)
-{
-    auto wsgi_req = static_cast<wsgi_request*>(engineData);
-
-    if (uwsgi_response_prepare_headers_int(wsgi_req, status)) {
-        return false;
-    }
-
-    const auto headersData = headers.data();
-    auto it = headersData.constBegin();
-    const auto endIt = headersData.constEnd();
-    while (it != endIt) {
-        const QByteArray key = camelCaseHeader(it.key()).toLatin1();
-        const QByteArray value = it.value().toLatin1();
-
-        if (uwsgi_response_add_header(wsgi_req,
-                                      const_cast<char*>(key.constData()),
-                                      key.size(),
-                                      const_cast<char*>(value.constData()),
-                                      value.size())) {
-            return false;
-        }
-
-        ++it;
-    }
-
-    return true;
 }
 
 bool uWSGI::init()

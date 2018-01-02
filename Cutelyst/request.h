@@ -451,13 +451,6 @@ public:
     Engine *engine() const;
 
     /**
-     * Returns the internal pointer that references a request in the engine.
-     * You should never use this method.
-     */
-    Q_DECL_DEPRECATED
-    void *engineData();
-
-    /**
      * Constructs a new Request object.
      */
     Request(RequestPrivate *prv);

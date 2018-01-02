@@ -354,12 +354,7 @@ bool Application::setup(Engine *engine)
     return false;
 }
 
-void Application::handleRequest(Request *req)
-{
-    delete handleRequest2(req);
-}
-
-Context *Application::handleRequest2(Request *req)
+Context *Application::handleRequest(Request *req)
 {
     Q_D(Application);
 

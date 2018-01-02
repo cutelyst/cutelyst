@@ -65,7 +65,7 @@ public:
     /**
      * Expand the action to a list of actions which is used in chained
      */
-    virtual Action *expandAction(Context *c, Action *action) const;
+    virtual Action *expandAction(const Context *c, Action *action) const;
 
     /**
      * @brief registerAction

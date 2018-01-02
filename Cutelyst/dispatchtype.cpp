@@ -30,7 +30,7 @@ DispatchType::~DispatchType()
 {
 }
 
-Action *DispatchType::expandAction(Context *c, Action *action) const
+Action *DispatchType::expandAction(const Context *c, Action *action) const
 {
     Q_UNUSED(c)
     Q_UNUSED(action)

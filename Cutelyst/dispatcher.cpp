@@ -285,7 +285,7 @@ QString Dispatcher::uriForAction(Action *action, const QStringList &captures) co
     return ret;
 }
 
-Action *Dispatcher::expandAction(Context *c, Action *action) const
+Action *Dispatcher::expandAction(const Context *c, Action *action) const
 {
     Q_D(const Dispatcher);
     for (DispatchType *dispatch : d->dispatchers) {

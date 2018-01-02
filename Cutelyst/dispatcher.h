@@ -82,7 +82,7 @@ public:
      * Expand an action into a full representation of the dispatch. mostly useful for chained where the
      * returned Action will be of ActionChain type, other actions will just return a single action.
      */
-    Action *expandAction(Context *c, Action *action) const;
+    Action *expandAction(const Context *c, Action *action) const;
 
     /**
      * Returns a list of all dispatchers currently in use, if the dispatcher doesn't successfuly

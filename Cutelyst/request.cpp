@@ -383,12 +383,6 @@ Engine *Request::engine() const
     return d->engineRequest->engine;
 }
 
-void *Request::engineData()
-{
-    Q_D(Request);
-    return d->engineRequest;
-}
-
 void RequestPrivate::parseUrlQuery() const
 {
     // TODO move this to the asignment of query

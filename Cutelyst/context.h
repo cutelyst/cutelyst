@@ -386,20 +386,17 @@ public:
     /**
      * Gets an action in a given namespace.
      */
-    // TODO C2 mark as const
-    Action *getAction(const QString &action, const QString &ns = QString());
+    Action *getAction(const QString &action, const QString &ns = QString()) const;
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    // TODO C2 mark as const
-    QVector<Action *> getActions(const QString &action, const QString &ns = QString());
+    QVector<Action *> getActions(const QString &action, const QString &ns = QString()) const;
 
     /**
      * Returns all registered plugins
      */
-    // TODO C2 mark as const
-    QVector<Plugin *> plugins();
+    QVector<Plugin *> plugins() const;
 
     /*!
      * Returns the registered plugin that casts to the template type \p T
@@ -456,13 +453,6 @@ public:
      * Returns a configuration mapping for all configuration read
      */
     QVariantMap config() const;
-
-    /**
-     * Pointer to internal engine data about the current request.
-     * \note It's only used by Engines subclasses, Application code should not use it.
-     */
-    Q_DECL_DEPRECATED
-    void *engineData();
 
     /**
      * Translates the \a sourceText for the given \a context into the language defined by locale().

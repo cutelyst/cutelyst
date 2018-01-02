@@ -50,7 +50,6 @@ Context::Context(Application *app) :
     DummyRequest req(app->engine(), this);
     req.body = new QBuffer(this);
     req.body->open(QBuffer::ReadWrite);
-    req.requestPtr = nullptr;
 
     d_ptr->request = new Request(new RequestPrivate(nullptr));
     d_ptr->request->setParent(this);
@@ -272,7 +271,7 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     QStringList localArgs = args;
     QStringList localCaptures = captures;
 
-    Action *expandedAction = d->dispatcher->expandAction(const_cast<Context*>(this), action);
+    Action *expandedAction = d->dispatcher->expandAction(this, action);
     if (expandedAction->numberOfCaptures() > 0) {
         while (localCaptures.size() < expandedAction->numberOfCaptures()
                && localArgs.size()) {
@@ -337,21 +336,21 @@ bool Context::forward(const QString &action)
     return d->dispatcher->forward(this, action);
 }
 
-Action *Context::getAction(const QString &action, const QString &ns)
+Action *Context::getAction(const QString &action, const QString &ns) const
 {
-    Q_D(Context);
+    Q_D(const Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QVector<Action *> Context::getActions(const QString &action, const QString &ns)
+QVector<Action *> Context::getActions(const QString &action, const QString &ns) const
 {
-    Q_D(Context);
+    Q_D(const Context);
     return d->dispatcher->getActions(action, ns);
 }
 
-QVector<Cutelyst::Plugin *> Context::plugins()
+QVector<Cutelyst::Plugin *> Context::plugins() const
 {
-    Q_D(Context);
+    Q_D(const Context);
     return d->plugins;
 }
 
@@ -411,12 +410,6 @@ QVariantMap Context::config() const
 {
     Q_D(const Context);
     return d->app->config();
-}
-
-void *Context::engineData()
-{
-    Q_D(const Context);
-    return d->engineRequest;
 }
 
 QString Context::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const

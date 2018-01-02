@@ -202,16 +202,6 @@ ParamsMultiMap StatusMessage::statusQuery(Context *c, const QString &msg, Params
     return map;
 }
 
-QString StatusMessage::setError(Context *c, const QString &msg)
-{
-    return error(c, msg);
-}
-
-QString StatusMessage::setStatus(Context *c, const QString &msg)
-{
-    return status(c, msg);
-}
-
 bool StatusMessage::setup(Application *app)
 {
     connect(app, &Application::postForked, this, &StatusMessagePrivate::_q_postFork);

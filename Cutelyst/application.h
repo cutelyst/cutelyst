@@ -354,13 +354,7 @@ protected:
     /*!
      * Called by the Engine to handle a new Request object
      */
-    Q_DECL_DEPRECATED
-    void handleRequest(Request *req);
-
-    /*!
-     * Called by the Engine to handle a new Request object
-     */
-    Context *handleRequest2(Request *req);
+    Context *handleRequest(Request *req);
 
     /*!
      * Called by the Engine once post fork happened

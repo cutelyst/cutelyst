@@ -317,7 +317,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     return ret;
 }
 
-Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
+Action *DispatchTypeChained::expandAction(const Context *c, Action *action) const
 {
     Q_D(const DispatchTypeChained);
 
@@ -340,7 +340,7 @@ Action *DispatchTypeChained::expandAction(Context *c, Action *action) const
         curr = d->actions.value(parent);
     }
 
-    return new ActionChain(chain, c);
+    return new ActionChain(chain, const_cast<Context*>(c));
 }
 
 bool DispatchTypeChained::inUse()

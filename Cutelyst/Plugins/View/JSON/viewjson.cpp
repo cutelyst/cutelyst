@@ -106,21 +106,6 @@ bool ViewJson::xJsonHeader() const
     return d->xJsonHeader;
 }
 
-void ViewJson::setExposeStashString(const QString &key)
-{
-    setExposeStash(key);
-}
-
-void ViewJson::setExposeStashStringList(const QStringList &keys)
-{
-    setExposeStash(keys);
-}
-
-void ViewJson::setExposeStashRegularExpression(const QRegularExpression &re)
-{
-    setExposeStash(re);
-}
-
 QByteArray ViewJson::render(Context *c) const
 {
     Q_D(const ViewJson);

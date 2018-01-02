@@ -97,12 +97,6 @@ void Engine::finalizeCookies(Context *c)
     }
 }
 
-bool Engine::finalizeHeaders(Context *c)
-{
-    EngineRequest *conn = c->response()->d_ptr->engineRequest;
-    return conn->finalizeHeaders(c);
-}
-
 void Engine::finalizeBody(Context *c)
 {
     EngineRequest *conn = c->response()->d_ptr->engineRequest;
@@ -199,12 +193,6 @@ bool Engine::postForkApplication()
 quint64 Engine::time()
 {
     return QDateTime::currentMSecsSinceEpoch() * 1000;
-}
-
-qint64 Engine::write(Context *c, const char *data, qint64 len, void *engineData)
-{
-    Q_UNUSED(engineData)
-    return c->response()->d_ptr->engineRequest->write(data, len);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -351,27 +339,12 @@ Headers &Engine::defaultHeaders()
     return d->app->defaultHeaders();
 }
 
-Context *Engine::processRequest2(const EngineRequest &req)
-{
-    Q_D(Engine);
-
-    Q_UNUSED(req)
-
-    auto request = new Request(new RequestPrivate(nullptr));
-    return d->app->handleRequest2(request);
-}
-
 Context *Engine::processRequest(EngineRequest *req)
 {
     Q_D(Engine);
 
     auto request = new Request(new RequestPrivate(req));
-    return d->app->handleRequest2(request);
-}
-
-void Engine::processRequest(const EngineRequest &req)
-{
-    delete processRequest2(req);
+    return d->app->handleRequest(request);
 }
 
 QVariantMap Engine::opts() const
@@ -428,91 +401,6 @@ QVariantMap Engine::loadJsonConfig(const QString &filename)
     ret = doc.toVariant().toMap();
 
     return ret;
-}
-
-void Engine::finalize(Context *c)
-{
-    c->response()->d_ptr->engineRequest->finalize(c);
-}
-
-bool Engine::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
-{
-    ResponsePrivate *priv = c->response()->d_ptr;
-    return priv->engineRequest->webSocketHandshake(c, key, origin, protocol);
-}
-
-bool Engine::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(key)
-    Q_UNUSED(origin)
-    Q_UNUSED(protocol)
-    Q_UNUSED(engineData)
-    return false;
-}
-
-bool Engine::webSocketSendTextMessage(Context *c, const QString &message)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(message)
-    return false;
-}
-
-bool Engine::webSocketSendBinaryMessage(Context *c, const QByteArray &message)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(message)
-    return false;
-}
-
-bool Engine::webSocketSendPing(Context *c, const QByteArray &payload)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(payload)
-    return false;
-}
-
-bool Engine::webSocketClose(Context *c, quint16 code, const QString &reason)
-{
-    Q_UNUSED(c)
-    Q_UNUSED(code)
-    Q_UNUSED(reason)
-    return false;
-}
-
-void Engine::processRequest(const QString &method,
-                            const QString &path,
-                            const QByteArray &query,
-                            const QString &protocol,
-                            bool isSecure,
-                            const QString &serverAddress,
-                            const QHostAddress &remoteAddress,
-                            quint16 remotePort,
-                            const QString &remoteUser,
-                            const Headers &headers,
-                            quint64 startOfRequest,
-                            QIODevice *body,
-                            void *requestPtr)
-{
-    Q_D(Engine);
-
-    DummyRequest req(this, this);
-    req.method = method;
-    req.path = path;
-    req.query = query;
-    req.protocol = protocol;
-    req.isSecure = isSecure;
-    req.serverAddress = serverAddress;
-    req.remoteAddress = remoteAddress;
-    req.remotePort = remotePort;
-    req.remoteUser = remoteUser;
-    req.headers = headers;
-    req.startOfRequest = startOfRequest;
-    req.body = body;
-    req.requestPtr = requestPtr;
-
-    auto request = new Request(new RequestPrivate(nullptr));
-    delete d->app->handleRequest2(request);
 }
 
 #include "moc_engine.cpp"

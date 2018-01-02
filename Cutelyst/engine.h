@@ -101,102 +101,15 @@ public:
      */
     virtual quint64 time();
 
+    /**
+     * Process the EngineRequest \p req, the caller
+     * must delete the context when the request is finished.
+     *
+     * This method allows for engines to keep the Context alive
+     * while processing websocket data.
+     */
     Context *processRequest(EngineRequest *request);
 
-protected:
-    /**
-     * @brief initApplication
-     *
-     * This method inits the application and
-     * calls init on the engine. It must be called on the
-     * engine's thread
-     *
-     * @return true if succeded
-     */
-    bool initApplication();
-
-    /**
-     * @brief postForkApplication
-     *
-     * Subclasses must be call after the engine forks by the worker thread,
-     * if no forking is involved it must be called once the worker thread has
-     * started.
-     *
-     * For convenience QThread::currentThread() has it's object name set with
-     * the worker core number.
-     *
-     * @return true if the engine should use this process
-     */
-    bool postForkApplication();
-
-    /**
-     * Called by Response to manually write data
-     */
-    qint64 write(Context *c, const char *data, qint64 len, void *engineData);
-
-    /**
-     * Reimplement this to do the RAW writing to the client
-     */
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) = 0;
-
-    /**
-     * Reimplement if you need a custom way
-     * to Set-Cookie, the default implementation
-     * writes them to c->res()->headers()
-     */
-    virtual void finalizeCookies(Context *c);
-
-    /**
-     * Finalize the headers, and call
-     * doWriteHeader(), reimplemententions
-     * must call this first
-     */
-    Q_DECL_DEPRECATED
-    virtual bool finalizeHeaders(Context *c);
-
-    /**
-     * Reimplement this to write the headers back to the client
-     */
-    virtual bool finalizeHeadersWrite(Context *c, quint16 status,  const Headers &headers, void *engineData) = 0;
-
-    /**
-     * Engines must reimplement this to write the
-     * response body back to the caller
-     */
-    virtual void finalizeBody(Context *c);
-
-    /**
-     * Engines should overwrite this if they
-     * want to to make custom error messages.
-     * Default implementation render an html
-     * with errors.
-     */
-    virtual void finalizeError(Context *c);
-
-    /**
-     * Called by Application to deal
-     * with finalizing cookies, headers and body
-     */
-    Q_DECL_DEPRECATED
-    void finalize(Context *c);
-
-    Q_DECL_DEPRECATED
-    bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
-
-    Q_DECL_DEPRECATED
-    virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData);
-
-    Q_DECL_DEPRECATED
-    virtual bool webSocketSendTextMessage(Context *c, const QString &message);
-
-    Q_DECL_DEPRECATED
-    virtual bool webSocketSendBinaryMessage(Context *c, const QByteArray &message);
-
-    Q_DECL_DEPRECATED
-    virtual bool webSocketSendPing(Context *c, const QByteArray &payload);
-
-    Q_DECL_DEPRECATED
-    virtual bool webSocketClose(Context *c, quint16 code, const QString &reason);
 
     /**
      * Returns the header key in camel case form
@@ -247,43 +160,57 @@ protected:
      */
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
+protected:
+    /**
+     * @brief initApplication
+     *
+     * This method inits the application and
+     * calls init on the engine. It must be called on the
+     * engine's thread
+     *
+     * @return true if succeded
+     */
+    bool initApplication();
+
+    /**
+     * @brief postForkApplication
+     *
+     * Subclasses must be call after the engine forks by the worker thread,
+     * if no forking is involved it must be called once the worker thread has
+     * started.
+     *
+     * For convenience QThread::currentThread() has it's object name set with
+     * the worker core number.
+     *
+     * @return true if the engine should use this process
+     */
+    bool postForkApplication();
+
+    /**
+     * Reimplement if you need a custom way
+     * to Set-Cookie, the default implementation
+     * writes them to c->res()->headers()
+     */
+    virtual void finalizeCookies(Context *c);
+
+    /**
+     * Engines must reimplement this to write the
+     * response body back to the caller
+     */
+    virtual void finalizeBody(Context *c);
+
+    /**
+     * Engines should overwrite this if they
+     * want to to make custom error messages.
+     * Default implementation render an html
+     * with errors.
+     */
+    virtual void finalizeError(Context *c);
+
     /**
      * This is the HTTP default response headers that each request gets
      */
     Headers &defaultHeaders();
-
-    /**
-     * Process the EngineRequest \p req, the caller
-     * must delete the context when the request is finished.
-     *
-     * This method allows for engines to keep the Context alive
-     * while processing websocket data.
-     */
-    Context *processRequest2(const EngineRequest &req);
-
-    /**
-     * Deprecated
-     */
-    Q_DECL_DEPRECATED
-    void processRequest(const EngineRequest &req);
-
-    Q_DECL_DEPRECATED
-    /**
-     * Deprecated
-     */
-    void processRequest(const QString &method,
-                        const QString &path,
-                        const QByteArray &query,
-                        const QString &protocol,
-                        bool https,
-                        const QString &serverAddress,
-                        const QHostAddress &remoteAddress,
-                        quint16 remotePort,
-                        const QString &remoteUser,
-                        const Headers &headers,
-                        quint64 startOfRequest,
-                        QIODevice *body,
-                        void *requestPtr);
 
     EnginePrivate *d_ptr;
 

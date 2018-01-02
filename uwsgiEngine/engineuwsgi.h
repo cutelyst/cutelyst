@@ -50,10 +50,6 @@ public:
 
     virtual bool init() final;
 
-    virtual bool finalizeHeadersWrite(Context *c, quint16 status, const Headers &headers, void *engineData) override;
-
-    virtual qint64 doWrite(Context *c, const char *data, qint64 len, void *engineData) final;
-
     void readRequestUWSGI(wsgi_request *req);
 
     void processRequest(wsgi_request *req);

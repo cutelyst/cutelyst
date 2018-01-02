@@ -182,7 +182,6 @@ bool RoleACL::aroundExecute(Context *c, QStack<Cutelyst::Component *> stack)
     return false;
 }
 
-// TODO maybe mark this as static for 2.0
 bool RoleACL::canVisit(Context *c) const
 {
     Q_D(const RoleACL);

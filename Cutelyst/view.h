@@ -38,14 +38,8 @@ public:
      * The base implementation for a View class, a name
      * for the view should be set to be found by Context->view()
      */
-    explicit View(QObject *parent, const QString &name = QString());
+    explicit View(QObject *parent, const QString &name);
     virtual ~View();
-
-    /**
-     * Returns the name of the view
-     */
-    // TODO remove Cutelyst2
-    QString name() const;
 
     /**
      * The default implementation returns Component::OnlyExecute

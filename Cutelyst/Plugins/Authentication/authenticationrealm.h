@@ -58,28 +58,23 @@ public:
      */
     virtual AuthenticationUser authenticate(Context *c, const ParamsMultiMap &authinfo);
 
-protected:
     /*!
      * Removes the user from the session
-     * TODO move out on Cutelyst2
      */
     void removePersistedUser(Context *c);
 
     /*!
      * Stores the user on the session
-     * TODO move out on Cutelyst2
      */
     AuthenticationUser persistUser(Context *c, const AuthenticationUser &user);
 
     /*!
      * Retrieves the user from the store
-     * TODO move out on Cutelyst2
      */
     AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser);
 
     /*!
      * Checks if user can be retrieved
-     * TODO move out on Cutelyst2
      */
     QVariant userIsRestorable(Context *c);
 

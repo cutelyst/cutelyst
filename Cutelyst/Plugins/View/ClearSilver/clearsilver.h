@@ -32,12 +32,6 @@ class CUTELYST_VIEW_CLEARSILVER_EXPORT ClearSilver : public View
     Q_DECLARE_PRIVATE(ClearSilver)
 public:
     /*!
-     * Constructs a ClearSilver object with the given parent.
-     */
-    // TODO Cutelyst2 remove
-    explicit ClearSilver(QObject *parent = nullptr);
-
-    /*!
      * Constructs a ClearSilver object with the given parent and name.
      */
     explicit ClearSilver(QObject *parent = nullptr, const QString &name = QString());

@@ -54,20 +54,6 @@ Q_SIGNALS:
     void shutdownCompleted(CWsgiEngine *engine);
 
 protected:
-    virtual bool finalizeHeadersWrite(Cutelyst::Context *c, quint16 status,  const Cutelyst::Headers &headers, void *engineData) override;
-
-    virtual qint64 doWrite(Cutelyst::Context *c, const char *data, qint64 len, void *engineData) override;
-
-    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol, void *engineData) override;
-
-    virtual bool webSocketSendTextMessage(Cutelyst::Context *c, const QString &message) override;
-
-    virtual bool webSocketSendBinaryMessage(Cutelyst::Context *c, const QByteArray &message) override;
-
-    virtual bool webSocketSendPing(Cutelyst::Context *c, const QByteArray &payload) override;
-
-    virtual bool webSocketClose(Cutelyst::Context *c, quint16 code, const QString &reason) override;
-
     inline void startSocketTimeout() {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();
