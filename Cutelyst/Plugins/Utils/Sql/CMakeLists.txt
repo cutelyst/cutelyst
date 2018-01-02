@@ -22,7 +22,7 @@ set_target_properties(Cutelyst2Qt5UtilsSql PROPERTIES
 )
 
 target_link_libraries(Cutelyst2Qt5UtilsSql
-    PRIVATE cutelyst-qt5
+    PRIVATE Cutelyst2Qt5::Core
     PRIVATE Qt5::Sql
 )
 
