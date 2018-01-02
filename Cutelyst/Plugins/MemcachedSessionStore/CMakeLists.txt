@@ -23,7 +23,7 @@ set_target_properties(Cutelyst2Qt5MemcachedSessionStore PROPERTIES
 target_link_libraries(Cutelyst2Qt5MemcachedSessionStore
     PRIVATE Cutelyst2Qt5::Core
     PRIVATE Cutelyst2Qt5::Session
-    PRIVATE cutelyst_qt5_plugin_memcached
+    PRIVATE Cutelyst2Qt5::Memcached
 )
 
 set_property(TARGET Cutelyst2Qt5MemcachedSessionStore PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})
