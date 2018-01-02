@@ -14,28 +14,27 @@ set(plugin_view_email_HEADERS
     viewemailtemplate.h
 )
 
-add_library(cutelyst_qt5_plugin_view_email SHARED
+add_library(Cutelyst2Qt5ViewEmail SHARED
     ${plugin_view_email_SRC}
     ${plugin_view_email_HEADERS}
 )
-add_library(CutelystQt5::View::Email ALIAS cutelyst_qt5_plugin_view_email)
-set_property(TARGET cutelyst_qt5_plugin_view_email PROPERTY EXPORT_NAME View::Email)
+add_library(CutelystQt5::View::Email ALIAS Cutelyst2Qt5ViewEmail)
 
-set_target_properties(cutelyst_qt5_plugin_view_email PROPERTIES
+set_target_properties(Cutelyst2Qt5ViewEmail PROPERTIES
+    EXPORT_NAME View::Email
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_view_email
+target_link_libraries(Cutelyst2Qt5ViewEmail
     PRIVATE SimpleMail::Core
-    PRIVATE cutelyst-qt5
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS cutelyst_qt5_plugin_view_email EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_view_email_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/Email
-        COMPONENT View::Email
+set_property(TARGET Cutelyst2Qt5ViewEmail PROPERTY PUBLIC_HEADER ${plugin_view_email_HEADERS})
+install(TARGETS Cutelyst2Qt5ViewEmail
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Email
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewEmail.pc.in

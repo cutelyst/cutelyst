@@ -23,32 +23,31 @@ set(plugin_authentication_HEADERS
     credentialhttp.h
 )
 
-add_library(cutelyst_qt5_plugin_authentication SHARED
+add_library(Cutelyst2Qt5Authentication SHARED
     ${plugin_authentication_SRC}
     ${plugin_authentication_HEADERS}
 )
-add_library(CutelystQt5::Authentication ALIAS cutelyst_qt5_plugin_authentication)
-set_property(TARGET cutelyst_qt5_plugin_authentication PROPERTY EXPORT_NAME Authentication)
+add_library(Cutelyst2Qt5::Authentication ALIAS Cutelyst2Qt5Authentication)
 
-set_target_properties(cutelyst_qt5_plugin_authentication PROPERTIES
+set_target_properties(Cutelyst2Qt5Authentication PROPERTIES
+    EXPORT_NAME Authentication
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_authentication
-    PRIVATE cutelyst-qt5
-    PRIVATE cutelyst_qt5_plugin_session
+target_link_libraries(Cutelyst2Qt5Authentication
+    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst2Qt5::Session
 )
 
-install(TARGETS cutelyst_qt5_plugin_authentication EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_authentication_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Authentication
-        COMPONENT Authentication
+set_property(TARGET Cutelyst2Qt5Authentication PROPERTY PUBLIC_HEADER ${plugin_authentication_HEADERS})
+install(TARGETS Cutelyst2Qt5Authentication
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Authentication
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Authentication.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Authentication.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Authentication.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Authentication.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Authentication.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

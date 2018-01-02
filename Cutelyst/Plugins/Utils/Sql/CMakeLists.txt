@@ -9,32 +9,31 @@ set(plugin_sql_HEADERS
     Sql
 )
 
-add_library(cutelyst_qt5_plugin_utils_sql SHARED
+add_library(Cutelyst2Qt5UtilsSql SHARED
     ${plugin_sql_SRC}
     ${plugin_sql_HEADERS}
 )
-add_library(CutelystQt5::Utils::Sql ALIAS cutelyst_qt5_plugin_utils_sql)
-set_property(TARGET cutelyst_qt5_plugin_utils_sql PROPERTY EXPORT_NAME Utils::Sql)
+add_library(Cutelyst2Qt5::Utils::Sql ALIAS Cutelyst2Qt5UtilsSql)
 
-set_target_properties(cutelyst_qt5_plugin_utils_sql PROPERTIES
+set_target_properties(Cutelyst2Qt5UtilsSql PROPERTIES
+    EXPORT_NAME Utils::Sql
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_utils_sql
+target_link_libraries(Cutelyst2Qt5UtilsSql
     PRIVATE cutelyst-qt5
     PRIVATE Qt5::Sql
 )
 
-install(TARGETS cutelyst_qt5_plugin_utils_sql EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_sql_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
-        COMPONENT Utils::Sql
+set_property(TARGET Cutelyst2Qt5UtilsSql PROPERTY PUBLIC_HEADER ${plugin_sql_HEADERS})
+install(TARGETS Cutelyst2Qt5UtilsSql
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsSql.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsSql.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsSql.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsSql.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsSql.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

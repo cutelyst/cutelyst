@@ -8,28 +8,27 @@ set(plugin_csrfprotection_HEADERS
     CSRFProtection
 )
 
-add_library(cutelyst_qt5_plugin_csrfprotection SHARED
+add_library(Cutelyst2Qt5CsrfProtection SHARED
     ${plugin_csrfprotection_SRC}
     ${plugin_csrfprotection_HEADERS}
 )
-add_library(CutelystQt5::CSRFProtection ALIAS cutelyst_qt5_plugin_csrfprotection)
-set_property(TARGET cutelyst_qt5_plugin_csrfprotection PROPERTY EXPORT_NAME CSRFProtection)
+add_library(CutelystQt5::CSRFProtection ALIAS Cutelyst2Qt5CsrfProtection)
 
-set_target_properties(cutelyst_qt5_plugin_csrfprotection PROPERTIES
+set_target_properties(Cutelyst2Qt5CsrfProtection PROPERTIES
+    EXPORT_NAME CSRFProtection
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_csrfprotection
-    PRIVATE cutelyst-qt5
-    PRIVATE cutelyst_qt5_plugin_session
+target_link_libraries(Cutelyst2Qt5CsrfProtection
+    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst2Qt5::Session
 )
 
-install(TARGETS cutelyst_qt5_plugin_csrfprotection EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_csrfprotection_HEADERS}
-    DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/CSRFProtection
-    COMPONENT CSRFProtection
+set_property(TARGET Cutelyst2Qt5CsrfProtection PROPERTY PUBLIC_HEADER ${plugin_csrfprotection_HEADERS})
+install(TARGETS Cutelyst2Qt5CsrfProtection
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/CSRFProtection
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5CSRFProtection.pc.in

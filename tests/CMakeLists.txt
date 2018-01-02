@@ -13,7 +13,7 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt5::Test CutelystQt5::Core Qt5::Network)
+target_link_libraries(coverage_test Qt5::Test Cutelyst2Qt5::Core Qt5::Network)
 
 function(cute_test _testname _link1 _link2 _link3)
     add_executable(${_testname}_exec ${_testname}.cpp)
@@ -25,7 +25,7 @@ function(cute_test _testname _link1 _link2 _link3)
         cxx_nullptr
         cxx_override
     )
-    target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} CutelystQt5::Core coverage_test)
+    target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} Cutelyst2Qt5::Core coverage_test)
 endfunction()
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
@@ -45,17 +45,17 @@ cutelyst_templates_unit_tests(
     testactionrenderview
 )
 
-cute_test(testvalidator CutelystQt5::Utils::Validator "" "")
+cute_test(testvalidator Cutelyst2Qt5::Utils::Validator "" "")
 
 if (NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT CMAKE_GENERATOR MATCHES "Ninja")
-    cute_test(testauthentication CutelystQt5::Authentication CutelystQt5::Session "")
-    cute_test(testactionroleacl CutelystQt5::Authentication CutelystQt5::Session "")
+    cute_test(testauthentication Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
+    cute_test(testactionroleacl Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
 endif()
 
-cute_test(testpbkdf2 CutelystQt5::Authentication "" "")
-cute_test(testpagination CutelystQt5::Utils::Pagination "" "")
-cute_test(testviewjson CutelystQt5::View::JSON "" "")
-cute_test(teststatusmessage CutelystQt5::StatusMessage CutelystQt5::Session "")
+cute_test(testpbkdf2 Cutelyst2Qt5::Authentication "" "")
+cute_test(testpagination Cutelyst2Qt5::Utils::Pagination "" "")
+cute_test(testviewjson Cutelyst2Qt5::View::JSON "" "")
+cute_test(teststatusmessage Cutelyst2Qt5::StatusMessage Cutelyst2Qt5::Session "")
 if (PLUGIN_MEMCACHED)
-cute_test(testmemcached CutelystQt5::Memcached "" "")
+cute_test(testmemcached Cutelyst2Qt5::Memcached "" "")
 endif (PLUGIN_MEMCACHED)

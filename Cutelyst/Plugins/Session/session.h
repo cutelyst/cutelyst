@@ -18,7 +18,7 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
-#include <QtCore/QVariant>
+#include <QVariant>
 
 #include <Cutelyst/plugin.h>
 #include <Cutelyst/cutelyst_global.h>

@@ -12,27 +12,26 @@ set(plugin_view_grantlee_HEADERS
     grantleeview.h
 )
 
-add_library(cutelyst_view_grantlee SHARED ${grantlee_plugin_SRC})
+add_library(Cutelyst2Qt5ViewGrantlee SHARED ${grantlee_plugin_SRC})
 
-add_library(CutelystQt5::View::Grantlee ALIAS cutelyst_view_grantlee)
+add_library(CutelystQt5::View::Grantlee ALIAS Cutelyst2Qt5ViewGrantlee)
 
-set_property(TARGET cutelyst_view_grantlee PROPERTY EXPORT_NAME View::Grantlee)
 
-set_target_properties(cutelyst_view_grantlee PROPERTIES
+set_target_properties(Cutelyst2Qt5ViewGrantlee PROPERTIES
+    EXPORT_NAME View::Grantlee
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_view_grantlee
+target_link_libraries(Cutelyst2Qt5ViewGrantlee
     PRIVATE Grantlee5::Templates
-    PRIVATE cutelyst-qt5
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS cutelyst_view_grantlee EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_view_grantlee_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/Grantlee
-        COMPONENT View::Grantlee
+set_property(TARGET Cutelyst2Qt5ViewGrantlee PROPERTY PUBLIC_HEADER ${plugin_view_grantlee_HEADERS})
+install(TARGETS Cutelyst2Qt5ViewGrantlee
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/JSON
 )
 
 # urifor and csrf_token
@@ -52,7 +51,7 @@ set_property(TARGET grantlee_cutelyst PROPERTY EXPORT_NAME cutelyst)
 
 target_link_libraries(grantlee_cutelyst
     PRIVATE Grantlee5::Templates
-    PRIVATE cutelyst-qt5
+    PRIVATE Cutelyst2Qt5::Core
 )
 if (PLUGIN_CSRFPROTECTION)
     target_link_libraries(grantlee_cutelyst
@@ -61,12 +60,12 @@ if (PLUGIN_CSRFPROTECTION)
 endif (PLUGIN_CSRFPROTECTION)
 grantlee_adjust_plugin_name(grantlee_cutelyst)
 
-install(TARGETS grantlee_cutelyst EXPORT CutelystQt5Targets
+install(TARGETS grantlee_cutelyst EXPORT CutelystTargets
         LIBRARY DESTINATION "${CUTELYST_PLUGINS_DIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Grantlee.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Grantlee.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Grantlee.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Grantlee.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Grantlee.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

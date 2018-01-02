@@ -83,14 +83,13 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-add_library(cutelyst-qt5 SHARED
+add_library(Cutelyst2Qt5 SHARED
     ${cutelystqt_SRC}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
 )
-add_library(CutelystQt5::Core ALIAS cutelyst-qt5)
-set_property(TARGET cutelyst-qt5 PROPERTY EXPORT_NAME Core)
-target_compile_features(cutelyst-qt5
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt5::Core ALIAS Cutelyst2Qt5)
+target_compile_features(Cutelyst2Qt5
   PRIVATE
     cxx_auto_type
   PUBLIC
@@ -98,35 +97,39 @@ target_compile_features(cutelyst-qt5
 )
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
-  set_property(TARGET cutelyst-qt5 PROPERTY DEBUG_POSTFIX "d")
+  set_property(TARGET Cutelyst2Qt5 PROPERTY DEBUG_POSTFIX "d")
 endif()
 
-target_compile_definitions(cutelyst-qt5
+target_compile_definitions(Cutelyst2Qt5
   PRIVATE
     PLUGINS_PREFER_DEBUG_POSTFIX=$<CONFIG:Debug>
 )
 
-set_target_properties(cutelyst-qt5 PROPERTIES
+set_target_properties(Cutelyst2Qt5 PROPERTIES
+    EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
-target_link_libraries(cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5
     Qt5::Core
     Qt5::Network
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Core.pc
+  ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
   @ONLY
 )
 
-install(TARGETS cutelyst-qt5 EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Core.pc
+set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
+install(TARGETS Cutelyst2Qt5
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
-install(FILES ${cutelystqt_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst
-)
+
 
 add_subdirectory(Plugins)
 add_subdirectory(Actions)

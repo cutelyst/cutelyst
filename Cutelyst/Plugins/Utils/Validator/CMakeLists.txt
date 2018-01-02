@@ -169,31 +169,30 @@ set(plugin_validator_HEADERS
     ValidatorResult
 )
 
-add_library(cutelyst_qt5_plugin_utils_validator SHARED
+add_library(Cutelyst2Qt5UtilsValidator SHARED
     ${plugin_validator_SRC}
     ${plugin_validator_HEADERS}
 )
-add_library(CutelystQt5::Utils::Validator ALIAS cutelyst_qt5_plugin_utils_validator)
-set_property(TARGET cutelyst_qt5_plugin_utils_validator PROPERTY EXPORT_NAME Utils::Validator)
+add_library(Cutelyst2Qt5::Utils::Validator ALIAS Cutelyst2Qt5UtilsValidator)
 
-set_target_properties(cutelyst_qt5_plugin_utils_validator PROPERTIES
+set_target_properties(Cutelyst2Qt5UtilsValidator PROPERTIES
+    EXPORT_NAME Utils::Validator
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_utils_validator
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5UtilsValidator
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS cutelyst_qt5_plugin_utils_validator EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_validator_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
-        COMPONENT Utils::Validator
+set_property(TARGET Cutelyst2Qt5UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
+install(TARGETS Cutelyst2Qt5UtilsValidator
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsValidator.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsValidator.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsValidator.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

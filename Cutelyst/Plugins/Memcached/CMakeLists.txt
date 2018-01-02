@@ -11,32 +11,31 @@ set(plugin_memcached_HEADERS
     Memcached
 )
 
-add_library(cutelyst_qt5_plugin_memcached SHARED
+add_library(Cutelyst2Qt5Memcached SHARED
     ${plugin_memcached_SRC}
     ${plugin_memcached_HEADERS}
 )
-add_library(CutelystQt5::Memcached ALIAS cutelyst_qt5_plugin_memcached)
-set_property(TARGET cutelyst_qt5_plugin_memcached PROPERTY EXPORT_NAME Memcached)
+add_library(Cutelyst2Qt5::Memcached ALIAS Cutelyst2Qt5Memcached)
 
-set_target_properties(cutelyst_qt5_plugin_memcached PROPERTIES
+set_target_properties(Cutelyst2Qt5Memcached PROPERTIES
+    EXPORT_NAME Memcached
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_memcached
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5Memcached
+    PRIVATE Cutelyst2Qt5::Core
     ${MEMCACHED_LIBRARIES}
 )
 
-install(TARGETS cutelyst_qt5_plugin_memcached EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_memcached_HEADERS}
-	DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Memcached
-	COMPONENT Memcached
+set_property(TARGET Cutelyst2Qt5Memcached PROPERTY PUBLIC_HEADER ${plugin_memcached_HEADERS})
+install(TARGETS Cutelyst2Qt5Memcached
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Memcached
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Memcached.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Memcached.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Memcached.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5Memcached.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5Memcached.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

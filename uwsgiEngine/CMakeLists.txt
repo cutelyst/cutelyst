@@ -26,20 +26,18 @@ add_definitions(${UWSGI_CFLAGS})
 
 add_library(cutelyst MODULE ${uswgi_engine_SRC})
 target_link_libraries(cutelyst
-    PRIVATE CutelystQt5::Core
-    PRIVATE Qt5::Core
-    PRIVATE Qt5::Network
+    PRIVATE Cutelyst2Qt5::Core
 )
 
 if (LINUX)
 target_link_libraries(cutelyst
-    PRIVATE CutelystQt5::EventLoopEPoll
+    PRIVATE Cutelyst2Qt5::EventLoopEPoll
 )
 endif (LINUX)
 
 SET_TARGET_PROPERTIES(cutelyst
     PROPERTIES
-    SUFFIX "_plugin.so"
+    SUFFIX "2_plugin.so"
     PREFIX ""
 )
 

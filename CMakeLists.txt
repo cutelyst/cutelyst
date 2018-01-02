@@ -8,7 +8,7 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-project(cutelyst VERSION 1.12.0)
+project(cutelyst VERSION 2.0.0)
 
 find_package(Qt5 5.6.0 COMPONENTS
     Core
@@ -16,7 +16,7 @@ find_package(Qt5 5.6.0 COMPONENTS
     Sql
 )
 
-set(CUTELYST_API_LEVEL "0")
+set(CUTELYST_API_LEVEL "2")
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
@@ -51,7 +51,7 @@ endif ()
 # Options
 #
 option( ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF )
-option( BUILD_TESTS "Build the Cutelyst tests" TRUE )
+option( BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL} )
 
 if (BUILD_TESTS)
   enable_testing()
@@ -91,7 +91,7 @@ set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
-set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst-plugins" CACHE PATH "Output directory for cutelyst plugins")
+set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst2-plugins" CACHE PATH "Output directory for cutelyst plugins")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
 
@@ -136,20 +136,20 @@ include_directories(
 
 # cmake config files
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelystqt5-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
     @ONLY
 )
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelystqt5-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelystqt5-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/cutelystqt5-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cutelystqt5/
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
 )
-install(EXPORT CutelystQt5Targets
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/cutelystqt5/"
-    FILE CutelystQt5Targets.cmake
+install(EXPORT CutelystTargets
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
+    FILE Cutelyst${PROJECT_VERSION_MAJOR}Qt5Targets.cmake
     NAMESPACE Cutelyst::
     COMPONENT Devel
 )

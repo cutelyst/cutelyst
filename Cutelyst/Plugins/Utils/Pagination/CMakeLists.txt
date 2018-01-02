@@ -8,31 +8,30 @@ set(plugin_pagination_HEADERS
     Pagination
 )
 
-add_library(cutelyst_qt5_plugin_utils_pagination SHARED
+add_library(Cutelyst2Qt5UtilsPagination SHARED
     ${plugin_pagination_SRC}
     ${plugin_pagination_HEADERS}
 )
-add_library(CutelystQt5::Utils::Pagination ALIAS cutelyst_qt5_plugin_utils_pagination)
-set_property(TARGET cutelyst_qt5_plugin_utils_pagination PROPERTY EXPORT_NAME Utils::Pagination)
+add_library(Cutelyst2Qt5::Utils::Pagination ALIAS Cutelyst2Qt5UtilsPagination)
 
-set_target_properties(cutelyst_qt5_plugin_utils_pagination PROPERTIES
+set_target_properties(Cutelyst2Qt5UtilsPagination PROPERTIES
+    EXPORT_NAME Utils::Pagination
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_utils_pagination
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5UtilsPagination
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS cutelyst_qt5_plugin_utils_pagination EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_pagination_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/Utils
-        COMPONENT Utils::Pagination
+set_property(TARGET Cutelyst2Qt5UtilsPagination PROPERTY PUBLIC_HEADER ${plugin_pagination_HEADERS})
+install(TARGETS Cutelyst2Qt5UtilsPagination
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsPagination.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsPagination.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsPagination.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5UtilsPagination.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsPagination.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

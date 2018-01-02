@@ -1,13 +1,13 @@
-add_library(plugin_action_roleacl MODULE
+add_library(ActionRoleACL MODULE
     roleacl.cpp
     roleacl.h
     roleacl_p.h
     metadata.json
 )
 
-target_link_libraries(plugin_action_roleacl
-    PRIVATE cutelyst-qt5
-    PRIVATE cutelyst_qt5_plugin_authentication
+target_link_libraries(ActionRoleACL
+    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst2Qt5::Authentication
 )
 
-install(TARGETS plugin_action_roleacl DESTINATION ${CUTELYST_PLUGINS_DIR})
+install(TARGETS ActionRoleACL DESTINATION ${CUTELYST_PLUGINS_DIR})

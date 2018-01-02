@@ -14,10 +14,10 @@ target_compile_features(cutelyst-skell
     cxx_generalized_initializers
 )
 target_link_libraries(cutelyst-skell
-    Qt5::Core
-    Qt5::Network
-    cutelyst_wsgi_qt5
+    PRIVATE Qt5::Core
+    PRIVATE Qt5::Network
+    PRIVATE Cutelyst2Qt5::WSGI
 )
 
-set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst)
+set_target_properties(cutelyst-skell PROPERTIES OUTPUT_NAME cutelyst2)
 install(TARGETS cutelyst-skell DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

@@ -10,21 +10,21 @@ set(eventloop_epoll_HEADERS
     eventdispatcher_epoll.h
 )
 
-add_library(cutelyst_qt_eventloop_epoll SHARED
+add_library(Cutelyst2Qt5EventLoopEpoll SHARED
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
-add_library(CutelystQt5::EventLoopEPoll ALIAS cutelyst_qt_eventloop_epoll)
-set_property(TARGET cutelyst_qt_eventloop_epoll PROPERTY EXPORT_NAME EventLoopEPoll)
+add_library(Cutelyst2Qt5::EventLoopEPoll ALIAS Cutelyst2Qt5EventLoopEpoll)
 
-set_target_properties(cutelyst_qt_eventloop_epoll PROPERTIES
+set_target_properties(Cutelyst2Qt5EventLoopEpoll PROPERTIES
+    EXPORT_NAME EventLoopEPoll
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt_eventloop_epoll
+target_link_libraries(Cutelyst2Qt5EventLoopEpoll
     Qt5::Core
 )
 
-install(TARGETS cutelyst_qt_eventloop_epoll EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS Cutelyst2Qt5EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 

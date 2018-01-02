@@ -12,7 +12,7 @@ else (PLUGIN_MEMCACHED)
     message(STATUS "PLUGIN: Memcached, disabled.")
 endif (PLUGIN_MEMCACHED)
 
-if (PLUGIN_MEMCACHEDSESSIONSTORE)
+if (PLUGIN_MEMCACHEDSESSIONSTORE        )
     message(STATUS "PLUGIN: MemcachedSessionStore, enabled")
     add_subdirectory(MemcachedSessionStore)
 else (PLUGIN_MEMCACHEDSESSIONSTORE)

@@ -24,34 +24,33 @@ if (PLUGIN_STATICCOMPRESSED_BROTLI)
     add_definitions(-DBROTLI_ENABLED)
 endif (PLUGIN_STATICCOMPRESSED_BROTLI)
 
-add_library(cutelyst_qt5_plugin_staticcompressed SHARED
+add_library(Cutelyst2Qt5StaticCompressed SHARED
     ${plugin_staticcompressed_SRC}
     ${plugin_staticcompressed_HEADERS}
 )
-add_library(CutelystQt5::StaticCompressed ALIAS cutelyst_qt5_plugin_staticcompressed)
-set_property(TARGET cutelyst_qt5_plugin_staticcompressed PROPERTY EXPORT_NAME StaticCompressed)
+add_library(Cutelyst2Qt5::StaticCompressed ALIAS Cutelyst2Qt5StaticCompressed)
 
-set_target_properties(cutelyst_qt5_plugin_staticcompressed PROPERTIES
+set_target_properties(Cutelyst2Qt5StaticCompressed PROPERTIES
+    EXPORT_NAME StaticCompressed
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_staticcompressed
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5StaticCompressed
+    PRIVATE Cutelyst2Qt5::Core
     ${ZOPFLI_LIBRARIES}
     ${BROTLI_LIBRARIES}
 )
 
-install(TARGETS cutelyst_qt5_plugin_staticcompressed EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_staticcompressed_HEADERS}
-    DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/StaticCompressed
-    COMPONENT StaticCompressed
+set_property(TARGET Cutelyst2Qt5StaticCompressed PROPERTY PUBLIC_HEADER ${plugin_staticcompressed_HEADERS})
+install(TARGETS Cutelyst2Qt5StaticCompressed
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/StaticCompressed
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5StaticCompressed.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StaticCompressed.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5StaticCompressed.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5StaticCompressed.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5StaticCompressed.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 

@@ -7,31 +7,30 @@ set(plugin_view_json_HEADERS
     viewjson.h
 )
 
-add_library(cutelyst_qt5_plugin_view_json SHARED
+add_library(Cutelyst2Qt5ViewJson SHARED
     ${plugin_view_json_SRC}
     ${plugin_view_json_HEADERS}
 )
-add_library(CutelystQt5::View::JSON ALIAS cutelyst_qt5_plugin_view_json)
-set_property(TARGET cutelyst_qt5_plugin_view_json PROPERTY EXPORT_NAME View::JSON)
+add_library(Cutelyst2Qt5::View::JSON ALIAS Cutelyst2Qt5ViewJson)
 
-set_target_properties(cutelyst_qt5_plugin_view_json PROPERTIES
+set_target_properties(Cutelyst2Qt5ViewJson PROPERTIES
+    EXPORT_NAME View::JSON
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_view_json
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5ViewJson
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS cutelyst_qt5_plugin_view_json EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_view_json_HEADERS}
-        DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/View/JSON
-        COMPONENT View::JSON
+set_property(TARGET Cutelyst2Qt5ViewJson PROPERTY PUBLIC_HEADER ${plugin_view_json_HEADERS})
+install(TARGETS Cutelyst2Qt5ViewJson
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/JSON
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewJSON.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewJSON.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5ViewJSON.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewJSON.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5ViewJSON.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

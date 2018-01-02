@@ -1,12 +1,12 @@
-add_library(plugin_action_rest MODULE
+add_library(ActionREST MODULE
     actionrest.cpp
     actionrest.h
     actionrest_p.h
     metadata.json
 )
 
-target_link_libraries(plugin_action_rest
-    PRIVATE cutelyst-qt5
+target_link_libraries(ActionREST
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS plugin_action_rest DESTINATION ${CUTELYST_PLUGINS_DIR})
+install(TARGETS ActionREST DESTINATION ${CUTELYST_PLUGINS_DIR})

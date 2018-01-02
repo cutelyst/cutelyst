@@ -8,33 +8,32 @@ set(plugin_memcachedsessionstore_HEADERS
     MemcachedSessionStore
 )
 
-add_library(cutelyst_qt5_plugin_memcachedsessionstore SHARED
+add_library(Cutelyst2Qt5MemcachedSessionStore SHARED
     ${plugin_memcachedsessionstore_SRC}
     ${plugin_memcachedsessionstore_HEADERS}
 )
-add_library(CutelystQt5::MemcachedSessionStore ALIAS cutelyst_qt5_plugin_memcachedsessionstore)
-set_property(TARGET cutelyst_qt5_plugin_memcachedsessionstore PROPERTY EXPORT_NAME MemcachedSessionStore)
+add_library(Cutelyst2Qt5::MemcachedSessionStore ALIAS Cutelyst2Qt5MemcachedSessionStore)
 
-set_target_properties(cutelyst_qt5_plugin_memcachedsessionstore PROPERTIES
+set_target_properties(Cutelyst2Qt5MemcachedSessionStore PROPERTIES
+    EXPORT_NAME MemcachedSessionStore
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(cutelyst_qt5_plugin_memcachedsessionstore
-    PRIVATE cutelyst-qt5
+target_link_libraries(Cutelyst2Qt5MemcachedSessionStore
+    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst2Qt5::Session
     PRIVATE cutelyst_qt5_plugin_memcached
-    PRIVATE cutelyst_qt5_plugin_session
 )
 
-install(TARGETS cutelyst_qt5_plugin_memcachedsessionstore EXPORT CutelystQt5Targets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-
-install(FILES ${plugin_memcachedsessionstore_HEADERS}
-    DESTINATION include/cutelyst-qt5/Cutelyst/Plugins/MemcachedSessionStore
-    COMPONENT MemcachedSessionStore
+set_property(TARGET Cutelyst2Qt5MemcachedSessionStore PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})
+install(TARGETS Cutelyst2Qt5MemcachedSessionStore
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/MemcachedSessionStore
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5MemcachedSessionStore.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5MemcachedSessionStore.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

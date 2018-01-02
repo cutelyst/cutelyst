@@ -1,12 +1,12 @@
-add_library(plugin_action_renderview MODULE
+add_library(ActionRenderView MODULE
     renderview.cpp
     renderview.h
     renderview_p.h
     metadata.json
 )
 
-target_link_libraries(plugin_action_renderview
-    PRIVATE cutelyst-qt5
+target_link_libraries(ActionRenderView
+    PRIVATE Cutelyst2Qt5::Core
 )
 
-install(TARGETS plugin_action_renderview DESTINATION ${CUTELYST_PLUGINS_DIR})
+install(TARGETS ActionRenderView DESTINATION ${CUTELYST_PLUGINS_DIR})
