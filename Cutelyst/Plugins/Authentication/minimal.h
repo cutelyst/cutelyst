@@ -31,7 +31,7 @@ public:
     /**
      * Constructs a new minimal authentication store object with the given parent.
      */
-    explicit StoreMinimal(QObject *parent = nullptr);
+    explicit StoreMinimal(const QString &idField, QObject *parent = nullptr);
     virtual ~StoreMinimal();
 
     /**
@@ -55,6 +55,7 @@ public:
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
 
 private:
+    QString m_idField;
     QVector<AuthenticationUser> m_users;
 };
 

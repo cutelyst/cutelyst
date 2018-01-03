@@ -159,7 +159,7 @@ TestEngine* TestActionRoleACL::getEngine()
     new DeniedRoleACL(app);
     new ActionRoleACL(app);
 
-    auto clearStore = new StoreMinimal;
+    auto clearStore = new StoreMinimal(QStringLiteral("id"));
 
     AuthenticationUser fooUser(QStringLiteral("foo"));
     fooUser.insert(QStringLiteral("roles"), QStringList{ QStringLiteral("admin") });

@@ -61,12 +61,6 @@ void AuthenticationUser::setAuthRealm(AuthenticationRealm *authRealm)
     m_realm = authRealm;
 }
 
-bool AuthenticationUser::checkPassword(const QString &password) const
-{
-    Q_UNUSED(password)
-    return false;
-}
-
 QDataStream &operator<<(QDataStream &out, const AuthenticationUser &user)
 {
     out << user.id() << static_cast<QVariantMap>(user);

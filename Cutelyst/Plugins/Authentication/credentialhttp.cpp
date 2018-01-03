@@ -151,12 +151,7 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     QString password = authinfo.value(passwordField);
     const QString storedPassword = user.value(passwordField).toString();
 
-    if (passwordType == CredentialHttp::None) {
-        qCCritical(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
-        return true;
-    } else if (passwordType == CredentialHttp::Clear) {
-        return storedPassword == password;
-    } else if (passwordType == CredentialHttp::Hashed) {
+    if (Q_LIKELY(passwordType == CredentialHttp::Hashed)) {
         if (!passwordPreSalt.isEmpty()) {
             password.prepend(password);
         }
@@ -166,8 +161,11 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
         }
 
         return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
-    } else if (passwordType == CredentialHttp::SelfCheck) {
-        return user.checkPassword(password);
+    } else if (passwordType == CredentialHttp::Clear) {
+        return storedPassword == password;
+    } else if (passwordType == CredentialHttp::None) {
+        qCCritical(C_CREDENTIALHTTP) << "CredentialPassword is set to ignore password check";
+        return true;
     }
 
     return false;

@@ -31,13 +31,12 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT CredentialPassword : public Authenti
     Q_OBJECT
     Q_DECLARE_PRIVATE(CredentialPassword)
 public:
-    enum Type {
+    enum PasswordType {
         None,
         Clear,
-        Hashed,
-        SelfCheck
+        Hashed
     };
-    Q_ENUM(Type)
+    Q_ENUM(PasswordType)
 
     /*!
      * Constructs a new CredentialPassword object with the given parent.
@@ -60,12 +59,12 @@ public:
     /*!
      * Returns the type of password this class will be dealing with.
      */
-    Type passwordType() const;
+    PasswordType passwordType() const;
 
     /*!
      * Sets the type of password this class will be dealing with.
      */
-    void setPasswordType(Type type);
+    void setPasswordType(PasswordType type);
 
     /*!
      * Returns the salt string to be prepended to the password

@@ -30,7 +30,7 @@ public:
     static int cryptoStrToEnum(const QByteArray &hashMethod);
 
     QString passwordField = QStringLiteral("password");
-    CredentialPassword::Type passwordType = CredentialPassword::None;
+    CredentialPassword::PasswordType passwordType = CredentialPassword::None;
     QString passwordPreSalt;
     QString passwordPostSalt;
 };

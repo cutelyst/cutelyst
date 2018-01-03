@@ -67,13 +67,13 @@ void CredentialPassword::setPasswordField(const QString &fieldName)
     d->passwordField = fieldName;
 }
 
-CredentialPassword::Type CredentialPassword::passwordType() const
+CredentialPassword::PasswordType CredentialPassword::passwordType() const
 {
     Q_D(const CredentialPassword);
     return d->passwordType;
 }
 
-void CredentialPassword::setPasswordType(CredentialPassword::Type type)
+void CredentialPassword::setPasswordType(Cutelyst::CredentialPassword::PasswordType type)
 {
     Q_D(CredentialPassword);
     d->passwordType = type;
@@ -255,12 +255,7 @@ bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, co
     QString password = authinfo.value(passwordField);
     const QString storedPassword = user.value(passwordField).toString();
 
-    if (passwordType == CredentialPassword::None) {
-        qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
-        return true;
-    } else if (passwordType == CredentialPassword::Clear) {
-        return storedPassword == password;
-    } else if (passwordType == CredentialPassword::Hashed) {
+    if (Q_LIKELY(passwordType == CredentialPassword::Hashed)) {
         if (!passwordPreSalt.isEmpty()) {
             password.prepend(password);
         }
@@ -270,8 +265,11 @@ bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, co
         }
 
         return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
-    } else if (passwordType == CredentialPassword::SelfCheck) {
-        return user.checkPassword(password);
+    } else if (passwordType == CredentialPassword::Clear) {
+        return storedPassword == password;
+    } else if (passwordType == CredentialPassword::None) {
+        qCDebug(C_CREDENTIALPASSWORD) << "CredentialPassword is set to ignore password check";
+        return true;
     }
 
     return false;

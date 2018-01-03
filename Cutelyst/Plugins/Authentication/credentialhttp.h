@@ -34,8 +34,7 @@ public:
     enum PasswordType {
         None,
         Clear,
-        Hashed,
-        SelfCheck
+        Hashed
     };
     Q_ENUM(PasswordType)
 

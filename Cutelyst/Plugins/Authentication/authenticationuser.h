@@ -67,12 +67,6 @@ public:
      */
     void setAuthRealm(AuthenticationRealm *authRealm);
 
-    /*!
-     * Verifies the user password.
-     * UNUSED at the moment
-     */
-    virtual bool checkPassword(const QString &password) const;
-
 private:
     QString m_id;
     AuthenticationRealm *m_realm;

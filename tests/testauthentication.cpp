@@ -149,7 +149,7 @@ TestEngine* TestAuthentication::getEngine()
 
     auto auth = new Authentication(app);
 
-    auto clearStore = new StoreMinimal;
+    auto clearStore = new StoreMinimal(QStringLiteral("id"));
     AuthenticationUser fooUser(QStringLiteral("foo"));
     fooUser.insert(QStringLiteral("password"), QStringLiteral("123"));
     clearStore->addUser(fooUser);
@@ -162,7 +162,7 @@ TestEngine* TestAuthentication::getEngine()
     auth->addRealm(new AuthenticationRealm(clearStore, clearPassword));
 
 
-    auto hashedStore = new StoreMinimal;
+    auto hashedStore = new StoreMinimal(QStringLiteral("id"));
     fooUser.insert(QStringLiteral("password"), CredentialPassword::createPassword(QByteArrayLiteral("123"), QCryptographicHash::Sha256, 10, 10, 10));
     hashedStore->addUser(fooUser);
     barUser.insert(QStringLiteral("password"), CredentialPassword::createPassword(QByteArrayLiteral("321"), QCryptographicHash::Sha256, 20, 20, 20));
@@ -179,14 +179,17 @@ TestEngine* TestAuthentication::getEngine()
 
     auto clearHttpCredential = new CredentialHttp;
     clearHttpCredential->setPasswordType(CredentialHttp::Clear);
+    clearHttpCredential->setUsernameField(QStringLiteral("id"));
     auth->addRealm(new AuthenticationRealm(clearStore, clearHttpCredential), QStringLiteral("httpClear"));
 
     auto hashedHttpCredential = new CredentialHttp;
     hashedHttpCredential->setPasswordType(CredentialHttp::Hashed);
+    hashedHttpCredential->setUsernameField(QStringLiteral("id"));
     auth->addRealm(new AuthenticationRealm(hashedStore, hashedHttpCredential), QStringLiteral("httpHashed"));
 
     auto noneHttpCredential = new CredentialHttp;
     noneHttpCredential->setPasswordType(CredentialHttp::None);
+    noneHttpCredential->setUsernameField(QStringLiteral("id"));
     auth->addRealm(new AuthenticationRealm(clearStore, noneHttpCredential), QStringLiteral("httpNone"));
 
 
