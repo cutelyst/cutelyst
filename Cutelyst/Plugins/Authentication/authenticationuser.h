@@ -30,6 +30,7 @@ namespace Cutelyst {
 class AuthenticationRealm;
 class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public QVariantMap
 {
+    Q_GADGET
 public:
     /*!
      * Constructs a new AuthenticationUser object

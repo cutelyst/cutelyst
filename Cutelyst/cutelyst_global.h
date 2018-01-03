@@ -4,102 +4,102 @@
 #include <QtCore/QtGlobal>
 
 // defined by cmake when building this library
-#if defined(cutelyst_qt5_EXPORTS)
+#if defined(Cutelyst2Qt5_EXPORTS)
 #  define CUTELYST_LIBRARY Q_DECL_EXPORT
 #else
 #  define CUTELYST_LIBRARY Q_DECL_IMPORT
 #endif
-#if defined(plugin_action_renderview_EXPORTS)
+#if defined(ActionRenderView_EXPORTS)
 #  define CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(plugin_action_rest_EXPORTS)
+#if defined(ActionRest_EXPORTS)
 #  define CUTELYST_PLUGIN_ACTION_REST_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_ACTION_REST_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(plugin_action_roleacl_EXPORTS)
+#if defined(ActionRoleACL_EXPORTS)
 #  define CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_authentication_EXPORTS)
+#if defined(Cutelyst2Qt5Authentication_EXPORTS)
 #  define CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_AUTHENTICATION_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_session_EXPORTS)
+#if defined(Cutelyst2Qt5Session_EXPORTS)
 #  define CUTELYST_PLUGIN_SESSION_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_SESSION_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_staticsimple_EXPORTS)
+#if defined(Cutelyst2Qt5StaticSimple_EXPORTS)
 #  define CUTELYST_PLUGIN_STATICSIMPLE_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_STATICSIMPLE_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_staticcompressed_EXPORTS)
+#if defined(Cutelyst2Qt5StaticCompressed_EXPORTS)
 #  define CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_utils_pagination_EXPORTS)
+#if defined(Cutelyst2Qt5UtilsPagination_EXPORTS)
 #  define CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_statusmessage_EXPORTS)
+#if defined(Cutelyst2Qt5StatusMessage_EXPORTS)
 #  define CUTELYST_PLUGIN_STATUSMESSAGE_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_STATUSMESSAGE_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_memcached_EXPORTS)
+#if defined(Cutelyst2Qt5Memcached_EXPORTS)
 #  define CUTELYST_PLUGIN_MEMCACHED_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_MEMCACHED_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_memcachedsessionstore_EXPORTS)
+#if defined(Cutelyst2Qt5MemcachedSessionStore_EXPORTS)
 #  define CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_csrfprotection_EXPORTS)
+#if defined(Cutelyst2Qt5CsrfProtection_EXPORTS)
 #  define CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_utils_sql_EXPORTS)
+#if defined(Cutelyst2Qt5UtilsSql_EXPORTS)
 #  define CUTELYST_PLUGIN_UTILS_SQL_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_UTILS_SQL_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_utils_validator_EXPORTS)
+#if defined(Cutelyst2Qt5UtilsValidator_EXPORTS)
 #  define CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_view_clearsilver_EXPORTS)
+#if defined(Cutelyst2Qt5ViewClearSilver_EXPORTS)
 #  define CUTELYST_VIEW_CLEARSILVER_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_VIEW_CLEARSILVER_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_view_email_EXPORTS)
+#if defined(Cutelyst2Qt5ViewEmail_EXPORTS)
 #  define CUTELYST_VIEW_EMAIL_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_VIEW_EMAIL_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_view_grantlee_EXPORTS)
+#if defined(Cutelyst2Qt5ViewGrantlee_EXPORTS)
 #  define CUTELYST_VIEW_GRANTLEE_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_VIEW_GRANTLEE_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_qt5_plugin_view_json_EXPORTS)
+#if defined(Cutelyst2Qt5ViewJson_EXPORTS)
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_IMPORT
 #endif
-#if defined(cutelyst_wsgi_qt5_EXPORTS)
+#if defined(Cutelyst2Qt5Wsgi_EXPORTS)
 #  define CUTELYST_WSGI_EXPORT Q_DECL_EXPORT
 #else
 #  define CUTELYST_WSGI_EXPORT Q_DECL_IMPORT
