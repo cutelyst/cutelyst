@@ -155,7 +155,14 @@ build_script:
   - cd c:\dev\cutelyst
   - md build
   - cd build
-  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%" "-DENABLE_MAINTAINER_CFLAGS=%ENABLE_MAINTAINER_CFLAGS%"
+  - cmake .. -G "%CMAKE_GENERATOR%" "-DCMAKE_PREFIX_PATH=%QT5%" "-DENABLE_MAINTAINER_CFLAGS=%ENABLE_MAINTAINER_CFLAGS%" -DBUILD_ALL=on
+    -DPLUGIN_VIEW_EMAIL=off
+    -DPLUGIN_VIEW_GRANTLEE=off
+    -DPLUGIN_VIEW_CLEARSILVER=off
+    -DPLUGIN_MEMCACHED=off
+    -DPLUGIN_MEMCACHEDSESSIONSTORE=off
+    -DPLUGIN_UWSGI=off
+    -DUSE_JEMALLOC=off
   - cmake --build . --config Debug
   - cmake --build . --config Release
 
