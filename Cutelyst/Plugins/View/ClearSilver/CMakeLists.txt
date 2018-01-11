@@ -36,7 +36,7 @@ install(TARGETS Cutelyst2Qt5ViewClearSilver
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewClearSilver.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewClearSilver.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5ViewClearSilver.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5ViewClearSilver.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5ViewClearSilver.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
