@@ -161,8 +161,8 @@ HTML_TIMESTAMP         = @DOXYGEN_TIMESTAMP@
 #---------------------------------------------------------------------------
 GENERATE_QHP       = @GENERATE_QHP@
 QHP_NAMESPACE      = "org.cutelyst.@PROJECT_VERSION_MAJOR@@PROJECT_VERSION_MINOR@@PROJECT_VERSION_PATCH@"
-QHP_VIRTUAL_FOLDER = "cutelyst-@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@"
-QCH_FILE           = @CMAKE_BINARY_DIR@/"cutelyst-@PROJECT_VERSION_MAJOR@@PROJECT_VERSION_MINOR@@PROJECT_VERSION_PATCH@.qch"
+QHP_VIRTUAL_FOLDER = "cutelyst@PROJECT_VERSION_MAJOR@"
+QCH_FILE           = @CMAKE_BINARY_DIR@/"cutelyst@PROJECT_VERSION_MAJOR@.qch"
 QHG_LOCATION       = @QHG_LOCATION@
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
