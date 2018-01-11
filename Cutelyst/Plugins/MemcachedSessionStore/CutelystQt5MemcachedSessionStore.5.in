@@ -7,7 +7,7 @@ This session store saves session data to Memcached servers using the
 .BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
 plugin.
 .SH CONFIGURATION
-The Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the
+The Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore plugin can be configured in the Cutelyst application configuration file in the
 .I Cutelyst_MemcachedSessionStore_Plugin
 section.
 .PP
