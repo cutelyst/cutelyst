@@ -230,7 +230,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = @TAGFILES@
-GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/"cutelyst.tags"
+GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/"cutelyst@PROJECT_VERSION_MAJOR@.tags"
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 PERL_PATH              = /usr/bin/perl
