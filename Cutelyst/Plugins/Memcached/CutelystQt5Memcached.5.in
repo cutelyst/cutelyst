@@ -5,7 +5,7 @@ Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached - Configuration of the Memcached Plu
 .SH DESCRIPTION
 The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a Memcached general-purpose distributed memory caching system. It uses libmemcached to connect to a pool of memcached servers and to perform the caching operations.
 .SH CONFIGURATION
-The Memcached plugin can be configured in the Cutelyst configuration file in the
+The Memcached plugin can be configured in the Cutelyst application configuration file in the
 .I Cutelyst_Memcached_Plugin
 section.
 It uses the same configuration strings as
