@@ -94,6 +94,7 @@ set (BUILDDIR "${CMAKE_BINARY_DIR}")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst2-plugins" CACHE PATH "Output directory for cutelyst plugins")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
+set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
