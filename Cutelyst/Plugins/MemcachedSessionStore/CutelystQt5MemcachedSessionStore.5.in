@@ -27,5 +27,7 @@ group_key=sessions
 .RE
 .SH NOTES
 The memcached server does not guarantee the existence of the session data. It might for example delete the data because it runs out of memory and deletes session data. So be careful when using this plugin to store sessions.
+.SH LOGGING CATEGORY
+cutelyst.plugin.memcachedsessionstore
 .SH "SEE ALSO"
 .BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
