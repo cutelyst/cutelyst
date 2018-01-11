@@ -69,9 +69,9 @@ public:
 
     /**
      * If config has
-     * [Plugin_Session]
+     * [Cutelyst_Session_Plugin]
      * expires = 1234
-     * it will change de default expires which is 7200 (two hours)
+     * it will change the default expires which is 7200 (two hours)
      */
     virtual bool setup(Application *app) final;
 
