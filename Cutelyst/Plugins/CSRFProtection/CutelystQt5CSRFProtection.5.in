@@ -1,0 +1,76 @@
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection @PROJECT_VERSION@"
+
+.SH NAME
+Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection - Configuration of the CSRFProtection Plugin for the Cutelyst Web Framework
+.SH DESCRIPTION
+The CSRFProtection plugin implements a synchronizer token pattern (STP) to protect input forms against
+.UR https://en.wikipedia.org/wiki/Cross-site_request_forgery
+Cross Site Request Forgery (CSRF/XSRF) attacks
+.UE .
+This type of attack occurs when a malicious website contains a link, a form button or some JavaScript that is intended to perform some action on your website, using the credentials of a logged-in user who visits the malicious site in their browser.
+.SH CONFIGURATION
+There are some options you can set in your application configuration file in the
+.I Cutelyst_CSRFProtection_Plugin
+section.
+.PP
+.I cookie_age
+(integer value, default: 31449600)
+.RS 4
+The age/expiration time of the cookie in seconds.
+.PP
+The reason for setting a long-lived expiration time is to avoid problems in the case of a user closing a browser or bookmarking a page and then loading that page from a browser cache. Without persistent cookies, the form submission would fail in this case.
+.PP
+Some browsers (specifically Internet Explorer) can disallow the use of persistent cookies or can have the indexes to the cookie jar corrupted on disk, thereby causing CSRF protection checks to (sometimes intermittently) fail. Change this setting to @c 0 to use session-based CSRF cookies, which keep the cookies in-memory instead of on persistent storage.
+.RE
+.PP
+.I cookie_domain
+(string value, default: empty)
+.RS 4
+The domain to be used when setting the CSRF cookie. This can be useful for easily allowing cross-subdomain requests to be excluded from the normal cross site request forgery protection. It should be set to a string such as ".example.com" to allow a POST request from a form on one subdomain to be accepted by a view served from another subdomain.
+.PP
+Please note that the presence of this setting does not imply that the CSRF protection is safe from cross-subdomain attacks by default - please see the
+.B NOTES
+section.
+.RE
+.PP
+.I cookie_secure
+(boolean value, default: false)
+.RS 4
+Whether to use a secure cookie for the CSRF cookie. If this is set to
+.IR true ,
+the cookie will be marked as secure, which means browsers may ensure that the cookie is only sent with an HTTPS connection.
+.RE
+.PP
+.I trusted_origins
+(string list, default: empty)
+.RS 4
+A comma separated list of hosts which are trusted origins for unsafe requests (e.g. POST). For a secure unsafe request, the CSRF protection requires that the request have a
+.B Referer
+header that matches the origin present in the
+.B Host
+header. This prevents, for example, a POST request from
+.I subdomain.example.com
+from succeeding against
+.IR api.example.com .
+If you need cross-origin unsafe requests over HTTPS, continuing the example, add "subdomain.example.com" to this list. The setting also supports subdomains, so you could add ".example.com", for example, to allow access from all subdomains of
+.IR example.com .
+.RE
+.PP
+.I log_failed_ip
+(boolean value, default: false)
+.RS 4
+If this is set to
+.IR true ,
+the log output for failed checks will contain the IP address of the remote client.
+.RE
+.SH EXAMPLES
+.RS 0
+[Cutelyst_CSRFProtection_Plugin]
+.RE
+.RS 0
+cookie_secure=true
+.RE
+.SH NOTES
+Subdomains within a site will be able to set cookies on the client for the whole domain. By setting the cookie and using a corresponding token, subdomains will be able to circumvent the CSRF protection. The only way to avoid this is to ensure that subdomains are controlled by trusted users (or, are at least unable to set cookies). Note that even without CSRF, there are other vulnerabilities, such as session fixation, that make giving subdomains to untrusted parties a bad idea, and these vulnerabilities cannot easily be fixed with current browsers.
+.SH LOGGING CATEGORY
+cutelyst.plugin.csrfprotection

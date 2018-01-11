@@ -36,3 +36,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5CSRFProtection.pc.in
     @ONLY
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/CutelystQt5CSRFProtection.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5CSRFProtection.5.in
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5CSRFProtection.5
+    @ONLY
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5CSRFProtection.5 DESTINATION ${MANDIR}/man5)
