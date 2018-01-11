@@ -1,0 +1,87 @@
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached @PROJECT_VERSION@"
+
+.SH NAME
+Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached - Configuration of the Memcached Plugin for the Cutelyst Web Framework
+.SH DESCRIPTION
+The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a Memcached general-purpose distributed memory caching system. It uses libmemcached to connect to a pool of memcached servers and to perform the caching operations.
+.SH CONFIGURATION
+The Memcached plugin can be configured in the Cutelyst configuration file in the
+.I Cutelyst_Memcached_Plugin
+section.
+It uses the same configuration strings as
+.BR libmemcached_configuration (3)
+but in lowercase and without the dashes in front and for consistence - replaced by _ . So --BINARY-PROTOCOL will be binary_protocol. To add servers and/or sockets use the
+.I servers
+configuration key. Servers can be added with name, port and weight, separated by
+.I ,
+(comma) - multiple servers are separated by a
+.I ;
+(semicolon). To add sockets, use a full path as name. If no configuration has been set or if the
+.I servers
+configuration key is empty, a default server at localhost on port 11211 will be used.
+.PP
+Additional to the configuration options of
+.BR libmemcached_configuration (3)
+there are some plugin specific options:
+.PP
+.I compression
+(default: false)
+.RS 4
+boolean value, enables compression of input values based on qCompress / zlib
+.RE
+.PP
+.I compression_level
+(default: -1)
+.RS 4
+integer value, the compression level used by qCompress
+.RE
+.PP
+.I compression_threshold
+(default: 100)
+.RS 4
+integer value, the compression size threshold in bytes, only input values bigger than the threshold will be compressed
+.RE
+.PP
+.I encryption_key
+(default: empty)
+.RS 4
+string value, if set and not empty, AES encryption will be enabled
+.RE
+.PP
+.I sasl_user
+(default: empty)
+.RS 4
+string value, if set and not empty, SASL authentication will be used - note that SASL support has to be enabled when building libmemcached
+.RE
+.PP
+.I sasl_password
+(default: empty)
+.RS 4
+string value, if set and not empty, SASL authentication will be used
+.RE
+.SH EXAMPLES
+.RS 0
+[Cutelyst_Memcached_Plugin]
+.RE
+.RS 0
+servers=cache.example.com,11211,2;/path/to/memcached.sock,1
+.RE
+.RS 0
+binary_protocol=true
+.RE
+.RS 0
+namespace=foobar
+.RE
+.SH NOTES
+If you want to use non-ASCII key names you have to enable the
+.IR binary_protocol .
+.PP
+If
+.BR libmemcached_configuration (3)
+is not available on your system, have a look a the
+.UR http://docs.libmemcached.org/libmemcached_configuration.html
+online documentation of libmemcached
+.UE .
+.SH "SEE ALSO"
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore (5)
+.BR libmemcached_configuration (3)
