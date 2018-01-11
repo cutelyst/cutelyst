@@ -82,6 +82,8 @@ is not available on your system, have a look a the
 .UR http://docs.libmemcached.org/libmemcached_configuration.html
 online documentation of libmemcached
 .UE .
+.SH LOGGING CATEGORY
+cutelyst.plugin.memcached
 .SH "SEE ALSO"
 .BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore (5)
 .BR libmemcached_configuration (3)
