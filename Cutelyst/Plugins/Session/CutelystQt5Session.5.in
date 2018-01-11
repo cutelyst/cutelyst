@@ -1,0 +1,39 @@
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5Session 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5Session @PROJECT_VERSION@"
+
+.SH NAME
+Cutelyst@PROJECT_VERSION_MAJOR@Qt5Session - Configuration of the Session Plugin for the Cutelyst Web Framework
+.SH DESCRIPTION
+The Session plugin for Cutelyst can be used to generate user sessions that are stored on the server side in a session store and on the user side in a session cookie. The name of the session cookie is the name of the application + "_session".
+.SH CONFIGURATION
+The Session plugin can be configured in the Cutelyst application configuration file in the
+.I Cutelyst_Session_Plugin
+section.
+.PP
+.I expires
+(integer value, default: 7200)
+.RS 4
+Expiration duration of the cookie in seconds.
+.RE
+.PP
+.I verify_address
+(boolean value, default: false)
+.RS 4
+If enabled, the plugin will check if the IP address of the requesting user matches the address stored in the session data. In case of a mismatch, the session will be deleted.
+.RE
+.PP
+.I verify_user_agent
+(boolean value, default: false)
+.RS 4
+If true, the plugin will check if the user agent of the requesting user matches the user agent stored in the session data. In case of a mismatch, the session will be deleted.
+.RE
+.SH EXAMPLES
+.RS 0
+[Cutelyst_Session_Plugin]
+.RE
+.RS 0
+expires=1234
+.RE
+.SH LOGGING CATEGORY
+cutelyst.plugin.session
+.SH "SEE ALSO"
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore (5)
