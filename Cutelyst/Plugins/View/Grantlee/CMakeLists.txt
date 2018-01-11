@@ -55,7 +55,7 @@ target_link_libraries(grantlee_cutelyst
 )
 if (PLUGIN_CSRFPROTECTION)
     target_link_libraries(grantlee_cutelyst
-        PRIVATE cutelyst_qt5_plugin_csrfprotection
+        PRIVATE Cutelyst2Qt5::CSRFProtection
     )
 endif (PLUGIN_CSRFPROTECTION)
 grantlee_adjust_plugin_name(grantlee_cutelyst)
