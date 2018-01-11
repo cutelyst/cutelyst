@@ -1,0 +1,31 @@
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore @PROJECT_VERSION@"
+
+.SH NAME
+Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore - Configuration of the Memcached Session Store Plugin for the Cutelyst Web Framework
+.SH DESCRIPTION
+This session store saves session data to Memcached servers using the
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
+plugin.
+.SH CONFIGURATION
+The Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the
+.I Cutelyst_MemcachedSessionStore_Plugin
+section.
+.PP
+Currently there are the following configuration options:
+.PP
+.I group_key
+(default: empty)
+.RS 4
+string value, defines a group key to store the data on a specific server
+.RE
+.SH EXAMPLES
+.RS 0
+[Cutelyst_MemcachedSessionStore_Plugin]
+.RE
+.RS 0
+group_key=sessions
+.RE
+.SH NOTES
+The memcached server does not guarantee the existence of the session data. It might for example delete the data because it runs out of memory and deletes session data. So be careful when using this plugin to store sessions.
+.SH "SEE ALSO"
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
