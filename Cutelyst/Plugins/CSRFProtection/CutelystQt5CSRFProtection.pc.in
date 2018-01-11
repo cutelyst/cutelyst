@@ -7,5 +7,5 @@ Name: Cutelyst Qt5 CSRF Protection Plugin
 Description: Cutelyst CSRF Protection plugin
 Version: @PROJECT_VERSION@
 Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Session
-Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5CsrfProtection
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection
 Cflags: -I${includedir}/Cutelyst -I${includedir}
