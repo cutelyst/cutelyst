@@ -38,8 +38,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.pc.i
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.5.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.5
-    @ONLY
-)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.5 DESTINATION ${MANDIR}/man5)
+if(UNIX)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.5.in
+        ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.5
+        @ONLY
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5MemcachedSessionStore.5 DESTINATION ${MANDIR}/man5)
+endif()
