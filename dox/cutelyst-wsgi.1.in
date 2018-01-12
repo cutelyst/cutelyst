@@ -1,0 +1,193 @@
+.TH cutelyst-wsgi@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst-wsgi@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION"
+
+.SH NAME
+cutelyst-wsgi@PROJECT_VERSION_MAJOR@ - Fast, developer-friendly WSGI server for Cutelyst applications.
+
+.SH SYNOPSIS
+.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
+.RI [ OPTIONS ]
+
+.SH DESCRIPTION
+.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
+is a Web Service Gateway Interface (WSGI) server for Cutelyst applications that can either be used as standalone HTTP server or as a gateway between your Cutelyst application and another webserver like Apache or nginx.
+
+.SH OPTIONS
+.SS "Generic Program Information"
+.TP
+.BR \-h ", " \-\^\-help
+Output a usage message and exit
+.TP
+.BR \-v ", " \-\^\-version
+Output the version number of
+.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
+and exit.
+.SS "Load Application"
+.TP
+.BI "\-a\fR,\fP \-\^\-application" " file"
+Application to load.
+.TP
+.BR \-r ", " \-\^\-auto-restart
+Automatically restart when the application file changes.
+.TP
+.BI \-\^\-pidfile " file"
+Create pid
+.I file
+(before privileges drop).
+.TP
+.BI \-\^\-pidfile2 " file"
+Create pid
+.I file
+(after privileges drop).
+.TP
+.BI \-\^\-stop " pidfile"
+Stop an instance identified by
+.IR pidfile .
+.SS "Directories and Mountpoints"
+.TP
+.BI \-\^\-chdir " directory"
+Change to the specified
+.I directory
+before the application loads.
+.TP
+.BI \-\^\-chdir2 " directory"
+Change to the specifie
+.I directory
+after the application has been loaded.
+.TP
+.BI \-\^\-static-map " mountpoint=path"
+Map
+.I mountpoint
+to static directory (or file).
+.TP
+.BI \-\^\-static-map2 " mountpoint=path"
+Like static-map but completely appending the requested resource to the docroot.
+.SS "Load Configuration"
+.TP
+.BI \-\^\-ini " file"
+Load configuration from ini
+.IR file .
+.TP
+.BI "\-j\fR,\fP \-\^\-json" " file"
+Load configuration from JSON
+.IR file .
+.TP
+.BI \-\^\-touch-reload " file"
+Reload the application if the specified
+.I file
+is modified/touched.
+.SS "Threads and Processes"
+.TP
+.BR \-M ", " \-\^\-master
+Enable master process.
+.TP
+.B \-\^\-lazy
+Set lazy mode (load application in workers instead of master).
+.TP
+.BI "\-p\fR,\fP \-\^\-processes" " processes"
+Spawn the specified number of
+.IR processes .
+.TP
+.BI "\-t\fR,\fP \-\^\-threads" " threads"
+Number of
+.I threads
+to use.
+.TP
+.BI \-\^\-cpu-affinity " core count"
+Set CPU affinity with the number of CPUs available for each wokrker core.
+.TP
+.B \-\^\-experimental-thread-balancer
+Balances new connections to threads using round-robin.
+.SS "Sockets"
+.TP
+.BI "\-\^\-h1\fR,\fP \-\^\-http-socket" " address"
+Bind to the specified TCP socket using HTTP protocol.
+.TP
+.BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " address"
+Bind to the specified TCP socket using HTTPS protocol
+.TP
+.BI \-\^\-fastcgi-socket " address"
+Bind to the specified UNIX/TCP socket using FastCGI protocol.
+.TP
+.BI \-\^\-socket-access " options"
+Set the LOCAL socket access, such as 'ugo' standing for User, Group, Other access.
+.TP
+.BI \-\^\-chown-socket " uid:gid"
+Chown unix sockets.
+.TP
+.B \-\^\-reuse-port
+Enable SO_REUSEPORT flag on socket (Linux 3.9+)
+.TP
+.BI "\-z\fR,\fP \-\^\-socket-timeout" " seconds"
+Set internal sockets timeout in
+.IR seconds .
+.SS "User and Group"
+.TP
+.BI \-\^\-uid " user/uid"
+Setuid to the specified
+.IR user/uid .
+.TP
+.BI \-\^\-gid " group/gid"
+Setgid to the specified
+.IR group/gid .
+.TP
+.B \-\^\-no-initgroups
+Disable additional groups set via initgroups().
+.TP
+.BI \-\^\-umask " mode"
+Set file
+.I mode
+creation mask.
+.SS "TCP Settings"
+.TP
+.B \-\^\-tcp-nodelay
+Enable TCP NODELAY on each request.
+.TP
+.B \-\^\-so-keepalive
+Enable TCP KEEPALIVEs.
+.SS "Buffer Sizes"
+.TP
+.BI "\-b\fR,\fP \-\^\-buffer-size" " bytes"
+Set internal buffer size in
+.IR bytes .
+.TP
+.BI \-\^\-post-buffering " bytes"
+Set size in
+.I bytes
+after which will buffer to disk insted of memory.
+.TP
+.BI \-\^\-post-buffering-bufsize " bytes"
+Set buff size in
+.I bytes
+for read() in post buffering mode.
+.TP
+.BI \-\^\-socket-sndbuf " bytes"
+Set SO_SNDBUF in
+.IR bytes .
+.TP
+.BI \-\^\-socket-rcvbuf " bytes"
+Set SO_RCVBUF in
+.IR bytes .
+.TP
+.BI \-\^\-websocket-max-size " Kbytes"
+Set the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option.
+
+.SH "EXIT STATUS"
+0 on success and 1 if something failed.
+
+.SH BUGS
+File bug reports to the
+.UR https://github.com/cutelyst/cutelyst/issues
+issue system of the GitHub project
+.UE .
+
+.SH EXAMPLE
+.SS "Start application with HTTP socket and load ini config file"
+cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-h1 localhost:3000 \-\^\-ini /path/to/appconfig.ini
+.SS "Start application on local FastCGI socket and protect socket file"
+cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-chown-socket myuser:www \-\^\-socket-access ug \-\^\-uid myuser
+.SS "Start application on local FastCGI socket and store PID in file"
+cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-pidfile /run/cutelystapp.pid
+.SS "Stop application using pid file"
+cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-\^\-stop /run/cutelystapp.pid
+.SH "SEE ALSO"
+.BR cutelyst@PROJECT_VERSION_MAJOR@ (1)

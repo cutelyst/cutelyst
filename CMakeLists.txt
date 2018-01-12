@@ -179,6 +179,8 @@ endif ()
 
 add_subdirectory(cmd)
 
+add_subdirectory(dox)
+
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()

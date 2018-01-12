@@ -1,0 +1,66 @@
+.TH cutelyst@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION"
+
+.SH NAME
+cutelyst@PROJECT_VERSION_MAJOR@ - Developer Helper Application for the Cutelyst Web Framework
+
+.SH SYNOPSIS
+.B cutelyst@PROJECT_VERSION_MAJOR@
+.RI [ OPTIONS ]
+
+.SH DESCRIPTION
+.B cutelyst@PROJECT_VERSION_MAJOR@
+is a command line utility to help developers creating new applications for the Cutelyst Web Framework. It can create a skeleton for a new application, controllers and start your application.
+
+.SH OPTIONS
+.SS "Generic Program Information"
+.TP
+.BR \-h ", " \-\^\-help
+Output a usage message and exit
+.TP
+.BR \-v ", " \-\^\-version
+Output the version number of
+.B cutelyst@PROJECT_VERSION_MAJOR@
+and exit.
+.SS "Creating skeletons"
+.TP
+.BI \-\^\-create-app " app_name"
+Creates a new Cutelyst application with the given
+.IR app_name .
+.TP
+.BI \-\^\-controller " controller_name"
+Create a new Controller for your application with the given
+.IR controller_name .
+.SS "Development Server"
+.TP
+.B \-\^\-server
+Starts a HTTP server.
+.TP
+.BI \-\^\-app-file " file_name"
+Application file to use with the server (usually in build/src/lib*.so), if not set it will try to autodetect.
+.TP
+.BI "\-p\fR,\fP \-\^\-server-port" " port"
+.I Port
+used by the development server.
+.TP
+.BR \-r ", " \-\^\-restart
+Restarts the development server when the application file changes.
+
+.SH EXIT STATUS
+Returns 0 on success and 1 on failure.
+
+.SH BUGS
+File bug reports to the
+.UR https://github.com/cutelyst/cutelyst/issues
+issue system of the GitHub project
+.UE .
+
+.SH EXAMPLE
+.SS "Create application"
+cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-create-app MyCutelystApp
+.SS "Create controller"
+cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-contoller MyNewController
+.SS "Start server"
+cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-server \-\^\-app-file build/src/libMyCutelystApp.so \-p 8080 \-r
+
+.SH "SEE ALSO"
+.BR cutelyst-wsgi@PROJECT_VERSION_MAJOR@ (1)
