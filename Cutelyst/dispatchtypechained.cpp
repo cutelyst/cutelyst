@@ -364,7 +364,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
         return bestAction;
     }
 
-    const StringActionsMap children = it.value();
+    const StringActionsMap &children = it.value();
     QStringList keys = children.keys();
     std::sort(keys.begin(), keys.end(), [](const QString &a, const QString &b) -> bool {
         // action2 then action1 to try the longest part first

@@ -66,7 +66,7 @@ QString Headers::contentType() const
     QString ret;
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
-        const QString ct = it.value();
+        const QString &ct = it.value();
         ret = ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
     }
     return ret;
@@ -82,7 +82,7 @@ QString Headers::contentTypeCharset() const
     QString ret;
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
-        const QString contentType = it.value();
+        const QString &contentType = it.value();
         int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
         if (pos != -1) {
             int endPos = contentType.indexOf(QLatin1Char(';'), pos);
@@ -183,7 +183,7 @@ QDateTime Headers::date() const
     QDateTime ret;
     auto it = m_data.constFind(QStringLiteral("DATE"));
     if (it != m_data.constEnd()) {
-        const QString date = it.value();
+        const QString &date = it.value();
 
         if (date.endsWith(QLatin1String(" GMT"))) {
             ret = QLocale::c().toDateTime(date.left(date.size() - 4),
@@ -208,7 +208,7 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     QDateTime ret;
     auto it = m_data.constFind(QStringLiteral("IF_MODIFIED_SINCE"));
     if (it != m_data.constEnd()) {
-        const QString ifModifiedStr = it.value();
+        const QString &ifModifiedStr = it.value();
 
         if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
             ret = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),

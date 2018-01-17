@@ -132,9 +132,9 @@ QByteArray ViewJson::render(Context *c) const
 
         auto it = stash.constBegin();
         while (it != stash.constEnd()) {
-            const QString key = it.key();
+            const QString &key = it.key();
             if (d->exposeKeys.contains(key)) {
-                exposedStash.insertMulti(it.key(), it.value());
+                exposedStash.insertMulti(key, it.value());
             }
             ++it;
         }
@@ -148,7 +148,7 @@ QByteArray ViewJson::render(Context *c) const
 
         auto it = stash.constBegin();
         while (it != stash.constEnd()) {
-            const QString key = it.key();
+            const QString &key = it.key();
             if (re.match(key).hasMatch()) {
                 exposedStash.insertMulti(key, it.value());
             }

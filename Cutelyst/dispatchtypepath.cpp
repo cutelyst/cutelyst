@@ -144,7 +144,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
         const auto attributes = action->attributes();
         auto it = attributes.constFind(QStringLiteral("Path"));
         if (it != attributes.constEnd()) {
-            const QString path = it.value();
+            const QString &path = it.value();
             if (path.isEmpty()) {
                 ret = QStringLiteral("/");
             } else if (!path.startsWith(QLatin1Char('/'))) {

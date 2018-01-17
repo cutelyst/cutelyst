@@ -553,8 +553,8 @@ bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, c
     auto it = headersData.constBegin();
     const auto endIt = headersData.constEnd();
     while (it != endIt) {
-        const QString key = it.key();
-        const QString value = it.value();
+        const QString &key = it.key();
+        const QString &value = it.value();
         if (!hasDate && key == QLatin1String("DATE")) {
             hasDate = true;
         }

@@ -200,8 +200,8 @@ bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, cons
     auto it = headersData.constBegin();
     const auto endIt = headersData.constEnd();
     while (it != endIt) {
-        const QString key = it.key();
-        const QString value = it.value();
+        const QString &key = it.key();
+        const QString &value = it.value();
         if (sock->headerConnection == Socket::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
             if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
                 sock->headerConnection = Socket::HeaderConnectionClose;
