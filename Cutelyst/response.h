@@ -165,14 +165,14 @@ public:
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
      */
-    void setJsonBody(const QJsonObject &object);
+    void setJsonObjectBody(const QJsonObject &object);
 
     /**
      * Sets a QJsonArray on a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
      */
-    void setJsonBody(const QJsonArray &array);
+    void setJsonArrayBody(const QJsonArray &array);
 
     /**
      * Short for headers().contentEncoding();
