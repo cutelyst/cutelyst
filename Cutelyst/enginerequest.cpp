@@ -107,7 +107,7 @@ void EngineRequest::finalizeCookies(Context *c)
     Headers &headers = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader(QStringLiteral("set_cookie"), QString::fromLatin1(cookie.toRawForm()));
+        headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
     }
 }
 
