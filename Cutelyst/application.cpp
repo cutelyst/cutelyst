@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,6 +54,8 @@ Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
 Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component")
 
 using namespace Cutelyst;
+
+static const QString _home(QLatin1String("home"));
 
 Application::Application(QObject *parent) :
     QObject(parent),
@@ -214,13 +216,13 @@ QVariantMap Application::config() const
 
 QString Application::pathTo(const QString &path) const
 {
-    QDir home = config(QStringLiteral("home")).toString();
+    QDir home = config(_home).toString();
     return home.absoluteFilePath(path);
 }
 
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
-    QDir home = config(QStringLiteral("home")).toString();
+    QDir home = config(_home).toString();
     return home.absoluteFilePath(path.join(QLatin1Char('/')));
 }
 
@@ -341,9 +343,10 @@ bool Application::setup(Engine *engine)
         d->dispatcher->setupActions(d->controllers, d->dispatchers, d->engine->workerCore() == 0);
 
         if (zeroCore) {
-            qCInfo(CUTELYST_CORE) << QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
-                                     .arg(QCoreApplication::applicationName(), QLatin1String(Application::cutelystVersion()), QLatin1String(qVersion()))
-                                     .toLatin1().constData();
+            qCInfo(CUTELYST_CORE) << qPrintable(QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
+                                                .arg(QCoreApplication::applicationName(),
+                                                     QLatin1String(Application::cutelystVersion()),
+                                                     QLatin1String(qVersion())));
         }
 
         Q_EMIT preForked(this);
@@ -397,8 +400,8 @@ Context *Application::handleRequest(Request *req)
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 c->response()->status(),
-                c->response()->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown")).toLatin1().data(),
-                c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown")).toLatin1().data());
+                qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))),
+                qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
 
         quint64 endOfRequest = engine->time();
         double enlapsed = (endOfRequest - engineRequest->startOfRequest) / 1000000.0;
@@ -409,9 +412,8 @@ Context *Application::handleRequest(Request *req)
             average = QString::number(1.0 / enlapsed, 'f');
             average.truncate(average.size() - 3);
         }
-        qCInfo(CUTELYST_STATS) << QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                  .arg(QString::number(enlapsed, 'f'), average, QString::fromLatin1(stats->report()))
-                                  .toLatin1().constData();
+        qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
+                                             .arg(QString::number(enlapsed, 'f'), average, QString::fromLatin1(stats->report())));
         delete stats;
     }
 
@@ -530,7 +532,7 @@ void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
     if (!config.contains(QLatin1String("home"))) {
-        config.insert(QStringLiteral("home"), QDir::currentPath());
+        config.insert(_home, QDir::currentPath());
     }
 
     if (!config.contains(QLatin1String("root"))) {
@@ -579,12 +581,12 @@ void Cutelyst::ApplicationPrivate::logRequest(Request *req)
 
     ParamsMultiMap params = req->queryParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Query Parameters are:"));
+        logRequestParameters(params, QLatin1String("Query Parameters are:"));
     }
 
     params = req->bodyParameters();
     if (!params.isEmpty()) {
-        logRequestParameters(params, QStringLiteral("Body Parameters are:"));
+        logRequestParameters(params, QLatin1String("Body Parameters are:"));
     }
 
     const auto uploads = req->uploads();
@@ -602,8 +604,8 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QStringLiteral("Parameter"),
-                                                       QStringLiteral("Value"),
+                                                       QLatin1String("Parameter"),
+                                                       QLatin1String("Value"),
                                                    },
                                                    title).constData();
 }
@@ -619,12 +621,12 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upl
                      });
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QStringLiteral("Parameter"),
-                                                       QStringLiteral("Filename"),
-                                                       QStringLiteral("Type"),
-                                                       QStringLiteral("Size"),
+                                                       QLatin1String("Parameter"),
+                                                       QLatin1String("Filename"),
+                                                       QLatin1String("Type"),
+                                                       QLatin1String("Size"),
                                                    },
-                                                   QStringLiteral("File Uploads are:")).constData();
+                                                   QLatin1String("File Uploads are:")).constData();
 }
 
 Component *ApplicationPrivate::createComponentPlugin(const QString &name, QObject *parent, const QString &directory)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,9 @@
 
 #include <QCryptographicHash>
 #include <QEventLoop>
+
+static const QString _applicationJson(QLatin1String("application/json"));
+static const QString _location(QLatin1String("LOCATION"));
 
 using namespace Cutelyst;
 
@@ -140,7 +143,7 @@ void Response::setJsonBody(const QJsonDocument &documment)
     Q_D(Response);
     const QByteArray body = documment.toJson(QJsonDocument::Compact);
     d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
+    d->headers.setContentType(_applicationJson);
 }
 
 void Response::setJsonObjectBody(const QJsonObject &object)
@@ -148,7 +151,7 @@ void Response::setJsonObjectBody(const QJsonObject &object)
     Q_D(Response);
     const QByteArray body = QJsonDocument(object).toJson(QJsonDocument::Compact);
     d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
+    d->headers.setContentType(_applicationJson);
 }
 
 void Response::setJsonArrayBody(const QJsonArray &array)
@@ -156,7 +159,7 @@ void Response::setJsonArrayBody(const QJsonArray &array)
     Q_D(Response);
     const QByteArray body = QJsonDocument(array).toJson(QJsonDocument::Compact);
     d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
+    d->headers.setContentType(_applicationJson);
 }
 
 QString Response::contentEncoding() const
@@ -245,7 +248,7 @@ void Response::redirect(const QUrl &url, quint16 status)
         const QString location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
 
-        d->headers.setHeader(QStringLiteral("LOCATION"), location);
+        d->headers.setHeader(_location, location);
         d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
 
         const QString buf = QStringLiteral(
@@ -262,7 +265,7 @@ void Response::redirect(const QUrl &url, quint16 status)
                                "</html>\n");
         setBody(buf);
     } else {
-        d->headers.removeHeader(QStringLiteral("LOCATION"));
+        d->headers.removeHeader(_location);
         qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url << status;
     }
 }

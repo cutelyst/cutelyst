@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,10 @@
 #include <QtCore/QUrl>
 
 using namespace Cutelyst;
+
+static const QString _pathPart(QLatin1String("PathPart"));
+static const QString _captureArgs(QLatin1String("CaptureArgs"));
+static const QString _chained(QLatin1String("Chained"));
 
 DispatchTypeChained::DispatchTypeChained(QObject *parent) : DispatchType(parent)
   , d_ptr(new DispatchTypeChainedPrivate)
@@ -236,7 +240,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    attributes.insert(QStringLiteral("PathPart"), part);
+    attributes.insert(_pathPart, part);
     action->setAttributes(attributes);
 
     auto &childrenOf = d->childrenOf[chainedTo][part];
@@ -269,8 +273,8 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
 
     QString ret;
     const QMap<QString, QString> attributes = action->attributes();
-    if (!(attributes.contains(QStringLiteral("Chained")) &&
-            !attributes.contains(QStringLiteral("CaptureArgs")))) {
+    if (!(attributes.contains(_chained) &&
+            !attributes.contains(_captureArgs))) {
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: action is not an end point" << action;
         return ret;
     }
@@ -281,7 +285,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     Action *curr = action;
     while (curr) {
         const QMap<QString, QString> attributes = curr->attributes();
-        if (attributes.contains(QStringLiteral("CaptureArgs"))) {
+        if (attributes.contains(_captureArgs)) {
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
                 qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures" << curr->numberOfCaptures() << captures.size();
@@ -292,12 +296,12 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
             localCaptures = localCaptures.mid(0, localCaptures.size() - curr->numberOfCaptures());
         }
 
-        const QString pp = attributes.value(QStringLiteral("PathPart"));
+        const QString pp = attributes.value(_pathPart);
         if (!pp.isEmpty()) {
             parts.prepend(pp);
         }
 
-        parent = attributes.value(QStringLiteral("Chained"));
+        parent = attributes.value(_chained);
         curr = d->actions.value(parent);
     }
 
@@ -327,7 +331,7 @@ Action *DispatchTypeChained::expandAction(const Context *c, Action *action) cons
     }
 
     // The action must be chained to something
-    if (!action->attributes().contains(QStringLiteral("Chained"))) {
+    if (!action->attributes().contains(_chained)) {
         return nullptr;
     }
 
@@ -336,7 +340,7 @@ Action *DispatchTypeChained::expandAction(const Context *c, Action *action) cons
 
     while (curr) {
         chain.prepend(curr);
-        const QString parent = curr->attribute(QStringLiteral("Chained"));
+        const QString parent = curr->attribute(_chained);
         curr = d->actions.value(parent);
     }
 
@@ -387,7 +391,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
         const Actions tryActions = children.value(tryPart);
         for (Action *action : tryActions) {
             const QMap<QString, QString> attributes = action->attributes();
-            if (attributes.contains(QStringLiteral("CaptureArgs"))) {
+            if (attributes.contains(_captureArgs)) {
                 const int captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts
                 if (parts.size() < captureCount) {
@@ -422,7 +426,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                           actionCaptures.size() < bestAction.captures.size() &&
                           ret.n_pathParts > bestAction.n_pathParts))) {
                     actions.prepend(action);
-                    int pathparts = attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                    int pathparts = attributes.value(_pathPart).count(QLatin1Char('/')) + 1;
                     bestAction.actions = actions;
                     bestAction.captures = captures + actionCaptures;
                     bestAction.parts = actionParts;
@@ -435,7 +439,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                 }
 
                 const QString argsAttr = attributes.value(QStringLiteral("Args"));
-                const int pathparts = attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                const int pathparts = attributes.value(_pathPart).count(QLatin1Char('/')) + 1;
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match

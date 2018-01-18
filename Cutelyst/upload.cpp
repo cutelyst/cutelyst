@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,8 @@
 #include <QTemporaryFile>
 
 using namespace Cutelyst;
+
+static const QString _failureToWriteBlock(QLatin1String("Failure to write block"));
 
 QString Upload::filename() const
 {
@@ -70,7 +72,7 @@ bool Upload::save(const QString &newName)
                 break;
             totalRead += in;
             if (in != out.write(block, in)) {
-                setErrorString(QStringLiteral("Failure to write block"));
+                setErrorString(_failureToWriteBlock);
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;
@@ -119,7 +121,7 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
                 break;
             totalRead += in;
             if (in != ret->write(block, in)) {
-                setErrorString(QStringLiteral("Failure to write block"));
+                setErrorString(_failureToWriteBlock);
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;

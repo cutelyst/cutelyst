@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,8 @@
 #include <QDebug>
 
 using namespace Cutelyst;
+
+static const QString _slash(QLatin1String("/"));
 
 DispatchTypePath::DispatchTypePath(QObject *parent) :
     DispatchType(parent),
@@ -80,7 +82,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
 
     QString _path = path;
     if (_path.isEmpty()) {
-        _path = QStringLiteral("/");
+        _path = _slash;
     }
 
     const auto it = d->paths.constFind(_path);
@@ -146,7 +148,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
-                ret = QStringLiteral("/");
+                ret = _slash;
             } else if (!path.startsWith(QLatin1Char('/'))) {
                 ret = QLatin1Char('/') + path;
             } else {
@@ -164,7 +166,7 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {
-        _path = QStringLiteral("/");
+        _path = _slash;
     }
 
     auto it = paths.find(_path);

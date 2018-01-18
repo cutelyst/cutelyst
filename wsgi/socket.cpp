@@ -133,11 +133,7 @@ bool Socket::webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, cons
     headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
     headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
     const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("ORIGIN")) : origin;
-    if (localOrigin.isEmpty()) {
-        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), QStringLiteral("*"));
-    } else {
-        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), localOrigin);
-    }
+    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), localOrigin.isEmpty() ? QStringLiteral("*") : localOrigin);
 
     const QString wsProtocol = protocol.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_PROTOCOL")) : protocol;
     if (!wsProtocol.isEmpty()) {
