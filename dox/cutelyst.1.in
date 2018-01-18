@@ -1,4 +1,4 @@
-.TH cutelyst@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION"
+.TH cutelyst@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
 cutelyst@PROJECT_VERSION_MAJOR@ - Developer Helper Application for the Cutelyst Web Framework

@@ -1,4 +1,4 @@
-.TH cutelyst-wsgi@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst-wsgi@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION"
+.TH cutelyst-wsgi@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst-wsgi@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
 cutelyst-wsgi@PROJECT_VERSION_MAJOR@ - Fast, developer-friendly WSGI server for Cutelyst applications.
