@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -246,7 +246,7 @@ public:
      * "Basic Authentication Scheme".
      * It will return a pair of username and password respectively.
      */
-    QPair<QString, QString> authorizationBasicPair() const;
+    std::pair<QString, QString> authorizationBasicPair() const;
 
     /**
      * This method is used to set an authorization header that use the
@@ -279,7 +279,7 @@ public:
      * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
      * It will return a pair of username and password respectively.
      */
-    QPair<QString, QString> proxyAuthorizationBasicPair() const;
+    std::pair<QString, QString> proxyAuthorizationBasicPair() const;
 
     /**
      * Returns the value associated with \p field

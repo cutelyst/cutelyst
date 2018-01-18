@@ -25,7 +25,7 @@ using namespace Cutelyst;
 
 inline QString normalizeHeaderKey(const QString &field);
 inline QByteArray decodeBasicAuth(const QString &auth);
-inline QPair<QString, QString> decodeBasicAuthPair(const QString &auth);
+inline std::pair<QString, QString> decodeBasicAuthPair(const QString &auth);
 
 static const QString _contentType(QLatin1String("CONTENT_TYPE"));
 static const QString _contentDisposition(QLatin1String("CONTENT_DISPOSITION"));
@@ -319,7 +319,7 @@ QString Headers::authorizationBasic() const
     return QString::fromLatin1(decodeBasicAuth(authorization()));
 }
 
-QPair<QString, QString> Headers::authorizationBasicPair() const
+std::pair<QString, QString> Headers::authorizationBasicPair() const
 {
     return decodeBasicAuthPair(authorization());
 }
@@ -355,7 +355,7 @@ QString Headers::proxyAuthorizationBasic() const
     return QString::fromLatin1(decodeBasicAuth(proxyAuthorization()));
 }
 
-QPair<QString, QString> Headers::proxyAuthorizationBasicPair() const
+std::pair<QString, QString> Headers::proxyAuthorizationBasicPair() const
 {
     return decodeBasicAuthPair(proxyAuthorization());
 }
@@ -440,9 +440,9 @@ QByteArray decodeBasicAuth(const QString &auth)
     return ret;
 }
 
-QPair<QString, QString> decodeBasicAuthPair(const QString &auth)
+std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
 {
-    QPair<QString, QString> ret;
+    std::pair<QString, QString> ret;
     const QByteArray authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');

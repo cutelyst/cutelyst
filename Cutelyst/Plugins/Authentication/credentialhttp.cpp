@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -184,7 +184,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     AuthenticationUser user;
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
-    const QPair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
+    const std::pair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
     if (userPass.first.isEmpty()) {
         return user;
     }
