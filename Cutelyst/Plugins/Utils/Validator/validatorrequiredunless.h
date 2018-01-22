@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,16 +26,17 @@ namespace Cutelyst {
 class ValidatorRequiredUnlessPrivate;
 
 /*!
+ * \ingroup plugins-utils-validator-rules
  * \brief The field under validation must be present and not empty unless the other field is equal to any value in the list.
  *
- * If the other field specified as \a otherField does \b not conaint \b any of the values specified in the \a otherValues list, the
- * \a field under validation must be present and not empty.
+ * If the other field specified as \a otherField does \b not contain \b any of the values specified in the \a otherValues list, the
+ * \a field under validation must be present and not empty. This validator is the opposite of ValidatorRequiredIf.
  *
- * If ValidatorRule::trimBefore() is set to \c true (the default), whitespaces will be removed from
- * the beginning and the end of the input value before validation. So, fields that only contain whitespaces
- * will be treated as empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation. So, fields that only contain
+ * whitespaces will be treated as empty.
  *
- * \link Validator See Validator for general usage of validators. \endlink
+ * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredWith, ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
  */
@@ -47,41 +48,28 @@ public:
      * \param field         Name of the input field to validate.
      * \param otherField    Name of the other input field to validate.
      * \param otherValues   List of values that are not allowed to be in the other field to require the main field.
-     * \param label         Human readable input field label, used for generic error messages.
-     * \param customError   Custom error message if validation fails.
+     * \param messages      Custom error messages if validation fails.
      */
-    ValidatorRequiredUnless(const QString &field, const QString &otherField, const QStringList &otherValues, const QString &label = QString(), const QString &customError = QString());
+    ValidatorRequiredUnless(const QString &field, const QString &otherField, const QStringList &otherValues, const ValidatorMessages &messages = ValidatorMessages());
     
     /*!
      * \brief Deconstructs the required unless validator.
      */
     ~ValidatorRequiredUnless();
     
-    /*!
-     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
-     */
-    QString validate() const override;
-
-    /*!
-     * \brief Sets the name of the other field.
-     */
-    void setOtherField(const QString &otherField);
-
-    /*!
-     * \brief Sets the comparative values for the other field.
-     */
-    void setOtherValues(const QStringList &otherValues);
-    
 protected:
     /*!
-     * \brief Returns a generic error message.
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
      */
-    QString genericValidationError() const override;
-    
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
     /*!
-     * Constructs a new ValidatorRequiredUnless object with the given private class.
+     * \brief Returns a generic error message if validation failed.
      */
-    ValidatorRequiredUnless(ValidatorRequiredUnlessPrivate &dd);
+    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
     
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredUnless)

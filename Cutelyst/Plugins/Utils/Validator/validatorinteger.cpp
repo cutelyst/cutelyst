@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,46 +17,107 @@
  */
 
 #include "validatorinteger_p.h"
-#include <QRegularExpression>
 
 using namespace Cutelyst;
 
-ValidatorInteger::ValidatorInteger(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorIntegerPrivate(field, label, customError))
+ValidatorInteger::ValidatorInteger(const QString &field, QMetaType::Type type, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorIntegerPrivate(field, type, messages, defValKey))
 {
 }
-
-
-ValidatorInteger::ValidatorInteger(ValidatorIntegerPrivate &dd) :
-    ValidatorRule(dd)
-{
-}
-
 
 ValidatorInteger::~ValidatorInteger()
 {
 }
 
-QString ValidatorInteger::validate() const
+ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    const QString v = value();
+    const QString v = value(params);
 
-    if (!v.isEmpty() && !v.contains(QRegularExpression(QStringLiteral("^-?\\d+$")))) {
-        result = validationError();
+    if (!v.isEmpty()) {
+        Q_D(const ValidatorInteger);
+        QVariant converted;
+
+        switch(d->type) {
+        case QMetaType::Short:
+        case QMetaType::Int:
+        case QMetaType::Long:
+        case QMetaType::LongLong:
+        case QMetaType::UShort:
+        case QMetaType::UInt:
+        case QMetaType::ULong:
+        case QMetaType::ULongLong:
+            converted = d->valueToNumber(c, v, d->type);
+            break;
+        default:
+            result.errorMessage = validationDataError(c);
+            qCWarning(C_VALIDATOR, "ValidatorInteger: Conversion type for field %s at %s::%s is not an integer type.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            break;
+        }
+
+        if (converted.isValid()) {
+            result.value = converted;
+        } else {
+            qCDebug(C_VALIDATOR, "ValidatorInteger: Validation failed for field %s at %s::%s: not an integer value.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            result.errorMessage = validationError(c);
+        }
+    } else {
+        defaultValue(c, &result, "ValidatorInteger");
     }
 
     return result;
 }
 
-QString ValidatorInteger::genericValidationError() const
+QString ValidatorInteger::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Has to be an integer (1,2,-3 etc).");
+    Q_UNUSED(errorData)
+    Q_D(const ValidatorInteger);
+    const QString _label = label(c);
+    QString min;
+    QString max;
+    switch (d->type) {
+    case QMetaType::Short:
+        min = c->locale().toString(std::numeric_limits<short>::min());
+        min = c->locale().toString(std::numeric_limits<short>::max());
+        break;
+    case QMetaType::Int:
+        min = c->locale().toString(std::numeric_limits<int>::min());
+        min = c->locale().toString(std::numeric_limits<int>::max());
+        break;
+    case QMetaType::Long:
+        min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::min()));
+        min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::max()));
+        break;
+    case QMetaType::LongLong:
+        min = c->locale().toString(std::numeric_limits<qlonglong>::min());
+        min = c->locale().toString(std::numeric_limits<qlonglong>::max());
+        break;
+    case QMetaType::UShort:
+        min = c->locale().toString(std::numeric_limits<ushort>::min());
+        min = c->locale().toString(std::numeric_limits<ushort>::max());
+        break;
+    case QMetaType::UInt:
+        min = c->locale().toString(std::numeric_limits<uint>::min());
+        min = c->locale().toString(std::numeric_limits<uint>::max());
+        break;
+    case QMetaType::ULong:
+        min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::min()));
+        min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::max()));
+        break;
+    case QMetaType::ULongLong:
+    default:
+        min = c->locale().toString(std::numeric_limits<qulonglong>::min());
+        min = c->locale().toString(std::numeric_limits<qulonglong>::max());
+        break;
+    }
+    if (_label.isEmpty()) {
+        //: %1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit
+        error = c->translate("ValidatorInteger", "Not a valid integer value between %1 and %2.").arg(min, max);
     } else {
-        error = QStringLiteral("You have to enter an integer (1,2,-3 etc.) into the “%1” field.").arg(label());
+        //: %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
+        error = c->translate("ValidatorInteger", "The value in the “%1“ field is not a valid integer between %2 and %3.").arg(_label, min, max);
     }
     return error;
 }

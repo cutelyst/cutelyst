@@ -26,14 +26,14 @@ namespace Cutelyst {
 class ValidatorMinPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorMinPrivate(const QString &f, QMetaType::Type t, double m, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e),
+    ValidatorMinPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk) :
+        ValidatorRulePrivate(f, msgs, dvk),
         type(t),
         min(m)
     {}
 
     QMetaType::Type type;
-    double min;
+    QVariant min;
 };
     
 }

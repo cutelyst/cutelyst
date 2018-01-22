@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const QString &label, const QString &otherLabel, const QString &customError) :
-    ValidatorRule(*new ValidatorSamePrivate(field, otherField, label, otherLabel, customError))
-{
-}
-
-ValidatorSame::ValidatorSame(ValidatorSamePrivate &dd) :
-    ValidatorRule(dd)
+ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const char *otherLabel, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorSamePrivate(field, otherField, otherLabel, messages, defValKey))
 {
 }
 
@@ -34,38 +29,48 @@ ValidatorSame::~ValidatorSame()
 {
 }
 
-QString ValidatorSame::validate() const
+ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorSame);
 
-    const QString v = value();
+    const QString v = value(params);
 
-    if (!v.isEmpty() && (v != d->parameters.value(d->otherField))) {
-        result = validationError();
+    if (!v.isEmpty()) {
+        const QString ov = trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
+        if (v != ov) {
+            result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR, "ValidatorSame: Validation failed for field %s at %s::%s: value is not the same as in the field %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->otherField));
+        } else {
+            result.value.setValue<QString>(v);
+        }
+    } else {
+        defaultValue(c, &result, "ValidatorSame");
     }
 
     return result;
 }
 
-QString ValidatorSame::genericValidationError() const
+QString ValidatorSame::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
 
     Q_D(const ValidatorSame);
-
-    if (label().isEmpty()) {
-        error = QStringLiteral("Must be the same as in the “%1” field.").arg(!d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    QString _olabel;
+    if (d->otherLabel) {
+        _olabel = d->translationContext.size() ? c->translate(d->translationContext.data(), d->otherLabel) : QString::fromUtf8(d->otherLabel);
     } else {
-        error = QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(label(), !d->otherLabel.isEmpty() ? d->otherLabel : d->otherField);
+        _olabel = d->otherField;
+    }
+
+    if (_label.isEmpty()) {
+        error = QStringLiteral("Must be the same as in the “%1” field.").arg(_olabel);
+    } else {
+        error = QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(_label, _olabel);
     }
 
     return error;
-}
-
-void ValidatorSame::setOtherField(const QString &otherField)
-{
-    Q_D(ValidatorSame);
-    d->otherField = otherField;
 }

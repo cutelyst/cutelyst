@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,17 +27,21 @@ namespace Cutelyst {
 class ValidatorPrivate
 {
 public:
-    ValidatorPrivate() {}
+    ValidatorPrivate(const QLatin1String &trContext) :
+        translationContext(trContext)
+    {}
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals) :
+    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals, const QLatin1String &trContext) :
+        translationContext(trContext),
         validators(vals)
-    {}
-
-    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals, std::initializer_list<std::pair<QString, QString> > labelDictionary) :
-        validators(vals),
-        labelDict(labelDictionary)
-    {}
+    {
+        if (!validators.empty()) {
+            for (ValidatorRule* r : validators) {
+                r->setTranslationContext(trContext);
+            }
+        }
+    }
 #endif
 
     ~ValidatorPrivate() {
@@ -47,9 +51,9 @@ public:
         }
     }
 
+    QLatin1String translationContext;
     ParamsMultiMap params;
     std::vector<ValidatorRule*> validators;
-    QHash<QString,QString> labelDict;
 };
 
 }

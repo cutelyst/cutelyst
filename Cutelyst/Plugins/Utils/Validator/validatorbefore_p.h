@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,14 +27,16 @@ namespace Cutelyst {
 class ValidatorBeforePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorBeforePrivate(const QString &f, const QVariant &d, const QString &i, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e),
-        date(d),
+    ValidatorBeforePrivate(const QString &f, const QVariant &comp, const QString &tz, const char *i, const ValidatorMessages &m, const QString &dvk) :
+        ValidatorRulePrivate(f, m, dvk),
+        comparison(comp),
+        timeZone(tz),
         inputFormat(i)
     {}
 
-    QVariant date;
-    QString inputFormat;
+    QVariant comparison;
+    QString timeZone;
+    const char *inputFormat = nullptr;
 };
 
 }

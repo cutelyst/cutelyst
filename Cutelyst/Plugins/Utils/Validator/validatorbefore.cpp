@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,13 +24,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before")
 
-ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &dateTime, const QString &inputFormat, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorBeforePrivate(field, dateTime, inputFormat, label, customError))
-{
-}
-
-ValidatorBefore::ValidatorBefore(ValidatorBeforePrivate &dd) :
-    ValidatorRule(dd)
+ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorBeforePrivate(field, comparison, timeZone, inputFormat, messages, defValKey))
 {
 }
 
@@ -38,136 +33,199 @@ ValidatorBefore::~ValidatorBefore()
 {
 }
 
-QString ValidatorBefore::validate() const
+ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorBefore);
 
-    const QString v = value();
+    const QString v = value(params);
 
     if (!v.isEmpty()) {
 
-        if (d->date.type() == QVariant::Date) {
+        const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
 
-            const QDate odate = d->date.toDate();
-            if (!odate.isValid()) {
-                qCWarning(C_VALIDATORBEFORE) << "Invalid validation date.";
-                result = validationDataError();
+        const QVariant _comp = (d->comparison.type() == QVariant::String)
+                ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
+                : d->comparison;
+
+        if (_comp.type() == QVariant::Date) {
+
+            const QDate odate = _comp.toDate();
+            if (Q_UNLIKELY(!odate.isValid())) {
+                qCWarning(C_VALIDATOR, "ValidatorBefore: Invalid comparison date and time for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                result.errorMessage = validationDataError(c);
             } else {
-                const QDate date = d->extractDate(v, d->inputFormat);
-                if (!date.isValid()) {
-                    qCWarning(C_VALIDATORBEFORE) << "Can not parse input date:" << v;
-                    result = parsingError();
+                const QDate date = d->extractDate(c, v, d->inputFormat);
+                if (Q_UNLIKELY(!date.isValid())) {
+                    qCWarning(C_VALIDATOR, "ValidatorBefore: Can not parse input date \"%s\" for field %s at %s::%s.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                    result.errorMessage = parsingError(c, odate);
                 } else {
-                    if (date >= odate) {
-                        result = validationError();
+                    if (Q_UNLIKELY(date >= odate)) {
+                        qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input date \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(date.toString()), qPrintable(odate.toString()));
+                        result.errorMessage = validationError(c, odate);
+                    } else {
+                        result.value.setValue<QDate>(date);
                     }
                 }
             }
 
-        } else if (d->date.type() == QVariant::DateTime) {
+        } else if (_comp.type() == QVariant::DateTime) {
 
-            const QDateTime odatetime = d->date.toDateTime();
-            if (!odatetime.isValid()) {
-                qCWarning(C_VALIDATORBEFORE) << "Invalid validation date and time.";
-                result = validationDataError();
+            const QDateTime odatetime = _comp.toDateTime();
+            if (Q_UNLIKELY(!odatetime.isValid())) {
+                qCWarning(C_VALIDATOR, "ValidatorBefore: Invalid comparison date and time for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                result.errorMessage = validationDataError(c);
             } else {
-                const QDateTime datetime = d->extractDateTime(v, d->inputFormat);
-                if (!datetime.isValid()) {
-                    qCWarning(C_VALIDATORBEFORE) << "Can not parse input date and time:" << v;
-                    result = parsingError();
+                const QDateTime datetime = d->extractDateTime(c, v, d->inputFormat, tz);
+                if (Q_UNLIKELY(!datetime.isValid())) {
+                    qCWarning(C_VALIDATOR, "ValidatorBefore: Can not parse input date and time \"%s\" for field %s at %s::%s.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                    result.errorMessage = parsingError(c, odatetime);
                 } else {
-                    if (datetime >= odatetime) {
-                        result = validationError();
+                    if (Q_UNLIKELY(datetime >= odatetime)) {
+                        qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input date and time \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(datetime.toString()), qPrintable(odatetime.toString()));
+                        result.errorMessage = validationError(c, odatetime);
+                    } else {
+                        result.value.setValue<QDateTime>(datetime);
                     }
                 }
             }
 
-        } else if (d->date.type() == QVariant::Time) {
+        } else if (_comp.type() == QVariant::Time) {
 
-            const QTime otime = d->date.toTime();
-            if (!otime.isValid()) {
-                qCWarning(C_VALIDATORBEFORE) << "Invalid validation time.";
-                result = validationDataError();
+            const QTime otime = _comp.toTime();
+            if (Q_UNLIKELY(!otime.isValid())) {
+                qCWarning(C_VALIDATOR, "ValidatorBefore: Invalid comparison time for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                result.errorMessage = validationDataError(c);
             } else {
-                const QTime time = d->extractTime(v, d->inputFormat);
-                if (!time.isValid()) {
-                    qCWarning(C_VALIDATORBEFORE) << "Can not parse input time:" << v;
-                    result = parsingError();
+                const QTime time = d->extractTime(c, v, d->inputFormat);
+                if (Q_UNLIKELY(!time.isValid())) {
+                    qCWarning(C_VALIDATOR, "ValidatorBefore: Can not parse input time \"%s\" for field %s at %s::%s.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                    result.errorMessage = parsingError(c, otime);
                 } else {
-                    if (time >= otime) {
-                        result = validationError();
+                    if (Q_UNLIKELY(time >= otime)) {
+                        qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input time \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(time.toString()), qPrintable(otime.toString()));
+                        result.errorMessage = validationError(c, otime);
+                    } else {
+                        result.value.setValue<QTime>(time);
                     }
                 }
             }
 
         } else {
-            qCWarning(C_VALIDATORBEFORE) << "Invalid validation data:" << d->date;
-            result = validationDataError();
+            qCWarning(C_VALIDATOR) << "ValidatorBefore: Invalid validation data for field" << field() << "at" << c->controllerName() << "::" << c->actionName() << ":" << d->comparison;
+            result.errorMessage = validationDataError(c);
         }
+    } else {
+        defaultValue(c, &result, "ValidatorAfter");
     }
 
     return result;
 }
 
-QString ValidatorBefore::genericValidationError() const
+QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
 
     Q_D(const ValidatorBefore);
 
-    QString compDateTime;
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
 
-    switch (d->date.type()) {
-    case QVariant::Date:
-        //: date shown in validator error message
-        compDateTime = d->date.toDate().toString(QStringLiteral("dd.MM.yyyy"));
-        break;
-    case QVariant::DateTime:
-        //: date and time shown in validator error message
-        compDateTime = d->date.toDateTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
-        break;
-    case QVariant::Time:
-        //: time shown in the validator error message
-        compDateTime = d->date.toTime().toString(QStringLiteral("dd.MM.yyyy HH:mm"));
-    default:
-        break;
-    }
-
-    if (label().isEmpty()) {
-
-        error = QStringLiteral("Must be before %1.").arg(compDateTime);
+        switch (errorData.type()) {
+        case QVariant::Date:
+            error = QStringLiteral("Has to be before %1.").arg(errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
+            break;
+        case QVariant::DateTime:
+            error = QStringLiteral("Has to be before %1.").arg(errorData.toDateTime().toString(c->locale().dateTimeFormat(QLocale::ShortFormat)));
+            break;
+        case QVariant::Time:
+            error = QStringLiteral("Has to be before %1.").arg(errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
+            break;
+        default:
+            error = validationDataError(c);
+            break;
+        }
 
     } else {
 
-        switch(d->date.type()) {
+        switch(errorData.type()) {
         case QVariant::Date:
-            error = QStringLiteral("The date in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            error = c->translate("Cutelyst::ValidatorBefore", "The date in the “%1” field must be before %2.").arg(_label, errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
         case QVariant::DateTime:
-            error = QStringLiteral("The date and time in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            error = c->translate("Cutelyst::ValidatorBefore", "The date and time in the “%1” field must be before %2.").arg(_label, errorData.toDateTime().toString(c->locale().dateTimeFormat(QLocale::ShortFormat)));
             break;
         case QVariant::Time:
-            error = QStringLiteral("The time in the “%1” field must be before “%2”.").arg(label(), compDateTime);
+            error = c->translate("Cutelyst::ValidatorBefore", "The time in the “%1” field must be before %2.").arg(_label, errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
             break;
         default:
-            error = validationDataError();
+            error = validationDataError(c);
             break;
         }
+
     }
 
     return error;
 }
 
-void ValidatorBefore::setDateTime(const QVariant &dateTime)
+QString ValidatorBefore::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    Q_D(ValidatorBefore);
-    d->date = dateTime;
+    QString error;
+
+    Q_UNUSED(errorData)
+    error = c->translate("Cutelyst::ValidatorBefore", "The comparison value is not a valid date and/or time, or cannot be found.");
+
+    return error;
 }
 
-void ValidatorBefore::setInputFormat(const QString &format)
+QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorData) const
 {
-    Q_D(ValidatorBefore);
-    d->inputFormat = format;
+    QString error;
+
+    Q_D(const ValidatorBefore);
+
+    const QString _label = label(c);
+    if (d->inputFormat) {
+        if (_label.isEmpty()) {
+            error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed according to the follwing date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
+        } else {
+            error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+        }
+    } else {
+
+        if (_label.isEmpty()) {
+            switch (errorData.type()) {
+            case QMetaType::QDateTime:
+                error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date and time.");
+                break;
+            case QMetaType::QTime:
+                error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as time.");
+                break;
+            case QMetaType::QDate:
+                error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date.");
+                break;
+            default:
+                error = validationDataError(c);
+                break;
+            }
+        } else {
+            switch (errorData.type()) {
+            case QMetaType::QDateTime:
+                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as date and time.").arg(_label);
+                break;
+            case QMetaType::QTime:
+                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as time.").arg(_label);
+                break;
+            case QMetaType::QDate:
+                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as date.").arg(_label);
+                break;
+            default:
+                error = validationDataError(c);
+                break;
+            }
+        }
+    }
+
+    return error;
 }

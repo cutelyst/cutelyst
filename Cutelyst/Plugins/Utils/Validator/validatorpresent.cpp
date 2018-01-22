@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorPresent::ValidatorPresent(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorPresentPrivate(field, label, customError))
-{
-}
-
-ValidatorPresent::ValidatorPresent(ValidatorPresentPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorPresent::ValidatorPresent(const QString &field, const Cutelyst::ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorPresentPrivate(field, messages))
 {
 }
 
@@ -34,24 +29,29 @@ ValidatorPresent::~ValidatorPresent()
 {
 }
 
-QString ValidatorPresent::validate() const
+ValidatorReturnType ValidatorPresent::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (!parameters().contains(field())) {
-        result = validationError();
+    if (!params.contains(field())) {
+        result.errorMessage = validationError(c);
+        qCDebug(C_VALIDATOR, "ValidatorPresent: Validation failed for field %s at %s::%s: field was not found in the input data", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+    } else {
+        result.value.setValue<QString>(value(params));
     }
 
     return result;
 }
 
-QString ValidatorPresent::genericValidationError() const
+QString ValidatorPresent::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Has to be present in input data.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorPresent", "Has to be present in input data.");
     } else {
-        error = QStringLiteral("The “%1” field was not found in the input data.").arg(label());
+        error =  c->translate("Cutelyst::ValidatorPresent", "The “%1” field was not found in the input data.").arg(_label);
     }
     return error;
 }

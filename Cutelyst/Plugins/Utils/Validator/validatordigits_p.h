@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,12 +26,12 @@ namespace Cutelyst {
 class ValidatorDigitsPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDigitsPrivate(const QString &f, int len, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e),
+    ValidatorDigitsPrivate(const QString &f, const QVariant &len, const ValidatorMessages &m, const QString &dvk) :
+        ValidatorRulePrivate(f, m, dvk),
         length(len)
     {}
 
-    int length;
+    QVariant length;
 };
     
 }

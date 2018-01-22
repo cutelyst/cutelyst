@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,18 +26,20 @@ namespace Cutelyst {
 class ValidatorDigitsPrivate;
 
 /*!
+ * \ingroup plugins-utils-validator-rules
  * \brief Checks for digits only with optional length check.
  *
  * The \a field under validation must only contain digits with an optional exact \a length. If length is set to a value lower
  * or equal to \c 0, the length check will not be performed. The input digits will not be interpreted as numeric values
  * but as a string. So the length is not meant to test for an exact numeric value but for the string length.
  *
- * If ValidatorRule::trimBefore() is set to \c true (the default), whitespaces will be removed from
- * the beginning and the end of the input value before validation. If the \a field's value is empty or if
- * the \a field is missing in the input data, the validation will succeed without performing the validation itself.
- * Use one of the \link ValidatorRequired required validators \endlink to require the field to be present and not empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation.
+ * If the \a field's value is empty or if the \a field is missing in the input data, the validation will succeed without
+ * performing the validation itself. Use one of the \link ValidatorRequired required validators \endlink to require the
+ * field to be present and not empty.
  *
- * \link Validator See Validator for general usage of validators. \endlink
+ * \sa Validator for general usage of validators.
  *
  * \sa ValidatorDigitsBetween
  */
@@ -47,39 +49,44 @@ public:
     /*!
      * \brief Constructs a new digits validator.
      * \param field         Name of the input field to validate.
-     * \param length        Length of the digits, defaults to \c -1 what disables the check.
-     * \param label         Human readable input field label, used for generic error messages.
-     * \param customError   Custom error message if validation fails.
+     * \param length        Exact length of the digits, defaults to \c -1. A value lower \c 1 disables the length check. Should be either an int to directly specify the length or the name
+     * of an input field or \link Context::stash() Stash \endlink key containing the length constraint.
+     * \param messages      Custom error messages if validation fails.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorDigits(const QString &field, int length = -1, const QString &label = QString(), const QString &customError = QString());
+    ValidatorDigits(const QString &field, const QVariant &length = -1, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
     
     /*!
      * \brief Deconstructs the digits validator.
      */
     ~ValidatorDigits();
-    
-    /*!
-     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
-     */
-    QString validate() const override;
 
     /*!
-     * \brief Sets the allowed length of the input data.
+     * \ingroup plugins-utils-validator-rules
+     * \brief Returns \c true if \a value only contains digits.
      *
-     * Defaults to \c -1 what disables the length check.
+     * Note that this function will return \c true for an empty \a value if the \a length check is disabled.
+     *
+     * \param value     The value to validate as it is.
+     * \param length    Exact length of the digits, defaults to \c -1. A value lower \c 1 disables the length check.
+     * \return \c true if the \a value only contains digits
      */
-    void setLength(int length);
+    static bool validate(const QString &value, int length = -1);
 
 protected:
     /*!
-     * \brief Returns a generic error message.
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as QString.
      */
-    QString genericValidationError() const override;
-    
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
     /*!
-     * Constructs a new ValidatorDigits object with the given private class.
+     * \brief Returns a generic error if validation failed.
+     *
+     * \a errorData will contain \c 0, if \a length is greater than \c 0 and does not match the field value length, \a errorData will contain \c 1.
      */
-    ValidatorDigits(ValidatorDigitsPrivate &dd);
+    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
     
 private:
     Q_DECLARE_PRIVATE(ValidatorDigits)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,16 +27,17 @@ namespace Cutelyst {
 class ValidatorRequiredIfPrivate;
 
 /*!
- * \brief The field under validation must be present and not empty if the other field is equal to any value in the list.
+ * \ingroup plugins-utils-validator-rules
+ * \brief The field under validation must be present and not empty if the other field is equal to any value in a list.
  *
  * If the other field specified as \a otherField contains \b any of the values defined in the \a otherValues list, the
- * field under validation must be present and not empty.
+ * field under validation must be present and not empty. This validator is the opposite of ValidatorRequiredUnless.
  *
- * If ValidatorRule::trimBefore() is set to \c true (the default), whitespaces will be removed from
- * the beginning and the end of the input value before validation. So, fields that only contain whitespaces
- * will be treated as empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation. So, fields that only contain
+ * whitespaces will be treated as empty.
  *
- * \link Validator See Validator for general usage of validators. \endlink
+ * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequired, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
  */
@@ -47,43 +48,29 @@ public:
      * \brief Constructs a new required if validator.
      * \param field         Name of the input field to validate.
      * \param otherField    Name of the other input field to validate.
-     * \param otherValues   Values in the other field from which one must match the field content to require the main field.
-     * \param label         Human readable input field label, used for generic error messages.
-     * \param customError   Custom error message if validation fails.
+     * \param otherValues   Values in the other field from which one must match the other field's content to require the main field.
+     * \param messages      Custom error messages if validation fails.
      */
-    ValidatorRequiredIf(const QString &field, const QString &otherField, const QStringList &otherValues, const QString &label = QString(), const QString &customError = QString());
+    ValidatorRequiredIf(const QString &field, const QString &otherField, const QStringList &otherValues, const ValidatorMessages &messages = ValidatorMessages());
     
     /*!
      * \brief Deconstructs the required if validator.
      */
     ~ValidatorRequiredIf();
-    
-    /*!
-     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
-     */
-    QString validate() const override;
-
-    /*!
-     * \brief Sets the name of the other field.
-     */
-    void setOtherField(const QString &otherField);
-
-    /*!
-     * \brief Sets the values that have to be in the other field.
-     */
-    void setOtherValues(const QStringList &otherValues);
-
-    
+       
 protected:
     /*!
-     * \brief Returns a generic error message.
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
      */
-    QString genericValidationError() const override;
-    
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
     /*!
-     * Constructs a new ValidatorRequiredIf object with the given private class.
+     * \brief Returns a generic error message if validation failed.
      */
-    ValidatorRequiredIf(ValidatorRequiredIfPrivate &dd);
+    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
     
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredIf)

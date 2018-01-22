@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,16 +26,16 @@ namespace Cutelyst {
 class ValidatorBetweenPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorBetweenPrivate(const QString &f, QMetaType::Type t, double mi, double ma, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e),
-        type(t),
+    ValidatorBetweenPrivate(const QString &f, QMetaType::Type t, const QVariant &mi, const QVariant &ma, const ValidatorMessages &m, const QString &dvk) :
+        ValidatorRulePrivate(f, m, dvk),
         min(mi),
-        max(ma)
+        max(ma),
+        type(t)
     {}
 
+    QVariant min;
+    QVariant max;
     QMetaType::Type type;
-    double min;
-    double max;
 };
     
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,13 +22,38 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
+
+struct ValidatorEmailDiagnoseStruct {
+    ValidatorEmail::Diagnose finalStatus;
+    QList<ValidatorEmail::Diagnose> returnStatus;
+    QString localpart;
+    QString domain;
+    QString literal;
+};
     
 class ValidatorEmailPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorEmailPrivate(const QString &f, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e)
+    ValidatorEmailPrivate(const QString &f, ValidatorEmail::Category thresh, bool dns, const ValidatorMessages &m, const QString &dvk) :
+        ValidatorRulePrivate(f, m, dvk),
+        threshold(thresh),
+        checkDns(dns)
     {}
+
+    enum EmailPart {
+        ComponentLocalpart  = 0,
+        ComponentDomain     = 1,
+        ComponentLiteral    = 2,
+        ContextComment      = 3,
+        ContextFWS          = 4,
+        ContextQuotedString = 5,
+        ContextQuotedPair   = 6
+    };
+
+    static bool checkEmail(const QString &email, bool checkDNS = false, ValidatorEmail::Category threshold = ValidatorEmail::RFC5321, ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
+
+    ValidatorEmail::Category threshold = ValidatorEmail::RFC5321;
+    bool checkDns = false;
 };
     
 }

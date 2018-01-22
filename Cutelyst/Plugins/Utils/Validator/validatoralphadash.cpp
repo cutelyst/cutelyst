@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,14 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorAlphaDashPrivate(field, label, customError))
-{
-
-}
-
-ValidatorAlphaDash::ValidatorAlphaDash(ValidatorAlphaDashPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorAlphaDashPrivate(field, asciiOnly, messages, defValKey))
 {
 
 }
@@ -38,24 +32,53 @@ ValidatorAlphaDash::~ValidatorAlphaDash()
 
 }
 
-QString ValidatorAlphaDash::validate() const
+ValidatorReturnType ValidatorAlphaDash::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")))) {
-        result = validationError();
+    Q_D(const ValidatorAlphaDash);
+
+    const QString v = value(params);
+    if (!v.isEmpty()) {
+        if (Q_LIKELY(ValidatorAlphaDash::validate(v, d->asciiOnly))) {
+            result.value.setValue<QString>(v);
+        } else {
+            qCDebug(C_VALIDATOR, "ValidatorAlphaDash: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+            result.errorMessage = validationError(c);
+        }
+    } else {
+        defaultValue(c, &result, "ValidatorAlphaDash");
     }
 
     return result;
 }
 
-QString ValidatorAlphaDash::genericValidationError() const
+bool ValidatorAlphaDash::validate(const QString &value, bool asciiOnly)
+{
+    bool valid = true;
+    if (asciiOnly) {
+        for (const QChar &ch : value) {
+            const ushort &uc = ch.unicode();
+            if (!(((uc > 64) && (uc < 91)) || ((uc > 96) && (uc < 123)) || ((uc > 47) && (uc < 58)) || (uc == 45) || (uc == 95))) {
+                valid = false;
+                break;
+            }
+        }
+    } else {
+        valid = value.contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")));
+    }
+    return valid;
+}
+
+QString ValidatorAlphaDash::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Can only contain alpha-numeric characters, dashes and underscores.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorAlphaDash", "Can only contain alpha-numeric characters, dashes and underscores.");
     } else {
-        error = QStringLiteral("The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(label());
+        error = c->translate("Cutelyst::ValidatorAlphaDash", "The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.").arg(_label);
     }
     return error;
 }

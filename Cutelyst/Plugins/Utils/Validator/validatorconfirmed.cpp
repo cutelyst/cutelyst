@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorConfirmed::ValidatorConfirmed(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorConfirmedPrivate(field, label, customError))
-{
-}
-
-ValidatorConfirmed::ValidatorConfirmed(ValidatorConfirmedPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorConfirmed::ValidatorConfirmed(const QString &field, const ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorConfirmedPrivate(field, messages))
 {
 }
 
@@ -34,28 +29,40 @@ ValidatorConfirmed::~ValidatorConfirmed()
 {
 }
 
-QString ValidatorConfirmed::validate() const
+ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (!value().isEmpty()) {
+    const QString v = value(params);
+
+    if (!v.isEmpty()) {
         const QString ofn = field() + QLatin1String("_confirmation");
+        QString ofv = params.value(ofn);
 
-        if (value() != parameters().value(ofn)) {
-            result = validationError();
+        if (trimBefore()) {
+            ofv = ofv.trimmed();
+        }
+
+        if (Q_UNLIKELY(v != ofv)) {
+            result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR, "ValidatorConfirmed: Failed to confirm the value in the field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        } else {
+            result.value.setValue<QString>(v);
         }
     }
 
     return result;
 }
 
-QString ValidatorConfirmed::genericValidationError() const
+QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Confirmation failed.");
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorConfirmed", "Confirmation failed.");
     } else {
-        error = QStringLiteral("The content of the “%1” field has not been confirmed.").arg(label());
+        error = c->translate("Cutelyst::ValidatorConfirmed", "The value in the “%1“ field has not been confirmed.").arg(_label);
     }
     return error;
 }

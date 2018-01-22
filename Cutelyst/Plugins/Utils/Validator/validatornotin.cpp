@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorNotInPrivate(field, values, label, customError))
-{
-}
-
-ValidatorNotIn::ValidatorNotIn(ValidatorNotInPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorNotInPrivate(field, values, cs, messages, defValKey))
 {
 }
 
@@ -34,37 +29,54 @@ ValidatorNotIn::~ValidatorNotIn()
 {
 }
 
-QString ValidatorNotIn::validate() const
+ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorNotIn);
 
     if (d->values.empty()) {
-        result = validationDataError();
+        result.errorMessage = validationDataError(c);
+        qCWarning(C_VALIDATOR, "ValidatorNotIn: The list of comparison values for the field %s at %s::%s is empty.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     } else {
-        const QString v = value();
-        if (!v.isEmpty() && d->values.contains(v)) {
-            result = validationError();
+        const QString v = value(params);
+        if (!v.isEmpty()) {
+            if (d->values.contains(v, d->cs)) {
+                result.errorMessage = validationError(c);
+                qCDebug(C_VALIDATOR, "ValidatorNotIn: Validation failed for field %s at %s::%s: \"%s\" is part of the list of not allowed comparison values.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+            } else {
+                result.value.setValue<QString>(v);
+            }
+        } else {
+            defaultValue(c, &result, "ValidatorNotIn");
         }
     }
 
     return result;
 }
 
-QString ValidatorNotIn::genericValidationError() const
+QString ValidatorNotIn::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Value is not allowed.");
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorNotIn", "Value is not allowed.");
     } else {
-        error = QStringLiteral("The value in the “%1” field is not allowed.").arg(label());
+        error = c->translate("Cutelyst::ValidatorNotIn", "The value in the “%1” field is not allowed.").arg(_label);
     }
     return error;
 }
 
-void ValidatorNotIn::setValues(const QStringList &values)
+QString ValidatorNotIn::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
-    Q_D(ValidatorNotIn);
-    d->values = values;
+    QString error;
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorNotIn", "The list of comparison values is empty.");
+    } else {
+        error = c->translate("Cutelyst::ValidatorNotIn", "The list of comparison values for the “%1” field is empty.").arg(_label);
+    }
+    return error;
 }

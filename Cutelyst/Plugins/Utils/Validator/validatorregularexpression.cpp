@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, label, customError))
-{
-}
-
-ValidatorRegularExpression::ValidatorRegularExpression(ValidatorRegularExpressionPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, messages, defValKey))
 {
 }
 
@@ -34,32 +29,42 @@ ValidatorRegularExpression::~ValidatorRegularExpression()
 {
 }
 
-QString ValidatorRegularExpression::validate() const
+ValidatorReturnType ValidatorRegularExpression::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorRegularExpression);
 
-    if (!value().isEmpty() && !value().contains(d->regex)) {
-        result = validationError();
+    const QString v = value(params);
+
+    if (d->regex.isValid()) {
+        if (!v.isEmpty()) {
+            if (v.contains(d->regex)) {
+                result.value.setValue<QString>(v);
+            } else {
+                result.errorMessage = validationError(c);
+                qCDebug(C_VALIDATOR, "ValidatorRegularExpression: Validation failed for field %s at %s::%s because value does not match the following regular expression: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->regex.pattern()));
+            }
+        } else {
+            defaultValue(c, &result, "ValidatorRegularExpression");
+        }
+    } else {
+        result.errorMessage = validationDataError(c);
+        qCWarning(C_VALIDATOR, "ValidatorRegularExpression: the regular expression for the field %s at %s::%s is not valid: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->regex.errorString()));
     }
 
     return result;
 }
 
-QString ValidatorRegularExpression::genericValidationError() const
+QString ValidatorRegularExpression::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Does not match desired format.");
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRegularExpression", "Does not match the desired format.");
     } else {
-        error = QStringLiteral("The “%1” field does not match the desired format.").arg(label());
+        error = c->translate("Cutelyst::ValidatorRegularExpression", "The “%1” field does not match the desired format.").arg(_label);
     }
     return error;
-}
-
-void ValidatorRegularExpression::setRegex(const QRegularExpression &regex)
-{
-    Q_D(ValidatorRegularExpression);
-    d->regex = regex;
 }

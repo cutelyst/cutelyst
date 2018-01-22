@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,8 +26,8 @@ namespace Cutelyst {
 class ValidatorIpPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorIpPrivate(const QString &f, ValidatorIp::Constraints c, const QString &l, const QString &e) :
-        ValidatorRulePrivate(f, l, e),
+    ValidatorIpPrivate(const QString &f, ValidatorIp::Constraints c, const ValidatorMessages &m, const QString &dvk) :
+        ValidatorRulePrivate(f, m, dvk),
         constraints(c)
     {}
 

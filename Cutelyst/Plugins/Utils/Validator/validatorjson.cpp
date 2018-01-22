@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,16 +18,12 @@
 
 #include "validatorjson_p.h"
 #include <QJsonDocument>
+#include <QJsonParseError>
 
 using namespace Cutelyst;
 
-ValidatorJson::ValidatorJson(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorJsonPrivate(field, label, customError))
-{
-}
-
-ValidatorJson::ValidatorJson(ValidatorJsonPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorJson::ValidatorJson(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorJsonPrivate(field, messages, defValKey))
 {
 }
 
@@ -35,29 +31,47 @@ ValidatorJson::~ValidatorJson()
 {
 }
 
-QString ValidatorJson::validate() const
+ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    const QString v = value();
+    const QString v = value(params);
 
     if (!v.isEmpty()) {
-        const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8());
+        QJsonParseError jpe;
+        const QJsonDocument json = QJsonDocument::fromJson(v.toUtf8(), &jpe);
         if (json.isEmpty() || json.isNull()) {
-            result = validationError();
+            result.errorMessage = validationError(c, jpe.errorString());
+            qCDebug(C_VALIDATOR, "ValidatorJson: Validation failed for field %s at %s::%s with the following error: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(jpe.errorString()));
+        } else {
+            result.value.setValue<QJsonDocument>(json);
         }
+    } else {
+        defaultValue(c, &result, "ValidatorJson");
     }
 
     return result;
 }
 
-QString ValidatorJson::genericValidationError() const
+QString ValidatorJson::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Invalid JSON data.");
+    const QString _label = label(c);
+    const QString jsonError = errorData.toString();
+    if (_label.isEmpty()) {
+        if (!jsonError.isEmpty()) {
+            //: %1 will contain the json error
+            error = c->translate("Cutelyst::ValidatorJson", "Invalid JSON data: %1").arg(jsonError);
+        } else {
+            error = c->translate("Cutelyst::ValidatorJson", "Invalid JSON data.");
+        }
     } else {
-        error = QStringLiteral("The data entered in the “%1” field is not valid JSON.").arg(label());
+        if (!jsonError.isEmpty()) {
+            //: %1 will contain the field label, %2 will contain the json error
+            error = c->translate("Cutelyst::ValidatorJson", "The data entered in the “%1” field is not valid JSON: %2").arg(_label, jsonError);
+        } else {
+            error = c->translate("Cutelyst::ValidatorJson", "The data entered in the “%1” field is not valid JSON.").arg(_label);
+        }
     }
     return error;
 }

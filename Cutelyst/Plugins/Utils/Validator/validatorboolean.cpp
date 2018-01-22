@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorBoolean::ValidatorBoolean(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorBooleanPrivate(field, label, customError))
-{
-}
-
-ValidatorBoolean::ValidatorBoolean(ValidatorBooleanPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorBoolean::ValidatorBoolean(const QString &field, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorBooleanPrivate(field, messages, defValKey))
 {
 }
 
@@ -35,27 +30,41 @@ ValidatorBoolean::~ValidatorBoolean()
 {
 }
 
-QString ValidatorBoolean::validate() const
+ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (!value().isEmpty()) {
-        static const QStringList l({QStringLiteral("1"), QStringLiteral("0"), QStringLiteral("true"), QStringLiteral("false"), QStringLiteral("on"), QStringLiteral("off")});
-        if (!l.contains(value(), Qt::CaseInsensitive)) {
-            result = validationError();
+    const QString v = value(params);
+
+    Q_D(const ValidatorBoolean);
+
+    if (!v.isEmpty()) {
+        static const QStringList lt({QStringLiteral("1"), QStringLiteral("true"), QStringLiteral("on")});
+        static const QStringList lf({QStringLiteral("0"), QStringLiteral("false"), QStringLiteral("off")});
+        if (lt.contains(v, Qt::CaseInsensitive)) {
+            result.value.setValue<bool>(true);
+        } else if (lf.contains(v, Qt::CaseInsensitive)) {
+            result.value.setValue<bool>(false);
+        } else {
+            result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR, "ValidatorBoolean: The value %s of field %s in %s::%s can not be interpreted as boolean.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
         }
+    } else {
+        defaultValue(c, &result, "ValidatorBoolean");
     }
 
     return result;
 }
 
-QString ValidatorBoolean::genericValidationError() const
+QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Can not be interpreted as boolean.");
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorBoolean", "Can not be interpreted as boolean value.");
     } else {
-        error = QStringLiteral("The data in the “%1” field can not be interpreted as a boolean.").arg(label());
+        error = c->translate("Cutelyst::ValidatorBoolean", "The value in the “%1” field can not be interpreted as a boolean value.").arg(_label);
     }
     return error;
 }

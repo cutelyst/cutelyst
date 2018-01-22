@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequired::ValidatorRequired(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorRequiredPrivate(field, label, customError))
-{
-}
-
-ValidatorRequired::ValidatorRequired(ValidatorRequiredPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorRequired::ValidatorRequired(const QString &field, const Cutelyst::ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorRequiredPrivate(field, messages))
 {
 }
 
@@ -34,24 +29,29 @@ ValidatorRequired::~ValidatorRequired()
 {
 }
 
-QString ValidatorRequired::validate() const
+ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (value().isEmpty()) {
-        result = validationError();
+    const QString v = value(params);
+    if (Q_LIKELY(!v.isEmpty())) {
+        result.value.setValue<QString>(v);
+    } else {
+        result.errorMessage = validationError(c);
     }
 
     return result;
 }
 
-QString ValidatorRequired::genericValidationError() const
+QString ValidatorRequired::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("This is required.");
+    Q_UNUSED(errorData);
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRequired", "This is required.");
     } else {
-        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+        error = c->translate("Cutelyst::ValidatorRequired", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

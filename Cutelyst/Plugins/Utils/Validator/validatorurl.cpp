@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorUrl::ValidatorUrl(const QString &field, Constraints constraints, const QStringList &schemes, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorUrlPrivate(field, constraints, schemes, label, customError))
-{
-}
-
-ValidatorUrl::ValidatorUrl(ValidatorUrlPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorUrl::ValidatorUrl(const QString &field, Constraints constraints, const QStringList &schemes, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorUrlPrivate(field, constraints, schemes, messages, defValKey))
 {
 }
 
@@ -35,13 +30,13 @@ ValidatorUrl::~ValidatorUrl()
 {
 }
 
-QString ValidatorUrl::validate() const
+ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorUrl);
 
-    const QString v = value();
+    const QString v = value(params);
 
     if (!v.isEmpty()) {
 
@@ -52,7 +47,7 @@ QString ValidatorUrl::validate() const
             parsingMode = QUrl::StrictMode;
         }
 
-        QUrl url(value(), parsingMode);
+        QUrl url(v, parsingMode);
         if (!url.isValid() || url.isEmpty()) {
             valid = false;
         }
@@ -66,22 +61,22 @@ QString ValidatorUrl::validate() const
         }
 
         if (valid) {
-            QStringList schemeList = d->schemes;
+            const QStringList schemeList = d->constraints.testFlag(WebsiteOnly) ? QStringList({QStringLiteral("http"), QStringLiteral("https")}) : d->schemes;
 
-            if (d->constraints.testFlag(WebsiteOnly)) {
-                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive)) {
-                    schemeList.append(QStringLiteral("http"));
-                }
-                if (!schemeList.contains(QStringLiteral("https"), Qt::CaseInsensitive)) {
-                    schemeList.append(QStringLiteral("https"));
-                }
-            }
+//            if (d->constraints.testFlag(WebsiteOnly)) {
+//                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive)) {
+//                    schemeList.append(QStringLiteral("http"));
+//                }
+//                if (!schemeList.contains(QStringLiteral("https"), Qt::CaseInsensitive)) {
+//                    schemeList.append(QStringLiteral("https"));
+//                }
+//            }
 
-            if (!schemeList.isEmpty()) {
+            if (!schemeList.empty()) {
 
-                const QStringList sc = schemeList;
+//                const QStringList sc = schemeList;
                 bool foundScheme = false;
-                for (const QString &s : sc) {
+                for (const QString &s : schemeList) {
                     const QString sl =  s.toLower();
                     if (url.scheme() == sl) {
                         foundScheme = true;
@@ -96,32 +91,27 @@ QString ValidatorUrl::validate() const
         }
 
         if (!valid) {
-            result = validationError();
+            result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR, "ValidatorUrl: Validation failed for field %s at %s::%s: not a valid URL", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        } else {
+            result.value.setValue<QUrl>(url);
         }
+    } else {
+        defaultValue(c, &result, "ValidatorUrl");
     }
 
     return result;
 }
 
-QString ValidatorUrl::genericValidationError() const
+QString ValidatorUrl::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Not a valid URL.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorUrl", "Not a valid URL.");
     } else {
-        error = QStringLiteral("The value in the “%1” field is not a valid URL.").arg(label());
+        error = c->translate("Cutelyst::ValidatorUrl", "The value in the “%1” field is not a valid URL.").arg(_label);
     }
     return error;
-}
-
-void ValidatorUrl::setConstraints(Constraints constraints)
-{
-    Q_D(ValidatorUrl);
-    d->constraints = constraints;
-}
-
-void ValidatorUrl::setSchemes(const QStringList &schemes)
-{
-    Q_D(ValidatorUrl);
-    d->schemes = schemes;
 }
