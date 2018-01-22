@@ -243,7 +243,7 @@ public:
     /*!
      * \brief Constructs a new %Validator.
      */
-    explicit Validator(const QLatin1String &translationContext = QLatin1String());
+    explicit Validator(QLatin1String translationContext = QLatin1String());
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
     /*!
@@ -253,7 +253,7 @@ public:
      *
      * This constructor is only available if the compiler supports C++11 std::initializer_list.
      */
-    explicit Validator(std::initializer_list<ValidatorRule*> validators, const QLatin1String &translationContext = QLatin1String());
+    explicit Validator(std::initializer_list<ValidatorRule*> validators, QLatin1String translationContext = QLatin1String());
 #endif
 
     /*!

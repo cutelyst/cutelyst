@@ -27,12 +27,12 @@ namespace Cutelyst {
 class ValidatorPrivate
 {
 public:
-    ValidatorPrivate(const QLatin1String &trContext) :
+    ValidatorPrivate(QLatin1String trContext) :
         translationContext(trContext)
     {}
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals, const QLatin1String &trContext) :
+    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals, QLatin1String trContext) :
         translationContext(trContext),
         validators(vals)
     {
