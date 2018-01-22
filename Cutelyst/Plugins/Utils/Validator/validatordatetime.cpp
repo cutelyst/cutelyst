@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,64 +22,66 @@
 
 using namespace Cutelyst;
 
-ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &format, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorDateTimePrivate(field, format, label, customError))
+ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorDateTimePrivate(field, timeZone, inputFormat, messages, defValKey))
 {
 }
-
-ValidatorDateTime::ValidatorDateTime(ValidatorDateTimePrivate &dd) :
-    ValidatorRule(dd)
-{
-}
-
 
 ValidatorDateTime::~ValidatorDateTime()
 {
 }
 
-QString ValidatorDateTime::validate() const
+ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorDateTime);
 
-    const QString v = value().trimmed();
+    const QString v = value(params);
 
     if (!v.isEmpty()) {
-        const QDateTime dt = d->extractDateTime(v, d->format);
+        const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
+        const QDateTime dt = d->extractDateTime(c, v, d->inputFormat, tz);
 
         if (!dt.isValid()) {
-            result = validationError();
+            result.errorMessage = validationError(c);
+            qCDebug(C_VALIDATOR, "ValidatorDateTime: Validation failed for value \"%s\" in field %s in %s::%s: not a valid date and time.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        } else {
+            result.value.setValue<QDateTime>(dt);
         }
+
+    } else {
+        defaultValue(c, &result, "ValidatorDateTime");
     }
 
     return result;
 }
 
-QString ValidatorDateTime::genericValidationError() const
+QString ValidatorDateTime::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
 
     Q_D(const ValidatorDateTime);
+    Q_UNUSED(errorData)
 
-    if (label().isEmpty()) {
+    const QString _label = label(c);
 
-        error = QStringLiteral("Not a valid date and time.");
+    if (_label.isEmpty()) {
+
+        if (d->inputFormat) {
+            error = c->translate("Cutelyst::ValidatorDateTime", "Not a valid date and time according to the following date format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
+        } else {
+            error = c->translate("Cutelyst::ValidatorDateTime", "Not a valid date and time.");
+        }
 
     } else {
 
-        if (!d->format.isEmpty()) {
-            error = QStringLiteral("The data in the “%1” field can not be interpreted as date and time of this schema: “%2”").arg(label(), d->format);
+        if (d->inputFormat) {
+            error = c->translate("Cutelyst::ValidatorDateTime", "The value in the “%1” field can not be parsed as date and time according to the following date and time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         } else {
-            error = QStringLiteral("The data in the “%1” field can not be interpreted as date and time.").arg(label());
+            error = c->translate("Cutelyst::ValidatorDateTime", "The value in the “%1” field can not be prased as date and time.").arg(_label);
         }
     }
 
     return error;
-}
-
-void ValidatorDateTime::setFormat(const QString &format)
-{
-    Q_D(ValidatorDateTime);
-    d->format = format;
 }

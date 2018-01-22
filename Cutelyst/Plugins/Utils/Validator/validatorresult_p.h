@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,14 +30,16 @@ public:
 
     ValidatorResultPrivate(const ValidatorResultPrivate &other) :
         QSharedData(other),
-        errorStrings(other.errorStrings),
-        errors(other.errors)
+        errors(other.errors),
+        values(other.values),
+        extras(other.extras)
     {}
 
     ~ValidatorResultPrivate() {}
 
-    QStringList errorStrings;
     QHash<QString,QStringList> errors;
+    QVariantHash values;
+    QVariantHash extras;
 };
 
 }

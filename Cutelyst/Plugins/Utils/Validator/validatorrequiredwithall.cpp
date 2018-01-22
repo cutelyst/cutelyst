@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredWithAll::ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorRequiredWithAllPrivate(field, otherFields, label, customError))
-{
-}
-
-ValidatorRequiredWithAll::ValidatorRequiredWithAll(ValidatorRequiredWithAllPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorRequiredWithAll::ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorRequiredWithAllPrivate(field, otherFields, messages))
 {
 }
 
@@ -34,14 +29,15 @@ ValidatorRequiredWithAll::~ValidatorRequiredWithAll()
 {
 }
 
-QString ValidatorRequiredWithAll::validate() const
+ValidatorReturnType ValidatorRequiredWithAll::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
     Q_D(const ValidatorRequiredWithAll);
 
     if (d->otherFields.empty()) {
-        result = validationDataError();
+        result.errorMessage = validationDataError(c);
+        qCWarning(C_VALIDATOR, "ValidatorRequiredWithAll: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     } else {
 
         bool containsAll = true;
@@ -49,33 +45,40 @@ QString ValidatorRequiredWithAll::validate() const
         const QStringList ofc = d->otherFields;
 
         for (const QString &other : ofc) {
-            if (!parameters().contains(other)) {
+            if (!params.contains(other)) {
                 containsAll = false;
                 break;
             }
         }
 
-        if (containsAll && value().isEmpty()) {
-            result = validationError();
+        const QString v = value(params);
+
+        if (containsAll) {
+            if (!v.isEmpty()) {
+                result.value.setValue<QString>(v);
+            } else {
+                result.errorMessage = validationError(c);
+                qCDebug(C_VALIDATOR, "ValidatorRequiredWithAll: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            }
+        } else {
+            if (!v.isEmpty()) {
+                result.value.setValue<QString>(v);
+            }
         }
     }
 
     return result;
 }
 
-QString ValidatorRequiredWithAll::genericValidationError() const
+QString ValidatorRequiredWithAll::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("This is required.");
+    const QString _label = label(c);
+    Q_UNUSED(errorData)
+    if (_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRequiredWithAll", "This is required.");
     } else {
-        error = QStringLiteral("You must fill in the “%1” field.").arg(label());
+        error = c->translate("Cutelyst::ValidatorRequiredWithAll", "You must fill in the “%1” field.").arg(_label);
     }
     return error;
-}
-
-void ValidatorRequiredWithAll::setOtherFields(const QStringList &otherFields)
-{
-    Q_D(ValidatorRequiredWithAll);
-    d->otherFields = otherFields;
 }

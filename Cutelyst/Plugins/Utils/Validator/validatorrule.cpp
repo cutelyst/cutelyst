@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,13 @@
  */
 
 #include "validatorrule_p.h"
+#include <Cutelyst/Context>
+#include <Cutelyst/ParamsMultiMap>
 
 using namespace Cutelyst;
 
-ValidatorRule::ValidatorRule(const QString &field, const QString &label, const QString &customError) :
-    d_ptr(new ValidatorRulePrivate(field, label, customError))
+ValidatorRule::ValidatorRule(const QString &field, const ValidatorMessages &messages, const QString &defValKey) :
+    d_ptr(new ValidatorRulePrivate(field, messages, defValKey))
 {
 }
 
@@ -36,130 +38,142 @@ ValidatorRule::~ValidatorRule()
 
 QString ValidatorRule::field() const { Q_D(const ValidatorRule); return d->field; }
 
-void ValidatorRule::setField(const QString &field)
-{
-    Q_D(ValidatorRule);
-    d->field = field;
-}
-
-QString ValidatorRule::label() const { Q_D(const ValidatorRule); return d->label; }
-
-void ValidatorRule::setLabel(const QString &label)
-{
-    Q_D(ValidatorRule);
-    d->label = label;
-}
-
-QString ValidatorRule::value() const
+QString ValidatorRule::value(const Cutelyst::ParamsMultiMap &params) const
 {
     QString v;
 
     Q_D(const ValidatorRule);
 
-    if (!field().isEmpty() && !d->parameters.isEmpty()) {
-        if (trimBefore()) {
-            v = d->parameters.value(field()).trimmed();
+    if (!d->field.isEmpty() && !params.empty()) {
+        if (d->trimBefore) {
+            v = params.value(d->field).trimmed();
         } else {
-            v = d->parameters.value(field());
+            v = params.value(d->field);
         }
     }
 
     return v;
 }
 
-ParamsMultiMap ValidatorRule::parameters() const { Q_D(const ValidatorRule); return d->parameters; }
-
-void ValidatorRule::setParameters(const ParamsMultiMap &params)
+QString ValidatorRule::label(Context *c) const
 {
-    Q_D(ValidatorRule);
-    d->parameters = params;
+    QString l;
+    Q_D(const ValidatorRule);
+    if (d->messages.label) {
+        if (d->translationContext.size()) {
+            l = c->translate(d->translationContext.data(), d->messages.label);
+        } else {
+            l = QString::fromUtf8(d->messages.label);
+        }
+    }
+    return l;
 }
 
-QString ValidatorRule::validationError() const
+QString ValidatorRule::validationError(Cutelyst::Context *c, const QVariant &errorData) const
+{
+    QString error;
+    Q_UNUSED(errorData)
+    Q_D(const ValidatorRule);
+    if (d->messages.validationError) {
+        if (d->translationContext.size()) {
+            error = c->translate(d->translationContext.data(), d->messages.validationError);
+        } else {
+            error = QString::fromUtf8(d->messages.validationError);
+        }
+    } else {
+        error = genericValidationError(c);
+    }
+    return error;
+}
+
+QString ValidatorRule::genericValidationError(Context *c, const QVariant &errorData) const
+{
+    QString error;
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (!_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRule", "The input data in the “%1” field is not acceptable.").arg(_label);
+    } else {
+        error = c->translate("Cutelyst::ValidatorRule", "The input data is not acceptable.");
+    }
+    return error;
+}
+
+QString ValidatorRule::parsingError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
     Q_D(const ValidatorRule);
-    if (d->customError.isEmpty()) {
-        error = genericValidationError();
+    Q_UNUSED(errorData)
+    if (d->messages.parsingError) {
+        if (d->translationContext.size()) {
+            error = c->translate(d->translationContext.data(), d->messages.parsingError);
+        } else {
+            error = QString::fromUtf8(d->messages.parsingError);
+        }
     } else {
-        error = d->customError;
+        error = genericParsingError(c);
     }
     return error;
 }
 
-QString ValidatorRule::genericValidationError() const
+QString ValidatorRule::genericParsingError(Cutelyst::Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Input value is not acceptable.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (!_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRule", "The input data in the “%1“ field could not be parsed.").arg(_label);
     } else {
-        error = QStringLiteral("The input data in the “%1” field is not valid.").arg(label());
+        error = c->translate("Cutelyst::ValidatorRule", "The input data could not be parsed.");
     }
     return error;
 }
 
-QString ValidatorRule::parsingError() const
-{
-    QString error;
-    Q_D(const ValidatorRule);
-    if (d->customParsingError.isEmpty()) {
-        error = genericParsingError();
-    } else {
-        error = d->customParsingError;
-    }
-    return error;
-}
-
-QString ValidatorRule::genericParsingError() const
-{
-    QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Failed to parse input data.");
-    } else {
-        error = QStringLiteral("Failed to parse the input data of the “%1” field.").arg(label());
-    }
-    return error;
-}
-
-QString ValidatorRule::validationDataError() const
+QString ValidatorRule::validationDataError(Context *c, const QVariant &errorData) const
 {
     QString error;
     Q_D(const ValidatorRule);
-    if (d->customValidationDataError.isEmpty()) {
-        error = genericValidationDataError();
+    Q_UNUSED(errorData)
+    if (d->messages.validationDataError) {
+        if (d->translationContext.size()) {
+            error = c->translate(d->translationContext.data(), d->messages.validationDataError);
+        } else {
+            error = QString::fromUtf8(d->messages.validationDataError);
+        }
     } else {
-        error = d->customValidationDataError;
+        error = genericValidationDataError(c);
     }
     return error;
 }
 
-QString ValidatorRule::genericValidationDataError() const
+QString ValidatorRule::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Missing or unusable validation data.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (!_label.isEmpty()) {
+        error = c->translate("Cutelyst::ValidatorRule", "Missing or invalid validation data for the “%1” field.").arg(_label);
     } else {
-        error = QStringLiteral("Missing or unusable validation data for the “%1” field.").arg(label());
+        error = c->translate("Cutelyst::ValidatorRule", "Missing or invalid validation data.");
     }
     return error;
 }
 
-void ValidatorRule::setCustomError(const QString &customError)
+void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result, const char *validatorName) const
 {
-    Q_D(ValidatorRule);
-    d->customError = customError;
-}
-
-void ValidatorRule::setCustomParsingError(const QString &custom)
-{
-    Q_D(ValidatorRule);
-    d->customParsingError = custom;
-}
-
-void ValidatorRule::setCustomValidationDataError(const QString &custom)
-{
-    Q_D(ValidatorRule);
-    d->customValidationDataError = custom;
+    Q_ASSERT_X(c, "getting default value", "invalid context object");
+    Q_ASSERT_X(result, "getting default value", "invalid result object");
+    Q_ASSERT_X(validatorName, "getting default value", "invalid validator name");
+    Q_D(const ValidatorRule);
+    if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
+        result->value.setValue(c->stash(d->defValKey));
+        qCDebug(C_VALIDATOR, "%s: Using default value \"%s\" for field %s in %s::%s.",
+                validatorName,
+                qPrintable(result->value.toString()),
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
+    }
 }
 
 bool ValidatorRule::trimBefore() const { Q_D(const ValidatorRule); return d->trimBefore; }
@@ -168,4 +182,10 @@ void ValidatorRule::setTrimBefore(bool trimBefore)
 {
     Q_D(ValidatorRule);
     d->trimBefore = trimBefore;
+}
+
+void ValidatorRule::setTranslationContext(QLatin1String trContext)
+{
+    Q_D(ValidatorRule);
+    d->translationContext = trContext;
 }

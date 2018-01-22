@@ -24,7 +24,7 @@
 #include "validatornumeric.h"
 #include "validatorpresent.h"
 #include "validatorregularexpression.h"
-#include "validatorrequired.h" 
+#include "validatorrequired.h"
 #include "validatorrequiredif.h"
 #include "validatorrequiredunless.h"
 #include "validatorrequiredwith.h"

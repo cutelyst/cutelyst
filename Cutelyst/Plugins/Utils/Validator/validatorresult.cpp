@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,7 +49,6 @@ bool ValidatorResult::isValid() const
 
 void ValidatorResult::addError(const QString &field, const QString &message)
 {
-    d->errorStrings.append(message);
     QStringList fieldErrors = d->errors.value(field);
     fieldErrors.append(message);
     d->errors.insert(field, fieldErrors);
@@ -57,7 +56,15 @@ void ValidatorResult::addError(const QString &field, const QString &message)
 
 QStringList ValidatorResult::errorStrings() const
 {
-    return d->errorStrings;
+    QStringList strings;
+
+    auto i = d->errors.constBegin();
+    while (i != d->errors.constEnd()) {
+        strings.append(i.value());
+        ++i;
+    }
+
+    return strings;
 }
 
 QHash<QString, QStringList> ValidatorResult::errors() const
@@ -65,12 +72,17 @@ QHash<QString, QStringList> ValidatorResult::errors() const
     return d->errors;
 }
 
+bool ValidatorResult::hasErrors(const QString &field) const
+{
+    return d->errors.contains(field);
+}
+
 QJsonObject ValidatorResult::errorsJsonObject() const
 {
     QJsonObject json;
 
     if (!d->errors.empty()) {
-        QHash<QString,QStringList>::const_iterator i = d->errors.constBegin();
+        auto i = d->errors.constBegin();
         while (i != d->errors.constEnd()) {
             json.insert(i.key(), QJsonValue(QJsonArray::fromStringList(i.value())));
             ++i;
@@ -83,4 +95,34 @@ QJsonObject ValidatorResult::errorsJsonObject() const
 QStringList ValidatorResult::failedFields() const
 {
     return QStringList(d->errors.keys());
+}
+
+QVariantHash ValidatorResult::values() const
+{
+    return d->values;
+}
+
+QVariant ValidatorResult::value(const QString &field) const
+{
+    return d->values.value(field);
+}
+
+void ValidatorResult::addValue(const QString &field, const QVariant &value)
+{
+    d->values.insert(field, value);
+}
+
+QVariantHash ValidatorResult::extras() const
+{
+    return d->extras;
+}
+
+QVariant ValidatorResult::extra(const QString &field) const
+{
+    return d->extras.value(field);
+}
+
+void ValidatorResult::addExtra(const QString &field, const QVariant &extra)
+{
+    d->extras.insert(field, extra);
 }

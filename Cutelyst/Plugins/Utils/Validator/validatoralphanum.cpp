@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,14 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorAlphaNum::ValidatorAlphaNum(const QString &field, const QString &label, const QString &customError) :
-    ValidatorRule(*new ValidatorAlphaNumPrivate(field, label, customError))
-{
-
-}
-
-ValidatorAlphaNum::ValidatorAlphaNum(ValidatorAlphaNumPrivate &dd) :
-    ValidatorRule(dd)
+ValidatorAlphaNum::ValidatorAlphaNum(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorAlphaNumPrivate(field, asciiOnly, messages, defValKey))
 {
 
 }
@@ -38,24 +32,54 @@ ValidatorAlphaNum::~ValidatorAlphaNum()
 
 }
 
-QString ValidatorAlphaNum::validate() const
+ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap &params) const
 {
-    QString result;
+    ValidatorReturnType result;
 
-    if (!value().isEmpty() && !value().contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")))) {
-        result = validationError();
+    Q_D(const ValidatorAlphaNum);
+
+    const QString v = value(params);
+    if (!v.isEmpty()) {
+        if (Q_LIKELY(ValidatorAlphaNum::validate(v, d->asciiOnly))) {
+            result.value.setValue<QString>(v);
+        } else {
+            qCDebug(C_VALIDATOR, "ValidatorAlphaNum: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+            result.errorMessage = validationError(c);
+        }
+
+    } else {
+        defaultValue(c, &result, "ValidatorAlphaNum");
     }
 
     return result;
 }
 
-QString ValidatorAlphaNum::genericValidationError() const
+bool ValidatorAlphaNum::validate(const QString &value, bool asciiOnly)
+{
+    bool valid = true;
+    if (asciiOnly) {
+        for (const QChar &ch : value) {
+            const ushort &uc = ch.unicode();
+            if (!(((uc > 64) && (uc < 91)) || ((uc > 96) && (uc < 123)) || ((uc > 47) && (uc < 58)))) {
+                valid = false;
+                break;
+            }
+        }
+    } else {
+        valid = value.contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN]+$")));
+    }
+    return valid;
+}
+
+QString ValidatorAlphaNum::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    if (label().isEmpty()) {
-        error = QStringLiteral("Must be entirely alpha-numeric characters.");
+    Q_UNUSED(errorData)
+    const QString _label = label(c);
+    if (_label.isEmpty()) {
+        error = c->translate("ValidatorAlphaNum", "Must be entierly alpha-numeric characters.");
     } else {
-        error = QStringLiteral("The text in the “%1” field must be entirely alpha-numeric characters.").arg(label());
+        error = c->translate("ValidatorAlphaNum", "The text in the “%1” field must be entirely alpha-numeric characters.").arg(_label);
     }
     return error;
 }

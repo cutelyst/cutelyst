@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,15 +26,16 @@ namespace Cutelyst {
 class ValidatorRequiredPrivate;
 
 /*!
+ * \ingroup plugins-utils-validator-rules
  * \brief Checks if a field is available and not empty.
  *
  * The \a field under validation must be present in the input data and not empty.
  *
- * If ValidatorRule::trimBefore() is set to \c true (the default), whitespaces will be removed from
- * the beginning and the end of the input value before validation. So, fields that only contain whitespaces
- * will be treated as empty and are invalid.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation.
+ * So, fields that only contain whitespaces will be treated as empty and are invalid.
  *
- * \link Validator See Validator for general usage of validators. \endlink
+ * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
  */
@@ -43,32 +44,29 @@ class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequired : public Validato
 public:
     /*!
      * \brief Constructs a new required validator.
-     * \param field         Name of the input field to validate.
-     * \param label         Human readable input field label, used for generic error messages.
-     * \param customError   Custom error message if validation fails.
+     *
+     * \param field     Name of the input field that is required.
+     * \param messages  Custom error message if validation fails.
      */
-    ValidatorRequired(const QString &field, const QString &label = QString(), const QString &customError = QString());
+    ValidatorRequired(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the required validator.
      */
     ~ValidatorRequired();
 
-    /*!
-     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
-     */
-    QString validate() const override;
-
 protected:
+    /*!
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as QString.
+     */
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
     /*!
      * \brief Returns a generic error message.
      */
-    QString genericValidationError() const override;
-
-    /*!
-     * Constructs a new ValidatorRequired object with the given private class.
-     */
-    ValidatorRequired(ValidatorRequiredPrivate &dd);
+    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRequired)

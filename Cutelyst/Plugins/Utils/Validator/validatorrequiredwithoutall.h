@@ -27,16 +27,17 @@ namespace Cutelyst {
 class ValidatorRequiredWithoutAllPrivate;
 
 /*!
+ * \ingroup plugins-utils-validator-rules
  * \brief The field under validation must be present and not empty only when all of the other specified fields are not present.
  *
  * If \b all of the fields specified in the \a otherFields list are \b not present in the input data, the \a field under validation
  * must be present and not empty. For the other fields it will only be checked if they are not part of the input data, not their content.
  *
- * If ValidatorRule::trimBefore() is set to \c true (the default), whitespaces will be removed from
- * the beginning and the end of the input value before validation. So, fields that only contain whitespaces
- * will be treated as empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation. So, fields that only contain
+ * whitespaces will be treated as empty.
  *
- * \link Validator See Validator for general usage of validators. \endlink
+ * \sa Validator for general usage of validators.
  *
  * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithAll, ValidatorRequiredWithout
  */
@@ -47,36 +48,28 @@ public:
      * \brief Constructs a new required without all validator.
      * \param field         Name of the input field to validate.
      * \param otherFields   List of field names that are not allowed to be present to require the field.
-     * \param label         Human readable input field label, used for generic error messages.
-     * \param customError   Custom error message if validation fails.
+     * \param messages      Custom error messages if validation fails.
      */
-    ValidatorRequiredWithoutAll(const QString &field, const QStringList &otherFields, const QString &label = QString(), const QString &customError = QString());
+    ValidatorRequiredWithoutAll(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages = ValidatorMessages());
     
     /*!
      * \brief Deconstructs the required without all validator.
      */
     ~ValidatorRequiredWithoutAll();
     
-    /*!
-     * \brief Performs the validation and returns an empty QString on success, otherwise an error message.
-     */
-    QString validate() const override;
-
-    /*!
-     * \brief Sets the list of other fields.
-     */
-    void setOtherFields(const QStringList &otherFields);
-    
 protected:
     /*!
-     * \brief Returns a generic error message.
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
      */
-    QString genericValidationError() const override;
-    
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
     /*!
-     * Constructs a new ValidatorRequiredWithoutAll object with the given private class.
+     * \brief Returns a generic error message if validation failed.
      */
-    ValidatorRequiredWithoutAll(ValidatorRequiredWithoutAllPrivate &dd);
+    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
     
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredWithoutAll)
