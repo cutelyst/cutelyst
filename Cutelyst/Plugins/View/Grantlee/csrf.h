@@ -27,6 +27,8 @@
 
 class CSRFTag : public Grantlee::AbstractNodeFactory
 {
+    Q_OBJECT
+public:
     Grantlee::Node *getNode(const QString &tagContent, Grantlee::Parser *p) const override;
 };
 
