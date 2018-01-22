@@ -19,6 +19,9 @@ using namespace Cutelyst;
 class TestMemcached : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestMemcached(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 
@@ -877,7 +880,7 @@ private:
         return list;
     }
 
-    QHash<QString,QByteArray> getTestHash(const QString &prefix = QLatin1String("val")) {
+    QHash<QString,QByteArray> getTestHash(const QString &prefix = QStringLiteral("val")) {
         QHash<QString,QByteArray> hash;
         hash.insert(prefix + QLatin1Char('1'), QByteArrayLiteral("Lorem ipsum"));
         hash.insert(prefix + QLatin1Char('2'), QByteArrayLiteral("dolor sit amet"));
@@ -888,7 +891,7 @@ private:
         return hash;
     }
 
-    QHash<QString,QVariantList> getTestHashList(const QString &prefix = QLatin1String("val")) {
+    QHash<QString,QVariantList> getTestHashList(const QString &prefix = QStringLiteral("val")) {
         QHash<QString,QVariantList> hash;
         for (int i = 0; i < 6; ++i) {
             hash.insert(prefix + QString::number(i), getTestVariantList2());

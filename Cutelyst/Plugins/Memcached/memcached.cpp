@@ -105,7 +105,7 @@ bool Memcached::setup(Application *app)
         const QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
         if (!_val.isEmpty()) {
             const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + _val;
-            config.push_back(optStr);
+            config.push_back(optStr); // clazy:exclude=reserve-candidates
         }
     }
 

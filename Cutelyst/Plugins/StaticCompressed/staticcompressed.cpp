@@ -131,7 +131,7 @@ bool StaticCompressed::setup(Application *app)
 
     qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
 
-    connect(app, &Application::beforePrepareAction, [d](Context *c, bool *skipMethod) {
+    connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
         d->beforePrepareAction(c, skipMethod);
     });
 
@@ -193,7 +193,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                         compressedPath = locateCacheFile(path, currentDateTime, Brotli)                        ;
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving brotli compressed data from \"%s\".", qPrintable(compressedPath));
-                            contentEncoding = QLatin1String("br");
+                            contentEncoding = QStringLiteral("br");
                         }
                     } else
 #endif
