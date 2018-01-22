@@ -98,8 +98,6 @@ QString ValidatorDigitsBetween::genericValidationError(Context *c, const QVarian
 {
     QString error;
 
-    Q_D(const ValidatorDigitsBetween);
-
     const QVariantList list = errorData.toList();
     const QString min = list.at(0).toString();
     const QString max = list.at(1).toString();

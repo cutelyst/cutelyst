@@ -36,8 +36,6 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
 
     const QString v = value(params);
 
-    Q_D(const ValidatorBoolean);
-
     if (!v.isEmpty()) {
         static const QStringList lt({QStringLiteral("1"), QStringLiteral("true"), QStringLiteral("on")});
         static const QStringList lf({QStringLiteral("0"), QStringLiteral("false"), QStringLiteral("off")});

@@ -116,7 +116,7 @@ ValidatorReturnType ValidatorMin::validate(Context *c, const ParamsMultiMap &par
                                                                   {QStringLiteral("val"), val},
                                                                   {QStringLiteral("min"), min}
                                                               });
-                        qCDebug(C_VALIDATOR, "ValidatorMin: Validation failed for field %s in %s::%s: %f is not greater than %f and %f.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, min);
+                        qCDebug(C_VALIDATOR, "ValidatorMin: Validation failed for field %s in %s::%s: %f is not greater than %f.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, min);
                     } else {
                         valid = true;
                     }

@@ -87,8 +87,6 @@ QString ValidatorDigits::genericValidationError(Context *c, const QVariant &erro
 {
     QString error;
 
-    Q_D(const ValidatorDigits);
-
     const QString _label = label(c);
     const int _length = errorData.toInt();
 

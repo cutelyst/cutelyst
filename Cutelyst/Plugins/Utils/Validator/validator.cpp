@@ -25,13 +25,13 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator")
 
-Validator::Validator(const QLatin1String &translationContext) :
+Validator::Validator(QLatin1String translationContext) :
     d_ptr(new ValidatorPrivate(translationContext))
 {
 }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-Validator::Validator(std::initializer_list<ValidatorRule *> validators, const QLatin1String &translationContext) :
+Validator::Validator(std::initializer_list<ValidatorRule *> validators, QLatin1String translationContext) :
     d_ptr(new ValidatorPrivate(validators, translationContext))
 {
 }
