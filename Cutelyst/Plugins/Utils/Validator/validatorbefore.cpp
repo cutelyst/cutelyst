@@ -127,8 +127,6 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVar
 {
     QString error;
 
-    Q_D(const ValidatorBefore);
-
     const QString _label = label(c);
     if (_label.isEmpty()) {
 
