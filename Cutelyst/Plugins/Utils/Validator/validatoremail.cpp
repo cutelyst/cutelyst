@@ -22,6 +22,7 @@
 #include <QDnsLookup>
 #include <QTimer>
 #include <QUrl>
+#include <functional>
 #include <algorithm>
 
 using namespace Cutelyst;
