@@ -27,6 +27,7 @@ class ValidatorPresentPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorPresent validatorpresent.h <Cutelyst/Plugins/Utils/validatorpresent.h>
  * \brief The field under validation must be present in input data but can be empty.
  *
  * This validator checks if the \a field is present in the input data, but not if it contains any content.

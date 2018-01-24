@@ -53,6 +53,7 @@ class ValidatorRule;
 
 /*!
  * \ingroup plugins-utils-validator
+ * \class Validator validator.h <Cutelyst/Plugins/Utils/Validator>
  * \brief Validation processor for input data
  *
  * %Validator can validate input data from the Context or a ParamsMultiMap using validation rules

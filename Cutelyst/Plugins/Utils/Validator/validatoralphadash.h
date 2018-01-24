@@ -27,6 +27,7 @@ class ValidatorAlphaDashPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorAlphaDash validatoralphadash.h <Cutelyst/Plugins/Utils/validatoralphadash.h>
  * \brief Checks a value for only alpha-numeric content and dashes and underscores.
  *
  * The \a field under validation is only allowed to contain alpha-numeric characters as well as dashes and underscores.

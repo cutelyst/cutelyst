@@ -27,6 +27,7 @@ class ValidatorConfirmedPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorConfirmed validatorconfirmed.h <Cutelyst/Plugins/Utils/validatorconfirmed.h>
  * \brief Checks for a confirmation input field.
  *
  * The \a field under validation must have a matching field of \c foo_confirmation. For example, if the field under

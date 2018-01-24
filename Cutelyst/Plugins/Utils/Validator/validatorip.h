@@ -27,6 +27,7 @@ class ValidatorIpPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorIp validatorip.h <Cutelyst/Plugins/Utils/validatorip.h>
  * \brief Checks if the field value is a valid IP address.
  *
  * This uses QHostAddress internally to check if the \a field contains a valid IP address. You can

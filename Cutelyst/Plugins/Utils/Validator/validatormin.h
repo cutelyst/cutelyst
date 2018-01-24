@@ -27,6 +27,7 @@ class ValidatorMinPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorMin validatormin.h <Cutelyst/Plugins/Utils/validatormin.h>
  * \brief Checks if a value is not smaller or shorter than a maximum value.
  *
  * This works for floating point, integer and QString types, where for numeric types it will check the value itself while for QString it will check the string length.

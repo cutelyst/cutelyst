@@ -27,6 +27,7 @@ class ValidatorTimePrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorTime validatortime.h <Cutelyst/Plugins/Utils/validatortime.h>
  * \brief Checks if the input data is a valid time.
  *
  * This validator checks if the input \a field can be parsed into a QTime, it will check the parsing ability but will not convert the

@@ -27,6 +27,7 @@ class ValidatorJsonPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorJson validatorjson.h <Cutelyst/Plugins/Utils/validatorjson.h>
  * \brief Checks if the inut data is valid JSON.
  *
  * This tries to load the input \a field string into a QJsonDocument and checks if it is not null and not empty.

@@ -27,6 +27,7 @@ class ValidatorIntegerPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorInteger validatorinteger.h <Cutelyst/Plugins/Utils/validatorinteger.h>
  * \brief Checks if the value is an integer.
  *
  * Tries to convert the input parameter value into the integer \a type specified in the constructor.

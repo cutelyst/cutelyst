@@ -27,6 +27,7 @@ class ValidatorSizePrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorSize validatorsize.h <Cutelyst/Plugins/Utils/validatorsize.h>
  * \brief The field under validation must have a size matching the given value.
  *
  * Checks if the size of the value in the input \a field is the same as the given \a size.

@@ -26,6 +26,7 @@ namespace Cutelyst {
 class ValidatorBetweenPrivate;
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorBetween validatorbetween.h <Cutelyst/Plugins/Utils/validatorbetween.h>
  * \brief Checks if a value or text length is between a minimum and maximum value.
  *
  * This validator has the mandatory extra parameters \a type, \a min and \a max. \a type specifies the type to validate against,

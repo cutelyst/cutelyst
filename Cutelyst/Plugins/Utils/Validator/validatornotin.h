@@ -28,6 +28,7 @@ class ValidatorNotInPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorNotIn validatornotin.h <Cutelyst/Plugins/Utils/validatornotin.h>
  * \brief Checks if the field value is not one from a list of values.
  *
  * This validator checks if the value of the \a field is not one from a list of \a values.

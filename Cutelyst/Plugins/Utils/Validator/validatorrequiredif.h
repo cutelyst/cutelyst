@@ -28,6 +28,7 @@ class ValidatorRequiredIfPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorRequiredIf validatorrequiredif.h <Cutelyst/Plugins/Utils/validatorrequiredif.h>
  * \brief The field under validation must be present and not empty if the other field is equal to any value in a list.
  *
  * If the other field specified as \a otherField contains \b any of the values defined in the \a otherValues list, the

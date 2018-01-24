@@ -27,6 +27,7 @@ class ValidatorAlphaPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorAlpha validatoralpha.h <Cutelyst/Plugins/Utils/validatoralpha.h>
  * \brief Validates an input field for only alphabetic content.
  *
  * The \a field under validation is only allowed to contain alphabetic characters.

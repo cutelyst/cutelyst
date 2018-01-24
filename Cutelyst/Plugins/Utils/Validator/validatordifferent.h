@@ -27,6 +27,7 @@ class ValidatorDifferentPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorDifferent validatordifferent.h <Cutelyst/Plugins/Utils/validatordifferent.h>
  * \brief Checks if two values are different.
  *
  * This will check if the value in the one input \a field is different from the value in the \a other input field.

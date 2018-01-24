@@ -27,6 +27,7 @@ class ValidatorMaxPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorMax validatormax.h <Cutelyst/Plugins/Utils/validatormax.h>
  * \brief Checks if a value is not bigger or longer than a maximum value.
  *
  * This works for floating point, integer and QString types, where for numeric types it will check the value itself while for QString it will check the string length.

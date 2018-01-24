@@ -27,6 +27,7 @@ class ValidatorAcceptedPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorAccepted validatoraccepted.h <Cutelyst/Plugins/Utils/validatoraccepted.h>
  * \brief Checks if a field is available and has a specific value.
  *
  * The \a field under validation must be \c yes, \c on, \c 1, or \c true. This is useful for validating "Terms of Service" acceptance.

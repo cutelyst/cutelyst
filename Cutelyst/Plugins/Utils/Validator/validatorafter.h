@@ -28,6 +28,7 @@ class ValidatorAfterPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorAfter validatorafter.h <Cutelyst/Plugins/Utils/validatorafter.h>
  * \brief Checks if a date, time or datetime is after a comparison value.
  *
  * This will check if the date, time or datetime in the input \a field is earlier than the \a comparison value set in the constructor.

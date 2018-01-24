@@ -27,6 +27,7 @@ class ValidatorEmailPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorEmail validatoremail.h <Cutelyst/Plugins/Utils/validatoremail.h>
  * \brief Checks if the value is a valid email address according to specific RFCs.
  *
  * You can use a \link ValidatorEmail::Category Category\endlink as threshold to define which level of compliance you accpet as valid.
