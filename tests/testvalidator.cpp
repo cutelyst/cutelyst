@@ -35,13 +35,10 @@ public:
     TestValidator(QObject *parent = nullptr) :
         CoverageObject(parent)
     {
-//        m_oldLocale = QLocale();
-//        QLocale::setDefault(QLocale::c());
     }
 
     ~TestValidator()
     {
-//        QLocale::setDefault(m_oldLocale);
     }
 
 private Q_SLOTS:
@@ -60,8 +57,6 @@ private:
     TestEngine* getEngine();
 
     void doTest();
-
-    QLocale m_oldLocale;
 };
 
 
@@ -427,6 +422,47 @@ public:
     void emailErrors(Context *c) {
         Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5322, false, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
+    }
+
+    // ***** Endpoint for ValidatorFileSize ******
+    C_ATTR(fileSize, :Local :AutoArgs)
+    void fileSize(Context *c) {
+        ValidatorFileSize::Option option = ValidatorFileSize::NoOption;
+        const QString opt = c->req()->param(QStringLiteral("option"));
+        if (opt == QLatin1String("OnlyBinary")) {
+            option = ValidatorFileSize::OnlyBinary;
+        } else if (opt == QLatin1String("OnlyDecimal")) {
+            option = ValidatorFileSize::OnlyDecimal;
+        } else if (opt == QLatin1String("ForceBinary")) {
+            option = ValidatorFileSize::ForceBinary;
+        } else if (opt == QLatin1String("ForceDecimal")) {
+            option = ValidatorFileSize::ForceDecimal;
+        }
+        const double min = c->req()->param(QStringLiteral("min"), QStringLiteral("-1.0")).toDouble();
+        const double max = c->req()->param(QStringLiteral("max"), QStringLiteral("-1.0")).toDouble();
+        c->setLocale(QLocale(c->req()->param(QStringLiteral("locale"), QStringLiteral("C"))));
+        Validator v({new ValidatorFileSize(QStringLiteral("field"), option, min, max, m_validatorMessages)});
+        checkResponse(c, v.validate(c, Validator::NoTrimming));
+    }
+
+    // ***** Endpoint for ValidatorFileSize with return value check *****
+    C_ATTR(fileSizeValue, :Local :AutoArgs)
+    void fileSizeValue(Context *c) {
+        c->setLocale(QLocale::c());
+        Validator v({new ValidatorFileSize(QStringLiteral("field"))});
+        const ValidatorResult r = v.validate(c);
+        if (r) {
+            QString sizeString;
+            const QVariant rv = r.value(QStringLiteral("field"));
+            if (rv.type() == QVariant::Double) {
+                sizeString = QString::number(rv.toDouble(), 'f', 2);
+            } else {
+                sizeString = QString::number(rv.toULongLong());
+            }
+            c->response()->setBody(sizeString.toUtf8());
+        } else {
+            c->response()->setBody(r.errorStrings().constFirst());
+        }
     }
 
     // ***** Endpoint for ValidatorFilled ******
@@ -1723,6 +1759,182 @@ void TestValidator::testController_data()
     }
 
     QTest::newRow("email-empty") << QStringLiteral("/emailValid") << headers << QByteArrayLiteral("field=") << valid;
+
+
+    // **** Start testing ValidatorFileSize *****
+
+    count = 0;
+    for (const QString &size : {
+         QStringLiteral("1M"),
+         QStringLiteral("M1"),
+         QStringLiteral("1 G"),
+         QStringLiteral("G 1"),
+         QStringLiteral("1.5 G"),
+         QStringLiteral("G 1.5"),
+         QStringLiteral("2.345 TiB"),
+         QStringLiteral("TiB2.345"),
+         QStringLiteral("5B"),
+         QStringLiteral("B5"),
+         QStringLiteral("5 B"),
+         QStringLiteral("B 5"),
+         QStringLiteral(" 2.0 Gi"),
+         QStringLiteral(" Gi 2.0"),
+         QStringLiteral("2.0 Gi "),
+         QStringLiteral("Gi 2.0 "),
+         QStringLiteral(" 2.0 Gi "),
+         QStringLiteral(" Gi 2.0 "),
+         QStringLiteral(" 2.0    Gi "),
+         QStringLiteral(" Gi    2.0 "),
+         QStringLiteral("3.67YB"),
+         QStringLiteral("YB3.67"),
+         QStringLiteral("1"),
+         QStringLiteral("1024"),
+         QStringLiteral(".5MB"),
+         QStringLiteral("MB.5")}) {
+        const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(size);
+        QTest::newRow(QString(QStringLiteral("filesize-valid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/fileSize") << headers << body << valid;
+        count++;
+    }
+
+    count = 0;
+    for (const QString &size : {
+         QStringLiteral("1QiB"),
+         QStringLiteral("QiB1"),
+         QStringLiteral(" 1QiB"),
+         QStringLiteral(" QiB1"),
+         QStringLiteral("1QiB "),
+         QStringLiteral("QiB1 "),
+         QStringLiteral("1 QiB"),
+         QStringLiteral("Q iB1"),
+         QStringLiteral("1   QiB"),
+         QStringLiteral("Q   iB1"),
+         QStringLiteral("1..4 G"),
+         QStringLiteral("G 1..4"),
+         QStringLiteral("1iB"),
+         QStringLiteral("iB1"),
+         QStringLiteral("1Byte"),
+         QStringLiteral("Byte1"),
+         QStringLiteral("1024iK"),
+         QStringLiteral("iK 2048")}) {
+        const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(size);
+        QTest::newRow(QString(QStringLiteral("filesize-invalid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/fileSize") << headers << body << invalid;
+        count++;
+    }
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1,5M"));
+    query.addQueryItem(QStringLiteral("locale"), QStringLiteral("de"));
+    QTest::newRow("filesize-locale-de-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5M"));
+    query.addQueryItem(QStringLiteral("locale"), QStringLiteral("de"));
+    QTest::newRow("filesize-locale-de-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1٫5M"));
+    query.addQueryItem(QStringLiteral("locale"), QStringLiteral("ar"));
+    QTest::newRow("filesize-locale-ar-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5M"));
+    query.addQueryItem(QStringLiteral("locale"), QStringLiteral("ar"));
+    QTest::newRow("filesize-locale-ar-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TiB"));
+    query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyBinary"));
+    QTest::newRow("filesize-onlybinary-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TB"));
+    query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyBinary"));
+    QTest::newRow("filesize-onlybinary-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TB"));
+    query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyDecimal"));
+    QTest::newRow("filesize-onlydecimyl-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5TiB"));
+    query.addQueryItem(QStringLiteral("option"), QStringLiteral("OnlyDecimal"));
+    QTest::newRow("filesize-onlydecimyl-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("2K"));
+    query.addQueryItem(QStringLiteral("min"), QStringLiteral("1000"));
+    QTest::newRow("filesize-min-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("2K"));
+    query.addQueryItem(QStringLiteral("min"), QStringLiteral("2048"));
+    QTest::newRow("filesize-min-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
+    QTest::newRow("filesize-max-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("2047"));
+    QTest::newRow("filesize-max-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("2KiB"));
+    query.addQueryItem(QStringLiteral("min"), QStringLiteral("2048"));
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
+    QTest::newRow("filesize-min-max-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("0.5KiB"));
+    query.addQueryItem(QStringLiteral("min"), QStringLiteral("1024"));
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
+    QTest::newRow("filesize-min-max-invalid-1") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("3.5KiB"));
+    query.addQueryItem(QStringLiteral("min"), QStringLiteral("1024"));
+    query.addQueryItem(QStringLiteral("max"), QStringLiteral("2048"));
+    QTest::newRow("filesize-min-max-invalid-2") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+
+    // **** Start testing ValidatorFileSize with return values
+
+    const QMap<QString, QString> fileSizes({
+                                               {QStringLiteral("1"), QStringLiteral("1")},
+                                               {QStringLiteral("1B"), QStringLiteral("1")},
+                                               {QStringLiteral("1K"), QStringLiteral("1000")},
+                                               {QStringLiteral("1KiB"), QStringLiteral("1024")},
+                                               {QStringLiteral("3.45K"), QStringLiteral("3450")},
+                                               {QStringLiteral("3.45KiB"), QStringLiteral("3533")},
+                                               {QStringLiteral("3456MB"), QStringLiteral("3456000000")},
+                                               {QStringLiteral("3456MiB"), QStringLiteral("3623878656")},
+                                               {QStringLiteral("4.321GB"), QStringLiteral("4321000000")},
+                                               {QStringLiteral("4.321GiB"), QStringLiteral("4639638422")},
+                                               {QStringLiteral("45.7890TB"), QStringLiteral("45789000000000")},
+                                               {QStringLiteral("45.7890TiB"), QStringLiteral("50345537924235")},
+                                               {QStringLiteral("123.456789PB"), QStringLiteral("123456789000000000")},
+                                               {QStringLiteral("123.456789PiB"), QStringLiteral("138999987234189488")},
+                                               {QStringLiteral("1.23EB"), QStringLiteral("1230000000000000000")},
+                                               {QStringLiteral("1.23EiB"), QStringLiteral("1418093450666421760")},
+                                               {QStringLiteral("2ZB"), QStringLiteral("2000000000000000000000.00")},
+                                               {QStringLiteral("2ZiB"), QStringLiteral("2361183241434822606848.00")}
+                                           });
+
+    count = 0;
+    auto fileSizesIt = fileSizes.constBegin();
+    while (fileSizesIt != fileSizes.constEnd()) {
+        query.clear();
+        query.addQueryItem(QStringLiteral("field"), fileSizesIt.key());
+        QTest::newRow(QString(QStringLiteral("filesize-return-value-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/fileSizeValue") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << fileSizesIt.value().toUtf8();
+        ++fileSizesIt;
+        count++;
+    }
 
     // **** Start testing ValidatorFilled *****
 
