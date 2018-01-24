@@ -28,6 +28,7 @@ class ValidatorRegularExpressionPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorRegularExpression validatorregularexpression.h <Cutelyst/Plugins/Utils/validatorregularexpression.h>
  * \brief The field under validation must match the given regular expression.
  *
  * Checks if the \a regex matches the content of the \a field.

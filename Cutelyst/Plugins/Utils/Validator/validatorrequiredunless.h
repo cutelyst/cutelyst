@@ -27,6 +27,7 @@ class ValidatorRequiredUnlessPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorRequiredUnless validatorrequiredunless.h <Cutelyst/Plugins/Utils/validatorrequiredunless.h>
  * \brief The field under validation must be present and not empty unless the other field is equal to any value in the list.
  *
  * If the other field specified as \a otherField does \b not contain \b any of the values specified in the \a otherValues list, the

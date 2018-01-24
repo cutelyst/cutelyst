@@ -27,6 +27,7 @@ class ValidatorInPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorIn validatorin.h <Cutelyst/Plugins/Utils/validatorin.h>
  * \brief Checks if the field value is one from a list of values.
  *
  * Validates if the \a field contains a value from the \a values list.

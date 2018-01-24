@@ -52,6 +52,7 @@ class Context;
 
 /*!
  * \ingroup plugins-utils-validator
+ * \class ValidatorReturnType validatorrule.h <Cutelyst/Plugins/Utils/ValidatorRule>
  * \brief Contains the result of a single input parameter validation.
  *
  * For information about the possible values of \link ValidatorReturnType::value value\endlink and
@@ -84,6 +85,7 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
 
 /*!
  * \ingroup plugins-utils-validator
+ * \class ValidatorMessages validatorrule.h <Cutelyst/Plugins/Utils/ValidatorRule>
  * \brief Stores custom error messages and the input field label.
  *
  * This struct is used by ValidatorRule derived classes to store custom error messages
@@ -168,6 +170,7 @@ class ValidatorRulePrivate;
 
 /*!
  * \ingroup plugins-utils-validator
+ * \class ValidatorRule validatorrule.h <Cutelyst/Plugins/Utils/ValidatorRule>
  * \brief Base class for all validator \link plugins-utils-validator-rules rules\endlink.
  *
  * This class can not be used on it's own, you have to create a derived class from it that implements your

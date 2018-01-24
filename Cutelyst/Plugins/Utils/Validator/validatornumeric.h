@@ -27,6 +27,7 @@ class ValidatorNumericPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorNumeric validatornumeric.h <Cutelyst/Plugins/Utils/validatornumeric.h>
  * \brief Checks if the field under validation could be casted into a numeric value.
  *
  * Checks for signed and unsigned integers as well as floats (also with exponential e) together with minus signs in the input \a field. *

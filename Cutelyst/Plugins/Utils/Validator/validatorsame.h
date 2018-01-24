@@ -27,6 +27,7 @@ class ValidatorSamePrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorSame validatorsame.h <Cutelyst/Plugins/Utils/validatorsame.h>
  * \brief The given field must match the field under validation.
  *
  * The \a field under validation must have the same content as \a otherField.

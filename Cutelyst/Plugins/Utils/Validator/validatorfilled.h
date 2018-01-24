@@ -27,6 +27,7 @@ class ValidatorFilledPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorFilled validatorfilled.h <Cutelyst/Plugins/Utils/validatorfilled.h>
  * \brief The field under validation must not be empty when it is present.
  *
  * The difference to the \link ValidatorRequired required validator \endlink is, that it will only be

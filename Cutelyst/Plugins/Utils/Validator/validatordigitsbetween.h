@@ -27,6 +27,7 @@ class ValidatorDigitsBetweenPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorDigitsBetween validatordigitsbetween.h <Cutelyst/Plugins/Utils/validatordigitsbetween.h>
  * \brief Checks for digits only with a length between min and max.
  *
  * The field under validation must only contain digits with a length between \a min and \a max. The digits

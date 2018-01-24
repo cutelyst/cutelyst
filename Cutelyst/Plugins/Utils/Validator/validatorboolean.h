@@ -27,6 +27,7 @@ class ValidatorBooleanPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorBoolean validatorboolean.h <Cutelyst/Plugins/Utils/validatorboolean.h>
  * \brief Checks if a value can be casted into a boolean.
  *
  * The \a field under validation must contain one of the following acceptable input values: \c 1, \c 0, \c true, \c false, \c on and \c off.

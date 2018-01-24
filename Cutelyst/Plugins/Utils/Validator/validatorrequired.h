@@ -27,6 +27,7 @@ class ValidatorRequiredPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorRequired validatorrequired.h <Cutelyst/Plugins/Utils/validatorrequired.h>
  * \brief Checks if a field is available and not empty.
  *
  * The \a field under validation must be present in the input data and not empty.

@@ -31,6 +31,7 @@ class ValidatorResultPrivate;
 
 /*!
  * \ingroup plugins-utils-validator
+ * \class ValidatorResult validatorresult.h <Cutelyst/Plugins/Utils/ValdatorResult>
  * \brief Provides information about performed validations.
  *
  * %ValidatorResult will be returned by Validator when calling \link Validator::validate() validate()\endlink on it.
@@ -40,8 +41,8 @@ class ValidatorResultPrivate;
  * Additionally to the error messages that occure if validation fails for one or more fields, %ValidatorResult will
  * also contain the extracted values from the input parameters. Use values() to return all values or value() to
  * return the value for a single field. Because there will be only one value stored for each field, you should order
- * your validators in a way that a validater for a field comes last that converts the input QString into the
- * wanted type. See the documentation for the specific validtor to learn what type of data it returns.
+ * your validators in a way that a validator for a field comes last that converts the input QString into the
+ * wanted type. See the documentation for the specific validator to see what type of data it returns.
  *
  * Some validators might even return more details about the validation result. This extra data can be returned with
  * the extras() method for all input parameters or with extra() for a single one.

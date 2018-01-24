@@ -27,6 +27,7 @@ class ValidatorDigitsPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorDigits validatordigits.h <Cutelyst/Plugins/Utils/validatordigits.h>
  * \brief Checks for digits only with optional length check.
  *
  * The \a field under validation must only contain digits with an optional exact \a length. If length is set to a value lower

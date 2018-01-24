@@ -27,6 +27,7 @@ class ValidatorAlphaNumPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorAlphaNum validatoralphanum.h <Cutelyst/Plugins/Utils/validatoralphanum.h>
  * \brief Checks a value for only alpha-numeric content.
  *
  * The \a field under validation is only allowed to contain alpha-numeric characters.

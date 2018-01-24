@@ -27,6 +27,7 @@ class ValidatorUrlPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
+ * \class ValidatorUrl validatorurl.h <Cutelyst/Plugins/Utils/validatorurl.h>
  * \brief The field under validation must be a valid URL.
  *
  * Checks if the \a field contains a valid URL by loading it into a QUrl and testing it's validity.
