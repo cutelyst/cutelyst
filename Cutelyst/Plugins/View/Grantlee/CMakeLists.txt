@@ -31,7 +31,7 @@ target_link_libraries(Cutelyst2Qt5ViewGrantlee
 set_property(TARGET Cutelyst2Qt5ViewGrantlee PROPERTY PUBLIC_HEADER ${plugin_view_grantlee_HEADERS})
 install(TARGETS Cutelyst2Qt5ViewGrantlee
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/JSON
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Grantlee
 )
 
 # urifor and csrf_token
