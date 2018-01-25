@@ -17,7 +17,7 @@
  */
 
 #include "validatorfilesize_p.h"
-#include <math.h>
+#include <cmath>
 #include <limits>
 
 using namespace Cutelyst;
