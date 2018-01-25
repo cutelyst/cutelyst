@@ -4,6 +4,7 @@
 #include <QTest>
 #include <QObject>
 #include <QUrlQuery>
+#include <utility>
 
 #include "headers.h"
 #include "coverageobject.h"
@@ -1046,7 +1047,7 @@ void TestMemcached::testController_data()
         count++;
     }
 
-    const QVector<QPair<QString,QByteArray>> testVect{
+    const QVector<std::pair<QString,QByteArray>> testVect{
         {QStringLiteral("setEmptyKeyByKey"), QByteArrayLiteral("invalid")},
         {QStringLiteral("setTooLongKeyByKey"), QByteArrayLiteral("invalid")},
         {QStringLiteral("setQVariantList"), QByteArrayLiteral("valid")},
@@ -1122,7 +1123,7 @@ void TestMemcached::testController_data()
         {QStringLiteral("flush"), QByteArrayLiteral("valid")}
     };
 
-    for (const QPair<QString,QByteArray> &test : testVect) {
+    for (const std::pair<QString,QByteArray> &test : testVect) {
         QTest::newRow(test.first.toLocal8Bit().constData()) << QStringLiteral("/memcached/test/") + test.first << headers << QByteArray() << test.second;
     }
 }

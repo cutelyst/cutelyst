@@ -19,6 +19,7 @@
 #include "validatorip_p.h"
 #include <QHostAddress>
 #include <QRegularExpression>
+#include <utility>
 
 using namespace Cutelyst;
 
@@ -67,7 +68,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
     } else {
 
         // private IPv4 subnets
-        static const std::vector<QPair<QHostAddress,int>> ipv4Private({
+        static const std::vector<std::pair<QHostAddress,int>> ipv4Private({
                                                                           // Used for local communications within a private network
                                                                           // https://tools.ietf.org/html/rfc1918
                                                                           {QHostAddress(QStringLiteral("10.0.0.0")), 8},
@@ -87,7 +88,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
                                                                       });
 
         // reserved IPv4 subnets
-        static const std::vector<QPair<QHostAddress,int>> ipv4Reserved({
+        static const std::vector<std::pair<QHostAddress,int>> ipv4Reserved({
                                                                            // Used for broadcast messages to the current ("this")
                                                                            // https://tools.ietf.org/html/rfc1700
                                                                            {QHostAddress(QStringLiteral("0.0.0.0")), 8},
@@ -135,7 +136,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
 
         // private IPv6 subnets
-        static const std::vector<QPair<QHostAddress,int>> ipv6Private({
+        static const std::vector<std::pair<QHostAddress,int>> ipv6Private({
                                                                           // unique local address
                                                                           {QHostAddress(QStringLiteral("fc00::")), 7},
 
@@ -144,7 +145,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
                                                                       });
 
         // reserved IPv6 subnets
-        static const std::vector<QPair<QHostAddress,int>> ipv6Reserved({
+        static const std::vector<std::pair<QHostAddress,int>> ipv6Reserved({
                                                                            // unspecified address
                                                                            {QHostAddress(QStringLiteral("::")), 128},
 
@@ -192,8 +193,8 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoPrivateRange) || constraints.testFlag(PublicOnly))) {
 
-                        for (const QPair<QHostAddress,int> &subnet : ipv4Private) {
-                            if (a.isInSubnet(subnet)) {
+                        for (const std::pair<QHostAddress,int> &subnet : ipv4Private) {
+                            if (a.isInSubnet(subnet.first, subnet.second)) {
                                 valid = false;
                                 break;
                             }
@@ -202,8 +203,8 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoReservedRange) || constraints.testFlag(PublicOnly))) {
 
-                        for (const QPair<QHostAddress,int> &subnet : ipv4Reserved) {
-                            if (a.isInSubnet(subnet)) {
+                        for (const std::pair<QHostAddress,int> &subnet : ipv4Reserved) {
+                            if (a.isInSubnet(subnet.first, subnet.second)) {
                                 valid = false;
                                 break;
                             }
@@ -224,8 +225,8 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoPrivateRange) || constraints.testFlag(PublicOnly))) {
 
-                        for (const QPair<QHostAddress,int> &subnet : ipv6Private) {
-                            if (a.isInSubnet(subnet)) {
+                        for (const std::pair<QHostAddress,int> &subnet : ipv6Private) {
+                            if (a.isInSubnet(subnet.first, subnet.second)) {
                                 valid = false;
                                 break;
                             }
@@ -234,8 +235,8 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
                     if (valid && (constraints.testFlag(NoReservedRange) || constraints.testFlag(PublicOnly))) {
 
-                        for (const QPair<QHostAddress,int> &subnet : ipv6Reserved) {
-                            if (a.isInSubnet(subnet)) {
+                        for (const std::pair<QHostAddress,int> &subnet : ipv6Reserved) {
+                            if (a.isInSubnet(subnet.first, subnet.second)) {
                                 valid = false;
                                 break;
                             }
