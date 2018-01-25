@@ -1833,10 +1833,13 @@ void TestValidator::testController_data()
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("de"));
     QTest::newRow("filesize-locale-de-invalid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
+    // disabled on MSVC because that shit still has problems with utf8 in 2018...
+#ifndef _MSC_VER
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1٫5M"));
     query.addQueryItem(QStringLiteral("locale"), QStringLiteral("ar"));
     QTest::newRow("filesize-locale-ar-valid") << QStringLiteral("/fileSize") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+#endif
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("1.5M"));
