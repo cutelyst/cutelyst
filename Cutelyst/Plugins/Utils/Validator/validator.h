@@ -44,7 +44,7 @@ namespace Cutelyst {
  *
  * <h3>Building and using</h3>
  * The plugin is linked to %Cutelyst Core API and the QtNetwork module. To use it in your application, link your
- * application to \a Cutelyst2Qt5::Utils::Validator.
+ * application to \a Cutelyst::Utils::Validator.
  */
 
 class ValidatorPrivate;
