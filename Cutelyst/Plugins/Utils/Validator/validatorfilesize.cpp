@@ -67,7 +67,7 @@ bool ValidatorFileSize::validate(const QString &value, double min, double max, C
                     valid = false;
                     break;
                 }
-            } else if ((ch != 9) && (ch != 32)) { // not a digit or decimal point and not a space or tab
+            } else if ((uc != 9) && (uc != 32)) { // not a digit or decimal point and not a space or tab
                 if (startsWith == 0) {
                     startsWith = 1;
                 }
