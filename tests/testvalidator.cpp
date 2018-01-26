@@ -636,6 +636,22 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorRequiredUnlessStash with stash match *****
+    C_ATTR(requiredUnlessStashMatch, :Local :AutoArgs)
+    void requiredUnlessStashMatch(Context *c) {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("eins"));
+        Validator v({new ValidatorRequiredUnlessStash(QStringLiteral("field"), QStringLiteral("stashkey"), QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}), m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorRequiredUnlessStash with stash not match *****
+    C_ATTR(requiredUnlessStashNotMatch, :Local :AutoArgs)
+    void requiredUnlessStashNotMatch(Context *c) {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("drei"));
+        Validator v({new ValidatorRequiredUnlessStash(QStringLiteral("field"), QStringLiteral("stashkey"), QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}), m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorRequiredWith ******
     C_ATTR(requiredWith, :Local :AutoArgs)
     void requiredWith(Context *c) {
@@ -2456,7 +2472,7 @@ void TestValidator::testController_data()
 
 
 
-    // **** Start testing ValidatorRequiredIfStash with matching stash key *****
+    // **** Start testing ValidatorRequiredIfStash *****
 
     query.clear();
     query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
@@ -2505,6 +2521,27 @@ void TestValidator::testController_data()
     QTest::newRow("requiredunless-invalid01") << QStringLiteral("/requiredUnless") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
 
+    // **** Start testing ValidatorRequiredUnlessStash *****
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdf"));
+    QTest::newRow("requiredunlessstash-valid00") << QStringLiteral("/requiredUnlessStashMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
+    QTest::newRow("requiredunlessstash-valid01") << QStringLiteral("/requiredUnlessStashMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("asdf"));
+    QTest::newRow("requiredunlessstash-valid02") << QStringLiteral("/requiredUnlessStashNotMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdf"));
+    QTest::newRow("requiredunlessstash-invalid00") << QStringLiteral("/requiredUnlessStashNotMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("%20"));
+    QTest::newRow("requiredunlessstash-invalid01") << QStringLiteral("/requiredUnlessStashNotMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
 
     // **** Start testing ValidatorRequiredWith *****

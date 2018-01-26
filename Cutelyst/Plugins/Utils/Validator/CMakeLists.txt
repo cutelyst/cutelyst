@@ -65,6 +65,8 @@ set(plugin_validator_SRC
     validatorrequiredifstash_p.h
     validatorrequiredunless.cpp
     validatorrequiredunless_p.h
+    validatorrequiredunlessstash.cpp
+    validatorrequiredunlessstash_p.h
     validatorrequiredwith.cpp
     validatorrequiredwith_p.h
     validatorrequiredwithall.cpp
@@ -122,6 +124,7 @@ set(plugin_validator_HEADERS
     validatorrequiredif.h
     validatorrequiredifstash.h
     validatorrequiredunless.h
+    validatorrequiredunlessstash.h
     validatorrequiredwith.h
     validatorrequiredwithall.h
     validatorrequiredwithout.h
