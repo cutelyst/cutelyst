@@ -613,6 +613,22 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorRequiredIfStash with stash match *****
+    C_ATTR(requiredIfStashMatch, :Local :AutoArgs)
+    void requiredIfStashMatch(Context *c) {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("eins"));
+        Validator v({new ValidatorRequiredIfStash(QStringLiteral("field"), QStringLiteral("stashkey"), QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}), m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorRequiredIfStash with stash not match *****
+    C_ATTR(requiredIfStashNotMatch, :Local :AutoArgs)
+    void requiredIfStashNotMatch(Context *c) {
+        c->setStash(QStringLiteral("stashkey"), QStringLiteral("drei"));
+        Validator v({new ValidatorRequiredIfStash(QStringLiteral("field"), QStringLiteral("stashkey"), QVariantList({QStringLiteral("eins"), QStringLiteral("zwei")}), m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorRequiredUnless ******
     C_ATTR(requiredUnless, :Local :AutoArgs)
     void requiredUnless(Context *c) {
@@ -2439,6 +2455,24 @@ void TestValidator::testController_data()
     QTest::newRow("requiredif-invalid01") << QStringLiteral("/requiredIf") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
 
+
+    // **** Start testing ValidatorRequiredIfStash with matching stash key *****
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
+    QTest::newRow("requiredifstash-valid01") << QStringLiteral("/requiredIfStashMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("adsf"));
+    QTest::newRow("requiredifstash-valid02") << QStringLiteral("/requiredIfStashNotMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
+    QTest::newRow("requiredifstash-invalid03") << QStringLiteral("/requiredIfStashNotMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << valid;
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field2"), QStringLiteral("adsf"));
+    QTest::newRow("requiredifstash-invalid") << QStringLiteral("/requiredIfStashMatch") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
     // **** Start testing ValidatorRequiredUnless *****
 
