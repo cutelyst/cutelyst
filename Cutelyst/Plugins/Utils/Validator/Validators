@@ -27,6 +27,7 @@
 #include "validatorregularexpression.h"
 #include "validatorrequired.h"
 #include "validatorrequiredif.h"
+#include "validatorrequiredifstash.h"
 #include "validatorrequiredunless.h"
 #include "validatorrequiredwith.h"
 #include "validatorrequiredwithall.h"
