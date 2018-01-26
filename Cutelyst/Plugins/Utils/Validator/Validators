@@ -29,6 +29,7 @@
 #include "validatorrequiredif.h"
 #include "validatorrequiredifstash.h"
 #include "validatorrequiredunless.h"
+#include "validatorrequiredunlessstash.h"
 #include "validatorrequiredwith.h"
 #include "validatorrequiredwithall.h"
 #include "validatorrequiredwithout.h"
