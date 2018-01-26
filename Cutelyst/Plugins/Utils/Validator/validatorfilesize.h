@@ -53,6 +53,9 @@ class ValidatorFileSizePrivate;
  * performing the validation itself. Use one of the \link ValidatorRequired required validators \endlink to require the
  * field to be present and not empty.
  *
+ * If you want to use a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-pattern">pattern</a>
+ * in your HTML input element that matches this validator, use ValidatorFileSize::inputPattern().
+ *
  * \sa Validator for general usage of validators.
  *
  * \since Cutelyst 2.0.0
@@ -112,6 +115,18 @@ public:
                          Option option = NoOption,
                          const QLocale &locale = QLocale(),
                          double *fileSize = nullptr);
+
+    /*!
+     * \brief Puts an HTML input pattern for file sizes into the stash.
+     *
+     * This will either put \c "^\\d+[,.٫]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?" into the \a stashKey if the \link Context::locale()
+     * current locale's\endlink direction is from left to right, or \c "[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[,.٫]?\\d*" if the
+     * direction is right to left.
+     *
+     * \param c         Pointer to the current context.
+     * \param stashKey  Name of the stash key to put the pattern in.
+     */
+    static void inputPattern(Context *c, const QString &stashKey = QStringLiteral("fileSizePattern"));
 
 protected:
     /*!

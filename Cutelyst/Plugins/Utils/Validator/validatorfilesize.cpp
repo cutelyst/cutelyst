@@ -329,3 +329,9 @@ QString ValidatorFileSize::genericValidationDataError(Context *c, const QVariant
 
     return error;
 }
+
+void ValidatorFileSize::inputPattern(Context *c, const QString &stashKey)
+{
+    Q_ASSERT(c);
+    c->setStash(stashKey, c->locale().textDirection() == Qt::LeftToRight ? QStringLiteral("^\\d+[,.٫]?\\d*\\s*[KkMmGgTt]?[Ii]?[Bb]?") : QStringLiteral("[KkMmGgTt]?[Ii]?[Bb]?\\s*\\d+[,.٫]?\\d*"));
+}
