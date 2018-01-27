@@ -16,7 +16,7 @@ http://www.techempower.com/benchmarks/
 
  * Cross-platform
  * Pluggable Engines
-   * uWSGI - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
+   * [uWSGI](http://projects.unbit.it/uwsgi) - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
    * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 and FastCGI both with Pipelining and Keep-Alive support)
  * WebSockets
  * REST with ActionREST
