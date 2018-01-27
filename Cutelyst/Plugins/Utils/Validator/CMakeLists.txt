@@ -31,6 +31,8 @@ set(plugin_validator_SRC
     validatordigits_p.h
     validatordigitsbetween.cpp
     validatordigitsbetween_p.h
+    validatordomain.cpp
+    validatordomain_p.h
     validatoremail.cpp
     validatoremail_p.h
     validatorfilesize.cpp
@@ -107,6 +109,7 @@ set(plugin_validator_HEADERS
     validatordifferent.h
     validatordigits.h
     validatordigitsbetween.h
+    validatordomain.h
     validatoremail.h
     validatorfilesize.h
     validatorfilled.h

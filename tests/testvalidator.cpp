@@ -347,6 +347,20 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorDomain without DNS check *****
+    C_ATTR(domain, :Local :AutoArgs)
+    void domain(Context *c) {
+        Validator v({new ValidatorDomain(QStringLiteral("field"), false, m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
+    // ***** Endpoint for ValidatorDomain with DNS check *****
+    C_ATTR(domainDns, :Local :AutoArgs)
+    void domainDns(Context *c) {
+        Validator v({new ValidatorDomain(QStringLiteral("field"), true, m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorEmail valid ****
     C_ATTR(emailValid, :Local :AutoArgs)
     void emailValid(Context *c) {
@@ -1229,6 +1243,85 @@ void TestValidator::testController_data()
 
     QTest::newRow("digitsbetween-invalid-greater") << QStringLiteral("/digitsBetween?field=0123456789123") << headers << QByteArray() << invalid;
 
+
+    // **** Start testing ValidatorDomain *****
+
+    QByteArray domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("huessenbergnetz.de"));
+    QTest::newRow("domain-valid01") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("a.de"));
+    QTest::newRow("domain-valid02") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("a1.de"));
+    QTest::newRow("domain-valid03") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.com."));
+    QTest::newRow("domain-valid04") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("test-1.example.com."));
+    QTest::newRow("domain-valid05") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // label with max length of 63 chars
+    QTest::newRow("domain-valid06") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // total length of 253 chars
+    QTest::newRow("domain-valid07") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    // disabled on MSVC because that shit still has problems with utf8 in 2018...
+#ifndef _MSC_VER
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("hüssenbergnetz.de"));
+    QTest::newRow("domain-valid08") << QStringLiteral("/domain") << headers << domainBody << valid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر"));
+    QTest::newRow("domain-valid09") << QStringLiteral("/domain") << headers << domainBody << valid;
+#endif
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.com1")); // digit in non puny code TLD
+    QTest::newRow("domain-invalid01") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.c")); // one char tld
+    QTest::newRow("domain-invalid02") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.3com")); // starts with digit
+    QTest::newRow("domain-invalid03") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.co3m")); // contains digit
+    QTest::newRow("domain-invalid04") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com")); // label too long, 64 chars
+    QTest::newRow("domain-invalid05") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com")); // too long, 254 chars
+    QTest::newRow("domain-invalid06") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.co-m")); // contains dash in tld
+    QTest::newRow("domain-invalid07") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("-example.com")); // contains dash at label start
+    QTest::newRow("domain-invalid08") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("3example.com")); // contains digit at label start
+    QTest::newRow("domain-invalid09") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example-.com")); // contains dash at label end
+    QTest::newRow("domain-invalid10") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    // disabled on MSVC because that shit still has problems with utf8 in 2018...
+#ifndef _MSC_VER
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر1"));
+    QTest::newRow("domain-invalid11") << QStringLiteral("/domain") << headers << domainBody << invalid;
+
+    domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("موقع.وزارة-الاتصالات.مصر-"));
+    QTest::newRow("domain-invalid12") << QStringLiteral("/domain") << headers << domainBody << invalid;
+#endif
+
+    if (qEnvironmentVariableIsSet("CUTELYST_VALIDATORS_TEST_NETWORK")) {
+        domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("example.com"));
+        QTest::newRow("domain-dns-valid") << QStringLiteral("/domainDns") << headers << domainBody << valid;
+
+        domainBody = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("test.example.com"));
+        QTest::newRow("domain-dns-invalid") << QStringLiteral("/domainDns") << headers << domainBody << invalid;
+    }
 
 
     // **** Start testing ValidatorEmail *****
