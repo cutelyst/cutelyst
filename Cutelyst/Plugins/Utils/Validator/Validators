@@ -12,6 +12,7 @@
 #include "validatordifferent.h"
 #include "validatordigits.h"
 #include "validatordigitsbetween.h"
+#include "validatordomain.h"
 #include "validatoremail.h"
 #include "validatorfilesize.h"
 #include "validatorfilled.h"
