@@ -5,7 +5,14 @@
 
 A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
-Qt's meta object system is what powers the core of Cutelyst, it allows for introspecting controller's methods signatures and generate matching actions that can be invoked later. Main features:
+Qt's meta object system is what powers the core of Cutelyst, it allows for introspecting controller's methods signatures and generate matching actions that can be invoked later.
+
+## BENCHMARKS
+
+Don't trust us on being fast, check out this the most comprehensive web framework benchmarks by TechEmpower 
+http://www.techempower.com/benchmarks/
+
+## FEATURES:
 
  * Cross-platform
  * Pluggable Engines
@@ -37,10 +44,6 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
  * Asynchronous processing (optional and dependent on application code)
  * Unit tested
  * QtCreator integration
-
-## BENCHMARKS
-
-http://www.techempower.com/benchmarks/
 
 ## DOCUMENTATION
 
