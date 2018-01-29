@@ -61,7 +61,8 @@ public:
         InvalidTLD          = 7,    /**< The TLD label contains characters that are not allowed. */
         DashStart           = 8,    /**< At least one label starts with a dash. */
         DashEnd             = 9,    /**< At least one label ends with a dash. */
-        DigitStart          = 10    /**< At least one label starts with a digit. */
+        DigitStart          = 10,   /**< At least one label starts with a digit. */
+        DNSTimeout          = 11    /**< The DNS lookup took too long. */
     };
     Q_ENUM(Diagnose)
 
