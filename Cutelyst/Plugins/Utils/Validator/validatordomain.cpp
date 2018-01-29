@@ -19,7 +19,9 @@
 #include "validatordomain_p.h"
 #include <QUrl>
 #include <QStringList>
-#include <QHostInfo>
+#include <QEventLoop>
+#include <QDnsLookup>
+#include <QTimer>
 
 using namespace Cutelyst;
 
@@ -55,8 +57,8 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
         if (!tld.isEmpty()) {
             // there are no TLDs with digits inside, but IDN TLDs can
             // have digits in their puny code representation, so we have
-            // to check at first if the IDN TLD contains digits beforce
-            // converting all to ACE puny code
+            // to check at first if the IDN TLD contains digits before
+            // checking the ACE puny code
             for (const QChar &ch : tld) {
                 const ushort &uc = ch.unicode();
                 if (((uc > 47) && (uc < 58)) || (uc == 45)) {
@@ -165,10 +167,31 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
 
 
     if (valid && checkDNS) {
-        const QHostInfo hi = QHostInfo::fromName(v);
-        if ((hi.error() != QHostInfo::NoError) || hi.addresses().empty()) {
-            diag = MissingDNS;
+        QDnsLookup alookup(QDnsLookup::A, v);
+        QEventLoop aloop;
+        QObject::connect(&alookup, &QDnsLookup::finished, &aloop, &QEventLoop::quit);
+        QTimer::singleShot(3100, &alookup, &QDnsLookup::abort);
+        alookup.lookup();
+        aloop.exec();
+
+        if (((alookup.error() != QDnsLookup::NoError) && (alookup.error() != QDnsLookup::OperationCancelledError)) || alookup.hostAddressRecords().empty()) {
+            QDnsLookup aaaaLookup(QDnsLookup::AAAA, v);
+            QEventLoop aaaaLoop;
+            QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
+            QTimer::singleShot(3100, &aaaaLookup, &QDnsLookup::abort);
+            aaaaLookup.lookup();
+            aaaaLoop.exec();
+
+            if (((aaaaLookup.error() != QDnsLookup::NoError) && (aaaaLookup.error() != QDnsLookup::OperationCancelledError)) || aaaaLookup.hostAddressRecords().empty()) {
+                valid = false;
+                diag = MissingDNS;
+            } else if (aaaaLookup.error() == QDnsLookup::OperationCancelledError) {
+                valid = false;
+                diag = DNSTimeout;
+            }
+        } else if (alookup.error() == QDnsLookup::OperationCancelledError) {
             valid = false;
+            diag = DNSTimeout;
         }
     }
 
@@ -226,6 +249,9 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
         case Valid:
             error = c->translate("Cutelyst::ValidatorDomain", "The domain name is valid.");
             break;
+        case DNSTimeout:
+            error = c->translate("Cutelyst::ValidatorDomain", "The DNS lookup was aborted because it took too long.");
+            break;
         default:
             Q_ASSERT_X(false, "domain validation diagnose", "invalid diagnose");
             break;
@@ -264,6 +290,9 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             break;
         case Valid:
             error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1” field is valid.").arg(label);
+            break;
+        case DNSTimeout:
+            error = c->translate("Cutelyst::ValidatorDomain", "The DNS lookup for the name in the “%1” field was aborted because it took too long.").arg(label);
             break;
         default:
             Q_ASSERT_X(false, "domain validation diagnose", "invalid diagnose");
