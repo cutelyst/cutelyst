@@ -128,13 +128,6 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
         return ret;
     }
 
-    if (d->isAuthTypeDigest()) {
-        ret = d->authenticateDigest(c, realm, authinfo);
-        if (!ret.isNull()) {
-            return ret;
-        }
-    }
-
     if (d->isAuthTypeBasic()) {
         ret = d->authenticateBasic(c, realm, authinfo);
         if (!ret.isNull()) {
@@ -169,13 +162,6 @@ bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const 
     }
 
     return false;
-}
-
-AuthenticationUser CredentialHttpPrivate::authenticateDigest(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
-{
-    qCDebug(C_CREDENTIALHTTP) << "Checking http digest authentication.";
-
-    return AuthenticationUser();
 }
 
 AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
@@ -217,23 +203,12 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, Authe
         res->setBody(authorizationRequiredMessage);
     }
 
-    // Create Digest response
-    if (isAuthTypeDigest()) {
-//        _create_digest_auth_response TODO
-    }
-
     // Create Basic response
     if (isAuthTypeBasic()) {
         createBasicAuthResponse(c);
     }
 
     return AuthenticationUser();
-}
-
-bool CredentialHttpPrivate::isAuthTypeDigest() const
-{
-    return type == CredentialHttp::Digest || type == CredentialHttp::Any;
-
 }
 
 bool CredentialHttpPrivate::isAuthTypeBasic() const

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,6 @@ public:
 
     enum AuthType {
         Any,
-        Digest,
         Basic
     };
     Q_ENUM(AuthType)
@@ -52,7 +51,7 @@ public:
     virtual ~CredentialHttp();
 
     /**
-     * Can be either any (the default), basic or digest.
+     * Can be either any (the default), basic.
      *
      * This controls authorization_required_response and
      * authenticate, but not the "manual" methods.

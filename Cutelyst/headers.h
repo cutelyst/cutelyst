@@ -256,13 +256,6 @@ public:
     QString setAuthorizationBasic(const QString &username, const QString &password);
 
     /**
-     * This method is used to get all the fields that
-     * build a "Digest Authentication Scheme".
-     * It will return a Hash containing keys and values.
-     */
-    QHash<QString, QString> authorizationDigest() const;
-
-    /**
      * A user agent that wishes to authenticate itself with a server or a proxy, may do so by including these headers.
      */
     QString proxyAuthorization() const;

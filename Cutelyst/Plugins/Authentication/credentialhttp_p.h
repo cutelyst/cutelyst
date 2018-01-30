@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,6 @@ class CredentialHttpPrivate
 {
 public:
     bool checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo);
-    AuthenticationUser authenticateDigest(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
     AuthenticationUser authenticateBasic(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
     AuthenticationUser authenticationFailed(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo);
 
