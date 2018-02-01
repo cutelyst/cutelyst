@@ -29,6 +29,7 @@ before_install:
       clearsilver-dev
       libmemcached-dev
       libjemalloc-dev
+      libpwquality-dev
       qt${QT_VERSION_MM}base qt${QT_VERSION_MM}tools
       && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
     fi
@@ -50,6 +51,7 @@ before_script:
        -DPLUGIN_MEMCACHED=off
        -DPLUGIN_MEMCACHEDSESSIONSTORE=off
        -DPLUGIN_UWSGI=off
+       -DPLUGIN_VALIDATOR_PWQUALITY=off
        -DUSE_JEMALLOC=off
      ;fi
    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
