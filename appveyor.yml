@@ -162,6 +162,7 @@ build_script:
     -DPLUGIN_MEMCACHED=off
     -DPLUGIN_MEMCACHEDSESSIONSTORE=off
     -DPLUGIN_UWSGI=off
+    -DPLUGIN_VALIDATOR_PWQUALITY=off
     -DUSE_JEMALLOC=off
   - cmake --build . --config Debug
   - cmake --build . --config Release
