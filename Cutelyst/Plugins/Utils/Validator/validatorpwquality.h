@@ -65,10 +65,19 @@ public:
      * \brief Constructs a new %ValidatorPwQuality with the given parameters.
      * \param field     Name of the input field to validate.
      * \param threshold The quality score threshold below the validation fails.
-     * \param options   Options for libpwquality.
+     * \param options   Options for libpwquality. Use invalid QVariant to omit.
+     * \param userName  Input params key or stash key containing the user name, used for quality checks.
+     * Will first try params, than stash. Leave empty to omit.
+     * \param oldPassword   Input params key or stash key containing the old password, used for quality checks.
+     * Will first try params, than stash. Leave empty to omit.
      * \param messages  Custom error messages if validation fails.
      */
-    explicit ValidatorPwQuality(const QString &field, int threshold = 30, const QVariant &options = QVariant(), const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorPwQuality(const QString &field,
+                                int threshold = 30,
+                                const QVariant &options = QVariant(),
+                                const QString &userName = QString(),
+                                const QString &oldPassword = QString(),
+                                const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the %ValidatorPwQuality.
