@@ -18,6 +18,7 @@
 
 #include "validatorpwquality_p.h"
 #include <pwquality.h>
+#include <QLoggingCategory>
 
 using namespace Cutelyst;
 
@@ -329,6 +330,14 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
         int rv = validate(v, opts, opw, un);
         if (rv < d->threshold) {
             result.errorMessage = validationError(c, rv);
+            if (C_VALIDATOR().isDebugEnabled()) {
+                if (rv < 0) {
+                    char buf[1024];
+                    qCDebug(C_VALIDATOR, "ValidatorPwQuality: Validation failed for field %s at %s::%s: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), pwquality_strerror(buf, sizeof(buf), rv, nullptr));
+                } else {
+                    qCDebug(C_VALIDATOR, "ValidatorPwQuality: Validation failed for field %s at %s::%s because the quality score %i is below the threshold of %i.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), rv, d->threshold);
+                }
+            }
         } else {
             result.value.setValue<QString>(v);
         }
