@@ -1,3 +1,17 @@
+if (PLUGIN_VALIDATOR_PWQUALITY)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(PWQUALITY REQUIRED pwquality)
+    message(STATUS "PLUGIN: Validator, enable PwQuality")
+    add_definitions(-DPWQUALITY_ENABLED)
+    set(plugin_validator_pwquality_SRC
+        validatorpwquality.cpp
+        validatorpwquality_p.h
+    )
+    set(plugin_validator_pwquality_HEADERS
+        validatorpwquality.h
+    )
+endif (PLUGIN_VALIDATOR_PWQUALITY)
+
 set(plugin_validator_SRC
     validator.cpp
     validator_p.h
@@ -87,7 +101,8 @@ set(plugin_validator_SRC
     validatorurl_p.h
     validatorresult.cpp
     validatorresult_p.h
-) 
+    ${plugin_validator_pwquality_SRC}
+)
 
 
 set(plugin_validator_HEADERS
@@ -139,6 +154,7 @@ set(plugin_validator_HEADERS
     Validators
     validatorresult.h
     ValidatorResult
+    ${plugin_validator_pwquality_HEADERS}
 )
 
 add_library(Cutelyst2Qt5UtilsValidator SHARED
@@ -156,6 +172,7 @@ set_target_properties(Cutelyst2Qt5UtilsValidator PROPERTIES
 target_link_libraries(Cutelyst2Qt5UtilsValidator
     PRIVATE Cutelyst2Qt5::Core
     Qt5::Network
+    ${PWQUALITY_LIBRARIES}
 )
 
 set_property(TARGET Cutelyst2Qt5UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})

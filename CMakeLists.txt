@@ -70,6 +70,7 @@ option(PLUGIN_VIEW_EMAIL "Enables View::Email plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_GRANTLEE "Enables View::Grantlee plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_CLEARSILVER "Enables View::ClearSilver plugin" ${BUILD_ALL})
 option(PLUGIN_UWSGI "Enables uWSGI plugin" ${BUILD_ALL})
+option(PLUGIN_VALIDATOR_PWQUALITY "Enables ValidatorPwQuality that required libpwquality" ${BUILD_ALL})
 
 # NONE
 

@@ -1,0 +1,114 @@
+/*
+ * Copyright (C) 2018 Matthias Fehring <kontakt@buschmann23.de>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+#ifndef CUTELYSTVALIDATORPWQUALITY_H
+#define CUTELYSTVALIDATORPWQUALITY_H
+
+#include <Cutelyst/cutelyst_global.h>
+#include "validatorrule.h"
+
+namespace Cutelyst {
+
+class ValidatorPwQualityPrivate;
+
+/*!
+ * \ingroup plugins-utils-validator-rules
+ * \class ValidatorPwQuality validatorpwquality.h <Cutelyst/Plugins/Utils/validatorpwquality.h>
+ * \brief Validates an input field with libpwquality to check password quality.
+ *
+ * This validator uses <a href="https://github.com/libpwquality/libpwquality">libpwquality</a> to generate a
+ * password quality score that is compared against a \a threshold. If it is below the \a threshold, the validation
+ * fails. According to libpwquality a score of 0-30 is of low, a score of 30-60 of medium and a score of 60-100
+ * of high quality. Everything below 0 is an error and the password should not be used.
+ *
+ * As this validator relies on an external library, it will not be included and build by default. Use either
+ * <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst
+ * for build with cmake.
+ *
+ * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
+ * whitespaces will be removed from the beginning and the end of the input value before validation.
+ * If the \a field's value is empty or if the \a field is missing in the input data, the validation will succeed without
+ * performing the validation itself. Use one of the \link ValidatorRequired required validators \endlink to require the
+ * field to be present and not empty.
+ *
+ * \sa Validator for general usage of validators.
+ *
+ * \since Cutelyst 2.0.0
+ */
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorPwQuality : public ValidatorRule
+{
+public:
+    /*!
+     * \brief Constructs a new %ValidatorPwQuality with the given parameters.
+     * \param field     Name of the input field to validate.
+     * \param threshold The quality score threshold below the validation fails.
+     * \param messages  Custom error messages if validation fails.
+     */
+    explicit ValidatorPwQuality(const QString &field, int threshold = 30, const ValidatorMessages &messages = ValidatorMessages());
+
+    /*!
+     * \brief Deconstructs the %ValidatorPwQuality.
+     */
+    ~ValidatorPwQuality();
+
+    /*!
+     * \ingroup plugins-utils-validator-rules
+     * \brief Returns the password quality score for \a value.
+     * \param value         The value to validate.
+     * \param oldPassword   Optional old password used for some checks.
+     * \param user          Optional user name used for some checks.
+     * \return the password quality score, everything below \c 0 is an error, everything >= 0 is a quality score where
+     * 0-30 is low, 30-60 medium and 60-100 high quality. You can use ValidatorPwQuality::errorString() to get a human
+     * readable string explaining the return value.
+     */
+    static int validate(const QString &value, const QString &oldPassword = QString(), const QString &user = QString());
+
+    /*!
+     * \brief Returns a human readable string for the return value of ValidatorPwQuality::validate()
+     * \param c             Current context, used for translations.
+     * \param returnValue   The return value of ValidatorPwQuality::validate()
+     * \param label         Optional label used in the returned string.
+     * \param threshold     The threshold below that a password is invalid.
+     * \return Human readable error string. If \a returnValue is >= 0 but below \a threshold, a string explaining the
+     * threshold will be returned. If \a returnValue is >= \a threshold, an empty string will be returned.
+     */
+    static QString errorString(Context *c, int returnValue, const QString &label = QString(), int threshold = 0);
+
+protected:
+    /*!
+     * \brief Performs the validation and returns the result.
+     *
+     * If validation succeeded, ValidatorReturnType::value will contain the input paramter
+     * value as QString.
+     */
+    ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
+
+    /*!
+     * \brief Returns a generic error message if validation failed.
+     *
+     * The \a errorData will contain the score returned by ValidatorPqQuality::validate()
+     */
+    QString genericValidationError(Context *c, const QVariant &errorData) const override;
+
+private:
+    Q_DECLARE_PRIVATE(ValidatorPwQuality)
+    Q_DISABLE_COPY(ValidatorPwQuality)
+};
+
+}
+
+#endif // CUTELYSTVALIDATORPWQUALITY_H
