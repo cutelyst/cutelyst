@@ -612,7 +612,7 @@ public:
 #ifdef PWQUALITY_ENABLED
     C_ATTR(pwQuality, :Local :AutoArgs)
     void pwQuality(Context *c) {
-        Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, m_validatorMessages)});
+        Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, QVariant(), m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 #endif

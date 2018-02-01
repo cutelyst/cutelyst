@@ -35,9 +35,18 @@ class ValidatorPwQualityPrivate;
  * fails. According to libpwquality a score of 0-30 is of low, a score of 30-60 of medium and a score of 60-100
  * of high quality. Everything below 0 is an error and the password should not be used.
  *
+ * <h3>Building</h3>
  * As this validator relies on an external library, it will not be included and build by default. Use either
  * <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst
  * for build with cmake.
+ *
+ * <h3>Options</h3>
+ * %ValidatorPwQuality can take additional \a options. To learn more about the available options see <code>man 5 pwquality.conf</code>.
+ * The options value can be either a QVariantMap containing the options or a QString specifying a file name that will be read
+ * by libpwquality. For the constructor the options will also be searched in the current \link Context::stash() stash\endlink if
+ * it is a QString. The stash value should than be either a QVariantMap or a QString pointing to a configuration file. All values
+ * in the QVariantMap used to specify \a options, have to be convertible into QString. The QVariantMap does not have to contain
+ * all available option keys, for keys that are not contained, the default values of libpwquality will be used.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
  * whitespaces will be removed from the beginning and the end of the input value before validation.
@@ -56,9 +65,10 @@ public:
      * \brief Constructs a new %ValidatorPwQuality with the given parameters.
      * \param field     Name of the input field to validate.
      * \param threshold The quality score threshold below the validation fails.
+     * \param options   Options for libpwquality.
      * \param messages  Custom error messages if validation fails.
      */
-    explicit ValidatorPwQuality(const QString &field, int threshold = 30, const ValidatorMessages &messages = ValidatorMessages());
+    explicit ValidatorPwQuality(const QString &field, int threshold = 30, const QVariant &options = QVariant(), const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the %ValidatorPwQuality.
@@ -69,13 +79,14 @@ public:
      * \ingroup plugins-utils-validator-rules
      * \brief Returns the password quality score for \a value.
      * \param value         The value to validate.
+     * \param options       Options for libpwquality.
      * \param oldPassword   Optional old password used for some checks.
      * \param user          Optional user name used for some checks.
      * \return the password quality score, everything below \c 0 is an error, everything >= 0 is a quality score where
      * 0-30 is low, 30-60 medium and 60-100 high quality. You can use ValidatorPwQuality::errorString() to get a human
      * readable string explaining the return value.
      */
-    static int validate(const QString &value, const QString &oldPassword = QString(), const QString &user = QString());
+    static int validate(const QString &value, const QVariant &options = QVariant(), const QString &oldPassword = QString(), const QString &user = QString());
 
     /*!
      * \brief Returns a human readable string for the return value of ValidatorPwQuality::validate()

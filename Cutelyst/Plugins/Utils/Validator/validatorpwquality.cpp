@@ -21,8 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, messages))
+ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, messages))
 {
 
 }
@@ -32,7 +32,7 @@ ValidatorPwQuality::~ValidatorPwQuality()
 
 }
 
-int ValidatorPwQuality::validate(const QString &value, const QString &oldPassword, const QString &user)
+int ValidatorPwQuality::validate(const QString &value, const QVariant &options, const QString &oldPassword, const QString &user)
 {
     int rv = 0;
 
@@ -41,7 +41,30 @@ int ValidatorPwQuality::validate(const QString &value, const QString &oldPasswor
         pwquality_settings_t *pwq = pwquality_default_settings();
         if (pwq) {
 
-            rv = pwquality_read_config(pwq, nullptr, nullptr);
+            if (options.isValid()) {
+                if (options.type() == QVariant::Map) {
+                    const QVariantMap map = options.toMap();
+                    auto i = map.constBegin();
+                    while (i != map.constEnd()) {
+                        const QString opt = i.key() + QLatin1Char('=') + i.value().toString();
+                        rv = pwquality_set_option(pwq, opt.toUtf8().constData());
+                        if (rv != 0) {
+                            char buf[1024];
+                            qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to set pwquality option %s: %s", qUtf8Printable(opt), pwquality_strerror(buf, sizeof(buf), rv, nullptr));
+                            break;
+                        }
+                        ++i;
+                    }
+                } else if (options.type() == QVariant::String) {
+                    const QString configFile = options.toString();
+                    void *auxerror;
+                    rv = pwquality_read_config(pwq, configFile.toUtf8().constData(), &auxerror);
+                    if (rv != 0) {
+                        char buf[1024];
+                        qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to read configuration file: %s", pwquality_strerror(buf, sizeof(buf), rv, auxerror));
+                    }
+                }
+            }
 
             if (rv == 0) {
                 const char *pw = value.toUtf8().constData();
@@ -276,7 +299,20 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
 
     if (!v.isEmpty()) {
         Q_D(const ValidatorPwQuality);
-        int rv = validate(v);
+        QVariant opts;
+        if (d->options.isValid()) {
+            if (d->options.type() == QVariant::Map) {
+                opts = d->options;
+            } else if (d->options.type() == QVariant::String) {
+                const QString optString = d->options.toString();
+                if (c->stash().contains(optString)) {
+                    opts = c->stash(optString);
+                } else {
+                    opts = d->options;
+                }
+            }
+        }
+        int rv = validate(v, opts);
         if (rv < d->threshold) {
             result.errorMessage = validationError(c, rv);
         } else {
