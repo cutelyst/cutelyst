@@ -26,15 +26,19 @@ namespace Cutelyst {
 class ValidatorPwQualityPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorPwQualityPrivate(const QString &f, int t, const QVariant &opts, const ValidatorMessages &m) :
+    ValidatorPwQualityPrivate(const QString &f, int t, const QVariant &opts, const QString &un, const QString &opw, const ValidatorMessages &m) :
         ValidatorRulePrivate(f, m, QString()),
         options(opts),
+        userName(un),
+        oldPassword(opw),
         threshold(t)
     {
 
     }
 
     QVariant options;
+    QString userName;
+    QString oldPassword;
     int threshold = 30;
 };
 

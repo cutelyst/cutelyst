@@ -21,8 +21,8 @@
 
 using namespace Cutelyst;
 
-ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, messages))
+ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const QString &userName, const QString &oldPassword, const ValidatorMessages &messages) :
+    ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, userName, oldPassword, messages))
 {
 
 }
@@ -312,7 +312,21 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
                 }
             }
         }
-        int rv = validate(v, opts);
+        QString un;
+        if (!d->userName.isEmpty()) {
+            un = params.value(d->userName);
+            if (un.isEmpty()) {
+                un = c->stash(d->userName).toString();
+            }
+        }
+        QString opw;
+        if (!d->oldPassword.isEmpty()) {
+            opw = params.value(d->oldPassword);
+            if (opw.isEmpty()) {
+                opw = c->stash(d->oldPassword).toString();
+            }
+        }
+        int rv = validate(v, opts, opw, un);
         if (rv < d->threshold) {
             result.errorMessage = validationError(c, rv);
         } else {
