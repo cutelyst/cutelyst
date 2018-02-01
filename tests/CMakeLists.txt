@@ -45,6 +45,9 @@ cutelyst_templates_unit_tests(
     testactionrenderview
 )
 
+if(PLUGIN_VALIDATOR_PWQUALITY)
+    add_definitions(-DPWQUALITY_ENABLED)
+endif(PLUGIN_VALIDATOR_PWQUALITY)
 cute_test(testvalidator Cutelyst2Qt5::Utils::Validator "" "")
 
 if (NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT CMAKE_GENERATOR MATCHES "Ninja")

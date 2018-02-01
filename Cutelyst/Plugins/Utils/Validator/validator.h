@@ -45,6 +45,11 @@ namespace Cutelyst {
  * <h3>Building and using</h3>
  * The plugin is linked to %Cutelyst Core API and the QtNetwork module. To use it in your application, link your
  * application to \a Cutelyst::Utils::Validator.
+ *
+ * <h4>Optional validators</h4>
+ * ValidatorPwQuality relies on <a href="https://github.com/libpwquality/libpwquality">libpwquality</a> and will not
+ * be included and build by default. Use either <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or
+ * <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst for build with cmake.
  */
 
 class ValidatorPrivate;

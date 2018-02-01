@@ -25,6 +25,9 @@
 #include <Cutelyst/Plugins/Utils/Validator/Validator>
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
 #include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
+#ifdef PWQUALITY_ENABLED
+#include <Cutelyst/Plugins/Utils/Validator/validatorpwquality.h>
+#endif
 
 using namespace Cutelyst;
 
@@ -605,6 +608,14 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorPwQuality *****
+#ifdef PWQUALITY_ENABLED
+    C_ATTR(pwQuality, :Local :AutoArgs)
+    void pwQuality(Context *c) {
+        Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+#endif
 
     // ***** Endpoint for ValidatorRegularExpression ******
     C_ATTR(regex, :Local :AutoArgs)
@@ -2495,6 +2506,37 @@ void TestValidator::testController_data()
     query.addQueryItem(QStringLiteral("field2"), QStringLiteral("asdfasdf"));
     QTest::newRow("present-invalid") << QStringLiteral("/present") << headers << query.toString(QUrl::FullyEncoded).toLatin1() << invalid;
 
+
+    // **** Start testing ValidatorPwQuality
+#ifdef PWQUALITY_ENABLED
+    const QList<QString> validPws({
+                                      QStringLiteral("diN3nah(afx0dAw"),
+                                      QStringLiteral("q@zSAJH@rizA"),
+                                      QStringLiteral("UrykiRYxRaH9")
+                                  });
+
+    count = 0;
+    for (const QString &pw : validPws) {
+        query.clear();
+        query.addQueryItem(QStringLiteral("field"), pw);
+        QTest::newRow(qUtf8Printable(QStringLiteral("pwquality-valid0%1").arg(count)))
+                << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
+        count++;
+    }
+
+    const QList<QString> invalidPws({
+                                        QStringLiteral("schalke04"), // dictionay
+                                        QStringLiteral("asdf234a"), // score too low
+                                        QStringLiteral("asdf") // too short
+                                    });
+    for (const QString &pw : invalidPws) {
+        query.clear();
+        query.addQueryItem(QStringLiteral("field"), pw);
+        QTest::newRow(qUtf8Printable(QStringLiteral("pwquality-invalid0%1").arg(count)))
+                << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << invalid;
+        count++;
+    }
+#endif
 
 
     // **** Start testing ValidatorRegex *****
