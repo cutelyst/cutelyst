@@ -1,6 +1,6 @@
 if (PLUGIN_VALIDATOR_PWQUALITY)
     find_package(PkgConfig REQUIRED)
-    pkg_search_module(PWQUALITY REQUIRED pwquality)
+    pkg_search_module(PWQUALITY REQUIRED pwquality>=1.2.2)
     message(STATUS "PLUGIN: Validator, enable PwQuality")
     add_definitions(-DPWQUALITY_ENABLED)
     set(plugin_validator_pwquality_SRC

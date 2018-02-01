@@ -623,9 +623,7 @@ public:
                                       {QStringLiteral("maxrepeat"), 0},
                                       {QStringLiteral("maxsequence"), 0},
                                       {QStringLiteral("maxclassrepeat"), 0},
-                                      {QStringLiteral("gecoscheck"), 0},
-                                      {QStringLiteral("dictcheck"), 1},
-                                      {QStringLiteral("usercheck"), 1}
+                                      {QStringLiteral("gecoscheck"), 0}
                                   });
         Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, options, QString(), QString(), m_validatorMessages)});
         checkResponse(c, v.validate(c));
