@@ -2523,7 +2523,7 @@ void TestValidator::testController_data()
     // **** Start testing ValidatorPwQuality
 #ifdef PWQUALITY_ENABLED
     const QList<QString> validPws({
-                                      QStringLiteral("diN3nah(afx0dAw"),
+                                      QStringLiteral("niKeHAm@M0vZuJvYlDaP6"),
                                       QStringLiteral("q@zSAJH@rizA"),
                                       QStringLiteral("UrykiRYxRaH9")
                                   });
