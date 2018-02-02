@@ -2525,9 +2525,8 @@ void TestValidator::testController_data()
     // **** Start testing ValidatorPwQuality
 #ifdef PWQUALITY_ENABLED
     const QList<QString> invalidPws({
-                                        QStringLiteral("asdf234a"), // score too low
-                                        QStringLiteral("scha"), // too short
-                                        QStringLiteral("password") // dictionary
+                                        QStringLiteral("asdf1234"),
+                                        QStringLiteral("scha"),
                                     });
     count = 0;
     for (const QString &pw : invalidPws) {
