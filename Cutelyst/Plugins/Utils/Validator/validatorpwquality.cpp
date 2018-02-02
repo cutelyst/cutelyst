@@ -25,7 +25,11 @@ using namespace Cutelyst;
 ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const QString &userName, const QString &oldPassword, const ValidatorMessages &messages) :
     ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, userName, oldPassword, messages))
 {
-
+    // this is kind of a dirty hack for older versions of libpwquality
+    // version 1.2.2 of libpwquality on Ubuntu Trusty for example will
+    // return a score of 0 for the first time of use, not sure why
+    // libpwquality 1.4.0 on openSUSE does not have this problem
+    ValidatorPwQuality::validate(QStringLiteral("asdf234a"));
 }
 
 ValidatorPwQuality::~ValidatorPwQuality()
