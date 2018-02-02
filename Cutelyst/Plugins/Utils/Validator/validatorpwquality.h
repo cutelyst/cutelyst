@@ -35,6 +35,10 @@ class ValidatorPwQualityPrivate;
  * fails. According to libpwquality a score of 0-30 is of low, a score of 30-60 of medium and a score of 60-100
  * of high quality. Everything below 0 is an error and the password should not be used.
  *
+ * \note The score is strongly related to the \c minlen setting of libpwquality. This setting does not mean, that every
+ * password is invalid, that is shorter than the \c minlen. If you want to require a minimum lengths of your password,
+ * use ValidatorMin.
+ *
  * <h3>Building</h3>
  * As this validator relies on an external library, it will not be included and build by default. Use either
  * <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst
@@ -46,7 +50,8 @@ class ValidatorPwQualityPrivate;
  * by libpwquality. For the constructor the options will also be searched in the current \link Context::stash() stash\endlink if
  * it is a QString. The stash value should than be either a QVariantMap or a QString pointing to a configuration file. All values
  * in the QVariantMap used to specify \a options, have to be convertible into QString. The QVariantMap does not have to contain
- * all available option keys, for keys that are not contained, the default values of libpwquality will be used.
+ * all available option keys, for keys that are not contained, the default values of libpwquality will be used. If the \a options
+ * QVariant is not valid, the options from the default libpwquality configuration file will be read.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
  * whitespaces will be removed from the beginning and the end of the input value before validation.
