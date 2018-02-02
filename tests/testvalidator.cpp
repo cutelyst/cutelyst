@@ -2525,7 +2525,7 @@ void TestValidator::testController_data()
     const QList<QString> validPws({
                                       QStringLiteral("niKeHAm@M0vZuJvYlDaP6"),
                                       QStringLiteral("q@zSAJH@rizA"),
-                                      QStringLiteral("UrykiRYxRaH9")
+                                      QStringLiteral("UrykiR9YxRaH!b")
                                   });
 
     count = 0;
