@@ -612,7 +612,7 @@ public:
 #ifdef PWQUALITY_ENABLED
     C_ATTR(pwQuality, :Local :AutoArgs)
     void pwQuality(Context *c) {
-        const QVariantMap options({
+        static const QVariantMap options({
                                       {QStringLiteral("difok"), 1},
                                       {QStringLiteral("minlen"), 8},
                                       {QStringLiteral("dcredit"), 0},
@@ -625,7 +625,7 @@ public:
                                       {QStringLiteral("maxclassrepeat"), 0},
                                       {QStringLiteral("gecoscheck"), 0}
                                   });
-        Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, options, QString(), QString(), m_validatorMessages)});
+        static Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, options, QString(), QString(), m_validatorMessages)});
         checkResponse(c, v.validate(c));
     }
 #endif
