@@ -2522,10 +2522,6 @@ void TestValidator::testController_data()
 
     // **** Start testing ValidatorPwQuality
 #ifdef PWQUALITY_ENABLED
-    query.clear();
-    query.addQueryItem(QStringLiteral("field"), QStringLiteral("niKeHAm@M0vZuJvYlDaP6"));
-    QTest::newRow("pwquality-valid") << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
-
     const QList<QString> invalidPws({
                                         QStringLiteral("schalke04"), // dictionay
                                         QStringLiteral("asdf234a"), // score too low
@@ -2538,6 +2534,10 @@ void TestValidator::testController_data()
                 << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << invalid;
         count++;
     }
+
+    query.clear();
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("niKeHAm@M0vZuJvYlDaP6"));
+    QTest::newRow("pwquality-valid") << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
 #endif
 
 
