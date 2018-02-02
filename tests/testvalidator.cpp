@@ -613,17 +613,19 @@ public:
     C_ATTR(pwQuality, :Local :AutoArgs)
     void pwQuality(Context *c) {
         static const QVariantMap options({
-                                      {QStringLiteral("difok"), 1},
-                                      {QStringLiteral("minlen"), 8},
-                                      {QStringLiteral("dcredit"), 0},
-                                      {QStringLiteral("ucredit"), 0},
-                                      {QStringLiteral("ocredit"), 0},
-                                      {QStringLiteral("lcredit"), 0},
-                                      {QStringLiteral("minclass"), 0},
-                                      {QStringLiteral("maxrepeat"), 0},
-                                      {QStringLiteral("maxsequence"), 0},
-                                      {QStringLiteral("maxclassrepeat"), 0},
-                                      {QStringLiteral("gecoscheck"), 0}
+                                             {QStringLiteral("difok"), 1},
+                                             {QStringLiteral("minlen"), 10},
+                                             {QStringLiteral("dcredit"), 0},
+                                             {QStringLiteral("ucredit"), 0},
+                                             {QStringLiteral("ocredit"), 0},
+                                             {QStringLiteral("lcredit"), 0},
+                                             {QStringLiteral("minclass"), 0},
+                                             {QStringLiteral("maxrepeat"), 0},
+                                             {QStringLiteral("maxclassrepeat"), 0},
+                                             {QStringLiteral("maxsequence"), 0},
+                                             {QStringLiteral("gecoscheck"), 0},
+                                             {QStringLiteral("dictcheck"), 1},
+                                             {QStringLiteral("usercheck"), 0}
                                   });
         static Validator v({new ValidatorPwQuality(QStringLiteral("field"), 50, options, QString(), QString(), m_validatorMessages)});
         checkResponse(c, v.validate(c));
@@ -2523,10 +2525,11 @@ void TestValidator::testController_data()
     // **** Start testing ValidatorPwQuality
 #ifdef PWQUALITY_ENABLED
     const QList<QString> invalidPws({
-                                        QStringLiteral("schalke04"), // dictionay
                                         QStringLiteral("asdf234a"), // score too low
-                                        QStringLiteral("asdf") // too short
+                                        QStringLiteral("scha"), // too short
+                                        QStringLiteral("password") // dictionary
                                     });
+    count = 0;
     for (const QString &pw : invalidPws) {
         query.clear();
         query.addQueryItem(QStringLiteral("field"), pw);
