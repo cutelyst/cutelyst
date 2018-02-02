@@ -2539,7 +2539,7 @@ void TestValidator::testController_data()
     }
 
     query.clear();
-    query.addQueryItem(QStringLiteral("field"), QStringLiteral("niKeHAm@M0vZuJvYlDaP6"));
+    query.addQueryItem(QStringLiteral("field"), QStringLiteral("niKeHAm@M0vZ!8sd$uJv?4AYlDaP6"));
     QTest::newRow("pwquality-valid") << QStringLiteral("/pwQuality") << headers << query.toString(QUrl::FullyEncoded).toUtf8() << valid;
 #endif
 
