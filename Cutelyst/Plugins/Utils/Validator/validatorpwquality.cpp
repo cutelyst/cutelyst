@@ -55,27 +55,33 @@ int ValidatorPwQuality::validate(const QString &value, const QVariant &options, 
                         const int orv = pwquality_set_option(pwq, opt.toUtf8().constData());
                         if (orv != 0) {
                             char buf[1024];
-                            const char *strError = pwquality_strerror(buf, sizeof(buf), orv, nullptr);
-                            qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to set pwquality option %s: %s", qUtf8Printable(opt), strError);
+                            qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to set pwquality option %s: %s", qUtf8Printable(opt), pwquality_strerror(buf, sizeof(buf), orv, nullptr));
                         }
                         ++i;
                     }
                 } else if (options.type() == QVariant::String) {
                     const QString configFile = options.toString();
-                    void *auxerror;
-                    const int rcrv = pwquality_read_config(pwq, configFile.toUtf8().constData(), &auxerror);
-                    if (rcrv != 0) {
-                        char buf[1024];
-                        const char *strError = pwquality_strerror(buf, sizeof(buf), rcrv, auxerror);
-                        qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to read configuration file %s: %s", qUtf8Printable(configFile), strError);
+                    if (C_VALIDATOR().isWarningEnabled()) {
+                        void *auxerror;
+                        const int rcrv = pwquality_read_config(pwq, configFile.toUtf8().constData(), &auxerror);
+                        if (rcrv != 0) {
+                            char buf[1024];
+                            qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to read configuration file %s: %s", qUtf8Printable(configFile), pwquality_strerror(buf, sizeof(buf), rcrv, auxerror));
+                        }
+                    } else {
+                        pwquality_read_config(pwq, configFile.toUtf8().constData(), nullptr);
                     }
                 }
             } else {
-                void *auxerror;
-                const int rcrv = pwquality_read_config(pwq, nullptr, &auxerror);
-                if (rcrv != 0) {
-                    char buf[1024];
-                    qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to read default configuration file: %s", pwquality_strerror(buf, sizeof(buf), rcrv, auxerror));
+                if (C_VALIDATOR().isWarningEnabled()) {
+                    void *auxerror;
+                    const int rcrv = pwquality_read_config(pwq, nullptr, &auxerror);
+                    if (rcrv != 0) {
+                        char buf[1024];
+                        qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to read default configuration file: %s", pwquality_strerror(buf, sizeof(buf), rcrv, auxerror));
+                    }
+                } else {
+                    pwquality_read_config(pwq, nullptr, nullptr);
                 }
             }
 
