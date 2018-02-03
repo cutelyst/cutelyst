@@ -35,10 +35,6 @@ class ValidatorPwQualityPrivate;
  * fails. According to libpwquality a score of 0-30 is of low, a score of 30-60 of medium and a score of 60-100
  * of high quality. Everything below 0 is an error and the password should not be used.
  *
- * \note The score is strongly related to the \c minlen setting of libpwquality. This setting does not mean, that every
- * password is invalid, that is shorter than the \c minlen. If you want to require a minimum lengths of your password,
- * use ValidatorMin.
- *
  * <h3>Building</h3>
  * As this validator relies on an external library, it will not be included and build by default. Use either
  * <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst
