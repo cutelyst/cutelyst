@@ -47,7 +47,8 @@ class ValidatorPwQualityPrivate;
  * it is a QString. The stash value should than be either a QVariantMap or a QString pointing to a configuration file. All values
  * in the QVariantMap used to specify \a options, have to be convertible into QString. The QVariantMap does not have to contain
  * all available option keys, for keys that are not contained, the default values of libpwquality will be used. If the \a options
- * QVariant is not valid, the options from the default libpwquality configuration file will be read.
+ * QVariant is not valid or if a contained QString or QVariantMap is empty, the options from the default libpwquality configuration
+ * file will be read.
  *
  * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
  * whitespaces will be removed from the beginning and the end of the input value before validation.
