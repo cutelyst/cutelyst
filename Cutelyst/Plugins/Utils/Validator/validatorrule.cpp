@@ -81,7 +81,7 @@ QString ValidatorRule::validationError(Cutelyst::Context *c, const QVariant &err
             error = QString::fromUtf8(d->messages.validationError);
         }
     } else {
-        error = genericValidationError(c);
+        error = genericValidationError(c, errorData);
     }
     return error;
 }
@@ -111,7 +111,7 @@ QString ValidatorRule::parsingError(Cutelyst::Context *c, const QVariant &errorD
             error = QString::fromUtf8(d->messages.parsingError);
         }
     } else {
-        error = genericParsingError(c);
+        error = genericParsingError(c, errorData);
     }
     return error;
 }
@@ -141,7 +141,7 @@ QString ValidatorRule::validationDataError(Context *c, const QVariant &errorData
             error = QString::fromUtf8(d->messages.validationDataError);
         }
     } else {
-        error = genericValidationDataError(c);
+        error = genericValidationDataError(c, errorData);
     }
     return error;
 }
