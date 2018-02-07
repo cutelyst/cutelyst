@@ -33,6 +33,7 @@ Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication")
 using namespace Cutelyst;
 
 char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
+char *AuthenticationRealm::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 
 static thread_local Authentication *auth = nullptr;
 
@@ -51,19 +52,17 @@ Authentication::~Authentication()
     delete d_ptr;
 }
 
-void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm, const QString &name)
+void Authentication::addRealm(Cutelyst::AuthenticationRealm *realm)
 {
     Q_D(Authentication);
-    realm->setObjectName(name);
-    realm->setName(name);
     realm->setParent(this);
-    d->realms.insert(name, realm);
-    d->realmsOrder.append(name);
+    d->realms.insert(realm->objectName(), realm);
+    d->realmsOrder.append(realm->objectName());
 }
 
 void Cutelyst::Authentication::addRealm(Cutelyst::AuthenticationStore *store, Cutelyst::AuthenticationCredential *credential, const QString &name)
 {
-    addRealm(new AuthenticationRealm(store, credential, this), name);
+    addRealm(new AuthenticationRealm(store, credential, name, this));
 }
 
 AuthenticationRealm *Authentication::realm(const QString &name) const
@@ -143,7 +142,7 @@ bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
 {
     QVariant user = c->property(AUTHENTICATION_USER);
     if (!user.isNull()) {
-        return user.value<AuthenticationUser>().authRealm()->name() == realmName;
+        return user.value<AuthenticationUser>().authRealm() == realmName;
     } else {
         if (!auth) {
             qCCritical(C_AUTHENTICATION, "Authentication plugin not registered!");

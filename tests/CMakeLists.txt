@@ -50,10 +50,8 @@ if(PLUGIN_VALIDATOR_PWQUALITY)
 endif(PLUGIN_VALIDATOR_PWQUALITY)
 cute_test(testvalidator Cutelyst2Qt5::Utils::Validator "" "")
 
-if (NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT CMAKE_GENERATOR MATCHES "Ninja")
-    cute_test(testauthentication Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
-    cute_test(testactionroleacl Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
-endif()
+cute_test(testauthentication Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
+cute_test(testactionroleacl Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
 
 cute_test(testpbkdf2 Cutelyst2Qt5::Authentication "" "")
 cute_test(testpagination Cutelyst2Qt5::Utils::Pagination "" "")

@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class AuthenticationRealm;
-class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser : public QVariantMap
+class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationUser
 {
     Q_GADGET
 public:
@@ -40,18 +40,18 @@ public:
     /*!
      * Constructs a new AuthenticationUser object with the given id
      */
-    AuthenticationUser(const QString &id);
+    AuthenticationUser(const QVariant &id);
     virtual ~AuthenticationUser();
 
     /**
      * A unique ID by which a AuthenticationUser can be retrieved from the store.
      */
-    QString id() const;
+    QVariant id() const;
 
     /*!
      * Sets the unique user id restored from the store
      */
-    void setId(const QString &id);
+    void setId(const QVariant &id);
 
     /*!
      * Returns true if the object is null
@@ -61,17 +61,44 @@ public:
     /*!
      * Returns the authentication realm from which this user was retrieved
      */
-    AuthenticationRealm *authRealm();
+    QString authRealm();
 
     /*!
      * Sets the authentication realm from which this user was retrieved
      */
-    void setAuthRealm(AuthenticationRealm *authRealm);
+    void setAuthRealm(const QString &authRealm);
 
-private:
-    QString m_id;
-    AuthenticationRealm *m_realm;
+    inline QVariantMap data() const;
+
+    inline void setData(const QVariantMap &data);
+
+    inline void insert(const QString &key, const QVariant &value);
+
+    inline QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
+
+protected:
+    QVariantMap m_data;
 };
+
+QVariantMap AuthenticationUser::data() const
+{
+    return m_data;
+}
+
+void AuthenticationUser::setData(const QVariantMap &data)
+{
+    m_data = data;
+}
+
+void AuthenticationUser::insert(const QString &key, const QVariant &value)
+{
+    m_data.insert(key, value);
+}
+
+QVariant AuthenticationUser::value(const QString &key, const QVariant &defaultValue) const
+{
+    return m_data.value(key, defaultValue);
+}
 
 }
 

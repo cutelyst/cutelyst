@@ -26,53 +26,50 @@ AuthenticationUser::AuthenticationUser()
 
 }
 
-AuthenticationUser::AuthenticationUser(const QString &id) :
-    m_id(id)
+AuthenticationUser::AuthenticationUser(const QVariant &id)
 {
-
+    setId(id);
 }
 
 AuthenticationUser::~AuthenticationUser()
 {
 }
 
-QString AuthenticationUser::id() const
+QVariant AuthenticationUser::id() const
 {
-    return m_id;
+    return m_data.value(QStringLiteral("id")).toString();
 }
 
-void AuthenticationUser::setId(const QString &id)
+void AuthenticationUser::setId(const QVariant &id)
 {
-    m_id = id;
+    m_data.insert(QStringLiteral("id"), id);
 }
 
 bool AuthenticationUser::isNull() const
 {
-    return m_id.isEmpty();
+    return m_data.isEmpty();
 }
 
-AuthenticationRealm *AuthenticationUser::authRealm()
+QString AuthenticationUser::authRealm()
 {
-    return m_realm;
+    return m_data.value(QStringLiteral("authRealm")).toString();
 }
 
-void AuthenticationUser::setAuthRealm(AuthenticationRealm *authRealm)
+void AuthenticationUser::setAuthRealm(const QString &authRealm)
 {
-    m_realm = authRealm;
+    m_data.insert(QStringLiteral("authRealm"), authRealm);
 }
 
 QDataStream &operator<<(QDataStream &out, const AuthenticationUser &user)
 {
-    out << user.id() << static_cast<QVariantMap>(user);
+    out << user.data();
     return out;
 }
 
 QDataStream &operator>>(QDataStream &in, AuthenticationUser &user)
 {
-    QString id;
     QVariantMap map;
-    in >> id >> map;
-    user.setId(id);
-    user.swap(map);
+    in >> map;
+    user.setData(map);
     return in;
 }

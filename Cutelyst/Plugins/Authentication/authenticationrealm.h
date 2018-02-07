@@ -31,11 +31,14 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT AuthenticationRealm : public Compone
 {
     Q_OBJECT
 public:
+    /*! default realm name */
+    static char *defaultRealm;
+
     /*!
      * Constructs a new AuthenticationRealm object with the given parent.
      * \note This class will take ownership of store and credential.
      */
-    explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent = nullptr);
+    explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm), QObject *parent = nullptr);
     virtual ~AuthenticationRealm();
 
     /*!

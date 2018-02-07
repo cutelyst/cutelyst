@@ -31,13 +31,15 @@ Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm")
 #define SESSION_AUTHENTICATION_USER "__authentication_user"
 #define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in authentication.cpp
 
-AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, QObject *parent)
+AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name, QObject *parent)
     : Component(parent)
     , m_store(store)
     , m_credential(credential)
 {
     m_store->setParent(this);
     m_credential->setParent(this);
+    setObjectName(name);
+    setName(name);
 }
 
 AuthenticationRealm::~AuthenticationRealm()
@@ -108,7 +110,7 @@ AuthenticationUser AuthenticationRealm::restoreUser(Context *c, const QVariant &
 
     if (!user.isNull()) {
         // Sets the realm the user originated in
-        user.setAuthRealm(this);
+        user.setAuthRealm(objectName());
     } else {
         qCWarning(C_AUTH_REALM) << "Store claimed to have a restorable user, but restoration failed. Did you change the user's id_field?";
     }
