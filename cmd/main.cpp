@@ -269,7 +269,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << "\n";
         out << "# Link to Cutelyst" << "\n";
         out << "target_link_libraries(" << appName << "\n";
-        out << "    Cutelyst2Qt5::Core" << "\n";
+        out << "    Cutelyst::Core" << "\n";
         out << "    Qt5::Core" << "\n";
         out << "    Qt5::Network" << "\n";
         out << ")" << "\n";
