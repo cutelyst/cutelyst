@@ -38,6 +38,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QPluginLoader>
 #include <QtCore/QTranslator>
+#include <QtCore/QFileInfo>
+#include <QtCore/QLocale>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_PATH, "cutelyst.dispatcher.path")
@@ -70,6 +72,8 @@ Application::Application(QObject *parent) :
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
 
     d->dispatcher = new Dispatcher(this);
+
+    loadTranslations(QStringLiteral("cutelystcore"));
 }
 
 Application::~Application()
@@ -527,6 +531,45 @@ QString Application::translate(const QLocale &locale, const char *context, const
     return result;
 }
 
+void Application::loadTranslations(const QString &filename, const QString &directory, const QString &prefix, const QString &suffix)
+{
+    if (Q_LIKELY(!filename.isEmpty())) {
+        const QString _dir = directory.isEmpty() ? QStringLiteral(I18NDIR) : directory;
+        const QDir i18nDir(_dir);
+        if (Q_LIKELY(i18nDir.exists())) {
+            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
+            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QStringList namesFilter = QStringList({filename + QLatin1Char('*') + _suffix});
+
+            const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
+            if (Q_LIKELY(!tsFiles.empty())) {
+                for (const QFileInfo &ts : tsFiles) {
+                    const QString fn = ts.fileName();
+                    const int prefIdx = fn.indexOf(_prefix);
+                    const QString locString = fn.mid(prefIdx + _prefix.length(), fn.length() - prefIdx - _suffix.length() - _prefix.length());
+                    QLocale loc(locString);
+                    if (Q_LIKELY(loc.language() != QLocale::C)) {
+                        auto trans = new QTranslator(this);
+                        if (Q_LIKELY(trans->load(loc, filename, _prefix, QStringLiteral(I18NDIR)))) {
+                            addTranslator(loc, trans);
+                        } else {
+                            delete trans;
+                            qCWarning(CUTELYST_CORE) << "Can not load translations for locale" << loc.name();
+                        }
+                    } else {
+                        qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string" << locString;
+                    }
+                }
+            } else {
+                qCWarning(CUTELYST_CORE) << "Can not find translation files for" << filename << "in directory" << _dir;
+            }
+        } else {
+            qCWarning(CUTELYST_CORE) << "Can not load translations from not existing directory:" << _dir;
+        }
+    } else {
+        qCWarning(CUTELYST_CORE) << "Can not load translations for empty file name.";
+    }
+}
 
 void Cutelyst::ApplicationPrivate::setupHome()
 {
