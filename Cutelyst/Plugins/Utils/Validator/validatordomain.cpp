@@ -333,3 +333,5 @@ QString ValidatorDomain::genericValidationError(Context *c, const QVariant &erro
     error = ValidatorDomain::diagnoseString(c, diag, _label);
     return error;
 }
+
+#include "moc_validatordomain.cpp"

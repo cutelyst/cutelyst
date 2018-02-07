@@ -1556,3 +1556,5 @@ bool ValidatorEmail::validate(const QString &email, Category threshold, bool che
 
     return ret;
 }
+
+#include "moc_validatoremail.cpp"
