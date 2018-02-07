@@ -15,6 +15,7 @@
 #define DATADIR "@DATADIR@"
 #define LIBDIR "@LIBDIR@"
 #define BUILDDIR "@BUILDDIR@"
+#define I18NDIR "@I18NDIR@"
 
 /* Name of package */
 #define PACKAGE_NAME "cutelyst"
