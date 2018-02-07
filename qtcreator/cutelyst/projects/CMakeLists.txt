@@ -6,7 +6,7 @@ if (POLICY CMP0043)
 endif()
 
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
-find_package(CutelystQt5 REQUIRED)
+find_package(Cutelyst2Qt5 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)
@@ -15,13 +15,10 @@ set(CMAKE_AUTOMOC ON)
 # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Enable C++11 features
-add_definitions(-std=c++11)
-
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CutelystQt5_INCLUDE_DIR}
+    ${Cutelyst2Qt5_INCLUDE_DIR}
 )
 
 file(GLOB_RECURSE TEMPLATES_SRC root/*)

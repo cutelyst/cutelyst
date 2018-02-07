@@ -10,7 +10,7 @@ add_library(%{ProjectName} SHARED ${cutelyst_SRCS})
 
 # Link to Cutelyst
 target_link_libraries(%{ProjectName}
-    Cutelyst::Core
+    Cutelyst2Qt5::Core
     Qt5::Core
     Qt5::Network
 )

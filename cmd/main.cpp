@@ -76,8 +76,6 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         QFileInfo fileInfo(filename);
         out << "#include \"" << fileInfo.baseName() << ".h\"" << "\n";
         out << "\n";
-        out << "#include <Cutelyst/Plugins/StaticSimple/staticsimple.h>" << "\n";
-        out << "\n";
         out << "#include \"root.h\"" << "\n";
         out << "\n";
         out << "using namespace Cutelyst;" << "\n";
@@ -93,8 +91,6 @@ bool buildApplicationImplementation(const QString &filename, const QString &appN
         out << "bool " << appName << "::init" << "()" << "\n";
         out << "{" << "\n";
         out << "    new Root(this);" << "\n";
-        out << "\n";
-        out << "    new StaticSimple(this);" << "\n";
         out << "\n";
         out << "    return true;" << "\n";
         out << "}" << "\n";
@@ -273,8 +269,7 @@ bool buildSrcCMakeLists(const QString &name, const QString &appName)
         out << "\n";
         out << "# Link to Cutelyst" << "\n";
         out << "target_link_libraries(" << appName << "\n";
-        out << "    Cutelyst::Core" << "\n";
-        out << "    Cutelyst::StaticSimple" << "\n";
+        out << "    Cutelyst2Qt5::Core" << "\n";
         out << "    Qt5::Core" << "\n";
         out << "    Qt5::Network" << "\n";
         out << ")" << "\n";
@@ -313,7 +308,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "  endif()\n";
         out << "endif()\n\n";
         out << "find_package(Qt5 COMPONENTS Core Network REQUIRED)" << "\n";
-        out << "find_package(CutelystQt5 REQUIRED)" << "\n";
+        out << "find_package(Cutelyst2Qt5 REQUIRED)" << "\n";
         out << "\n";
         out << "# Auto generate moc files" << "\n";
         out << "set(CMAKE_AUTOMOC ON)" << "\n";
@@ -322,13 +317,10 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "# to always look for includes there:" << "\n";
         out << "set(CMAKE_INCLUDE_CURRENT_DIR ON)" << "\n";
         out << "\n";
-        out << "# Enable C++11 features" << "\n";
-        out << "add_definitions(-std=c++11)" << "\n";
-        out << "\n";
         out << "include_directories(" << "\n";
         out << "    ${CMAKE_SOURCE_DIR}" << "\n";
         out << "    ${CMAKE_CURRENT_BINARY_DIR}" << "\n";
-        out << "    ${CutelystQt5_INCLUDE_DIR}" << "\n";
+        out << "    ${Cutelyst2Qt5_INCLUDE_DIR}" << "\n";
         out << ")" << "\n";
         out << "\n";
         out << "file(GLOB_RECURSE TEMPLATES_SRC root/*)" << "\n";
