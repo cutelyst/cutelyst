@@ -54,6 +54,7 @@ namespace Cutelyst {
 
 class ValidatorPrivate;
 class Context;
+class Application;
 class ValidatorRule;
 
 /*!
@@ -229,6 +230,11 @@ class ValidatorRule;
 
    </form>
  * \endcode
+ *
+ * <h3>Translations</h3>
+ *
+ * Use Validator::loadTranslations(this) in your reimplementation of Application::init() if you are using the %Validator
+ * plugin and want to use translated generic messages.
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT Validator
 {
@@ -307,6 +313,11 @@ public:
      * all added rules will get destroyed, too.
      */
     void addValidator(ValidatorRule *v);
+
+    /*!
+     * \brief Loads the translations for the plugin.
+     */
+    static void loadTranslations(Application *app);
 
 protected:
     const QScopedPointer<ValidatorPrivate> d_ptr;

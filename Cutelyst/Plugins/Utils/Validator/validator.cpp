@@ -19,6 +19,7 @@
 #include "validator_p.h"
 #include <Cutelyst/context.h>
 #include <Cutelyst/request.h>
+#include <Cutelyst/application.h>
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
@@ -135,4 +136,9 @@ void Validator::addValidator(ValidatorRule *v)
     Q_D(Validator);
     v->setTranslationContext(d->translationContext);
     d->validators.push_back(v);
+}
+
+void Validator::loadTranslations(Application *app)
+{
+    app->loadTranslations(QStringLiteral("plugin_utils_validator"));
 }

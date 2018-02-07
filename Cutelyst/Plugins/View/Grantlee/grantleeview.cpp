@@ -53,6 +53,8 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
         // If CUTELYST_VAR is set the template might have become
         // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
         d->cutelystVar = app->config(QStringLiteral("CUTELYST_VAR"), QStringLiteral("c")).toString();
+
+        app->loadTranslations(QStringLiteral("plugin_view_grantlee"));
     } else {
         // make sure templates can be found on the current directory
         setIncludePaths({ QDir::currentPath() });

@@ -77,6 +77,8 @@ bool CSRFProtection::setup(Application *app)
 {
     Q_D(CSRFProtection);
 
+    app->loadTranslations(QStringLiteral("plugin_csrfprotection"));
+
     const QVariantMap config = app->engine()->config(QStringLiteral("Cutelyst_CSRFProtection_Plugin"));
 
     d->cookieAge = config.value(QStringLiteral("cookie_age"), DEFAULT_COOKIE_AGE).value<qint64>();
