@@ -38,9 +38,9 @@ public:
     QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
 
     CredentialHttp::AuthType type = CredentialHttp::Any;
+    CredentialHttp::PasswordType passwordType = CredentialHttp::None;
     QString usernameField = QStringLiteral("username");
     QString passwordField = QStringLiteral("password");
-    CredentialHttp::PasswordType passwordType = CredentialHttp::None;
     QString passwordPreSalt;
     QString passwordPostSalt;
     QString authorizationRequiredMessage;
