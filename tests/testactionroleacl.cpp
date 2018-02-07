@@ -146,11 +146,31 @@ TestEngine* TestActionRoleACL::getEngine()
 {
     qputenv("RECURSION", QByteArrayLiteral("10"));
 
-    QDir current = QDir::current();
-    current.cd(QStringLiteral(".."));
+    QDir buildDir = QDir::current();
+    buildDir.cd(QStringLiteral(".."));
+
+    QDir current = buildDir;
     QString pluginPaths = current.absolutePath();
+
     current.cd(QStringLiteral("Cutelyst/Actions/RoleACL"));
     pluginPaths += QLatin1Char(';') + current.absolutePath();
+
+    current = buildDir;
+    current.cd(QStringLiteral("Release"));
+    pluginPaths += QLatin1Char(';') + current.absolutePath();
+
+    current = buildDir;
+    current.cd(QStringLiteral("Release/Cutelyst/Actions/RoleACL"));
+    pluginPaths += QLatin1Char(';') + current.absolutePath();
+
+    current = buildDir;
+    current.cd(QStringLiteral("Debug"));
+    pluginPaths += QLatin1Char(';') + current.absolutePath();
+
+    current = buildDir;
+    current.cd(QStringLiteral("Debug/Cutelyst/Actions/RoleACL"));
+    pluginPaths += QLatin1Char(';') + current.absolutePath();
+
     qDebug() << "setting CUTELYST_PLUGINS_DIR to" << pluginPaths;
     qputenv("CUTELYST_PLUGINS_DIR", pluginPaths.toLocal8Bit());
 
