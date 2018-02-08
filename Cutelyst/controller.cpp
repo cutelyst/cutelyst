@@ -127,7 +127,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
 
         for (int i = 0; i < className.length(); ++i) {
             const QChar c = className.at(i);
-            if (c.isLower()) {
+            if (c.isLower() || c.isDigit()) {
                 controlerNS.append(c);
                 lastWasUpper = false;
             } else if (c == QLatin1Char('_')) {
