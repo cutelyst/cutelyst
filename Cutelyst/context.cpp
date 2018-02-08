@@ -426,7 +426,7 @@ QString ContextPrivate::statsStartExecute(Component *code)
 
     actionName = code->reverse();
 
-    if (dynamic_cast<Action *>(code)) {
+    if (qobject_cast<Action *>(code)) {
         actionName.prepend(QLatin1Char('/'));
     }
 
