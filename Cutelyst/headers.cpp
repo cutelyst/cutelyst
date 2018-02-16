@@ -19,6 +19,8 @@
 
 #include "common.h"
 
+#include "engine.h"
+
 #include <QStringList>
 
 using namespace Cutelyst;
@@ -447,4 +449,18 @@ std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
         }
     }
     return ret;
+}
+
+QDebug operator<<(QDebug debug, const Headers &headers)
+{
+    const QHash<QString, QString> data = headers.data();
+    const bool oldSetting = debug.autoInsertSpaces();
+    debug.nospace() << "Headers(";
+    for (auto it = data.constBegin();
+         it != data.constEnd(); ++it) {
+        debug << '(' << Engine::camelCaseHeader(it.key()) + QLatin1Char('=') + it.value() << ')';
+    }
+    debug << ')';
+    debug.setAutoInsertSpaces(oldSetting);
+    return debug.maybeSpace();
 }

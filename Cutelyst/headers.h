@@ -389,4 +389,6 @@ void Headers::pushRawHeader(const QString &field, const QString &value) {
 
 Q_DECLARE_METATYPE(Cutelyst::Headers)
 
+QDebug CUTELYST_LIBRARY operator<<(QDebug dbg, const Cutelyst::Headers &headers);
+
 #endif // HEADERS_H
