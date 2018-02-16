@@ -77,7 +77,7 @@ QDataStream &operator>>(QDataStream &in, AuthenticationUser &user)
 
 QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
 {
-    dbg << user;
+    dbg << user.data();
 
     return dbg;
 }
