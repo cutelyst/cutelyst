@@ -484,7 +484,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
     }
 
     if (c->action()->attributes().contains(QStringLiteral("CSRFIgnore"))) {
-        qCDebug(C_CSRFPROTECTION, "Action \"%s::%s\" is ignored by the CSRF protection.", qPrintable(c->action()->className()), qPrintable(c->action()->objectName()));
+        qCDebug(C_CSRFPROTECTION, "Action \"%s::%s\" is ignored by the CSRF protection.", qPrintable(c->action()->className()), qPrintable(c->action()->reverse()));
         return;
     }
 

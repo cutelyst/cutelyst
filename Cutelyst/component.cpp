@@ -48,6 +48,18 @@ void Component::setName(const QString &name)
     d->name = name;
 }
 
+QString Component::reverse() const
+{
+    Q_D(const Component);
+    return d->reverse;
+}
+
+void Component::setReverse(const QString &reverse)
+{
+    Q_D(Component);
+    d->reverse = reverse;
+}
+
 bool Component::init(Cutelyst::Application *application, const QVariantHash &args)
 {
     Q_UNUSED(application)

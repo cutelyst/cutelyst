@@ -28,6 +28,7 @@ class ComponentPrivate
 {
 public:
     QString name;
+    QString reverse;
     QStack<Component *> beforeRoles;
     QStack<Component *> aroundRoles;
     QStack<Component *> afterRoles;

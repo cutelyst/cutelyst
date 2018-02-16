@@ -78,12 +78,12 @@ public:
     /**
      * Returns the private name of this component.
      */
-    inline QString reverse() const;
+    QString reverse() const;
 
     /**
      * Defines the private name of this Component.
      */
-    inline void setReverse(const QString &reverse);
+    void setReverse(const QString &reverse);
 
     /**
      * A Does class is always attached to an action,
@@ -137,13 +137,6 @@ protected:
     friend class Controller;
     ComponentPrivate *d_ptr;
 };
-
-inline QString Component::reverse() const {
-    return objectName();
-}
-inline void Component::setReverse(const QString &reverse) {
-    setObjectName(reverse);
-}
 
 }
 
