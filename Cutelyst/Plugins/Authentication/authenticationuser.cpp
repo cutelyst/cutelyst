@@ -18,6 +18,7 @@
 #include "authenticationuser.h"
 
 #include <QDataStream>
+#include <QDebug>
 
 using namespace Cutelyst;
 
