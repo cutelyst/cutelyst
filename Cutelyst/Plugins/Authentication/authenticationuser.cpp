@@ -77,7 +77,14 @@ QDataStream &operator>>(QDataStream &in, AuthenticationUser &user)
 
 QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
 {
-    dbg << user.data();
-
-    return dbg;
+    const QVariantMap map = user.data();
+    const bool oldSetting = dbg.autoInsertSpaces();
+    dbg.nospace() << "AuthenticationUser(";
+    for (auto it = map.constBegin();
+         it != map.constEnd(); ++it) {
+        dbg << '(' << it.key() << ", " << it.value() << ')';
+    }
+    dbg << ')';
+    dbg.setAutoInsertSpaces(oldSetting);
+    return dbg.maybeSpace();
 }
