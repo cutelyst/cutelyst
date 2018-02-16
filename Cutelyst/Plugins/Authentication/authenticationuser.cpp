@@ -17,7 +17,7 @@
  */
 #include "authenticationuser.h"
 
-#include <QtCore/QDataStream>
+#include <QDataStream>
 
 using namespace Cutelyst;
 
@@ -72,4 +72,11 @@ QDataStream &operator>>(QDataStream &in, AuthenticationUser &user)
     in >> map;
     user.setData(map);
     return in;
+}
+
+QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
+{
+    dbg << user;
+
+    return dbg;
 }
