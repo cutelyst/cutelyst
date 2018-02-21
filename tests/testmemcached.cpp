@@ -831,8 +831,8 @@ private:
     std::pair<QString,QString> getKeyVal(Context *c) {
         std::pair<QString,QString> pair;
 
-        pair.first = c->req()->param(QStringLiteral("key"));
-        pair.second = c->req()->param(QStringLiteral("val"));
+        pair.first = c->req()->queryParam(QStringLiteral("key"));
+        pair.second = c->req()->queryParam(QStringLiteral("val"));
 
         return pair;
     }
