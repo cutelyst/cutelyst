@@ -286,40 +286,6 @@ public:
                                                        c->request()->queryParam(QStringLiteral("defaultValue"))));
     }
 
-    C_ATTR(parameters, :Local :AutoArgs)
-    void parameters(Context *c) {
-        QUrlQuery ret;
-        auto params = c->request()->parameters();
-        auto it = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
-        }
-        c->response()->setBody(ret.toString(QUrl::FullyEncoded));
-    }
-
-    C_ATTR(paramsKey, :Local :AutoArgs)
-    void paramsKey(Context *c, const QString &param) {
-        c->response()->setBody(c->request()->params(param).join(QLatin1Char('/')));
-    }
-
-    C_ATTR(params, :Local :AutoArgs)
-    void params(Context *c) {
-        QUrlQuery ret;
-        auto params = c->request()->params();
-        auto it = params.constBegin();
-        while (it != params.constEnd()) {
-            ret.addQueryItem(it.key(), it.value());
-            ++it;
-        }
-        c->response()->setBody(ret.toString(QUrl::FullyEncoded));
-    }
-
-    C_ATTR(paramsKeyDefaultValue, :Local :AutoArgs)
-    void paramsKeyDefaultValue(Context *c, const QString &param, const QString &defaultValue) {
-        c->response()->setBody(c->request()->param(param, defaultValue));
-    }
-
     C_ATTR(bodyData, :Local :AutoArgs)
     void bodyData(Context *c) {
         c->response()->setBody(QByteArray(c->request()->bodyData().typeName()));
@@ -768,69 +734,6 @@ void TestRequest::testController_data()
     QTest::newRow("bodyParam-test04") << get << QStringLiteral("/request/test/bodyParam?param=x%2By&defaultValue=SomeDefaultValue")
                                       << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                       << QByteArrayLiteral("foo+bar");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("parameters-test00") << get << QStringLiteral("/request/test/parameters?param=y&defaultValue=SomeDefaultValue")
-                                       << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                       << QByteArrayLiteral("bar=baz&defaultValue=SomeDefaultValue&foo=Cutelyst&param=y&x");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("params-test00") << get << QStringLiteral("/request/test/params?param=y&defaultValue=SomeDefaultValue")
-                                   << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                   << QByteArrayLiteral("bar=baz&defaultValue=SomeDefaultValue&foo=Cutelyst&param=y&x");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKey-test00") << get << QStringLiteral("/request/test/paramsKey/foo?param=y&defaultValue=SomeDefaultValue")
-                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                      << QByteArrayLiteral("Cutelyst");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKey-test01") << get << QStringLiteral("/request/test/paramsKey/x?param=y&defaultValue=SomeDefaultValue")
-                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                      << QByteArrayLiteral("");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKeyDefaultValue-test00") << post << QStringLiteral("/request/test/paramsKeyDefaultValue/foo/bar?param=y&defaultValue=SomeDefaultValue")
-                                                  << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                                  << QByteArrayLiteral("Cutelyst");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKeyDefaultValue-test01") << post << QStringLiteral("/request/test/paramsKeyDefaultValue/x/gotDefault?param=y&defaultValue=SomeDefaultValue")
-                                                  << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                                  << QByteArrayLiteral("");
-
-    query.clear();
-    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
-    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
-    query.addQueryItem(QStringLiteral("x"), QString());
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
-    QTest::newRow("paramsKeyDefaultValue-test01") << get << QStringLiteral("/request/test/paramsKeyDefaultValue/z/gotDefault?param=y&defaultValue=SomeDefaultValue")
-                                                  << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                                  << QByteArrayLiteral("gotDefault");
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));

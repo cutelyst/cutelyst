@@ -39,8 +39,7 @@ public:
         BaseParsed = 0x02,
         CookiesParsed = 0x04,
         QueryParsed = 0x08,
-        BodyParsed = 0x10,
-        ParamParsed = 0x20,
+        BodyParsed = 0x10
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
@@ -69,7 +68,6 @@ public:
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable QString remoteHostname;
-    mutable ParamsMultiMap param;
     mutable QMap<QString, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;

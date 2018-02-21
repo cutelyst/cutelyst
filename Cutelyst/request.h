@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,8 +53,6 @@ class CUTELYST_LIBRARY Request : public QObject
     Q_PROPERTY(QVariant bodyData READ bodyData)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParams READ bodyParameters)
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters)
-    Q_PROPERTY(Cutelyst::ParamsMultiMap parameters READ parameters)
-    Q_PROPERTY(Cutelyst::ParamsMultiMap params READ parameters)
     Q_PROPERTY(QVariant headers READ headers())
     Q_PROPERTY(QString contentEncoding READ contentEncoding)
     Q_PROPERTY(QString contentType READ contentType)
@@ -205,14 +203,14 @@ public:
     QVariant bodyData() const;
 
     /**
-     * Returns a QVariantMap of body (POST) parameters, this method
+     * Returns a QVariantMap of body (POST/PUT) parameters, this method
      * is expensive as it creates the map each time it's called, cache
      * it's result instead of calling multiple times
      */
     QVariantMap bodyParametersVariant() const;
 
     /**
-     * Returns a Map of body (POST) parameters when content type is application/x-www-form-urlencoded
+     * Returns a Map of body (POST/PUT) parameters when content type is application/x-www-form-urlencoded
      */
     ParamsMultiMap bodyParameters() const;
 
@@ -251,14 +249,14 @@ public:
     QString queryKeywords() const;
 
     /**
-     * Returns a QVariantMap of query string (GET) parameters, this method
+     * Returns a QVariantMap of query string parameters, this method
      * is expensive as it creates the map each time it's called, cache
      * it's result instead of calling multiple times
      */
     QVariantMap queryParametersVariant() const;
 
     /**
-     * Returns a QMultiHash containing the query string (GET) parameters
+     * Returns a QMultiHash containing the query string parameters
      */
     ParamsMultiMap queryParameters() const;
 
@@ -286,36 +284,6 @@ public:
      * Convenience method for geting all query values passing a key
      */
     inline QStringList queryParams(const QString &key) const;
-
-    /**
-     * Returns a QVariantMap of both query string (GET) and body (POST) parameters, this method
-     * is expensive as it creates the map each time it's called, cache
-     * it's result instead of calling multiple times
-     */
-    QVariantMap parametersVariant() const;
-
-    /**
-     * Returns a QMultiHash containing both the query parameters (GET)
-     * and the body parameters (POST)
-     */
-    ParamsMultiMap parameters() const;
-
-    /**
-     * Returns the value specified by key, it's equivalent to calling
-     * parameters().value().
-     */
-    inline QString param(const QString &key, const QString &defaultValue = QString()) const;
-
-    /**
-     * Returns the values specified by key, it's equivalent to calling
-     * parameters().values().
-     */
-    inline QStringList params(const QString &key) const;
-
-    /**
-     * Short for parameters()
-     */
-    inline ParamsMultiMap params() const;
 
     /**
      * Returns the Content-Encoding header
@@ -530,15 +498,6 @@ inline QString Request::queryParam(const QString &key, const QString &defaultVal
 
 inline QStringList Request::queryParams(const QString &key) const
 { return queryParameters().values(key); }
-
-inline QString Request::param(const QString &key, const QString &defaultValue) const
-{ return parameters().value(key, defaultValue); }
-
-inline QStringList Request::params(const QString &key) const
-{ return parameters().values(key); }
-
-inline ParamsMultiMap Request::params() const
-{ return parameters(); }
 
 inline QString Request::contentEncoding() const
 { return headers().contentEncoding(); }

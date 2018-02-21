@@ -84,7 +84,7 @@ public:
     C_ATTR(setJsonBody, :Local :AutoArgs)
     void setJsonBody(Context *c) {
         QJsonObject obj;
-        auto params = c->request()->parameters();
+        auto params = c->request()->queryParameters();
         auto it = params.constBegin();
         while (it != params.constEnd()) {
             obj.insert(it.key(), it.value());

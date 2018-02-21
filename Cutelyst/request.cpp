@@ -242,22 +242,6 @@ ParamsMultiMap Request::queryParameters() const
     return d->queryParam;
 }
 
-QVariantMap Request::parametersVariant() const
-{
-    return RequestPrivate::paramsMultiMapToVariantMap(parameters());
-}
-
-ParamsMultiMap Request::parameters() const
-{
-    Q_D(const Request);
-    if (!(d->parserStatus & RequestPrivate::ParamParsed)) {
-        d->param = queryParameters();
-        d->param.unite(bodyParameters());
-        d->parserStatus |= RequestPrivate::ParamParsed;
-    }
-    return d->param;
-}
-
 QString Request::cookie(const QString &name) const
 {
     Q_D(const Request);

@@ -64,7 +64,8 @@ Cutelyst::ValidatorResult Validator::validate(Context *c, ValidatorFlags flags) 
     } else if (flags.testFlag(QueryParamsOnly)) {
         params = c->req()->queryParameters();
     } else {
-        params = c->req()->parameters();
+        params = c->req()->queryParameters();
+        params.unite(c->req()->bodyParameters());
     }
 
     result = validate(c, params, flags);

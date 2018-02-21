@@ -445,7 +445,7 @@ public:
     C_ATTR(fileSize, :Local :AutoArgs)
     void fileSize(Context *c) {
         ValidatorFileSize::Option option = ValidatorFileSize::NoOption;
-        const QString opt = c->req()->param(QStringLiteral("option"));
+        const QString opt = c->req()->bodyParameter(QStringLiteral("option"));
         if (opt == QLatin1String("OnlyBinary")) {
             option = ValidatorFileSize::OnlyBinary;
         } else if (opt == QLatin1String("OnlyDecimal")) {
@@ -455,9 +455,9 @@ public:
         } else if (opt == QLatin1String("ForceDecimal")) {
             option = ValidatorFileSize::ForceDecimal;
         }
-        const double min = c->req()->param(QStringLiteral("min"), QStringLiteral("-1.0")).toDouble();
-        const double max = c->req()->param(QStringLiteral("max"), QStringLiteral("-1.0")).toDouble();
-        c->setLocale(QLocale(c->req()->param(QStringLiteral("locale"), QStringLiteral("C"))));
+        const double min = c->req()->bodyParameter(QStringLiteral("min"), QStringLiteral("-1.0")).toDouble();
+        const double max = c->req()->bodyParameter(QStringLiteral("max"), QStringLiteral("-1.0")).toDouble();
+        c->setLocale(QLocale(c->req()->bodyParameter(QStringLiteral("locale"), QStringLiteral("C"))));
         Validator v({new ValidatorFileSize(QStringLiteral("field"), option, min, max, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming));
     }
@@ -507,8 +507,8 @@ public:
     C_ATTR(ip, :Local :AutoArgs)
     void ip(Context *c) {
         ValidatorIp::Constraints constraints = ValidatorIp::NoConstraint;
-        if (!c->request()->parameters().value(QStringLiteral("constraints")).isEmpty()) {
-            QStringList cons = c->request()->parameters().value(QStringLiteral("constraints")).split(QStringLiteral(","));
+        if (!c->request()->bodyParameter(QStringLiteral("constraints")).isEmpty()) {
+            QStringList cons = c->request()->bodyParameter(QStringLiteral("constraints")).split(QStringLiteral(","));
             if (cons.contains(QStringLiteral("IPv4Only"))) {
                 constraints |= ValidatorIp::IPv4Only;
             }
@@ -547,8 +547,8 @@ public:
     void max(Context *c) {
         QMetaType::Type type = QMetaType::UnknownType;
 
-        if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
-            QString t = c->request()->parameters().value(QStringLiteral("type"));
+        if (!c->request()->bodyParameter(QStringLiteral("type")).isEmpty()) {
+            const QString t = c->request()->bodyParameter(QStringLiteral("type"));
             if (t == QLatin1String("sint")) {
                 type = QMetaType::Int;
             } else if (t == QLatin1String("uint")) {
@@ -569,8 +569,8 @@ public:
         c->setStash(QStringLiteral("compval"), 10);
         QMetaType::Type type = QMetaType::UnknownType;
 
-        if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
-            QString t = c->request()->parameters().value(QStringLiteral("type"));
+        if (!c->request()->bodyParameter(QStringLiteral("type")).isEmpty()) {
+            const QString t = c->request()->bodyParameter(QStringLiteral("type"));
             if (t == QLatin1String("sint")) {
                 type = QMetaType::Int;
             } else if (t == QLatin1String("uint")) {
@@ -732,8 +732,8 @@ public:
     void size(Context *c) {
         QMetaType::Type type = QMetaType::UnknownType;
 
-        if (!c->request()->parameters().value(QStringLiteral("type")).isEmpty()) {
-            QString t = c->request()->parameters().value(QStringLiteral("type"));
+        if (!c->request()->bodyParameter(QStringLiteral("type")).isEmpty()) {
+            const QString t = c->request()->bodyParameter(QStringLiteral("type"));
             if (t == QLatin1String("sint")) {
                 type = QMetaType::Int;
             } else if (t == QLatin1String("uint")) {
@@ -767,13 +767,13 @@ public:
     void url(Context *c) {
         ValidatorUrl::Constraints constraints = ValidatorUrl::NoConstraint;
         QStringList schemes;
-        QString scheme = c->request()->parameters().value(QStringLiteral("schemes"));
+        QString scheme = c->request()->bodyParameter(QStringLiteral("schemes"));
         if (!scheme.isEmpty()) {
             schemes = scheme.split(QStringLiteral(","));
         }
 
-        if (!c->request()->parameters().value(QStringLiteral("constraints")).isEmpty()) {
-            QStringList cons = c->request()->parameters().value(QStringLiteral("constraints")).split(QStringLiteral(","));
+        if (!c->request()->bodyParameter(QStringLiteral("constraints")).isEmpty()) {
+            const QStringList cons = c->request()->bodyParameter(QStringLiteral("constraints")).split(QStringLiteral(","));
             if (cons.contains(QStringLiteral("StrictParsing"))) {
                 constraints |= ValidatorUrl::StrictParsing;
             }
