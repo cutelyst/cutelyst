@@ -128,6 +128,10 @@ class StaticCompressedPrivate;
  * <A HREF="https://github.com/google/brotli">libbrotlienc</A> development and header files have to
  * be present (default: @c off)
  *
+ * Since Cutelyst 2.0.0 you can check if \c CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI and/or
+ * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI are defined if you need to know that the plugin supports
+ * that compressions.
+ *
  * @since Cutelyst 1.11.0
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */

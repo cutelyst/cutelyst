@@ -11,19 +11,6 @@ set(plugin_staticcompressed_HEADERS
     StaticCompressed
 )
 
-if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
-    find_package(Zopfli REQUIRED)
-    message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
-    add_definitions(-DZOPFLI_ENABLED)
-endif (PLUGIN_STATICCOMPRESSED_ZOPFLI)
-
-if (PLUGIN_STATICCOMPRESSED_BROTLI)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(BROTLI REQUIRED libbrotlienc)
-    message(STATUS "PLUGIN: StaticCompressed, enable brotli")
-    add_definitions(-DBROTLI_ENABLED)
-endif (PLUGIN_STATICCOMPRESSED_BROTLI)
-
 add_library(Cutelyst2Qt5StaticCompressed SHARED
     ${plugin_staticcompressed_SRC}
     ${plugin_staticcompressed_HEADERS}
@@ -37,10 +24,41 @@ set_target_properties(Cutelyst2Qt5StaticCompressed PROPERTIES
 )
 
 target_link_libraries(Cutelyst2Qt5StaticCompressed
-    PRIVATE Cutelyst2Qt5::Core
-    ${ZOPFLI_LIBRARIES}
-    ${BROTLI_LIBRARIES}
+    PUBLIC
+        Cutelyst2Qt5::Core
 )
+
+# used in the pkg-config file
+set(CUTELYST_STATICCOMPRESSED_DEFINES "")
+
+if (PLUGIN_STATICCOMPRESSED_ZOPFLI)
+    find_package(Zopfli REQUIRED)
+    message(STATUS "PLUGIN: StaticCompressed, enable zopfli")
+    target_link_libraries(Cutelyst2Qt5StaticCompressed
+        PRIVATE
+            ${ZOPFLI_LIBRARIES}
+    )
+    target_compile_definitions(Cutelyst2Qt5StaticCompressed
+        PUBLIC
+            CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
+    )
+    set(CUTELYST_STATICCOMPRESSED_DEFINES "${CUTELYST_STATICCOMPRESSED_DEFINES} -DCUTELYST_STATICCOMPRESSED_WITH_ZOPFLI")
+endif (PLUGIN_STATICCOMPRESSED_ZOPFLI)
+
+if (PLUGIN_STATICCOMPRESSED_BROTLI)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(BROTLI REQUIRED libbrotlienc)
+    message(STATUS "PLUGIN: StaticCompressed, enable brotli")
+    target_link_libraries(Cutelyst2Qt5StaticCompressed
+        PRIVATE
+            ${BROTLI_LIBRARIES}
+    )
+    target_compile_definitions(Cutelyst2Qt5StaticCompressed
+        PUBLIC
+            CUTELYST_STATICCOMPRESSED_WITH_BROTLI
+    )
+    set(CUTELYST_STATICCOMPRESSED_DEFINES "${CUTELYST_STATICCOMPRESSED_DEFINES} -DCUTELYST_STATICCOMPRESSED_WITH_BROTLI")
+endif (PLUGIN_STATICCOMPRESSED_BROTLI)
 
 set_property(TARGET Cutelyst2Qt5StaticCompressed PROPERTY PUBLIC_HEADER ${plugin_staticcompressed_HEADERS})
 install(TARGETS Cutelyst2Qt5StaticCompressed

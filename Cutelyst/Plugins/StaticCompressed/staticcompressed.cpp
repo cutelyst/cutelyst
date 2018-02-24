@@ -34,11 +34,11 @@
 #include <QDataStream>
 #include <QLockFile>
 
-#ifdef ZOPFLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
 #include <zopfli/gzip_container.h>
 #endif
 
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
 #include <brotli/encode.h>
 #endif
 
@@ -112,7 +112,7 @@ bool StaticCompressed::setup(Application *app)
         d->zlibCompressionLevel = -1;
     }
 
-#ifdef ZOPFLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     d->zopfliIterations = config.value(QStringLiteral("zopfli_iterations"), 15).toInt(&ok);
     if (!ok || (d->zopfliIterations < 0)) {
         d->zopfliIterations = 15;
@@ -121,7 +121,7 @@ bool StaticCompressed::setup(Application *app)
     supportedCompressions << QStringLiteral("zopfli");
 #endif
 
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     d->brotliQualityLevel = config.value(QStringLiteral("brotli_quality_level"), BROTLI_DEFAULT_QUALITY).toInt(&ok);
     if (!ok || (d->brotliQualityLevel < BROTLI_MIN_QUALITY) || (d->brotliQualityLevel > BROTLI_MAX_QUALITY)) {
         d->brotliQualityLevel = BROTLI_DEFAULT_QUALITY;
@@ -188,7 +188,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                     const QString acceptEncoding = c->req()->header(QStringLiteral("Accept-Encoding"));
                     qCDebug(C_STATICCOMPRESSED) << "Accept-Encoding:" << acceptEncoding;
 
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                     if (acceptEncoding.contains(QLatin1String("br"), Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, Brotli)                        ;
                         if (!compressedPath.isEmpty()) {
@@ -266,7 +266,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
     case Gzip:
         suffix = QStringLiteral(".gz");
         break;
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     case Brotli:
         suffix = QStringLiteral(".br");
         break;
@@ -298,7 +298,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
             QLockFile lock(path + QLatin1String(".lock"));
             if (lock.tryLock(10)) {
                 switch (compression) {
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                 case Brotli:
                     if (compressBrotli(origPath, path)) {
                         compressedPath = path;
@@ -306,7 +306,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
                     break;
 #endif
                 case Zopfli:
-#ifdef ZOPFLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
                     if (compressZopfli(origPath, path)) {
                         compressedPath = path;
                     }
@@ -518,7 +518,7 @@ bool StaticCompressedPrivate::compressDeflate(const QString &inputPath, const QS
     return true;
 }
 
-#ifdef ZOPFLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
 bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QString &outputPath) const
 {
     qCDebug(C_STATICCOMPRESSED, "Compressing \"%s\" with zopfli to \"%s\".", qPrintable(inputPath), qPrintable(outputPath));
@@ -572,7 +572,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
 }
 #endif
 
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
 bool StaticCompressedPrivate::compressBrotli(const QString &inputPath, const QString &outputPath) const
 {
     qCDebug(C_STATICCOMPRESSED, "Compressing \"%s\" with brotli to \"%s\".", qPrintable(inputPath), qPrintable(outputPath));
