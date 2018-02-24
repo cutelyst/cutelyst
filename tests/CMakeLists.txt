@@ -45,9 +45,6 @@ cutelyst_templates_unit_tests(
     testactionrenderview
 )
 
-if(PLUGIN_VALIDATOR_PWQUALITY)
-    add_definitions(-DPWQUALITY_ENABLED)
-endif(PLUGIN_VALIDATOR_PWQUALITY)
 cute_test(testvalidator Cutelyst2Qt5::Utils::Validator "" "")
 
 cute_test(testauthentication Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")

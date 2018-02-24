@@ -25,9 +25,6 @@
 #include <Cutelyst/Plugins/Utils/Validator/Validator>
 #include <Cutelyst/Plugins/Utils/Validator/Validators>
 #include <Cutelyst/Plugins/Utils/Validator/validatorresult.h>
-#ifdef PWQUALITY_ENABLED
-#include <Cutelyst/Plugins/Utils/Validator/validatorpwquality.h>
-#endif
 
 using namespace Cutelyst;
 
@@ -609,7 +606,7 @@ public:
     }
 
     // ***** Endpoint for ValidatorPwQuality *****
-#ifdef PWQUALITY_ENABLED
+#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
     C_ATTR(pwQuality, :Local :AutoArgs)
     void pwQuality(Context *c) {
         static const QVariantMap options({
@@ -2523,7 +2520,7 @@ void TestValidator::testController_data()
 
 
     // **** Start testing ValidatorPwQuality
-#ifdef PWQUALITY_ENABLED
+#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
     const QList<QString> invalidPws({
                                         QStringLiteral("ovkaCPa"), // too short, lower than 8
                                         QStringLiteral("password"), // dictionary

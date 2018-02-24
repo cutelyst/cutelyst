@@ -8,4 +8,4 @@ Description: Cutelyst Validator Utils plugin
 Version: @PROJECT_VERSION@
 Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core
 Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5UtilsValidator
-Cflags: -I${includedir}/Cutelyst -I${includedir}
+Cflags: -I${includedir}/Cutelyst -I${includedir} @CUTELYST_VALIDATOR_DEFINES@
