@@ -43,10 +43,10 @@ public:
     QString locateCacheFile(const QString &origPath, const QDateTime &origLastModified, Compression compression) const;
     bool compressGzip(const QString &inputPath, const QString &outputPath, const QDateTime &origLastModified) const;
     bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
-#ifdef ZOPFLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     bool compressZopfli(const QString &inputPath, const QString &outputPath) const;
 #endif
-#ifdef BROTLI_ENABLED
+#ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     bool compressBrotli(const QString &inputPath, const QString &outputPath) const;
 #endif
 
