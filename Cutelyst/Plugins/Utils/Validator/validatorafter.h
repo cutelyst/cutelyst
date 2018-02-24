@@ -20,7 +20,6 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
-#include <QTimeZone>
 
 namespace Cutelyst {
 
