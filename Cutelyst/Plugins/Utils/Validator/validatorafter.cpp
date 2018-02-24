@@ -19,6 +19,7 @@
 #include "validatorafter_p.h"
 
 #include <QLocale>
+#include <QTimeZone>
 
 using namespace Cutelyst;
 
