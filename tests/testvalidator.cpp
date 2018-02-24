@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QRegularExpression>
 #include <QLocale>
+#include <QTimeZone>
 #include <limits>
 
 #include "headers.h"
