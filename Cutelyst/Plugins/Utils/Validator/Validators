@@ -25,6 +25,9 @@
 #include "validatornotin.h"
 #include "validatornumeric.h"
 #include "validatorpresent.h"
+#ifdef CUTELYST_VALIDATOR_WITH_PWQUALITY
+#include "validatorpwquality.h"
+#endif
 #include "validatorregularexpression.h"
 #include "validatorrequired.h"
 #include "validatorrequiredif.h"

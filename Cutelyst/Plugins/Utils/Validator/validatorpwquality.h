@@ -38,7 +38,8 @@ class ValidatorPwQualityPrivate;
  * <h3>Building</h3>
  * As this validator relies on an external library, it will not be included and build by default. Use either
  * <code>-DPLUGIN_VALIDATOR_PWQUALITY:BOOL=ON</code> or <code>-DBUILD_ALL:BOOL=ON</code> when configuring %Cutelyst
- * for build with cmake.
+ * for build with cmake. In your %Cutelyst application you can check if \c CUTELYST_VALIDATOR_WITH_PWQUALITY has been
+ * defined to see if this validator is available.
  *
  * <h3>Options</h3>
  * %ValidatorPwQuality can take additional \a options. To learn more about the available options see <code>man 5 pwquality.conf</code>.

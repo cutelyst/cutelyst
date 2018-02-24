@@ -1,17 +1,3 @@
-if (PLUGIN_VALIDATOR_PWQUALITY)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(PWQUALITY REQUIRED pwquality>=1.2.2)
-    message(STATUS "PLUGIN: Validator, enable PwQuality")
-    add_definitions(-DPWQUALITY_ENABLED)
-    set(plugin_validator_pwquality_SRC
-        validatorpwquality.cpp
-        validatorpwquality_p.h
-    )
-    set(plugin_validator_pwquality_HEADERS
-        validatorpwquality.h
-    )
-endif (PLUGIN_VALIDATOR_PWQUALITY)
-
 set(plugin_validator_SRC
     validator.cpp
     validator_p.h
@@ -101,7 +87,6 @@ set(plugin_validator_SRC
     validatorurl_p.h
     validatorresult.cpp
     validatorresult_p.h
-    ${plugin_validator_pwquality_SRC}
 )
 
 
@@ -154,8 +139,15 @@ set(plugin_validator_HEADERS
     Validators
     validatorresult.h
     ValidatorResult
-    ${plugin_validator_pwquality_HEADERS}
 )
+
+if (PLUGIN_VALIDATOR_PWQUALITY)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(PWQUALITY REQUIRED pwquality>=1.2.2)
+    message(STATUS "PLUGIN: Validator, enable PwQuality")
+    list(APPEND plugin_validator_SRC validatorpwquality.cpp validatorpwquality_p.h)
+    list(APPEND plugin_validator_HEADERS validatorpwquality.h)
+endif (PLUGIN_VALIDATOR_PWQUALITY)
 
 add_library(Cutelyst2Qt5UtilsValidator SHARED
     ${plugin_validator_SRC}
@@ -170,10 +162,23 @@ set_target_properties(Cutelyst2Qt5UtilsValidator PROPERTIES
 )
 
 target_link_libraries(Cutelyst2Qt5UtilsValidator
-    PRIVATE Cutelyst2Qt5::Core
-    Qt5::Network
-    ${PWQUALITY_LIBRARIES}
+    PUBLIC
+        Cutelyst2Qt5::Core
+    PRIVATE
+        Qt5::Network
 )
+
+if (PLUGIN_VALIDATOR_PWQUALITY)
+    target_link_libraries(Cutelyst2Qt5UtilsValidator
+        PRIVATE
+            ${PWQUALITY_LIBRARIES}
+    )
+    target_compile_definitions(Cutelyst2Qt5UtilsValidator
+        PUBLIC
+            CUTELYST_VALIDATOR_WITH_PWQUALITY
+    )
+    set(CUTELYST_VALIDATOR_DEFINES "-DCUTELYST_VALIDATOR_WITH_PWQUALITY")
+endif (PLUGIN_VALIDATOR_PWQUALITY)
 
 set_property(TARGET Cutelyst2Qt5UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
 install(TARGETS Cutelyst2Qt5UtilsValidator
