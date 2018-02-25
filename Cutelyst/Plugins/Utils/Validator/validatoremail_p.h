@@ -30,14 +30,14 @@ struct ValidatorEmailDiagnoseStruct {
     QString domain;
     QString literal;
 };
-    
+
 class ValidatorEmailPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorEmailPrivate(const QString &f, ValidatorEmail::Category thresh, bool dns, const ValidatorMessages &m, const QString &dvk) :
+    ValidatorEmailPrivate(const QString &f, ValidatorEmail::Category thresh, ValidatorEmail::Options opts, const ValidatorMessages &m, const QString &dvk) :
         ValidatorRulePrivate(f, m, dvk),
         threshold(thresh),
-        checkDns(dns)
+        options(opts)
     {}
 
     enum EmailPart {
@@ -50,12 +50,12 @@ public:
         ContextQuotedPair   = 6
     };
 
-    static bool checkEmail(const QString &email, bool checkDNS = false, ValidatorEmail::Category threshold = ValidatorEmail::RFC5321, ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
+    static bool checkEmail(const QString &email, ValidatorEmail::Options options = ValidatorEmail::NoOption, ValidatorEmail::Category threshold = ValidatorEmail::RFC5321, ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
 
     ValidatorEmail::Category threshold = ValidatorEmail::RFC5321;
-    bool checkDns = false;
+    ValidatorEmail::Options options = ValidatorEmail::NoOption;
 };
-    
+
 }
 
 #endif //CUTELYSTVALIDATOREMAIL_P_H

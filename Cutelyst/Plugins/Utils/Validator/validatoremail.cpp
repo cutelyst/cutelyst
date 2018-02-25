@@ -27,8 +27,8 @@
 
 using namespace Cutelyst;
 
-ValidatorEmail::ValidatorEmail(const QString &field, Category threshold, bool checkDns, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorEmailPrivate(field, threshold, checkDns, messages, defValKey))
+ValidatorEmail::ValidatorEmail(const QString &field, Category threshold, Options options, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+    ValidatorRule(*new ValidatorEmailPrivate(field, threshold, options, messages, defValKey))
 {
 }
 
@@ -71,7 +71,7 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
 
         ValidatorEmailDiagnoseStruct diag;
 
-        if (ValidatorEmailPrivate::checkEmail(email, d->checkDns, d->threshold, &diag)) {
+        if (ValidatorEmailPrivate::checkEmail(email, d->options, d->threshold, &diag)) {
             if (!diag.literal.isEmpty()) {
                 result.value.setValue<QString>(diag.localpart + QLatin1Char('@') + diag.literal);
             } else {
@@ -100,7 +100,7 @@ QString ValidatorEmail::genericValidationError(Context *c, const QVariant &error
     return error;
 }
 
-bool ValidatorEmailPrivate::checkEmail(const QString &email, bool checkDNS, ValidatorEmail::Category threshold, ValidatorEmailDiagnoseStruct *diagnoseStruct)
+bool ValidatorEmailPrivate::checkEmail(const QString &email, ValidatorEmail::Options options, ValidatorEmail::Category threshold, ValidatorEmailDiagnoseStruct *diagnoseStruct)
 {
     bool ret;
 
@@ -127,6 +127,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &email, bool checkDNS, Vali
 
     // US-ASCII visible characters not valid for atext (https://tools.ietf.org/html/rfc5322#section-3.2.3)
     const QString stringSpecials = QStringLiteral("()<>[]:;@\\,.\"");
+
+    const bool checkDns = options.testFlag(ValidatorEmail::CheckDNS);
+//    const bool allowUTF8 = options.testFlag(ValidatorEmail::AllowUTF8);
 
     for (int i = 0; i < rawLength; i++) {
         token = email[i];
@@ -1002,7 +1005,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &email, bool checkDNS, Vali
     // Check DNS?
     bool dnsChecked = false;
 
-    if (checkDNS && (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(threshold))) {
+    if (checkDns && (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(threshold))) {
         // https://tools.ietf.org/html/rfc5321#section-2.3.5
         //   Names that can
         //   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
@@ -1543,12 +1546,12 @@ QString ValidatorEmail::categoryString(Context *c, Diagnose diagnose, const QStr
     return ret;
 }
 
-bool ValidatorEmail::validate(const QString &email, Category threshold, bool checkDns, QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
+bool ValidatorEmail::validate(const QString &email, Category threshold, Options options, QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
 {
     bool ret = false;
 
     ValidatorEmailDiagnoseStruct diag;
-    ret = ValidatorEmailPrivate::checkEmail(email, checkDns, threshold, &diag);
+    ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);
 
     if (diagnoses) {
         *diagnoses = diag.returnStatus;

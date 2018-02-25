@@ -22,7 +22,7 @@
 #include "validatorrule.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorEmailPrivate;
 
 /*!
@@ -131,15 +131,22 @@ public:
     };
     Q_ENUM(Diagnose)
 
+    enum Option : quint8 {
+        NoOption    = 0,    /**< No option enabled, the default. */
+        CheckDNS    = 1,    /**< Enabled a DNS lookup to check if there are MX records for the mail domain. */
+        AllowUTF8   = 2     /**< Allows UTF8 characters in the email address. */
+    };
+    Q_DECLARE_FLAGS(Options, Option)
+
     /*!
      * \brief Constructs a new email validator.
      * \param field         Name of the input field to validate.
-     * \param checkDns      If \c true, a DNS lookup will be performed to check if there are MX records for the email domain.
+     * \param options       Options for the validation process.
      * \param messages      Custom error messages if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorEmail(const QString &field, Category threshold = RFC5321, bool checkDns = false, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+    ValidatorEmail(const QString &field, Category threshold = RFC5321, Options options = NoOption, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
+
     /*!
      * \brief Deconstructs the email validator.
      */
@@ -184,12 +191,12 @@ public:
      * \brief Returns \c true if \a email is a valid address according to the Category given in the \a threshold.
      * \param[in] email         The address to validate.
      * \param[in] threshold     The threshold category that limits the diagnose that is accepted as valid.
-     * \param[in] checkDns      If \c true, a check for valid MX and A records of the address's domain will be performed.
+     * \param[in] options       Options for the validation process.
      * \param[out] diagnoses    If not a \c nullptr, this will contain a list of all issues found by the check, ordered from the highest to the lowest.
      * \return \c true if \a email is a valid address according to the Category given in the \a threshold.
      */
-    static bool validate(const QString &email, Category threshold = RFC5321, bool checkDns = false, QList<Diagnose> *diagnoses = nullptr);
-    
+    static bool validate(const QString &email, Category threshold = RFC5321, Options options = NoOption, QList<Diagnose> *diagnoses = nullptr);
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -204,13 +211,15 @@ protected:
      * \brief Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorEmail)
     Q_DISABLE_COPY(ValidatorEmail)
 };
-    
+
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::ValidatorEmail::Options)
 
 #endif //CUTELYSTVALIDATOREMAIL_H
 

@@ -365,77 +365,77 @@ public:
     // ***** Endpoint for ValidatorEmail valid ****
     C_ATTR(emailValid, :Local :AutoArgs)
     void emailValid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail valid emails completely valid *****
     C_ATTR(emailDnsWarnValid, :Local :AutoArgs)
     void emailDnsWarnValid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, true, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, ValidatorEmail::CheckDNS, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail RFC5321 conformant emails valid *****
     C_ATTR(emailRfc5321Valid, :Local :AutoArgs)
     void emailRfc5321Valid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5321, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5321, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail RFC5321 conformant emails invalid *****
     C_ATTR(emailRfc5321Invalid, :Local :AutoArgs)
     void emailRfc5321Invalid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::DNSWarn, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::DNSWarn, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail CFWS conformant emails valid *****
     C_ATTR(emailCfwsValid, :Local :AutoArgs)
     void emailCfwsValid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::CFWS, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::CFWS, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail CFWS conformant emails invalid *****
     C_ATTR(emailCfwsInvalid, :Local :AutoArgs)
     void emailCfwsInvalid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5321, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5321, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail Deprecated emails valid *****
     C_ATTR(emailDeprecatedValid, :Local :AutoArgs)
     void emailDeprecatedValid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Deprecated, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Deprecated, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail CFWS conformant emails invalid *****
     C_ATTR(emailDeprecatedInvalid, :Local :AutoArgs)
     void emailDeprecatedInvalid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::CFWS, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::CFWS, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail RFC5322 emails valid *****
     C_ATTR(emailRfc5322Valid, :Local :AutoArgs)
     void emailRfc5322Valid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5322, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5322, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail RFC5322 conformant emails invalid *****
     C_ATTR(emailRfc5322Invalid, :Local :AutoArgs)
     void emailRfc5322Invalid(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Deprecated, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Deprecated, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
     // ***** Endpoint for ValidatorEmail with errors *****
     C_ATTR(emailErrors, :Local :AutoArgs)
     void emailErrors(Context *c) {
-        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5322, false, m_validatorMessages)});
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::RFC5322, ValidatorEmail::NoOption, m_validatorMessages)});
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
