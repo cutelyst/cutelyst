@@ -755,10 +755,20 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 //                       %d127              ;  white space characters
                 const ushort uni = token.unicode();
 
-                if ((uni > 127) || (uni == 0) || (uni == 10)) {
-                    returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
-                } else if ((uni < 32) || (uni == 127)) {
-                    returnStatus.push_back(ValidatorEmail::DeprecatedQText);
+                if (!allowUtf8Local) {
+                    if ((uni > 127) || (uni == 0) || (uni == 10)) {
+                        returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
+                    } else if ((uni < 32) || (uni == 127)) {
+                        returnStatus.push_back(ValidatorEmail::DeprecatedQText);
+                    }
+                } else {
+                    if (!token.isLetterOrNumber()) {
+                        if ((uni > 127) || (uni == 0) || (uni == 10)) {
+                            returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
+                        } else if ((uni < 32) || (uni == 127)) {
+                            returnStatus.push_back(ValidatorEmail::DeprecatedQText);
+                        }
+                    }
                 }
 
                 parseLocalPart += token;
