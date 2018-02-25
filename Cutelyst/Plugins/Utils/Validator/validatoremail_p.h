@@ -50,7 +50,7 @@ public:
         ContextQuotedPair   = 6
     };
 
-    static bool checkEmail(const QString &email, ValidatorEmail::Options options = ValidatorEmail::NoOption, ValidatorEmail::Category threshold = ValidatorEmail::RFC5321, ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
+    static bool checkEmail(const QString &address, ValidatorEmail::Options options = ValidatorEmail::NoOption, ValidatorEmail::Category threshold = ValidatorEmail::RFC5321, ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
 
     ValidatorEmail::Category threshold = ValidatorEmail::RFC5321;
     ValidatorEmail::Options options = ValidatorEmail::NoOption;

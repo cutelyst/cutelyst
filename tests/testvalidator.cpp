@@ -439,6 +439,27 @@ public:
         checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
     }
 
+    // ***** Endpoint for ValidatorEmail with allowed IDNs
+    C_ATTR(emailIdnAllowed, :Local :AutoArgs)
+    void emailIdnAllowed(Context *c) {
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, ValidatorEmail::AllowIDN, m_validatorMessages)});
+        checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
+    }
+
+    // ***** Endpoint for ValidatorEmail with allowed UTF8 local part
+    C_ATTR(emailUtf8Local, :Local :AutoArgs)
+    void emailUtf8Local(Context *c) {
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, ValidatorEmail::UTF8Local, m_validatorMessages)});
+        checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
+    }
+
+    // ***** Endpoint for ValidatorEmail with allowed UTF8 local part and IDN
+    C_ATTR(emailUtf8, :Local :AutoArgs)
+    void emailUtf8(Context *c) {
+        Validator v({new ValidatorEmail(QStringLiteral("field"), ValidatorEmail::Valid, ValidatorEmail::AllowUTF8, m_validatorMessages)});
+        checkResponse(c, v.validate(c, Validator::NoTrimming|Validator::BodyParamsOnly));
+    }
+
     // ***** Endpoint for ValidatorFileSize ******
     C_ATTR(fileSize, :Local :AutoArgs)
     void fileSize(Context *c) {
@@ -1351,7 +1372,7 @@ void TestValidator::testController_data()
     // **** Start testing ValidatorEmail *****
 
     const QList<QString> validEmails({
-                                         QStringLiteral("test@hüssenbergnetz.de"),
+                                         QStringLiteral("test@huessenbergnetz.de"),
                                          // addresses are taken from https://github.com/dominicsayers/isemail/blob/master/test/tests.xml
                                          QStringLiteral("test@iana.org"),
                                          QStringLiteral("test@nominet.org.uk"),
@@ -1832,6 +1853,14 @@ void TestValidator::testController_data()
         count++;
     }
 
+    count = 0;
+    for (const QString &email : {QStringLiteral("test@hüssenbergnetz.de"), QStringLiteral("täst@huessenbergnetz.de"), QStringLiteral("täst@hüssenbergnetz.de")}) {
+        const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
+        QTest::newRow(QString(QStringLiteral("email-valid-invalid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/emailValid") << headers << body << invalid;
+        count++;
+    }
+
     if (qEnvironmentVariableIsSet("CUTELYST_VALIDATORS_TEST_NETWORK")) {
         QTest::newRow("email-valid-dns") << QStringLiteral("/emailDnsWarnValid") << headers << QByteArrayLiteral("field=test@huessenbergnetz.de") << valid;
         count = 0;
@@ -1904,6 +1933,46 @@ void TestValidator::testController_data()
         const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
         QTest::newRow(QString(QStringLiteral("email-errors-invalid-%1").arg(count)).toUtf8().constData())
                 << QStringLiteral("/emailErrors") << headers << body << invalid;
+        count++;
+    }
+
+    {
+        QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("test@hüssenbergnetz.de"));
+        QTest::newRow("email-idnallowed-valid") << QStringLiteral("/emailIdnAllowed") << headers << body << valid;
+
+        body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
+        QTest::newRow("email-idnallowed-invalid") << QStringLiteral("/emailIdnAllowed") << headers << body << invalid;
+
+        body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("täst@huessenbergnetz.de"));
+        QTest::newRow("email-utf8localallowed-valid") << QStringLiteral("/emailUtf8Local") << headers << body << valid;
+
+        body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
+        QTest::newRow("email-utf8localallowed-invalid") << QStringLiteral("/emailUtf8Local") << headers << body << invalid;
+
+        body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(QStringLiteral("täst@hüssenbergnetz.de"));
+        QTest::newRow("email-utf8allowed-valid-0") << QStringLiteral("/emailUtf8") << headers << body << valid;
+    }
+
+    count = 1;
+    for (const QString &email : validEmails) {
+        const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
+        QTest::newRow(QString(QStringLiteral("email-utf8allowed-valid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/emailUtf8") << headers << body << valid;
+        count++;
+    }
+
+    QList<QString> utf8InvalidEmails;
+    utf8InvalidEmails.append(rfc5321Emails);
+    utf8InvalidEmails.append(cfwsEmails);
+    utf8InvalidEmails.append(deprecatedEmails);
+    utf8InvalidEmails.append(rfc5322Emails);
+    utf8InvalidEmails.append(errorEmails);
+
+    count = 0;
+    for (const QString &email : utf8InvalidEmails) {
+        const QByteArray body = QByteArrayLiteral("field=") + QUrl::toPercentEncoding(email);
+        QTest::newRow(QString(QStringLiteral("email-utf8allowed-invalid-%1").arg(count)).toUtf8().constData())
+                << QStringLiteral("/emailUtf8") << headers << body << invalid;
         count++;
     }
 

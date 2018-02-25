@@ -132,9 +132,11 @@ public:
     Q_ENUM(Diagnose)
 
     enum Option : quint8 {
-        NoOption    = 0,    /**< No option enabled, the default. */
-        CheckDNS    = 1,    /**< Enabled a DNS lookup to check if there are MX records for the mail domain. */
-        AllowUTF8   = 2     /**< Allows UTF8 characters in the email address. */
+        NoOption    = 0,                    /**< No option enabled, the default. */
+        CheckDNS    = 1,                    /**< Enabled a DNS lookup to check if there are MX records for the mail domain. */
+        UTF8Local   = 2,                    /**< Allows UTF8 characters in the email address local part. */
+        AllowIDN    = 4,                    /**< Allows internationalized domain names (IDN). */
+        AllowUTF8   = UTF8Local|AllowIDN    /**< Allows UTF8 characters in the email local part and internationalized domain names (IDN). */
     };
     Q_DECLARE_FLAGS(Options, Option)
 

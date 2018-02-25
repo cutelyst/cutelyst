@@ -46,32 +46,32 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
 
     if (!v.isEmpty()) {
 
-        QString email;
-        const int atPos = v.lastIndexOf(QLatin1Char('@'));
-        if (atPos > 0) {
-            const QStringRef local = v.leftRef(atPos);
-            const QString domain = v.mid(atPos + 1);
-            bool asciiDomain = true;
-            for (const QChar &ch : domain) {
-                const ushort &uc = ch.unicode();
-                if (uc > 127) {
-                    asciiDomain = false;
-                    break;
-                }
-            }
+//        QString email;
+//        const int atPos = v.lastIndexOf(QLatin1Char('@'));
+//        if (atPos > 0) {
+//            const QStringRef local = v.leftRef(atPos);
+//            const QString domain = v.mid(atPos + 1);
+//            bool asciiDomain = true;
+//            for (const QChar &ch : domain) {
+//                const ushort &uc = ch.unicode();
+//                if (uc > 127) {
+//                    asciiDomain = false;
+//                    break;
+//                }
+//            }
 
-            if (asciiDomain) {
-                email = v;
-            } else {
-                email = local + QLatin1Char('@') + QString::fromLatin1(QUrl::toAce(domain));
-            }
-        } else {
-            email = v;
-        }
+//            if (asciiDomain) {
+//                email = v;
+//            } else {
+//                email = local + QLatin1Char('@') + QString::fromLatin1(QUrl::toAce(domain));
+//            }
+//        } else {
+//            email = v;
+//        }
 
         ValidatorEmailDiagnoseStruct diag;
 
-        if (ValidatorEmailPrivate::checkEmail(email, d->options, d->threshold, &diag)) {
+        if (ValidatorEmailPrivate::checkEmail(v, d->options, d->threshold, &diag)) {
             if (!diag.literal.isEmpty()) {
                 result.value.setValue<QString>(diag.localpart + QLatin1Char('@') + diag.literal);
             } else {
@@ -100,12 +100,11 @@ QString ValidatorEmail::genericValidationError(Context *c, const QVariant &error
     return error;
 }
 
-bool ValidatorEmailPrivate::checkEmail(const QString &email, ValidatorEmail::Options options, ValidatorEmail::Category threshold, ValidatorEmailDiagnoseStruct *diagnoseStruct)
+bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::Options options, ValidatorEmail::Category threshold, ValidatorEmailDiagnoseStruct *diagnoseStruct)
 {
     bool ret;
 
     QList<ValidatorEmail::Diagnose> returnStatus{ValidatorEmail::ValidAddress};
-    int rawLength = email.length();
 
     EmailPart context = ComponentLocalpart;
     QList<EmailPart> contextStack{context};
@@ -129,7 +128,37 @@ bool ValidatorEmailPrivate::checkEmail(const QString &email, ValidatorEmail::Opt
     const QString stringSpecials = QStringLiteral("()<>[]:;@\\,.\"");
 
     const bool checkDns = options.testFlag(ValidatorEmail::CheckDNS);
-//    const bool allowUTF8 = options.testFlag(ValidatorEmail::AllowUTF8);
+    const bool allowUtf8Local = options.testFlag(ValidatorEmail::UTF8Local);
+    const bool allowIdn = options.testFlag(ValidatorEmail::AllowIDN);
+
+    QString email;
+    const int atPos = address.lastIndexOf(QLatin1Char('@'));
+    if (allowIdn) {
+        if (atPos > 0) {
+            const QStringRef local = address.leftRef(atPos);
+            const QString domain = address.mid(atPos + 1);
+            bool asciiDomain = true;
+            for (const QChar &ch : domain) {
+                const ushort &uc = ch.unicode();
+                if (uc > 127) {
+                    asciiDomain = false;
+                    break;
+                }
+            }
+
+            if (asciiDomain) {
+                email = address;
+            } else {
+                email = local + QLatin1Char('@') + QString::fromLatin1(QUrl::toAce(domain));
+            }
+        } else {
+            email = address;
+        }
+    } else {
+        email = address;
+    }
+
+    const int rawLength = email.length();
 
     for (int i = 0; i < rawLength; i++) {
         token = email[i];
@@ -282,8 +311,16 @@ bool ValidatorEmailPrivate::checkEmail(const QString &email, ValidatorEmail::Opt
                     contextPrior = context;
                     const ushort uni = token.unicode();
 
-                    if ((uni < 33) || (uni > 126) || (uni == 10) || stringSpecials.contains(token)) {
-                        returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // fatal error
+                    if (!allowUtf8Local) {
+                        if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
+                            returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // fatal error
+                        }
+                    } else {
+                        if (!token.isLetterOrNumber()) {
+                            if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
+                                returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // fatal error
+                            }
+                        }
                     }
 
                     parseLocalPart += token;
