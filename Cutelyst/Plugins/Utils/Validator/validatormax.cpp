@@ -41,6 +41,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
         bool valid = false;
 
         switch (d->type) {
+        case QMetaType::Char:
         case QMetaType::Short:
         case QMetaType::Int:
         case QMetaType::Long:
@@ -69,6 +70,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
             }
         }
             break;
+        case QMetaType::UChar:
         case QMetaType::UShort:
         case QMetaType::UInt:
         case QMetaType::ULong:
@@ -177,6 +179,7 @@ QString ValidatorMax::genericValidationError(Cutelyst::Context *c, const QVarian
     const QVariantMap map = errorData.toMap();
     QString max;
     switch (d->type) {
+    case QMetaType::Char:
     case QMetaType::Short:
     case QMetaType::Int:
     case QMetaType::Long:
@@ -184,6 +187,7 @@ QString ValidatorMax::genericValidationError(Cutelyst::Context *c, const QVarian
     case QMetaType::QString:
         max = c->locale().toString(map.value(QStringLiteral("max")).toLongLong());
         break;
+    case QMetaType::UChar:
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:
