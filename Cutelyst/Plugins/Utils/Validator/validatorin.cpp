@@ -66,7 +66,6 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
 QString ValidatorIn::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    Q_D(const ValidatorIn);
     const QStringList vals = errorData.toStringList();
     const QString _label = label(c);
     if (_label.isEmpty()) {
