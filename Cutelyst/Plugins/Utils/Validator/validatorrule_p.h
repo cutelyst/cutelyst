@@ -346,6 +346,16 @@ public:
         bool ok = false;
 
         switch (type) {
+        case QMetaType::Char:
+        {
+            const short _v = value.toShort(&ok);
+            if (ok) {
+                if ((_v < static_cast<short>(std::numeric_limits<char>::max())) && (_v > static_cast<short>(std::numeric_limits<char>::min()))) {
+                    var.setValue<char>(static_cast<char>(_v));
+                }
+            }
+        }
+            break;
         case QMetaType::Short:
         {
 //            const short v = c->locale().toShort(value, &ok);
@@ -387,6 +397,16 @@ public:
             const qlonglong v = value.toLongLong(&ok);
             if (ok) {
                 var.setValue<qlonglong>(v);
+            }
+        }
+            break;
+        case QMetaType::UChar:
+        {
+            const ushort _v = value.toUShort(&ok);
+            if (ok) {
+                if ((_v < static_cast<ushort>(std::numeric_limits<uchar>::max())) && (_v > static_cast<ushort>(std::numeric_limits<uchar>::min()))) {
+                    var.setValue<uchar>(static_cast<uchar>(_v));
+                }
             }
         }
             break;

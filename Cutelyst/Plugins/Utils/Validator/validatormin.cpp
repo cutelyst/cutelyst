@@ -42,6 +42,7 @@ ValidatorReturnType ValidatorMin::validate(Context *c, const ParamsMultiMap &par
         bool valid = false;
 
         switch (d->type) {
+        case QMetaType::Char:
         case QMetaType::Short:
         case QMetaType::Int:
         case QMetaType::Long:
@@ -70,6 +71,7 @@ ValidatorReturnType ValidatorMin::validate(Context *c, const ParamsMultiMap &par
             }
         }
             break;
+        case QMetaType::UChar:
         case QMetaType::UShort:
         case QMetaType::UInt:
         case QMetaType::ULong:
@@ -178,6 +180,7 @@ QString ValidatorMin::genericValidationError(Cutelyst::Context *c, const QVarian
     const QVariantMap map = errorData.toMap();
     QString min;
     switch (d->type) {
+    case QMetaType::Char:
     case QMetaType::Short:
     case QMetaType::Int:
     case QMetaType::Long:
@@ -185,6 +188,7 @@ QString ValidatorMin::genericValidationError(Cutelyst::Context *c, const QVarian
     case QMetaType::QString:
         min = c->locale().toString(map.value(QStringLiteral("min")).toLongLong());
         break;
+    case QMetaType::UChar:
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:

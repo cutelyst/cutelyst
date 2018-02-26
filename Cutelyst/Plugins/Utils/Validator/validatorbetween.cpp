@@ -42,6 +42,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
         bool valid = false;
 
         switch (d->type) {
+        case QMetaType::Char:
         case QMetaType::Short:
         case QMetaType::Int:
         case QMetaType::Long:
@@ -77,6 +78,7 @@ ValidatorReturnType ValidatorBetween::validate(Context *c, const ParamsMultiMap 
             }
         }
             break;
+        case QMetaType::UChar:
         case QMetaType::UShort:
         case QMetaType::UInt:
         case QMetaType::ULong:
@@ -206,6 +208,7 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c, const QVa
     const QVariantMap map = errorData.toMap();
     QString min, max;
     switch (d->type) {
+    case QMetaType::Char:
     case QMetaType::Short:
     case QMetaType::Int:
     case QMetaType::Long:
@@ -214,6 +217,7 @@ QString ValidatorBetween::genericValidationError(Cutelyst::Context *c, const QVa
         min = c->locale().toString(map.value(QStringLiteral("min")).toLongLong());
         max = c->locale().toString(map.value(QStringLiteral("max")).toLongLong());
         break;
+    case QMetaType::UChar:
     case QMetaType::UShort:
     case QMetaType::UInt:
     case QMetaType::ULong:

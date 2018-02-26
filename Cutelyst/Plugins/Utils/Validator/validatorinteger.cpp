@@ -40,10 +40,12 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c, const Param
         QVariant converted;
 
         switch(d->type) {
+        case QMetaType::Char:
         case QMetaType::Short:
         case QMetaType::Int:
         case QMetaType::Long:
         case QMetaType::LongLong:
+        case QMetaType::UChar:
         case QMetaType::UShort:
         case QMetaType::UInt:
         case QMetaType::ULong:
@@ -78,6 +80,10 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
     QString min;
     QString max;
     switch (d->type) {
+    case QMetaType::Char:
+        min = c->locale().toString(std::numeric_limits<char>::min());
+        max = c->locale().toString(std::numeric_limits<char>::max());
+        break;
     case QMetaType::Short:
         min = c->locale().toString(std::numeric_limits<short>::min());
         min = c->locale().toString(std::numeric_limits<short>::max());
@@ -93,6 +99,10 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
     case QMetaType::LongLong:
         min = c->locale().toString(std::numeric_limits<qlonglong>::min());
         min = c->locale().toString(std::numeric_limits<qlonglong>::max());
+        break;
+    case QMetaType::UChar:
+        min = c->locale().toString(std::numeric_limits<uchar>::min());
+        min = c->locale().toString(std::numeric_limits<uchar>::max());
         break;
     case QMetaType::UShort:
         min = c->locale().toString(std::numeric_limits<ushort>::min());
