@@ -19,6 +19,7 @@
 
 #include "protocol.h"
 #include "protocolhttp.h"
+#include "protocolhttp2.h"
 #include "protocolfastcgi.h"
 #include "cwsgiengine.h"
 #include "socket.h"
@@ -155,6 +156,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                      QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
                                      QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocketOpt);
+
+    QCommandLineOption http2SocketOpt({ QStringLiteral("http2-socket"), QStringLiteral("h2") },
+                                     QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP/2 protocol"),
+                                     QCoreApplication::translate("main", "address"));
+    parser.addOption(http2SocketOpt);
 
     QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
                                       QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
@@ -449,6 +455,8 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     setHttpSocket(httpSocket() + parser.values(httpSocketOpt));
 
+    setHttp2Socket(http2Socket() + parser.values(http2SocketOpt));
+
     setHttpsSocket(httpsSocket() + parser.values(httpsSocketOpt));
 
     setFastcgiSocket(fastcgiSocket() + parser.values(fastcgiSocketOpt));
@@ -609,6 +617,17 @@ void WSGIPrivate::listenTcpSockets()
         const auto sockets = httpSockets;
         for (const auto &socket : sockets) {
             listenTcp(socket, protoHTTP, false);
+        }
+    }
+
+    if (!http2Sockets.isEmpty()) {
+        if (!protoHTTP2) {
+            protoHTTP2 = new ProtocolHttp2(q);
+        }
+
+        const auto sockets = http2Sockets;
+        for (const auto &socket : sockets) {
+            listenTcp(socket, protoHTTP2, false);
         }
     }
 
@@ -838,6 +857,18 @@ QStringList WSGI::httpSocket() const
 {
     Q_D(const WSGI);
     return d->httpSockets;
+}
+
+void WSGI::setHttp2Socket(const QStringList &http2Socket)
+{
+    Q_D(WSGI);
+    d->http2Sockets = http2Socket;
+}
+
+QStringList WSGI::http2Socket() const
+{
+    Q_D(const WSGI);
+    return d->http2Sockets;
 }
 
 void WSGI::setHttpsSocket(const QStringList &httpsSocket)

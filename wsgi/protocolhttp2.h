@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,43 +15,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef PROTOCOLHTTP2_H
+#define PROTOCOLHTTP2_H
 
 #include <QObject>
 
-#include "cwsgiengine.h"
+#include "protocol.h"
 
 namespace CWSGI {
 
-class WSGI;
-class Socket;
-class Protocol
+class ProtocolHttp2 : public Protocol
 {
 public:
-    enum Type {
-        Unknown,
-        Http11,
-        Http2,
-        FastCGI1
-    };
+    explicit ProtocolHttp2(WSGI *wsgi);
+    ~ProtocolHttp2();
 
-    Protocol(WSGI *wsgi);
-    virtual ~Protocol();
+    virtual Type type() const override;
 
-    virtual Type type() const;
-
-    virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
-    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) = 0;
-    virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
-
-    qint64 m_postBufferSize;
-    qint64 m_bufferSize;
-    qint64 m_webSocketBufferSize;
-    qint64 m_postBuffering;
-    char *m_postBuffer;
+    virtual void readyRead(Socket *sock, QIODevice *io) const override;
+    virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 };
 
 }
 
-#endif // PROTOCOL_H
+#endif // PROTOCOLHTTP2_H

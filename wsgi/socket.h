@@ -52,7 +52,8 @@ public:
     enum ParserState {
         MethodLine = 0,
         HeaderLine,
-        ContentBody
+        ContentBody,
+        H2Frames
     };
     Q_ENUM(ParserState)
 
@@ -116,7 +117,7 @@ public:
     quint32 last = 0;
     int beginLine = 0;
     HeaderConnection headerConnection = HeaderConnectionNotSet;
-    quint16 pktsize = 0;// FGCI
+    quint32 pktsize = 0;// FGCI-16 H2-24
     bool headerHost = false;
     bool processing = false;
     bool timeout = false;
@@ -130,6 +131,8 @@ public:
     quint32 websocket_mask;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
+
+
 
     virtual bool webSocketSendTextMessage(const QString &message) override final;
 

@@ -444,7 +444,7 @@ void wsgi_proto_fastcgi_endrequest(Socket *wsgi_req, QIODevice *io)
 
 qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const
 {
-    int len;
+    qint64 len;
     QIODevice *body = sock->body;
     quint32 &pad = sock->buf_size;
     while (bytesAvailable && sock->pktsize + pad) {

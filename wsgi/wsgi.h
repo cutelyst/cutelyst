@@ -127,6 +127,14 @@ public:
     QStringList httpSocket() const;
 
     /**
+     * Defines how an HTTP2 socket should be binded
+     * @accessors http2Socket(), setHttp2Socket()
+     */
+    Q_PROPERTY(QStringList http2_socket READ http2Socket WRITE setHttp2Socket)
+    void setHttp2Socket(const QStringList &http2Socket);
+    QStringList http2Socket() const;
+
+    /**
      * Defines how an HTTPS socket should be binded
      * @accessors httpsSocket(), setHttpsSocket()
      */

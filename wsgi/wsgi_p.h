@@ -63,6 +63,7 @@ public:
     QVariantMap opt;
     QVariantMap config;
     QStringList httpSockets;
+    QStringList http2Sockets;
     QStringList httpsSockets;
     QStringList fastcgiSockets;
     QStringList staticMaps;
@@ -90,6 +91,7 @@ public:
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     Protocol *protoHTTP = nullptr;
+    Protocol *protoHTTP2 = nullptr;
     Protocol *protoFCGI = nullptr;
     AbstractFork *genericFork = nullptr;
     int bufferSize = 4096;
