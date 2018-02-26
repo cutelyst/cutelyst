@@ -23,20 +23,20 @@
 #include <QStringList>
 
 namespace Cutelyst {
-    
+
 class ValidatorInPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorInPrivate(const QString &f, const QStringList &vs, Qt::CaseSensitivity c, const ValidatorMessages &m, const QString &dvk) :
+    ValidatorInPrivate(const QString &f, const QVariant &vs, Qt::CaseSensitivity c, const ValidatorMessages &m, const QString &dvk) :
         ValidatorRulePrivate(f, m, dvk),
         cs(c),
         values(vs)
     {}
 
     Qt::CaseSensitivity cs = Qt::CaseSensitive;
-    QStringList values;
+    QVariant values;
 };
-    
+
 }
 
 #endif //CUTELYSTVALIDATORIN_P_H

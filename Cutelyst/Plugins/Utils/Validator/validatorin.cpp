@@ -20,7 +20,7 @@
 
 using namespace Cutelyst;
 
-ValidatorIn::ValidatorIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
+ValidatorIn::ValidatorIn(const QString &field, const QVariant &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
     ValidatorRule(*new ValidatorInPrivate(field, values, cs, messages, defValKey))
 {
 }
@@ -37,15 +37,23 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
 
     const QString v = value(params);
     if (!v.isEmpty()) {
-        if (d->values.empty()) {
+        QStringList vals;
+
+        if (d->values.type() == QVariant::StringList) {
+            vals = d->values.toStringList();
+        } else  if (d->values.type() == QVariant::String) {
+            vals = c->stash(d->values.toString()).toStringList();
+        }
+
+        if (vals.empty()) {
             qCWarning(C_VALIDATOR, "ValidatorIn: The list of comparison values for the field %s at %s::%s is empty.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             result.errorMessage = validationDataError(c);
         } else {
-            if (d->values.contains(v, d->cs)) {
+            if (vals.contains(v, d->cs)) {
                 result.value.setValue<QString>(v);
             } else {
                 qCDebug(C_VALIDATOR, "ValidatorIn: Validation failed for field %s at %s::%s: \"%s\" is not part of the list of comparison values.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
-                result.errorMessage = validationError(c);
+                result.errorMessage = validationError(c, vals);
             }
         }
     } else {
@@ -59,12 +67,12 @@ QString ValidatorIn::genericValidationError(Context *c, const QVariant &errorDat
 {
     QString error;
     Q_D(const ValidatorIn);
-    Q_UNUSED(errorData);
+    const QStringList vals = errorData.toStringList();
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following: %1").arg(c->locale().createSeparatedList(d->values));
+        error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following: %1").arg(c->locale().createSeparatedList(vals));
     } else {
-        error = c->translate("Cutelyst::ValidatorIn", "The value in the “%1” field has to be one of the following: %2").arg(_label, c->locale().createSeparatedList(d->values));
+        error = c->translate("Cutelyst::ValidatorIn", "The value in the “%1” field has to be one of the following: %2").arg(_label, c->locale().createSeparatedList(vals));
     }
     return error;
 }

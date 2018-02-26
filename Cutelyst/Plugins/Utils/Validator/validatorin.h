@@ -22,7 +22,7 @@
 #include "validatorrule.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorInPrivate;
 
 /*!
@@ -48,18 +48,18 @@ public:
     /*!
      * \brief Constructs a new in validator.
      * \param field         Name of the input field to validate.
-     * \param values        List of values to compare against.
+     * \param values        List of values to compare against. Can be either a QStringList containing the allowed values or a QString specifing a stash key containing a QStringList with allowed values.
      * \param cs            Defines if the comparison should be performed case sensitive or insensitive.
      * \param messages      Custom error message if validation fails.
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
-    ValidatorIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs = Qt::CaseSensitive, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+    ValidatorIn(const QString &field, const QVariant &values, Qt::CaseSensitivity cs = Qt::CaseSensitive, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
+
     /*!
      * \brief Deconstructs the in validator.
      */
     ~ValidatorIn();
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -78,12 +78,12 @@ protected:
      * \brief Returns a generic error messages if the list of comparison values is empty.
      */
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorIn)
     Q_DISABLE_COPY(ValidatorIn)
 };
-    
+
 }
 
 #endif //CUTELYSTVALIDATORIN_H
