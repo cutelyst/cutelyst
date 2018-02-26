@@ -1456,3 +1456,6 @@ void WSGIPrivate::applyConfig(const QVariantMap &config)
         ++it;
     }
 }
+
+#include "moc_wsgi.cpp"
+#include "moc_wsgi_p.cpp"
