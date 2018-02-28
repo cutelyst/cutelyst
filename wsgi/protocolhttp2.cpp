@@ -47,9 +47,19 @@ struct h2_frame {
 __attribute__ ((__packed__));
 #endif
 
-enum Flags {
-    FlagSettingsAck = 0x1,
+enum SettingsFlags {
+    FlagSettingsAck = 0x1
+};
+
+enum PingFlags {
     FlagPingAck = 0x1
+};
+
+enum HeaderFlags {
+    FlagHeadersEndStream = 0x1,
+    FlagHeadersEndHeaders = 0x4,
+    FlagHeadersPadded = 0x8,
+    FlagHeadersPriority = 0x20,
 };
 
 enum FrameType {
@@ -148,8 +158,8 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
 
     if (len > 0) {
         sock->buf_size += len;
-
-        while (sock->buf_size) {
+        int ret = 0;
+        while (sock->buf_size && ret == 0) {
             qDebug() << QByteArray(sock->buffer, sock->buf_size);
             if (sock->connState == Socket::MethodLine) {
                 if (sock->buf_size >= PREFACE_SIZE) {
@@ -163,7 +173,7 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                         sendSettings(io, settings);
                     } else {
                         qCDebug(CWSGI_H2) << "Wrong preface";
-                        sendError(io);
+                        sendGoAway(io, ErrorProtocolError);
                         sock->connectionClose();
                         return;
                         //                    return PROTOCOL_ERROR;
@@ -172,6 +182,14 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
             } else if (sock->connState == Socket::H2Frames) {
                 if (sock->buf_size >= sizeof(struct h2_frame)) {
                     auto fr = reinterpret_cast<struct h2_frame *>(sock->buffer);
+                    H2Frame frame;
+                    frame.len = fr->size0 | (fr->size1 << 8) | (fr->size2 << 16);
+                    frame.streamId = fr->rbit_stream_id0 |
+                            (fr->rbit_stream_id1 << 8) |
+                            (fr->rbit_stream_id2 << 16) |
+                            ((fr->rbit_stream_id3 & ~0x80) << 24); // Ignore first bit
+                    frame.type = fr->type;
+                    frame.flags = fr->flags;
                     sock->pktsize = fr->size0 | (fr->size1 << 8) | (fr->size2 << 16);
                     sock->stream_id = fr->rbit_stream_id0 |
                             (fr->rbit_stream_id1 << 8) |
@@ -188,103 +206,29 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                     }
 
                     if (fr->type == FrameSettings) {
-                        qDebug() << "Consumming settings";
-                        if ((fr->flags & FlagSettingsAck && sock->pktsize) || sock->pktsize % 6) {
-                            // FRAME_SIZE_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        } else if (sock->stream_id) {
-                            // PROTOCOL_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        }
-
-                        QVector<std::pair<quint16, quint32>> settings;
-                        uint pos = 0;
-                        while (sock->pktsize > pos) {
-                            quint16 identifier = h2_be16(sock->buffer + 9 + pos);
-                            quint32 value = h2_be32(sock->buffer + 9 + 2 + pos);
-                            settings.push_back({ identifier, value });
-//                            sock->pktsize -= 6;
-                            pos += 6;
-                            if (identifier == SETTINGS_ENABLE_PUSH && value > 1) {
-                                // PROTOCOL_ERROR
-                                sendError(io);
-                                sock->connectionClose();
-                                return;
-                            }
-                            qDebug() << "SETTINGS" << identifier << value;
-                        }
-                        sendSettingsAck(io);
+                        ret = parseSettings(sock, io, frame);
 
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FramePriority) {
-                        qDebug() << "Consumming priority";
-                        if (sock->pktsize != 5) {
-                            // FRAME_SIZE_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        }
+                        ret = parsePriority(sock, io, frame);
 
-                        uint pos = 0;
-                        while (sock->pktsize > pos) {
-                            // TODO store/disable EXCLUSIVE bit
-                            quint32 exclusiveAndStreamDep = h2_be32(sock->buffer + 9 + pos);
-                            quint8 weigth = *reinterpret_cast<quint8 *>(sock->buffer + 9 + 4 + pos) + 1;
-//                            settings.push_back({ identifier, value });
-//                            sock->pktsize -= 6;
-
-                            if (exclusiveAndStreamDep == 0 || sock->stream_id == exclusiveAndStreamDep) {
-                                // PROTOCOL_ERROR
-                                sendError(io);
-                                sock->connectionClose();
-                                return;
-                            }
-
-                            pos += 6;
-                            qDebug() << "PRIO" << exclusiveAndStreamDep << weigth;
-                        }
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FrameHeaders) {
-                        qDebug() << "Consumming headers";
-                        if (sock->stream_id == 0) {
-                            // PROTOCOL_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        }
+                        ret = parseHeaders(sock, io, frame);
 
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FramePing) {
-                        qCDebug(CWSGI_H2) << "Got ping" << fr->flags;
-                        if (sock->pktsize != 8) {
-                            // FRAME_SIZE_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        } else if (sock->stream_id) {
-                            // PROTOCOL_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        }
+                        ret = parsePing(sock, io, frame);
 
-                        if (!(fr->flags & FlagPingAck)) {
-                            sendPing(io, FlagPingAck, sock->buffer + 9, 8);
-                        }
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FrameData) {
                         qCDebug(CWSGI_H2) << "Frame data" << fr->type;
                         if (sock->stream_id == 0) {
-                            // PROTOCOL_ERROR
-                            sendError(io);
+                            sendGoAway(io, ErrorProtocolError);
                             sock->connectionClose();
                             return;
                         }
@@ -293,21 +237,11 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FramePushPromise) {
                         // PROTOCOL_ERROR
-                        sendError(io);
+                        sendGoAway(io, ErrorProtocolError);
                         sock->connectionClose();
                         return;
                     } else if (fr->type == FrameRstStream) {
-                        if (sock->stream_id == 0) {
-                            // PROTOCOL_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        } else if (sock->pktsize != 4) {
-                            // FRAME_SIZE_ERROR
-                            sendError(io);
-                            sock->connectionClose();
-                            return;
-                        }
+                        ret = parseRstStream(sock, io, frame);
 
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
@@ -326,9 +260,141 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
     }
 }
 
-int ProtocolHttp2::sendError(QIODevice *io) const
+int ProtocolHttp2::parseSettings(Socket *sock, QIODevice *io, const H2Frame &fr) const
 {
-    return sendFrame(io, FrameGoaway, 0);
+    qDebug() << "Consumming settings";
+    if ((fr.flags & FlagSettingsAck && fr.len) || fr.len % 6) {
+        sendGoAway(io, ErrorFrameSizeError);
+        sock->connectionClose();
+        return 1;
+    } else if (fr.streamId) {
+        sendGoAway(io, ErrorProtocolError);
+        sock->connectionClose();
+        return 1;
+    }
+
+    if (!(fr.flags & FlagSettingsAck)) {
+        QVector<std::pair<quint16, quint32>> settings;
+        uint pos = 0;
+        while (sock->pktsize > pos) {
+            quint16 identifier = h2_be16(sock->buffer + 9 + pos);
+            quint32 value = h2_be32(sock->buffer + 9 + 2 + pos);
+            settings.push_back({ identifier, value });
+            //                            sock->pktsize -= 6;
+            pos += 6;
+            qDebug() << "SETTINGS" << identifier << value;
+            if (identifier == SETTINGS_ENABLE_PUSH && value > 1) {
+                sendGoAway(io, ErrorProtocolError);
+                sock->connectionClose();
+                return 1;
+            }
+        }
+        sendSettingsAck(io);
+    }
+
+    return 0;
+}
+
+int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) const
+{
+    qDebug() << "Consumming headers";
+    if (sock->stream_id == 0) {
+        sendGoAway(io, ErrorProtocolError);
+        sock->connectionClose();
+        return 1;
+    }
+
+    int pos = 0;
+    char *ptr = sock->buffer + 9;
+    quint8 padLength = 0;
+    if (fr.flags & FlagHeadersPadded) {
+        padLength = quint8(*(ptr + pos));
+        pos += 1;
+    }
+
+    quint32 streamDependency = 0;
+    quint8 weight = 0;
+    if (fr.flags & FlagHeadersPriority) {
+        streamDependency = h2_be32(ptr + pos);
+        pos += 4;
+        weight = quint8(*(ptr + pos)) + 1;
+        pos += 1;
+    }
+
+    qDebug() << "Headers" << padLength << streamDependency << weight << QByteArray(ptr + pos, fr.len - pos);
+
+    return 0;
+}
+
+int ProtocolHttp2::parsePriority(Socket *sock, QIODevice *io, const H2Frame &fr) const
+{
+    qDebug() << "Consumming priority";
+    if (fr.len != 5) {
+        sendGoAway(io, ErrorFrameSizeError);
+        sock->connectionClose();
+        return 1;
+    } else if (fr.streamId == 0) {
+        sendGoAway(io, ErrorProtocolError);
+        sock->connectionClose();
+        return 1;
+    }
+
+    uint pos = 0;
+    while (fr.len > pos) {
+        // TODO store/disable EXCLUSIVE bit
+        quint32 exclusiveAndStreamDep = h2_be32(sock->buffer + 9 + pos);
+        quint8 weigth = *reinterpret_cast<quint8 *>(sock->buffer + 9 + 4 + pos) + 1;
+//                            settings.push_back({ identifier, value });
+//                            sock->pktsize -= 6;
+
+        if (fr.streamId == exclusiveAndStreamDep) {
+            qDebug() << "PRIO error2" << exclusiveAndStreamDep << fr.streamId;
+            sendGoAway(io, ErrorProtocolError);
+            sock->connectionClose();
+            return 1;
+        }
+
+        pos += 6;
+        qDebug() << "PRIO" << exclusiveAndStreamDep << weigth;
+    }
+
+    return 0;
+}
+
+int ProtocolHttp2::parsePing(Socket *sock, QIODevice *io, const H2Frame &fr) const
+{
+    qCDebug(CWSGI_H2) << "Got ping" << fr.flags;
+    if (fr.len != 8) {
+        sendGoAway(io, ErrorFrameSizeError);
+        sock->connectionClose();
+        return 1;
+    } else if (fr.streamId) {
+        sendGoAway(io, ErrorProtocolError);
+        sock->connectionClose();
+        return 1;
+    }
+
+    if (!(fr.flags & FlagPingAck)) {
+        sendPing(io, FlagPingAck, sock->buffer + 9, 8);
+    }
+    return 0;
+}
+
+int ProtocolHttp2::parseRstStream(Socket *sock, QIODevice *io, const H2Frame &fr) const
+{
+    if (sock->stream_id == 0 || sock->pktsize != 4) {
+        sendGoAway(io, ErrorProtocolError);
+        sock->connectionClose();
+        return 1;
+    }
+
+    return 0;
+}
+
+int ProtocolHttp2::sendGoAway(QIODevice *io, quint32 error) const
+{
+    quint64 data = error;
+    return sendFrame(io, FrameGoaway, 0, reinterpret_cast<const char *>(&data), 8);
 }
 
 int ProtocolHttp2::sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32>> &settings) const
