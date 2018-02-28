@@ -189,6 +189,18 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
 
                     if (fr->type == FrameSettings) {
                         qDebug() << "Consumming settings";
+                        if ((fr->flags & FlagSettingsAck && sock->pktsize) || sock->pktsize % 6) {
+                            // FRAME_SIZE_ERROR
+                            sendError(io);
+                            sock->connectionClose();
+                            return;
+                        } else if (sock->stream_id) {
+                            // PROTOCOL_ERROR
+                            sendError(io);
+                            sock->connectionClose();
+                            return;
+                        }
+
                         QVector<std::pair<quint16, quint32>> settings;
                         uint pos = 0;
                         while (sock->pktsize > pos) {
@@ -197,6 +209,12 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                             settings.push_back({ identifier, value });
 //                            sock->pktsize -= 6;
                             pos += 6;
+                            if (identifier == SETTINGS_ENABLE_PUSH && value > 1) {
+                                // PROTOCOL_ERROR
+                                sendError(io);
+                                sock->connectionClose();
+                                return;
+                            }
                             qDebug() << "SETTINGS" << identifier << value;
                         }
                         sendSettingsAck(io);
@@ -220,7 +238,7 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
 //                            settings.push_back({ identifier, value });
 //                            sock->pktsize -= 6;
 
-                            if (exclusiveAndStreamDep == 0) {
+                            if (exclusiveAndStreamDep == 0 || sock->stream_id == exclusiveAndStreamDep) {
                                 // PROTOCOL_ERROR
                                 sendError(io);
                                 sock->connectionClose();
@@ -234,6 +252,13 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FrameHeaders) {
                         qDebug() << "Consumming headers";
+                        if (sock->stream_id == 0) {
+                            // PROTOCOL_ERROR
+                            sendError(io);
+                            sock->connectionClose();
+                            return;
+                        }
+
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FramePing) {
@@ -257,6 +282,13 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FrameData) {
                         qCDebug(CWSGI_H2) << "Frame data" << fr->type;
+                        if (sock->stream_id == 0) {
+                            // PROTOCOL_ERROR
+                            sendError(io);
+                            sock->connectionClose();
+                            return;
+                        }
+
                         sock->buf_size -= 9 + sock->pktsize;
                         memmove(sock->buffer, sock->buffer + 9 + sock->pktsize, sock->buf_size);
                     } else if (fr->type == FramePushPromise) {
