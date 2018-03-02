@@ -19,18 +19,36 @@
 #define HPACKTABLES_H
 
 #include <QString>
+#include <vector>
 
 namespace CWSGI {
 
-class HuffmanNode;
+class HPackHeaders
+{
+public:
+    HPackHeaders(int size = 4096);
+
+    bool updateTableSize(uint size);
+
+    void push_back(const std::pair<QString, QString> &pair) {
+        headers.push_back(pair);
+    }
+
+    std::vector<std::pair<QString, QString>> headers;
+};
+
+class HuffmanTree;
 class HPackTables
 {
 public:
     HPackTables();
 
+    static bool decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree);
+
     static std::pair<QString, QString> header(int index);
 };
 
+class Node;
 class HuffmanTree {
 public:
     HuffmanTree(int tableSize = 257);

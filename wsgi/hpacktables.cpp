@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include <QDebug>
+
 using namespace CWSGI;
 
 typedef struct {
@@ -26,9 +28,102 @@ typedef struct {
     uint8_t bitLen;
 } huffman_code;
 
+quint64 decode_int(quint32 &dst, const quint8 *buf, quint8 N)
+{
+    quint64 len = 1;
+    quint16 twoN = (1 << N) -1;
+    dst = *buf & twoN;
+    if (dst == twoN) {
+        int M = 0;
+        do {
+            dst += (*(buf+len) & 0x7f) << M;
+            M += 7;
+        }
+        while (*(buf+(len++)) & 0x80);
+    }
+
+    return len;
+}
+
+quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf)
+{
+    quint32 str_len = 0;
+    quint64 len = decode_int(str_len, buf, 7);
+    if ((*buf & 0x80) > 0) {
+        dst = huffman->decode(buf+len, str_len);
+    } else {
+        for (uint i = 0; i < str_len; i++) {
+            dst += QLatin1Char(*(buf + (len + i)));
+        }
+    }
+    return len + str_len;
+}
+
 HPackTables::HPackTables()
 {
 
+}
+
+bool HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree)
+{
+    while (it < itEnd) {
+        if (0x20 == (*it * 0xE0)) {
+            quint32 size(0);
+            quint64 len = decode_int(size, it, 5);
+            qDebug() << "6.3 Dynamic Table update" << *it << size << len;
+            if (!headers.updateTableSize(size)) {
+                return 1;
+            }
+
+            it += len;
+        } else if (*it & 0x80){
+            quint32 index(0);
+            quint64 len = decode_int(index, it, 7);
+            qDebug() << "6.1 Indexed Header Field Representation" << *it << index << len;
+            if (index == 0) {
+                return 1;
+            }
+            if (index <= 62) {
+                auto h = HPackTables::header(index);
+                headers.push_back({ h.first, h.second });
+                qDebug() << "header" << h.first << h.second;
+            }
+            it += len;
+        } else {
+            qDebug() << "else" << *it;
+
+            uint32_t index(0);
+            QString key;
+            quint64 len = 0;
+            if ((*it & 0xC0) == 0x40) {
+                // 6.2.1 Literal Header Field with Incremental Indexing
+                len = decode_int(index, it, 6);
+            } else {
+                // 6.2.2 Literal Header Field without Indexing
+                len = decode_int(index, it, 4);
+            }
+            it += len;
+
+            if (index != 0) {
+                auto h = HPackTables::header(index);
+                qDebug() << "header key" << h.first << h.second;
+
+                key = h.first;
+            } else {
+                qDebug() << "header parse key";
+                len = parse_string(hTree, key, it);
+                it += len;
+            }
+
+            QString value;
+            len = parse_string(hTree, value, it);
+            it += len;
+            headers.push_back({ key, value });
+            qDebug() << "header key/value" << key << value;
+        }
+    }
+
+    return true;
 }
 
 static const std::pair<QString, QString> staticHeaders[] = {
@@ -375,6 +470,22 @@ public:
     Node *right = nullptr;
     qint16 code;
 };
+
+HPackHeaders::HPackHeaders(int size)
+{
+    headers.reserve(size);
+}
+
+bool HPackHeaders::updateTableSize(uint size)
+{
+    if (size > headers.capacity()) {
+        return false;
+    }
+
+    headers.reserve(size);
+    return true;
+}
+
 }
 HuffmanTree::HuffmanTree(int tableSize)
 //    : m_root(new Node(0xffffffff))

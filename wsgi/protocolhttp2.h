@@ -55,9 +55,10 @@ public:
     int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32> > &settings) const;
     int sendSettingsAck(QIODevice *io) const;
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
-    int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, const char *data = nullptr, qint32 dataLen = 0) const;
+    int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
+    quint32 m_maxFrameSize;
     HuffmanTree *hTree;
 };
 
