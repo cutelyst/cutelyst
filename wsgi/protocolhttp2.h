@@ -44,6 +44,7 @@ public:
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
 
     int parseSettings(Socket *sock, QIODevice *io, const H2Frame &fr) const;
+    int parseData(Socket *sock, QIODevice *io, const H2Frame &fr) const;
     int parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) const;
     int parsePriority(Socket *sock, QIODevice *io, const H2Frame &fr) const;
     int parsePing(Socket *sock, QIODevice *io, const H2Frame &fr) const;
