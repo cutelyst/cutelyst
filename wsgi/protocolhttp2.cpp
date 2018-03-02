@@ -18,8 +18,11 @@
 #include "protocolhttp2.h"
 
 #include "socket.h"
+#include "hpacktables.h"
 
 #include <QLoggingCategory>
+
+#include <cmath>
 
 using namespace CWSGI;
 
@@ -144,6 +147,8 @@ ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
         qFatal("HTTP/2 Protocol requires that buffer-size to be at least '16384' in size, current value is '%s'",
                QByteArray::number(m_bufferSize).constData());
     }
+
+    hTree = new HuffmanTree;
 }
 
 ProtocolHttp2::~ProtocolHttp2()
@@ -316,6 +321,39 @@ int ProtocolHttp2::parseData(Socket *sock, QIODevice *io, const H2Frame &fr) con
     return ErrorNoError;
 }
 
+quint64 decode_int(quint32 &dst, const quint8 *buf, quint8 N)
+{
+    quint64 len = 1;
+    quint16 twoN = (1 << N) -1;
+    dst = *buf & twoN;
+    if (dst == twoN) {
+        int M = 0;
+        do {
+            dst += (*(buf+len) & 0x7f) << M;
+            M += 7;
+        }
+        while (*(buf+(len++)) & 0x80);
+    }
+
+    return len;
+}
+
+quint64 parse_string(HuffmanTree *huffman, QString &dst, const uint8_t *buf)
+{
+    quint32 str_len = 0;
+    quint64 len = decode_int(str_len, buf, 7);
+    if ((*buf & 0x80) > 0) {
+        dst = huffman->decode(buf+len, str_len);
+//        dst = this->huffman->decode(buf+len, str_len);
+        qDebug() << "TODO huffman" << dst;
+    } else {
+        for (uint i = 0; i < str_len; i++) {
+            dst += QLatin1Char(*(buf + (len + i)));
+        }
+    }
+    return len + str_len;
+}
+
 int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) const
 {
     qDebug() << "Consumming headers";
@@ -339,6 +377,68 @@ int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) 
         pos += 4;
         weight = quint8(*(ptr + pos)) + 1;
         pos += 1;
+    }
+
+    QVector<std::pair<QString, QString>> headers;
+    ptr += pos;
+//    quint8 *itr = reinteptr;
+    quint8 *it = reinterpret_cast<quint8 *>(ptr);
+    for (uint i = pos; i < fr.len; /*++i*/) {
+        if (0x20 == (*it * 0xE0)) {
+            quint32 size(0);
+            quint64 len = decode_int(size, it, 5);
+            qCDebug(CWSGI_H2) << "6.3 Dynamic Table update" << *it << size << len;
+            i += len;
+            it += len;
+        } else if (*it & 0x80){
+            quint32 index(0);
+            quint64 len = decode_int(index, it, 7);
+            qCDebug(CWSGI_H2) << "6.1 Indexed Header Field Representation" << *it << index << len;
+            if (index == 0) {
+                return 1;
+            }
+            if (index <= 62) {
+                auto h = HPackTables::header(index);
+                headers.push_back({ h.first, h.second });
+                qDebug() << "header" << h.first << h.second;
+            }
+            i += len;
+            it += len;
+        } else {
+            qCDebug(CWSGI_H2) << "else" << *it;
+
+            uint32_t index(0);
+            QString key;
+            quint64 len = 0;
+            if ((*it & 0xC0) == 0x40) {
+                // 6.2.1 Literal Header Field with Incremental Indexing
+                len = decode_int(index, it, 6);
+            } else {
+                // 6.2.2 Literal Header Field without Indexing
+                len = decode_int(index, it, 4);
+            }
+            i += len;
+            it += len;
+
+            if (index != 0) {
+                auto h = HPackTables::header(index);
+                qDebug() << "header key" << h.first << h.second;
+
+                key = h.first;
+            } else {
+                qDebug() << "header parse key";
+                len = parse_string(hTree, key, it);
+                i += len;
+                it += len;
+            }
+
+            QString value;
+            len = parse_string(hTree, value, it);
+            i += len;
+            it += len;
+            headers.push_back({ key, value });
+            qDebug() << "header key/value" << key << value;
+        }
     }
 
     qDebug() << "Headers" << padLength << streamDependency << weight << QByteArray(ptr + pos, fr.len - pos);

@@ -33,6 +33,7 @@ public:
     quint8 flags;
 };
 
+class HuffmanTree;
 class ProtocolHttp2 : public Protocol
 {
 public:
@@ -56,6 +57,8 @@ public:
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, const char *data = nullptr, qint32 dataLen = 0) const;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
+
+    HuffmanTree *hTree;
 };
 
 }
