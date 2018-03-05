@@ -21,29 +21,20 @@
 #include <QString>
 #include <vector>
 
-#include "socket.h"
+namespace Cutelyst {
+class Headers;
+}
 
 namespace CWSGI {
 
-class HPackHeaders
-{
-public:
-    HPackHeaders(int size = 4096);
-
-    bool updateTableSize(uint size);
-
-    void push_back(const std::pair<QString, QString> &pair) {
-        headers.push_back(pair);
-    }
-
-    std::vector<std::pair<QString, QString>> headers;
-};
+class H2Stream;
 
 class HuffmanTree;
-class HPackTables
+class HPack
 {
 public:
-    HPackTables();
+    HPack(int maxTableSize);
+    ~HPack();
 
     void encodeStatus(int status);
 
@@ -51,12 +42,13 @@ public:
 
     QByteArray data() const;
 
-    static int decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree, Socket::H2Stream *stream);
-
-    static std::pair<QString, QString> header(int index);
+    int decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream);
 
 private:
+    std::vector<std::pair<QString, QString>> m_dynamicTable;
+    HuffmanTree *m_huffmanTree;
     QByteArray buf;
+    quint32 m_maxTableSize;
 };
 
 class Node;

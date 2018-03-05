@@ -18,11 +18,10 @@
 #include "protocolhttp2.h"
 
 #include "socket.h"
-#include "hpacktables.h"
+#include "hpack.h"
+#include "wsgi.h"
 
 #include <QLoggingCategory>
-
-#include <cmath>
 
 using namespace CWSGI;
 
@@ -156,8 +155,8 @@ ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
                QByteArray::number(m_bufferSize).constData());
     }
 
+    m_headerTableSize = wsgi->http2HeaderTableSize();
     m_maxFrameSize = m_bufferSize - 9;
-    hTree = new HuffmanTree;
 }
 
 ProtocolHttp2::~ProtocolHttp2()
@@ -194,6 +193,7 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
 
                             sendSettings(io, {
                                              { SETTINGS_MAX_FRAME_SIZE, m_maxFrameSize },
+                                             { SETTINGS_HEADER_TABLE_SIZE, m_headerTableSize },
                                          });
                         } else {
                             qCDebug(CWSGI_H2) << "Wrong preface";
@@ -357,15 +357,15 @@ int ProtocolHttp2::parseData(Socket *sock, QIODevice *io, const H2Frame &fr) con
 
     }
 
-    Socket::H2Stream *stream;
+    H2Stream *stream;
     auto streamIt = sock->streams.constFind(fr.streamId);
     if (streamIt != sock->streams.constEnd()) {
         stream = streamIt.value();
 
-        if (stream->state == Socket::H2Stream::Idle) {
+        if (stream->state == H2Stream::Idle) {
             return sendGoAway(io, sock->maxStreamId, ErrorProtocolError);
-        } else if (stream->state == Socket::H2Stream::HalfClosed ||
-                   stream->state == Socket::H2Stream::Closed) {
+        } else if (stream->state == H2Stream::HalfClosed ||
+                   stream->state == H2Stream::Closed) {
             return sendGoAway(io, sock->maxStreamId, ErrorStreamClosed);
         }
     } else {
@@ -426,14 +426,14 @@ int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) 
     }
     ptr += pos;
 
-    Socket::H2Stream *stream;
+    H2Stream *stream;
     auto streamIt = sock->streams.constFind(fr.streamId);
     if (streamIt != sock->streams.constEnd()) {
         stream = streamIt.value();
 
         qCDebug(CWSGI_H2) << "------------" << !(fr.flags & FlagHeadersEndStream) << stream->state << sock->streamForContinuation ;
 
-        if (!(fr.flags & FlagHeadersEndStream) && stream->state == Socket::H2Stream::Open && sock->streamForContinuation == 0) {
+        if (!(fr.flags & FlagHeadersEndStream) && stream->state == H2Stream::Open && sock->streamForContinuation == 0) {
             qCDebug(CWSGI_H2) << "header FlagHeadersEndStream stream->headers.size()";
             return sendGoAway(io, sock->maxStreamId, ErrorProtocolError);
         }
@@ -444,30 +444,32 @@ int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) 
         }
         sock->maxStreamId = fr.streamId;
 
-        stream = new Socket::H2Stream;
+        stream = new H2Stream;
         sock->streams.insert(fr.streamId, stream);
     }
 
-    if (stream->state == Socket::H2Stream::Idle) {
-        stream->state = Socket::H2Stream::Open;
+    if (stream->state == H2Stream::Idle) {
+        stream->state = H2Stream::Open;
     }
 
     if (fr.flags & FlagHeadersEndStream) {
-        stream->state = Socket::H2Stream::HalfClosed;
+        stream->state = H2Stream::HalfClosed;
     }
 
-    HPackHeaders headers;
+    if (!sock->hpack) {
+        sock->hpack = new HPack(m_headerTableSize);
+    }
+
     quint8 *it = reinterpret_cast<quint8 *>(ptr);
     quint8 *itEnd = it + fr.len - pos - padLength;
-    int ret = HPackTables::decode(it, itEnd, headers, hTree, stream);
+    int ret = sock->hpack->decode(it, itEnd, stream);
     if (ret) {
         qDebug() << "Headers parser error" << ret << QByteArray(ptr + pos, fr.len - pos - padLength).toHex();
 //        qDebug() << "Headers" << padLength << streamDependency << weight /*<< QByteArray(ptr + pos, fr.len - pos - padLength).toHex()*/ << ret;
         return sendGoAway(io, sock->maxStreamId, ret);
     }
-    stream->headers = headers.headers;
 
-    qDebug() << "Headers" << padLength << streamDependency << weight << "stream headers size" << stream->headers.size() /*<< QByteArray(ptr + pos, fr.len - pos - padLength).toHex()*/ << ret;
+    qDebug() << "Headers" << padLength << streamDependency << weight << "stream headers size" << stream->headers /*<< QByteArray(ptr + pos, fr.len - pos - padLength).toHex()*/ << ret;
 
     if (fr.flags & FlagHeadersEndHeaders) {
         sock->streamForContinuation = 0;
@@ -478,7 +480,7 @@ int ProtocolHttp2::parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) 
     }
 
 
-    if ((stream->state == Socket::H2Stream::HalfClosed || fr.flags & FlagHeadersEndStream)
+    if ((stream->state == H2Stream::HalfClosed || fr.flags & FlagHeadersEndStream)
             && sock->streamForContinuation == 0) {
 
         // Process request
@@ -553,20 +555,20 @@ int ProtocolHttp2::parseRstStream(Socket *sock, QIODevice *io, const H2Frame &fr
         return sendGoAway(io, sock->maxStreamId, ErrorFrameSizeError);
     }
 
-    Socket::H2Stream *stream;
+    H2Stream *stream;
     auto streamIt = sock->streams.constFind(fr.streamId);
     if (streamIt != sock->streams.constEnd()) {
         stream = streamIt.value();
 
         qCDebug(CWSGI_H2) << "Consuming RST_STREAM state" << stream->state;
-        if (stream->state == Socket::H2Stream::Idle) {
+        if (stream->state == H2Stream::Idle) {
             return sendGoAway(io, sock->maxStreamId, ErrorProtocolError);
         }
     } else {
        return sendGoAway(io, sock->maxStreamId, ErrorStreamClosed);
     }
 
-    stream->state = Socket::H2Stream::Closed;
+    stream->state = H2Stream::Closed;
 
     quint32 errorCode = h2_be32(sock->buffer + 9);
     qCDebug(CWSGI_H2) << "RST frame" << errorCode;
@@ -594,12 +596,12 @@ int ProtocolHttp2::parseWindowUpdate(Socket *sock, QIODevice *io, const H2Frame 
 //    }
 
     if (fr.streamId) {
-        Socket::H2Stream *stream;
+        H2Stream *stream;
         auto streamIt = sock->streams.constFind(fr.streamId);
         if (streamIt != sock->streams.constEnd()) {
             stream = streamIt.value();
 
-            if (stream->state == Socket::H2Stream::Idle) {
+            if (stream->state == H2Stream::Idle) {
                 return sendGoAway(io, sock->maxStreamId, ErrorProtocolError);
             }
         } else {
@@ -611,7 +613,7 @@ int ProtocolHttp2::parseWindowUpdate(Socket *sock, QIODevice *io, const H2Frame 
 
         quint64 result = stream->windowSize + windowSizeIncrement;
         if (result > 2147483647) {
-            stream->state = Socket::H2Stream::Closed;
+            stream->state = H2Stream::Closed;
             sendRstStream(io, fr.streamId, ErrorFlowControlError);
         }
         stream->windowSize = result;
@@ -748,7 +750,7 @@ bool ProtocolHttp2::sendHeaders(QIODevice *io, Socket *sock, quint16 status, con
 
 void ProtocolHttp2::sendDummyReply(Socket *sock, QIODevice *io, const H2Frame &fr) const
 {
-    HPackTables t;
+    HPack t(m_headerTableSize);
     t.encodeStatus(200);
     QByteArray reply = t.data();
     qDebug() << "Send dummy reply" << reply.toHex() << reply.size();

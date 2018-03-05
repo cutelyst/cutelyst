@@ -33,7 +33,7 @@ public:
     quint8 flags;
 };
 
-class HuffmanTree;
+class HPack;
 class ProtocolHttp2 : public Protocol
 {
 public:
@@ -64,7 +64,7 @@ public:
     void sendDummyReply(Socket *sock, QIODevice *io, const H2Frame &fr) const;
 
     quint32 m_maxFrameSize;
-    HuffmanTree *hTree;
+    quint32 m_headerTableSize;
 };
 
 }

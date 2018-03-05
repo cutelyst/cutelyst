@@ -135,6 +135,14 @@ public:
     QStringList http2Socket() const;
 
     /**
+     * Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
+     * @accessors http2Socket(), setHttp2Socket()
+     */
+    Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE setHttp2HeaderTableSize)
+    void setHttp2HeaderTableSize(quint32 headerTableSize);
+    quint32 http2HeaderTableSize() const;
+
+    /**
      * Defines how an HTTPS socket should be binded
      * @accessors httpsSocket(), setHttpsSocket()
      */

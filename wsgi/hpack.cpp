@@ -15,13 +15,18 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-#include "hpacktables.h"
+#include "hpack.h"
+#include "hpack_p.h"
+
+#include "socket.h"
 
 #include <vector>
 
 #include <QDebug>
 
 using namespace CWSGI;
+
+static const std::pair<QString, QString> staticHeaders;
 
 typedef struct {
     quint32 code;
@@ -70,11 +75,7 @@ quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool
     quint32 str_len = 0;
     quint64 len = decode_int(str_len, buf, 7);
     if (*buf & 0x80) {
-        qDebug() << "HUFFMAN" << len << str_len;
-//        if (str_len > 9) {
-//            error = true;
-//            return 0;
-//        }
+        qDebug() << "HUFFMAN value" << len << str_len;
         dst = huffman->decode(buf + len, str_len, error);
     } else {
         for (uint i = 0; i < str_len; i++) {
@@ -104,12 +105,17 @@ quint64 parse_string_key(HuffmanTree *huffman, QString &dst, const quint8 *buf, 
     return len + str_len;
 }
 
-HPackTables::HPackTables()
+HPack::HPack(int maxTableSize) : m_maxTableSize(maxTableSize)
 {
-
+    m_huffmanTree = new HuffmanTree();
 }
 
-void HPackTables::encodeStatus(int status)
+HPack::~HPack()
+{
+    delete m_huffmanTree;
+}
+
+void HPack::encodeStatus(int status)
 {
     if (status == 200) {
         buf.append(0x88);
@@ -130,12 +136,12 @@ void HPackTables::encodeStatus(int status)
     }
 }
 
-void HPackTables::encodeHeader(const QByteArray &key, const QByteArray &value)
+void HPack::encodeHeader(const QByteArray &key, const QByteArray &value)
 {
 
 }
 
-QByteArray HPackTables::data() const
+QByteArray HPack::data() const
 {
     return buf;
 }
@@ -157,7 +163,7 @@ enum ErrorCodes {
     ErrorHttp11Required = 0xD
 };
 
-inline bool validPseudoHeader(const QString &k, const QString &v, Socket::H2Stream *stream)
+inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
 {
     qDebug() << k << v << stream->path << stream->method << stream->authority << stream->scheme;
     if (k == QLatin1String(":path")) {
@@ -190,27 +196,34 @@ inline bool validHeader(const QString &k, const QString &v)
             (k != QLatin1String("te") || v == QLatin1String("trailers"));
 }
 
-inline void consumeHeader(const QString &k, const QString &v, Socket::H2Stream *stream)
+inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
 {
     if (k == QLatin1String("content-length")) {
         stream->contentLength = v.toLongLong();
     }
 }
 
-int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree, Socket::H2Stream *stream)
+int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
 {
     bool pseudoHeadersAllowed = true;
+    bool allowedToUpdate = true;
     while (it < itEnd) {
-        if (0x20 == (*it * 0xE0)) {
+        quint8 kind = *it & 0xF0;
+        if (kind & 0x20) {
             quint32 size(0);
             quint64 len = decode_int(size, it, 5);
-            qDebug() << "6.3 Dynamic Table update" << *it << size << len;
-            if (!headers.updateTableSize(size)) {
+            qDebug() << "6.3 Dynamic Table update" << *it << "size" << size << len << "allowedToUpdate" << allowedToUpdate;
+            if (size > m_maxTableSize) {
+                qDebug() << "Trying to update beyond limits";
                 return ErrorCompressionError;
             }
+            if (!allowedToUpdate) {
+//                return ErrorCompressionError;
+            }
+            m_dynamicTable.reserve(size);
 
             it += len;
-        } else if (*it & 0x80){
+        } else if (kind & 0x80){
             quint32 index(0);
             quint64 len = decode_int(index, it, 7);
             qDebug() << "6.1 Indexed Header Field Representation" << *it << index << len;
@@ -222,8 +235,17 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
             QString value;
             if (index > 61) {
                 qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << index << len;
+                index -= 61;
+                if (index < m_dynamicTable.size()) {
+                    auto h = m_dynamicTable.at(index);
+                    key = h.first;
+                    value = h.second;
+                    qDebug() << "=========================GETTING from dynamic table key/value" << key << value;
+                } else {
+                    return ErrorCompressionError;
+                }
             } else  {
-                auto h = HPackTables::header(index);
+                auto h = hpackStaticHeaders[index];
                 key = h.first;
                 value = h.second;
             }
@@ -239,7 +261,7 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                headers.push_back({ key, value });
+                stream->headers.pushHeader(key, value);
             }
 
             it += len;
@@ -249,11 +271,14 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
             quint32 index(0);
             QString key;
             quint64 len = 0;
-            if ((*it & 0xC0) == 0x40) {
+            if (kind == 0x40) {
                 // 6.2.1 Literal Header Field with Incremental Indexing
                 len = decode_int(index, it, 6);
-            } else {
+            } else if (kind == 0x00) {
                 // 6.2.2 Literal Header Field without Indexing
+                len = decode_int(index, it, 4);
+            } else {
+                // 6.2.2 Literal Header Field Never Inded
                 len = decode_int(index, it, 4);
             }
             it += len;
@@ -265,14 +290,14 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
             if (index != 0) {
                 qDebug() << "header index" << index;
 
-                auto h = HPackTables::header(index);
+                auto h = hpackStaticHeaders[index];
                 qDebug() << "header key" << h.first << h.second;
 
                 key = h.first;
             } else {
                 qDebug() << "header parse key";
                 bool errorUpper = false;
-                len = parse_string_key(hTree, key, it, errorUpper);
+                len = parse_string_key(m_huffmanTree, key, it, errorUpper);
                 if (errorUpper) {
                     return ErrorProtocolError;
                 }
@@ -281,7 +306,7 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
 
             QString value;
             bool error = false;
-            len = parse_string(hTree, value, it, error);
+            len = parse_string(m_huffmanTree, value, it, error);
             if (error) {
                 return ErrorCompressionError;
             }
@@ -298,11 +323,18 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                headers.push_back({ key, value });
+                stream->headers.pushHeader(key, value);
+            }
+
+            if (kind == 0x40) {
+                qDebug() << "=========================Adding to dynamic table key/value" << key << value;
+                m_dynamicTable.push_back({ key, value });
             }
 
             qDebug() << "header key/value" << key << value;
         }
+
+        allowedToUpdate = false;
     }
 
     if (stream->path.isEmpty() || stream->method.isEmpty() || stream->scheme.isEmpty()) {
@@ -310,77 +342,6 @@ int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &hea
     }
 
     return 0;
-}
-
-static const std::pair<QString, QString> staticHeaders[] = {
-
-    {QString(), QString()},
-    {QStringLiteral(":authority"), QString()},
-    {QStringLiteral(":method"), QStringLiteral("GET")},
-    {QStringLiteral(":method"), QStringLiteral("POST")},
-    {QStringLiteral(":path"), QStringLiteral("/")},
-    {QStringLiteral(":path"), QStringLiteral("/index.html")},
-    {QStringLiteral(":scheme"), QStringLiteral("http")},
-    {QStringLiteral(":scheme"), QStringLiteral("https")},
-    {QStringLiteral(":status"), QStringLiteral("200")},
-    {QStringLiteral(":status"), QStringLiteral("204")},
-    {QStringLiteral(":status"), QStringLiteral("206")},
-    {QStringLiteral(":status"), QStringLiteral("304")},
-    {QStringLiteral(":status"), QStringLiteral("400")},
-    {QStringLiteral(":status"), QStringLiteral("404")},
-    {QStringLiteral(":status"), QStringLiteral("500")},
-    {QStringLiteral("accept-charset"), QString()},
-    {QStringLiteral("accept-encoding"), QStringLiteral("gzip, deflate")},
-    {QStringLiteral("accept-language"), QString()},
-    {QStringLiteral("accept-ranges"), QString()},
-    {QStringLiteral("accept"), QString()},
-    {QStringLiteral("access-control-allow-origin"), QString()},
-    {QStringLiteral("age"), QString()},
-    {QStringLiteral("allow"), QString()},
-    {QStringLiteral("authorization"), QString()},
-    {QStringLiteral("cache-control"), QString()},
-    {QStringLiteral("content-disposition"), QString()},
-    {QStringLiteral("content-encoding"), QString()},
-    {QStringLiteral("content-language"), QString()},
-    {QStringLiteral("content-length"), QString()},
-    {QStringLiteral("content-location"), QString()},
-    {QStringLiteral("content-range"), QString()},
-    {QStringLiteral("content-type"), QString()},
-    {QStringLiteral("cookie"), QString()},
-    {QStringLiteral("date"), QString()},
-    {QStringLiteral("etag"), QString()},
-    {QStringLiteral("expect"), QString()},
-    {QStringLiteral("expires"), QString()},
-    {QStringLiteral("from"), QString()},
-    {QStringLiteral("host"), QString()},
-    {QStringLiteral("if-match"), QString()},
-    {QStringLiteral("if-modified-since"), QString()},
-    {QStringLiteral("if-none-match"), QString()},
-    {QStringLiteral("if-range"), QString()},
-    {QStringLiteral("if-unmodified-since"), QString()},
-    {QStringLiteral("last-modified"), QString()},
-    {QStringLiteral("link"), QString()},
-    {QStringLiteral("location"), QString()},
-    {QStringLiteral("max-forwards"), QString()},
-    {QStringLiteral("proxy-authenticate"), QString()},
-    {QStringLiteral("proxy-authorization"), QString()},
-    {QStringLiteral("range"), QString()},
-    {QStringLiteral("referer"), QString()},
-    {QStringLiteral("refresh"), QString()},
-    {QStringLiteral("retry-after"), QString()},
-    {QStringLiteral("server"), QString()},
-    {QStringLiteral("set-cookie"), QString()},
-    {QStringLiteral("strict-transport-security"), QString()},
-    {QStringLiteral("transfer-encoding"), QString()},
-    {QStringLiteral("user-agent"), QString()},
-    {QStringLiteral("vary"), QString()},
-    {QStringLiteral("via"), QString()},
-    {QStringLiteral("www-authenticate"), QString()}
-};
-
-std::pair<QString, QString> HPackTables::header(int index)
-{
-    return staticHeaders[index];
 }
 
 static const huffman_code HUFFMAN_TABLE[] = {
@@ -659,21 +620,6 @@ public:
     qint16 code;
 };
 
-HPackHeaders::HPackHeaders(int size)
-{
-    headers.reserve(size);
-}
-
-bool HPackHeaders::updateTableSize(uint size)
-{
-    if (size > headers.capacity()) {
-        return false;
-    }
-
-    headers.reserve(size);
-    return true;
-}
-
 }
 HuffmanTree::HuffmanTree(int tableSize)
 //    : m_root(new Node(0xffffffff))
@@ -699,7 +645,8 @@ HuffmanTree::HuffmanTree(int tableSize)
     }
 }
 
-HuffmanTree::~HuffmanTree() {
+HuffmanTree::~HuffmanTree()
+{
     delete m_root;
 }
 
@@ -743,6 +690,7 @@ QString HuffmanTree::decode(const quint8 *buf, quint32 str_len, bool &error)
 {
     QString dst;
     Node *cursor = m_root;
+//    qDebug() << "HuffmanTree::decode" << str_len << QByteArray(reinterpret_cast<const char *>(buf), str_len).toHex();
     for (quint16 i = 0; i < str_len; i++) {
 //        qDebug() << "i" << i;
         quint8 pading = 0;

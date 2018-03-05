@@ -64,6 +64,7 @@ public:
     QVariantMap config;
     QStringList httpSockets;
     QStringList http2Sockets;
+    quint32 http2HeaderTableSize = 4096;
     QStringList httpsSockets;
     QStringList fastcgiSockets;
     QStringList staticMaps;

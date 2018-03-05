@@ -27,9 +27,32 @@
 
 #include "cwsgiengine.h"
 
+#include "hpack.h"
+
 class QIODevice;
 
 namespace CWSGI {
+
+struct H2Stream
+{
+    enum state {
+        Idle,
+        Open,
+        HalfClosed,
+        Closed
+    };
+
+    QString method;
+    QString path;
+    QString scheme;
+    QString authority;
+    Cutelyst::Headers headers;
+    quint32 streamId;
+    quint32 windowSize = 65535;
+    qint64 contentLength = -1;
+    qint64 consumedData = 0;
+    quint8 state = Idle;
+};
 
 class WSGI;
 
@@ -106,6 +129,8 @@ public:
         delete body;
         body = nullptr;
         status = InitialState;
+        delete hpack;
+        hpack = nullptr;
         qDeleteAll(streams);
         streams.clear();
     }
@@ -138,31 +163,12 @@ public:
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
 
+    HPack *hpack = nullptr;
     quint64 maxStreamId = 0;// H2
     quint64 streamForContinuation = 0;// H2
     quint32 windowSize = 65535;
     bool canPush = false;
 
-    struct H2Stream
-    {
-        enum state {
-            Idle,
-            Open,
-            HalfClosed,
-            Closed
-        };
-
-        QString method;
-        QString path;
-        QString scheme;
-        QString authority;
-        std::vector<std::pair<QString,QString>> headers;
-        quint32 streamId;
-        quint32 windowSize = 65535;
-        qint64 contentLength = -1;
-        qint64 consumedData = 0;
-        quint8 state = Idle;
-    };
     QHash<quint32, H2Stream *> streams;
 
 

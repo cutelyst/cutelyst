@@ -162,6 +162,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                      QCoreApplication::translate("main", "address"));
     parser.addOption(http2SocketOpt);
 
+    QCommandLineOption http2HeaderTableSizeOpt({ QStringLiteral("http2-header-table-size") },
+                                               QCoreApplication::translate("main", "Defined the HTTP/2 header table size"),
+                                               QCoreApplication::translate("main", "size"));
+    parser.addOption(http2HeaderTableSizeOpt);
+
     QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
                                       QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
                                       QCoreApplication::translate("main", "address"));
@@ -448,6 +453,15 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         bool ok;
         auto size = parser.value(wsMaxSize).toInt(&ok);
         setWebsocketMaxSize(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
+    }
+
+    if (parser.isSet(http2HeaderTableSizeOpt)) {
+        bool ok;
+        auto size = parser.value(http2HeaderTableSizeOpt).toUInt(&ok);
+        setHttp2HeaderTableSize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
@@ -869,6 +883,18 @@ QStringList WSGI::http2Socket() const
 {
     Q_D(const WSGI);
     return d->http2Sockets;
+}
+
+void WSGI::setHttp2HeaderTableSize(quint32 headerTableSize)
+{
+    Q_D(WSGI);
+    d->http2HeaderTableSize = headerTableSize;
+}
+
+quint32 WSGI::http2HeaderTableSize() const
+{
+    Q_D(const WSGI);
+    return d->http2HeaderTableSize;
 }
 
 void WSGI::setHttpsSocket(const QStringList &httpsSocket)
