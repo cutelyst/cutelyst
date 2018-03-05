@@ -24,8 +24,8 @@
 using namespace CWSGI;
 
 typedef struct {
-    uint32_t code;
-    uint8_t bitLen;
+    quint32 code;
+    quint8 bitLen;
 } huffman_code;
 
 quint64 decode_int(quint32 &dst, const quint8 *buf, quint8 N)
@@ -45,15 +45,60 @@ quint64 decode_int(quint32 &dst, const quint8 *buf, quint8 N)
     return len;
 }
 
-quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf)
+quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
+{
+    quint16 twoN = (1 << N) -1;
+    if (I < twoN) {
+        *dst = I;
+        return 1;
+    }
+
+    I -= twoN;
+    *dst = twoN;
+    quint64 i = 1;
+    for (; I >= 128; i++) {
+        *(dst + i) = (I & 0x7f) | 0x80;
+        I = I >> 7;
+    }
+    *(dst + (i++)) = I;
+
+    return i;
+}
+
+quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool &error)
+{
+    quint32 str_len = 0;
+    quint64 len = decode_int(str_len, buf, 7);
+    if (*buf & 0x80) {
+        qDebug() << "HUFFMAN" << len << str_len;
+//        if (str_len > 9) {
+//            error = true;
+//            return 0;
+//        }
+        dst = huffman->decode(buf + len, str_len, error);
+    } else {
+        for (uint i = 0; i < str_len; i++) {
+            dst += QLatin1Char(*(buf + (len + i)));
+        }
+    }
+    return len + str_len;
+}
+
+quint64 parse_string_key(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool &error)
 {
     quint32 str_len = 0;
     quint64 len = decode_int(str_len, buf, 7);
     if ((*buf & 0x80) > 0) {
-        dst = huffman->decode(buf+len, str_len);
+        qDebug() << "HUFFMAN key" << len << str_len;
+        dst = huffman->decode(buf+len, str_len, error);
     } else {
         for (uint i = 0; i < str_len; i++) {
-            dst += QLatin1Char(*(buf + (len + i)));
+            QChar c = QLatin1Char(*(buf + (len + i)));
+            if (c.isUpper()) {
+                error = true;
+                return 0;
+            }
+            dst += c;
         }
     }
     return len + str_len;
@@ -64,15 +109,104 @@ HPackTables::HPackTables()
 
 }
 
-bool HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree)
+void HPackTables::encodeStatus(int status)
 {
+    if (status == 200) {
+        buf.append(0x88);
+    } else if (status == 204) {
+        buf.append(0x89);
+    } else if (status == 206) {
+        buf.append(0x8A);
+    } else if (status == 304) {
+        buf.append(0x8B);
+    } else if (status == 400) {
+        buf.append(0x8C);
+    } else if (status == 404) {
+        buf.append(0x8D);
+    } else if (status == 500) {
+        buf.append(0x8E);
+    } else {
+        encodeHeader(QByteArrayLiteral(":status"), QByteArray::number(status));
+    }
+}
+
+void HPackTables::encodeHeader(const QByteArray &key, const QByteArray &value)
+{
+
+}
+
+QByteArray HPackTables::data() const
+{
+    return buf;
+}
+
+enum ErrorCodes {
+    ErrorNoError = 0x0,
+    ErrorProtocolError = 0x1,
+    ErrorInternalError = 0x2,
+    ErrorFlowControlError = 0x3,
+    ErrorSettingsTimeout = 0x4,
+    ErrorStreamClosed = 0x5,
+    ErrorFrameSizeError = 0x6,
+    ErrorRefusedStream = 0x7,
+    ErrorCancel = 0x8,
+    ErrorCompressionError = 0x9,
+    ErrorConnectError = 0xA,
+    ErrorEnhanceYourCalm  = 0xB,
+    ErrorInadequateSecurity = 0xC,
+    ErrorHttp11Required = 0xD
+};
+
+inline bool validPseudoHeader(const QString &k, const QString &v, Socket::H2Stream *stream)
+{
+    qDebug() << k << v << stream->path << stream->method << stream->authority << stream->scheme;
+    if (k == QLatin1String(":path")) {
+        if (stream->path.isEmpty() && !v.isEmpty()) {
+            stream->path = v;
+            return true;
+        }
+    } else if (k == QLatin1String(":method")) {
+        if (stream->method.isEmpty()) {
+            stream->method = v;
+            return true;
+        }
+    } else if (k == QLatin1String(":authority")) {
+        if (stream->authority.isEmpty()) {
+            stream->authority = v;
+            return true;
+        }
+    } else if (k == QLatin1String(":scheme")) {
+        if (stream->scheme.isEmpty()) {
+            stream->scheme = v;
+            return true;
+        }
+    }
+    return false;
+}
+
+inline bool validHeader(const QString &k, const QString &v)
+{
+    return k != QLatin1String("connection") &&
+            (k != QLatin1String("te") || v == QLatin1String("trailers"));
+}
+
+inline void consumeHeader(const QString &k, const QString &v, Socket::H2Stream *stream)
+{
+    if (k == QLatin1String("content-length")) {
+        stream->contentLength = v.toLongLong();
+    }
+}
+
+int HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree, Socket::H2Stream *stream)
+{
+    bool pseudoHeadersAllowed = true;
     while (it < itEnd) {
         if (0x20 == (*it * 0xE0)) {
             quint32 size(0);
             quint64 len = decode_int(size, it, 5);
             qDebug() << "6.3 Dynamic Table update" << *it << size << len;
             if (!headers.updateTableSize(size)) {
-                return 1;
+                return ErrorCompressionError;
             }
 
             it += len;
@@ -81,18 +215,38 @@ bool HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &he
             quint64 len = decode_int(index, it, 7);
             qDebug() << "6.1 Indexed Header Field Representation" << *it << index << len;
             if (index == 0) {
-                return 1;
+                return ErrorCompressionError;
             }
-            if (index <= 62) {
+
+            QString key;
+            QString value;
+            if (index > 61) {
+                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << index << len;
+            } else  {
                 auto h = HPackTables::header(index);
-                headers.push_back({ h.first, h.second });
-                qDebug() << "header" << h.first << h.second;
+                key = h.first;
+                value = h.second;
             }
+
+            qDebug() << "header" << key << value;
+            if (key.startsWith(QLatin1Char(':'))) {
+                if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
+                    return ErrorProtocolError;
+                }
+            } else {
+                if (!validHeader(key, value)) {
+                    return ErrorProtocolError;
+                }
+                pseudoHeadersAllowed = false;
+                consumeHeader(key, value, stream);
+                headers.push_back({ key, value });
+            }
+
             it += len;
         } else {
             qDebug() << "else" << *it;
 
-            uint32_t index(0);
+            quint32 index(0);
             QString key;
             quint64 len = 0;
             if ((*it & 0xC0) == 0x40) {
@@ -104,29 +258,62 @@ bool HPackTables::decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &he
             }
             it += len;
 
+            if (index > 61) {
+                return ErrorCompressionError;
+            }
+
             if (index != 0) {
+                qDebug() << "header index" << index;
+
                 auto h = HPackTables::header(index);
                 qDebug() << "header key" << h.first << h.second;
 
                 key = h.first;
             } else {
                 qDebug() << "header parse key";
-                len = parse_string(hTree, key, it);
+                bool errorUpper = false;
+                len = parse_string_key(hTree, key, it, errorUpper);
+                if (errorUpper) {
+                    return ErrorProtocolError;
+                }
                 it += len;
             }
 
             QString value;
-            len = parse_string(hTree, value, it);
+            bool error = false;
+            len = parse_string(hTree, value, it, error);
+            if (error) {
+                return ErrorCompressionError;
+            }
             it += len;
-            headers.push_back({ key, value });
+
+
+            if (key.startsWith(QLatin1Char(':'))) {
+                if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
+                    return ErrorProtocolError;
+                }
+            } else {
+                if (!validHeader(key, value)) {
+                    return ErrorProtocolError;
+                }
+                pseudoHeadersAllowed = false;
+                consumeHeader(key, value, stream);
+                headers.push_back({ key, value });
+            }
+
             qDebug() << "header key/value" << key << value;
         }
     }
 
-    return true;
+    if (stream->path.isEmpty() || stream->method.isEmpty() || stream->scheme.isEmpty()) {
+        return ErrorProtocolError;
+    }
+
+    return 0;
 }
 
 static const std::pair<QString, QString> staticHeaders[] = {
+
     {QString(), QString()},
     {QStringLiteral(":authority"), QString()},
     {QStringLiteral(":method"), QStringLiteral("GET")},
@@ -197,6 +384,7 @@ std::pair<QString, QString> HPackTables::header(int index)
 }
 
 static const huffman_code HUFFMAN_TABLE[] = {
+
     {0x1ff8, 13},
     {0x7fffd8, 23},
     {0xfffffe2, 28},
@@ -495,7 +683,7 @@ HuffmanTree::HuffmanTree(int tableSize)
         Node *cursor = m_root;
         huffman_code huff = HUFFMAN_TABLE[code];
         for (int i = huff.bitLen; i > 0; i--) {
-            if ((huff.code & (1 << (i-1))) > 0) {
+            if (huff.code & (1 << (i-1))) {
                 if (!cursor->right) {
                     cursor->right = new Node;
                 }
@@ -551,23 +739,35 @@ qint64 HuffmanTree::encode(quint8 *buf, const QByteArray &content)
     return len;
 }
 
-QString HuffmanTree::decode(const quint8 *buf, quint32 str_len)
+QString HuffmanTree::decode(const quint8 *buf, quint32 str_len, bool &error)
 {
     QString dst;
     Node *cursor = m_root;
     for (quint16 i = 0; i < str_len; i++) {
+//        qDebug() << "i" << i;
+        quint8 pading = 0;
         for (qint8 j = 7; j >= 0; j--) {
-            if ((*(buf + i) & (1 << j)) > 0) {
+            if (*(buf + i) & (1 << j)) {
                 cursor = cursor->right;
             } else {
                 cursor = cursor->left;
             }
 
+//            qDebug() << "HuffmanTree::decode" << j << cursor->code;
             if (cursor->code >= 0) {
                 dst += QLatin1Char(cursor->code);
                 cursor = m_root;
+            } else {
+                ++pading;
+            }
+
+            if (pading > 7) {
+                qDebug() << "HuffmanTree::decode padding error" << pading;
+                error = true;
+                return dst;
             }
         }
     }
+    qDebug() << "HuffmanTree::decode" << str_len;
     return dst;
 }

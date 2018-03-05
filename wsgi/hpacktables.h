@@ -21,6 +21,8 @@
 #include <QString>
 #include <vector>
 
+#include "socket.h"
+
 namespace CWSGI {
 
 class HPackHeaders
@@ -43,9 +45,18 @@ class HPackTables
 public:
     HPackTables();
 
-    static bool decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree);
+    void encodeStatus(int status);
+
+    void encodeHeader(const QByteArray &key, const QByteArray &value);
+
+    QByteArray data() const;
+
+    static int decode(const quint8 *it, const quint8 *itEnd, HPackHeaders &headers, HuffmanTree *hTree, Socket::H2Stream *stream);
 
     static std::pair<QString, QString> header(int index);
+
+private:
+    QByteArray buf;
 };
 
 class Node;
@@ -54,7 +65,7 @@ public:
     HuffmanTree(int tableSize = 257);
     ~HuffmanTree();
     qint64 encode(quint8 *buf, const QByteArray &content);
-    QString decode(const quint8 *buf, quint32 len);
+    QString decode(const quint8 *buf, quint32 len, bool &error);
 
 private:
     Node *m_root;

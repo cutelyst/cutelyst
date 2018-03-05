@@ -50,13 +50,18 @@ public:
     int parsePriority(Socket *sock, QIODevice *io, const H2Frame &fr) const;
     int parsePing(Socket *sock, QIODevice *io, const H2Frame &fr) const;
     int parseRstStream(Socket *sock, QIODevice *io, const H2Frame &fr) const;
+    int parseWindowUpdate(Socket *sock, QIODevice *io, const H2Frame &fr) const;
 
-    int sendGoAway(QIODevice *io, quint32 error) const;
+    int sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error) const;
+    int sendRstStream(QIODevice *io, quint32 streamId, quint32 error) const;
     int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32> > &settings) const;
     int sendSettingsAck(QIODevice *io) const;
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
+    int sendData(QIODevice *io, quint32 streamId, qint32 windowSize, const char *data, qint32 dataLen) const;
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
+
+    void sendDummyReply(Socket *sock, QIODevice *io, const H2Frame &fr) const;
 
     quint32 m_maxFrameSize;
     HuffmanTree *hTree;

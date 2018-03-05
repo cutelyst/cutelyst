@@ -44,6 +44,7 @@ TcpSocket::TcpSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent) : QT
 
 void TcpSocket::connectionClose()
 {
+    flush();
     disconnectFromHost();
 }
 
@@ -212,6 +213,7 @@ SslSocket::SslSocket(WSGI *wsgi, Cutelyst::Engine *engine, QObject *parent) : QS
 
 void SslSocket::connectionClose()
 {
+    flush();
     disconnectFromHost();
 }
 

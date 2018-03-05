@@ -94,14 +94,20 @@ public:
         beginLine = 0;
         last = 0;
         startOfRequest = 0;
+        maxStreamId = 0;
+        streamForContinuation = 0;
+        windowSize = 65535;
         headerConnection = HeaderConnectionNotSet;
         pktsize = 0;
         processing = false;
         headerHost = false;
+        canPush = false;
         timeout = false;
         delete body;
         body = nullptr;
         status = InitialState;
+        qDeleteAll(streams);
+        streams.clear();
     }
 
     virtual void connectionClose() = 0;
@@ -132,6 +138,32 @@ public:
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
 
+    quint64 maxStreamId = 0;// H2
+    quint64 streamForContinuation = 0;// H2
+    quint32 windowSize = 65535;
+    bool canPush = false;
+
+    struct H2Stream
+    {
+        enum state {
+            Idle,
+            Open,
+            HalfClosed,
+            Closed
+        };
+
+        QString method;
+        QString path;
+        QString scheme;
+        QString authority;
+        std::vector<std::pair<QString,QString>> headers;
+        quint32 streamId;
+        quint32 windowSize = 65535;
+        qint64 contentLength = -1;
+        qint64 consumedData = 0;
+        quint8 state = Idle;
+    };
+    QHash<quint32, H2Stream *> streams;
 
 
     virtual bool webSocketSendTextMessage(const QString &message) override final;
