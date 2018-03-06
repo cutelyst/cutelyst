@@ -55,14 +55,14 @@ struct H2Stream
 };
 
 class WSGI;
-
+class Socket;
 class Protocol;
-class Socket : public Cutelyst::EngineRequest
+class ProtoRequest : public Cutelyst::EngineRequest
 {
     Q_GADGET
 public:
-    Socket(WSGI *wsgi, Cutelyst::Engine *_engine);
-    virtual ~Socket();
+    ProtoRequest(WSGI *wsgi, Cutelyst::Engine *_engine);
+    virtual ~ProtoRequest();
 
     enum HeaderConnection {
         HeaderConnectionNotSet = 0,
@@ -135,8 +135,7 @@ public:
         streams.clear();
     }
 
-    virtual void connectionClose() = 0;
-
+    Socket *sock;//temporary
     qint64 contentLength;
     QIODevice *io;
     Cutelyst::Context *websocketContext = nullptr;
@@ -190,6 +189,22 @@ protected:
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
+};
+
+class Socket
+{
+    Q_GADGET
+public:
+    Socket(WSGI *wsgi, Cutelyst::Engine *_engine);
+    virtual ~Socket();
+
+    virtual void connectionClose() = 0;
+
+    inline void resetSocket() {
+
+    }
+
+    ProtoRequest *protoRequest;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

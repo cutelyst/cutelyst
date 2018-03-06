@@ -25,6 +25,7 @@
 namespace CWSGI {
 
 class WSGI;
+class ProtoRequest;
 class ProtocolFastCGI : public Protocol
 {
 public:
@@ -33,18 +34,18 @@ public:
 
     virtual Type type() const override;
 
-    inline qint64 readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const;
+    inline qint64 readBody(Socket *socket, QIODevice *io, qint64 bytesAvailable) const;
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
     virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
     qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:
-    inline quint16 addHeader(Socket *wsgi_req, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
-    inline int parseHeaders(Socket *wsgi_req, const char *buf, size_t len) const;
-    inline int processPacket(Socket *sock) const;
-    inline bool writeBody(Socket *sock, char *buf, qint64 len) const;
+    inline quint16 addHeader(ProtoRequest *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
+    inline int parseHeaders(ProtoRequest *request, const char *buf, size_t len) const;
+    inline int processPacket(ProtoRequest *request) const;
+    inline bool writeBody(ProtoRequest *request, char *buf, qint64 len) const;
     // write a STDOUT packet
-    int wsgi_proto_fastcgi_write(QIODevice *io, Socket *wsgi_req, const char *buf, int len);
+    int wsgi_proto_fastcgi_write(QIODevice *io, ProtoRequest *request, const char *buf, int len);
 };
 
 }

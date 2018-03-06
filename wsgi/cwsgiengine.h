@@ -48,6 +48,14 @@ public:
 
     virtual bool init() override;
 
+    inline QByteArray lastDate() {
+        if (m_lastDateTimer.hasExpired(1000)) {
+            m_lastDate = dateHeader();
+            m_lastDateTimer.restart();
+        }
+        return m_lastDate;
+    }
+
 Q_SIGNALS:
     void started();
     void shutdown();
@@ -70,14 +78,6 @@ protected:
         if (--m_runningServers == 0) {
             Q_EMIT shutdownCompleted(this);
         }
-    }
-
-    inline QByteArray lastDate() {
-        if (m_lastDateTimer.hasExpired(1000)) {
-            m_lastDate = dateHeader();
-            m_lastDateTimer.restart();
-        }
-        return m_lastDate;
     }
 
     static QByteArray dateHeader();

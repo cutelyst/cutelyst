@@ -56,8 +56,8 @@ void TcpServer::incomingConnection(qintptr handle)
         sock = new TcpSocket(m_wsgi, m_engine, this);
 
         connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->timeout = false;
-            sock->proto->readyRead(sock, sock);
+            sock->protoRequest->timeout = false;
+            sock->protoRequest->proto->readyRead(sock, sock);
         });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
             m_socks.push_back(obj);
@@ -68,10 +68,10 @@ void TcpServer::incomingConnection(qintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
 
-        sock->proto = m_protocol;
-        sock->serverAddress = m_serverAddress;
-        sock->remoteAddress = sock->peerAddress();
-        sock->remotePort = sock->peerPort();
+        sock->protoRequest->proto = m_protocol;// TODO create proto request
+        sock->protoRequest->serverAddress = m_serverAddress;
+        sock->protoRequest->remoteAddress = sock->peerAddress();
+        sock->protoRequest->remotePort = sock->peerPort();
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);
@@ -96,7 +96,7 @@ void TcpServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
-                socket->headerConnection = Socket::HeaderConnectionClose;
+                socket->protoRequest->headerConnection = ProtoRequest::HeaderConnectionClose;
                 connect(socket, &TcpSocket::finished, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
@@ -113,11 +113,11 @@ void TcpServer::timeoutConnections()
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
-            if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
-                if (socket->timeout) {
+            if (socket && !socket->protoRequest->processing && socket->state() == QAbstractSocket::ConnectedState) {
+                if (socket->protoRequest->timeout) {
                     socket->connectionClose();
                 } else {
-                    socket->timeout = true;
+                    socket->protoRequest->timeout = true;
                 }
             }
         }

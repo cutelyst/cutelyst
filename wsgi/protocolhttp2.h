@@ -34,6 +34,7 @@ public:
 };
 
 class HPack;
+class ProtoRequest;
 class ProtocolHttp2 : public Protocol
 {
 public:
@@ -44,13 +45,13 @@ public:
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
 
-    int parseSettings(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parseData(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parseHeaders(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parsePriority(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parsePing(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parseRstStream(Socket *sock, QIODevice *io, const H2Frame &fr) const;
-    int parseWindowUpdate(Socket *sock, QIODevice *io, const H2Frame &fr) const;
+    int parseSettings(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parseData(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parseHeaders(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePriority(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePing(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parseRstStream(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parseWindowUpdate(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
 
     int sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error) const;
     int sendRstStream(QIODevice *io, quint32 streamId, quint32 error) const;
@@ -61,7 +62,7 @@ public:
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
-    void sendDummyReply(Socket *sock, QIODevice *io, const H2Frame &fr) const;
+    void sendDummyReply(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
 
     quint32 m_maxFrameSize;
     quint32 m_headerTableSize;

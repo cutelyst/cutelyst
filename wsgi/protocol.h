@@ -26,6 +26,7 @@ namespace CWSGI {
 
 class WSGI;
 class Socket;
+class ProtoRequest;
 class Protocol
 {
 public:
