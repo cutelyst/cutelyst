@@ -218,7 +218,7 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
                 return ErrorCompressionError;
             }
             if (!allowedToUpdate) {
-//                return ErrorCompressionError;
+                return ErrorCompressionError;
             }
             m_dynamicTable.reserve(size);
 
