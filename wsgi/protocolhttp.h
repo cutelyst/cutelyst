@@ -21,11 +21,78 @@
 #include <QObject>
 
 #include "protocol.h"
+#include "socket.h"
 
 namespace CWSGI {
 
 class WSGI;
 class Socket;
+
+class ProtoRequestHttp : public ProtocolData, public Cutelyst::EngineRequest
+{
+    Q_GADGET
+public:
+    enum WebSocketPhase
+    {
+        WebSocketPhaseHeaders,
+        WebSocketPhaseSize,
+        WebSocketPhaseMask,
+        WebSocketPhasePayload,
+    };
+    Q_ENUM(WebSocketPhase)
+
+    enum OpCode
+    {
+        OpCodeContinue    = 0x0,
+        OpCodeText        = 0x1,
+        OpCodeBinary      = 0x2,
+        OpCodeReserved3   = 0x3,
+        OpCodeReserved4   = 0x4,
+        OpCodeReserved5   = 0x5,
+        OpCodeReserved6   = 0x6,
+        OpCodeReserved7   = 0x7,
+        OpCodeClose       = 0x8,
+        OpCodePing        = 0x9,
+        OpCodePong        = 0xA,
+        OpCodeReservedB   = 0xB,
+        OpCodeReservedC   = 0xC,
+        OpCodeReservedD   = 0xD,
+        OpCodeReservedE   = 0xE,
+        OpCodeReservedF   = 0xF
+    };
+    Q_ENUM(OpCode)
+
+    ProtoRequestHttp(WSGI *wsgi, Cutelyst::Engine *_engine);
+    virtual ~ProtoRequestHttp();
+
+    virtual qint64 doWrite(const char *data, qint64 len) override final;
+    inline qint64 doWrite(const QByteArray &data) {
+        return doWrite(data.constData(), data.size());
+    }
+
+    virtual bool webSocketSendTextMessage(const QString &message) override final;
+
+    virtual bool webSocketSendBinaryMessage(const QByteArray &message) override final;
+
+    virtual bool webSocketSendPing(const QByteArray &payload) override final;
+
+    virtual bool webSocketClose(quint16 code, const QString &reason) override final;
+
+    Cutelyst::Context *websocketContext = nullptr;
+    QByteArray websocket_message;
+    QByteArray websocket_payload;
+    quint32 websocket_need;
+    quint32 websocket_mask;
+    int websocket_start_of_frame = 0;
+    int websocket_phase = 0;
+    int websocket_payload_size;
+    quint8 websocket_continue_opcode = 0;
+    quint8 websocket_finn_opcode;
+
+protected:
+    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) /*override final*/;
+};
+
 class ProtocolWebSocket;
 class ProtocolHttp : public Protocol
 {

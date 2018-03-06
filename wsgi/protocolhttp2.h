@@ -21,6 +21,7 @@
 #include <QObject>
 
 #include "protocol.h"
+#include "socket.h"
 
 namespace CWSGI {
 
@@ -33,8 +34,25 @@ public:
     quint8 flags;
 };
 
+class ProtoRequestHttp2 : public ProtocolData
+{
+    Q_GADGET
+public:
+    ProtoRequestHttp2(WSGI *wsgi, Cutelyst::Engine *_engine);
+    virtual ~ProtoRequestHttp2();
+
+    quint64 stream_id = 0;
+
+    HPack *hpack = nullptr;
+    quint64 maxStreamId = 0;
+    quint64 streamForContinuation = 0;
+    quint32 windowSize = 65535;
+    bool canPush = false;
+
+    QHash<quint32, H2Stream *> streams;
+};
+
 class HPack;
-class ProtoRequest;
 class ProtocolHttp2 : public Protocol
 {
 public:
@@ -45,13 +63,13 @@ public:
 
     virtual void readyRead(Socket *sock, QIODevice *io) const override;
 
-    int parseSettings(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parseData(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parseHeaders(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parsePriority(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parsePing(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parseRstStream(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
-    int parseWindowUpdate(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    int parseSettings(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePriority(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parsePing(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parseRstStream(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    int parseWindowUpdate(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
 
     int sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error) const;
     int sendRstStream(QIODevice *io, quint32 streamId, quint32 error) const;
@@ -62,7 +80,7 @@ public:
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
     virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
-    void sendDummyReply(ProtoRequest *request, QIODevice *io, const H2Frame &fr) const;
+    void sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
 
     quint32 m_maxFrameSize;
     quint32 m_headerTableSize;

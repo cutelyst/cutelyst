@@ -40,7 +40,7 @@ public:
     };
     Q_DECLARE_FLAGS(Status, StatusFlag)
 
-    explicit EngineRequest(Engine *_engine);
+    explicit EngineRequest();
 
     virtual ~EngineRequest();
 
@@ -137,9 +137,6 @@ public:
 
     /*! Connection status */
     Status status = InitialState;
-
-    /*! Pointer to parent Engine class */
-    Engine *engine;
 
     /*! The QIODevice containing the body (if any) of the request */
     QIODevice *body = nullptr;

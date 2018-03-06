@@ -364,7 +364,7 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
 Engine *Request::engine() const
 {
     Q_D(const Request);
-    return d->engineRequest->engine;
+    return d->engine;
 }
 
 void RequestPrivate::parseUrlQuery() const

@@ -53,6 +53,7 @@ public:
     static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
     // Pointer to Engine data
+    Engine *engine;
     EngineRequest *engineRequest = nullptr;
 
     // Engines don't need to touch this

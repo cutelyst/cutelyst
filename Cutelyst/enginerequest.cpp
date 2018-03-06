@@ -27,7 +27,7 @@ Q_LOGGING_CATEGORY(CUTELYST_ENGINEREQUEST, "cutelyst.engine_request")
 
 using namespace Cutelyst;
 
-EngineRequest::EngineRequest(Engine *_engine) : engine(_engine)
+EngineRequest::EngineRequest()
 {
 
 }

@@ -14,7 +14,7 @@ using namespace Cutelyst;
 class TestEngineConnection : public EngineRequest
 {
 public:
-    TestEngineConnection(Engine *engine) : EngineRequest(engine) {}
+    TestEngineConnection() {}
 
 protected:
     virtual qint64 doWrite(const char *data, qint64 len) final;
@@ -95,7 +95,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
 
     QVariantMap ret;
 
-    TestEngineConnection req(this);
+    TestEngineConnection req;
     req.method = method;
     req.path = path;
     req.query = query;

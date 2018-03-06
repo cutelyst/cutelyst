@@ -32,7 +32,7 @@ struct wsgi_request;
 class uwsgiConnection : public Cutelyst::EngineRequest
 {
 public:
-    explicit uwsgiConnection(wsgi_request *req, Cutelyst::Engine *engine);
+    explicit uwsgiConnection(wsgi_request *req);
 
     virtual ~uwsgiConnection();
 

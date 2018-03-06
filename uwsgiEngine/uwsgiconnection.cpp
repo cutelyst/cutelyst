@@ -40,9 +40,8 @@ static inline uint16_t notSlash(char *str, uint16_t length) {
     return length;
 }
 
-uwsgiConnection::uwsgiConnection(wsgi_request *req, Cutelyst::Engine *engine)
-  : EngineRequest(engine)
-  , request(req)
+uwsgiConnection::uwsgiConnection(wsgi_request *req)
+  : request(req)
 {
     uint16_t pos = notSlash(req->path_info, req->path_info_len);
     path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);

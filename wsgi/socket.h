@@ -31,6 +31,10 @@
 
 class QIODevice;
 
+namespace Cutelyst {
+class Engine;
+}
+
 namespace CWSGI {
 
 struct H2Stream
@@ -57,12 +61,12 @@ struct H2Stream
 class WSGI;
 class Socket;
 class Protocol;
-class ProtoRequest : public Cutelyst::EngineRequest
+class ProtocolData /* : public Cutelyst::EngineRequest*/
 {
     Q_GADGET
 public:
-    ProtoRequest(WSGI *wsgi, Cutelyst::Engine *_engine);
-    virtual ~ProtoRequest();
+    ProtocolData();
+    virtual ~ProtocolData();
 
     enum HeaderConnection {
         HeaderConnectionNotSet = 0,
@@ -80,115 +84,51 @@ public:
     };
     Q_ENUM(ParserState)
 
-    enum OpCode
-    {
-        OpCodeContinue    = 0x0,
-        OpCodeText        = 0x1,
-        OpCodeBinary      = 0x2,
-        OpCodeReserved3   = 0x3,
-        OpCodeReserved4   = 0x4,
-        OpCodeReserved5   = 0x5,
-        OpCodeReserved6   = 0x6,
-        OpCodeReserved7   = 0x7,
-        OpCodeClose       = 0x8,
-        OpCodePing        = 0x9,
-        OpCodePong        = 0xA,
-        OpCodeReservedB   = 0xB,
-        OpCodeReservedC   = 0xC,
-        OpCodeReservedD   = 0xD,
-        OpCodeReservedE   = 0xE,
-        OpCodeReservedF   = 0xF
-    };
-    Q_ENUM(OpCode)
-
-    enum WebSocketPhase
-    {
-        WebSocketPhaseHeaders,
-        WebSocketPhaseSize,
-        WebSocketPhaseMask,
-        WebSocketPhasePayload,
-    };
-    Q_ENUM(WebSocketPhase)
-
     inline void resetSocket() {
         connState = MethodLine;
-        stream_id = 0; //FCGI
+//        stream_id = 0; //FCGI
         buf_size = 0;
         beginLine = 0;
         last = 0;
-        startOfRequest = 0;
-        maxStreamId = 0;
-        streamForContinuation = 0;
-        windowSize = 65535;
+//        startOfRequest = 0;
+//        maxStreamId = 0;
+//        streamForContinuation = 0;
+//        windowSize = 65535;
         headerConnection = HeaderConnectionNotSet;
         pktsize = 0;
-        processing = false;
+//        processing = false;
         headerHost = false;
-        canPush = false;
-        timeout = false;
-        delete body;
-        body = nullptr;
-        status = InitialState;
-        delete hpack;
-        hpack = nullptr;
-        qDeleteAll(streams);
-        streams.clear();
+//        canPush = false;
+//        delete body;
+//        body = nullptr;
+//        status = InitialState;
+//        delete hpack;
+//        hpack = nullptr;
+//        qDeleteAll(streams);
+//        streams.clear();
     }
 
     Socket *sock;//temporary
     qint64 contentLength;
     QIODevice *io;
-    Cutelyst::Context *websocketContext = nullptr;
-    Protocol *proto;
     char *buffer;
     ParserState connState = MethodLine;
-    quint64 stream_id = 0;// FGCI
     quint32 buf_size = 0;
     quint32 last = 0;
     int beginLine = 0;
     HeaderConnection headerConnection = HeaderConnectionNotSet;
     quint32 pktsize = 0;// FGCI-16 H2-24
     bool headerHost = false;
-    bool processing = false;
-    bool timeout = false;
 
-    QByteArray websocket_message;
-    QByteArray websocket_payload;
-    quint32 websocket_need;
-    int websocket_start_of_frame = 0;
-    int websocket_phase = 0;
-    int websocket_payload_size;
-    quint32 websocket_mask;
-    quint8 websocket_continue_opcode = 0;
-    quint8 websocket_finn_opcode;
-
-    HPack *hpack = nullptr;
-    quint64 maxStreamId = 0;// H2
-    quint64 streamForContinuation = 0;// H2
-    quint32 windowSize = 65535;
-    bool canPush = false;
-
-    QHash<quint32, H2Stream *> streams;
-
-
-    virtual bool webSocketSendTextMessage(const QString &message) override final;
-
-    virtual bool webSocketSendBinaryMessage(const QByteArray &message) override final;
-
-    virtual bool webSocketSendPing(const QByteArray &payload) override final;
-
-    virtual bool webSocketClose(quint16 code, const QString &reason) override final;
 
 protected:
-    virtual qint64 doWrite(const char *data, qint64 len) override final;
+//    virtual qint64 doWrite(const char *data, qint64 len)/* override final*/;
 
-    inline qint64 doWrite(const QByteArray &data) {
-        return doWrite(data.constData(), data.size());
-    }
+//    inline qint64 doWrite(const QByteArray &data) {
+//        return doWrite(data.constData(), data.size());
+//    }
 
-    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
-
-    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
+//    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers)/* override final*/;
 };
 
 class Socket
@@ -204,7 +144,11 @@ public:
 
     }
 
-    ProtoRequest *protoRequest;
+    Cutelyst::Engine *engine;
+    Protocol *proto;
+    ProtocolData *protoData;
+    bool timeout = false;
+    bool processing = false;
 };
 
 class TcpSocket : public QTcpSocket, public Socket

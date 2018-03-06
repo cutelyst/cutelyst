@@ -36,8 +36,8 @@ void TcpSslServer::incomingConnection(qintptr handle)
     sock->setSslConfiguration(m_sslConfiguration);
 
     connect(sock, &QIODevice::readyRead, [sock] () {
-        sock->protoRequest->timeout = false;
-        sock->protoRequest->proto->readyRead(sock, sock);
+        sock->timeout = false;
+        sock->proto->readyRead(sock, sock);
     });
     connect(sock, &SslSocket::finished, [this] () {
         --m_processing;
@@ -47,10 +47,10 @@ void TcpSslServer::incomingConnection(qintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
 
-        sock->protoRequest->proto = m_protocol;
-        sock->protoRequest->serverAddress = m_serverAddress;
-        sock->protoRequest->remoteAddress = sock->peerAddress();
-        sock->protoRequest->remotePort = sock->peerPort();
+        sock->proto = m_protocol;
+//        sock->protoData->serverAddress = m_serverAddress;
+//        sock->protoData->remoteAddress = sock->peerAddress();
+//        sock->protoData->remotePort = sock->peerPort();
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);
@@ -77,7 +77,7 @@ void TcpSslServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
-                socket->protoRequest->headerConnection = ProtoRequest::HeaderConnectionClose;
+//                socket->protoData->headerConnection = ProtoRequest::HeaderConnectionClose;
                 connect(socket, &TcpSocket::finished, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
@@ -94,11 +94,11 @@ void TcpSslServer::timeoutConnections()
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<SslSocket*>(child);
-            if (socket && !socket->protoRequest->processing && socket->state() == QAbstractSocket::ConnectedState) {
-                if (socket->protoRequest->timeout) {
+            if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
+                if (socket->timeout) {
                     socket->connectionClose();
                 } else {
-                    socket->protoRequest->timeout = true;
+                    socket->timeout = true;
                 }
             }
         }

@@ -69,10 +69,7 @@ class DummyRequest : public QObject, public EngineRequest
 {
     Q_OBJECT
 public:
-    DummyRequest(Engine *engine, QObject *parent)
-        : QObject(parent), EngineRequest(engine) {
-
-    }
+    DummyRequest(QObject *parent) : QObject(parent) {}
 
     virtual qint64 doWrite(const char *, qint64) { return -1; }
 

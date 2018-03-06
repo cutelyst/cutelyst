@@ -21,11 +21,31 @@
 #include <QObject>
 
 #include "protocol.h"
+#include "socket.h"
 
 namespace CWSGI {
 
 class WSGI;
-class ProtoRequest;
+class ProtoRequestFastCGI : public ProtocolData, public Cutelyst::EngineRequest
+{
+    Q_GADGET
+public:
+    ProtoRequestFastCGI(WSGI *wsgi, Cutelyst::Engine *_engine);
+    virtual ~ProtoRequestFastCGI();
+
+protected:
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
+
+    virtual qint64 doWrite(const char *data, qint64 len) override final;
+
+    inline qint64 doWrite(const QByteArray &data) {
+        return doWrite(data.constData(), data.size());
+    }
+
+public:
+    quint64 stream_id = 0;
+};
+
 class ProtocolFastCGI : public Protocol
 {
 public:
@@ -40,12 +60,12 @@ public:
     qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len) override;
 
 private:
-    inline quint16 addHeader(ProtoRequest *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
-    inline int parseHeaders(ProtoRequest *request, const char *buf, size_t len) const;
-    inline int processPacket(ProtoRequest *request) const;
-    inline bool writeBody(ProtoRequest *request, char *buf, qint64 len) const;
+    inline quint16 addHeader(ProtoRequestFastCGI *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
+    inline int parseHeaders(ProtoRequestFastCGI *request, const char *buf, size_t len) const;
+    inline int processPacket(ProtoRequestFastCGI *request) const;
+    inline bool writeBody(ProtoRequestFastCGI *request, char *buf, qint64 len) const;
     // write a STDOUT packet
-    int wsgi_proto_fastcgi_write(QIODevice *io, ProtoRequest *request, const char *buf, int len);
+    int wsgi_proto_fastcgi_write(QIODevice *io, ProtoRequestFastCGI *request, const char *buf, int len);
 };
 
 }

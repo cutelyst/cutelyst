@@ -103,8 +103,8 @@ void LocalServer::incomingConnection(quintptr handle)
         sock = new LocalSocket(m_wsgi, m_engine, this);
 
         connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->protoRequest->timeout = false;
-            sock->protoRequest->proto->readyRead(sock, sock);
+            sock->timeout = false;
+            sock->proto->readyRead(sock, sock);
         });
         connect(sock, &LocalSocket::finished, [this] (LocalSocket *obj) {
             m_socks.push_back(obj);
@@ -117,8 +117,8 @@ void LocalServer::incomingConnection(quintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->resetSocket();
 
-        sock->protoRequest->proto = m_protocol;
-        sock->protoRequest->serverAddress = QStringLiteral("localhost");
+        sock->proto = m_protocol;
+//        sock->protoData->serverAddress = QStringLiteral("localhost");
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }
@@ -148,7 +148,7 @@ void LocalServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<LocalSocket*>(child);
             if (socket) {
-                socket->protoRequest->headerConnection = ProtoRequest::HeaderConnectionClose;
+//                socket->protoData->headerConnection = ProtoRequest::HeaderConnectionClose;
                 connect(socket, &LocalSocket::finished, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
@@ -165,11 +165,11 @@ void LocalServer::timeoutConnections()
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<LocalSocket*>(child);
-            if (socket && !socket->protoRequest->processing && socket->state() == QLocalSocket::ConnectedState) {
-                if (socket->protoRequest->timeout) {
+            if (socket && !socket->processing && socket->state() == QLocalSocket::ConnectedState) {
+                if (socket->timeout) {
                     socket->connectionClose();
                 } else {
-                    socket->protoRequest->timeout = true;
+                    socket->timeout = true;
                 }
             }
         }

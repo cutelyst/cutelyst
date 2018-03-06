@@ -48,7 +48,7 @@ void TcpSocket::connectionClose()
     disconnectFromHost();
 }
 
-Socket::Socket(WSGI *wsgi, Cutelyst::Engine *_engine)/* : EngineRequest(_engine)*/
+Socket::Socket(WSGI *wsgi, Cutelyst::Engine *_engine)
 {
 //    body = nullptr;
 //    buffer = new char[wsgi->bufferSize()];
@@ -59,103 +59,25 @@ Socket::~Socket()
 //    delete [] buffer;
 }
 
-bool ProtoRequest::webSocketSendTextMessage(const QString &message)
+ProtocolData::ProtocolData()
 {
-    if (headerConnection != ProtoRequest::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray rawMessage = message.toUtf8();
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequest::OpCodeText, rawMessage.size());
-    doWrite(headers);
-    return doWrite(rawMessage) == rawMessage.size();
 }
 
-bool ProtoRequest::webSocketSendBinaryMessage(const QByteArray &message)
+ProtocolData::~ProtocolData()
 {
-    if (headerConnection != ProtoRequest::HeaderConnectionUpgrade) {
-        return false;
-    }
 
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequest::OpCodeBinary, message.size());
-    doWrite(headers);
-    return doWrite(message) == message.size();
 }
 
-bool ProtoRequest::webSocketSendPing(const QByteArray &payload)
-{
-    if (headerConnection != ProtoRequest::HeaderConnectionUpgrade) {
-        return false;
-    }
+//qint64 ProtocolData::doWrite(const char *data, qint64 len)
+//{
+//    qint64 ret = sock->proto->sendBody(io, sock, data, len);
+//    return ret;
+//}
 
-    const QByteArray rawMessage = payload.left(125);
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequest::OpCodePing, rawMessage.size());
-    doWrite(headers);
-    return doWrite(rawMessage) == rawMessage.size();
-}
-
-bool ProtoRequest::webSocketClose(quint16 code, const QString &reason)
-{
-    if (headerConnection != ProtoRequest::HeaderConnectionUpgrade) {
-        return false;
-    }
-
-    const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
-    return doWrite(reply) == reply.size();
-}
-
-qint64 ProtoRequest::doWrite(const char *data, qint64 len)
-{
-    qint64 ret = proto->sendBody(io, sock, data, len);
-    return ret;
-}
-
-bool ProtoRequest::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
-{
-    return proto->sendHeaders(io, sock, status, static_cast<CWsgiEngine *>(engine)->lastDate(), headers);
-}
-
-bool ProtoRequest::webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol)
-{
-    if (headerConnection == ProtoRequest::HeaderConnectionUpgrade) {
-        return true;
-    }
-
-    if (proto->type() != Protocol::Http11) {
-        qCWarning(CWSGI_SOCK) << "Upgrading a connection to websocket is only supported with the HTTP protocol" << typeid(proto).name();
-        return false;
-    }
-
-    const Cutelyst::Headers requestHeaders = c->request()->headers();
-    Cutelyst::Response *response = c->response();
-    Cutelyst::Headers &headers = response->headers();
-
-    response->setStatus(Cutelyst::Response::SwitchingProtocols);
-    headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
-    headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
-    const QString localOrigin = origin.isEmpty() ? requestHeaders.header(QStringLiteral("ORIGIN")) : origin;
-    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"), localOrigin.isEmpty() ? QStringLiteral("*") : localOrigin);
-
-    const QString wsProtocol = protocol.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_PROTOCOL")) : protocol;
-    if (!wsProtocol.isEmpty()) {
-        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_PROTOCOL"), wsProtocol);
-    }
-
-    const QString localKey = key.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_KEY")) : key;
-    const QString wsKey = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-    if (wsKey.length() == 36) {
-        qCWarning(CWSGI_SOCK) << "Missing websocket key";
-        return false;
-    }
-
-    const QByteArray wsAccept = QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
-    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
-
-    headerConnection = ProtoRequest::HeaderConnectionUpgrade;
-    websocketContext = c;
-
-    return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
-}
+//bool ProtocolData::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
+//{
+//    return sock->proto->sendHeaders(io, sock, status, static_cast<CWsgiEngine *>(sock->engine)->lastDate(), headers);
+//}
 
 void TcpSocket::socketDisconnected()
 {

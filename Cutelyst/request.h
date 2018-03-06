@@ -463,6 +463,7 @@ private:
     friend class Application;
     friend class Dispatcher;
     friend class DispatchType;
+    friend class Context;
     Q_DECLARE_PRIVATE(Request)
 };
 

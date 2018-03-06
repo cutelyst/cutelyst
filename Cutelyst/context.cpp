@@ -45,12 +45,13 @@ Context::Context(Application *app) :
 {
     d_ptr->response = new Response(this, d_ptr->engine, app->defaultHeaders());
 
-    DummyRequest req(app->engine(), this);
+    DummyRequest req(this);
     req.body = new QBuffer(this);
     req.body->open(QBuffer::ReadWrite);
 
     d_ptr->request = new Request(new RequestPrivate(nullptr));
     d_ptr->request->setParent(this);
+    d_ptr->request->d_ptr->engine = d_ptr->engine;
 }
 
 Context::~Context()
