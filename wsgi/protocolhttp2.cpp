@@ -451,7 +451,8 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         }
         request->maxStreamId = fr.streamId;
 
-        stream = new H2Stream;
+//        auto proto = dynamic_cast<ProtocolHttp2 *>(request->sock->proto);
+        stream = new H2Stream(request);
         request->streams.insert(fr.streamId, stream);
     }
 
@@ -744,14 +745,16 @@ int ProtocolHttp2::sendFrame(QIODevice *io, quint8 type, quint8 flags, quint32 s
 
 void ProtocolHttp2::sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
 {
-    HPack t(m_headerTableSize);
-    t.encodeStatus(200);
-    QByteArray reply = t.data();
-    qDebug() << "Send dummy reply" << reply.toHex() << reply.size();
+    request->sock->engine->processRequestAsync(request);
 
-    sendFrame(io, FrameHeaders, FlagHeadersEndHeaders, fr.streamId, reply.constData(), reply.size());
+//    HPack t(m_headerTableSize);
+//    t.encodeStatus(200);
+//    QByteArray reply = t.data();
+//    qDebug() << "Send dummy reply" << reply.toHex() << reply.size();
 
-    sendData(io, fr.streamId, request->windowSize, "Hello World!", 12);
+//    sendFrame(io, FrameHeaders, FlagHeadersEndHeaders, fr.streamId, reply.constData(), reply.size());
+
+//    sendData(io, fr.streamId, request->windowSize, "Hello World!", 12);
 }
 
 ProtoRequestHttp2::ProtoRequestHttp2(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
@@ -762,4 +765,25 @@ ProtoRequestHttp2::ProtoRequestHttp2(Socket *sock, int bufferSize) : ProtocolDat
 ProtoRequestHttp2::~ProtoRequestHttp2()
 {
 
+}
+
+H2Stream::H2Stream(ProtoRequestHttp2 *protocol) : proto(protocol)
+{
+
+}
+
+qint64 H2Stream::doWrite(const char *data, qint64 len)
+{
+    auto parser = dynamic_cast<ProtocolHttp2 *>(proto->sock->proto);
+    return parser->sendData(proto->io, streamId, windowSize, data, len);
+}
+
+bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
+{
+    HPack t(4096);
+    t.encodeStatus(status);
+    const QByteArray reply = t.data();
+
+    auto parser = dynamic_cast<ProtocolHttp2 *>(proto->sock->proto);
+    return parser->sendFrame(proto->io, FrameHeaders, FlagHeadersEndHeaders, streamId, reply.constData(), reply.size());
 }

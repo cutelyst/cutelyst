@@ -24,6 +24,10 @@
 #include "socket.h"
 #include "hpack.h"
 
+//namespace Cutelyst {
+//class Headers;
+//}
+
 namespace CWSGI {
 
 class H2Frame
@@ -35,7 +39,8 @@ public:
     quint8 flags;
 };
 
-class H2Stream
+class ProtoRequestHttp2;
+class H2Stream : public Cutelyst::EngineRequest
 {
 public:
     enum state {
@@ -44,12 +49,18 @@ public:
         HalfClosed,
         Closed
     };
+    H2Stream(ProtoRequestHttp2 *protocol);
+
+    virtual qint64 doWrite(const char *data, qint64 len) override final;
+
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     QString method;
     QString path;
     QString scheme;
     QString authority;
     Cutelyst::Headers headers;
+    ProtoRequestHttp2 *proto;
     quint32 streamId;
     quint32 windowSize = 65535;
     qint64 contentLength = -1;
@@ -78,6 +89,7 @@ public:
         windowSize = 65535;
         canPush = false;
     }
+
     quint64 stream_id = 0;
     quint32 pktsize = 0;
 
@@ -90,7 +102,6 @@ public:
     QHash<quint32, H2Stream *> streams;
 };
 
-class HPack;
 class ProtocolHttp2 : public Protocol
 {
 public:
@@ -121,6 +132,7 @@ public:
 
     void sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
 
+public:
     quint32 m_maxFrameSize;
     quint32 m_headerTableSize;
 };
