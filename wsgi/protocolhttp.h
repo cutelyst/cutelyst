@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,8 +62,10 @@ public:
     };
     Q_ENUM(OpCode)
 
-    ProtoRequestHttp(WSGI *wsgi, Cutelyst::Engine *_engine);
+    ProtoRequestHttp(Socket *sock, int bufferSize);
     virtual ~ProtoRequestHttp();
+
+    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
     inline qint64 doWrite(const QByteArray &data) {
@@ -78,11 +80,31 @@ public:
 
     virtual bool webSocketClose(quint16 code, const QString &reason) override final;
 
+    inline virtual void resetSocket() override final {
+        ProtocolData::resetSocket();
+        startOfRequest = 0;
+        status = InitialState;
+        delete body;
+        body = nullptr;
+
+        websocketContext = nullptr;
+        last = 0;
+        beginLine = 0;
+
+        serverAddress = sock->serverAddress;
+        remoteAddress = sock->remoteAddress;
+        remotePort = sock->remotePort;
+    }
+
+    virtual void socketDisconnected() override final;
+
     Cutelyst::Context *websocketContext = nullptr;
     QByteArray websocket_message;
     QByteArray websocket_payload;
     quint32 websocket_need;
     quint32 websocket_mask;
+    quint32 last = 0;
+    int beginLine = 0;
     int websocket_start_of_frame = 0;
     int websocket_phase = 0;
     int websocket_payload_size;
@@ -90,7 +112,7 @@ public:
     quint8 websocket_finn_opcode;
 
 protected:
-    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) /*override final*/;
+    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
 };
 
 class ProtocolWebSocket;
@@ -102,8 +124,9 @@ public:
 
     virtual Type type() const override;
 
-    virtual void readyRead(Socket *sock, QIODevice *io) const override;
-    virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
+    virtual void parse(Socket *sock, QIODevice *io) const override final;
+
+    virtual ProtocolData *createData(Socket *sock) const override final;
 
 private:
     inline bool processRequest(Socket *sock) const;

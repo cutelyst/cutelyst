@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,27 @@
  */
 #include "protocol.h"
 
+#include "socket.h"
 #include "wsgi.h"
 
 using namespace CWSGI;
+
+ProtocolData::ProtocolData(Socket *_sock, int bufferSize)
+    : sock(_sock)
+    , io(dynamic_cast<QIODevice *>(_sock))
+{
+    buffer = new char[bufferSize];
+}
+
+ProtocolData::~ProtocolData()
+{
+    delete [] buffer;
+}
 
 Protocol::Protocol(WSGI *wsgi)
 {
     m_bufferSize = wsgi->bufferSize();
     m_postBuffering = wsgi->postBuffering();
-    m_webSocketBufferSize = wsgi->bufferSize();
     m_postBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
     m_postBuffer = new char[wsgi->postBufferingBufsize()];
 }
@@ -38,10 +50,4 @@ Protocol::~Protocol()
 Protocol::Type Protocol::type() const
 {
     return Unknown;
-}
-
-qint64 Protocol::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
-{
-    Q_UNUSED(sock)
-    return io->write(data, len);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,10 @@
 
 class QTextCodec;
 
+namespace Cutelyst {
+class Context;
+}
+
 namespace CWSGI {
 
 class WSGI;
@@ -34,8 +38,9 @@ public:
     static QByteArray createWebsocketHeader(quint8 opcode, quint64 len);
     static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);
 
-    virtual void readyRead(Socket *sock, QIODevice *io) const override;
-    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
+    virtual void parse(Socket *sock, QIODevice *io) const override final;
+
+    virtual ProtocolData *createData(Socket *sock) const override final;
 
 private:
     bool send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame) const;

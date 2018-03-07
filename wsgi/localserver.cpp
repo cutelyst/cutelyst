@@ -100,11 +100,12 @@ void LocalServer::incomingConnection(quintptr handle)
         sock = m_socks.back();
         m_socks.pop_back();
     } else {
-        sock = new LocalSocket(m_wsgi, m_engine, this);
+        sock = new LocalSocket(m_engine, this);
+        sock->protoData = m_protocol->createData(sock);
 
         connect(sock, &QIODevice::readyRead, [sock] () {
             sock->timeout = false;
-            sock->proto->readyRead(sock, sock);
+            sock->proto->parse(sock, sock);
         });
         connect(sock, &LocalSocket::finished, [this] (LocalSocket *obj) {
             m_socks.push_back(obj);
@@ -118,7 +119,7 @@ void LocalServer::incomingConnection(quintptr handle)
         sock->resetSocket();
 
         sock->proto = m_protocol;
-//        sock->protoData->serverAddress = QStringLiteral("localhost");
+        sock->serverAddress = QStringLiteral("localhost");
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,12 +20,55 @@
 
 #include <QObject>
 
-#include "cwsgiengine.h"
+class QIODevice;
 
 namespace CWSGI {
 
 class WSGI;
 class Socket;
+class Protocol;
+class ProtocolData
+{
+    Q_GADGET
+public:
+    ProtocolData(Socket *sock, int bufferSize);
+    virtual ~ProtocolData();
+
+    enum HeaderConnection {
+        HeaderConnectionNotSet = 0,
+        HeaderConnectionKeep,
+        HeaderConnectionClose,
+        HeaderConnectionUpgrade
+    };
+    Q_ENUM(HeaderConnection)
+
+    enum ParserState {
+        MethodLine = 0,
+        HeaderLine,
+        ContentBody,
+        H2Frames
+    };
+    Q_ENUM(ParserState)
+
+    inline virtual void resetSocket() {
+        connState = MethodLine;
+        buf_size = 0;
+        headerConnection = HeaderConnectionNotSet;
+        headerHost = false;
+    }
+
+    virtual void socketDisconnected() {}
+
+    qint64 contentLength;
+    Socket *sock;//temporary
+    QIODevice *io;
+    quint32 buf_size = 0;
+    ParserState connState = MethodLine;
+    HeaderConnection headerConnection = HeaderConnectionNotSet;
+    char *buffer;
+    bool headerHost = false;
+};
+
 class Protocol
 {
 public:
@@ -41,13 +84,12 @@ public:
 
     virtual Type type() const;
 
-    virtual void readyRead(Socket *sock, QIODevice *io) const = 0;
-    virtual bool sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) = 0;
-    virtual qint64 sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len);
+    virtual void parse(Socket *sock, QIODevice *io) const = 0;
+
+    virtual ProtocolData *createData(Socket *sock) const = 0;
 
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
-    qint64 m_webSocketBufferSize;
     qint64 m_postBuffering;
     char *m_postBuffer;
 };

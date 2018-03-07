@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -118,7 +118,7 @@ quint64 ws_be64(const char *buf) {
     return ret;
 }
 
-void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
+void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
 {
     qint64 bytesAvailable = io->bytesAvailable();
     auto request = static_cast<ProtoRequestHttp *>(sock->protoData);
@@ -163,15 +163,10 @@ void ProtocolWebSocket::readyRead(Socket *sock, QIODevice *io) const
     }
 }
 
-bool ProtocolWebSocket::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers)
+ProtocolData *ProtocolWebSocket::createData(Socket *sock) const
 {
-    Q_UNUSED(io)
     Q_UNUSED(sock)
-    Q_UNUSED(status)
-    Q_UNUSED(dateHeader)
-    Q_UNUSED(headers)
-    qFatal("ProtocolWebSocket::sendHeaders() called!");
-    return false;
+    return nullptr;
 }
 
 bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singleFrame) const

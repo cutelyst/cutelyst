@@ -22,6 +22,7 @@
 
 #include "protocol.h"
 #include "socket.h"
+#include "hpack.h"
 
 namespace CWSGI {
 
@@ -34,14 +35,51 @@ public:
     quint8 flags;
 };
 
+class H2Stream
+{
+public:
+    enum state {
+        Idle,
+        Open,
+        HalfClosed,
+        Closed
+    };
+
+    QString method;
+    QString path;
+    QString scheme;
+    QString authority;
+    Cutelyst::Headers headers;
+    quint32 streamId;
+    quint32 windowSize = 65535;
+    qint64 contentLength = -1;
+    qint64 consumedData = 0;
+    quint8 state = Idle;
+};
+
 class ProtoRequestHttp2 : public ProtocolData
 {
     Q_GADGET
 public:
-    ProtoRequestHttp2(WSGI *wsgi, Cutelyst::Engine *_engine);
+    ProtoRequestHttp2(Socket *sock, int bufferSize);
     virtual ~ProtoRequestHttp2();
 
+    inline virtual void resetSocket() override final {
+        ProtocolData::resetSocket();
+
+        stream_id = 0;
+        pktsize = 0;
+        delete hpack;
+        hpack = nullptr;
+        qDeleteAll(streams);
+        streams.clear();
+        maxStreamId = 0;
+        streamForContinuation = 0;
+        windowSize = 65535;
+        canPush = false;
+    }
     quint64 stream_id = 0;
+    quint32 pktsize = 0;
 
     HPack *hpack = nullptr;
     quint64 maxStreamId = 0;
@@ -61,7 +99,9 @@ public:
 
     virtual Type type() const override;
 
-    virtual void readyRead(Socket *sock, QIODevice *io) const override;
+    virtual void parse(Socket *sock, QIODevice *io) const override final;
+
+    virtual ProtocolData *createData(Socket *sock) const override final;
 
     int parseSettings(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
     int parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
@@ -78,7 +118,6 @@ public:
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
     int sendData(QIODevice *io, quint32 streamId, qint32 windowSize, const char *data, qint32 dataLen) const;
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
-    virtual bool sendHeaders(QIODevice *io, CWSGI::Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers) override;
 
     void sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
 

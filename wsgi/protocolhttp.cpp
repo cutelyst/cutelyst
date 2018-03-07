@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,7 +74,7 @@ inline int CrLfIndexIn(const char *str, int len, int from)
     return -1;
 }
 
-void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
+void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 {
     // Post buffering
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
@@ -83,7 +83,7 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
         int len;
         qint64 remaining;
 
-        QIODevice *body /*= protoRequest->body*/;
+        QIODevice *body = protoRequest->body;
         do {
             remaining = protoRequest->contentLength - body->size();
             len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
@@ -111,7 +111,7 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
     protoRequest->buf_size += len;
 
     while (protoRequest->last < protoRequest->buf_size) {
-//        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(protoRequest->buf, protoRequest->buf_size);
+//        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(protoRequest->buffer, protoRequest->buf_size);
         int ix = CrLfIndexIn(protoRequest->buffer, protoRequest->buf_size, protoRequest->last);
         if (ix != -1) {
             int len = ix - protoRequest->beginLine;
@@ -189,56 +189,9 @@ void ProtocolHttp::readyRead(Socket *sock, QIODevice *io) const
     }
 }
 
-bool ProtocolHttp::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers)
+ProtocolData *ProtocolHttp::createData(Socket *sock) const
 {
-    auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
-    int msgLen;
-    const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
-    io->write(msg, msgLen);
-
-    const auto headersData = headers.data();
-    ProtoRequestHttp::HeaderConnection fallbackConnection = protoRequest->headerConnection;
-    protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionNotSet;
-
-    bool hasDate = false;
-    auto it = headersData.constBegin();
-    const auto endIt = headersData.constEnd();
-    while (it != endIt) {
-        const QString &key = it.key();
-        const QString &value = it.value();
-        if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
-            if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
-                protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            } else if (value.compare(QLatin1String("upgrade"), Qt::CaseInsensitive) == 0) {
-                protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
-            } else {
-                protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
-            }
-        } else if (!hasDate && key == QLatin1String("DATE")) {
-            hasDate = true;
-        }
-
-        QString ret(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
-        io->write(ret.toLatin1());
-
-        ++it;
-    }
-
-    if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
-        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep) {
-            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
-            io->write("\r\nConnection: keep-alive", 24);
-        } else {
-            protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            io->write("\r\nConnection: close", 19);
-        }
-    }
-
-    if (!hasDate) {
-        io->write(dateHeader);
-    }
-
-    return io->write("\r\n\r\n", 4) == 4;
+    return new ProtoRequestHttp(sock, m_bufferSize);
 }
 
 bool ProtocolHttp::processRequest(Socket *sock) const
@@ -385,9 +338,9 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     protoRequest->headers.pushRawHeader(key, value);
 }
 
-ProtoRequestHttp::ProtoRequestHttp(WSGI *wsgi, Cutelyst::Engine *_engine)
+ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
-
+    startOfRequest = 0;
 }
 
 ProtoRequestHttp::~ProtoRequestHttp()
@@ -395,10 +348,65 @@ ProtoRequestHttp::~ProtoRequestHttp()
 
 }
 
+bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
+{
+    if (websocketContext && status != Cutelyst::Response::SwitchingProtocols) {
+        qCWarning(CWSGI_SOCK) << "Trying to write header while on an Websocket context";
+        return false;
+    }
+
+    int msgLen;
+    const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
+    io->write(msg, msgLen);
+
+    const auto headersData = headers.data();
+    ProtoRequestHttp::HeaderConnection fallbackConnection = headerConnection;
+    headerConnection = ProtoRequestHttp::HeaderConnectionNotSet;
+
+    bool hasDate = false;
+    auto it = headersData.constBegin();
+    const auto endIt = headersData.constEnd();
+    while (it != endIt) {
+        const QString &key = it.key();
+        const QString &value = it.value();
+        if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
+            if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+                headerConnection = ProtoRequestHttp::HeaderConnectionClose;
+            } else if (value.compare(QLatin1String("upgrade"), Qt::CaseInsensitive) == 0) {
+                headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
+            } else {
+                headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
+            }
+        } else if (!hasDate && key == QLatin1String("DATE")) {
+            hasDate = true;
+        }
+
+        QString ret(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
+        io->write(ret.toLatin1());
+
+        ++it;
+    }
+
+    if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
+        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep) {
+            headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
+            io->write("\r\nConnection: keep-alive", 24);
+        } else {
+            headerConnection = ProtoRequestHttp::HeaderConnectionClose;
+            io->write("\r\nConnection: close", 19);
+        }
+    }
+
+    if (!hasDate) {
+        io->write(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
+    }
+
+    return io->write("\r\n\r\n", 4) == 4;
+}
+
 qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
 {
-    qint64 ret = sock->proto->sendBody(io, sock, data, len);
-    return ret;
+    return io->write(data, len);
 }
 
 bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
@@ -444,6 +452,18 @@ bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
 
     const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
     return doWrite(reply) == reply.size();
+}
+
+void ProtoRequestHttp::socketDisconnected()
+{
+    if (websocketContext) {
+        if (websocket_finn_opcode != 0x88) {
+            websocketContext->request()->webSocketClosed(1005, QString());
+        }
+
+        delete websocketContext;
+        websocketContext = nullptr;
+    }
 }
 
 bool ProtoRequestHttp::webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol)

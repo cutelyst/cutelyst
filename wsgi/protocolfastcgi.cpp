@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -371,65 +371,9 @@ bool ProtocolFastCGI::writeBody(ProtoRequestFastCGI *request, char *buf, qint64 
     return request->body->write(buf, len) == len;
 }
 
-int ProtocolFastCGI::wsgi_proto_fastcgi_write(QIODevice *io, ProtoRequestFastCGI *request, const char *buf, int len)
-{
-    // reset for next write
-    int write_pos = 0;
-    quint32 proto_parser_status = 0;
-
-    Q_FOREVER {
-        // fastcgi packets are limited to 64k
-        quint8 padding = 0;
-
-        if (proto_parser_status == 0) {
-            quint16 fcgi_len = qMin(len - write_pos, 0xffff);
-            proto_parser_status = fcgi_len;
-
-            struct fcgi_record fr;
-            fr.version = FCGI_VERSION_1;
-            fr.type = FCGI_STDOUT;
-
-            quint8 *sid = reinterpret_cast<quint8 *>(&request->stream_id);
-            fr.req1 = sid[1];
-            fr.req0 = sid[0];
-
-            quint16 padded_len = FCGI_ALIGN(fcgi_len);
-            if (padded_len > fcgi_len) {
-                padding = padded_len - fcgi_len;
-            }
-            fr.pad = padding;
-
-            fr.reserved = 0;
-            fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
-            fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
-            if (io->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
-                return -1;
-            }
-        }
-
-        qint64 wlen = io->write(buf + write_pos, proto_parser_status);
-        if (padding) {
-            io->write("\0\0\0\0\0\0\0\0\0", padding);
-        }
-
-        if (wlen > 0) {
-            write_pos += wlen;
-            proto_parser_status -= wlen;
-            if (write_pos == len) {
-                return WSGI_OK;
-            }
-            continue;
-        }
-        if (wlen < 0) {
-            qCWarning(CWSGI_FCGI) << "Writing socket error" << io->errorString();
-        }
-        return -1;
-    }
-}
-
 #define FCGI_END_REQUEST_DATA "\1\x06\0\1\0\0\0\0\1\3\0\1\0\x08\0\0\0\0\0\0\0\0\0\0"
 
-void wsgi_proto_fastcgi_endrequest(ProtoRequestFastCGI *wsgi_req, QIODevice *io)
+inline void wsgi_proto_fastcgi_endrequest(ProtoRequestFastCGI *wsgi_req, QIODevice *io)
 {
     char end_request[] = FCGI_END_REQUEST_DATA;
 //    memcpy(end_request, FCGI_END_REQUEST_DATA, 24);
@@ -476,7 +420,7 @@ qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvaila
     return bytesAvailable;
 }
 
-void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
+void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
 {
     // Post buffering
     qint64 bytesAvailable = io->bytesAvailable();
@@ -538,7 +482,22 @@ void ProtocolFastCGI::readyRead(Socket *sock, QIODevice *io) const
     } while (bytesAvailable);
 }
 
-bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers)
+ProtocolData *ProtocolFastCGI::createData(Socket *sock) const
+{
+    return new ProtoRequestFastCGI(sock, m_bufferSize);
+}
+
+ProtoRequestFastCGI::ProtoRequestFastCGI(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
+{
+    startOfRequest = 0;
+}
+
+ProtoRequestFastCGI::~ProtoRequestFastCGI()
+{
+
+}
+
+bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     static thread_local QByteArray headerBuffer = ([]() -> QByteArray {
                                                        QByteArray ret;
@@ -569,40 +528,70 @@ bool ProtocolFastCGI::sendHeaders(QIODevice *io, Socket *sock, quint16 status, c
     }
 
     if (!hasDate) {
-        headerBuffer.append(dateHeader);
+        headerBuffer.append(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
     }
     headerBuffer.append("\r\n\r\n", 4);
 
-    auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
-    return wsgi_proto_fastcgi_write(io, request, headerBuffer.constData(), headerBuffer.size()) == 0;
-}
-
-qint64 ProtocolFastCGI::sendBody(QIODevice *io, Socket *sock, const char *data, qint64 len)
-{
-    auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
-    if (wsgi_proto_fastcgi_write(io, request, data, len) == 0) {
-        return len;
-    }
-    return -1;
-}
-
-ProtoRequestFastCGI::ProtoRequestFastCGI(WSGI *wsgi, Cutelyst::Engine *_engine)
-{
-
-}
-
-ProtoRequestFastCGI::~ProtoRequestFastCGI()
-{
-
-}
-
-bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
-{
-    return sock->proto->sendHeaders(io, sock, status, static_cast<CWsgiEngine *>(sock->engine)->lastDate(), headers);
+    return doWrite(headerBuffer.constData(), headerBuffer.size()) == 0;
 }
 
 qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 {
-    qint64 ret = sock->proto->sendBody(io, sock, data, len);
-    return ret;
+    // reset for next write
+    int write_pos = 0;
+    quint32 proto_parser_status = 0;
+
+    Q_FOREVER {
+        // fastcgi packets are limited to 64k
+        quint8 padding = 0;
+
+        if (proto_parser_status == 0) {
+            quint16 fcgi_len;
+            if (len - write_pos < 0xffff) {
+                fcgi_len = len - write_pos;
+            } else {
+                fcgi_len = 0xffff;
+            }
+            proto_parser_status = fcgi_len;
+
+            struct fcgi_record fr;
+            fr.version = FCGI_VERSION_1;
+            fr.type = FCGI_STDOUT;
+
+            quint8 *sid = reinterpret_cast<quint8 *>(stream_id);
+            fr.req1 = sid[1];
+            fr.req0 = sid[0];
+
+            quint16 padded_len = FCGI_ALIGN(fcgi_len);
+            if (padded_len > fcgi_len) {
+                padding = padded_len - fcgi_len;
+            }
+            fr.pad = padding;
+
+            fr.reserved = 0;
+            fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
+            fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
+            if (io->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
+                return -1;
+            }
+        }
+
+        qint64 wlen = io->write(data + write_pos, proto_parser_status);
+        if (padding) {
+            io->write("\0\0\0\0\0\0\0\0\0", padding);
+        }
+
+        if (wlen > 0) {
+            write_pos += wlen;
+            proto_parser_status -= wlen;
+            if (write_pos == len) {
+                return WSGI_OK;
+            }
+            continue;
+        }
+        if (wlen < 0) {
+            qCWarning(CWSGI_FCGI) << "Writing socket error" << io->errorString();
+        }
+        return -1;
+    }
 }

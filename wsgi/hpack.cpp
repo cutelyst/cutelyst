@@ -18,7 +18,7 @@
 #include "hpack.h"
 #include "hpack_p.h"
 
-#include "socket.h"
+#include "protocolhttp2.h"
 
 #include <vector>
 

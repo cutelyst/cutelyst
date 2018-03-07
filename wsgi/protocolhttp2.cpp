@@ -169,12 +169,12 @@ Protocol::Type ProtocolHttp2::type() const
     return Http2;
 }
 
-void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
+void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
 {
     auto request = static_cast<ProtoRequestHttp2 *>(sock->protoData);
 
     qint64 bytesAvailable = io->bytesAvailable();
-    qCDebug(CWSGI_H2) << "readyRead available" << bytesAvailable << "buffer size" << request->buf_size << "default buffer size" << m_bufferSize ;
+    qCDebug(CWSGI_H2) << "parse available" << bytesAvailable << "buffer size" << request->buf_size << "default buffer size" << m_bufferSize ;
 
     do {
         int len = io->read(request->buffer + request->buf_size, m_bufferSize - request->buf_size);
@@ -294,6 +294,11 @@ void ProtocolHttp2::readyRead(Socket *sock, QIODevice *io) const
             break;
         }
     } while (bytesAvailable);
+}
+
+ProtocolData *ProtocolHttp2::createData(Socket *sock) const
+{
+    return new ProtoRequestHttp2(sock, m_bufferSize);
 }
 
 int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
@@ -737,11 +742,6 @@ int ProtocolHttp2::sendFrame(QIODevice *io, quint8 type, quint8 flags, quint32 s
     return 0;
 }
 
-bool ProtocolHttp2::sendHeaders(QIODevice *io, Socket *sock, quint16 status, const QByteArray &dateHeader, const Cutelyst::Headers &headers)
-{
-    return false;
-}
-
 void ProtocolHttp2::sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const
 {
     HPack t(m_headerTableSize);
@@ -752,4 +752,14 @@ void ProtocolHttp2::sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, co
     sendFrame(io, FrameHeaders, FlagHeadersEndHeaders, fr.streamId, reply.constData(), reply.size());
 
     sendData(io, fr.streamId, request->windowSize, "Hello World!", 12);
+}
+
+ProtoRequestHttp2::ProtoRequestHttp2(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
+{
+
+}
+
+ProtoRequestHttp2::~ProtoRequestHttp2()
+{
+
 }

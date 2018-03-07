@@ -32,12 +32,13 @@ TcpSslServer::TcpSslServer(const QString &serverAddress, CWSGI::Protocol *protoc
 
 void TcpSslServer::incomingConnection(qintptr handle)
 {
-    auto sock = new SslSocket(m_wsgi, m_engine, this);
+    auto sock = new SslSocket(m_engine, this);
+    sock->protoData = m_protocol->createData(sock);
     sock->setSslConfiguration(m_sslConfiguration);
 
     connect(sock, &QIODevice::readyRead, [sock] () {
         sock->timeout = false;
-        sock->proto->readyRead(sock, sock);
+        sock->proto->parse(sock, sock);
     });
     connect(sock, &SslSocket::finished, [this] () {
         --m_processing;
@@ -48,9 +49,9 @@ void TcpSslServer::incomingConnection(qintptr handle)
         sock->resetSocket();
 
         sock->proto = m_protocol;
-//        sock->protoData->serverAddress = m_serverAddress;
-//        sock->protoData->remoteAddress = sock->peerAddress();
-//        sock->protoData->remotePort = sock->peerPort();
+        sock->serverAddress = m_serverAddress;
+        sock->remoteAddress = sock->peerAddress();
+        sock->remotePort = sock->peerPort();
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);
