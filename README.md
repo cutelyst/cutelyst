@@ -9,7 +9,7 @@ Qt's meta object system is what powers the core of Cutelyst, it allows for intro
 
 ## BENCHMARKS
 
-Don't trust us on being fast, check out this the most comprehensive web framework benchmarks by TechEmpower 
+Don't trust us on being fast, check out the most comprehensive web framework benchmarks by TechEmpower 
 http://www.techempower.com/benchmarks/
 
 ## FEATURES:
