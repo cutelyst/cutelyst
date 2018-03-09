@@ -49,11 +49,13 @@ public:
         HalfClosed,
         Closed
     };
-    H2Stream(ProtoRequestHttp2 *protocol);
+    H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protocol);
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
 
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
+
+    void updateWindowSize(qint32 size);
 
     QString method;
     QString path;
@@ -87,8 +89,11 @@ public:
         maxStreamId = 0;
         streamForContinuation = 0;
         windowSize = 65535;
+        initialWindowSize = 65535;
         canPush = false;
     }
+
+    void updateWindowSize(qint32 size);
 
     quint64 stream_id = 0;
     quint32 pktsize = 0;
@@ -96,8 +101,10 @@ public:
     HPack *hpack = nullptr;
     quint64 maxStreamId = 0;
     quint64 streamForContinuation = 0;
-    quint32 windowSize = 65535;
-    bool canPush = false;
+    qint32 windowSize = 65535;
+    qint32 initialWindowSize = 65535;
+    qint16 maxFranmeSize = 16384;
+    bool canPush = true;
 
     QHash<quint32, H2Stream *> streams;
 };
@@ -130,7 +137,7 @@ public:
     int sendData(QIODevice *io, quint32 streamId, qint32 windowSize, const char *data, qint32 dataLen) const;
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
 
-    void sendDummyReply(ProtoRequestHttp2 *request, QIODevice *io, const H2Frame &fr) const;
+    void queueStream(Socket *socket, H2Stream *stream) const;
 
 public:
     quint32 m_maxFrameSize;

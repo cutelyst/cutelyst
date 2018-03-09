@@ -20,6 +20,12 @@
 
 #include <QString>
 
+
+
+
+
+
+
 static const std::pair<QString, QString> hpackStaticHeaders[] = {
     {QString(), QString()},
     {QStringLiteral(":authority"), QString()},
