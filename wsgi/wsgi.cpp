@@ -162,7 +162,7 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                      QCoreApplication::translate("main", "address"));
     parser.addOption(http2SocketOpt);
 
-    QCommandLineOption http2HeaderTableSizeOpt({ QStringLiteral("http2-header-table-size") },
+    QCommandLineOption http2HeaderTableSizeOpt(QStringLiteral("http2-header-table-size"),
                                                QCoreApplication::translate("main", "Defined the HTTP/2 header table size"),
                                                QCoreApplication::translate("main", "size"));
     parser.addOption(http2HeaderTableSizeOpt);
