@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,15 +33,15 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
-#define SESSION_VALUES "__session_values"
-#define SESSION_EXPIRES "__session_expires"
-#define SESSION_TRIED_LOADING_EXPIRES "__session_tried_loading_expires"
-#define SESSION_EXTENDED_EXPIRES "__session_extended_expires"
-#define SESSION_UPDATED "__session_updated"
-#define SESSION_ID "__session_id"
-#define SESSION_TRIED_LOADING_ID "__session_tried_loading_id"
-#define SESSION_DELETED_ID "__session_deleted_id"
-#define SESSION_DELETE_REASON "__session_delete_reason"
+static const QString SESSION_VALUES = QLatin1String("_c_session_values");
+static const QString SESSION_EXPIRES = QLatin1String("_c_session_expires");
+static const QString SESSION_TRIED_LOADING_EXPIRES = QLatin1String("_c_session_tried_loading_expires");
+static const QString SESSION_EXTENDED_EXPIRES = QLatin1String("_c_session_extended_expires");
+static const QString SESSION_UPDATED = QLatin1String("_c_session_updated");
+static const QString SESSION_ID = QLatin1String("_c_session_id");
+static const QString SESSION_TRIED_LOADING_ID = QLatin1String("_c_session_tried_loading_id");
+static const QString SESSION_DELETED_ID = QLatin1String("_c_session_deleted_id");
+static const QString SESSION_DELETE_REASON = QLatin1String("_c_session_delete_reason");
 
 static thread_local Session *m_instance = nullptr;
 
@@ -96,7 +96,7 @@ SessionStore *Session::storage() const
 QString Session::id(Cutelyst::Context *c)
 {
     QString ret;
-    const QVariant sid = c->property(SESSION_ID);
+    const QVariant sid = c->stash(SESSION_ID);
     if (sid.isNull()) {
         if (Q_UNLIKELY(!m_instance)) {
             qCCritical(C_SESSION) << "Session plugin not registered";
@@ -113,7 +113,7 @@ QString Session::id(Cutelyst::Context *c)
 
 quint64 Session::expires(Context *c)
 {
-    QVariant expires = c->property(SESSION_EXTENDED_EXPIRES);
+    QVariant expires = c->stash(SESSION_EXTENDED_EXPIRES);
     if (!expires.isNull()) {
         return expires.toULongLong();
     }
@@ -155,13 +155,13 @@ void Session::deleteSession(Context *c, const QString &reason)
 
 QString Session::deleteReason(Context *c)
 {
-    return c->property(SESSION_DELETE_REASON).toString();
+    return c->stash(SESSION_DELETE_REASON).toString();
 }
 
 QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant &defaultValue)
 {
     QVariant ret = defaultValue;
-    QVariant session = c->property(SESSION_VALUES);
+    QVariant session = c->stash(SESSION_VALUES);
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
     }
@@ -175,7 +175,7 @@ QVariant Session::value(Cutelyst::Context *c, const QString &key, const QVariant
 
 void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant &value)
 {
-    QVariant session = c->property(SESSION_VALUES);
+    QVariant session = c->stash(SESSION_VALUES);
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
@@ -192,13 +192,13 @@ void Session::setValue(Cutelyst::Context *c, const QString &key, const QVariant 
     QVariantHash data = session.toHash();
     data.insert(key, value);
 
-    c->setProperty(SESSION_VALUES, data);
-    c->setProperty(SESSION_UPDATED, true);
+    c->setStash(SESSION_VALUES, data);
+    c->setStash(SESSION_UPDATED, true);
 }
 
 void Session::deleteValue(Context *c, const QString &key)
 {
-    QVariant session = c->property(SESSION_VALUES);
+    QVariant session = c->stash(SESSION_VALUES);
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
@@ -215,13 +215,13 @@ void Session::deleteValue(Context *c, const QString &key)
     QVariantHash data = session.toHash();
     data.remove(key);
 
-    c->setProperty(SESSION_VALUES, data);
-    c->setProperty(SESSION_UPDATED, true);
+    c->setStash(SESSION_VALUES, data);
+    c->setStash(SESSION_UPDATED, true);
 }
 
 void Session::deleteValues(Context *c, const QStringList &keys)
 {
-    QVariant session = c->property(SESSION_VALUES);
+    QVariant session = c->stash(SESSION_VALUES);
     if (session.isNull()) {
         session = SessionPrivate::loadSession(c);
         if (session.isNull()) {
@@ -240,8 +240,8 @@ void Session::deleteValues(Context *c, const QStringList &keys)
         data.remove(key);
     }
 
-    c->setProperty(SESSION_VALUES, data);
-    c->setProperty(SESSION_UPDATED, true);
+    c->setStash(SESSION_VALUES, data);
+    c->setStash(SESSION_UPDATED, true);
 }
 
 bool Session::isValid(Cutelyst::Context *c)
@@ -257,10 +257,10 @@ QString SessionPrivate::generateSessionId()
 QString SessionPrivate::loadSessionId(Context *c, const QString &sessionName)
 {
     QString ret;
-    if (!c->property(SESSION_TRIED_LOADING_ID).isNull()) {
+    if (!c->stash(SESSION_TRIED_LOADING_ID).isNull()) {
         return ret;
     }
-    c->setProperty(SESSION_TRIED_LOADING_ID, true);
+    c->setStash(SESSION_TRIED_LOADING_ID, true);
 
     const QString sid = getSessionId(c, sessionName);
     if (!sid.isEmpty() && !validateSessionId(sid)) {
@@ -269,17 +269,17 @@ QString SessionPrivate::loadSessionId(Context *c, const QString &sessionName)
     }
 
     ret = sid;
-    c->setProperty(SESSION_ID, sid);
+    c->setStash(SESSION_ID, sid);
     return ret;
 }
 
 QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
 {
     QString ret;
-    bool deleted = !c->property(SESSION_DELETED_ID).isNull();
+    bool deleted = !c->stash(SESSION_DELETED_ID).isNull();
 
     if (!deleted) {
-        const QVariant property = c->property(SESSION_ID);
+        const QVariant property = c->stash(SESSION_ID);
         if (!property.isNull()) {
             ret = property.toString();
             return ret;
@@ -298,7 +298,7 @@ QString SessionPrivate::getSessionId(Context *c, const QString &sessionName)
 QString SessionPrivate::createSessionIdIfNeeded(Session *session, Context *c, quint64 expires)
 {
     QString ret;
-    const QVariant sid = c->property(SESSION_ID);
+    const QVariant sid = c->stash(SESSION_ID);
     if (!sid.isNull()) {
         ret = sid.toString();
     } else {
@@ -313,7 +313,7 @@ QString SessionPrivate::createSessionId(Session *session, Context *c, quint64 ex
 
     qCDebug(C_SESSION) << "Created session" << sid;
 
-    c->setProperty(SESSION_ID, sid);
+    c->setStash(SESSION_ID, sid);
     resetSessionExpires(session, c, sid);
     setSessionId(session, c, sid);
 
@@ -337,14 +337,14 @@ void SessionPrivate::_q_saveSession(Context *c)
     }
     saveSessionExpires(c);
 
-    if (!c->property(SESSION_UPDATED).toBool()) {
+    if (!c->stash(SESSION_UPDATED).toBool()) {
         return;
     }
     SessionStore *store = m_instance->d_ptr->store;
-    QVariantHash sessionData = c->property(SESSION_VALUES).toHash();
+    QVariantHash sessionData = c->stash(SESSION_VALUES).toHash();
     sessionData.insert(QStringLiteral("__updated"), QDateTime::currentMSecsSinceEpoch() / 1000);
 
-    const QString sid = c->property(SESSION_ID).toString();
+    const QString sid = c->stash(SESSION_ID).toString();
     store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
 }
 
@@ -357,7 +357,7 @@ void SessionPrivate::deleteSession(Session *session, Context *c, const QString &
 {
     qCDebug(C_SESSION) << "Deleting session" << reason;
 
-    const QVariant sidVar = c->property(SESSION_ID).toString();
+    const QVariant sidVar = c->stash(SESSION_ID).toString();
     if (!sidVar.isNull()) {
         const QString sid = sidVar.toString();
         session->d_ptr->store->deleteSessionData(c, sid, QStringLiteral("session"));
@@ -368,16 +368,16 @@ void SessionPrivate::deleteSession(Session *session, Context *c, const QString &
     }
 
     // Reset the values in Context object
-    c->setProperty(SESSION_VALUES, QVariant());
-    c->setProperty(SESSION_ID, QVariant());
-    c->setProperty(SESSION_EXPIRES, QVariant());
+    c->setStash(SESSION_VALUES, QVariant());
+    c->setStash(SESSION_ID, QVariant());
+    c->setStash(SESSION_EXPIRES, QVariant());
 
-    c->setProperty(SESSION_DELETE_REASON, reason);
+    c->setStash(SESSION_DELETE_REASON, reason);
 }
 
 void SessionPrivate::deleteSessionId(Session *session, Context *c, const QString &sid)
 {
-    c->setProperty(SESSION_DELETED_ID, true); // to prevent get_session_id from returning it
+    c->setStash(SESSION_DELETED_ID, true); // to prevent get_session_id from returning it
 
     updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::currentDateTimeUtc()));
 }
@@ -385,7 +385,7 @@ void SessionPrivate::deleteSessionId(Session *session, Context *c, const QString
 QVariant SessionPrivate::loadSession(Context *c)
 {
     QVariant ret;
-    const QVariant property = c->property(SESSION_VALUES);
+    const QVariant property = c->stash(SESSION_VALUES);
     if (!property.isNull()) {
         ret = property.toHash();
         return ret;
@@ -401,7 +401,7 @@ QVariant SessionPrivate::loadSession(Context *c)
         if (SessionPrivate::validateSessionId(sid)) {
 
             const QVariantHash sessionData = m_instance->d_ptr->store->getSessionData(c, sid, QStringLiteral("session")).toHash();
-            c->setProperty(SESSION_VALUES, sessionData);
+            c->setStash(SESSION_VALUES, sessionData);
 
             if (m_instance->d_ptr->verifyAddress &&
                     sessionData.contains(QStringLiteral("__address")) &&
@@ -460,9 +460,9 @@ quint64 SessionPrivate::extendSessionExpires(Session *session, Context *c, quint
         const quint64 cutoff = current - threshold;
         const quint64 time = QDateTime::currentMSecsSinceEpoch() / 1000;
 
-        if (!threshold || cutoff <= time || c->property(SESSION_UPDATED).toBool()) {
+        if (!threshold || cutoff <= time || c->stash(SESSION_UPDATED).toBool()) {
             quint64 updated = calculateInitialSessionExpires(session, c, sid);
-            c->setProperty(SESSION_EXTENDED_EXPIRES, updated);
+            c->setStash(SESSION_EXTENDED_EXPIRES, updated);
             extendSessionId(session, c, sid, updated);
 
             return updated;
@@ -500,7 +500,7 @@ QVariant SessionPrivate::initializeSessionData(Session *session, Context *c)
 
 void SessionPrivate::saveSessionExpires(Context *c)
 {
-    const QVariant expires = c->property(SESSION_EXPIRES);
+    const QVariant expires = c->stash(SESSION_EXPIRES);
     if (!expires.isNull()) {
         const QString sid = Session::id(c);
         if (!sid.isEmpty()) {
@@ -521,17 +521,17 @@ void SessionPrivate::saveSessionExpires(Context *c)
 QVariant SessionPrivate::loadSessionExpires(Session *session, Context *c, const QString &sessionId)
 {
     QVariant ret;
-    if (c->property(SESSION_TRIED_LOADING_EXPIRES).toBool()) {
-        ret = c->property(SESSION_EXPIRES);
+    if (c->stash(SESSION_TRIED_LOADING_EXPIRES).toBool()) {
+        ret = c->stash(SESSION_EXPIRES);
         return ret;
     }
-    c->setProperty(SESSION_TRIED_LOADING_EXPIRES, true);
+    c->setStash(SESSION_TRIED_LOADING_EXPIRES, true);
 
     if (!sessionId.isEmpty()) {
         const quint64 expires = getStoredSessionExpires(session, c, sessionId);
 
         if (expires >= static_cast<quint64>(QDateTime::currentMSecsSinceEpoch() / 1000)) {
-            c->setProperty(SESSION_EXPIRES, expires);
+            c->setStash(SESSION_EXPIRES, expires);
             ret = expires;
         } else {
             deleteSession(session, c, QStringLiteral("session expired"));
@@ -558,12 +558,12 @@ quint64 SessionPrivate::resetSessionExpires(Session *session, Context *c, const 
 {
     const quint64 exp = calculateInitialSessionExpires(session, c, sessionId);
 
-    c->setProperty(SESSION_EXPIRES, exp);
+    c->setStash(SESSION_EXPIRES, exp);
 
     // since we're setting _session_expires directly, make loadSessionExpires
     // actually use that value.
-    c->setProperty(SESSION_TRIED_LOADING_EXPIRES, true);
-    c->setProperty(SESSION_EXTENDED_EXPIRES, exp);
+    c->setStash(SESSION_TRIED_LOADING_EXPIRES, true);
+    c->setStash(SESSION_EXTENDED_EXPIRES, exp);
 
     return exp;
 }

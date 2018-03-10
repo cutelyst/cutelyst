@@ -46,12 +46,12 @@
 #define CSRF_TOKEN_LENGTH 2 * CSRF_SECRET_LENGTH
 #define CSRF_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define CSRF_SESSION_KEY "_csrftoken"
-#define CONTEXT_CSRF_COOKIE "_csrfcookie"
-#define CONTEXT_CSRF_COOKIE_USED "_csrfcookieused"
-#define CONTEXT_CSRF_COOKIE_NEEDS_RESET "_csrfcookieneedsreset"
-#define CONTEXT_CSRF_PROCESSING_DONE "_csrfprocessingdone"
-#define CONTEXT_CSRF_COOKIE_SET "_csrfcookieset"
-#define CONTEXT_CSRF_CHECK_PASSED "_csrfcheckpassed"
+static const QString CONTEXT_CSRF_COOKIE = QLatin1String("_c_csrfcookie");
+static const QString CONTEXT_CSRF_COOKIE_USED = QLatin1String("_c_csrfcookieused");
+static const QString CONTEXT_CSRF_COOKIE_NEEDS_RESET = QLatin1String("_c_csrfcookieneedsreset");
+static const QString CONTEXT_CSRF_PROCESSING_DONE = QLatin1String("_c_csrfprocessingdone");
+static const QString CONTEXT_CSRF_COOKIE_SET = QLatin1String("_c_csrfcookieset");
+static const QString CONTEXT_CSRF_CHECK_PASSED = QLatin1String("_c_csrfcheckpassed");
 
 Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection")
 
@@ -174,18 +174,18 @@ QByteArray CSRFProtection::getToken(Context *c)
 {
     QByteArray token;
 
-    QByteArray contextCookie = c->property(CONTEXT_CSRF_COOKIE).toByteArray();
+    const QByteArray contextCookie = c->stash(CONTEXT_CSRF_COOKIE).toByteArray();
     QByteArray secret;
     if (contextCookie.isEmpty()) {
         secret = CSRFProtectionPrivate::getNewCsrfString();
         token = CSRFProtectionPrivate::saltCipherSecret(secret);
-        c->setProperty(CONTEXT_CSRF_COOKIE, token);
+        c->setStash(CONTEXT_CSRF_COOKIE, token);
     } else {
         secret = CSRFProtectionPrivate::unsaltCipherToken(contextCookie);
         token = CSRFProtectionPrivate::saltCipherSecret(secret);
     }
 
-    c->setProperty(CONTEXT_CSRF_COOKIE_USED, true);
+    c->setStash(CONTEXT_CSRF_COOKIE_USED, true);
 
     return token;
 }
@@ -209,15 +209,15 @@ bool CSRFProtection::checkPassed(Context *c)
     if (CSRFProtectionPrivate::secureMethods.contains(c->req()->method())) {
         return true;
     } else {
-        return c->property(CONTEXT_CSRF_CHECK_PASSED).toBool();
+        return c->stash(CONTEXT_CSRF_CHECK_PASSED).toBool();
     }
 }
 
 //void CSRFProtection::rotateToken(Context *c)
 //{
-//    c->setProperty(CONTEXT_CSRF_COOKIE_USED, true);
-//    c->setProperty(CONTEXT_CSRF_COOKIE, CSRFProtectionPrivate::getNewCsrfToken());
-//    c->setProperty(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
+//    c->setStash(CONTEXT_CSRF_COOKIE_USED, true);
+//    c->setStash(CONTEXT_CSRF_COOKIE, CSRFProtectionPrivate::getNewCsrfToken());
+//    c->setStash(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
 //}
 
 /**
@@ -356,7 +356,7 @@ QByteArray CSRFProtectionPrivate::getToken(Context *c)
 
         token = CSRFProtectionPrivate::sanitizeToken(cookieToken);
         if (token != cookieToken) {
-            c->setProperty(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
+            c->setStash(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
         }
     }
 
@@ -377,9 +377,9 @@ void CSRFProtectionPrivate::setToken(Context *c)
     }
 
     if (csrf->d_ptr->useSessions) {
-        Session::setValue(c, QStringLiteral(CSRF_SESSION_KEY), c->property(CONTEXT_CSRF_COOKIE).toByteArray());
+        Session::setValue(c, QStringLiteral(CSRF_SESSION_KEY), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
     } else {
-        QNetworkCookie cookie(csrf->d_ptr->cookieName.toLatin1(), c->property(CONTEXT_CSRF_COOKIE).toByteArray());
+        QNetworkCookie cookie(csrf->d_ptr->cookieName.toLatin1(), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
         if (!csrf->d_ptr->cookieDomain.isEmpty()) {
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
@@ -391,7 +391,7 @@ void CSRFProtectionPrivate::setToken(Context *c)
         c->res()->headers().pushHeader(QStringLiteral("Vary"), QStringLiteral("Cookie"));
     }
 
-    qCDebug(C_CSRFPROTECTION, "Set token \"%s\" to %s.", c->property(CONTEXT_CSRF_COOKIE).toByteArray().constData(), csrf->d_ptr->useSessions ? "session" : "cookie");
+    qCDebug(C_CSRFPROTECTION, "Set token \"%s\" to %s.", c->stash(CONTEXT_CSRF_COOKIE).toByteArray().constData(), csrf->d_ptr->useSessions ? "session" : "cookie");
 }
 
 /**
@@ -401,7 +401,7 @@ void CSRFProtectionPrivate::setToken(Context *c)
  */
 void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const QString &displayReason)
 {
-    c->setProperty(CONTEXT_CSRF_CHECK_PASSED, false);
+    c->setStash(CONTEXT_CSRF_CHECK_PASSED, false);
 
     if (!csrf) {
         qCCritical(C_CSRFPROTECTION) << "CSRFProtection plugin not registered";
@@ -440,8 +440,8 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
 
 void CSRFProtectionPrivate::accept(Context *c)
 {
-    c->setProperty(CONTEXT_CSRF_CHECK_PASSED, true);
-    c->setProperty(CONTEXT_CSRF_PROCESSING_DONE, true);
+    c->setStash(CONTEXT_CSRF_CHECK_PASSED, true);
+    c->setStash(CONTEXT_CSRF_PROCESSING_DONE, true);
 }
 
 /**
@@ -474,12 +474,12 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
 
     const QByteArray csrfToken = CSRFProtectionPrivate::getToken(c);
     if (!csrfToken.isNull()) {
-        c->setProperty(CONTEXT_CSRF_COOKIE, csrfToken);
+        c->setStash(CONTEXT_CSRF_COOKIE, csrfToken);
     } else {
         CSRFProtection::getToken(c);
     }
 
-    if (c->property(CONTEXT_CSRF_PROCESSING_DONE).toBool()) {
+    if (c->stash(CONTEXT_CSRF_PROCESSING_DONE).toBool()) {
         return;
     }
 
@@ -610,18 +610,18 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
     // Set the CSRF cookie even if it's already set, so we renew
     // the expiry timer.
 
-    if (!c->property(CONTEXT_CSRF_COOKIE_NEEDS_RESET).toBool()) {
-        if (c->property(CONTEXT_CSRF_COOKIE_SET).toBool()) {
+    if (!c->stash(CONTEXT_CSRF_COOKIE_NEEDS_RESET).toBool()) {
+        if (c->stash(CONTEXT_CSRF_COOKIE_SET).toBool()) {
             return;
         }
     }
 
-    if (!c->property(CONTEXT_CSRF_COOKIE_USED).toBool()) {
+    if (!c->stash(CONTEXT_CSRF_COOKIE_USED).toBool()) {
         return;
     }
 
     CSRFProtectionPrivate::setToken(c);
-    c->setProperty(CONTEXT_CSRF_COOKIE_SET, true);
+    c->setStash(CONTEXT_CSRF_COOKIE_SET, true);
 }
 
 #include "moc_csrfprotection.cpp"

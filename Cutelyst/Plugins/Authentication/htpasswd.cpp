@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,8 +26,9 @@
 using namespace Cutelyst;
 
 StoreHtpasswd::StoreHtpasswd(const QString &name, QObject *parent) : AuthenticationStore(parent)
+  , m_filename(name)
 {
-    setProperty("_file", name);
+
 }
 
 StoreHtpasswd::~StoreHtpasswd()
@@ -37,10 +38,9 @@ StoreHtpasswd::~StoreHtpasswd()
 
 void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 {
-    QString username = user.value(QStringLiteral("username"));
+    const QString username = user.value(QStringLiteral("username"));
 
-    QString fileName = property("_file").toString();
-    QTemporaryFile tmp(fileName + QLatin1String("-XXXXXXX"));
+    QTemporaryFile tmp(m_filename + QLatin1String("-XXXXXXX"));
     tmp.setAutoRemove(false); // sort of a backup
     if (!tmp.open()) {
         qCWarning(CUTELYST_UTILS_AUTH) << "Failed to open temporary file for writing";
@@ -48,7 +48,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     }
 
     bool wrote = false;
-    QFile file(fileName);
+    QFile file(m_filename);
     if (file.exists() && file.open(QFile::ReadWrite | QFile::Text)) {
         while (!file.atEnd()) {
             QByteArray line = file.readLine();
@@ -72,7 +72,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
         return;
     }
 
-    if (!tmp.rename(fileName)) {
+    if (!tmp.rename(m_filename)) {
         qCWarning(CUTELYST_UTILS_AUTH) << "Failed to rename temporary file";
     }
 }
@@ -80,10 +80,9 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
     AuthenticationUser ret;
-    QString username = userInfo.value(QStringLiteral("username"));
+    const QString username = userInfo.value(QStringLiteral("username"));
 
-    QString fileName = property("_file").toString();
-    QFile file(fileName);
+    QFile file(m_filename);
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         while (!file.atEnd()) {
             QByteArray line = file.readLine();

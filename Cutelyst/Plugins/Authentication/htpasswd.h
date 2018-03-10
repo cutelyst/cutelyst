@@ -52,6 +52,9 @@ public:
      * Reimplemented from AuthenticationStore::fromSession().
      */
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser) final;
+
+private:
+    QString m_filename;
 };
 
 }

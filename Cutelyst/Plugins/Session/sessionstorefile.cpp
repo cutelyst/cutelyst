@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,8 +30,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
 
-#define SESSION_STORE_FILE_SAVE "__session_store_file_save"
-#define SESSION_STORE_FILE_DATA "__session_store_file_data"
+static const QString SESSION_STORE_FILE_SAVE = QLatin1String("_c_session_store_file_save");
+static const QString SESSION_STORE_FILE_DATA = QLatin1String("_c_session_store_file_data");
 
 static QVariantHash loadSessionData(Context *c, const QString &sid);
 
@@ -56,8 +56,8 @@ bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QS
     QVariantHash data = loadSessionData(c, sid);
 
     data.insert(key, value);
-    c->setProperty(SESSION_STORE_FILE_DATA, data);
-    c->setProperty(SESSION_STORE_FILE_SAVE, true);
+    c->setStash(SESSION_STORE_FILE_DATA, data);
+    c->setStash(SESSION_STORE_FILE_SAVE, true);
 
     return true;
 }
@@ -67,8 +67,8 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
     QVariantHash data = loadSessionData(c, sid);
 
     data.remove(key);
-    c->setProperty(SESSION_STORE_FILE_DATA, data);
-    c->setProperty(SESSION_STORE_FILE_SAVE, true);
+    c->setStash(SESSION_STORE_FILE_DATA, data);
+    c->setStash(SESSION_STORE_FILE_SAVE, true);
 
     return true;
 }
@@ -83,7 +83,7 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
 QVariantHash loadSessionData(Context *c, const QString &sid)
 {
     QVariantHash data;
-    const QVariant sessionVariant = c->property(SESSION_STORE_FILE_DATA);
+    const QVariant sessionVariant = c->stash(SESSION_STORE_FILE_DATA);
     if (!sessionVariant.isNull()) {
         data = sessionVariant.toHash();
         return data;
@@ -108,11 +108,11 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
 
     // Commit data when Context gets deleted
     QObject::connect(c, &Context::destroyed, [=] () {
-        if (!c->property(SESSION_STORE_FILE_SAVE).toBool()) {
+        if (!c->stash(SESSION_STORE_FILE_SAVE).toBool()) {
             return;
         }
 
-        QVariantHash data = c->property(SESSION_STORE_FILE_DATA).toHash();
+        QVariantHash data = c->stash(SESSION_STORE_FILE_DATA).toHash();
 
         if (data.isEmpty()) {
             QFile::remove(file->fileName());
@@ -145,7 +145,7 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
         lock.unlock();
     }
 
-    c->setProperty(SESSION_STORE_FILE_DATA, data);
+    c->setStash(SESSION_STORE_FILE_DATA, data);
 
     return data;
 }

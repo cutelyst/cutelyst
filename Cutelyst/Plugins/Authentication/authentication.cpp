@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,8 +37,8 @@ char *AuthenticationRealm::defaultRealm = const_cast<char *>("cutelyst_authentic
 
 static thread_local Authentication *auth = nullptr;
 
-#define AUTHENTICATION_USER "__authentication_user"
-#define AUTHENTICATION_USER_REALM "__authentication_user_realm"
+static const QString AUTHENTICATION_USER = QLatin1String("_c_authentication_user");
+static const QString AUTHENTICATION_USER_REALM = QLatin1String("_c_authentication_user_realm");
 
 Authentication::Authentication(Application *parent) : Plugin(parent)
   , d_ptr(new AuthenticationPrivate)
@@ -113,7 +113,7 @@ AuthenticationUser Authentication::findUser(Cutelyst::Context *c, const ParamsMu
 Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
 {
     AuthenticationUser ret;
-    QVariant user = c->property(AUTHENTICATION_USER);
+    const QVariant user = c->stash(AUTHENTICATION_USER);
     if (user.isNull()) {        
         ret = AuthenticationPrivate::restoreUser(c, QVariant(), QString());
     } else {
@@ -124,7 +124,7 @@ Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
 
 bool Authentication::userExists(Cutelyst::Context *c)
 {
-    if (!c->property(AUTHENTICATION_USER).isNull()) {
+    if (!c->stash(AUTHENTICATION_USER).isNull()) {
         return true;
     } else {
         if (auth) {
@@ -140,7 +140,7 @@ bool Authentication::userExists(Cutelyst::Context *c)
 
 bool Authentication::userInRealm(Cutelyst::Context *c, const QString &realmName)
 {
-    QVariant user = c->property(AUTHENTICATION_USER);
+    const QVariant user = c->stash(AUTHENTICATION_USER);
     if (!user.isNull()) {
         return user.value<AuthenticationUser>().authRealm() == realmName;
     } else {
@@ -213,7 +213,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c
 {
     AuthenticationRealm *realm;
 
-    const QVariant realmVariant = Session::value(c, QStringLiteral(AUTHENTICATION_USER_REALM));
+    const QVariant realmVariant = Session::value(c, AUTHENTICATION_USER_REALM);
     if (!realmVariant.isNull()) {
         realm = realms.value(realmVariant.toString());
         if (realm && !realm->userIsRestorable(c).isNull()) {
@@ -248,11 +248,11 @@ void AuthenticationPrivate::setAuthenticated(Context *c, const AuthenticationUse
 void AuthenticationPrivate::setUser(Context *c, const AuthenticationUser &user, const QString &realmName)
 {
     if (user.isNull()) {
-        c->setProperty(AUTHENTICATION_USER, QVariant());
-        c->setProperty(AUTHENTICATION_USER_REALM, QVariant());
+        c->setStash(AUTHENTICATION_USER, QVariant());
+        c->setStash(AUTHENTICATION_USER_REALM, QVariant());
     } else {
-        c->setProperty(AUTHENTICATION_USER, QVariant::fromValue(user));
-        c->setProperty(AUTHENTICATION_USER_REALM, realmName);
+        c->setStash(AUTHENTICATION_USER, QVariant::fromValue(user));
+        c->setStash(AUTHENTICATION_USER_REALM, realmName);
     }
 }
 
@@ -260,7 +260,7 @@ void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &us
 {
     if (Authentication::userExists(c)) {
         if (Session::isValid(c)) {
-            Session::setValue(c, QStringLiteral(AUTHENTICATION_USER_REALM), realmName);
+            Session::setValue(c, AUTHENTICATION_USER_REALM, realmName);
         }
 
         if (realm) {

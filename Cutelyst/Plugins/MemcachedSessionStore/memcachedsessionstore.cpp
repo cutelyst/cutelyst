@@ -30,8 +30,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore")
 
-#define SESSION_STORE_MEMCD_SAVE "__session_store_memcd_save"
-#define SESSION_STORE_MEMCD_DATA "__session_store_memcd_data"
+static const QString SESSION_STORE_MEMCD_SAVE = QLatin1String("_c_session_store_memcd_save");
+static const QString SESSION_STORE_MEMCD_DATA = QLatin1String("_c_session_store_memcd_data");
 
 static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey);
 
@@ -63,8 +63,8 @@ bool MemcachedSessionStore::storeSessionData(Context *c, const QString &sid, con
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
     data.insert(key, value);
-    c->setProperty(SESSION_STORE_MEMCD_DATA, data);
-    c->setProperty(SESSION_STORE_MEMCD_SAVE, true);
+    c->setStash(SESSION_STORE_MEMCD_DATA, data);
+    c->setStash(SESSION_STORE_MEMCD_SAVE, true);
 
     return true;
 }
@@ -74,8 +74,8 @@ bool MemcachedSessionStore::deleteSessionData(Context *c, const QString &sid, co
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
     data.remove(key);
-    c->setProperty(SESSION_STORE_MEMCD_DATA, data);
-    c->setProperty(SESSION_STORE_MEMCD_SAVE, true);
+    c->setStash(SESSION_STORE_MEMCD_DATA, data);
+    c->setStash(SESSION_STORE_MEMCD_SAVE, true);
 
     return true;
 }
@@ -97,7 +97,7 @@ void MemcachedSessionStore::setGroupKey(const QString &groupKey)
 QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey)
 {
     QVariantHash data;
-    const QVariant sessionVariant = c->property(SESSION_STORE_MEMCD_DATA);
+    const QVariant sessionVariant = c->stash(SESSION_STORE_MEMCD_DATA);
     if (!sessionVariant.isNull()) {
         data = sessionVariant.toHash();
         return data;
@@ -107,11 +107,11 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
     const QString sessionKey = sessionPrefix + sid;
 
     QObject::connect(c, &Context::destroyed, [=] () {
-        if (!c->property(SESSION_STORE_MEMCD_SAVE).toBool()) {
+        if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {
             return;
         }
 
-        QVariantHash data = c->property(SESSION_STORE_MEMCD_DATA).toHash();
+        const QVariantHash data = c->stash(SESSION_STORE_MEMCD_DATA).toHash();
 
         if (data.isEmpty()) {
             bool ok = false;
@@ -143,7 +143,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
         data = Memcached::getByKey<QVariantHash>(groupKey, sessionKey);
     }
 
-    c->setProperty(SESSION_STORE_MEMCD_DATA, data);
+    c->setStash(SESSION_STORE_MEMCD_DATA, data);
 
     return data;
 }
