@@ -106,7 +106,7 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
     const static QString sessionPrefix = QCoreApplication::applicationName() + QLatin1String("_sess_");
     const QString sessionKey = sessionPrefix + sid;
 
-    QObject::connect(c, &Context::destroyed, [=] () {
+    QObject::connect(c->app(), &Application::afterDispatch, c, [=] () {
         if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {
             return;
         }

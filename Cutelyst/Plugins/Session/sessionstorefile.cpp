@@ -18,6 +18,7 @@
 #include "sessionstorefile.h"
 
 #include <Cutelyst/Context>
+#include <Cutelyst/Application>
 
 #include <QDir>
 #include <QFile>
@@ -107,12 +108,12 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
     }
 
     // Commit data when Context gets deleted
-    QObject::connect(c, &Context::destroyed, [=] () {
+    QObject::connect(c->app(), &Application::afterDispatch, c, [=] () {
         if (!c->stash(SESSION_STORE_FILE_SAVE).toBool()) {
             return;
         }
 
-        QVariantHash data = c->stash(SESSION_STORE_FILE_DATA).toHash();
+        const QVariantHash data = c->stash(SESSION_STORE_FILE_DATA).toHash();
 
         if (data.isEmpty()) {
             QFile::remove(file->fileName());
