@@ -33,6 +33,8 @@
 #include <QTimer>
 #include <QLoggingCategory>
 
+#include <typeinfo>
+
 using namespace CWSGI;
 
 Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http")
