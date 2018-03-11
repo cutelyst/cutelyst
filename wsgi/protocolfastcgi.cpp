@@ -154,26 +154,6 @@ Protocol::Type ProtocolFastCGI::type() const
     return FastCGI1;
 }
 
-quint32 wsgi_be32(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint32 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 24) & 0xff);
-    ptr[1] = static_cast<quint8>((*src >> 16) & 0xff);
-    ptr[2] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[3] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
-quint16 wsgi_be16(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint16 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[1] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
 quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const
 {
     char *buffer = request->buffer + request->pktsize;
@@ -229,51 +209,47 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
     return keylen + vallen + 2 + 2;
 }
 
-int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf, size_t len) const
+int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf, quint16 len) const
 {
-    size_t j;
-    quint8 octet;
-    quint32 keylen, vallen;
-    for (j = 0; j < len; j++) {
-        octet = static_cast<quint8>(buf[j]);
+    quint32 j = 0;
+    while (j < len) {
+        quint32 keylen, vallen;
+        quint8 octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
                 return -1;
-            keylen = wsgi_be32(&buf[j]) ^ 0x80000000;
-            j += 4;
-        }
-        else {
-            if (j + 1 >= len)
+
+            // Ignore first bit
+            keylen = quint8((buf[j++] & ~0x80) << 24) | quint8(buf[j++] << 16) | quint8(buf[j++] << 8) | quint8(buf[j++]);
+        } else {
+            if (++j >= len)
                 return -1;
             keylen = octet;
-            j++;
         }
+
         octet = static_cast<quint8>(buf[j]);
         if (octet > 127) {
             if (j + 4 >= len)
                 return -1;
-            vallen = wsgi_be32(&buf[j]) ^ 0x80000000;
-            j += 4;
-        }
-        else {
-            if (j + 1 >= len)
+
+            // Ignore first bit
+            vallen = quint8((buf[j++] & ~0x80) << 24) | quint8(buf[j++] << 16) | quint8(buf[j++] << 8) | quint8(buf[j++]);
+        } else {
+            if (++j >= len)
                 return -1;
             vallen = octet;
-            j++;
         }
 
-        if (j + (keylen + vallen) > len) {
+        if (j + (keylen + vallen) > len || keylen > 0xffff || vallen > 0xffff) {
             return -1;
         }
 
-        if (keylen > 0xffff || vallen > 0xffff)
-            return -1;
         quint16 pktsize = addHeader(request, buf + j, keylen, buf + j + keylen, vallen);
         if (pktsize == 0)
             return -1;
         request->pktsize += pktsize;
-        // -1 here as the for() will increment j again
-        j += (keylen + vallen) - 1;
+
+        j += keylen + vallen;
     }
 
     return 0;
@@ -285,12 +261,10 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
         if (request->buf_size >= sizeof(struct fcgi_record)) {
             auto fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
 
-            quint16 fcgi_len = wsgi_be16(reinterpret_cast<const char *>(&fr->cl1));
-            quint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
             quint8 fcgi_type = fr->type;
-            quint8 *sid = reinterpret_cast<quint8 *>(& request->stream_id);
-            sid[0] = fr->req0;
-            sid[1] = fr->req1;
+            quint16 fcgi_len = fr->cl0 | (fr->cl1 << 8);
+            quint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
+            request->stream_id = fr->req0 | (fr->req1 << 8);
 
             // if STDIN, end of the loop
             if (fcgi_type == FCGI_STDIN) {
@@ -558,8 +532,8 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             fr.version = FCGI_VERSION_1;
             fr.type = FCGI_STDOUT;
 
-            fr.req0 = static_cast<quint8>(stream_id & 0xff);
-            fr.req1 = static_cast<quint8>((stream_id >> 8) & 0xff);
+            fr.req1 = quint8(stream_id >> 8);
+            fr.req0 = quint8(stream_id);
 
             quint16 padded_len = FCGI_ALIGN(fcgi_len);
             if (padded_len > fcgi_len) {
@@ -568,8 +542,8 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             fr.pad = padding;
 
             fr.reserved = 0;
-            fr.cl0 = static_cast<quint8>(fcgi_len & 0xff);
-            fr.cl1 = static_cast<quint8>((fcgi_len >> 8) & 0xff);
+            fr.cl1 = quint8(fcgi_len >> 8);
+            fr.cl0 = quint8(fcgi_len);
             if (io->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
                 return -1;
             }

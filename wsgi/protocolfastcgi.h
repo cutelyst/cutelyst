@@ -79,7 +79,7 @@ public:
 
 private:
     inline quint16 addHeader(ProtoRequestFastCGI *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const;
-    inline int parseHeaders(ProtoRequestFastCGI *request, const char *buf, size_t len) const;
+    inline int parseHeaders(ProtoRequestFastCGI *request, const char *buf, quint16 len) const;
     inline int processPacket(ProtoRequestFastCGI *request) const;
     inline bool writeBody(ProtoRequestFastCGI *request, char *buf, qint64 len) const;
 };
