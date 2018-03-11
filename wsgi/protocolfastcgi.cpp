@@ -558,9 +558,8 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             fr.version = FCGI_VERSION_1;
             fr.type = FCGI_STDOUT;
 
-            quint8 *sid = reinterpret_cast<quint8 *>(stream_id);
-            fr.req1 = sid[1];
-            fr.req0 = sid[0];
+            fr.req0 = static_cast<quint8>(stream_id & 0xff);
+            fr.req1 = static_cast<quint8>((stream_id >> 8) & 0xff);
 
             quint16 padded_len = FCGI_ALIGN(fcgi_len);
             if (padded_len > fcgi_len) {
