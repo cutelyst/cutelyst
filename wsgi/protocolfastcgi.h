@@ -60,7 +60,7 @@ protected:
     }
 
 public:
-    quint64 stream_id = 0;
+    quint16 stream_id = 0;
     quint16 pktsize = 0;
 };
 
