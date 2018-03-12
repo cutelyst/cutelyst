@@ -62,7 +62,7 @@ WSGI::WSGI(QObject *parent) : QObject(parent),
     d_ptr(new WSGIPrivate(this))
 {
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qSetMessagePattern(QStringLiteral("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
+        qSetMessagePattern(QLatin1String("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
 
 #ifdef Q_OS_LINUX

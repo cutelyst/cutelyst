@@ -94,7 +94,7 @@ void uwsgi_cutelyst_on_load()
     }
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qSetMessagePattern(QStringLiteral("%{category}[%{type}] %{message}"));
+        qSetMessagePattern(QLatin1String("%{category}[%{type}] %{message}"));
     }
 }
 
