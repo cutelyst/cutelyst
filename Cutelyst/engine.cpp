@@ -89,42 +89,6 @@ Engine::~Engine()
     delete d_ptr;
 }
 
-void Engine::finalizeCookies(Context *c)
-{
-    Response *res = c->response();
-    Headers &headers = res->headers();
-    const auto cookies = res->cookies();
-    for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader(QStringLiteral("set_cookie"), QString::fromLatin1(cookie.toRawForm()));
-    }
-}
-
-void Engine::finalizeBody(Context *c)
-{
-    EngineRequest *conn = c->response()->d_ptr->engineRequest;
-    return conn->finalizeBody(c);
-}
-
-void Engine::finalizeError(Context *c)
-{
-    Response *res = c->response();
-
-    res->setContentType(QStringLiteral("text/html; charset=utf-8"));
-
-    QByteArray body;
-
-    // Trick IE. Old versions of IE would display their own error page instead
-    // of ours if we'd give it less than 512 bytes.
-    body.reserve(512);
-
-    body.append(c->errors().join(QLatin1Char('\n')).toUtf8());
-
-    res->setBody(body);
-
-    // Return 500
-    res->setStatus(Response::InternalServerError);
-}
-
 /**
  * @brief application
  * @return the Application object we are dealing with

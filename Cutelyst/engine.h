@@ -190,27 +190,6 @@ protected:
     bool postForkApplication();
 
     /**
-     * Reimplement if you need a custom way
-     * to Set-Cookie, the default implementation
-     * writes them to c->res()->headers()
-     */
-    virtual void finalizeCookies(Context *c);
-
-    /**
-     * Engines must reimplement this to write the
-     * response body back to the caller
-     */
-    virtual void finalizeBody(Context *c);
-
-    /**
-     * Engines should overwrite this if they
-     * want to to make custom error messages.
-     * Default implementation render an html
-     * with errors.
-     */
-    virtual void finalizeError(Context *c);
-
-    /**
      * This is the HTTP default response headers that each request gets
      */
     Headers &defaultHeaders();
