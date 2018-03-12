@@ -76,6 +76,10 @@ public:
 
     inline QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
+    inline operator QVariant() const {
+        return QVariant::fromValue(m_data);
+    }
+
 protected:
     QVariantMap m_data;
 };
