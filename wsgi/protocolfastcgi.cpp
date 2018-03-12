@@ -220,7 +220,10 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
                 return -1;
 
             // Ignore first bit
-            keylen = quint8((buf[j++] & ~0x80) << 24) | quint8(buf[j++] << 16) | quint8(buf[j++] << 8) | quint8(buf[j++]);
+            keylen = quint8((buf[j++] & ~0x80) << 24);
+            keylen |= quint8(buf[j++] << 16);
+            keylen |= quint8(buf[j++] << 8);
+            keylen |= quint8(buf[j++]);
         } else {
             if (++j >= len)
                 return -1;
@@ -233,7 +236,10 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
                 return -1;
 
             // Ignore first bit
-            vallen = quint8((buf[j++] & ~0x80) << 24) | quint8(buf[j++] << 16) | quint8(buf[j++] << 8) | quint8(buf[j++]);
+            vallen = quint8((buf[j++] & ~0x80) << 24);
+            vallen |= quint8(buf[j++] << 16);
+            vallen |= quint8(buf[j++] << 8);
+            vallen |= quint8(buf[j++]);
         } else {
             if (++j >= len)
                 return -1;
