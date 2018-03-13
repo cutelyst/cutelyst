@@ -27,6 +27,12 @@ class Headers;
 
 namespace CWSGI {
 
+struct DynamicTableEntry
+{
+    QString key;
+    QString value;
+};
+
 class H2Stream;
 
 class HuffmanTree;
@@ -45,7 +51,9 @@ public:
     int decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream);
 
 private:
-    std::vector<std::pair<QString, QString>> m_dynamicTable;
+    std::vector<DynamicTableEntry> m_dynamicTable;
+    quint32 m_dynamicTableSize = 0;
+    quint32 m_currentMaxDynamicTableSize = 0;
     HuffmanTree *m_huffmanTree;
     QByteArray buf;
     quint32 m_maxTableSize;
@@ -54,7 +62,7 @@ private:
 class Node;
 class HuffmanTree {
 public:
-    HuffmanTree(int tableSize = 257);
+    HuffmanTree();
     ~HuffmanTree();
     qint64 encode(quint8 *buf, const QByteArray &content);
     QString decode(const quint8 *buf, quint32 len, bool &error);

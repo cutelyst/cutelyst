@@ -370,10 +370,6 @@ int ProtocolHttp2::parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2
         if (padLength >= fr.len) {
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
-
-//        fr.len -= padLength;
-    } else {
-
     }
 
     H2Stream *stream;
@@ -392,6 +388,16 @@ int ProtocolHttp2::parseData(ProtoRequestHttp2 *request, QIODevice *io, const H2
     }
 
     qCDebug(CWSGI_H2) << "Frame data" << padLength << "state" << stream->state << "content-length" << stream->contentLength;
+
+    if (!stream->body) {
+        stream->body = createBody(request->contentLength);
+        if (!stream->body) {
+            // Failed to create body to store data
+            return sendGoAway(io, request->maxStreamId, ErrorInternalError);
+        }
+    }
+    stream->body->write(request->buffer + 9, fr.len - padLength);
+
     stream->consumedData += fr.len - padLength;
     if (stream->contentLength != -1 &&
             ((fr.flags & FlagDataEndStream && stream->contentLength != stream->consumedData) ||
