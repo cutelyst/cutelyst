@@ -28,6 +28,7 @@
 //class Headers;
 //}
 
+class QEventLoop;
 namespace CWSGI {
 
 class H2Frame
@@ -50,22 +51,25 @@ public:
         Closed
     };
     H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protocol);
+    ~H2Stream();
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
 
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
-    void updateWindowSize(qint32 size);
+    void windowUpdated();
 
+    QEventLoop *loop = nullptr;
     QString method;
     QString path;
     QString scheme;
     QString authority;
     Cutelyst::Headers headers;
-    ProtoRequestHttp2 *proto;
+    ProtoRequestHttp2 *protoRequest;
     quint32 streamId;
-    quint32 windowSize = 65535;
+    qint32 windowSize = 65535;
     qint64 contentLength = -1;
+    qint32 dataSent = 0;
     qint64 consumedData = 0;
     quint8 state = Idle;
 };
@@ -88,12 +92,11 @@ public:
         streams.clear();
         maxStreamId = 0;
         streamForContinuation = 0;
+        dataSent = 0;
         windowSize = 65535;
-        initialWindowSize = 65535;
+        settingsInitialWindowSize = 65535;
         canPush = false;
     }
-
-    void updateWindowSize(qint32 size);
 
     quint64 stream_id = 0;
     quint32 pktsize = 0;
@@ -101,8 +104,9 @@ public:
     HPack *hpack = nullptr;
     quint64 maxStreamId = 0;
     quint64 streamForContinuation = 0;
+    qint32 dataSent = 0;
     qint32 windowSize = 65535;
-    qint32 initialWindowSize = 65535;
+    qint32 settingsInitialWindowSize = 65535;
     qint16 maxFranmeSize = 16384;
     bool canPush = true;
 
@@ -134,7 +138,7 @@ public:
     int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32> > &settings) const;
     int sendSettingsAck(QIODevice *io) const;
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
-    int sendData(QIODevice *io, quint32 streamId, qint32 windowSize, const char *data, qint32 dataLen) const;
+    int sendData(QIODevice *io, quint32 streamId, qint32 flags, const char *data, qint32 dataLen) const;
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
 
     void queueStream(Socket *socket, H2Stream *stream) const;
