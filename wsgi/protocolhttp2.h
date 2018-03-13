@@ -90,6 +90,7 @@ public:
         hpack = nullptr;
         qDeleteAll(streams);
         streams.clear();
+        headersBuffer.clear();
         maxStreamId = 0;
         streamForContinuation = 0;
         dataSent = 0;
@@ -101,6 +102,7 @@ public:
     quint64 stream_id = 0;
     quint32 pktsize = 0;
 
+    QByteArray headersBuffer;
     HPack *hpack = nullptr;
     quint64 maxStreamId = 0;
     quint64 streamForContinuation = 0;

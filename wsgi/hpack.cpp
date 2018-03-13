@@ -176,10 +176,8 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
             return true;
         }
     } else if (k == QLatin1String(":authority")) {
-        if (stream->authority.isEmpty()) {
-            stream->authority = v;
-            return true;
-        }
+        stream->authority = v;
+        return true;
     } else if (k == QLatin1String(":scheme")) {
         if (stream->scheme.isEmpty()) {
             stream->scheme = v;
@@ -251,9 +249,11 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
             it += len;
 
         } else {
+            bool addToDynamicTable = false;
             if (*it & 0x40) {
                 // 6.2.1 Literal Header Field with Incremental Indexing
                 len = decode_int(intValue, it, 6);
+                addToDynamicTable = true;
                 qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << len << "allowedToUpdate" << allowedToUpdate;
             } else if (*it & 0x20) {
                 len = decode_int(intValue, it, 5);
@@ -301,6 +301,7 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
                 qDebug() << "=========================parsing string error";
                 return ErrorCompressionError;
             }
+            it += len;
 
             if (key.startsWith(QLatin1Char(':'))) {
                 if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
@@ -318,11 +319,10 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
                 stream->headers.pushHeader(key, value);
             }
 
-            if (*it & 0x40) {
+            if (addToDynamicTable) {
                 qDebug() << "=========================Adding to dynamic table key/value" << key << value;
                 m_dynamicTable.push_back({ key, value });
             }
-            it += len;
 
             qDebug() << "header key/value" << key << value;
         }

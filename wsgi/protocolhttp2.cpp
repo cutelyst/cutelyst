@@ -423,7 +423,6 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
         }
 
-//        fr.len -= padLength;
         pos += 1;
     }
 
@@ -481,8 +480,25 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         request->hpack = new HPack(m_headerTableSize);
     }
 
-    quint8 *it = reinterpret_cast<quint8 *>(ptr);
-    quint8 *itEnd = it + fr.len - pos - padLength;
+    if (fr.flags & FlagHeadersEndHeaders) {
+        request->streamForContinuation = 0;
+    } else {
+        request->headersBuffer.append(ptr, fr.len - pos - padLength);
+        qCDebug(CWSGI_H2) << "Setting HEADERS for continuation on stream" << fr.streamId;
+        request->streamForContinuation = fr.streamId;
+        return 0;
+    }
+
+    quint8 *it;
+    quint8 *itEnd;
+    if (request->headersBuffer.size()) {
+        it = reinterpret_cast<quint8 *>(request->headersBuffer.begin());
+        itEnd = reinterpret_cast<quint8 *>(request->headersBuffer.end());
+    } else {
+        it = reinterpret_cast<quint8 *>(ptr);
+        itEnd = it + fr.len - pos - padLength;
+    }
+
     int ret = request->hpack->decode(it, itEnd, stream);
     if (ret) {
         qDebug() << "Headers parser error" << ret << QByteArray(ptr + pos, fr.len - pos - padLength).toHex();
@@ -492,13 +508,13 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
 
     qDebug() << "Headers" << padLength << streamDependency << weight << "stream headers size" << stream->headers /*<< QByteArray(ptr + pos, fr.len - pos - padLength).toHex()*/ << ret;
 
-    if (fr.flags & FlagHeadersEndHeaders) {
-        request->streamForContinuation = 0;
-    } else {
-        qCDebug(CWSGI_H2) << "Setting HEADERS for continuation on stream" << fr.streamId;
-        request->streamForContinuation = fr.streamId;
-        return 0;
-    }
+//    if (fr.flags & FlagHeadersEndHeaders) {
+//        request->streamForContinuation = 0;
+//    } else {
+//        qCDebug(CWSGI_H2) << "Setting HEADERS for continuation on stream" << fr.streamId;
+//        request->streamForContinuation = fr.streamId;
+//        return 0;
+//    }
 
 
     if ((stream->state == H2Stream::HalfClosed || fr.flags & FlagHeadersEndStream)
