@@ -69,12 +69,12 @@ quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
     return i;
 }
 
-quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool &error)
+quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf, const quint8 *itEnd, bool &error)
 {
     quint32 str_len = 0;
     quint64 len = decode_int(str_len, buf, 7);
     if (*buf & 0x80) {
-        qDebug() << "HUFFMAN value" << len << str_len << QByteArray(reinterpret_cast<const char *>(buf + len), str_len).toHex();
+        qDebug() << "HUFFMAN value" << len << str_len << (buf + len + str_len < itEnd) << (buf + len + str_len) << itEnd/*<< QByteArray(reinterpret_cast<const char *>(buf + len), str_len).toHex()*/;
         dst = huffman->decode(buf + len, str_len, error);
     } else {
         for (uint i = 0; i < str_len; i++) {
@@ -84,7 +84,7 @@ quint64 parse_string(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool
     return len + str_len;
 }
 
-quint64 parse_string_key(HuffmanTree *huffman, QString &dst, const quint8 *buf, bool &error)
+quint64 parse_string_key(HuffmanTree *huffman, QString &dst, const quint8 *buf, const quint8 *itEnd, bool &error)
 {
     quint32 str_len = 0;
     quint64 len = decode_int(str_len, buf, 7);
@@ -219,8 +219,8 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
             QString key;
             QString value;
             if (intValue > 61) {
-                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << len;
-                intValue -= 61;
+                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << len << m_dynamicTable.size();
+                intValue -= 62;
                 if (intValue < m_dynamicTable.size()) {
                     auto h = m_dynamicTable.at(intValue);
                     key = h.first;
@@ -287,7 +287,7 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
                 key = h.first;
             } else {
                 bool errorUpper = false;
-                len = parse_string_key(m_huffmanTree, key, it, errorUpper);
+                len = parse_string_key(m_huffmanTree, key, it, itEnd, errorUpper);
                 if (errorUpper) {
                     return ErrorProtocolError;
                 }
@@ -296,13 +296,11 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
 
             QString value;
             bool error = false;
-            len = parse_string(m_huffmanTree, value, it, error);
+            len = parse_string(m_huffmanTree, value, it, itEnd, error);
             if (error) {
                 qDebug() << "=========================parsing string error";
                 return ErrorCompressionError;
             }
-            it += len;
-
 
             if (key.startsWith(QLatin1Char(':'))) {
                 if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
@@ -324,6 +322,7 @@ int HPack::decode(const quint8 *it, const quint8 *itEnd, H2Stream *stream)
                 qDebug() << "=========================Adding to dynamic table key/value" << key << value;
                 m_dynamicTable.push_back({ key, value });
             }
+            it += len;
 
             qDebug() << "header key/value" << key << value;
         }
