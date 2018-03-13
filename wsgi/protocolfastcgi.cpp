@@ -324,28 +324,11 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
 
 bool ProtocolFastCGI::writeBody(ProtoRequestFastCGI *request, char *buf, qint64 len) const
 {
-    if (request->body) {
-        return request->body->write(buf, len) == len;
-    }
-
-    if (m_postBuffering && request->contentLength > m_postBuffering) {
-        auto temp = new QTemporaryFile;
-        if (!temp->open()) {
-            qCWarning(CWSGI_FCGI) << "Failed to open temporary file to store post" << temp->errorString();
+    if (!request->body) {
+        request->body = createBody(request->contentLength);
+        if (!request->body) {
             return false;
         }
-        request->body = temp;
-    } else if (m_postBuffering && request->contentLength <= m_postBuffering) {
-        auto buffer = new QBuffer;
-        buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(request->contentLength);
-        request->body = buffer;
-    } else {
-        // Unbuffered
-        auto buffer = new QBuffer;
-        buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(request->contentLength);
-        request->body = buffer;
     }
 
     return request->body->write(buf, len) == len;

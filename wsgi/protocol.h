@@ -88,6 +88,8 @@ public:
 
     virtual ProtocolData *createData(Socket *sock) const = 0;
 
+    QIODevice *createBody(qint64 contentLength) const;
+
     qint64 m_postBufferSize;
     qint64 m_bufferSize;
     qint64 m_postBuffering;

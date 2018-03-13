@@ -20,6 +20,13 @@
 #include "socket.h"
 #include "wsgi.h"
 
+#include <QTemporaryFile>
+#include <QBuffer>
+
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CWSGI_PROTO, "cwsgi.proto")
+
 using namespace CWSGI;
 
 ProtocolData::ProtocolData(Socket *_sock, int bufferSize)
@@ -50,4 +57,30 @@ Protocol::~Protocol()
 Protocol::Type Protocol::type() const
 {
     return Unknown;
+}
+
+QIODevice *Protocol::createBody(qint64 contentLength) const
+{
+    QIODevice *body;
+    if (m_postBuffering && contentLength > m_postBuffering) {
+        auto temp = new QTemporaryFile;
+        if (!temp->open()) {
+            qCWarning(CWSGI_PROTO) << "Failed to open temporary file to store post" << temp->errorString();
+            // On error close connection immediately
+            return nullptr;
+        }
+        body = temp;
+    } else if (m_postBuffering && contentLength <= m_postBuffering) {
+        auto buffer = new QBuffer;
+        buffer->open(QIODevice::ReadWrite);
+        buffer->buffer().reserve(contentLength);
+        body = buffer;
+    } else {
+        // Unbuffered
+        auto buffer = new QBuffer;
+        buffer->open(QIODevice::ReadWrite);
+        buffer->buffer().reserve(contentLength);
+        body = buffer;
+    }
+    return body;
 }

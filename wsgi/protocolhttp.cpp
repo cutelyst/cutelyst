@@ -137,25 +137,10 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 } else {
                     if (protoRequest->contentLength != -1) {
                         protoRequest->connState = ProtoRequestHttp::ContentBody;
-                        if (m_postBuffering && protoRequest->contentLength > m_postBuffering) {
-                            auto temp = new QTemporaryFile;
-                            if (!temp->open()) {
-                                qCWarning(CWSGI_HTTP) << "Failed to open temporary file to store post" << temp->errorString();
-                                io->close(); // On error close immediately
-                                return;
-                            }
-                            protoRequest->body = temp;
-                        } else if (m_postBuffering && protoRequest->contentLength <= m_postBuffering) {
-                            auto buffer = new QBuffer;
-                            buffer->open(QIODevice::ReadWrite);
-                            buffer->buffer().reserve(protoRequest->contentLength);
-                            protoRequest->body = buffer;
-                        } else {
-                            // Unbuffered
-                            auto buffer = new QBuffer;
-                            buffer->open(QIODevice::ReadWrite);
-                            buffer->buffer().reserve(protoRequest->contentLength);
-                            protoRequest->body = buffer;
+                        protoRequest->body = createBody(protoRequest->contentLength);
+                        if (!protoRequest->body) {
+                            sock->connectionClose();
+                            return;
                         }
 
                         ptr += 2;
