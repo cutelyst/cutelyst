@@ -466,10 +466,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         }
         request->maxStreamId = fr.streamId;
 
-//        auto proto = dynamic_cast<ProtocolHttp2 *>(request->sock->proto);
         stream = new H2Stream(fr.streamId, request->settingsInitialWindowSize, request);
-        qCDebug(CWSGI_H2) << "------------ ---------------" << stream << request;
-        qCDebug(CWSGI_H2) << "------------ ---------------" << stream->protoRequest << request;
         stream->startOfRequest = request->sock->engine->time();
         request->streams.insert(fr.streamId, stream);
     }
@@ -488,10 +485,13 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
 
     if (fr.flags & FlagHeadersEndHeaders) {
         request->streamForContinuation = 0;
+        if (!request->headersBuffer.isEmpty()) {
+            request->headersBuffer.append(ptr, fr.len - pos - padLength);
+        }
     } else {
-        request->headersBuffer.append(ptr, fr.len - pos - padLength);
         qCDebug(CWSGI_H2) << "Setting HEADERS for continuation on stream" << fr.streamId;
         request->streamForContinuation = fr.streamId;
+        request->headersBuffer.append(ptr, fr.len - pos - padLength);
         return 0;
     }
 
@@ -505,6 +505,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         itEnd = it + fr.len - pos - padLength;
     }
 
+//    qDebug() << "DECODE ->" << QByteArray((char*)it, itEnd - it).toHex();
     int ret = request->hpack->decode(it, itEnd, stream);
     if (ret) {
         qDebug() << "Headers parser error" << ret << QByteArray(ptr + pos, fr.len - pos - padLength).toHex();
