@@ -15,6 +15,7 @@ set(cutelyst_wsgi_SRC
     protocolwebsocket.h
     protocolhttp.cpp
     protocolhttp.h
+    hpack_p.cpp
     hpack_p.h
     hpack.cpp
     hpack.h
