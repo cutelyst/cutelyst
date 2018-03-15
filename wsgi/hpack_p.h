@@ -19,6 +19,7 @@
 #define HPACK_P_H
 
 #include <QString>
+#include <QHash>
 
 class HPackPrivate {
 public:
@@ -118,6 +119,61 @@ static const hpackStaticPair hpackStaticHeaders[] = {
     {QStringLiteral("vary"), QString()},
     {QStringLiteral("via"), QString()},
     {QStringLiteral("www-authenticate"), QString()}
+};
+
+
+
+
+
+
+static const QHash<QString, quint16> hpackStaticHeadersCode {
+    {QStringLiteral("ACCEPT_CHARSET"), 0x0f00},
+//    {QStringLiteral("ACCEPT_ENCODING"), QStringLiteral("gzip, deflate")},
+    {QStringLiteral("ACCEPT_LANGUAGE"), 0x0f02},
+    {QStringLiteral("ACCEPT_RANGES"), 0x0f03},
+    {QStringLiteral("ACCEPT"), 0x0f04},
+    {QStringLiteral("ACCESS_CONTROL_ALLOW_ORIGIN"), 0x0f05},
+    {QStringLiteral("AGE"), 0x0f06},
+    {QStringLiteral("ALLOW"), 0x0f07},
+    {QStringLiteral("AUTHORIZATION"), 0x0f08},
+    {QStringLiteral("CACHE_CONTROL"), 0x0f09},
+    {QStringLiteral("CONTENT_DISPOSITION"), 0x0f0a},
+    {QStringLiteral("CONTENT_ENCODING"), 0x0f0b},
+    {QStringLiteral("CONTENT_LANGUAGE"), 0x0f0c},
+    {QStringLiteral("CONTENT_LENGTH"), 0x0f0d},
+    {QStringLiteral("CONTENT_LOCATION"), 0x0f0e},
+    {QStringLiteral("CONTENT_RANGE"), 0x0f0f},
+    {QStringLiteral("CONTENT_TYPE"), 0x0f10},
+    {QStringLiteral("COOKIE"), 0x0f11},
+    {QStringLiteral("DATE"), 0x0f12},
+    {QStringLiteral("ETAG"), 0x0f13},
+    {QStringLiteral("EXPECT"), 0x0f14},
+    {QStringLiteral("EXPIRES"), 0x0f15},
+    {QStringLiteral("FROM"), 0x0f16},
+    {QStringLiteral("HOST"), 0x0f17},
+    {QStringLiteral("IF_MATCH"), 0x0f18},
+    {QStringLiteral("IF_MODIFIED_SINCE"), 0x0f19},
+    {QStringLiteral("IF_NONE_MATCH"), 0x0f1a},
+    {QStringLiteral("IF_RANGE"), 0x0f1b},
+    {QStringLiteral("IF_UNMODIFIED_SINCE"), 0x0f1c},
+    {QStringLiteral("LAST_MODIFIED"), 0x0f1d},
+    {QStringLiteral("LINK"), 0x0f1f},
+    {QStringLiteral("LOCATION"), 0x0f20},
+    {QStringLiteral("MAX_FORWARDS"), 0x0f21},
+    {QStringLiteral("PROXY_AUTHENTICATE"), 0x0f22},
+    {QStringLiteral("PROXY_AUTHORIZATION"), 0x0f23},
+    {QStringLiteral("RANGE"), 0x0f24},
+    {QStringLiteral("REFERER"), 0x0f25},
+    {QStringLiteral("REFRESH"), 0x0f26},
+    {QStringLiteral("RETRY_AFTER"), 0x0f27},
+    {QStringLiteral("SERVER"), 0x0f28},
+    {QStringLiteral("SET_COOKIE"), 0x0f29},
+    {QStringLiteral("STRICT_TRANSPORT_SECURITY"), 0x0f2a},
+    {QStringLiteral("TRANSFER_ENCODING"), 0x0f2b},
+    {QStringLiteral("USER_AGENT"), 0x0f2c},
+    {QStringLiteral("VARY"), 0x0f2d},
+    {QStringLiteral("VIA"), 0x0f2e},
+    {QStringLiteral("WWW_AUTHENTICATE"), 0x0f2f}
 };
 
 #endif // HPACK_P_H

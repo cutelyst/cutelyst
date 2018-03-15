@@ -55,16 +55,15 @@ unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 
     return ++src;
 }
 
-quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
+quint64 encode_int(quint8 *dst, quint32 I, quint8 mask)
 {
-    quint16 twoN = (1 << N) -1;
-    if (I < twoN) {
+    if (I < mask) {
         *dst = I;
         return 1;
     }
 
-    I -= twoN;
-    *dst = twoN;
+    I -= mask;
+    *dst = mask;
     quint64 i = 1;
     for (; I >= 128; i++) {
         *(dst + i) = (I & 0x7f) | 0x80;
@@ -159,6 +158,12 @@ HPack::HPack(int maxTableSize) : m_currentMaxDynamicTableSize(maxTableSize), m_m
     quint8 *next = decodeUInt16(reinterpret_cast<unsigned char *>(bug.begin()), reinterpret_cast<unsigned char *>(bug.end()), dst, INT_MASK(7));
     qDebug() << "next"  << dst << next;
 
+
+    for (int i = 17; i < 62; ++i) {
+        int len = encode_int(reinterpret_cast<quint8 *>(bug.data()), i, INT_MASK(4));
+        qDebug() << "ENCODED ===================" << bug.left(len).toHex();
+    }
+
 }
 
 HPack::~HPack()
@@ -166,7 +171,7 @@ HPack::~HPack()
 
 }
 
-void HPack::encodeStatus(int status)
+void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf)
 {
     if (status == 200) {
         buf.append(0x88);
@@ -185,16 +190,46 @@ void HPack::encodeStatus(int status)
     } else {
         encodeHeader(QByteArrayLiteral(":status"), QByteArray::number(status));
     }
+
+    bool hasDate = false;
+    auto it = headers.constBegin();
+    while (it != headers.constEnd()) {
+        const QString &key = it.key();
+        const QString &value = it.value();
+        if (!hasDate && key == QLatin1String("DATE")) {
+            hasDate = true;
+        }
+
+        auto staticIt = hpackStaticHeadersCode.constFind(key);
+        if (staticIt != hpackStaticHeadersCode.constEnd()) {
+            const quint16 &staticCode = staticIt.value();
+            buf.append(quint8(staticCode >> 8));
+            buf.append(quint8(staticCode));
+
+            quint8 intBuf[10];
+            int len = encode_int(intBuf, value.length(), INT_MASK(4));
+//            for (int i = 0; i < len; ++i) {
+
+//            }
+            qDebug() << "ENCODED ===================" << buf.left(len).toHex();
+        }
+
+
+//        QString line(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
+//        const QByteArray data = line.toLatin1();
+//        buf.append(data);
+
+        ++it;
+    }
+
+    if (!hasDate) {
+//        buf.append(static_cast<CWsgiEngine *>(protoRequest->sock->engine)->lastDate());
+    }
 }
 
 void HPack::encodeHeader(const QByteArray &key, const QByteArray &value)
 {
 
-}
-
-QByteArray HPack::data() const
-{
-    return buf;
 }
 
 enum ErrorCodes {

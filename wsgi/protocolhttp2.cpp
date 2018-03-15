@@ -861,13 +861,12 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
 
 bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
-    HPack t(4096);
-    t.encodeStatus(status);
-    const QByteArray reply = t.data();
+    QByteArray buf;
+    protoRequest->hpack->encodeHeaders(status, headers.data(), buf);
 
-    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders" << reply.size() << streamId;
+    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders" << buf.size() << streamId;
     auto parser = dynamic_cast<ProtocolHttp2 *>(protoRequest->sock->proto);
-    int ret = parser->sendFrame(protoRequest->io, FrameHeaders, FlagHeadersEndHeaders, streamId, reply.constData(), reply.size());
+    int ret = parser->sendFrame(protoRequest->io, FrameHeaders, FlagHeadersEndHeaders, streamId, buf.constData(), buf.size());
     qCDebug(CWSGI_H2) << "H2Stream::writeHeaders ret" << ret;
     return ret == 0;
 }

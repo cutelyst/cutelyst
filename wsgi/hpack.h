@@ -41,11 +41,9 @@ public:
     HPack(int maxTableSize);
     ~HPack();
 
-    void encodeStatus(int status);
+    void encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf);
 
     void encodeHeader(const QByteArray &key, const QByteArray &value);
-
-    QByteArray data() const;
 
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 
@@ -53,7 +51,6 @@ private:
     QVector<DynamicTableEntry> m_dynamicTable;
     quint32 m_dynamicTableSize = 0;
     quint32 m_currentMaxDynamicTableSize = 0;
-    QByteArray buf;
     quint32 m_maxTableSize;
 };
 
