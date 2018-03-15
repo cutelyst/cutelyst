@@ -19,7 +19,7 @@
 #define HPACKTABLES_H
 
 #include <QString>
-#include <vector>
+#include <QVector>
 
 namespace Cutelyst {
 class Headers;
@@ -50,7 +50,7 @@ public:
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 
 private:
-    std::vector<DynamicTableEntry> m_dynamicTable;
+    QVector<DynamicTableEntry> m_dynamicTable;
     quint32 m_dynamicTableSize = 0;
     quint32 m_currentMaxDynamicTableSize = 0;
     QByteArray buf;

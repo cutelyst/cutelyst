@@ -24,6 +24,8 @@
 
 #include <QDebug>
 
+#define INT_MASK(bits) (1 << bits) - 1
+
 using namespace CWSGI;
 
 unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int &error);
@@ -109,22 +111,6 @@ unsigned char *decode_int(unsigned char *src, unsigned char *src_end, qint32 &ds
 //    return src;
 }
 
-quint64 decode_int(quint32 &dst, const quint8 *buf, quint8 N)
-{
-    quint64 len = 1;
-    quint16 twoN = (1 << N) -1;
-    dst = *buf & twoN;
-    if (dst == twoN) {
-        int M = 0;
-        do {
-            dst += (*(buf + len) & 0x7f) << M;
-            M += 7;
-        } while (*(buf + (len++)) & 0x80);
-    }
-
-    return len;
-}
-
 quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
 {
     quint16 twoN = (1 << N) -1;
@@ -151,12 +137,10 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd, boo
 
     bool huffmanDecode = *buf & 0x80;
 
-    buf = decode_int(buf, itEnd, str_len, (1 << 7) - 1);
+    buf = decode_int(buf, itEnd, str_len, INT_MASK(7));
 
-//    quint64 len = decode_int(str_len, buf, 7);
     if (huffmanDecode) {
         qDebug() << "HUFFMAN value" << str_len /*<< QByteArray(reinterpret_cast<const char *>(buf + len), str_len).toHex()*/;
-//        dst = huffman->decode(buf + len, str_len, error);
         int errorno = 0;
         buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
         if (errorno) {
@@ -184,10 +168,9 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd, bool &
     qint32 str_len = 0;
     bool huffmanDecode = *buf & 0x80;
 
-    buf = decode_int(buf, itEnd, str_len, (1 << 7) - 1);
+    buf = decode_int(buf, itEnd, str_len, INT_MASK(7));
     if (huffmanDecode) {
         qDebug() << "HUFFMAN key" << str_len;
-//        dst = huffman->decode(buf+len, str_len, error);
         int errorno = 0;
         buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
         if (errorno) {
@@ -322,7 +305,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
         qint32 intValue(0);
         qDebug() << "decode LOOP" << it;
         if (*it & 0x80){
-            it = decode_int(it, itEnd, intValue, (1 << 7) - 1);
+            it = decode_int(it, itEnd, intValue, INT_MASK(7));
             qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << errorno << it;
             if (intValue <= 0) {
                 return ErrorCompressionError;
@@ -333,8 +316,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             if (intValue > 61) {
                 qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << m_dynamicTable.size();
                 intValue -= 62;
-                if (intValue < qint64(m_dynamicTable.size())) {
-                    const auto h = m_dynamicTable.at(intValue);
+                if (intValue < m_dynamicTable.size()) {
+                    const auto h = m_dynamicTable[intValue];
                     key = h.key;
                     value = h.value;
                     qDebug() << "=========================GETTING from dynamic table key/value" << key << value;
@@ -361,21 +344,15 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 consumeHeader(key, value, stream);
                 stream->headers.pushHeader(key, value);
             }
-//            it += len;
-
         } else {
             bool addToDynamicTable = false;
             if (*it & 0x40) {
                 // 6.2.1 Literal Header Field with Incremental Indexing
-//                len = decode_int(intValue, it, 6);
-//                it = hpackDecodeInt(it, itEnd, intValue, (1<<6)-1, errorno);
-                it = decode_int(it, itEnd, intValue, (1 << 6) - 1);
+                it = decode_int(it, itEnd, intValue, INT_MASK(6));
                 addToDynamicTable = true;
                 qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate;
             } else if (*it & 0x20) {
-//                len = decode_int(intValue, it, 5);
-                it = decode_int(it, itEnd, intValue, (1 << 5) - 1);
-//                it = hpackDecodeInt(it, itEnd, intValue, (1<<5)-1, errorno);
+                it = decode_int(it, itEnd, intValue, INT_MASK(5));
                 qDebug() << "6.3 Dynamic Table update" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate << m_maxTableSize;
                 if (intValue > m_maxTableSize) {
                     qDebug() << "Trying to update beyond limits";
@@ -386,21 +363,16 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
                 m_currentMaxDynamicTableSize = intValue;
                 while (m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
-                    auto it = m_dynamicTable.back();
-                    m_dynamicTableSize -= it.key.length() + it.value.length() + 32;
-                    m_dynamicTable.pop_back();
+                    auto header = m_dynamicTable.takeLast();
+                    m_dynamicTableSize -= header.key.length() + header.value.length() + 32;
                 }
 
-//                it += len;
                 continue;
             } else {
                 // 6.2.2 Literal Header Field without Indexing
                 // 6.2.3 Literal Header Field Never Indexed
-                it = decode_int(it, itEnd, intValue, (1 << 4) - 1);
-//                it = hpackDecodeInt(it, itEnd, intValue, (1<<4)-1, errorno);
-//                len = decode_int(intValue, it, 4);
+                it = decode_int(it, itEnd, intValue, INT_MASK(4));
             }
-//            it += len;
 
             if (intValue > 61) {
                 return ErrorCompressionError;
@@ -445,15 +417,14 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 const int size = key.length() + value.length() + 32;
                 qDebug() << "=========================Adding to dynamic table key/value" << size << m_currentMaxDynamicTableSize << key;
                 while (size + m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
-                    auto it = m_dynamicTable.back();
+                    auto it = m_dynamicTable.takeLast();
                     qDebug() << "=========================Remove ONE dynamic table key/value" << it.key;
                     m_dynamicTableSize -= it.key.length() + it.value.length() + 32;
-                    m_dynamicTable.pop_back();
                 }
 
                 qDebug() << "=========================CAN ADD ONE dynamic table key/value" << size << m_dynamicTableSize << (size + m_dynamicTableSize) << m_currentMaxDynamicTableSize;
                 if (size + m_dynamicTableSize <= m_currentMaxDynamicTableSize) {
-                    m_dynamicTable.insert(m_dynamicTable.begin(), { key, value });
+                    m_dynamicTable.prepend({ key, value });
                     m_dynamicTableSize += size;
                     qDebug() << "=========================ADDED to dyn table" << size << m_dynamicTableSize;
                 }
