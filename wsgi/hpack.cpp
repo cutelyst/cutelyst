@@ -82,33 +82,29 @@ unsigned char* hpackDecodeInt(unsigned char *src, unsigned char *src_end, qint32
     return src;
 }
 
-unsigned char *decode_int(unsigned char *src, unsigned char *src_end, qint32 &dst, quint8 twoN)
+// This decodes an UInt
+// it returns nullptr if it tries to read past end
+// The value can overflow it's capacity, which should be harmless as it would
+// give parsing errors on other parts
+unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 &dst, quint8 mask)
 {
-//    dst = *src++ & twoN;
-//    if (dst == twoN) {
-//        int M = 0;
-//        qDebug() << (src < src_end) << bool(*src & 0x80);
-//        while (src < src_end && *src & 0x80) {
-//            dst += (*(src++) & 0x7f) << M;
-//            M += 7;
-//            qDebug() << (src < src_end) << bool(*src & 0x80);
-//        }
-//    }
+    qDebug() << Q_FUNC_INFO << "value 0" << QByteArray((char*)src, 10).toHex();
 
-
-    quint64 len = 1;
-    dst = *src & twoN;
-    if (dst == twoN) {
+    dst = *src & mask;
+    if (dst == mask) {
         int M = 0;
         do {
-            dst += (*(src + len) & 0x7f) << M;
+            if (++src >= src_end) {
+                dst = -1;
+                return nullptr;
+            }
+
+            dst += (*src & 0x7f) << M;
             M += 7;
-        } while (*(src + (len++)) & 0x80);
+        } while (*src & 0x80);
     }
 
-    return src + len;
-
-//    return src;
+    return ++src;
 }
 
 quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
@@ -131,20 +127,23 @@ quint64 encode_int(quint8 *dst, quint32 I, quint8 N)
     return i;
 }
 
-unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd, bool &error)
+unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
 {
-    qint32 str_len = 0;
+    quint16 str_len = 0;
 
     bool huffmanDecode = *buf & 0x80;
 
-    buf = decode_int(buf, itEnd, str_len, INT_MASK(7));
+    buf = decodeUInt16(buf, itEnd, str_len, INT_MASK(7));
+    if (!buf) {
+        return nullptr;
+    }
 
     if (huffmanDecode) {
         qDebug() << "HUFFMAN value" << str_len /*<< QByteArray(reinterpret_cast<const char *>(buf + len), str_len).toHex()*/;
         int errorno = 0;
         buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
-        if (errorno) {
-            error = true;
+        if (!buf) {
+            return nullptr;
         }
         qDebug() << "HUFFMAN decoded" << dst << errorno;
     } else {
@@ -157,24 +156,28 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd, boo
             }
         } else {
             qDebug() << "Not HUFFMAN value decoded  error";
-            error = true;
+            return nullptr;
         }
     }
     return buf;
 }
 
-unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd, bool &error)
+unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
 {
-    qint32 str_len = 0;
+    quint16 str_len = 0;
     bool huffmanDecode = *buf & 0x80;
 
-    buf = decode_int(buf, itEnd, str_len, INT_MASK(7));
+    buf = decodeUInt16(buf, itEnd, str_len, INT_MASK(7));
+    if (!buf) {
+        return nullptr;
+    }
+
     if (huffmanDecode) {
         qDebug() << "HUFFMAN key" << str_len;
         int errorno = 0;
         buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
-        if (errorno) {
-            error = true;
+        if (!buf) {
+            return nullptr;
         }
         qDebug() << "HUFFMAN decoded" << dst << errorno;
     } else {
@@ -185,16 +188,14 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd, bool &
             while (buf < itEnd) {
                 QChar c = QLatin1Char(*(buf++));
                 if (c.isUpper()) {
-                    error = true;
                     qDebug() << "Not HUFFMAN  decoded upper error";
-
-                    break;
+                    return nullptr;
                 }
                 dst += c;
             }
         } else {
             qDebug() << "Not HUFFMAN  decoded out bound error";
-            error = true;
+            return nullptr;
         }
     }
     return buf;
@@ -202,6 +203,13 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd, bool &
 
 HPack::HPack(int maxTableSize) : m_currentMaxDynamicTableSize(maxTableSize), m_maxTableSize(maxTableSize)
 {
+//    QByteArray bug("\xff\xff\xff\xff\xff\x7f");
+    QByteArray bug("\xff\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x80\x7e");
+    qDebug() << "+_+_+_+_+_+_++"  << bug.toHex() << (quint8*)(bug.begin()) << (quint8*)(bug.end());
+    qDebug() << "+_+_+_+_+_+_++"  << bug.toHex() << (quint8*)(bug.data()) << bug.end();
+    quint16 dst = 0;
+    quint8 *next = decodeUInt16(reinterpret_cast<unsigned char *>(bug.begin()), reinterpret_cast<unsigned char *>(bug.end()), dst, INT_MASK(7));
+    qDebug() << "next"  << dst << next;
 
 }
 
@@ -302,12 +310,12 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
     bool allowedToUpdate = true;
     while (it < itEnd) {
         int errorno(0);
-        qint32 intValue(0);
+        quint16 intValue(0);
         qDebug() << "decode LOOP" << it;
         if (*it & 0x80){
-            it = decode_int(it, itEnd, intValue, INT_MASK(7));
+            it = decodeUInt16(it, itEnd, intValue, INT_MASK(7));
             qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << errorno << it;
-            if (intValue <= 0) {
+            if (!it || intValue <= 0) {
                 return ErrorCompressionError;
             }
 
@@ -316,7 +324,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             if (intValue > 61) {
                 qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << m_dynamicTable.size();
                 intValue -= 62;
-                if (intValue < m_dynamicTable.size()) {
+                if (intValue < qint64(m_dynamicTable.size())) {
                     const auto h = m_dynamicTable[intValue];
                     key = h.key;
                     value = h.value;
@@ -348,19 +356,19 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             bool addToDynamicTable = false;
             if (*it & 0x40) {
                 // 6.2.1 Literal Header Field with Incremental Indexing
-                it = decode_int(it, itEnd, intValue, INT_MASK(6));
+                it = decodeUInt16(it, itEnd, intValue, INT_MASK(6));
+                if (!it) {
+                    return ErrorCompressionError;
+                }
                 addToDynamicTable = true;
                 qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate;
             } else if (*it & 0x20) {
-                it = decode_int(it, itEnd, intValue, INT_MASK(5));
+                it = decodeUInt16(it, itEnd, intValue, INT_MASK(5));
                 qDebug() << "6.3 Dynamic Table update" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate << m_maxTableSize;
-                if (intValue > m_maxTableSize) {
-                    qDebug() << "Trying to update beyond limits";
+                if (!it || intValue > m_maxTableSize || !allowedToUpdate) {
                     return ErrorCompressionError;
                 }
-                if (!allowedToUpdate) {
-                    return ErrorCompressionError;
-                }
+
                 m_currentMaxDynamicTableSize = intValue;
                 while (m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
                     auto header = m_dynamicTable.takeLast();
@@ -371,7 +379,10 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             } else {
                 // 6.2.2 Literal Header Field without Indexing
                 // 6.2.3 Literal Header Field Never Indexed
-                it = decode_int(it, itEnd, intValue, INT_MASK(4));
+                it = decodeUInt16(it, itEnd, intValue, INT_MASK(4));
+                if (!it) {
+                    return ErrorCompressionError;
+                }
             }
 
             if (intValue > 61) {
@@ -383,17 +394,15 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 const auto h = hpackStaticHeaders[intValue];
                 key = h.key;
             } else {
-                bool errorUpper = false;
-                it = parse_string_key(key, it, itEnd, errorUpper);
-                if (errorUpper) {
+                it = parse_string_key(key, it, itEnd);
+                if (!it) {
                     return ErrorProtocolError;
                 }
             }
 
             QString value;
-            bool error = false;
-            it = parse_string(value, it, itEnd, error);
-            if (error) {
+            it = parse_string(value, it, itEnd);
+            if (!it) {
                 qDebug() << "=========================parsing string error";
                 return ErrorCompressionError;
             }
@@ -449,8 +458,6 @@ unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
       const HPackPrivate::HuffDecode *entry = nullptr;
       QByteArray result/*(len * 2)*/; // max compression ratio is >= 0.5
 //      char *dst = result.data();
-
-
 
       do {
           if (entry) {

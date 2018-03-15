@@ -54,7 +54,7 @@ private:
     quint32 m_dynamicTableSize = 0;
     quint32 m_currentMaxDynamicTableSize = 0;
     QByteArray buf;
-    qint32 m_maxTableSize;
+    quint32 m_maxTableSize;
 };
 
 }
