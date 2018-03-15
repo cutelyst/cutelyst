@@ -28,59 +28,7 @@
 
 using namespace CWSGI;
 
-unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int &error);
-
-unsigned char* hpackDecodeInt(unsigned char *src, unsigned char *src_end, qint32 &value, quint8 prefix_max, int &errorno)
-{
-    quint8 mult;
-
-    if (src == src_end) {
-        qDebug() << "bug";
-        errorno = -2;
-        value = -1;
-        return src;
-    }
-
-    src++;
-    qDebug() << "in " << prefix_max << ((quint8)*src & prefix_max) << (quint8(*src) & prefix_max);
-    if ((value = (quint8)*src & prefix_max) == prefix_max) {
-        mult = 0;
-        qDebug() << "in hpackDecodeInt";
-
-        while (src < src_end) {
-
-            value += (*src & 0x7f) << mult;
-
-            if (value > UINT16_MAX) {
-                errorno = -3;
-                value = -1;
-                return src;
-            }
-
-            if ((*src++ & 0x80) == 0) {
-                errorno = 0;
-                return src;
-            }
-
-            mult += 7;
-
-            if (mult >= 32) // we only allow at most 4 octets (excluding prefix) to be used as int (== 2**(4*7) == 2**28)
-            {
-                errorno = -3; // Decoding of an integer gives a value too large
-
-                value = -1;
-                return src;
-            }
-
-        }
-    }
-
-    qDebug() << "bug end";
-    errorno = -2;
-    value = -1;
-
-    return src;
-}
+unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
 
 // This decodes an UInt
 // it returns nullptr if it tries to read past end
@@ -141,7 +89,7 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
     if (huffmanDecode) {
         qDebug() << "HUFFMAN value" << str_len /*<< QByteArray(reinterpret_cast<const char *>(buf + len), str_len).toHex()*/;
         int errorno = 0;
-        buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
+        buf = hpackDecodeString(buf, buf + str_len, dst, str_len);
         if (!buf) {
             return nullptr;
         }
@@ -175,7 +123,7 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
     if (huffmanDecode) {
         qDebug() << "HUFFMAN key" << str_len;
         int errorno = 0;
-        buf = hpackDecodeString(buf, buf + str_len, dst, errorno);
+        buf = hpackDecodeString(buf, buf + str_len, dst, str_len);
         if (!buf) {
             return nullptr;
         }
@@ -452,12 +400,11 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
     return 0;
 }
 
-unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int &error)
+unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
 {
-      uint8_t state = 0;
+      quint8 state = 0;
       const HPackPrivate::HuffDecode *entry = nullptr;
-      QByteArray result/*(len * 2)*/; // max compression ratio is >= 0.5
-//      char *dst = result.data();
+      value.reserve(len * 2); // max compression ratio is >= 0.5
 
       do {
           if (entry) {
@@ -465,62 +412,35 @@ unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
           }
           entry = HPackPrivate::huff_decode_table[state] + (*src >> 4);
 
-          if ((entry->flags & HPackPrivate::HUFF_FAIL) != 0)
-          {
-#     ifdef DEBUG
-              hpack_errno = -6; // A decoder decoded an invalid Huffman sequence
-#     endif
-
-              error = -6;
+          if (entry->flags & HPackPrivate::HUFF_FAIL) {
+              // A decoder decoded an invalid Huffman sequence
               return nullptr;
           }
 
-          if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-              //          *dst++ = entry->sym;
-              result.append(entry->sym);
+          if (entry->flags & HPackPrivate::HUFF_SYM) {
+              value.append(QLatin1Char(entry->sym));
           }
 
           entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
 
-          if ((entry->flags & HPackPrivate::HUFF_FAIL) != 0)
-          {
-#     ifdef DEBUG
-              hpack_errno = -6; // A decoder decoded an invalid Huffman sequence
-#     endif
-
-              error = -6;
+          if (entry->flags & HPackPrivate::HUFF_FAIL) {
+              // A decoder decoded an invalid Huffman sequence
               return nullptr;
           }
 
           if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-              result.append(entry->sym);
-              //          *dst++ = entry->sym;
+              value.append(QLatin1Char(entry->sym));
           }
 
       } while (++src < src_end);
 
-//          if (++src < src_end)
-//          {
-//              state = entry->state;
-
-//              goto loop;
-//          }
-
       qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) << "entry->state =" << entry->state;
 
-              if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0)
-      {
-#     ifdef DEBUG
-          hpack_errno = (entry->state == 28 ? -7   // A invalid header name or value character was coded
-                                            : -6); // A decoder decoded an invalid Huffman sequence
-#     endif
-
-          error = -7;
+      if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
+          // entry->state == 28 // A invalid header name or value character was coded
+          // entry->state != 28 // A decoder decoded an invalid Huffman sequence
           return nullptr;
       }
 
-//      result.size_adjust(dst);
-
-      value = QString::fromLatin1(result);
       return src_end;
 }
