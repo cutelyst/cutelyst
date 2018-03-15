@@ -352,8 +352,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
 
     bool hasDate = false;
     auto it = headersData.constBegin();
-    const auto endIt = headersData.constEnd();
-    while (it != endIt) {
+    while (it != headersData.constEnd()) {
         const QString &key = it.key();
         const QString &value = it.value();
         if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
