@@ -33,15 +33,15 @@ struct DynamicTableEntry
     QString value;
 };
 
+class CWsgiEngine;
 class H2Stream;
-
 class HPack
 {
 public:
     HPack(int maxTableSize);
     ~HPack();
 
-    void encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf);
+    void encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWSGI::CWsgiEngine *engine);
 
     void encodeHeader(const QByteArray &key, const QByteArray &value);
 

@@ -109,7 +109,7 @@ public:
     qint32 dataSent = 0;
     qint32 windowSize = 65535;
     qint32 settingsInitialWindowSize = 65535;
-    qint16 maxFranmeSize = 16384;
+    quint32 settingsMaxFrameSize = 16384;
     bool canPush = true;
 
     QHash<quint32, H2Stream *> streams;

@@ -349,6 +349,7 @@ int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, cons
                 if (value < 16384 || value > 16777215) {
                     return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
                 }
+                request->settingsMaxFrameSize = value;
             }
         }
         sendSettingsAck(io);
@@ -862,10 +863,16 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
 bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     QByteArray buf;
-    protoRequest->hpack->encodeHeaders(status, headers.data(), buf);
+    protoRequest->hpack->encodeHeaders(status, headers.data(), buf, static_cast<CWsgiEngine *>(protoRequest->sock->engine));
 
-    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders" << buf.size() << streamId;
+
+
+    //        buf.append(static_cast<CWsgiEngine *>(protoRequest->sock->engine)->lastDate());
+//        buf.append(->lastDate());
+
+    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders" << buf.toHex() << buf.size() << streamId;
     auto parser = dynamic_cast<ProtocolHttp2 *>(protoRequest->sock->proto);
+
     int ret = parser->sendFrame(protoRequest->io, FrameHeaders, FlagHeadersEndHeaders, streamId, buf.constData(), buf.size());
     qCDebug(CWSGI_H2) << "H2Stream::writeHeaders ret" << ret;
     return ret == 0;

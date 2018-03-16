@@ -55,23 +55,34 @@ unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 
     return ++src;
 }
 
-quint64 encode_int(quint8 *dst, quint32 I, quint8 mask)
+void encodeUInt16(QByteArray &buf, quint16 I, quint8 mask)
 {
     if (I < mask) {
-        *dst = I;
-        return 1;
+        buf.append(I);
+        return;
     }
 
     I -= mask;
-    *dst = mask;
-    quint64 i = 1;
-    for (; I >= 128; i++) {
-        *(dst + i) = (I & 0x7f) | 0x80;
+    buf.append(mask);
+    while (I >= 128) {
+        buf.append((I & 0x7f) | 0x80);
         I = I >> 7;
     }
-    *(dst + (i++)) = I;
+    buf.append(I);
+}
 
-    return i;
+static inline void encodeH2caseHeader(QByteArray &buf, const QString &key) {
+
+    encodeUInt16(buf, key.length(), INT_MASK(7));
+    for (auto keyIt : key) {
+        if (keyIt.isLetter()) {
+            buf.append(keyIt.toLower().toLatin1());
+        } else if (keyIt == QLatin1Char('_')) {
+            buf.append('-');
+        } else {
+            buf.append(keyIt.toLatin1());
+        }
+    }
 }
 
 unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
@@ -159,9 +170,10 @@ HPack::HPack(int maxTableSize) : m_currentMaxDynamicTableSize(maxTableSize), m_m
     qDebug() << "next"  << dst << next;
 
 
-    for (int i = 17; i < 62; ++i) {
-        int len = encode_int(reinterpret_cast<quint8 *>(bug.data()), i, INT_MASK(4));
-        qDebug() << "ENCODED ===================" << bug.left(len).toHex();
+    for (int i = 1; i < 62; ++i) {
+        QByteArray buf;
+        encodeUInt16(buf, i, INT_MASK(4));
+        qDebug() << "ENCODED ===================" << i << buf.toHex();
     }
 
 }
@@ -171,7 +183,7 @@ HPack::~HPack()
 
 }
 
-void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf)
+void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
 {
     if (status == 200) {
         buf.append(0x88);
@@ -188,7 +200,11 @@ void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QB
     } else if (status == 500) {
         buf.append(0x8E);
     } else {
-        encodeHeader(QByteArrayLiteral(":status"), QByteArray::number(status));
+        buf.append(0x08);
+
+        const QByteArray statusStr = QByteArray::number(status);
+        encodeUInt16(buf, statusStr.length(), INT_MASK(4));
+        buf.append(statusStr);
     }
 
     bool hasDate = false;
@@ -200,30 +216,34 @@ void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QB
             hasDate = true;
         }
 
-        auto staticIt = hpackStaticHeadersCode.constFind(key);
-        if (staticIt != hpackStaticHeadersCode.constEnd()) {
-            const quint16 &staticCode = staticIt.value();
-            buf.append(quint8(staticCode >> 8));
-            buf.append(quint8(staticCode));
+        auto staticIt = HPackPrivate::hpackStaticHeadersCode.constFind(key);
+        if (staticIt != HPackPrivate::hpackStaticHeadersCode.constEnd()) {
+            buf.append(staticIt.value(), 2);
 
-            quint8 intBuf[10];
-            int len = encode_int(intBuf, value.length(), INT_MASK(4));
-//            for (int i = 0; i < len; ++i) {
+            encodeUInt16(buf, value.length(), INT_MASK(7));
+            buf.append(value.toLatin1());
+        } else {
+            buf.append('\x00');
+            encodeH2caseHeader(buf, key);
 
-//            }
-            qDebug() << "ENCODED ===================" << buf.left(len).toHex();
+            encodeUInt16(buf, value.length(), INT_MASK(7));
+            buf.append(value.toLatin1());
         }
-
-
-//        QString line(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
-//        const QByteArray data = line.toLatin1();
-//        buf.append(data);
 
         ++it;
     }
 
     if (!hasDate) {
-//        buf.append(static_cast<CWsgiEngine *>(protoRequest->sock->engine)->lastDate());
+        const QByteArray date = engine->lastDate().mid(8);
+        if (date.length() != 29) {
+            // This should never happen but...
+            return;
+        }
+
+        // 0f12 Date header not indexed
+        // 1d = date length: 29
+        buf.append("\x0f\x12\x1d", 3);
+        buf.append(date);
     }
 }
 
@@ -317,7 +337,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                     return ErrorCompressionError;
                 }
             } else  {
-                const auto h = hpackStaticHeaders[intValue];
+                const auto h = HPackPrivate::hpackStaticHeaders[intValue];
                 key = h.key;
                 value = h.value;
             }
@@ -374,7 +394,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
 
             QString key;
             if (intValue != 0) {
-                const auto h = hpackStaticHeaders[intValue];
+                const auto h = HPackPrivate::hpackStaticHeaders[intValue];
                 key = h.key;
             } else {
                 it = parse_string_key(key, it, itEnd);
