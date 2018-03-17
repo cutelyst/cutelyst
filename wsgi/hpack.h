@@ -20,6 +20,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QHash>
 
 namespace Cutelyst {
 class Headers;
