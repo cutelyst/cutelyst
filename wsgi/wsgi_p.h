@@ -116,6 +116,7 @@ public:
     bool threadBalancer = false;
     bool userEventLoop = false;
     bool upgradeH2c = false;
+    bool httpsH2 = false;
 
 Q_SIGNALS:
     void postForked(int workerId);

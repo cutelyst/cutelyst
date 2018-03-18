@@ -106,6 +106,13 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                 } else if (server->protocol()->type() == Protocol::FastCGI1) {
                     server->setProtocol(getProtoFastCgi());
                 }
+
+                if (m_wsgi->httpsH2()) {
+                    auto sslServer = qobject_cast<TcpSslServer *>(server);
+                    if (sslServer) {
+                        sslServer->setHttp2Protocol(getProtoHttp2());
+                    }
+                }
             }
         }
 

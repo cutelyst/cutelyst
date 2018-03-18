@@ -28,6 +28,7 @@ using namespace CWSGI;
 TcpSslServer::TcpSslServer(const QString &serverAddress, CWSGI::Protocol *protocol, CWSGI::WSGI *wsgi, QObject *parent)
     : TcpServer(serverAddress, protocol, wsgi, parent)
 {
+
 }
 
 void TcpSslServer::incomingConnection(qintptr handle)
@@ -62,6 +63,14 @@ void TcpSslServer::incomingConnection(qintptr handle)
         }
 
         sock->startServerEncryption();
+        if (m_http2Protocol) {
+            connect(sock, &SslSocket::encrypted, this, [this, sock] () {
+                if (sock->sslConfiguration().nextNegotiatedProtocol() == "h2") {
+                    sock->proto = m_http2Protocol;
+                    sock->protoData = sock->proto->createData(sock);
+                }
+            });
+        }
     } else {
         delete sock;
     }
@@ -110,6 +119,11 @@ void TcpSslServer::setSslConfiguration(const QSslConfiguration &conf)
 {
     m_sslConfiguration = conf;
     conf.allowedNextProtocols();
+}
+
+void TcpSslServer::setHttp2Protocol(Protocol *protocol)
+{
+    m_http2Protocol = protocol;
 }
 
 #include "moc_tcpsslserver.cpp"

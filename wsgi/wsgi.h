@@ -152,6 +152,15 @@ public:
     bool upgradeH2c() const;
 
     /**
+     * Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
+     * Defaults to false
+     * @accessors http2Socket(), setHttp2Socket()
+     */
+    Q_PROPERTY(bool https_h2 READ httpsH2 WRITE setHttpsH2)
+    void setHttpsH2(bool enable);
+    bool httpsH2() const;
+
+    /**
      * Defines how an HTTPS socket should be binded
      * @accessors httpsSocket(), setHttpsSocket()
      */

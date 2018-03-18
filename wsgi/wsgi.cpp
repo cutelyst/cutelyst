@@ -170,6 +170,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                                QCoreApplication::translate("main", "Upgrades HTTP/1 to H2c (HTTP/2 Clear Text)"));
     parser.addOption(upgradeH2cOpt);
 
+    QCommandLineOption httpsH2Opt(QStringLiteral("https-h2"),
+                                  QCoreApplication::translate("main", "Negotiate HTTP/2 on HTTPS socket"));
+    parser.addOption(httpsH2Opt);
+
     QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
                                       QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
                                       QCoreApplication::translate("main", "address"));
@@ -436,6 +440,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     if (parser.isSet(upgradeH2cOpt)) {
         setUpgradeH2c(true);
+    }
+
+    if (parser.isSet(httpsH2Opt)) {
+        setHttpsH2(true);
     }
 
     if (parser.isSet(socketSndbuf)) {
@@ -888,6 +896,18 @@ bool WSGI::upgradeH2c() const
 {
     Q_D(const WSGI);
     return d->upgradeH2c;
+}
+
+void WSGI::setHttpsH2(bool enable)
+{
+    Q_D(WSGI);
+    d->httpsH2 = enable;
+}
+
+bool WSGI::httpsH2() const
+{
+    Q_D(const WSGI);
+    return d->httpsH2;
 }
 
 void WSGI::setHttpsSocket(const QStringList &httpsSocket)

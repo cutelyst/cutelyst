@@ -41,7 +41,10 @@ public:
 
     void setSslConfiguration(const QSslConfiguration &conf);
 
+    void setHttp2Protocol(Protocol *protocol);
+
 private:
+    Protocol *m_http2Protocol = nullptr;
     QSslConfiguration m_sslConfiguration;
 };
 
