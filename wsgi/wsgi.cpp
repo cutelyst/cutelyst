@@ -681,13 +681,13 @@ bool WSGIPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure
 
 void WSGIPrivate::listenLocalSockets()
 {
-    Q_Q(WSGI);
-
     QStringList http = httpSockets;
     QStringList http2 = http2Sockets;
     QStringList fastcgi = fastcgiSockets;
 
 #ifdef Q_OS_LINUX
+    Q_Q(WSGI);
+
     std::vector<int> fds = systemdNotify::listenFds();
     for (int fd : fds) {
         auto server = new LocalServer(q, this);
