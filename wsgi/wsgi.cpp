@@ -628,8 +628,6 @@ void WSGI::stop()
 
 void WSGIPrivate::listenTcpSockets()
 {
-    Q_Q(WSGI);
-
     const auto socketsH1 = httpSockets;
     for (const auto &socket : socketsH1) {
         listenTcp(socket, getHttpProto(), false);
