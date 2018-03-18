@@ -115,11 +115,12 @@ protected:
     virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
 };
 
+class ProtocolHttp2;
 class ProtocolWebSocket;
 class ProtocolHttp : public Protocol
 {
 public:
-    ProtocolHttp(WSGI *wsgi);
+    ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c = nullptr);
     ~ProtocolHttp();
 
     virtual Type type() const override;
@@ -129,11 +130,12 @@ public:
     virtual ProtocolData *createData(Socket *sock) const override final;
 
 private:
-    inline bool processRequest(Socket *sock) const;
+    inline bool processRequest(Socket *sock, QIODevice *io) const;
     inline void parseMethod(const char *ptr, const char *end, Socket *sock) const;
     inline void parseHeader(const char *ptr, const char *end, Socket *sock) const;
 
     ProtocolWebSocket *m_websocketProto;
+    ProtocolHttp2 *m_upgradeH2c;
 };
 
 }

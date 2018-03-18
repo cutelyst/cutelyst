@@ -19,6 +19,7 @@
 #include "socket.h"
 #include "protocolwebsocket.h"
 #include "wsgi.h"
+#include "protocolhttp2.h"
 
 #include <Cutelyst/Headers>
 #include <Cutelyst/Context>
@@ -40,8 +41,9 @@ using namespace CWSGI;
 Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http")
 Q_DECLARE_LOGGING_CATEGORY(CWSGI_SOCK)
 
-ProtocolHttp::ProtocolHttp(WSGI *wsgi) : Protocol(wsgi)
+ProtocolHttp::ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c) : Protocol(wsgi)
   , m_websocketProto(new ProtocolWebSocket(wsgi))
+  , m_upgradeH2c(upgradeH2c)
 {
 
 }
@@ -99,7 +101,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
         } while (bytesAvailable);
 
         if (remaining == len) {
-            processRequest(sock);
+            processRequest(sock, io);
         }
 
         return;
@@ -158,7 +160,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                         }
                     }
 
-                    if (!processRequest(sock)) {
+                    if (!processRequest(sock, io)) {
                         break;
                     }
                 }
@@ -181,13 +183,19 @@ ProtocolData *ProtocolHttp::createData(Socket *sock) const
     return new ProtoRequestHttp(sock, m_bufferSize);
 }
 
-bool ProtocolHttp::processRequest(Socket *sock) const
+bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
 {
     auto request = static_cast<ProtoRequestHttp *>(sock->protoData);
 //    qCDebug(CWSGI_HTTP) << "processRequest" << sock->protoData->contentLength;
     sock->processing = true;
     if (request->body) {
         request->body->seek(0);
+    }
+
+    qCDebug(CWSGI_HTTP) << "upgrade try" << m_upgradeH2c;
+//    if (m_upgradeH2c && m_upgradeH2c->upgradeH2C(sock, io, dynamic_cast<Cutelyst::EngineRequest*>(request))) {
+    if (m_upgradeH2c && m_upgradeH2c->upgradeH2C(sock, io, *request)) {
+        return false;
     }
 
     Cutelyst::Context *c = sock->engine->processRequest(request);

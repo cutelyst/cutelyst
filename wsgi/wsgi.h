@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -141,6 +141,15 @@ public:
     Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE setHttp2HeaderTableSize)
     void setHttp2HeaderTableSize(quint32 headerTableSize);
     quint32 http2HeaderTableSize() const;
+
+    /**
+     * Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text)
+     * Defaults to false
+     * @accessors http2Socket(), setHttp2Socket()
+     */
+    Q_PROPERTY(bool upgrade_h2c READ upgradeH2c WRITE setUpgradeH2c)
+    void setUpgradeH2c(bool enable);
+    bool upgradeH2c() const;
 
     /**
      * Defines how an HTTPS socket should be binded

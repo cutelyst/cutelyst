@@ -50,7 +50,7 @@ public:
         HalfClosed,
         Closed
     };
-    H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protocol);
+    H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protoRequestH2);
     ~H2Stream();
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
@@ -60,11 +60,7 @@ public:
     void windowUpdated();
 
     QEventLoop *loop = nullptr;
-    QString method;
-    QString path;
     QString scheme;
-    QString authority;
-    Cutelyst::Headers headers;
     ProtoRequestHttp2 *protoRequest;
     quint32 streamId;
     qint32 windowSize = 65535;
@@ -144,6 +140,8 @@ public:
     int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
 
     void queueStream(Socket *socket, H2Stream *stream) const;
+
+    bool upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request);
 
 public:
     quint32 m_maxFrameSize;

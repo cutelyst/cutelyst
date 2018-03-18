@@ -109,6 +109,7 @@ void TcpSslServer::timeoutConnections()
 void TcpSslServer::setSslConfiguration(const QSslConfiguration &conf)
 {
     m_sslConfiguration = conf;
+    conf.allowedNextProtocols();
 }
 
 #include "moc_tcpsslserver.cpp"

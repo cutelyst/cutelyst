@@ -778,6 +778,56 @@ void ProtocolHttp2::queueStream(Socket *socket, H2Stream *stream) const
     socket->engine->processRequestAsync(stream);
 }
 
+bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request)
+{
+    const Cutelyst::Headers &headers = request.headers;
+    if (headers.header(QStringLiteral("UPGRADE")) == QLatin1String("h2c") &&
+                headers.connection() == QLatin1String("Upgrade, HTTP2-Settings")) {
+        qCDebug(CWSGI_H2) << "upgrade";
+        const QString settings = headers.header(QStringLiteral("HTTP2_SETTINGS"));
+        if (!settings.isEmpty()) {
+            io->write("HTTP/1.1 101 Switching Protocols\r\n"
+                      "Connection: Upgrade\r\n"
+                      "Upgrade: h2c\r\n\r\n");
+            socket->proto = this;
+            socket->protoData = createData(socket);
+
+            auto protoRequest = static_cast<ProtoRequestHttp2 *>(socket->protoData);
+            protoRequest->hpack = new HPack(m_headerTableSize);
+            protoRequest->maxStreamId = 1;
+
+            auto stream = new H2Stream(1, 65535, protoRequest);
+            stream->method = request.method;
+            stream->path = request.path;
+            stream->query = request.query;
+            stream->serverAddress = request.serverAddress;
+            stream->remoteAddress = request.remoteAddress;
+            stream->remoteUser = request.remoteUser;
+            stream->headers = request.headers;
+            stream->startOfRequest = request.startOfRequest;
+            stream->status = request.status;
+            stream->body = request.body;
+            stream->remotePort = request.remotePort;
+            stream->isSecure = request.isSecure;
+
+            stream->state = H2Stream::HalfClosed;
+            protoRequest->streams.insert(1, stream);
+            protoRequest->maxStreamId = 1;
+
+            sendSettings(io, {
+                             { SETTINGS_MAX_FRAME_SIZE, m_maxFrameSize },
+                             { SETTINGS_HEADER_TABLE_SIZE, m_headerTableSize },
+                         });
+
+            // Process request
+            queueStream(socket, stream);
+            qCDebug(CWSGI_H2) << "upgraded";
+            return true;
+        }
+    }
+    return false;
+}
+
 ProtoRequestHttp2::ProtoRequestHttp2(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
 
@@ -788,12 +838,12 @@ ProtoRequestHttp2::~ProtoRequestHttp2()
 
 }
 
-H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHttp2 *protocol)
-    : protoRequest(protocol)
+H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHttp2 *protoRequestH2)
+    : protoRequest(protoRequestH2)
     , streamId(_streamId)
     , windowSize(_initialWindowSize)
 {
-
+    protocol = QStringLiteral("HTTP/2");
 }
 
 H2Stream::~H2Stream()

@@ -24,7 +24,6 @@
 #include "cwsgiengine.h"
 #include "socket.h"
 #include "tcpserverbalancer.h"
-#include "tcpsslserver.h"
 #include "localserver.h"
 
 #ifdef Q_OS_UNIX
@@ -166,6 +165,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                                QCoreApplication::translate("main", "Defined the HTTP/2 header table size"),
                                                QCoreApplication::translate("main", "size"));
     parser.addOption(http2HeaderTableSizeOpt);
+
+    QCommandLineOption upgradeH2cOpt(QStringLiteral("upgrade-h2c"),
+                                               QCoreApplication::translate("main", "Upgrades HTTP/1 to H2c (HTTP/2 Clear Text)"));
+    parser.addOption(upgradeH2cOpt);
 
     QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
                                       QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
@@ -431,6 +434,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         setSoKeepalive(true);
     }
 
+    if (parser.isSet(upgradeH2cOpt)) {
+        setUpgradeH2c(true);
+    }
+
     if (parser.isSet(socketSndbuf)) {
         bool ok;
         auto size = parser.value(socketSndbuf).toInt(&ok);
@@ -623,48 +630,24 @@ void WSGIPrivate::listenTcpSockets()
 {
     Q_Q(WSGI);
 
-    if (!httpSockets.isEmpty()) {
-        if (!protoHTTP) {
-            protoHTTP = new ProtocolHttp(q);
-        }
-
-        const auto sockets = httpSockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoHTTP, false);
-        }
+    const auto socketsH1 = httpSockets;
+    for (const auto &socket : socketsH1) {
+        listenTcp(socket, getHttpProto(), false);
     }
 
-    if (!http2Sockets.isEmpty()) {
-        if (!protoHTTP2) {
-            protoHTTP2 = new ProtocolHttp2(q);
-        }
-
-        const auto sockets = http2Sockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoHTTP2, false);
-        }
+    const auto socketsH1S = httpsSockets;
+    for (const auto &socket : socketsH1S) {
+        listenTcp(socket, getHttpProto(), true);
     }
 
-    if (!httpsSockets.isEmpty()) {
-        if (!protoHTTP) {
-            protoHTTP = new ProtocolHttp(q);
-        }
-
-        const auto sockets = httpsSockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoHTTP, true);
-        }
+    const auto socketsH2 = http2Sockets;
+    for (const auto &socket : socketsH2) {
+        listenTcp(socket, getHttp2Proto(), false);
     }
 
-    if (!fastcgiSockets.isEmpty()) {
-        if (!protoFCGI) {
-            protoFCGI = new ProtocolFastCGI(q);
-        }
-
-        const auto sockets = fastcgiSockets;
-        for (const auto &socket : sockets) {
-            listenTcp(socket, protoFCGI, false);
-        }
+    const auto socketsFCGI = fastcgiSockets;
+    for (const auto &socket : socketsFCGI) {
+        listenTcp(socket, getFastCgiProto(), false);
     }
 }
 
@@ -694,16 +677,9 @@ void WSGIPrivate::listenLocalSockets()
 {
     Q_Q(WSGI);
 
-    QStringList http = httpsSockets;
+    QStringList http = httpSockets;
+    QStringList http2 = http2Sockets;
     QStringList fastcgi = fastcgiSockets;
-
-    if (!http.isEmpty() && !protoHTTP) {
-        protoHTTP = new ProtocolHttp(q);
-    }
-
-    if (!fastcgi.isEmpty() && !protoFCGI) {
-        protoFCGI = new ProtocolFastCGI(q);
-    }
 
 #ifdef Q_OS_LINUX
     std::vector<int> fds = systemdNotify::listenFds();
@@ -715,9 +691,11 @@ void WSGIPrivate::listenLocalSockets()
 
             Protocol *protocol;
             if (http.removeOne(fullName) || http.removeOne(name)) {
-                protocol = protoHTTP;
+                protocol = getHttpProto();
+            } else if (http2.removeOne(fullName)  || http2.removeOne(name)) {
+                protocol = getHttp2Proto();
             } else if (fastcgi.removeOne(fullName)  || fastcgi.removeOne(name)) {
-                protocol = protoFCGI;
+                protocol = getFastCgiProto();
             } else {
                 qFatal("systemd activated socket does not match any configured socket");
             }
@@ -739,12 +717,17 @@ void WSGIPrivate::listenLocalSockets()
 
     const auto httpConst = http;
     for (const auto &socket : httpConst) {
-        listenLocal(socket, protoHTTP);
+        listenLocal(socket, getHttpProto());
+    }
+
+    const auto http2Const = http2;
+    for (const auto &socket : http2Const) {
+        listenLocal(socket, getHttp2Proto());
     }
 
     const auto fastcgiConst = fastcgi;
     for (const auto &socket : fastcgiConst) {
-        listenLocal(socket, protoFCGI);
+        listenLocal(socket, getFastCgiProto());
     }
 }
 
@@ -895,6 +878,18 @@ quint32 WSGI::http2HeaderTableSize() const
 {
     Q_D(const WSGI);
     return d->http2HeaderTableSize;
+}
+
+void WSGI::setUpgradeH2c(bool enable)
+{
+    Q_D(WSGI);
+    d->upgradeH2c = enable;
+}
+
+bool WSGI::upgradeH2c() const
+{
+    Q_D(const WSGI);
+    return d->upgradeH2c;
 }
 
 void WSGI::setHttpsSocket(const QStringList &httpsSocket)
@@ -1512,6 +1507,37 @@ void WSGIPrivate::applyConfig(const QVariantMap &config)
 
         ++it;
     }
+}
+
+Protocol *WSGIPrivate::getHttpProto()
+{
+    Q_Q(WSGI);
+    if (!protoHTTP) {
+        if (upgradeH2c) {
+            protoHTTP = new ProtocolHttp(q, getHttp2Proto());
+        } else {
+            protoHTTP = new ProtocolHttp(q);
+        }
+    }
+    return protoHTTP;
+}
+
+ProtocolHttp2 *WSGIPrivate::getHttp2Proto()
+{
+    Q_Q(WSGI);
+    if (!protoHTTP2) {
+        protoHTTP2 = new ProtocolHttp2(q);
+    }
+    return protoHTTP2;
+}
+
+Protocol *WSGIPrivate::getFastCgiProto()
+{
+    Q_Q(WSGI);
+    if (!protoFCGI) {
+        protoFCGI = new ProtocolFastCGI(q);
+    }
+    return protoFCGI;
 }
 
 #include "moc_wsgi.cpp"

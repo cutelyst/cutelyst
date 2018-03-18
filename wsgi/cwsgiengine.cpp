@@ -29,6 +29,7 @@
 
 #include "protocolwebsocket.h"
 #include "protocolhttp.h"
+#include "protocolhttp2.h"
 #include "protocolfastcgi.h"
 
 #ifdef Q_OS_UNIX
@@ -99,15 +100,11 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                 }
 
                 if (server->protocol()->type() == Protocol::Http11) {
-                    if (!m_protoHttp) {
-                        m_protoHttp = new ProtocolHttp(m_wsgi);
-                    }
-                    server->setProtocol(m_protoHttp);
+                    server->setProtocol(getProtoHttp());
+                } else if (server->protocol()->type() == Protocol::Http2) {
+                    server->setProtocol(getProtoHttp2());
                 } else if (server->protocol()->type() == Protocol::FastCGI1) {
-                    if (!m_protoFcgi) {
-                        m_protoFcgi = new ProtocolFastCGI(m_wsgi);
-                    }
-                    server->setProtocol(m_protoFcgi);
+                    server->setProtocol(getProtoFastCgi());
                 }
             }
         }
@@ -122,15 +119,11 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                 }
 
                 if (server->protocol()->type() == Protocol::Http11) {
-                    if (!m_protoHttp) {
-                        m_protoHttp = new ProtocolHttp(m_wsgi);
-                    }
-                    server->setProtocol(m_protoHttp);
+                    server->setProtocol(getProtoHttp());
+                } else if (server->protocol()->type() == Protocol::Http2) {
+                    server->setProtocol(getProtoHttp2());
                 } else if (server->protocol()->type() == Protocol::FastCGI1) {
-                    if (!m_protoFcgi) {
-                        m_protoFcgi = new ProtocolFastCGI(m_wsgi);
-                    }
-                    server->setProtocol(m_protoFcgi);
+                    server->setProtocol(getProtoFastCgi());
                 }
             }
         }
@@ -160,6 +153,34 @@ QByteArray CWsgiEngine::dateHeader()
     ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
                                                               QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     return ret.toLatin1();
+}
+
+Protocol *CWsgiEngine::getProtoHttp()
+{
+    if (!m_protoHttp) {
+        if (m_wsgi->upgradeH2c()) {
+            m_protoHttp = new ProtocolHttp(m_wsgi, getProtoHttp2());
+        } else {
+            m_protoHttp = new ProtocolHttp(m_wsgi);
+        }
+    }
+    return m_protoHttp;
+}
+
+ProtocolHttp2 *CWsgiEngine::getProtoHttp2()
+{
+    if (!m_protoHttp2) {
+        m_protoHttp2 = new ProtocolHttp2(m_wsgi);
+    }
+    return m_protoHttp2;
+}
+
+Protocol *CWsgiEngine::getProtoFastCgi()
+{
+    if (!m_protoFcgi) {
+        m_protoFcgi = new ProtocolFastCGI(m_wsgi);
+    }
+    return m_protoFcgi;
 }
 
 bool CWsgiEngine::init()

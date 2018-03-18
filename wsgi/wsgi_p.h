@@ -31,6 +31,7 @@ class AbstractFork;
 namespace CWSGI {
 
 class Protocol;
+class ProtocolHttp2;
 class WSGIPrivate : public QObject
 {
     Q_OBJECT
@@ -53,6 +54,10 @@ public:
     void loadConfig(const QString &file, bool json);
     void applyConfig(const QVariantMap &config);
     void loadLoggingRules(QSettings &settings);
+
+    Protocol *getHttpProto();
+    ProtocolHttp2 *getHttp2Proto();
+    Protocol *getFastCgiProto();
 
     WSGI *q_ptr;
     std::vector<QObject *> servers;
@@ -92,7 +97,7 @@ public:
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     Protocol *protoHTTP = nullptr;
-    Protocol *protoHTTP2 = nullptr;
+    ProtocolHttp2 *protoHTTP2 = nullptr;
     Protocol *protoFCGI = nullptr;
     AbstractFork *genericFork = nullptr;
     int bufferSize = 4096;
@@ -110,6 +115,7 @@ public:
     bool soKeepalive = false;
     bool threadBalancer = false;
     bool userEventLoop = false;
+    bool upgradeH2c = false;
 
 Q_SIGNALS:
     void postForked(int workerId);

@@ -246,7 +246,13 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
 //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->authority << stream->scheme;
     if (k == QLatin1String(":path")) {
         if (stream->path.isEmpty() && !v.isEmpty()) {
-            stream->path = v;
+            int pos = v.indexOf(QLatin1Char('?'));
+            if (pos == -1) {
+                stream->path = v;
+            } else {
+                stream->path = v.left(pos);
+                stream->query = v.mid(++pos).toLatin1();
+            }
             return true;
         }
     } else if (k == QLatin1String(":method")) {
@@ -255,11 +261,12 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
             return true;
         }
     } else if (k == QLatin1String(":authority")) {
-        stream->authority = v;
+        stream->serverAddress = v;
         return true;
     } else if (k == QLatin1String(":scheme")) {
         if (stream->scheme.isEmpty()) {
             stream->scheme = v;
+            stream->isSecure = v == QLatin1String("https");
             return true;
         }
     }
