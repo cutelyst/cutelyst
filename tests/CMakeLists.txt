@@ -57,3 +57,4 @@ cute_test(teststatusmessage Cutelyst2Qt5::StatusMessage Cutelyst2Qt5::Session ""
 if (PLUGIN_MEMCACHED)
 cute_test(testmemcached Cutelyst2Qt5::Memcached "" "")
 endif (PLUGIN_MEMCACHED)
+cute_test(testlangselect Cutelyst2Qt5::Utils::LangSelect Cutelyst2Qt5::Session Cutelyst2Qt5::StaticSimple)
