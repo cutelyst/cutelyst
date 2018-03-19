@@ -670,8 +670,8 @@ int ProtocolHttp2::sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error
 //    quint64 data = error;
 //    sendFrame(io, FrameGoaway, 0, 0, reinterpret_cast<const char *>(&data), 4);
     int ret = sendFrame(io, FrameGoaway, 0, 0, data.constData(), 8);
-    qDebug() << ret << int(error);
-    return error;
+//    qDebug() << ret << int(error);
+    return ret;
 }
 
 int ProtocolHttp2::sendRstStream(QIODevice *io, quint32 streamId, quint32 error) const
@@ -800,15 +800,11 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::En
             stream->method = request.method;
             stream->path = request.path;
             stream->query = request.query;
-            stream->serverAddress = request.serverAddress;
-            stream->remoteAddress = request.remoteAddress;
             stream->remoteUser = request.remoteUser;
             stream->headers = request.headers;
             stream->startOfRequest = request.startOfRequest;
             stream->status = request.status;
             stream->body = request.body;
-            stream->remotePort = request.remotePort;
-            stream->isSecure = request.isSecure;
 
             stream->state = H2Stream::HalfClosed;
             protoRequest->streams.insert(1, stream);
@@ -844,6 +840,10 @@ H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHtt
     , windowSize(_initialWindowSize)
 {
     protocol = QStringLiteral("HTTP/2");
+    serverAddress = protoRequestH2->sock->serverAddress;
+    remoteAddress = protoRequestH2->sock->remoteAddress;
+    remotePort = protoRequestH2->sock->remotePort;
+    isSecure = protoRequestH2->sock->isSecure;
 }
 
 H2Stream::~H2Stream()
