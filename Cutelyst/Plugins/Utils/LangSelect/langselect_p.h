@@ -20,7 +20,6 @@
 #define C_UTILS_LANGSELECT_P_H
 
 #include "langselect.h"
-#include <QLocale>
 
 namespace Cutelyst {
 
@@ -30,6 +29,7 @@ public:
     static void _q_postFork(Application *app);
 
     void beforePrepareAction(Context *c, bool *skipMethod);
+    bool detectLocale(Context *c, const QVector<LangSelect::Source> &_sourceOrder, bool *skipMethod = nullptr);
 
     QVector<QLocale> locales;
     QVector<LangSelect::Source> sourceOrder;
@@ -41,6 +41,7 @@ public:
     qint8 pathIdx = -127;
     LangSelect::Source storeTo = LangSelect::Fallback;
     bool addContentLanguageHeader = true;
+    bool autoDetect = true;
 };
 
 }

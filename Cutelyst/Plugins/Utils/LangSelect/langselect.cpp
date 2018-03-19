@@ -40,10 +40,11 @@ static thread_local LangSelect *lsp = nullptr;
 
 #define SELECTION_TRIED QLatin1String("_c_langselect_tried")
 
-LangSelect::LangSelect(Application *parent) :
+LangSelect::LangSelect(Application *parent, bool autoDetect) :
     Plugin(parent), d_ptr(new LangSelectPrivate)
 {
-
+    Q_D(LangSelect);
+    d->autoDetect = autoDetect;
 }
 
 LangSelect::~LangSelect()
@@ -57,10 +58,15 @@ bool LangSelect::setup(Application *app)
     if (!d->sourceOrder.empty()) {
         d->storeTo = d->sourceOrder.at(0);
     }
+    if (!d->locales.contains(d->fallbackLocale)) {
+        d->locales.append(d->fallbackLocale);
+    }
     connect(app, &Application::postForked, this, &LangSelectPrivate::_q_postFork);
-    connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
-        d->beforePrepareAction(c, skipMethod);
-    });
+    if (d->autoDetect) {
+        connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
+            d->beforePrepareAction(c, skipMethod);
+        });
+    }
 
     return true;
 }
@@ -218,22 +224,22 @@ void LangSelect::setCookieName(const QString &name)
     }
 }
 
-void LangSelect::setSubDomainIndex(qint8 idx)
+void LangSelect::setSubDomainIndex(qint8 index)
 {
     Q_D(LangSelect);
-    d->subDomainIdx = idx;
+    d->subDomainIdx = index;
     d->sourceOrder.removeAll(SubDomain);
-    if (idx >= 0) {
+    if (index >= 0) {
         d->sourceOrder.push_back(SubDomain);
     }
 }
 
-void LangSelect::setPathIndex(qint8 idx)
+void LangSelect::setPathIndex(qint8 index)
 {
     Q_D(LangSelect);
-    d->pathIdx = idx;
+    d->pathIdx = index;
     d->sourceOrder.removeAll(Path);
-    if (idx >= 0) {
+    if (index >= 0) {
         d->sourceOrder.push_back(Path);
     }
 }
@@ -276,14 +282,26 @@ QVector<QLocale> LangSelect::getSupportedLocales()
     return lsp->supportedLocales();
 }
 
-void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
+bool LangSelect::select(Context *c, const QVector<Cutelyst::LangSelect::Source> &sourceOrder)
 {
-    if (*skipMethod) {
-        return;
+    bool redirect = false;
+
+    if (!lsp) {
+        qCCritical(C_LANGSELECT) << "LangSelect plugin not registered";
+        return redirect;
     }
 
+    redirect = lsp->d_ptr->detectLocale(c, sourceOrder);
+
+    return redirect;
+}
+
+bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Source> &_sourceOrder, bool *skipMethod)
+{
+    bool redirect = false;
+
     if (!c->stash(SELECTION_TRIED).isNull()) {
-        return;
+        return redirect;
     }
 
     LangSelect::Source foundIn = LangSelect::Fallback;
@@ -291,10 +309,9 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
         c->setLocale(fallbackLocale);
     }
 
-    const auto constOrder = sourceOrder;
     bool pathContainedValidLocale = false;
     bool subDomainContainedValidLocale = false;
-    for (LangSelect::Source s : constOrder) {
+    for (LangSelect::Source s : _sourceOrder) {
         if (s == LangSelect::Session) {
             const QLocale l = Session::value(c, sessionKey).value<QLocale>();
             if (l.language() != QLocale::C && locales.contains(l)) {
@@ -326,6 +343,7 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
                 if (l.language() != QLocale::C) {
                     pathContainedValidLocale = true;
                     if (locales.contains(l)) {
+                        qCDebug(C_LANGSELECT) << "Found valid locale" << l << "at url path index" << pathIdx;
                         c->setLocale(l);
                         foundIn = s;
                         break;
@@ -340,6 +358,7 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
                     if (l.language() != QLocale::C) {
                         subDomainContainedValidLocale = true;
                         if (locales.contains(l)) {
+                            qCDebug(C_LANGSELECT) << "Found valid locale" << l << "at domain part index" << subDomainIdx;
                             c->setLocale(l);
                             foundIn = s;
                             break;
@@ -380,15 +399,39 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
                     if (locales.contains(i->second)) {
                         foundIn = LangSelect::AcceptHeader;
                         c->setLocale(i->second);
+                        qCDebug(C_LANGSELECT) << "Selected locale" << c->locale() << "from Accept-Language header";
                         break;
                     }
                     ++i;
+                }
+                // if there is no exact match, lets try to find a locale
+                // where a least the language matches
+                if (foundIn == LangSelect::Fallback) {
+                    i = langMap.crbegin();
+                    const auto constLocales = locales;
+                    while (i != langMap.crend()) {
+                        bool found = false;
+                        for (const QLocale &l : constLocales) {
+                            if (l.language() == i->second.language()) {
+                                found = true;
+                                foundIn = LangSelect::AcceptHeader;
+                                c->setLocale(i->second);
+                                qCDebug(C_LANGSELECT) << "Selected locale" << c->locale() << "from Accept-Language header";
+                                break;
+                            }
+                        }
+                        if (found) {
+                            break;
+                        }
+                        ++i;
+                    }
                 }
             }
         }
     }
 
     if (foundIn == LangSelect::Fallback) {
+        qCDebug(C_LANGSELECT) << "Can not find fitting locale, using fallback locale" << fallbackLocale;
         c->setLocale(fallbackLocale);
     }
 
@@ -401,9 +444,12 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
             } else {
                 pathParts.insert(pathIdx, c->locale().bcp47Name());
             }
-            uri.setPath(pathParts.join(QLatin1Char('/')));
+            uri.setPath(QLatin1Char('/') + pathParts.join(QLatin1Char('/')));
+            qCDebug(C_LANGSELECT) << "Storing selected locale in path by redirecting to" << uri;
             c->res()->redirect(uri, 307);
-            *skipMethod = true;
+            if (skipMethod) {
+                *skipMethod = true;
+            }
         } else if (storeTo == LangSelect::SubDomain) {
             auto uri = c->req()->uri();
             auto hostParts = uri.host().split(QLatin1Char('.'), QString::SkipEmptyParts);
@@ -413,11 +459,16 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
                 hostParts.insert(subDomainIdx, c->locale().bcp47Name());
             }
             uri.setHost(hostParts.join(QLatin1Char('.')));
+            qCDebug(C_LANGSELECT) << "Storing selected locale in subdomain by redirecting to" << uri;
             c->res()->redirect(uri, 307);
-            *skipMethod = true;
+            if (skipMethod) {
+                *skipMethod = true;
+            }
         } else if (storeTo == LangSelect::Session) {
+            qCDebug(C_LANGSELECT) << "Storing selected locale in session key" << sessionKey;
             Session::setValue(c, sessionKey, c->locale());
         } else if (storeTo == LangSelect::Cookie) {
+            qCDebug(C_LANGSELECT) << "Storing selected locale in cookie with name" << cookieName;
             c->res()->setCookie(QNetworkCookie(cookieName.toLatin1(), c->locale().bcp47Name().toLatin1()));
         }
     }
@@ -426,9 +477,22 @@ void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
         c->res()->setHeader(QStringLiteral("Content-Language"), c->locale().bcp47Name());
     }
 
+    return redirect;
+}
+
+void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod)
+{
+    if (*skipMethod) {
+        return;
+    }
+
+    if (!c->stash(SELECTION_TRIED).isNull()) {
+        return;
+    }
+
+    detectLocale(c, sourceOrder, skipMethod);
+
     c->setStash(SELECTION_TRIED, true);
-
-
 }
 
 void LangSelectPrivate::_q_postFork(Application *app)
