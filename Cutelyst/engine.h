@@ -108,7 +108,7 @@ public:
      * This method allows for engines to keep the Context alive
      * while processing websocket data.
      */
-    Context *processRequest(EngineRequest *request);
+    void processRequest(EngineRequest *request);
 
     /**
      * Returns the header key in camel case form
@@ -160,8 +160,14 @@ public:
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
 
 Q_SIGNALS:
+    /**
+     * Process the EngineRequest \p req Async, the caller
+     * must delete the context when the request is finished.
+     *
+     * This method allows for engines to keep the Context alive
+     * while processing websocket data.
+     */
     void processRequestAsync(EngineRequest *request);
-    void processRequestAsyncFinished(EngineRequest *request, Context *c);
 
 protected:
     /**
@@ -206,15 +212,6 @@ private:
      * @return true if succeeded
      */
     virtual bool init() = 0;
-
-    /**
-     * Process the EngineRequest \p req Async, the caller
-     * must delete the context when the request is finished.
-     *
-     * This method allows for engines to keep the Context alive
-     * while processing websocket data.
-     */
-    void processRequestAsyncImpl(EngineRequest *request);
 };
 
 inline bool Engine::isZeroWorker() const {

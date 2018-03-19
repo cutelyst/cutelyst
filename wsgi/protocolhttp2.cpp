@@ -915,6 +915,12 @@ bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
     return ret == 0;
 }
 
+void H2Stream::processingFinished()
+{
+    state = Closed;
+//    protoRequest->
+}
+
 void H2Stream::windowUpdated()
 {
 //    qDebug() << "WINDOW_UPDATED" << protoRequest->windowSize << windowSize << loop << (loop && loop->isRunning()) << this << protoRequest;

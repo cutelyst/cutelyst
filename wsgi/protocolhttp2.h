@@ -57,6 +57,8 @@ public:
 
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
+    virtual void processingFinished() override final;
+
     void windowUpdated();
 
     QEventLoop *loop = nullptr;

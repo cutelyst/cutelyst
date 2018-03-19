@@ -52,8 +52,6 @@ public:
 
     void readRequestUWSGI(wsgi_request *req);
 
-    void processRequest(wsgi_request *req);
-
     void addUnusedRequest(wsgi_request *wsgi_req);
 
     uwsgi_socket *watchSocket(struct uwsgi_socket *uwsgi_sock);

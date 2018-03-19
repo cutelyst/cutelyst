@@ -17,6 +17,8 @@
  */
 #include "engineuwsgi.h"
 
+#include "uwsgiconnection.h"
+
 #include <uwsgi.h>
 
 #include <Cutelyst/application.h>
@@ -148,7 +150,8 @@ int uwsgi_cutelyst_request(struct wsgi_request *wsgi_req)
         return -1;
     }
 
-    coreEngines->at(wsgi_req->async_id)->processRequest(wsgi_req);
+    uwsgiConnection req(wsgi_req);
+    coreEngines->at(wsgi_req->async_id)->processRequest(&req);
 
     return UWSGI_OK;
 }

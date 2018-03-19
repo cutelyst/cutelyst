@@ -361,10 +361,11 @@ bool Application::setup(Engine *engine)
     return false;
 }
 
-Context *Application::handleRequest(Request *req)
+void Application::handleRequest(EngineRequest *request)
 {
     Q_D(Application);
 
+    auto req = new Request(new RequestPrivate(request));
     Engine *engine = d->engine;
     EngineRequest *engineRequest = req->d_ptr->engineRequest;
     auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
@@ -373,6 +374,7 @@ Context *Application::handleRequest(Request *req)
     priv->request = req;
     priv->engineRequest = engineRequest;
     req->setParent(c);
+    request->context = c;
 
     Stats *stats = nullptr;
     if (d->useStats) {
@@ -420,8 +422,6 @@ Context *Application::handleRequest(Request *req)
                                              .arg(QString::number(enlapsed, 'f'), average, QString::fromLatin1(stats->report())));
         delete stats;
     }
-
-    return c;
 }
 
 bool Application::enginePostFork()

@@ -57,7 +57,7 @@ public:
     quint16 remotePort;
     Cutelyst::Engine *engine;
     Protocol *proto;
-    ProtocolData *protoData;
+    ProtocolData *protoData = nullptr;
     bool isSecure;
     bool timeout = false;
     bool processing = false;

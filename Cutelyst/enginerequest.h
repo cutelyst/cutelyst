@@ -30,6 +30,7 @@ class Context;
 class CUTELYST_LIBRARY EngineRequest
 {
     Q_GADGET
+    friend class Engine;
 public:
     enum StatusFlag {
         InitialState = 0x00,
@@ -99,6 +100,8 @@ protected:
      */
     virtual qint64 doWrite(const char *data, qint64 len) = 0;
 
+    virtual void processingFinished();
+
     /*!
      * Reimplement this to write the headers back to the client
      */
@@ -138,8 +141,11 @@ public:
     /*! Connection status */
     Status status = InitialState;
 
-    /*! The QIODevice containing the body (if any) of the request */
+    /*! The QIODevice containing the body (if any) of the request, it's deleted on destructor */
     QIODevice *body = nullptr;
+
+    /*! The Cutelyst::Context of this request, it's deleted on destructor */
+    Context *context = nullptr;
 
     /*! The remote/client port */
     quint16 remotePort = 0;

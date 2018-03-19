@@ -32,7 +32,7 @@ Socket::Socket(bool secure, Cutelyst::Engine *_engine) : engine(_engine), isSecu
 
 Socket::~Socket()
 {
-
+    delete protoData;
 }
 
 TcpSocket::TcpSocket(Cutelyst::Engine *engine, QObject *parent) : QTcpSocket(parent), Socket(false, engine)

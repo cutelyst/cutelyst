@@ -88,16 +88,6 @@ void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
     validateAndExecuteRequest(wsgi_req, 0);
 }
 
-void uWSGI::processRequest(wsgi_request *req)
-{
-    // wsgi_req->uri containg the whole URI it /foo/bar?query=null
-    // so we use path_info, maybe it would be better to just build our
-    // Request->uri() from it, but we need to run a performance test
-    uwsgiConnection request(req);
-
-    delete Engine::processRequest(&request);
-}
-
 void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
 {
     m_unusedReq.push_back(wsgi_req);
@@ -170,7 +160,12 @@ void uWSGI::validateAndExecuteRequest(wsgi_request *wsgi_req, int status)
         return;
     }
 
-    processRequest(wsgi_req);
+    // wsgi_req->uri containg the whole URI it /foo/bar?query=null
+    // so we use path_info, maybe it would be better to just build our
+    // Request->uri() from it, but we need to run a performance test
+    uwsgiConnection request(wsgi_req);
+
+    processRequest(&request);
 }
 
 uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)

@@ -77,6 +77,7 @@ WSGI::~WSGI()
     Q_D(WSGI);
 
     delete d->protoHTTP;
+    delete d->protoHTTP2;
     delete d->protoFCGI;
 
     std::cout << "Cutelyst-WSGI terminated" << std::endl;

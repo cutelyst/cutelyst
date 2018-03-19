@@ -192,26 +192,18 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
         request->body->seek(0);
     }
 
-    qCDebug(CWSGI_HTTP) << "upgrade try" << m_upgradeH2c;
-//    if (m_upgradeH2c && m_upgradeH2c->upgradeH2C(sock, io, dynamic_cast<Cutelyst::EngineRequest*>(request))) {
+    // When enabled try to upgrade to H2C
     if (m_upgradeH2c && m_upgradeH2c->upgradeH2C(sock, io, *request)) {
         return false;
     }
 
-    Cutelyst::Context *c = sock->engine->processRequest(request);
-    sock->processing = false;
+    sock->engine->processRequest(request);
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
-        // need 2 byte header
-        request->websocket_need = 2;
-        request->websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
-        sock->processing = true;
-        request->buf_size = 0;
         sock->proto = m_websocketProto;
 
         return false; // Must read remaining data
     }
-    delete c;
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
         sock->connectionClose();
@@ -401,6 +393,20 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
 qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
 {
     return io->write(data, len);
+}
+
+void ProtoRequestHttp::processingFinished()
+{
+    if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
+        // need 2 byte header
+        websocket_need = 2;
+        websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
+        buf_size = 0;
+    } else {
+        sock->processing = false;
+        delete context;
+        context = nullptr;
+    }
 }
 
 bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)

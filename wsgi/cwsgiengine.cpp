@@ -82,6 +82,13 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
     }
 }
 
+CWsgiEngine::~CWsgiEngine()
+{
+    delete m_protoFcgi;
+    delete m_protoHttp;
+    delete m_protoHttp2;
+}
+
 int CWsgiEngine::workerId() const
 {
     return m_workerId;

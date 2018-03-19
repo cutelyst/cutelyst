@@ -334,21 +334,6 @@ bool ProtocolFastCGI::writeBody(ProtoRequestFastCGI *request, char *buf, qint64 
     return request->body->write(buf, len) == len;
 }
 
-#define FCGI_END_REQUEST_DATA "\1\x06\0\1\0\0\0\0\1\3\0\1\0\x08\0\0\0\0\0\0\0\0\0\0"
-
-inline void wsgi_proto_fastcgi_endrequest(ProtoRequestFastCGI *wsgi_req, QIODevice *io)
-{
-    char end_request[] = FCGI_END_REQUEST_DATA;
-//    memcpy(end_request, FCGI_END_REQUEST_DATA, 24);
-    char *sid = (char *) &wsgi_req->stream_id;
-    // update with request id
-    end_request[2] = sid[1];
-    end_request[3] = sid[0];
-    end_request[10] = sid[1];
-    end_request[11] = sid[0];
-    io->write(end_request, 24);
-}
-
 qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const
 {
     qint64 len;
@@ -416,9 +401,7 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
                 continue;
             } else if (ret == WSGI_OK) {
                 sock->processing = true;
-                delete sock->engine->processRequest(request);
-                wsgi_proto_fastcgi_endrequest(request, io);
-                sock->processing = false;
+                sock->engine->processRequest(request);
 
                 if (request->headerConnection == ProtoRequestFastCGI::HeaderConnectionClose) {
                     // Web server did not set FCGI_KEEP_CONN
@@ -555,4 +538,22 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
         }
         return -1;
     }
+}
+
+#define FCGI_END_REQUEST_DATA "\1\x06\0\1\0\0\0\0\1\3\0\1\0\x08\0\0\0\0\0\0\0\0\0\0"
+
+void ProtoRequestFastCGI::processingFinished()
+{
+    char end_request[] = FCGI_END_REQUEST_DATA;
+    char *sid = (char *) &stream_id;
+    // update with request id
+    end_request[2] = sid[1];
+    end_request[3] = sid[0];
+    end_request[10] = sid[1];
+    end_request[11] = sid[0];
+    io->write(end_request, 24);
+
+    sock->processing = false;
+    delete context;
+    context = nullptr;
 }

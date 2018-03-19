@@ -59,7 +59,7 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
 {
     Q_D(Engine);
 
-    connect(this, &Engine::processRequestAsync, this, &Engine::processRequestAsyncImpl, Qt::QueuedConnection);
+    connect(this, &Engine::processRequestAsync, this, &Engine::processRequest, Qt::QueuedConnection);
 
     // Debug messages should be disabled by default
     QLoggingCategory::setFilterRules(QLatin1String("cutelyst.*.debug=false"));
@@ -305,21 +305,13 @@ Headers &Engine::defaultHeaders()
     return d->app->defaultHeaders();
 }
 
-Context *Engine::processRequest(EngineRequest *req)
+void Engine::processRequest(EngineRequest *request)
 {
     Q_D(Engine);
 
-    auto request = new Request(new RequestPrivate(req));
-    return d->app->handleRequest(request);
-}
+    d->app->handleRequest(request);
 
-void Engine::processRequestAsyncImpl(EngineRequest *req)
-{
-    Q_D(Engine);
-
-    auto request = new Request(new RequestPrivate(req));
-    Context *c = d->app->handleRequest(request);
-    Q_EMIT processRequestAsyncFinished(req, c);
+    request->processingFinished();
 }
 
 QVariantMap Engine::opts() const

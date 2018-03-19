@@ -34,7 +34,6 @@ EngineRequest::EngineRequest()
 
 EngineRequest::~EngineRequest()
 {
-    delete body;
 }
 
 void EngineRequest::finalizeBody(Context *c)
@@ -191,6 +190,14 @@ bool EngineRequest::webSocketClose(quint16 code, const QString &reason)
     Q_UNUSED(code)
     Q_UNUSED(reason)
     return false;
+}
+
+void EngineRequest::processingFinished()
+{
+    delete context;
+    context = nullptr;
+    delete body;
+    body = nullptr;
 }
 
 bool EngineRequest::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol)

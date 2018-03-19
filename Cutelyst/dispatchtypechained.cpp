@@ -37,7 +37,7 @@ DispatchTypeChained::DispatchTypeChained(QObject *parent) : DispatchType(parent)
 
 DispatchTypeChained::~DispatchTypeChained()
 {
-
+    delete d_ptr;
 }
 
 QByteArray DispatchTypeChained::list() const

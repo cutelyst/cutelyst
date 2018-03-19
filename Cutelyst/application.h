@@ -42,6 +42,7 @@ class DispatchType;
 class Request;
 class Response;
 class Engine;
+class EngineRequest;
 class Plugin;
 class Headers;
 class ApplicationPrivate;
@@ -383,7 +384,7 @@ protected:
     /*!
      * Called by the Engine to handle a new Request object
      */
-    Context *handleRequest(Request *req);
+    void handleRequest(Cutelyst::EngineRequest *request);
 
     /*!
      * Called by the Engine once post fork happened

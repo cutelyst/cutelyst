@@ -42,6 +42,8 @@ protected:
         return doWrite(data.constData(), data.size());
     }
 
+    virtual void processingFinished() override final;
+
     inline virtual void resetSocket() override final {
         ProtocolData::resetSocket();
 

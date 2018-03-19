@@ -72,6 +72,8 @@ public:
         return doWrite(data.constData(), data.size());
     }
 
+    virtual void processingFinished() override final;
+
     virtual bool webSocketSendTextMessage(const QString &message) override final;
 
     virtual bool webSocketSendBinaryMessage(const QByteArray &message) override final;
