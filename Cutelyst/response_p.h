@@ -33,8 +33,7 @@ class EngineRequest;
 class ResponsePrivate
 {
 public:
-    inline ResponsePrivate(Context *c, Engine *e, const Headers &h) : headers(h), context(c) { Q_UNUSED(e) }
-    inline ResponsePrivate(Context *c, EngineRequest *er, const Headers &h) : headers(h), context(c), engineRequest(er) { }
+    inline ResponsePrivate(const Headers &h, EngineRequest *er) : headers(h), engineRequest(er) { }
     inline void setBodyData(const QByteArray &body);
 
     Headers headers;
@@ -42,7 +41,6 @@ public:
     QByteArray bodyData;
     QUrl location;
     QIODevice *bodyIODevice = nullptr;
-    Context *context;
     EngineRequest *engineRequest;
     quint16 status = Response::OK;
 };

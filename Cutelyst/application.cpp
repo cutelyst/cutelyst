@@ -365,16 +365,15 @@ void Application::handleRequest(EngineRequest *request)
 {
     Q_D(Application);
 
-    auto req = new Request(new RequestPrivate(request));
     Engine *engine = d->engine;
-    EngineRequest *engineRequest = req->d_ptr->engineRequest;
+
     auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
     auto c = new Context(priv);
-    priv->response = new Response(c, engineRequest, d->headers);
-    priv->request = req;
-    priv->engineRequest = engineRequest;
-    req->setParent(c);
+
     request->context = c;
+    priv->engineRequest = request;
+    priv->response = new Response(d->headers, request);
+    priv->request = new Request(request);
 
     Stats *stats = nullptr;
     if (d->useStats) {
@@ -389,7 +388,7 @@ void Application::handleRequest(EngineRequest *request)
     if (!skipMethod) {
         static bool log = CUTELYST_REQUEST().isEnabled(QtDebugMsg);
         if (log) {
-            d->logRequest(req);
+            d->logRequest(priv->request);
         }
 
         d->dispatcher->prepareAction(c);
@@ -401,7 +400,7 @@ void Application::handleRequest(EngineRequest *request)
         Q_EMIT afterDispatch(c);
     }
 
-    engineRequest->finalize(c);
+    request->finalize();
 
     if (stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
@@ -410,7 +409,7 @@ void Application::handleRequest(EngineRequest *request)
                 qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
 
         quint64 endOfRequest = engine->time();
-        double enlapsed = (endOfRequest - engineRequest->startOfRequest) / 1000000.0;
+        double enlapsed = (endOfRequest - request->startOfRequest) / 1000000.0;
         QString average;
         if (enlapsed == 0.0) {
             average = QStringLiteral("??");

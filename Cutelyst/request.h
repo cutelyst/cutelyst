@@ -37,6 +37,7 @@ class Context;
 /** A vector of Upload pointers */
 typedef QVector<Upload *> Uploads;
 
+class EngineRequest;
 class RequestPrivate;
 class CUTELYST_LIBRARY Request : public QObject
 {
@@ -421,7 +422,7 @@ public:
     /**
      * Constructs a new Request object.
      */
-    Request(RequestPrivate *prv);
+    Request(EngineRequest *engineRequest);
 
 Q_SIGNALS:
     /*!

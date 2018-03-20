@@ -339,7 +339,7 @@ ProtoRequestHttp::~ProtoRequestHttp()
 
 bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
-    if (websocketContext && status != Cutelyst::Response::SwitchingProtocols) {
+    if (websocketUpgraded && status != Cutelyst::Response::SwitchingProtocols) {
         qCWarning(CWSGI_SOCK) << "Trying to write header while on an Websocket context";
         return false;
     }
@@ -454,14 +454,14 @@ bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
 
 void ProtoRequestHttp::socketDisconnected()
 {
-    if (websocketContext) {
+    if (websocketUpgraded) {
         if (websocket_finn_opcode != 0x88) {
-            websocketContext->request()->webSocketClosed(1005, QString());
+            context->request()->webSocketClosed(1005, QString());
         }
     }
 }
 
-bool ProtoRequestHttp::webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol)
+bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol)
 {
     if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         return true;
@@ -472,8 +472,8 @@ bool ProtoRequestHttp::webSocketHandshakeDo(Cutelyst::Context *c, const QString 
         return false;
     }
 
-    const Cutelyst::Headers requestHeaders = c->request()->headers();
-    Cutelyst::Response *response = c->response();
+    const Cutelyst::Headers requestHeaders = context->request()->headers();
+    Cutelyst::Response *response = context->response();
     Cutelyst::Headers &headers = response->headers();
 
     response->setStatus(Cutelyst::Response::SwitchingProtocols);
@@ -498,7 +498,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(Cutelyst::Context *c, const QString 
     headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
 
     headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
-    websocketContext = c;
+    websocketUpgraded = true;
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }

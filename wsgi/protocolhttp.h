@@ -94,7 +94,7 @@ public:
         delete context;
         context = nullptr;
 
-        websocketContext = nullptr;
+        websocketUpgraded = false;
         last = 0;
         beginLine = 0;
 
@@ -105,7 +105,6 @@ public:
 
     virtual void socketDisconnected() override final;
 
-    Cutelyst::Context *websocketContext = nullptr;
     QByteArray websocket_message;
     QByteArray websocket_payload;
     quint32 websocket_need;
@@ -117,9 +116,10 @@ public:
     int websocket_payload_size;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
+    bool websocketUpgraded = false;
 
 protected:
-    virtual bool webSocketHandshakeDo(Cutelyst::Context *c, const QString &key, const QString &origin, const QString &protocol) override final;
+    virtual bool webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol) override final;
 };
 
 class ProtocolHttp2;

@@ -32,14 +32,8 @@ static const QString _location(QLatin1String("LOCATION"));
 
 using namespace Cutelyst;
 
-Response::Response(Context *c, Engine *engine, const Cutelyst::Headers &defaultHeaders) : QIODevice(c)
-  , d_ptr(new ResponsePrivate(c, engine, defaultHeaders))
-{
-    open(QIODevice::WriteOnly);
-}
-
-Response::Response(Context *c, EngineRequest *engineRequest, const Headers &defaultHeaders) : QIODevice(c)
-  , d_ptr(new ResponsePrivate(c, engineRequest, defaultHeaders))
+Response::Response(const Headers &defaultHeaders, EngineRequest *engineRequest)
+  : d_ptr(new ResponsePrivate(defaultHeaders, engineRequest))
 {
     open(QIODevice::WriteOnly);
 }
@@ -73,7 +67,7 @@ qint64 Response::writeData(const char *data, qint64 len)
         d->bodyIODevice = nullptr;
         d->bodyData = QByteArray();
 
-        d->engineRequest->finalizeHeaders(d->context);
+        d->engineRequest->finalizeHeaders();
     }
 
     return d->engineRequest->write(data, len);
@@ -81,6 +75,7 @@ qint64 Response::writeData(const char *data, qint64 len)
 
 Response::~Response()
 {
+    delete d_ptr->bodyIODevice;
     delete d_ptr;
 }
 
@@ -125,8 +120,6 @@ void Response::setBody(QIODevice *body)
     Q_ASSERT(body && body->isOpen() && body->isReadable());
 
     if (!(d->engineRequest->status & EngineRequest::IOWrite)) {
-        body->setParent(d->context);
-
         d->bodyData = QByteArray();
         d->bodyIODevice = body;
     }
@@ -323,7 +316,7 @@ qint64 Response::size() const
 bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
 {
     Q_D(Response);
-    return d->engineRequest->webSocketHandshake(d->context, key, origin, protocol);
+    return d->engineRequest->webSocketHandshake(key, origin, protocol);
 }
 
 bool Response::webSocketTextMessage(const QString &message)

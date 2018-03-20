@@ -328,11 +328,9 @@ public:
 
 protected:
     /**
-     * Constructs a Response object, for this context c, engine and defaultHeaders.
+     * Constructs a Response object, for this engine request and defaultHeaders.
      */
-    explicit Response(Context *c, Engine *engine, const Headers &defaultHeaders);
-
-    explicit Response(Context *c, EngineRequest *conn, const Headers &defaultHeaders);
+    explicit Response(const Headers &defaultHeaders, EngineRequest *conn = nullptr);
 
     /**
      * Writes data to the response body, this will flush

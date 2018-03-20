@@ -43,19 +43,20 @@ Context::Context(ContextPrivate *priv) : d_ptr(priv)
 Context::Context(Application *app) :
     d_ptr(new ContextPrivate(app, app->engine(), app->dispatcher(), app->plugins()))
 {
-    d_ptr->response = new Response(this, d_ptr->engine, app->defaultHeaders());
+    auto req = new DummyRequest(this);
+    req->body = new QBuffer(this);
+    req->body->open(QBuffer::ReadWrite);
+    req->context = this;
 
-    DummyRequest req(this);
-    req.body = new QBuffer(this);
-    req.body->open(QBuffer::ReadWrite);
-
-    d_ptr->request = new Request(new RequestPrivate(nullptr));
-    d_ptr->request->setParent(this);
+    d_ptr->response = new Response(app->defaultHeaders(), req);
+    d_ptr->request = new Request(req);
     d_ptr->request->d_ptr->engine = d_ptr->engine;
 }
 
 Context::~Context()
 {
+    delete d_ptr->request;
+    delete d_ptr->response;
     delete d_ptr;
 }
 

@@ -27,9 +27,10 @@
 
 using namespace Cutelyst;
 
-Request::Request(RequestPrivate *prv) :
-    d_ptr(prv)
+Request::Request(Cutelyst::EngineRequest *engineRequest) :
+    d_ptr(new RequestPrivate)
 {
+    d_ptr->engineRequest = engineRequest;
 }
 
 Request::~Request()

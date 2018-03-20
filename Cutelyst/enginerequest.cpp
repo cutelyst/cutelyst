@@ -38,9 +38,9 @@ EngineRequest::~EngineRequest()
     delete context;
 }
 
-void EngineRequest::finalizeBody(Context *c)
+void EngineRequest::finalizeBody()
 {
-    Response *response = c->response();
+    Response *response = context->response();
 
     if (!(status & EngineRequest::Chunked)) {
         QIODevice *body = response->bodyDevice();
@@ -69,9 +69,9 @@ void EngineRequest::finalizeBody(Context *c)
     }
 }
 
-void EngineRequest::finalizeError(Context *c)
+void EngineRequest::finalizeError()
 {
-    Response *res = c->response();
+    Response *res = context->response();
 
     res->setContentType(QStringLiteral("text/html; charset=utf-8"));
 
@@ -81,7 +81,7 @@ void EngineRequest::finalizeError(Context *c)
     // of ours if we'd give it less than 512 bytes.
     body.reserve(512);
 
-    body.append(c->errors().join(QLatin1Char('\n')).toUtf8());
+    body.append(context->errors().join(QLatin1Char('\n')).toUtf8());
 
     res->setBody(body);
 
@@ -89,22 +89,22 @@ void EngineRequest::finalizeError(Context *c)
     res->setStatus(Response::InternalServerError);
 }
 
-void EngineRequest::finalize(Context *c)
+void EngineRequest::finalize()
 {
-    if (c->error()) {
-        finalizeError(c);
+    if (context->error()) {
+        finalizeError();
     }
 
-    if (!(status & EngineRequest::FinalizedHeaders) && !finalizeHeaders(c)) {
+    if (!(status & EngineRequest::FinalizedHeaders) && !finalizeHeaders()) {
         return;
     }
 
-    finalizeBody(c);
+    finalizeBody();
 }
 
-void EngineRequest::finalizeCookies(Context *c)
+void EngineRequest::finalizeCookies()
 {
-    Response *res = c->response();
+    Response *res = context->response();
     Headers &headers = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
@@ -112,9 +112,9 @@ void EngineRequest::finalizeCookies(Context *c)
     }
 }
 
-bool EngineRequest::finalizeHeaders(Context *c)
+bool EngineRequest::finalizeHeaders()
 {
-    Response *response = c->response();
+    Response *response = context->response();
     Headers &headers = response->headers();
 
     // Fix missing content length
@@ -125,7 +125,7 @@ bool EngineRequest::finalizeHeaders(Context *c)
         }
     }
 
-    finalizeCookies(c);
+    finalizeCookies();
 
     // Done
     status |= EngineRequest::FinalizedHeaders;
@@ -155,13 +155,13 @@ qint64 EngineRequest::write(const char *data, qint64 len)
     return -1;
 }
 
-bool EngineRequest::webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol)
+bool EngineRequest::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
 {
     if (status & EngineRequest::FinalizedHeaders) {
         return false;
     }
 
-    if (webSocketHandshakeDo(c, key, origin, protocol)) {
+    if (webSocketHandshakeDo(key, origin, protocol)) {
         status |= EngineRequest::FinalizedHeaders;
         return true;
     }
@@ -202,9 +202,8 @@ void EngineRequest::processingFinished()
     body = nullptr;
 }
 
-bool EngineRequest::webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol)
+bool EngineRequest::webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol)
 {
-    Q_UNUSED(c)
     Q_UNUSED(key)
     Q_UNUSED(origin)
     Q_UNUSED(protocol)

@@ -43,8 +43,6 @@ public:
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
-    RequestPrivate(EngineRequest *er) : engineRequest(er) { }
-
     inline void parseUrlQuery() const;
     inline void parseBody() const;
     inline void parseCookies() const;

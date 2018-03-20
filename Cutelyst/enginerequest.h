@@ -49,7 +49,7 @@ public:
      * Engines must reimplement this to write the
      * response body back to the caller
      */
-    virtual void finalizeBody(Context *c);
+    virtual void finalizeBody();
 
     /*!
      * Engines should overwrite this if they
@@ -57,34 +57,34 @@ public:
      * Default implementation render an html
      * with errors.
      */
-    virtual void finalizeError(Context *c);
+    virtual void finalizeError();
 
     /*!
      * Called by Application to deal
      * with finalizing cookies, headers and body
      */
-    void finalize(Context *c);
+    void finalize();
 
     /*!
      * Reimplement if you need a custom way
      * to Set-Cookie, the default implementation
      * writes them to c->res()->headers()
      */
-    virtual void finalizeCookies(Context *c);
+    virtual void finalizeCookies();
 
     /*!
      * Finalize the headers, and call
      * doWriteHeader(), reimplemententions
      * must call this first
      */
-    virtual bool finalizeHeaders(Context *c);
+    virtual bool finalizeHeaders();
 
     /*!
      * Called by Response to manually write data
      */
     qint64 write(const char *data, qint64 len);
 
-    bool webSocketHandshake(Context *c, const QString &key, const QString &origin, const QString &protocol);
+    bool webSocketHandshake(const QString &key, const QString &origin, const QString &protocol);
 
     virtual bool webSocketSendTextMessage(const QString &message);
 
@@ -117,7 +117,7 @@ protected:
      */
     virtual bool writeHeaders(quint16 status, const Headers &headers) = 0;
 
-    virtual bool webSocketHandshakeDo(Context *c, const QString &key, const QString &origin, const QString &protocol);
+    virtual bool webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol);
 
 public:
     /*! The method used (GET, POST...) */

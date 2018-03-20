@@ -192,14 +192,14 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         protoRequest->websocket_start_of_frame = protoRequest->websocket_message.size();
         request->webSocketTextFrame(frame,
                                     protoRequest->websocket_finn_opcode & 0x80,
-                                    protoRequest->websocketContext);
+                                    protoRequest->context);
     }
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
         protoRequest->websocket_continue_opcode = 0;
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
             request->webSocketTextMessage(frame,
-                                          protoRequest->websocketContext);
+                                          protoRequest->context);
         } else {
             QTextCodec::ConverterState stateMsg;
             const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &stateMsg);
@@ -209,7 +209,7 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
                 return false;
             }
             request->webSocketTextMessage(msg,
-                                          protoRequest->websocketContext);
+                                          protoRequest->context);
         }
         protoRequest->websocket_message = QByteArray();
         protoRequest->websocket_payload = QByteArray();
@@ -228,16 +228,16 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
     const QByteArray frame = protoRequest->websocket_payload;
     request->webSocketBinaryFrame(frame,
                                   protoRequest->websocket_finn_opcode & 0x80,
-                                  protoRequest->websocketContext);
+                                  protoRequest->context);
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
         protoRequest->websocket_continue_opcode = 0;
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
             request->webSocketBinaryMessage(frame,
-                                            protoRequest->websocketContext);
+                                            protoRequest->context);
         } else {
             request->webSocketBinaryMessage(protoRequest->websocket_message,
-                                            protoRequest->websocketContext);
+                                            protoRequest->context);
         }
         protoRequest->websocket_message = QByteArray();
         protoRequest->websocket_payload = QByteArray();
@@ -419,18 +419,18 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, uint le
     protoRequest->websocket_need = 2;
     protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
 
-    Cutelyst::Request *request = protoRequest->websocketContext->request();
+    Cutelyst::Request *request = protoRequest->context->request();
 
     switch (protoRequest->websocket_finn_opcode & 0xf) {
     case ProtoRequestHttp::OpCodeContinue:
         switch (protoRequest->websocket_continue_opcode) {
         case ProtoRequestHttp::OpCodeText:
-            if (!send_text(protoRequest->websocketContext, sock, false)) {
+            if (!send_text(protoRequest->context, sock, false)) {
                 return false;
             }
             break;
         case ProtoRequestHttp::OpCodeBinary:
-            send_binary(protoRequest->websocketContext, sock, false);
+            send_binary(protoRequest->context, sock, false);
             break;
         default:
             qCCritical(CWSGI_WS) << "Invalid CONTINUE opcode:" << (protoRequest->websocket_finn_opcode & 0xf);
@@ -439,22 +439,22 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, uint le
         }
         break;
     case ProtoRequestHttp::OpCodeText:
-        if (!send_text(protoRequest->websocketContext, sock, protoRequest->websocket_finn_opcode & 0x80)) {
+        if (!send_text(protoRequest->context, sock, protoRequest->websocket_finn_opcode & 0x80)) {
             return false;
         }
         break;
     case ProtoRequestHttp::OpCodeBinary:
-        send_binary(protoRequest->websocketContext, sock, protoRequest->websocket_finn_opcode & 0x80);
+        send_binary(protoRequest->context, sock, protoRequest->websocket_finn_opcode & 0x80);
         break;
     case ProtoRequestHttp::OpCodeClose:
-        send_closed(protoRequest->websocketContext, sock, io);
+        send_closed(protoRequest->context, sock, io);
         return false;
     case ProtoRequestHttp::OpCodePing:
         send_pong(io, protoRequest->websocket_payload.left(125));
         break;
     case ProtoRequestHttp::OpCodePong:
         request->webSocketPong(protoRequest->websocket_payload,
-                               protoRequest->websocketContext);
+                               protoRequest->context);
         break;
     default:
         break;
