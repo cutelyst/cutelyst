@@ -203,8 +203,6 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant
     ret = realmPtr->restoreUser(c, frozenUser);
 
     AuthenticationPrivate::setUser(c, ret);
-    // TODO
-    // $user->auth_realm($realm->name) if $user;
 
     return ret;
 }
@@ -239,8 +237,6 @@ void AuthenticationPrivate::setAuthenticated(Context *c, const AuthenticationUse
     if (!realm) {
         qCWarning(C_AUTHENTICATION) << "Called with invalid realm" << realmName;
     }
-    // TODO implement a user class
-//    $user->auth_realm($realm->name);
 
     AuthenticationPrivate::persistUser(c, user, realmName, realm);
 }

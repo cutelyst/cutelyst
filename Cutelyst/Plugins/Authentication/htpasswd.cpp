@@ -93,7 +93,6 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
                 QByteArray password = parts.at(1);
                 ret.insert(QStringLiteral("password"), QString::fromLatin1(password.replace(',', ':')));
                 break;
-                // TODO maybe support additional fields
             }
         }
     }

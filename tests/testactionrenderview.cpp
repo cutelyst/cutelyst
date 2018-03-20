@@ -42,7 +42,7 @@ public:
 
     C_ATTR(test2, :Local :ActionClass(RenderView))
     void test2(Context *c) {
-        c->setView(QStringLiteral("view2"));
+        c->setCustomView(QStringLiteral("view2"));
         c->setStash(QStringLiteral("data"), QByteArrayLiteral("test2"));
     }
 

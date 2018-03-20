@@ -77,8 +77,8 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
         view = c->view(defaultView);
     } else {
         // else fallback to Cutelysts default view
-        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Using Cutelysts default view" << defaultView << "for rendering.";
-        view = c->view();
+        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Using Cutelysts default view for rendering.";
+        view = c->view(QString());
     }
 
     // validate the per template view

@@ -173,7 +173,7 @@ Controller *Context::controller(const QString &name) const
     return d->dispatcher->controllers().value(name);
 }
 
-View *Context::view() const
+View *Context::customView() const
 {
     Q_D(const Context);
     return d->view;
@@ -185,7 +185,7 @@ View *Context::view(const QString &name) const
     return d->app->view(name);
 }
 
-bool Context::setView(const QString &name)
+bool Context::setCustomView(const QString &name)
 {
     Q_D(Context);
     d->view = d->app->view(name);

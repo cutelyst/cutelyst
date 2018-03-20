@@ -109,7 +109,7 @@ bool RenderView::doExecute(Cutelyst::Context *c)
         return true;
     }
 
-    View *view = c->view();
+    View *view = c->customView();
     if (view) {
         // Fist check if the user set a view
         return c->forward(view);

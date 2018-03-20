@@ -161,23 +161,22 @@ public:
     Controller *controller() const;
 
     /**
-     * Returns the controller by name, or 0
+     * Returns the controller by name, or nullptr
      * if the controller is not found
      */
     Controller *controller(const QString &name) const;
 
     /**
-     * Returns the view set to be used
-     * for rendering this request, if one
-     * is set by setView() or 0 if none was set
+     * Returns the view with name name or nullptr if not found
      */
-    View *view() const;
+    View *view(const QString &name = QString()) const;
 
     /**
-     * Returns the view with name name
+     * Returns the view set to be used
+     * for rendering this request, if one
+     * is set by setView() or nullptr if none was set
      */
-    // TODO find a new name for the above method
-    View *view(const QString &name) const;
+    View *customView() const;
 
     /**
      * Defines the view to be used to render
@@ -190,7 +189,7 @@ public:
      * Returns true if a view with the given
      * name was found
      */
-    bool setView(const QString &name);
+    bool setCustomView(const QString &name);
 
     /**
      * You can set hash keys by passing arguments,
