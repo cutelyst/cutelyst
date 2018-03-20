@@ -33,6 +33,7 @@ public:
 
     QVector<QLocale> locales;
     QVector<LangSelect::Source> sourceOrder;
+    QMap<QString,QLocale> domainMap;
     QString queryKey;
     QString sessionKey;
     QString cookieName;

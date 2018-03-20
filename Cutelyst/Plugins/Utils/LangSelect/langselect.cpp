@@ -244,6 +244,16 @@ void LangSelect::setPathIndex(qint8 index)
     }
 }
 
+void LangSelect::setDomainMap(const QMap<QString, QLocale> &map)
+{
+    Q_D(LangSelect);
+    d->domainMap = map;
+    d->sourceOrder.removeAll(Domain);
+    if (!map.empty()) {
+        d->sourceOrder.push_back(Domain);
+    }
+}
+
 void LangSelect::setSourceOrder(const QVector<Source> &order)
 {
     Q_D(LangSelect);
@@ -260,6 +270,8 @@ void LangSelect::setSourceOrder(const QVector<Source> &order)
             } else if (s == SubDomain && d->subDomainIdx >= 0) {
                 d->sourceOrder.push_back(s);
             } else if (s == Path && d->pathIdx >= 0) {
+                d->sourceOrder.push_back(s);
+            } else if (s == Domain && !d->domainMap.empty()) {
                 d->sourceOrder.push_back(s);
             }
         }
@@ -284,16 +296,12 @@ QVector<QLocale> LangSelect::getSupportedLocales()
 
 bool LangSelect::select(Context *c, const QVector<Cutelyst::LangSelect::Source> &sourceOrder)
 {
-    bool redirect = false;
-
     if (!lsp) {
         qCCritical(C_LANGSELECT) << "LangSelect plugin not registered";
-        return redirect;
+        return false;
     }
 
-    redirect = lsp->d_ptr->detectLocale(c, sourceOrder);
-
-    return redirect;
+    return lsp->d_ptr->detectLocale(c, sourceOrder);
 }
 
 bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Source> &_sourceOrder, bool *skipMethod)
@@ -366,6 +374,18 @@ bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Sourc
                     }
                 }
             }
+        } else if (s == LangSelect::Domain) {
+            const auto domain = c->req()->uri().host();
+            auto i = domainMap.constBegin();
+            while (i != domainMap.constEnd()) {
+                if (domain.endsWith(i.key())) {
+                    qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in domain map for domain" << domain;
+                    c->setLocale(i.value());
+                    foundIn = s;
+                    break;
+                    ++i;
+                }
+            }
         }
     }
 
@@ -405,7 +425,7 @@ bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Sourc
                     ++i;
                 }
                 // if there is no exact match, lets try to find a locale
-                // where a least the language matches
+                // where at least the language matches
                 if (foundIn == LangSelect::Fallback) {
                     i = langMap.crbegin();
                     const auto constLocales = locales;
@@ -447,6 +467,7 @@ bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Sourc
             uri.setPath(QLatin1Char('/') + pathParts.join(QLatin1Char('/')));
             qCDebug(C_LANGSELECT) << "Storing selected locale in path by redirecting to" << uri;
             c->res()->redirect(uri, 307);
+            redirect = true;
             if (skipMethod) {
                 *skipMethod = true;
             }
@@ -461,6 +482,7 @@ bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Sourc
             uri.setHost(hostParts.join(QLatin1Char('.')));
             qCDebug(C_LANGSELECT) << "Storing selected locale in subdomain by redirecting to" << uri;
             c->res()->redirect(uri, 307);
+            redirect = true;
             if (skipMethod) {
                 *skipMethod = true;
             }
@@ -470,10 +492,29 @@ bool LangSelectPrivate::detectLocale(Context *c, const QVector<LangSelect::Sourc
         } else if (storeTo == LangSelect::Cookie) {
             qCDebug(C_LANGSELECT) << "Storing selected locale in cookie with name" << cookieName;
             c->res()->setCookie(QNetworkCookie(cookieName.toLatin1(), c->locale().bcp47Name().toLatin1()));
+        } else if (storeTo == LangSelect::Domain) {
+            const auto langDomainParts = domainMap.key(c->locale()).split(QLatin1Char('.'), QString::SkipEmptyParts);
+            auto uri = c->req()->uri();
+            auto currDomainParts = uri.host().split(QLatin1Char('.'), QString::SkipEmptyParts);
+            if (currDomainParts <= langDomainParts) {
+                uri.setHost(langDomainParts.join(QLatin1Char('.')));
+            } else {
+                for (int i = 0; i < langDomainParts.size(); ++i) {
+                    currDomainParts.takeLast();
+                }
+                currDomainParts.append(langDomainParts);
+                uri.setHost(currDomainParts.join(QLatin1Char('.')));
+            }
+            qCDebug(C_LANGSELECT) << "Storing selected locale in domain by redirecting to" << uri;
+            c->res()->redirect(uri, 307);
+            redirect = true;
+            if (skipMethod) {
+                *skipMethod = true;
+            }
         }
     }
 
-    if (addContentLanguageHeader && !*skipMethod) {
+    if (addContentLanguageHeader && !redirect) {
         c->res()->setHeader(QStringLiteral("Content-Language"), c->locale().bcp47Name());
     }
 
