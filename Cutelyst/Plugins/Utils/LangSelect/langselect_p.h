@@ -28,11 +28,26 @@ class LangSelectPrivate
 public:
     static void _q_postFork(Application *app);
 
-    void beforePrepareAction(Context *c, bool *skipMethod);
-    bool detectLocale(Context *c, const QVector<LangSelect::Source> &_sourceOrder, bool *skipMethod = nullptr);
+    void beforePrepareAction(Context *c, bool *skipMethod) const;
+    bool detectLocale(Context *c, LangSelect::Source _source, bool *skipMethod = nullptr) const;
+    bool getFromQuery(Context *c, const QString &key) const;
+    bool getFromCookie(Context *c, const QString &cookie) const;
+    bool getFromSession(Context *c, const QString &key) const;
+    bool getFromPath(Context *c, int idx, bool *pathContainedValidLocale) const;
+    bool getFromSubdomain(Context *c, int idx, bool *subDomainContainedValidLocale) const;
+    bool getFromDomain(Context *c, const QMap<QString,QLocale> &map) const;
+    bool getFromHeader(Context *c, const QString &name = QLatin1String("Accept-Language")) const;
+    void setToQuery(Context *c, const QString &key) const;
+    void setToCookie(Context *c, const QString &name) const;
+    void setToSession(Context *c, const QString &key) const;
+    void setToPath(Context *c, int idx, bool pathContainedValidLocale) const;
+    void setToSubdomain(Context *c, int idx, bool subDomainContainedValidLocale) const;
+    void setToDomain(Context *c, const QMap<QString,QLocale> &map) const;
+    void setFallback(Context *c) const;
+    void setContentLanguage(Context *c) const;
 
     QVector<QLocale> locales;
-    QVector<LangSelect::Source> sourceOrder;
+    LangSelect::Source source = LangSelect::Fallback;
     QMap<QString,QLocale> domainMap;
     QString queryKey;
     QString sessionKey;
@@ -40,9 +55,9 @@ public:
     QLocale fallbackLocale;
     qint8 subDomainIdx = -127;
     qint8 pathIdx = -127;
-    LangSelect::Source storeTo = LangSelect::Fallback;
     bool addContentLanguageHeader = true;
     bool autoDetect = true;
+    bool detectFromHeader = true;
 };
 
 }
