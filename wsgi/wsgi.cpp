@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -65,7 +65,7 @@ WSGI::WSGI(QObject *parent) : QObject(parent),
     }
 
 #ifdef Q_OS_LINUX
-    if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+    if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP")) {
         std::cout << "Installing EPoll event loop" << std::endl;
         QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
     }
@@ -1385,7 +1385,7 @@ void WSGIPrivate::postFork(int workerId)
         QThread *thread = engine->thread();
         if (thread != qApp->thread()) {
 #ifdef Q_OS_LINUX
-            if (qEnvironmentVariableIsSet("CUTELYST_EVENT_LOOP_EPOLL")) {
+            if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP")) {
                 thread->setEventDispatcher(new EventDispatcherEPoll);
             }
 #endif
