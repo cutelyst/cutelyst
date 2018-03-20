@@ -53,7 +53,25 @@ class LangSelectPrivate;
  * @class LangSelect langselect.h <Cutelyst/Plugins/Utils/LangSelect>
  * @brief Language selection plugin
  *
+ * The %LangSelect plugin can be used to automatically detect and set a user's language by querying various
+ * sources like session keys, cookies, path and subdomain components or the @a Accept-Language header sent by
+ * the user agent (like the web browser). It will compare the detected locale against a list of locales supported
+ * by the application to choose the most appropriate locale fitting the user's preferences.
  *
+ * Unless the plugin has been constructed with @a autoDetect set to @c false, it will be connected to the
+ * Application::beforePrepareAction signal to set the locale. If auto detection is disabled, you can manually set the
+ * locale by calling LangSelect::select() on appropriate places.
+ *
+ * @b Note that you must register plugins like StaticSimple before the %LangSelect plugin, especially if you want to store
+ * the selected locale in the domain or the path.
+ *
+ * On a multilingual site you will mostly have some kind of selector that allows users to choose the display language.
+ * Especially on publicly available content you will put the locale information into the domain or URL path to optimize
+ * your content for search engines.
+ *
+ * <h3>Examples</h3>
+ * <h4>Read locale from URL query</h4>
+ * This is a rather classic approach of setting the locale
  *
  * @since Cutelyst 2.0.0
  */
@@ -70,7 +88,8 @@ public:
         Session         = 1,    /**< Tries to get the locale from a session key. */
         Cookie          = 2,    /**< Tries to get the locale from a cookie. */
         SubDomain       = 3,    /**< Tries to get the locale from a subdomain part. */
-        Path            = 4,    /**< Tries to get the locale from an URL path part. */
+        Domain          = 4,    /**< Tries to get the locale from the domain. */
+        Path            = 5,    /**< Tries to get the locale from an URL path part. */
         AcceptHeader    = 254,  /**< Only used internal. */
         Fallback        = 255   /**< Only used internal. */
     };
@@ -201,6 +220,24 @@ public:
      * Values below @c 0 will disable this source.
      */
     void setPathIndex(qint8 index);
+
+    /**
+     * Sets the @a map for full domain as source for locale selection. The @a map should contain
+     * the common domain part as key and the associated locale as value.
+     *
+     * <h3>Example</h3>
+     * @code{.cpp}
+     * bool MyApp::init()
+     * {
+     *     auto lsp = new LangSelect(this);
+     *     lsp->setDomainMap({
+     *                          {QStringLiteral("example.br"), QLocale(QLocale::Portuguese, QLocale::Brazil)},
+     *                          {QStringLiteral("example.de"), QLocale(QLocale::German, QLocale::Germany)}
+     *                      });
+     * }
+     * @endcode
+     */
+    void setDomainMap(const QMap<QString,QLocale> &map);
 
     /**
      * Sets the order of the sources.
