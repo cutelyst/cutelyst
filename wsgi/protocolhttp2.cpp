@@ -772,9 +772,7 @@ int ProtocolHttp2::sendFrame(QIODevice *io, quint8 type, quint8 flags, quint32 s
 
 void ProtocolHttp2::queueStream(Socket *socket, H2Stream *stream) const
 {
-//    QTimer::singleShot(1000, [=] {
-//        socket->engine->processRequestAsync(stream);
-//    });
+    ++socket->processing;
     socket->engine->processRequestAsync(stream);
 }
 
@@ -783,16 +781,16 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::En
     const Cutelyst::Headers &headers = request.headers;
     if (headers.header(QStringLiteral("UPGRADE")) == QLatin1String("h2c") &&
                 headers.connection() == QLatin1String("Upgrade, HTTP2-Settings")) {
-        qCDebug(CWSGI_H2) << "upgrade";
         const QString settings = headers.header(QStringLiteral("HTTP2_SETTINGS"));
         if (!settings.isEmpty()) {
             io->write("HTTP/1.1 101 Switching Protocols\r\n"
                       "Connection: Upgrade\r\n"
                       "Upgrade: h2c\r\n\r\n");
             socket->proto = this;
-            socket->protoData = createData(socket);
+            auto protoRequest = new ProtoRequestHttp2(socket, m_bufferSize);
+            protoRequest->upgradedFrom = socket->protoData;
+            socket->protoData = protoRequest;
 
-            auto protoRequest = static_cast<ProtoRequestHttp2 *>(socket->protoData);
             protoRequest->hpack = new HPack(m_headerTableSize);
             protoRequest->maxStreamId = 1;
 
@@ -902,23 +900,21 @@ bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
     QByteArray buf;
     protoRequest->hpack->encodeHeaders(status, headers.data(), buf, static_cast<CWsgiEngine *>(protoRequest->sock->engine));
 
-
-
-    //        buf.append(static_cast<CWsgiEngine *>(protoRequest->sock->engine)->lastDate());
-//        buf.append(->lastDate());
-
-//    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders" << buf.toHex() << buf.size() << streamId;
     auto parser = dynamic_cast<ProtocolHttp2 *>(protoRequest->sock->proto);
 
     int ret = parser->sendFrame(protoRequest->io, FrameHeaders, FlagHeadersEndHeaders, streamId, buf.constData(), buf.size());
-//    qCDebug(CWSGI_H2) << "H2Stream::writeHeaders ret" << ret;
+
     return ret == 0;
 }
 
 void H2Stream::processingFinished()
 {
+    EngineRequest::processingFinished();
+
     state = Closed;
-//    protoRequest->
+    protoRequest->streams.remove(streamId);
+    protoRequest->sock->requestFinished();
+    delete this;
 }
 
 void H2Stream::windowUpdated()

@@ -39,6 +39,7 @@ ProtocolData::ProtocolData(Socket *_sock, int bufferSize)
 ProtocolData::~ProtocolData()
 {
     delete [] buffer;
+    delete upgradedFrom;
 }
 
 Protocol::Protocol(WSGI *wsgi)

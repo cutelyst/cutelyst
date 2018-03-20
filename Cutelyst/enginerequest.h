@@ -100,6 +100,16 @@ protected:
      */
     virtual qint64 doWrite(const char *data, qint64 len) = 0;
 
+    /*!
+     * This is called when the Application chain is finished
+     * processing this request, here the request can send final
+     * bytes to the client or do a clean up.
+     *
+     * Default implementation deletes both body and context.
+     *
+     * If a WebSocket upgrade was made then you will want to keep
+     * the context object around.
+     */
     virtual void processingFinished();
 
     /*!
@@ -141,10 +151,12 @@ public:
     /*! Connection status */
     Status status = InitialState;
 
-    /*! The QIODevice containing the body (if any) of the request, it's deleted on destructor */
+    /*! The QIODevice containing the body (if any) of the request
+     * \note It's deleted on processingFinished() or destructor */
     QIODevice *body = nullptr;
 
-    /*! The Cutelyst::Context of this request, it's deleted on destructor */
+    /*! The Cutelyst::Context of this request
+     * \note It's deleted on processingFinished() or destructor */
     Context *context = nullptr;
 
     /*! The remote/client port */

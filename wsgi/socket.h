@@ -46,10 +46,17 @@ public:
     virtual ~Socket();
 
     virtual void connectionClose() = 0;
+    virtual void requestFinished() = 0;
 
     inline void resetSocket() {
-        protoData->resetSocket();
-        processing = false;
+        if (protoData->upgradedFrom) {
+            ProtocolData *data = protoData->upgradedFrom;
+            delete protoData;
+            protoData = data;
+        }
+        processing = 0;
+
+        protoData->resetData();
     }
 
     QString serverAddress;
@@ -58,9 +65,9 @@ public:
     Cutelyst::Engine *engine;
     Protocol *proto;
     ProtocolData *protoData = nullptr;
+    quint8 processing = 0;
     bool isSecure;
     bool timeout = false;
-    bool processing = false;
 };
 
 class TcpSocket : public QTcpSocket, public Socket
@@ -69,7 +76,8 @@ class TcpSocket : public QTcpSocket, public Socket
 public:
     explicit TcpSocket(Cutelyst::Engine *engine, QObject *parent = nullptr);
 
-    virtual void connectionClose() override;
+    virtual void connectionClose() override final;
+    virtual void requestFinished() override final;
     void socketDisconnected();
 
 Q_SIGNALS:
@@ -82,7 +90,8 @@ class SslSocket : public QSslSocket, public Socket
 public:
     explicit SslSocket(Cutelyst::Engine *engine, QObject *parent = nullptr);
 
-    virtual void connectionClose() override;
+    virtual void connectionClose() override final;
+    virtual void requestFinished() override final;
     void socketDisconnected();
 
 Q_SIGNALS:
@@ -95,7 +104,8 @@ class LocalSocket : public QLocalSocket, public Socket
 public:
     explicit LocalSocket(Cutelyst::Engine *engine, QObject *parent = nullptr);
 
-    virtual void connectionClose() override;
+    virtual void connectionClose() override final;
+    virtual void requestFinished() override final;
     void socketDisconnected();
 
 Q_SIGNALS:

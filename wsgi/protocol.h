@@ -51,7 +51,7 @@ public:
     };
     Q_ENUM(ParserState)
 
-    inline virtual void resetSocket() {
+    inline virtual void resetData() {
         connState = MethodLine;
         buf_size = 0;
         headerConnection = HeaderConnectionNotSet;
@@ -63,6 +63,7 @@ public:
     qint64 contentLength;
     Socket *sock;//temporary
     QIODevice *io;
+    ProtocolData *upgradedFrom = nullptr;
     quint32 buf_size = 0;
     ParserState connState = MethodLine;
     HeaderConnection headerConnection = HeaderConnectionNotSet;

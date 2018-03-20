@@ -46,6 +46,13 @@ void TcpSocket::connectionClose()
     disconnectFromHost();
 }
 
+void TcpSocket::requestFinished()
+{
+    if (!--processing && state() != ConnectedState) {
+        Q_EMIT finished(this);
+    }
+}
+
 void TcpSocket::socketDisconnected()
 {
     protoData->socketDisconnected();
@@ -66,6 +73,13 @@ void LocalSocket::connectionClose()
     disconnectFromServer();
 }
 
+void LocalSocket::requestFinished()
+{
+    if (!--processing && state() != ConnectedState) {
+        Q_EMIT finished(this);
+    }
+}
+
 void LocalSocket::socketDisconnected()
 {
     protoData->socketDisconnected();
@@ -84,6 +98,13 @@ void SslSocket::connectionClose()
 {
     flush();
     disconnectFromHost();
+}
+
+void SslSocket::requestFinished()
+{
+    if (!--processing && state() != ConnectedState) {
+        Q_EMIT finished(this);
+    }
 }
 
 void SslSocket::socketDisconnected()

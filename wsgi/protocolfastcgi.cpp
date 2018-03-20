@@ -400,8 +400,9 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
             if (ret == WSGI_AGAIN) {
                 continue;
             } else if (ret == WSGI_OK) {
-                sock->processing = true;
+                sock->processing++;
                 sock->engine->processRequest(request);
+                sock->requestFinished();
 
                 if (request->headerConnection == ProtoRequestFastCGI::HeaderConnectionClose) {
                     // Web server did not set FCGI_KEEP_CONN
@@ -410,7 +411,7 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
                 }
 
                 auto size = request->buf_size;
-                sock->resetSocket();
+                request->resetData();
                 request->buf_size = size;
             } else if (ret == WSGI_BODY) {
                 bytesAvailable = readBody(sock, io, bytesAvailable);
@@ -553,7 +554,4 @@ void ProtoRequestFastCGI::processingFinished()
     end_request[11] = sid[0];
     io->write(end_request, 24);
 
-    sock->processing = false;
-    delete context;
-    context = nullptr;
 }

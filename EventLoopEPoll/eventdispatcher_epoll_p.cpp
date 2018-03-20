@@ -45,6 +45,7 @@ EventDispatcherEPollPrivate::~EventDispatcherEPollPrivate()
         delete it.value();
         ++it;
     }
+    delete m_event_fd_info;
 }
 
 void EventDispatcherEPollPrivate::createEpoll()
@@ -63,7 +64,8 @@ void EventDispatcherEPollPrivate::createEpoll()
 
     struct epoll_event e;
     e.events = EPOLLIN;
-    e.data.ptr = new EventFdInfo(m_event_fd, this);
+    m_event_fd_info = new EventFdInfo(m_event_fd, this);
+    e.data.ptr = m_event_fd_info;
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
     }

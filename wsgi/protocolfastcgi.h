@@ -19,6 +19,7 @@
 #define PROTOCOLFASTCGI_H
 
 #include <QObject>
+#include <Cutelyst/Context>
 
 #include "protocol.h"
 #include "socket.h"
@@ -33,7 +34,6 @@ public:
     ProtoRequestFastCGI(Socket *sock, int bufferSize);
     virtual ~ProtoRequestFastCGI();
 
-protected:
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
@@ -44,14 +44,16 @@ protected:
 
     virtual void processingFinished() override final;
 
-    inline virtual void resetSocket() override final {
-        ProtocolData::resetSocket();
+    inline virtual void resetData() override final {
+        ProtocolData::resetData();
 
         // EngineRequest
         startOfRequest = 0;
         status = InitialState;
         delete body;
         body = nullptr;
+        delete context;
+        context = nullptr;
 
         stream_id = 0;
         pktsize = 0;

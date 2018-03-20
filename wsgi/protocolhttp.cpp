@@ -50,6 +50,7 @@ ProtocolHttp::ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c) : Protocol(wsg
 
 ProtocolHttp::~ProtocolHttp()
 {
+    delete m_websocketProto;
 }
 
 Protocol::Type ProtocolHttp::type() const
@@ -198,6 +199,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     }
 
     sock->engine->processRequest(request);
+    sock->requestFinished();
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         sock->proto = m_websocketProto;
@@ -208,18 +210,18 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
         sock->connectionClose();
         return false;
-    }
+    } 
 
     if (request->last < request->buf_size) {
         // move pipelined request to 0
         int remaining = request->buf_size - request->last;
         memmove(request->buffer, request->buffer + request->last, remaining);
-        sock->resetSocket();
+        request->resetData();
         request->buf_size = remaining;
 
         QCoreApplication::processEvents();
     } else {
-        sock->resetSocket();
+        request->resetData();
     }
 
     return true;
@@ -402,10 +404,6 @@ void ProtoRequestHttp::processingFinished()
         websocket_need = 2;
         websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
         buf_size = 0;
-    } else {
-        sock->processing = false;
-        delete context;
-        context = nullptr;
     }
 }
 
@@ -460,9 +458,6 @@ void ProtoRequestHttp::socketDisconnected()
         if (websocket_finn_opcode != 0x88) {
             websocketContext->request()->webSocketClosed(1005, QString());
         }
-
-        delete websocketContext;
-        websocketContext = nullptr;
     }
 }
 

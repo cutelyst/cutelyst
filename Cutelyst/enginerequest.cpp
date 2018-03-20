@@ -34,6 +34,8 @@ EngineRequest::EngineRequest()
 
 EngineRequest::~EngineRequest()
 {
+    delete body;
+    delete context;
 }
 
 void EngineRequest::finalizeBody(Context *c)

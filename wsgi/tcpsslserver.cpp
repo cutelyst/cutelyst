@@ -41,15 +41,14 @@ void TcpSslServer::incomingConnection(qintptr handle)
         sock->timeout = false;
         sock->proto->parse(sock, sock);
     });
-    connect(sock, &SslSocket::finished, [this] () {
+    connect(sock, &SslSocket::finished, [this] (SslSocket *socket) {
+        socket->deleteLater();
         --m_processing;
     });
-    connect(sock, &SslSocket::disconnected, sock, &SslSocket::deleteLater);
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
-        sock->resetSocket();
-
         sock->proto = m_protocol;
+
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();

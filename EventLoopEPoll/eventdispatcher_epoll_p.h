@@ -124,6 +124,7 @@ private:
     int m_epoll_fd = -1;
     int m_event_fd = -1;
     bool m_interrupt = false;
+    EventFdInfo *m_event_fd_info;
     QAtomicInt m_wakeups;
     HandleHash m_handles;
     SocketNotifierHash m_notifiers;

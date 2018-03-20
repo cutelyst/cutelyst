@@ -81,26 +81,26 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 
     if (secure) {
         const QString certPath = afterColon.section(QLatin1Char(','), 1, 1);
-        auto certFile = new QFile(certPath);
-        if (!certFile->open(QFile::ReadOnly)) {
+        QFile certFile(certPath);
+        if (!certFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
-                      << qPrintable(certFile->errorString()) << std::endl;
+                      << qPrintable(certFile.errorString()) << std::endl;
             exit(1);
         }
-        QSslCertificate cert(certFile);
+        QSslCertificate cert(&certFile);
         if (cert.isNull()) {
             std::cerr << "Failed to parse SSL certificate" << std::endl;
             exit(1);
         }
 
         const QString keyPath = afterColon.section(QLatin1Char(','), 2, 2);
-        auto keyFile = new QFile(keyPath);
-        if (!keyFile->open(QFile::ReadOnly)) {
+        QFile keyFile(keyPath);
+        if (!keyFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
-                      << qPrintable(keyFile->errorString()) << std::endl;
+                      << qPrintable(keyFile.errorString()) << std::endl;
             exit(1);
         }
-        QSslKey key(keyFile, QSsl::Rsa);
+        QSslKey key(&keyFile, QSsl::Rsa);
         if (key.isNull()) {
             std::cerr << "Failed to parse SSL private key" << std::endl;
             exit(1);

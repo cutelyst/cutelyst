@@ -61,15 +61,15 @@ void TcpServer::incomingConnection(qintptr handle)
             sock->proto->parse(sock, sock);
         });
         connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
+            obj->resetSocket();
             m_socks.push_back(obj);
             --m_processing;
         });
     }
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
-        sock->resetSocket();
-
         sock->proto = m_protocol;
+
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();

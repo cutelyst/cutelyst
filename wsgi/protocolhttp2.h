@@ -44,7 +44,7 @@ class ProtoRequestHttp2;
 class H2Stream : public Cutelyst::EngineRequest
 {
 public:
-    enum state {
+    enum State {
         Idle,
         Open,
         HalfClosed,
@@ -79,8 +79,8 @@ public:
     ProtoRequestHttp2(Socket *sock, int bufferSize);
     virtual ~ProtoRequestHttp2();
 
-    inline virtual void resetSocket() override final {
-        ProtocolData::resetSocket();
+    inline virtual void resetData() override final {
+        ProtocolData::resetData();
 
         stream_id = 0;
         pktsize = 0;
@@ -108,6 +108,7 @@ public:
     qint32 windowSize = 65535;
     qint32 settingsInitialWindowSize = 65535;
     quint32 settingsMaxFrameSize = 16384;
+    quint8 processing = 0;
     bool canPush = true;
 
     QHash<quint32, H2Stream *> streams;

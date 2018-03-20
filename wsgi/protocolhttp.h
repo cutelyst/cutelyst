@@ -23,6 +23,8 @@
 #include "protocol.h"
 #include "socket.h"
 
+#include <Cutelyst/Context>
+
 namespace CWSGI {
 
 class WSGI;
@@ -82,12 +84,15 @@ public:
 
     virtual bool webSocketClose(quint16 code, const QString &reason) override final;
 
-    inline virtual void resetSocket() override final {
-        ProtocolData::resetSocket();
+    inline virtual void resetData() override final {
+        ProtocolData::resetData();
+
         startOfRequest = 0;
         status = InitialState;
         delete body;
         body = nullptr;
+        delete context;
+        context = nullptr;
 
         websocketContext = nullptr;
         last = 0;

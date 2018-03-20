@@ -108,6 +108,7 @@ void LocalServer::incomingConnection(quintptr handle)
             sock->proto->parse(sock, sock);
         });
         connect(sock, &LocalSocket::finished, [this] (LocalSocket *obj) {
+            obj->resetSocket();
             m_socks.push_back(obj);
             if (--m_processing == 0) {
                 m_engine->stopSocketTimeout();
@@ -116,9 +117,8 @@ void LocalServer::incomingConnection(quintptr handle)
     }
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
-        sock->resetSocket();
-
         sock->proto = m_protocol;
+
         sock->serverAddress = QStringLiteral("localhost");
         if (++m_processing) {
             m_engine->startSocketTimeout();
