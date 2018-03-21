@@ -225,7 +225,7 @@ public:
     QString translate(const QLocale &locale, const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
 
     /**
-     * Loads translations for a specific @a filename.
+     * Loads translations for a specific @a filename from a single directory.
      *
      * This can be used to load translations for a specific component if the translation file names follow a common schema.
      * Let us assume you organised your translation files as follows:
@@ -245,11 +245,61 @@ public:
      * the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
      * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
-     * @sa addTranslator()
+     * @sa addTranslator(), loadTranslationsFromDir(), loadTranslationsFromDirs()
      *
      * @since Cuteylst 2.0.0
      */
     void loadTranslations(const QString &filename, const QString &directory = QString(), const QString &prefix = QString(), const QString &suffix = QString());
+
+    /**
+     * Loads translations for a specific @a filename from a single directory and returns a list of added locales.
+     *
+     * This can be used to load translations for a specific component if the translation file names follow a common schema.
+     * Let us assume you organised your translation files as follows:
+     * @li @c /usr/share/myapp/translations/myapp_de.qm
+     * @li @c /usr/share/myapp/translations/myapp_pt_BR.qm
+     * @li @c ...
+     *
+     * You can then use loadTranslationsFromDir() in your reimplementation of Application::init() as follows:
+     * @code{.cpp}
+     * bool MyApp::init()
+     * {
+     *      loadTranslationsFromDir(QStringLiteral("myapp"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     * }
+     * @endcode
+     *
+     * If @a directory is empty, the default directory, set by <code>-DI18NDIR</code>, will be used. @a prefix is the part between
+     * the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
+     * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
+     *
+     * @sa addTranslator(), loadTranslationsFromDirs()
+     *
+     * @since Cuteylst 2.1.0
+     */
+    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory = QString(), const QString &prefix = QLatin1String("."), const QString &suffix = QLatin1String(".qm"));
+
+    /**
+     * Loads translations for a specific @a filename from a directory structure under @a directory and returns a list of added locales.
+     *
+     * This can be used to load translations for a specific component or application if the the translation files are organized in
+     * subdirectories named after locale codes. Let us assume you organised your translation files as follows:
+     * @li @c /usr/share/locale/de/LC_MESSAGES/myapp.qm
+     * @li @c /usr/share/locale/pt_BR/LC_MESSAGES/myapp.qm
+     * @li @c ...
+     *
+     * You can then use loadTranslationsFromDirs() in your reimplementation of Application::init() as follows:
+     * @code{.cpp}
+     * bool MyApp::init()
+     * {
+     *     loadTranslationsFromDirs(QStringLiteral("/usr/share/locale"), QStringLiteral("LC_MESSAGES/myapp.qm"));
+     * }
+     * @endcode
+     *
+     * @sa addTranslator(), loadTranslationsFromDir()
+     *
+     * @since Cutelyst 2.1.0
+     */
+    QVector<QLocale> loadTranslationsFromDirs(const QString &directory, const QString &filename);
 
 protected:
     /**
