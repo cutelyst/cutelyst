@@ -472,7 +472,7 @@ bool LangSelect::fromPath(Context *c, const QString &locale)
         auto uri = c->req()->uri();
         auto pathParts = uri.path().split(QLatin1Char('/'));
         const auto localeIdx = pathParts.indexOf(locale);
-        pathParts[localeIdx] = c->locale().bcp47Name();
+        pathParts[localeIdx] = c->locale().bcp47Name().toLower();
         uri.setPath(pathParts.join(QLatin1Char('/')));
         qCDebug(C_LANGSELECT) << "Storing selected locale by redirecting to" << uri;
         c->res()->redirect(uri, 307);
@@ -694,7 +694,7 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
     if (query.hasQueryItem(key)) {
         query.removeQueryItem(key);
     }
-    query.addQueryItem(key, c->locale().bcp47Name());
+    query.addQueryItem(key, c->locale().bcp47Name().toLower());
     uri.setQuery(query);
     qCDebug(C_LANGSELECT) << "Storing selected locale in URL query by redirecting to" << uri;
     c->res()->redirect(uri, 307);
@@ -708,7 +708,7 @@ void LangSelectPrivate::setToCookie(Context *c, const QString &name) const
 
 void LangSelectPrivate::setToSession(Context *c, const QString &key) const
 {
-    qCDebug(C_LANGSELECT) << "Storing selected locale in session key" << sessionKey;
+    qCDebug(C_LANGSELECT) << "Storing selected locale in session key" << key;
     Session::setValue(c, key, c->locale());
 }
 
