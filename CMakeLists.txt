@@ -8,7 +8,7 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-project(cutelyst VERSION 2.0.0)
+project(cutelyst VERSION 2.1.0)
 
 find_package(Qt5 5.6.0 COMPONENTS
     Core
