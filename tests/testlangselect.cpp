@@ -3,13 +3,12 @@
 
 #include <QTest>
 #include <QObject>
-#include <QUrlQuery>
 #include <QLocale>
-#include <QNetworkCookie>
 #include <QDir>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QFileInfo>
+#include <QNetworkCookie>
 
 #include "headers.h"
 #include "coverageobject.h"
@@ -60,12 +59,7 @@ class LangselectTest : public Controller
 public:
     LangselectTest(QObject *parent) : Controller(parent) {}
 
-    C_ATTR(base, :Chained("/") :PathPart("langselect") :CaptureArgs(1))
-    void base(Context *c, const QString &lang) {
-        Q_UNUSED(lang);
-    }
-
-    C_ATTR(testLang, :Chained("base") :PathPart("testLang") :AutoArgs)
+    C_ATTR(testLang, :Local :AutoArgs)
     void testLang(Context *c) {
         c->res()->setBody(c->locale().bcp47Name());
     }
@@ -85,12 +79,13 @@ TestEngine* TestLangselect::getEngine()
     new Session(app);
     auto statDir = new StaticSimple(app);
     statDir->setIncludePaths({staticDir.path()});
-    auto plugin = new LangSelect(app);
-    plugin->setPathIndex(1);
-    plugin->setCookieName(QStringLiteral("lang"));
-    plugin->setQueryKey(QStringLiteral("lang"));
-    plugin->setSupportedLocales({QLocale(QLocale::German), QLocale(QLocale::Portuguese, QLocale::Brazil), QLocale(QLocale::English, QLocale::UnitedKingdom)});
+    auto plugin = new LangSelect(app, LangSelect::Cookie);
+    plugin->setSupportedLocales({
+                                    QLocale(QLocale::German),
+                                    QLocale(QLocale::Portuguese)
+                                });
     plugin->setFallbackLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
+    plugin->setCookieName(QStringLiteral("lang"));
     new LangselectTest(app);
     if (!engine->init()) {
         return nullptr;
@@ -109,7 +104,6 @@ void TestLangselect::doTest()
     QFETCH(Headers, headers);
     QFETCH(int, status);
     QFETCH(QByteArray, output);
-    QByteArray body;
 
     QUrl urlAux(url.mid(1));
 
@@ -117,22 +111,10 @@ void TestLangselect::doTest()
                                                        urlAux.path(),
                                                        urlAux.query(QUrl::FullyEncoded).toLatin1(),
                                                        headers,
-                                                       &body);
+                                                       nullptr);
 
-    const auto statusCode = result.value(QStringLiteral("statusCode")).value<quint16>();
-
-    if (statusCode == 307) {
-        QByteArray expectedRedirect;
-        if (!output.isEmpty()) {
-            expectedRedirect = QByteArrayLiteral("http://127.0.0.1/langselect/") + output + QByteArrayLiteral("/testLang");
-            if (urlAux.hasQuery()) {
-                expectedRedirect += QByteArrayLiteral("?") + urlAux.query(QUrl::FullyEncoded).toLatin1();
-            }
-        }
-        QCOMPARE(result.value(QStringLiteral("headers")).value<Headers>().header(QStringLiteral("Location")).toLatin1(), expectedRedirect);
-    } else {
-        QCOMPARE(statusCode, static_cast<quint16>(status));
-    }
+    QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), status);
+    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
 
 void TestLangselect::testController_data()
@@ -144,33 +126,16 @@ void TestLangselect::testController_data()
 
     Headers headers;
 
-    QUrlQuery query;
+    QTest::newRow("test-auto-cookie-00") << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("en-GB");
+    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("de-AT"));
+    QTest::newRow("test-auto-cookie-01") << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("de");
+    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("pt")).toRawForm()));
+    QTest::newRow("test-auto-cookie-02") << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("pt");
+    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("ru"));
+    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("dk")).toRawForm()));
+    QTest::newRow("test-auto-cookie-03") << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("en-GB");
 
-    QTest::newRow("set-by-query-01") << QStringLiteral("/langselect/testLang?lang=de") << headers << 307 << QByteArrayLiteral("de");
-    QTest::newRow("set-by-query-02") << QStringLiteral("/langselect/testLang?lang=pt-br") << headers << 307 << QByteArrayLiteral("pt");
-    QTest::newRow("set-by-query-03") << QStringLiteral("/langselect/testLang?lang=pt") << headers << 307 << QByteArrayLiteral("pt");
-    QTest::newRow("set-by-query-04") << QStringLiteral("/langselect/testLang?lang=pt-PT") << headers << 307 << QByteArrayLiteral("en-GB");
-
-    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("de-DE,de;q=0.8,en-GB;q=0.6,en-US;q=0.4,en;q=0.2"));
-    QTest::newRow("set-by-query-05") << QStringLiteral("/langselect/testLang?lang=ru") << headers << 307 << QByteArrayLiteral("de");
-
-    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("de")).toRawForm()));
-    QTest::newRow("set-by-cookie-01") << QStringLiteral("/langselect/testLang?lang=pt") << headers << 307 << QByteArrayLiteral("de");
-
-    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("ru")).toRawForm()));
-    QTest::newRow("set-by-cookie-02") << QStringLiteral("/langselect/testLang?lang=pt") << headers << 307 << QByteArrayLiteral("pt");
-
-    headers.removeHeader(QStringLiteral("Accept-Language"));
-    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("ru")).toRawForm()));
-    QTest::newRow("set-by-cookie-03") << QStringLiteral("/langselect/testLang") << headers << 307 << QByteArrayLiteral("en-GB");
-
-    headers.removeHeader(QStringLiteral("Cookie"));
-    QTest::newRow("set-by-path-01") << QStringLiteral("/langselect/de/testLang") << headers << 200 << QByteArray();
-    QTest::newRow("set-by-path-02") << QStringLiteral("/langselect/ru/testLang") << headers << 307 << QByteArray("en-GB");
-    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("de-DE,de;q=0.8,en-GB;q=0.6,en-US;q=0.4,en;q=0.2"));
-    QTest::newRow("set-by-path-03") << QStringLiteral("/langselect/ru/testLang") << headers << 307 << QByteArray("de");
-
-    QTest::newRow("test-static-file") << QStringLiteral("/") + staticFile.fileName() << headers << 200 << QByteArray();
+    QTest::newRow("test-auto-static-file") << QStringLiteral("/") + staticFile.fileName() << headers << 200 << QByteArray();
 
 }
 
