@@ -182,7 +182,7 @@ void LangSelect::setLocalesFromDir(const QString &path, const QString &name, con
                     }
                 }
                 if (shrinkToFit) {
-                    d->locales.shrink_to_fit();
+                    d->locales.squeeze();
                 }
             } else {
                 qCWarning(C_LANGSELECT, "Can not find translation files for \"%s\" in \"%s\".", qUtf8Printable(filter), qUtf8Printable(path));
@@ -222,7 +222,7 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                     }
                 }
                 if (shrinkToFit) {
-                    d->locales.shrink_to_fit();
+                    d->locales.squeeze();
                 }
             }
         } else {
@@ -273,7 +273,7 @@ void LangSelect::setSubDomainMap(const QMap<QString, QLocale> &map)
         }
         ++i;
     }
-    d->locales.shrink_to_fit();
+    d->locales.squeeze();
 }
 
 void LangSelect::setDomainMap(const QMap<QString, QLocale> &map)
@@ -292,7 +292,7 @@ void LangSelect::setDomainMap(const QMap<QString, QLocale> &map)
         }
         ++i;
     }
-    d->locales.shrink_to_fit();
+    d->locales.squeeze();
 }
 
 void LangSelect::setFallbackLocale(const QLocale &fallback)
