@@ -39,8 +39,6 @@ public:
     void setToQuery(Context *c, const QString &key) const;
     void setToCookie(Context *c, const QString &name) const;
     void setToSession(Context *c, const QString &key) const;
-    void setToSubdomain(Context *c, const QMap<QString, QLocale> &map) const;
-    void setToDomain(Context *c, const QMap<QString,QLocale> &map) const;
     void setFallback(Context *c) const;
     void setContentLanguage(Context *c) const;
 
@@ -48,6 +46,8 @@ public:
     LangSelect::Source source = LangSelect::Fallback;
     QMap<QString,QLocale> domainMap;
     QMap<QString,QLocale> subDomainMap;
+    QStringList redirectDomains;
+    QStringList redirectSubDomains;
     QString queryKey;
     QString sessionKey;
     QString cookieName;
