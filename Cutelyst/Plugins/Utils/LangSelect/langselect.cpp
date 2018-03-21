@@ -81,12 +81,6 @@ bool LangSelect::setup(Application *app)
             } else if (d->source == Cookie && d->cookieName.isEmpty()) {
                 qCCritical(C_LANGSELECT, "Can not use cookie as source with empty cookie name.");
                 return false;
-            } else if (d->source == SubDomain && d->subDomainMap.empty()) {
-                qCCritical(C_LANGSELECT, "Can not use subdomain as source with empty subdomain map.");
-                return false;
-            } else if (d->source == Domain && d->domainMap.empty()) {
-                qCCritical(C_LANGSELECT, "Can not use domain as source with empty domain map.");
-                return false;
             }
         } else {
             qCCritical(C_LANGSELECT, "Invalid source.");
@@ -413,48 +407,48 @@ bool LangSelect::fromCookie(Context *c, const QString &name)
 
 bool LangSelect::fromSubDomain(Context *c, const QMap<QString, QLocale> &subDomainMap)
 {
+    bool foundInSubDomain = false;
+
     if (!lsp) {
         qCCritical(C_LANGSELECT) << "LangSelect plugin not registered";
-        return true;
+        return foundInSubDomain;
     }
 
     const auto d = lsp->d_ptr;
     const auto _map = !subDomainMap.empty() ? subDomainMap : d->subDomainMap;
-    if (!d->getFromSubdomain(c, _map)) {
+    foundInSubDomain = d->getFromSubdomain(c, _map);
+    if (!foundInSubDomain) {
         if (!d->getFromHeader(c)) {
             d->setFallback(c);
         }
-        d->setToSubdomain(c, _map);
-        c->detach();
-        return false;
     }
 
     d->setContentLanguage(c);
 
-    return true;
+    return foundInSubDomain;
 }
 
 bool LangSelect::fromDomain(Context *c, const QMap<QString,QLocale> &domainMap)
 {
+    bool foundInDomain = false;
+
     if (!lsp) {
         qCCritical(C_LANGSELECT) << "LangSelect plugin not registered";
-        return true;
+        return foundInDomain;
     }
 
     const auto d = lsp->d_ptr;
     const auto _map = !domainMap.empty() ? domainMap : d->domainMap;
-    if (!d->getFromDomain(c, _map)) {
+    foundInDomain = d->getFromDomain(c, _map);
+    if (!foundInDomain) {
         if (!d->getFromHeader(c)) {
             d->setFallback(c);
         }
-        d->setToDomain(c, _map);
-        c->detach();
-        return false;
     }
 
     d->setContentLanguage(c);
 
-    return true;
+    return foundInDomain;
 }
 
 bool LangSelect::fromPath(Context *c, const QString &locale)
@@ -527,22 +521,10 @@ bool LangSelectPrivate::detectLocale(Context *c, LangSelect::Source _source, boo
     }
 
     if (foundIn != _source) {
-        if (_source == LangSelect::SubDomain) {
-            setToSubdomain(c, subDomainMap);
-            redirect = true;
-            if (skipMethod) {
-                *skipMethod = true;
-            }
-        } else if (_source == LangSelect::Session) {
+        if (_source == LangSelect::Session) {
             setToSession(c, sessionKey);
         } else if (_source == LangSelect::Cookie) {
             setToCookie(c, cookieName);
-        } else if (_source == LangSelect::Domain) {
-            setToDomain(c, domainMap);
-            redirect = true;
-            if (skipMethod) {
-                *skipMethod = true;
-            }
         } else if (_source == LangSelect::URLQuery) {
             setToQuery(c, queryKey);
             redirect = true;
@@ -600,41 +582,51 @@ bool LangSelectPrivate::getFromSession(Context *c, const QString &key) const
 
 bool LangSelectPrivate::getFromSubdomain(Context *c, const QMap<QString, QLocale> &map) const
 {
-    if (Q_LIKELY(!map.empty())) {
-        const auto domain = c->req()->uri().host();
-        auto i = map.constBegin();
-        while (i != map.constEnd()) {
-            if (domain.startsWith(i.key())) {
-                qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in subdomain map for domain" << domain;
-                c->setLocale(i.value());
-                return true;
-            }
-            ++i;
+    const auto domain = c->req()->uri().host();
+    auto i = map.constBegin();
+    while (i != map.constEnd()) {
+        if (domain.startsWith(i.key())) {
+            qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in subdomain map for domain" << domain;
+            c->setLocale(i.value());
+            return true;
         }
-        qCDebug(C_LANGSELECT) << "Can not find supported locale for subdomain" << domain;
-    } else {
-        qCWarning(C_LANGSELECT, "Can not select locale from empty subdomain map.");
+        ++i;
     }
+    const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
+    if (domainParts.size() > 2) {
+        const QLocale l(domainParts.at(0));
+        if (l.language() != QLocale::C && locales.contains(l)) {
+            qCDebug(C_LANGSELECT) << "Found supported locale" << l << "in subdomain of domain" << domain;
+            c->setLocale(l);
+            return true;
+        }
+    }
+    qCDebug(C_LANGSELECT) << "Can not find supported locale for subdomain" << domain;
     return false;
 }
 
 bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &map) const
 {
-    if (Q_LIKELY(!map.empty())) {
-        const auto domain = c->req()->uri().host();
-        auto i = map.constBegin();
-        while (i != map.constEnd()) {
-            if (domain.endsWith(i.key())) {
-                qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in domain map for domain" << domain;
-                c->setLocale(i.value());
-                return true;
-            }
-            ++i;
+    const auto domain = c->req()->uri().host();
+    auto i = map.constBegin();
+    while (i != map.constEnd()) {
+        if (domain.endsWith(i.key())) {
+            qCDebug(C_LANGSELECT) << "Found valid locale" << i.value() << "in domain map for domain" << domain;
+            c->setLocale(i.value());
+            return true;
         }
-        qCDebug(C_LANGSELECT) << "Can not find supported locale for domain" << domain;
-    } else {
-        qCWarning(C_LANGSELECT, "Can not select locale from empty domain map.");
+        ++i;
     }
+    const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
+    if (domainParts.size() > 1) {
+        const QLocale l(domainParts.at(domainParts.size() - 1));
+        if (l.language() != QLocale::C && locales.contains(l)) {
+            qCDebug(C_LANGSELECT) << "Found supported locale" << l << "in domain" << domain;
+            c->setLocale(l);
+            return true;
+        }
+    }
+    qCDebug(C_LANGSELECT) << "Can not find supported locale for domain" << domain;
     return false;
 }
 
@@ -681,7 +673,7 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QString &name) const
                 while (i != langMap.crend()) {
                     for (const QLocale &l : constLocales) {
                         if (l.language() == i->second.language()) {
-                            c->setLocale(i->second);
+                            c->setLocale(l);
                             qCDebug(C_LANGSELECT) << "Selected locale" << c->locale() << "from" << name << "header";
                             return true;
                         }
@@ -718,29 +710,6 @@ void LangSelectPrivate::setToSession(Context *c, const QString &key) const
 {
     qCDebug(C_LANGSELECT) << "Storing selected locale in session key" << sessionKey;
     Session::setValue(c, key, c->locale());
-}
-
-void LangSelectPrivate::setToSubdomain(Context *c, const QMap<QString, QLocale> &map) const
-{
-    const auto langDomainParts = map.key(c->locale()).split(QLatin1Char('.'), QString::SkipEmptyParts);
-    auto uri = c->req()->uri();
-    const auto currDomainParts = uri.host().split(QLatin1Char('.'), QString::SkipEmptyParts).mid(langDomainParts.size());
-    const QStringList newList = langDomainParts + currDomainParts;
-    uri.setHost(newList.join(QLatin1Char('.')));
-    qCDebug(C_LANGSELECT) << "Storing selected locale in subdomain by redirecting to" << uri;
-    c->res()->redirect(uri, 307);
-}
-
-void LangSelectPrivate::setToDomain(Context *c, const QMap<QString, QLocale> &map) const
-{
-    const auto langDomainParts = map.key(c->locale()).split(QLatin1Char('.'), QString::SkipEmptyParts);
-    auto uri = c->req()->uri();
-    const auto currDomainParts = uri.host().split(QLatin1Char('.'), QString::SkipEmptyParts);
-    auto newList = currDomainParts.mid(0, currDomainParts.size() - langDomainParts.size());
-    newList.append(langDomainParts);
-    uri.setHost(newList.join(QLatin1Char('.')));
-    qCDebug(C_LANGSELECT) << "Storing selected locale in domain by redirecting to" << uri;
-    c->res()->redirect(uri, 307);
 }
 
 void LangSelectPrivate::setFallback(Context *c) const
