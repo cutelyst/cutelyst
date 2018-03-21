@@ -15,9 +15,13 @@ http://www.techempower.com/benchmarks/
 ## FEATURES:
 
  * Cross-platform
+ * Stable API/ABI - v1 on v1.x.x branch and v2 on tagged from master
  * Pluggable Engines
+   * Cutelyst-WSGI - A cross-platform and fast WSGI engine
+     * HTTP/1.1 - Pipelining and Keep-Alive
+     * HTTP/2 - Upgrade to H2, ALPN negotiation on HTTPS and direct H2C
+     * FastCGI - Pipelining and Keep-Alive
    * [uWSGI](http://projects.unbit.it/uwsgi) - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
-   * Cutelyst-WSGI - A cross-platform and fast WSGI engine (HTTP 1.1 and FastCGI both with Pipelining and Keep-Alive support)
  * WebSockets
  * REST with ActionREST
  * Plugin based views
