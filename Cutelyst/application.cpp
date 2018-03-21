@@ -532,6 +532,13 @@ QString Application::translate(const QLocale &locale, const char *context, const
 
 void Application::loadTranslations(const QString &filename, const QString &directory, const QString &prefix, const QString &suffix)
 {
+    loadTranslationsFromDir(filename, directory, prefix, suffix);
+}
+
+QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix, const QString &suffix)
+{
+    QVector<QLocale> locales;
+
     if (Q_LIKELY(!filename.isEmpty())) {
         const QString _dir = directory.isEmpty() ? QStringLiteral(I18NDIR) : directory;
         const QDir i18nDir(_dir);
@@ -542,6 +549,7 @@ void Application::loadTranslations(const QString &filename, const QString &direc
 
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
+                locales.reserve(tsFiles.size());
                 for (const QFileInfo &ts : tsFiles) {
                     const QString fn = ts.fileName();
                     const int prefIdx = fn.indexOf(_prefix);
@@ -551,6 +559,7 @@ void Application::loadTranslations(const QString &filename, const QString &direc
                         auto trans = new QTranslator(this);
                         if (Q_LIKELY(trans->load(loc, filename, _prefix, QStringLiteral(I18NDIR)))) {
                             addTranslator(loc, trans);
+                            locales.append(loc);
                         } else {
                             delete trans;
                             qCWarning(CUTELYST_CORE) << "Can not load translations for locale" << loc.name();
@@ -559,6 +568,7 @@ void Application::loadTranslations(const QString &filename, const QString &direc
                         qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string" << locString;
                     }
                 }
+                locales.shrink_to_fit();
             } else {
                 qCWarning(CUTELYST_CORE) << "Can not find translation files for" << filename << "in directory" << _dir;
             }
@@ -568,6 +578,51 @@ void Application::loadTranslations(const QString &filename, const QString &direc
     } else {
         qCWarning(CUTELYST_CORE) << "Can not load translations for empty file name.";
     }
+
+    return locales;
+}
+
+QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory, const QString &filename)
+{
+    QVector<QLocale> locales;
+
+    if (Q_LIKELY(!directory.isEmpty() && !filename.isEmpty())) {
+        const QDir dir(directory);
+        if (Q_LIKELY(dir.exists())) {
+            const auto dirs = dir.entryList(QDir::AllDirs);
+            if (Q_LIKELY(!dirs.empty())) {
+                locales.reserve(dirs.size());
+                for (const QString &subDir : dirs) {
+                    const QString relFn = subDir + QLatin1Char('/') + filename;
+                    if (dir.exists(relFn)) {
+                        const QLocale l(subDir);
+                        if (Q_LIKELY(l.language() != QLocale::C)) {
+                            auto trans = new QTranslator(this);
+                            const QFileInfo fi(dir, relFn);
+                            if (Q_LIKELY(trans->load(l, fi.baseName(), QString(), fi.absolutePath(), fi.suffix()))) {
+                                addTranslator(l, trans);
+                                locales.append(l);
+                            } else {
+                                delete trans;
+                                qCWarning(CUTELYST_CORE) << "Can not load translations for locale" << l.name();
+                            }
+                        } else {
+                            qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string:" << subDir;
+                        }
+                    }
+                }
+                locales.shrink_to_fit();
+            } else {
+                qCWarning(CUTELYST_CORE) << "Can not find locale dirs under" << directory;
+            }
+        } else {
+            qCWarning(CUTELYST_CORE) << "Can not load translations from not existing directory:" << directory;
+        }
+    } else {
+        qCWarning(CUTELYST_CORE) << "Can not load translations fro empty file name or directory name";
+    }
+
+    return locales;
 }
 
 void Cutelyst::ApplicationPrivate::setupHome()
