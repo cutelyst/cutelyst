@@ -35,7 +35,7 @@ public:
     bool getFromSession(Context *c, const QString &key) const;
     bool getFromSubdomain(Context *c, const QMap<QString, QLocale> &map) const;
     bool getFromDomain(Context *c, const QMap<QString,QLocale> &map) const;
-    bool getFromHeader(Context *c, const QString &name = QLatin1String("Accept-Language")) const;
+    bool getFromHeader(Context *c, const QString &name = QStringLiteral("Accept-Language")) const;
     void setToQuery(Context *c, const QString &key) const;
     void setToCookie(Context *c, const QString &name) const;
     void setToSession(Context *c, const QString &key) const;
