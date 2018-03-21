@@ -39,7 +39,7 @@ using namespace Cutelyst;
 
 static thread_local LangSelect *lsp = nullptr;
 
-#define SELECTION_TRIED QLatin1String("_c_langselect_tried")
+#define SELECTION_TRIED QStringLiteral("_c_langselect_tried")
 
 LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source) :
     Plugin(parent), d_ptr(new LangSelectPrivate)
@@ -154,7 +154,7 @@ void LangSelect::addSupportedLocale(const QString &locale)
     }
 }
 
-void LangSelect::setLocalesFromDir(const QString &path, const QString &name, const QString prefix, const QString &suffix)
+void LangSelect::setLocalesFromDir(const QString &path, const QString &name, const QString &prefix, const QString &suffix)
 {
     Q_D(LangSelect);
     d->locales.clear();
@@ -215,7 +215,7 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                             qCDebug(C_LANGSELECT, "Added locale \"%s\" to the list of supported locales.", qUtf8Printable(subDir));
                         }  else {
                             shrinkToFit = true;
-                            qCWarning(C_LANGSELECT, "Can not add invalid locale \"%s\" to the list of supported locales.");
+                            qCWarning(C_LANGSELECT, "Can not add invalid locale \"%s\" to the list of supported locales.", qUtf8Printable(subDir));
                         }
                     } else {
                         shrinkToFit = true;
@@ -569,7 +569,7 @@ bool LangSelectPrivate::getFromCookie(Context *c, const QString &cookie) const
 
 bool LangSelectPrivate::getFromSession(Context *c, const QString &key) const
 {
-    const QLocale l = Cutelyst::Session::value(c, key).value<QLocale>();
+    const QLocale l = Cutelyst::Session::value(c, key).toLocale();
     if (l.language() != QLocale::C && locales.contains(l)) {
         qCDebug(C_LANGSELECT) << "Found valid locale" << l << "in session key" << key;
         c->setLocale(l);

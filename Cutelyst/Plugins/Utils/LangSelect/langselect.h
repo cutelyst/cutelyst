@@ -405,7 +405,7 @@ public:
      * If you already use Application::loadTranslations() to load your app translations you don't need to use this function.
      * Simply take the list returned by Application::loadTranslations() and give it to setSupportedLocales().
      */
-    void setLocalesFromDir(const QString &path, const QString &name, const QString prefix = QLatin1String("."), const QString &suffix = QLatin1String(".qm"));
+    void setLocalesFromDir(const QString &path, const QString &name, const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
 
     /**
      * Sets the list of supported locales by reading translation files with a specific @a name
