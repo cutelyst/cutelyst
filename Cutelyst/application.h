@@ -276,7 +276,7 @@ public:
      *
      * @since Cuteylst 2.1.0
      */
-    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory = QString(), const QString &prefix = QLatin1String("."), const QString &suffix = QLatin1String(".qm"));
+    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory = QString(), const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
 
     /**
      * Loads translations for a specific @a filename from a directory structure under @a directory and returns a list of added locales.
