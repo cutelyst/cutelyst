@@ -57,7 +57,7 @@ class LangSelectPrivate;
  * the user agent (like the web browser). It will compare the detected locale against a list of locales supported
  * by the application to choose the most appropriate locale fitting the user's preferences.
  *
- * Unless the plugin has been constructed with @a autoDetect set to @c false, it will be connected to the
+ * Unless the plugin has been constructed with the manual mode constructor, it will be connected to the
  * Application::beforePrepareAction() signal to set the locale. If auto detection is disabled, you can manually set the
  * locale by calling LangSelect::fromCookie(), LangSelect::fromDomain(), LangSelect::fromPath(), LangSelect::fromSession(),
  * LangSelect::fromUrlQuery() or LangSelect::fromSubDomain() at appropriate places.
@@ -69,23 +69,24 @@ class LangSelectPrivate;
  * Especially on publicly available content you might want to put the locale information into the domain or URL path to
  * optimize your content for search engines.
  *
+ * The plugin will also set two values to the stash that will contain the BCP47 name of the selected locale and the text
+ * direction. You can set the stash keys used for this information with setLanguageCodeStashKey() and setLanguageDirStashKey().
+ *
  * <h3 id="setting-supported-locales">Setting supported locales</h3>
  * One of the main purposes of this plugin is not only to select a locale, but also to select a locale that is supported
- * by your application. Therefore the plugin provides different mthods to set the list of supported locales. If you already
- * use Application::loadTranslations() or Application::loadTranslationsFromDirs() to load the translation files for
+ * by your application. Therefore the plugin provides different methods to set the list of supported locales. If you already
+ * use Application::loadTranslationsFromDir() or Application::loadTranslationsFromDirs() to load the translation files for
  * your application, you can simply use the returned list of that methods and give them to setSupportedLocales(). If you
  * use a different way of loading translations, have a look at the other functions to set the supported locales:
  * addSupportedLocale(), setSupportedLocales(), setLocalesFromDir() and setLocalesFromDirs().
  *
  * <h3 id="modes-of-operation">Modes of operation</h3>
- * The plugin can either work automatically or manual. The auto detection mode, that hooks into the
+ * The plugin can either work automatically or manual. The auto detection mode hooks into the
  * Application::beforePrepareAction() signal to set the locale. The mode of operation is defined when constructing
- * and registering the plugin. If auto detection is disabled, you can use on of the static functions that get and set
+ * and registering the plugin. If auto detection is disabled, you can use one of the static functions that get and set
  * the locale. Note that you still have to set the list of supported locales and might want to set some defaults for
  * the sources like the session key, etc.
  * @code{.cpp}
- * #include <Cutelyst/Plugins/Utils/LangSelect>
- *
  * bool MyApp::init()
  * {
  *     // register plugins like StaticSimple before the LangSelect
@@ -100,8 +101,6 @@ class LangSelectPrivate;
  * @endcode
  *
  * @code{.cpp}
- * #include <Cutelyst/Plugins/Utils/LangSelect>
- *
  * bool MyApp::init()
  * {
  *     // initializing the plugin in manual mode
@@ -116,10 +115,10 @@ class LangSelectPrivate;
  * locale internally, other sources that rely on the request URI will perform a redirect to set the detected source. Common
  * to all sources is, that they will fall back to the @a Accept-Language header and the locale set by setFallbackLocale()
  * if no supported locale can be detected in the source. You can omit the @a Accept-Language header and use the fallback
- * language directly by setting setDetectFromHeader() to @c false. If you set the source to AcceptHeader, the locale will
- * always be extracted from the @a Accept-Langauge header filed from the request and will never be stored somewhere.
+ * language directly by setting setDetectFromHeader() to @c false. If you set the source to LangSelect::AcceptHeader, the
+ * locale will always be extracted from the @a Accept-Langauge header filed from the request and will never be stored.
  *
- * For the following exmaples we will assume that your application supports English, German and Portuguese and English
+ * For the following examples we will assume that your application supports English, German and Portuguese and English
  * is the fallback locale.
  *
  * <h4 id="source-url-query">URL query</h4>
@@ -156,9 +155,8 @@ class LangSelectPrivate;
  * @code{.cpp}
  * bool MyApp::init()
  * {
- *     // registering the plugin in manual mode using
- *     // cooie as source and setting "lang" as default
- *     // cookie name
+ *     // registering the plugin in manual mode and
+ *     // setting "lang" as default cookie name
  *     auto lsp = new LangSelect(this);
  *     lsp->setCookieName(QStringLiteral("lang"));
  *     lsp->setSupportedLocales({
@@ -186,7 +184,7 @@ class LangSelectPrivate;
  * <h4 id="source-session">%Session</h4>
  * If you use LangSelect::Session to register the plugin in auto mode or if you use LangSelect::fromSession() to get and
  * set the locale from the session manually at appropriate places in your application, the plugin will try to detect the
- * locale from the session key specified for the plugin. This approach is great if you use session anyway becase the complete
+ * locale from the session key specified for the plugin. This approach is great if you use sessions anyway because the complete
  * QLocale object can be stored in the session, making it quite fast to load compared with the other methods that have to
  * construct the QLocale again from a string on every request.
  * @code{.cpp}
@@ -216,10 +214,98 @@ class LangSelectPrivate;
  * session store.
  *
  * <h4 id="source-path">Path</h4>
- * <h4 id="source-subdomain">Subdomain</h4>
- * <h4 id="source-domain">Domain</h4>
+ * If you use a chained dispatcher to detect the locale, you can use this plugin in manual mode and use LangSelect::fromPath()
+ * at the chained action that takes the locale as path argument. This will then set the locale if it is supported or will
+ * redirect to a path containing a supported locale.
+ * @code{.cpp}
+ * bool MyApp::init()
+ * {
+ *     // register the plugin in manual mode and set
+ *     // the list of supported locales
+ *     auto lsp = new LangSelect(this);
+ *     lsp->setSupportedLocales({
+ *                                  QLocale(QLocale::Portuguese),
+ *                                  QLocale(QLocale::German),
+ *                                  QLocale(QLocale::English)
+ *                             });
+ *     lsp->setFallbackLocale(QLocale(QLocale::English));
+ * }
  *
- * @since Cutelyst 2.0.0
+ * void MyRoot::base(Context *c, const QString &locale)
+ * {
+ *     if (LangSelect::fromPath(c, locale) {
+ *          // if the locale could be found in the
+ *          // list of supported locales, it will be set,
+ *          // otherwise the function will create a 307 redirect
+ *          // to the same path but with a valid locale and
+ *          // will call Context::detach()
+ *     }
+ * }
+ * @endcode
+ * If the user would now call the URL <code>http://www.example.com/pt/my/resource</code> the locale would be set to Portuguese
+ * and the normal flow of the application would continue. If the user would call the URL <code>http://www.example.com/ru/my/resource</code>
+ * and has no supported locale in the @a Accept-Language header, the function would create a redirect to
+ * <code>http://www.example.com/en/my/resource</code> and would detach from the normal execution flow.
+ *
+ * <h4 id="source-subdomain">Subdomain</h4>
+ * If you use LangSelect::SubDomain to register the plugin in auto mode or if you use LangSelect::fromSubDomain() to get and
+ * set the locale from the subdomain manually at appropriate places in your application, the plugin will try to detect the
+ * locale from the subdomain part specified for the plugin. This approach needs for sure DNS entries for every supported locale.
+ * Let us assume we have the following registered subdomains: www.example.com, de.example.com, en.example.com and pt.example.com.
+ * We will connect no locale to the www subdomain so that it will be redirected to one of the language subdomains.
+ * @code{.cpp}
+ * bool MyApp::init()
+ * {
+ *     auto lsp = new LangSelect(this, LangSelect::SubDomain);
+ *     // this will also set the list of supported locales
+ *     lsp->setSubDomainMap({
+ *                             {QStringLiteral("de"), QLocale(QLocale::German)},
+ *                             {QStringLiteral("en"), QLocale(QLocale::English)},
+ *                             {QStringLiteral("pt"), QLocale(QLocale::Portuguese)}
+ *                         ]);
+ *     lsp->setFallbackLocale(QLocale(QLocale::English));
+ * }
+ * @endcode
+ * If a user now calls the URL <code>http://www.exmaple.com/path/to/my/resource</code> it will be redirected to
+ * <code>http://en.example.com/path/to/my/resource</code> if the @a Accept-Header does not contain one of the supported
+ * locales. If the user would call <code>http://pt.example.com/path/to/my/resource</code> Portuguese would be se as locale
+ * and normal operation continues. Redirection based on the subdomain will substitute exaplte the amount of mapped subdomain
+ * levels from the beginning of the domain. So ru.m.exmaple.com would be redirected to for exmaple en.m.example.com in the
+ * above example.
+ *
+ * <h4 id="source-domain">Domain</h4>
+ * If you use LangSelect::Domain to register the plugin in auto mode or if you use LangSelect::fromDomain() to get and set
+ * the locale from the domain manually at appropriate places in your application, the plugin will try to detect the locale
+ * from the domain part specified for the plugin. This approach needs for sure DNS entries for every supported locale. Let
+ * us assume we have the following registered domains: exmaple.br, example.com and example.de.
+ * @code{.cpp}
+ * bool MyApp::init()
+ * {
+ *     auto lsp = new LangSelect(this, LangSelect::Domain);
+ *     // this will also set the list of supported locales
+ *     lsp->setDomainMap({
+ *                         {QStringLiteral("exmaple.br"), QLocale(QLocale::Portuguese)},
+ *                         {QStringLiteral("example.com"), QLocale(QLocale::English)},
+ *                         {QStringLiteral("example.de"), QLocale(QLocale::German)}
+ *                      });
+ *     lsp->setFallbackLocale(QLocale(QLocale::English));
+ * }
+ * @endcode
+ * If a user now calls the URL <code>http://www.examble.br</code> the locale will be set to Portuguese and the normal operation
+ * flow will continue. If there are also domains pointing to your application that are not part of the domain map, the user would
+ * be redirected to one of the domains best fitting the language settings of the user agent. Redirection based on the domain will
+ * substitute exactly the amount of mapped domain levels from the end of the domain name. So m.user.example.ru would be redirected to
+ * m.user.example.com in the above example.
+ *
+ * <h3 id="links-and-locales">Links and locales</h3>
+ * If you detect and set locales based on the session or a cookie you do not need to change anything on your links in your application.
+ * If you use the path or query to detect the locale, you can use Context::uriFor() or Context::uriForAction() to set the locale on
+ * internal URIs. For Grantlee themes there is also the %Cutelyst specific tag @c c_uri_for that can be used as
+ * <code>{% c_uri_for "/path" "arg1" "arg2" QUERY c.request.queryParams "foo=bar" %}</code>. Taking the defaul name of the stash key
+ * with the BCP47 name of the selected locale and using the path approach to set the locale, you could use the tag as follows:
+ * <code>{% c_uri_for "/path" c_langselect_lang "otherArg" QUERY c.request.queryParams "foo=bar" %}</code>.
+ *
+ * @since %Cutelyst 2.1.0
  */
 class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect : public Plugin
 {
@@ -233,9 +319,8 @@ public:
         URLQuery        = 0,    /**< Tries to get and store the locale from an URL query parameter. Requires setQueryKey(). */
         Session         = 1,    /**< Tries to get and store the locale from a session key. Requires setSessionKey(). */
         Cookie          = 2,    /**< Tries to get and store the locale from a cookie. Requires setCookieName(). */
-        SubDomain       = 3,    /**< Tries to get and store the locale from a subdomain part. Requires setSubDomainIndex(). */
+        SubDomain       = 3,    /**< Tries to get and store the locale from a subdomain part. Requires setSubDomainMap(). */
         Domain          = 4,    /**< Tries to get and store the locale from the domain. Requires setDomainMap(). */
-        Path            = 5,    /**< Tries to get and store the locale from an URL path part. Requires setPathIndex(). */
         AcceptHeader    = 254,  /**< Will the locale only detect from the Accept-Header and will not store it. */
         Fallback        = 255   /**< Only used internal. */
     };
@@ -243,7 +328,7 @@ public:
 
     /**
      * Constructs a new %LangSelect object with the given @a parent and @a source in
-     * auto detection mode.
+     * <b>auto detection mode</b>.
      *
      * The plugin will be connected to the Application::beforePrepareAction signal
      * and will automatically set the appropriate locale extracted from @a source.
@@ -254,10 +339,10 @@ public:
     LangSelect(Application *parent, Source source);
 
     /**
-     * Constructs a new %LangSelect object with the given @a parent in manual mode.
+     * Constructs a new %LangSelect object with the given @a parent in <b>manual mode</b>.
      *
      * The plugin will @b not be connected to the Application::beforePrepareAction signal
-     * so you have to use of of the static functions to set and store the locale.
+     * so you have to use one of the static functions to set and store the locale.
      */
     LangSelect(Application *parent);
 
@@ -365,32 +450,16 @@ public:
     void setCookieName(const QString &name);
 
     /**
-     * Sets the zero-based @a index of the sub domain part used to store and retrieve the locale.
-     * @a index has to be greater or equal to @c 0.
+     * Sets the @a map for subdomains as source for locale selection. The @a map should contain
+     * the subdomain part as key and the associated locale as value. See the <a href="#source-subdomain">
+     * subdomain example</a> to learn more about this approach.
      */
-    void setSubDomainIndex(qint8 index);
+    void setSubDomainMap(const QMap<QString,QLocale> &map);
 
     /**
-     * Sets the zero-based @a index of the URL path part used to store and retrieve the locale.
-     * @a index has to be greater or equal to @c 0.
-     */
-    void setPathIndex(qint8 index);
-
-    /**
-     * Sets the @a map for full domain as source for locale selection. The @a map should contain
-     * the common domain part as key and the associated locale as value.
-     *
-     * <h3>Example</h3>
-     * @code{.cpp}
-     * bool MyApp::init()
-     * {
-     *     auto lsp = new LangSelect(this);
-     *     lsp->setDomainMap({
-     *                          {QStringLiteral("example.br"), QLocale(QLocale::Portuguese, QLocale::Brazil)},
-     *                          {QStringLiteral("example.de"), QLocale(QLocale::German, QLocale::Germany)}
-     *                      });
-     * }
-     * @endcode
+     * Sets the @a map for full domains as source for locale selection. The @a map should contain
+     * the common domain part as key and the associated locale as value. See the <a href="#source-domain">
+     * domain example</a> to learn more about this approach.
      */
     void setDomainMap(const QMap<QString,QLocale> &map);
 
@@ -405,6 +474,17 @@ public:
      * a valid supported locale.
      */
     void setDetectFromHeader(bool enabled);
+
+    /**
+     * Sets the name of the stash @a key that will contain the BCP47 name of the selected locale.
+     */
+    void setLanguageCodeStashKey(const QString &key = QStringLiteral("c_langselect_lang"));
+
+    /**
+     * Sets the name of the stash @a key that will contain the text direction of the selected locale,
+     * either "ltr" or "rtl".
+     */
+    void setLanguageDirStashKey(const QString &key = QStringLiteral("c_langselect_dir"));
 
     /**
      * Returns the list of supported locales.
@@ -466,36 +546,35 @@ public:
     static bool fromCookie(Context *c, const QString &name = QString());
 
     /**
-     * Tries to get the locale from a subdomain specified by @a subDomainIndex. The index specifies the 0-based index
-     * number of the splitted domain name from the request. See the <a href="#source-subdomain">subdomain example</a>
-     * to get an idea how this approach works. If the subdomain part is not a <a href="#setting-supported-locales">supported
-     * locale</a>, the plugin will either try to get a supported locale from the @a Accept-Language header (if
-     * setDetectFromHeader() is not set to @c false) or it will use the locale set by setFallbackLocale().
+     * Tries to get the locale from the subdomain specified in the @a subDomainMap. The @a subDomainMap has to contain
+     * mappings between subdomains and locales. See the <a href="#source-subdomain">subdomain example</a> to get an idea
+     * on how this approach works. If the detected subdomain is not part of the @a subDomainMap, the plugin will either
+     * try to get a supported locale from the @a Accept-Language header (if setDetectFromHeader() is not set to @c false)
+     * or it will use the locale set by setFallbackLocale().
      *
-     * If the subdomain was not a valid locale, the locale detected by the header or the fallback locale will be set to the
-     * subdomain part identified by @a subDomainIndex and the plugin will create a 307 redirect to the new subdomain
-     * on the context response. If the redirect will be performed, the function returns @c false, otherwise it will
-     * return @c true.
+     * If the domain from the request could not be found in the @a subdDomainMap, the locale detected by the header
+     * or the fallbacl locale will be used to get a domain from the @a subDomainMap where the plugin will redirect to
+     * with a 307 redirect. If the redirect will be performed, the function will return @c false and Context::detach() will
+     * be called, otherwise it will return @c true.
      *
-     * @param c                 The current Context.
-     * @param subDomainIndex    The 0-based index of the subdomain part. If below @c 0, the value set by setSubDomainIndex()
-     * will be used.
-     * @return @c true if the subdomain at the specified index contained a supported locale, @c false if the locale will be
-     * set by a redirect.
+     * @param c             The current Context.
+     * @param subDomainMap  Mapping between subdomains and locales. If empty, the map set by setSubDomainMap() will be used.
+     * @return @c true if the subdomain has been found in the @a subDomainMap, @c false if the locale will be set by a redirect
+     * to a subdomain from the @a subDomainMap.
      */
-    static bool fromSubDomain(Context *c, qint8 subDomainIndex = -1);
+    static bool fromSubDomain(Context *c, const QMap<QString, QLocale> &subDomainMap = QMap<QString, QLocale>());
 
     /**
      * Tries to get the locale from the domain specified in the @a domainMap. The @a domainMap has to contain
-     * mappings between domains and locales. See the <a href="#source-domain">domain example</a> to get an idea
+     * mappings between domains and locales. See the <a href="#source-domain">domain example</a> to get an idea on
      * how this approach works. If the detected domain is not part of the @a domainMap, the plugin will either try
      * to get a supported locale from the @a Accept-Language header (if setDetectFromHeader() is not set to @c false)
      * or it will use the locale set by setFallbackLocale().
      *
      * If the domain from the request could not be found in the @a domainMap, the locale detected by the header or the
      * fallback locale will be used to get a domain from the @a domainMap where the plugin will redirect to with
-     * a 307 redirect. If the redirect will be performed, the function will return @c false, otherwise it
-     * will return @c true.
+     * a 307 redirect. If the redirect will be performed, the function will return @c false and Context::detach() will
+     * be called, otherwise it will return @c true.
      *
      * @param c         The current Context.
      * @param domainMap Mapping between domains and locales. If empty, the map set by setDomainMap() will be used.
@@ -505,28 +584,25 @@ public:
     static bool fromDomain(Context *c, const QMap<QString, QLocale> &domainMap = QMap<QString, QLocale>());
 
     /**
-     * Tries to get the locale from a part of the request URL path specified by @a pathInde. The index specifies the
-     * 0-based index number of the splitted path from the request. See the <a href="#source-path">path example</a> to
-     * get an idea on how this appraoch works. If the path part is not a <a href="#setting-supported-locales">supported
-     * locale</a>, the plugin will either try to get a supported locale from the @a Accept-Language header (if
-     * setDetectFromHeader() is not set to @c false) or it will use the locale set by setFallbackLocale().
+     * Takes the @a locale from a string extracted as argument from a chained action. See the <a href="#source-path">
+     * path example</a> to get an idea on how this approach works.
      *
-     * If the path part was not a valid locale, the locale detected by the header or the fallback locale will be set
-     * to the path part identified by @a pathIndex and the plugin will create a 307 redirect to the new path on the
-     * context response. If the redirect will be performed, the function returns @c false, otherwise it will
-     * return @c true.
-     *
+     * I the @a locale is not part of the supported locales, the plugin will create a 307 redirect to the same path
+     * but with a valid locale either extracted from the @a Accept-Language header (if setDetectFromHeader() is not
+     * set to @c false) or it will use the locale set by setFallbackLocale(). If the redirect will be performed, the
+     * function will return @c false and Context::detach() will be called, otherwise it will return @c true.
      * @param c         The current Context.
-     * @param pathIndex 0-based index of the path part. If below @c 0, the value set by setPathIndex() will be used.
-     * @return @c true if the path part at the specified @a pathIndex contains a supported locale, @c false if the
-     * locale will be set by a redirect.
+     * @param locale    Locale string supported by QLocale.
+     * @return @c true if the locale has been found in the path, @c false if the locale will be set by a redirect to
+     * a path containing a valid locale.
      */
-    static bool fromPath(Context *c, qint8 pathIndex = -1);
+    static bool fromPath(Context *c, const QString &locale);
 
 protected:
     /**
-     * Sets the plugin up. If the plugin has been constructed with @a autoDetect
-     * set to @c true, this will connect the plugin to the Application::beforePrepareAction()
+     * Sets the plugin up and checks the plugin configuration. If the configuration contains errors,
+     * it will return @c false, otherwise it will return @c true. If the plugin has been constructed
+     * with auto detection constructor, it will connect the plugin to the Application::beforePrepareAction()
      * signal.
      */
     virtual bool setup(Application *app) override;
