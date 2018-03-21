@@ -569,7 +569,7 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, c
                         qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string" << locString;
                     }
                 }
-                locales.shrink_to_fit();
+                locales.squeeze();
             } else {
                 qCWarning(CUTELYST_CORE) << "Can not find translation files for" << filename << "in directory" << _dir;
             }
@@ -612,7 +612,7 @@ QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory,
                         }
                     }
                 }
-                locales.shrink_to_fit();
+                locales.squeeze();
             } else {
                 qCWarning(CUTELYST_CORE) << "Can not find locale dirs under" << directory;
             }
