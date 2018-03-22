@@ -10,7 +10,7 @@ endif()
 
 project(cutelyst VERSION 2.1.0)
 
-find_package(Qt5 5.6.0 COMPONENTS
+find_package(Qt5 5.6.0 REQUIRED COMPONENTS
     Core
     Network
     Sql
