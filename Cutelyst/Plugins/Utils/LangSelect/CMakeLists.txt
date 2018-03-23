@@ -15,7 +15,7 @@ add_library(Cutelyst2Qt5UtilsLangSelect SHARED
 )
 add_library(Cutelyst2Qt5::Utils::LangSelect ALIAS Cutelyst2Qt5UtilsLangSelect)
 
-set_target_properties(Cutelyst2Qt5UtilsValidator PROPERTIES
+set_target_properties(Cutelyst2Qt5UtilsLangSelect PROPERTIES
     EXPORT_NAME Utils::LangSelect
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
