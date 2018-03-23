@@ -36,7 +36,7 @@ install(TARGETS Cutelyst2Qt5UtilsLangSelect
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsLangSelect.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsValidator.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsLangSelect.pc
     @ONLY
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsLangSelect.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
