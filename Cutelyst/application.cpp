@@ -545,7 +545,7 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, c
         if (Q_LIKELY(i18nDir.exists())) {
             const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
             const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
-            const QStringList namesFilter = QStringList({filename + QLatin1Char('*') + _suffix});
+            const QStringList namesFilter = QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
 
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
