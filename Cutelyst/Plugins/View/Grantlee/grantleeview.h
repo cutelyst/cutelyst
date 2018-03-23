@@ -202,17 +202,18 @@ public:
     /**
      * Loads translations for a specific @p filename from a single directory and returns a list of added locales.
      *
-     * This can be used to load translations for a specific component if the translation file names follow a common schema.
+     * This can be used to load translations for a template if the translation file names follow a common schema.
      * Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/mytemplate_de.qm
      * @li @c /usr/share/myapp/translations/mytemplate_pt_BR.qm
      * @li @c ...
      *
-     * You can then use loadTranslationsFromDir() in your reimplementation of Application::init() as follows:
+     * You can then use loadTranslationsFromDir() on your registered GrantleeView object as follows:
      * @code{.cpp}
      * bool MyApp::init()
      * {
-     *      loadTranslationsFromDir(QStringLiteral("mytemplate"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *      auto view = new GrantleeView(this);
+     *      view->loadTranslationsFromDir(QStringLiteral("mytemplate"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
      * }
      * @endcode
      *
