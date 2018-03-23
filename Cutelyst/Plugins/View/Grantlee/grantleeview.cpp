@@ -28,6 +28,7 @@
 #include <QString>
 #include <QDirIterator>
 #include <QtCore/QLoggingCategory>
+#include <QTranslator>
 
 Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
 
@@ -258,6 +259,52 @@ void GrantleeView::addTranslationCatalogs(const QHash<QString, QString> &catalog
     Q_D(GrantleeView);
     Q_ASSERT_X(!catalogs.empty(), "add translation catalogs to GranteleeView", "empty QHash");
     d->translationCatalogs.unite(catalogs);
+}
+
+QVector<QLocale> GrantleeView::loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix, const QString &suffix)
+{
+    QVector<QLocale> locales;
+
+    if (Q_LIKELY(!filename.isEmpty() && !directory.isEmpty())) {
+        const QDir i18nDir(directory);
+        if (Q_LIKELY(i18nDir.exists())) {
+            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
+            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QStringList namesFilter = QStringList({filename + QLatin1Char('*') + _suffix});
+            const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
+            if (Q_LIKELY(!tsFiles.empty())) {
+                locales.reserve(tsFiles.size());
+                for (const QFileInfo &ts : tsFiles) {
+                    const QString fn = ts.fileName();
+                    const int prefIdx = fn.indexOf(_prefix);
+                    const QString locString = fn.mid(prefIdx + _prefix.length(), fn.length() - prefIdx - _suffix.length() - _prefix.length());
+                    QLocale loc(locString);
+                    if (Q_LIKELY(loc.language() != QLocale::C)) {
+                        auto trans = new QTranslator(this);
+                        if (Q_LIKELY(trans->load(loc, filename, _prefix, QStringLiteral(I18NDIR)))) {
+                            addTranslator(loc, trans);
+                            locales.append(loc);
+                            qCDebug(CUTELYST_GRANTLEE) << "Loaded translations for locale" << loc << "from" << ts.absoluteFilePath();
+                        } else {
+                            delete trans;
+                            qCWarning(CUTELYST_GRANTLEE) << "Can not load translations for locale" << loc;
+                        }
+                    } else {
+                        qCWarning(CUTELYST_GRANTLEE) << "Can not load translations for invalid locale string" << locString;
+                    }
+                }
+                locales.squeeze();
+            } else {
+                qCWarning(CUTELYST_GRANTLEE) << "Can not find translation files for" << filename << "in directory" << directory;
+            }
+        } else {
+            qCWarning(CUTELYST_GRANTLEE) << "Can not load translations from not existing directory:" << directory;
+        }
+    } else {
+        qCWarning(CUTELYST_GRANTLEE) << "Can not load translations for empty file name or empty path.";
+    }
+
+    return locales;
 }
 
 #include "moc_grantleeview.cpp"
