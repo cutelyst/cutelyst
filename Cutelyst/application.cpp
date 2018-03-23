@@ -557,12 +557,13 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, c
                     QLocale loc(locString);
                     if (Q_LIKELY(loc.language() != QLocale::C)) {
                         auto trans = new QTranslator(this);
-                        if (Q_LIKELY(trans->load(loc, filename, _prefix, QStringLiteral(I18NDIR)))) {
+                        if (Q_LIKELY(trans->load(loc, filename, _prefix, _dir))) {
                             addTranslator(loc, trans);
                             locales.append(loc);
+                            qCDebug(CUTELYST_CORE) << "Loaded translations for" << loc << "from" << ts.absoluteFilePath();
                         } else {
                             delete trans;
-                            qCWarning(CUTELYST_CORE) << "Can not load translations for locale" << loc.name();
+                            qCWarning(CUTELYST_CORE) << "Can not load translations for" << loc << "from" << ts.absoluteFilePath();
                         }
                     } else {
                         qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string" << locString;
@@ -602,9 +603,10 @@ QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory,
                             if (Q_LIKELY(trans->load(l, fi.baseName(), QString(), fi.absolutePath(), fi.suffix()))) {
                                 addTranslator(l, trans);
                                 locales.append(l);
+                                qCDebug(CUTELYST_CORE) << "Loaded translations for" << l << "from" << fi.absoluteFilePath();
                             } else {
                                 delete trans;
-                                qCWarning(CUTELYST_CORE) << "Can not load translations for locale" << l.name();
+                                qCWarning(CUTELYST_CORE) << "Can not load translations for" << l << "from" << fi.absoluteFilePath();
                             }
                         } else {
                             qCWarning(CUTELYST_CORE) << "Can not load translations for invalid locale string:" << subDir;
@@ -619,7 +621,7 @@ QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory,
             qCWarning(CUTELYST_CORE) << "Can not load translations from not existing directory:" << directory;
         }
     } else {
-        qCWarning(CUTELYST_CORE) << "Can not load translations fro empty file name or directory name";
+        qCWarning(CUTELYST_CORE) << "Can not load translations for empty file name or directory name";
     }
 
     return locales;
