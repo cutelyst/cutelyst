@@ -326,7 +326,7 @@ struct uwsgi_option uwsgi_cutelyst_options[] = {
 
 };
 
-struct uwsgi_plugin CUTELYST_LIBRARY cutelyst_plugin = {
+struct uwsgi_plugin CUTELYST_LIBRARY cutelyst2_plugin = {
     "cutelyst", // name
     0, // alias
     0, // modifier1
