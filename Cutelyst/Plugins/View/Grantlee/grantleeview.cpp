@@ -281,7 +281,7 @@ QVector<QLocale> GrantleeView::loadTranslationsFromDir(const QString &filename, 
                     QLocale loc(locString);
                     if (Q_LIKELY(loc.language() != QLocale::C)) {
                         auto trans = new QTranslator(this);
-                        if (Q_LIKELY(trans->load(loc, filename, _prefix, QStringLiteral(I18NDIR)))) {
+                        if (Q_LIKELY(trans->load(loc, filename, _prefix, directory))) {
                             addTranslator(loc, trans);
                             locales.append(loc);
                             qCDebug(CUTELYST_GRANTLEE) << "Loaded translations for locale" << loc << "from" << ts.absoluteFilePath();
