@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QLocale>
+#include <QVector>
 
 #include <Cutelyst/View>
 
@@ -139,6 +140,8 @@ public:
      * }
      * \endcode
      *
+     * \sa loadTranslationsFromDir()
+     *
      * \since Cutelyst 1.5.0
      */
     void addTranslator(const QLocale &locale, QTranslator *translator);
@@ -149,6 +152,8 @@ public:
      * The \a locale string should be parseable by QLocale.
      *
      * \overload
+     *
+     * \sa loadTranslationsFromDir()
      *
      * \since Cutelyst 1.4.0
      */
@@ -193,6 +198,32 @@ public:
      * \since Cutelyst 1.5.0
      */
     void addTranslationCatalogs(const QHash<QString, QString> &catalogs);
+
+    /**
+     * Loads translations for a specific @p filename from a single directory and returns a list of added locales.
+     *
+     * This can be used to load translations for a specific component if the translation file names follow a common schema.
+     * Let us assume you organised your translation files as follows:
+     * @li @c /usr/share/myapp/translations/mytemplate_de.qm
+     * @li @c /usr/share/myapp/translations/mytemplate_pt_BR.qm
+     * @li @c ...
+     *
+     * You can then use loadTranslationsFromDir() in your reimplementation of Application::init() as follows:
+     * @code{.cpp}
+     * bool MyApp::init()
+     * {
+     *      loadTranslationsFromDir(QStringLiteral("mytemplate"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     * }
+     * @endcode
+     *
+     * @p prefix is the part between the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
+     * @p suffix is the file name suffix that defaults to <code>".qm"</code>.
+     *
+     * @sa addTranslator(), loadTranslationsFromDir()
+     *
+     * @since Cuteylst 2.1.0
+     */
+    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
 
 protected:
     GrantleeViewPrivate *d_ptr;
