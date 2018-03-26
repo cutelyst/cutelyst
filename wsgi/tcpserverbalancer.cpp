@@ -59,9 +59,10 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 {
     m_protocol = protocol;
 
-    const QString addressString = line
-            .section(QLatin1Char(':'), 0, 0)
-            .section(QLatin1Char(','), 0, 0);
+    int commaPos = line.indexOf(QLatin1Char(','));
+    const QString addressPortString = line.mid(0, commaPos);
+    const QString addressString = addressPortString.section(QLatin1Char(':'), 0, -2);
+    const QString portString = addressPortString.section(QLatin1Char(':'), -1);
 
     QHostAddress address;
     if (addressString.isEmpty()) {
@@ -70,9 +71,6 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         address.setAddress(addressString);
     }
 
-    const QString afterColon = line.section(QLatin1Char(':'), 1);
-    const QString portString = afterColon.section(QLatin1Char(','), 0, 0);
-
     bool ok;
     quint16 port = portString.toUInt(&ok);
     if (!ok || (port < 1 && port > 35554)) {
@@ -80,7 +78,13 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     }
 
     if (secure) {
-        const QString certPath = afterColon.section(QLatin1Char(','), 1, 1);
+        if (commaPos == -1) {
+            std::cerr << "No SSL certificate specified" << std::endl;
+            exit(1);
+        }
+
+        const QString sslString = line.mid(commaPos + 1);
+        const QString certPath = sslString.section(QLatin1Char(','), 0, 0);
         QFile certFile(certPath);
         if (!certFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
@@ -93,7 +97,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
             exit(1);
         }
 
-        const QString keyPath = afterColon.section(QLatin1Char(','), 2, 2);
+        const QString keyPath = sslString.section(QLatin1Char(','), 1, 1);
         QFile keyFile(keyPath);
         if (!keyFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
