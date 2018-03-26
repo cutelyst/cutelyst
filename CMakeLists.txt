@@ -127,11 +127,9 @@ add_definitions(
     -DQT_DISABLE_DEPRECATED_BEFORE=0x050900
 )
 
-if (NOT WIN32)
-add_definitions(
-    -std=c++11
-)
-endif()
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
