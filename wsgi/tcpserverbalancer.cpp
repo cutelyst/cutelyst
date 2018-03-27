@@ -61,7 +61,18 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 
     int commaPos = line.indexOf(QLatin1Char(','));
     const QString addressPortString = line.mid(0, commaPos);
-    const QString addressString = addressPortString.section(QLatin1Char(':'), 0, -2);
+
+    QString addressString;
+    int closeBracketPos = addressPortString.indexOf(QLatin1Char(']'));
+    if (closeBracketPos != -1) {
+        if (!line.startsWith(QLatin1Char('['))) {
+            std::cerr << "Failed to parse address: " << qPrintable(addressPortString) << std::endl;
+            exit(1);
+        }
+        addressString = addressPortString.mid(1, closeBracketPos - 1);
+    } else {
+        addressString = addressPortString.section(QLatin1Char(':'), 0, -2);
+    }
     const QString portString = addressPortString.section(QLatin1Char(':'), -1);
 
     QHostAddress address;
