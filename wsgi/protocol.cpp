@@ -85,3 +85,5 @@ QIODevice *Protocol::createBody(qint64 contentLength) const
     }
     return body;
 }
+
+#include "moc_protocol.cpp"

@@ -88,3 +88,5 @@ QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
     dbg.setAutoInsertSpaces(oldSetting);
     return dbg.maybeSpace();
 }
+
+#include "moc_authenticationuser.cpp"

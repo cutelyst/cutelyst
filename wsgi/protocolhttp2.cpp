@@ -925,3 +925,5 @@ void H2Stream::windowUpdated()
         loop->quit();
     }
 }
+
+#include "moc_protocolhttp2.cpp"

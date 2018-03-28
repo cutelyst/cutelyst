@@ -502,3 +502,5 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }
+
+#include "moc_protocolhttp.cpp"

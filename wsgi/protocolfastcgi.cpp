@@ -553,5 +553,6 @@ void ProtoRequestFastCGI::processingFinished()
     end_request[10] = sid[1];
     end_request[11] = sid[0];
     io->write(end_request, 24);
-
 }
+
+#include "moc_protocolfastcgi.cpp"
