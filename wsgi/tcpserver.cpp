@@ -60,9 +60,9 @@ void TcpServer::incomingConnection(qintptr handle)
             sock->timeout = false;
             sock->proto->parse(sock, sock);
         });
-        connect(sock, &TcpSocket::finished, [this] (TcpSocket *obj) {
-            obj->resetSocket();
-            m_socks.push_back(obj);
+        connect(sock, &TcpSocket::finished, [this, sock] () {
+            sock->resetSocket();
+            m_socks.push_back(sock);
             --m_processing;
         });
     }

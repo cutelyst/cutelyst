@@ -107,9 +107,9 @@ void LocalServer::incomingConnection(quintptr handle)
             sock->timeout = false;
             sock->proto->parse(sock, sock);
         });
-        connect(sock, &LocalSocket::finished, [this] (LocalSocket *obj) {
-            obj->resetSocket();
-            m_socks.push_back(obj);
+        connect(sock, &LocalSocket::finished, [this, sock] () {
+            sock->resetSocket();
+            m_socks.push_back(sock);
             if (--m_processing == 0) {
                 m_engine->stopSocketTimeout();
             }

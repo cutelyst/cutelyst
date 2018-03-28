@@ -49,7 +49,7 @@ void TcpSocket::connectionClose()
 void TcpSocket::requestFinished()
 {
     if (!--processing && state() != ConnectedState) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 
@@ -58,7 +58,7 @@ void TcpSocket::socketDisconnected()
     protoData->socketDisconnected();
 
     if (!processing) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 
@@ -76,7 +76,7 @@ void LocalSocket::connectionClose()
 void LocalSocket::requestFinished()
 {
     if (!--processing && state() != ConnectedState) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 
@@ -85,7 +85,7 @@ void LocalSocket::socketDisconnected()
     protoData->socketDisconnected();
 
     if (!processing) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 
@@ -103,7 +103,7 @@ void SslSocket::connectionClose()
 void SslSocket::requestFinished()
 {
     if (!--processing && state() != ConnectedState) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 
@@ -112,7 +112,7 @@ void SslSocket::socketDisconnected()
     protoData->socketDisconnected();
 
     if (!processing) {
-        Q_EMIT finished(this);
+        Q_EMIT finished();
     }
 }
 

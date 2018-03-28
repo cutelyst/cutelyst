@@ -41,8 +41,8 @@ void TcpSslServer::incomingConnection(qintptr handle)
         sock->timeout = false;
         sock->proto->parse(sock, sock);
     });
-    connect(sock, &SslSocket::finished, [this] (SslSocket *socket) {
-        socket->deleteLater();
+    connect(sock, &SslSocket::finished, [this, sock] () {
+        sock->deleteLater();
         --m_processing;
     });
 

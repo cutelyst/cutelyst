@@ -81,7 +81,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
-    void finished(TcpSocket *bj);
+    void finished();
 };
 
 class SslSocket : public QSslSocket, public Socket
@@ -95,7 +95,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
-    void finished(SslSocket *bj);
+    void finished();
 };
 
 class LocalSocket : public QLocalSocket, public Socket
@@ -109,7 +109,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
-    void finished(LocalSocket *bj);
+    void finished();
 };
 
 }
