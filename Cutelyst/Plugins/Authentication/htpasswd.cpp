@@ -63,7 +63,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     }
 
     if (!wrote) {
-        QByteArray line = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1() + '\n';
+        QByteArray line = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
         tmp.write(line);
     }
 
