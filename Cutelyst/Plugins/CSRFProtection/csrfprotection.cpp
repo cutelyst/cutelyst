@@ -229,7 +229,7 @@ QByteArray CSRFProtectionPrivate::getNewCsrfString()
     QByteArray csrfString;
 
     while (csrfString.size() < CSRF_SECRET_LENGTH) {
-        csrfString.append(QUuid::createUuid().toByteArray().toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
+        csrfString.append(QUuid::createUuid().toRfc4122().toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
     }
 
     csrfString.resize(CSRF_SECRET_LENGTH);

@@ -146,12 +146,16 @@ bool CredentialPassword::validatePassword(const QByteArray &password, const QByt
 QByteArray CredentialPassword::createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize)
 {
     QByteArray salt;
+#ifdef Q_OS_LINUX
     QFile random(QStringLiteral("/dev/urandom"));
-    if (!random.open(QIODevice::ReadOnly)) {
-        salt = QUuid::createUuid().toByteArray().toBase64();
-    } else {
+    if (random.open(QIODevice::ReadOnly)) {
         salt = random.read(saltByteSize).toBase64();
+    } else {
+#endif
+        salt = QUuid::createUuid().toRfc4122().toBase64();
+#ifdef Q_OS_LINUX
     }
+#endif
 
     const QByteArray methodStr = CredentialPasswordPrivate::cryptoEnumToStr(method);
     return methodStr + ':' + QByteArray::number(iterations) + ':' + salt + ':' +
