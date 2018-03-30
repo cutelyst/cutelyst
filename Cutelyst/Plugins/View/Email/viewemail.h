@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,10 @@ class ViewEmailPrivate;
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
-    Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey)
-    Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType)
-    Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset)
-    Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding)
+    Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey NOTIFY changed)
+    Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType NOTIFY changed)
+    Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset NOTIFY changed)
+    Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
 public:
     /**  This value defines which kind of connection should be used */
     enum ConnectionType
@@ -179,6 +179,9 @@ protected:
 
     Q_DECLARE_PRIVATE(ViewEmail)
     ViewEmailPrivate *d_ptr;
+
+Q_SIGNALS:
+    void changed();
 
 private:
     void initSender();

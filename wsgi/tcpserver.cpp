@@ -60,7 +60,7 @@ void TcpServer::incomingConnection(qintptr handle)
             sock->timeout = false;
             sock->proto->parse(sock, sock);
         });
-        connect(sock, &TcpSocket::finished, [this, sock] () {
+        connect(sock, &TcpSocket::finished, this, [this, sock] () {
             sock->resetSocket();
             m_socks.push_back(sock);
             --m_processing;
@@ -98,7 +98,7 @@ void TcpServer::shutdown()
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
                 socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
-                connect(socket, &TcpSocket::finished, [this] () {
+                connect(socket, &TcpSocket::finished, this, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }

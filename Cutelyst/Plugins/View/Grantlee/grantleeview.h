@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -56,7 +56,7 @@ public:
     explicit GrantleeView(QObject *parent = nullptr, const QString &name = QString());
     ~GrantleeView();
 
-    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /*!
      * Returns the list of include paths
      */
@@ -67,7 +67,7 @@ public:
      */
     void setIncludePaths(const QStringList &paths);
 
-    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
     /*!
      * Returns the template extension
      */
@@ -78,7 +78,7 @@ public:
      */
     void setTemplateExtension(const QString &extension);
 
-    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper NOTIFY changed)
 
     /*!
      * Returns the template wrapper.
@@ -91,7 +91,7 @@ public:
      */
     void setWrapper(const QString &name);
 
-    Q_PROPERTY(bool cache READ isCaching WRITE setCache)
+    Q_PROPERTY(bool cache READ isCaching WRITE setCache NOTIFY changed)
     /*!
      * Returns true if caching is enabled
      */
@@ -225,6 +225,9 @@ public:
      * @since Cuteylst 2.1.0
      */
     QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
+
+Q_SIGNALS:
+    void changed();
 
 protected:
     GrantleeViewPrivate *d_ptr;

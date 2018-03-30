@@ -456,7 +456,7 @@ void ProtoRequestHttp::socketDisconnected()
 {
     if (websocketUpgraded) {
         if (websocket_finn_opcode != 0x88) {
-            context->request()->webSocketClosed(1005, QString());
+            Q_EMIT context->request()->webSocketClosed(1005, QString());
         }
     }
 }

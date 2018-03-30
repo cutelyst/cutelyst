@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,16 +50,16 @@ class ContextPrivate;
 class CUTELYST_LIBRARY Context : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Action* action READ action)
-    Q_PROPERTY(QString actionName READ actionName)
-    Q_PROPERTY(QString ns READ ns)
-    Q_PROPERTY(QString namespace READ ns)
-    Q_PROPERTY(Request *req READ request)
-    Q_PROPERTY(Request *request READ request)
-    Q_PROPERTY(Controller *controller READ controller)
-    Q_PROPERTY(QString controllerName READ controllerName)
-    Q_PROPERTY(QVariantMap config READ config)
-    Q_PROPERTY(bool state READ state)
+    Q_PROPERTY(Action* action READ action CONSTANT)
+    Q_PROPERTY(QString actionName READ actionName CONSTANT)
+    Q_PROPERTY(QString ns READ ns CONSTANT)
+    Q_PROPERTY(QString namespace READ ns CONSTANT)
+    Q_PROPERTY(Request *req READ request CONSTANT)
+    Q_PROPERTY(Request *request READ request CONSTANT)
+    Q_PROPERTY(Controller *controller READ controller CONSTANT)
+    Q_PROPERTY(QString controllerName READ controllerName CONSTANT)
+    Q_PROPERTY(QVariantMap config READ config CONSTANT)
+    Q_PROPERTY(bool state READ state CONSTANT)
 public:
     /*!
      * Constructs a new DUMMY Context object that is child of Application

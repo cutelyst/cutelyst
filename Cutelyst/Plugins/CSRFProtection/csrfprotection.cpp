@@ -46,12 +46,12 @@
 #define CSRF_TOKEN_LENGTH 2 * CSRF_SECRET_LENGTH
 #define CSRF_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define CSRF_SESSION_KEY "_csrftoken"
-static const QString CONTEXT_CSRF_COOKIE = QLatin1String("_c_csrfcookie");
-static const QString CONTEXT_CSRF_COOKIE_USED = QLatin1String("_c_csrfcookieused");
-static const QString CONTEXT_CSRF_COOKIE_NEEDS_RESET = QLatin1String("_c_csrfcookieneedsreset");
-static const QString CONTEXT_CSRF_PROCESSING_DONE = QLatin1String("_c_csrfprocessingdone");
-static const QString CONTEXT_CSRF_COOKIE_SET = QLatin1String("_c_csrfcookieset");
-static const QString CONTEXT_CSRF_CHECK_PASSED = QLatin1String("_c_csrfcheckpassed");
+#define CONTEXT_CSRF_COOKIE QStringLiteral("_c_csrfcookie")
+#define CONTEXT_CSRF_COOKIE_USED QStringLiteral("_c_csrfcookieused")
+#define CONTEXT_CSRF_COOKIE_NEEDS_RESET QStringLiteral("_c_csrfcookieneedsreset")
+#define CONTEXT_CSRF_PROCESSING_DONE QStringLiteral("_c_csrfprocessingdone")
+#define CONTEXT_CSRF_COOKIE_SET QStringLiteral("_c_csrfcookieset")
+#define CONTEXT_CSRF_CHECK_PASSED QStringLiteral("_c_csrfcheckpassed")
 
 Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection")
 

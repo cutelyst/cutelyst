@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,6 +46,7 @@ void ViewEmailTemplate::setTemplatePrefix(const QString &prefix)
 {
     Q_D(ViewEmailTemplate);
     d->templatePrefix = prefix;
+    Q_EMIT changedProp();
 }
 
 QString ViewEmailTemplate::defaultView() const
@@ -58,6 +59,7 @@ void ViewEmailTemplate::setDefaultView(const QString &view)
 {
     Q_D(ViewEmailTemplate);
     d->defaultView = view;
+    Q_EMIT changedProp();
 }
 
 MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVariantHash &partHash)

@@ -33,15 +33,15 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
 
-static const QString SESSION_VALUES = QLatin1String("_c_session_values");
-static const QString SESSION_EXPIRES = QLatin1String("_c_session_expires");
-static const QString SESSION_TRIED_LOADING_EXPIRES = QLatin1String("_c_session_tried_loading_expires");
-static const QString SESSION_EXTENDED_EXPIRES = QLatin1String("_c_session_extended_expires");
-static const QString SESSION_UPDATED = QLatin1String("_c_session_updated");
-static const QString SESSION_ID = QLatin1String("_c_session_id");
-static const QString SESSION_TRIED_LOADING_ID = QLatin1String("_c_session_tried_loading_id");
-static const QString SESSION_DELETED_ID = QLatin1String("_c_session_deleted_id");
-static const QString SESSION_DELETE_REASON = QLatin1String("_c_session_delete_reason");
+#define SESSION_VALUES QStringLiteral("_c_session_values")
+#define SESSION_EXPIRES QStringLiteral("_c_session_expires")
+#define SESSION_TRIED_LOADING_EXPIRES QStringLiteral("_c_session_tried_loading_expires")
+#define SESSION_EXTENDED_EXPIRES QStringLiteral("_c_session_extended_expires")
+#define SESSION_UPDATED QStringLiteral("_c_session_updated")
+#define SESSION_ID QStringLiteral("_c_session_id")
+#define SESSION_TRIED_LOADING_ID QStringLiteral("_c_session_tried_loading_id")
+#define SESSION_DELETED_ID QStringLiteral("_c_session_deleted_id")
+#define SESSION_DELETE_REASON QStringLiteral("_c_session_delete_reason")
 
 static thread_local Session *m_instance = nullptr;
 

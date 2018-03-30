@@ -773,7 +773,7 @@ int ProtocolHttp2::sendFrame(QIODevice *io, quint8 type, quint8 flags, quint32 s
 void ProtocolHttp2::queueStream(Socket *socket, H2Stream *stream) const
 {
     ++socket->processing;
-    socket->engine->processRequestAsync(stream);
+    Q_EMIT socket->engine->processRequestAsync(stream);
 }
 
 bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request)

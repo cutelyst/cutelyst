@@ -565,7 +565,7 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 
     if (!d->umask.isEmpty() &&
-            !UnixFork::setUmask(d->umask)) {
+            !UnixFork::setUmask(d->umask.toLatin1())) {
         return 1;
     }
 
@@ -791,6 +791,7 @@ void WSGI::setApplication(const QString &application)
 {
     Q_D(WSGI);
     d->application = application;
+    Q_EMIT changed();
 }
 
 QString WSGI::application() const
@@ -807,6 +808,7 @@ void WSGI::setThreads(const QString &threads)
     } else {
         d->threads = threads.toInt();
     }
+    Q_EMIT changed();
 }
 
 QString WSGI::threads() const
@@ -827,6 +829,7 @@ void WSGI::setProcesses(const QString &process)
     } else {
         d->processes = process.toInt();
     }
+    Q_EMIT changed();
 }
 
 QString WSGI::processes() const
@@ -843,6 +846,7 @@ void WSGI::setChdir(const QString &chdir)
 {
     Q_D(WSGI);
     d->chdir = chdir;
+    Q_EMIT changed();
 }
 
 QString WSGI::chdir() const
@@ -855,6 +859,7 @@ void WSGI::setHttpSocket(const QStringList &httpSocket)
 {
     Q_D(WSGI);
     d->httpSockets = httpSocket;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::httpSocket() const
@@ -867,6 +872,7 @@ void WSGI::setHttp2Socket(const QStringList &http2Socket)
 {
     Q_D(WSGI);
     d->http2Sockets = http2Socket;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::http2Socket() const
@@ -879,6 +885,7 @@ void WSGI::setHttp2HeaderTableSize(quint32 headerTableSize)
 {
     Q_D(WSGI);
     d->http2HeaderTableSize = headerTableSize;
+    Q_EMIT changed();
 }
 
 quint32 WSGI::http2HeaderTableSize() const
@@ -891,6 +898,7 @@ void WSGI::setUpgradeH2c(bool enable)
 {
     Q_D(WSGI);
     d->upgradeH2c = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::upgradeH2c() const
@@ -903,6 +911,7 @@ void WSGI::setHttpsH2(bool enable)
 {
     Q_D(WSGI);
     d->httpsH2 = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::httpsH2() const
@@ -915,6 +924,7 @@ void WSGI::setHttpsSocket(const QStringList &httpsSocket)
 {
     Q_D(WSGI);
     d->httpsSockets = httpsSocket;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::httpsSocket() const
@@ -927,6 +937,7 @@ void WSGI::setFastcgiSocket(const QStringList &fastcgiSocket)
 {
     Q_D(WSGI);
     d->fastcgiSockets = fastcgiSocket;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::fastcgiSocket() const
@@ -939,6 +950,7 @@ void WSGI::setSocketAccess(const QString &socketAccess)
 {
     Q_D(WSGI);
     d->socketAccess = socketAccess;
+    Q_EMIT changed();
 }
 
 QString WSGI::socketAccess() const
@@ -951,6 +963,7 @@ void WSGI::setSocketTimeout(int timeout)
 {
     Q_D(WSGI);
     d->socketTimeout = timeout;
+    Q_EMIT changed();
 }
 
 int WSGI::socketTimeout() const
@@ -963,6 +976,7 @@ void WSGI::setChdir2(const QString &chdir2)
 {
     Q_D(WSGI);
     d->chdir2 = chdir2;
+    Q_EMIT changed();
 }
 
 QString WSGI::chdir2() const
@@ -975,6 +989,7 @@ void WSGI::setIni(const QStringList &ini)
 {
     Q_D(WSGI);
     d->ini = ini;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::ini() const
@@ -987,6 +1002,7 @@ void WSGI::setJson(const QStringList &files)
 {
     Q_D(WSGI);
     d->json = files;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::json() const
@@ -999,6 +1015,7 @@ void WSGI::setStaticMap(const QStringList &staticMap)
 {
     Q_D(WSGI);
     d->staticMaps = staticMap;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::staticMap() const
@@ -1011,6 +1028,7 @@ void WSGI::setStaticMap2(const QStringList &staticMap)
 {
     Q_D(WSGI);
     d->staticMaps2 = staticMap;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::staticMap2() const
@@ -1025,6 +1043,7 @@ void WSGI::setMaster(bool enable)
     if (!qEnvironmentVariableIsSet("CUTELYST_WSGI_IGNORE_MASTER")) {
         d->master = enable;
     }
+    Q_EMIT changed();
 }
 
 bool WSGI::master() const
@@ -1039,6 +1058,7 @@ void WSGI::setAutoReload(bool enable)
     if (enable) {
         d->autoReload = true;
     }
+    Q_EMIT changed();
 }
 
 bool WSGI::autoReload() const
@@ -1051,6 +1071,7 @@ void WSGI::setTouchReload(const QStringList &files)
 {
     Q_D(WSGI);
     d->touchReload = files;
+    Q_EMIT changed();
 }
 
 QStringList WSGI::touchReload() const
@@ -1067,6 +1088,7 @@ void WSGI::setBufferSize(qint64 size)
         return;
     }
     d->bufferSize = size;
+    Q_EMIT changed();
 }
 
 int WSGI::bufferSize() const
@@ -1079,6 +1101,7 @@ void WSGI::setPostBuffering(qint64 size)
 {
     Q_D(WSGI);
     d->postBuffering = size;
+    Q_EMIT changed();
 }
 
 qint64 WSGI::postBuffering() const
@@ -1095,6 +1118,7 @@ void WSGI::setPostBufferingBufsize(qint64 size)
         return;
     }
     d->postBufferingBufsize = size;
+    Q_EMIT changed();
 }
 
 qint64 WSGI::postBufferingBufsize() const
@@ -1107,6 +1131,7 @@ void WSGI::setTcpNodelay(bool enable)
 {
     Q_D(WSGI);
     d->tcpNodelay = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::tcpNodelay() const
@@ -1119,6 +1144,7 @@ void WSGI::setSoKeepalive(bool enable)
 {
     Q_D(WSGI);
     d->soKeepalive = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::soKeepalive() const
@@ -1131,6 +1157,7 @@ void WSGI::setSocketSndbuf(int value)
 {
     Q_D(WSGI);
     d->socketSendBuf = value;
+    Q_EMIT changed();
 }
 
 int WSGI::socketSndbuf() const
@@ -1143,6 +1170,7 @@ void WSGI::setSocketRcvbuf(int value)
 {
     Q_D(WSGI);
     d->socketReceiveBuf = value;
+    Q_EMIT changed();
 }
 
 int WSGI::socketRcvbuf() const
@@ -1155,6 +1183,7 @@ void WSGI::setWebsocketMaxSize(int value)
 {
     Q_D(WSGI);
     d->websocketMaxSize = value * 1024;
+    Q_EMIT changed();
 }
 
 int WSGI::websocketMaxSize() const
@@ -1167,6 +1196,7 @@ void WSGI::setPidfile(const QString &file)
 {
     Q_D(WSGI);
     d->pidfile = file;
+    Q_EMIT changed();
 }
 
 QString WSGI::pidfile() const
@@ -1179,6 +1209,7 @@ void WSGI::setPidfile2(const QString &file)
 {
     Q_D(WSGI);
     d->pidfile2 = file;
+    Q_EMIT changed();
 }
 
 QString WSGI::pidfile2() const
@@ -1192,6 +1223,7 @@ void WSGI::setUid(const QString &uid)
 {
     Q_D(WSGI);
     d->uid = uid;
+    Q_EMIT changed();
 }
 
 QString WSGI::uid() const
@@ -1204,6 +1236,7 @@ void WSGI::setGid(const QString &gid)
 {
     Q_D(WSGI);
     d->gid = gid;
+    Q_EMIT changed();
 }
 
 QString WSGI::gid() const
@@ -1216,6 +1249,7 @@ void WSGI::setNoInitgroups(bool enable)
 {
     Q_D(WSGI);
     d->noInitgroups = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::noInitgroups() const
@@ -1228,6 +1262,7 @@ void WSGI::setChownSocket(const QString &chownSocket)
 {
     Q_D(WSGI);
     d->chownSocket = chownSocket;
+    Q_EMIT changed();
 }
 
 QString WSGI::chownSocket() const
@@ -1240,6 +1275,7 @@ void WSGI::setUmask(const QString &value)
 {
     Q_D(WSGI);
     d->umask = value;
+    Q_EMIT changed();
 }
 
 QString WSGI::umask() const
@@ -1252,6 +1288,7 @@ void WSGI::setCpuAffinity(int value)
 {
     Q_D(WSGI);
     d->cpuAffinity = value;
+    Q_EMIT changed();
 }
 
 int WSGI::cpuAffinity() const
@@ -1266,6 +1303,7 @@ void WSGI::setReusePort(bool enable)
 {
     Q_D(WSGI);
     d->reusePort = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::reusePort() const
@@ -1279,6 +1317,7 @@ void WSGI::setLazy(bool enable)
 {
     Q_D(WSGI);
     d->lazy = enable;
+    Q_EMIT changed();
 }
 
 bool WSGI::lazy() const

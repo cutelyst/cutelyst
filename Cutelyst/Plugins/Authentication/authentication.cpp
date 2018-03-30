@@ -37,8 +37,8 @@ char *AuthenticationRealm::defaultRealm = const_cast<char *>("cutelyst_authentic
 
 static thread_local Authentication *auth = nullptr;
 
-static const QString AUTHENTICATION_USER = QLatin1String("_c_authentication_user");
-static const QString AUTHENTICATION_USER_REALM = QLatin1String("_c_authentication_user_realm");
+#define AUTHENTICATION_USER QStringLiteral("_c_authentication_user")
+#define AUTHENTICATION_USER_REALM QStringLiteral("_c_authentication_user_realm")
 
 Authentication::Authentication(Application *parent) : Plugin(parent)
   , d_ptr(new AuthenticationPrivate)

@@ -57,8 +57,6 @@ Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component")
 
 using namespace Cutelyst;
 
-static const QString _home(QLatin1String("home"));
-
 Application::Application(QObject *parent) :
     QObject(parent),
     d_ptr(new ApplicationPrivate)
@@ -220,13 +218,13 @@ QVariantMap Application::config() const
 
 QString Application::pathTo(const QString &path) const
 {
-    QDir home = config(_home).toString();
+    QDir home = config(QStringLiteral("home")).toString();
     return home.absoluteFilePath(path);
 }
 
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
-    QDir home = config(_home).toString();
+    QDir home = config(QStringLiteral("home")).toString();
     return home.absoluteFilePath(path.join(QLatin1Char('/')));
 }
 
@@ -631,7 +629,7 @@ void Cutelyst::ApplicationPrivate::setupHome()
 {
     // Hook the current directory in config if "home" is not set
     if (!config.contains(QLatin1String("home"))) {
-        config.insert(_home, QDir::currentPath());
+        config.insert(QStringLiteral("home"), QDir::currentPath());
     }
 
     if (!config.contains(QLatin1String("root"))) {

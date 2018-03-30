@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ public:
     explicit ClearSilver(QObject *parent = nullptr, const QString &name = QString());
     ~ClearSilver();
 
-    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths)
+    Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /*!
      * Returns the list of include paths
      */
@@ -48,7 +48,7 @@ public:
      */
     void setIncludePaths(const QStringList &paths);
 
-    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension)
+    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
     /*!
      * Returns the template extension
      */
@@ -59,7 +59,7 @@ public:
      */
     void setTemplateExtension(const QString &extension);
 
-    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper)
+    Q_PROPERTY(QString wrapper READ wrapper WRITE setWrapper NOTIFY changed)
     /*!
      * Returns the template wrapper.
      */
@@ -72,6 +72,9 @@ public:
     void setWrapper(const QString &name);
 
     QByteArray render(Context *c) const final;
+
+Q_SIGNALS:
+    void changed();
 
 protected:
     ClearSilverPrivate *d_ptr;

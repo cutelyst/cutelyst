@@ -27,8 +27,6 @@
 
 using namespace Cutelyst;
 
-static const QString _slash(QLatin1String("/"));
-
 DispatchTypePath::DispatchTypePath(QObject *parent) :
     DispatchType(parent),
     d_ptr(new DispatchTypePathPrivate)
@@ -82,7 +80,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
 
     QString _path = path;
     if (_path.isEmpty()) {
-        _path = _slash;
+        _path = QStringLiteral("/");
     }
 
     const auto it = d->paths.constFind(_path);
@@ -148,7 +146,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
-                ret = _slash;
+                ret = QStringLiteral("/");
             } else if (!path.startsWith(QLatin1Char('/'))) {
                 ret = QLatin1Char('/') + path;
             } else {
@@ -166,7 +164,7 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         _path.remove(0, 1);
     }
     if (_path.isEmpty()) {
-        _path = _slash;
+        _path = QStringLiteral("/");
     }
 
     auto it = paths.find(_path);

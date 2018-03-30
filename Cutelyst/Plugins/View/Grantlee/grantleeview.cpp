@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,6 +78,7 @@ void GrantleeView::setIncludePaths(const QStringList &paths)
     Q_D(GrantleeView);
     d->loader->setTemplateDirs(paths);
     d->includePaths = paths;
+    Q_EMIT changed();
 }
 
 QString GrantleeView::templateExtension() const
@@ -90,6 +91,7 @@ void GrantleeView::setTemplateExtension(const QString &extension)
 {
     Q_D(GrantleeView);
     d->extension = extension;
+    Q_EMIT changed();
 }
 
 QString GrantleeView::wrapper() const
@@ -102,6 +104,7 @@ void GrantleeView::setWrapper(const QString &name)
 {
     Q_D(GrantleeView);
     d->wrapper = name;
+    Q_EMIT changed();
 }
 
 void GrantleeView::setCache(bool enable)
@@ -122,6 +125,7 @@ void GrantleeView::setCache(bool enable)
         d->cache.clear();
         d->engine->addTemplateLoader(d->loader);
     }
+    Q_EMIT changed();
 }
 
 Grantlee::Engine *GrantleeView::engine() const

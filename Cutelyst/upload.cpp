@@ -25,8 +25,6 @@
 
 using namespace Cutelyst;
 
-static const QString _failureToWriteBlock(QLatin1String("Failure to write block"));
-
 QString Upload::filename() const
 {
     Q_D(const Upload);
@@ -72,7 +70,7 @@ bool Upload::save(const QString &newName)
                 break;
             totalRead += in;
             if (in != out.write(block, in)) {
-                setErrorString(_failureToWriteBlock);
+                setErrorString(QLatin1String("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;
@@ -121,7 +119,7 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
                 break;
             totalRead += in;
             if (in != ret->write(block, in)) {
-                setErrorString(_failureToWriteBlock);
+                setErrorString(QLatin1String("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
                 error = true;
                 break;

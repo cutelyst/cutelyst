@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,6 +50,7 @@ void ClearSilver::setIncludePaths(const QStringList &paths)
 {
     Q_D(ClearSilver);
     d->includePaths = paths;
+    Q_EMIT changed();
 }
 
 QString ClearSilver::templateExtension() const
@@ -62,6 +63,7 @@ void ClearSilver::setTemplateExtension(const QString &extension)
 {
     Q_D(ClearSilver);
     d->extension = extension;
+    Q_EMIT changed();
 }
 
 QString ClearSilver::wrapper() const
@@ -74,6 +76,7 @@ void ClearSilver::setWrapper(const QString &name)
 {
     Q_D(ClearSilver);
     d->wrapper = name;
+    Q_EMIT changed();
 }
 
 NEOERR* cutelyst_render(void *user, char *data)

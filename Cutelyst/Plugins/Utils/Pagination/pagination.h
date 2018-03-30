@@ -26,14 +26,14 @@ namespace Cutelyst {
 class CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Pagination : public QVariantMap
 {
     Q_GADGET
-    Q_PROPERTY(int limit READ limit)
-    Q_PROPERTY(int offset READ offset)
-    Q_PROPERTY(int currentPage READ currentPage)
-    Q_PROPERTY(int lastPage READ lastPage)
-    Q_PROPERTY(int numberOfItems READ numberOfItems)
-    Q_PROPERTY(bool enableFirst READ enableFirst)
-    Q_PROPERTY(bool enableLast READ enableLast)
-    Q_PROPERTY(QVector<int> pages READ pages)
+    Q_PROPERTY(int limit READ limit CONSTANT)
+    Q_PROPERTY(int offset READ offset CONSTANT)
+    Q_PROPERTY(int currentPage READ currentPage CONSTANT)
+    Q_PROPERTY(int lastPage READ lastPage CONSTANT)
+    Q_PROPERTY(int numberOfItems READ numberOfItems CONSTANT)
+    Q_PROPERTY(bool enableFirst READ enableFirst CONSTANT)
+    Q_PROPERTY(bool enableLast READ enableLast CONSTANT)
+    Q_PROPERTY(QVector<int> pages READ pages CONSTANT)
 public:
     Pagination();
     /**

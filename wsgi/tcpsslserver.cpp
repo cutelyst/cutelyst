@@ -37,11 +37,11 @@ void TcpSslServer::incomingConnection(qintptr handle)
     sock->protoData = m_protocol->createData(sock);
     sock->setSslConfiguration(m_sslConfiguration);
 
-    connect(sock, &QIODevice::readyRead, [sock] () {
+    connect(sock, &QIODevice::readyRead, this, [sock] () {
         sock->timeout = false;
         sock->proto->parse(sock, sock);
     });
-    connect(sock, &SslSocket::finished, [this, sock] () {
+    connect(sock, &SslSocket::finished, this, [this, sock] () {
         sock->deleteLater();
         --m_processing;
     });
@@ -87,7 +87,7 @@ void TcpSslServer::shutdown()
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
                 socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
-                connect(socket, &TcpSocket::finished, [this] () {
+                connect(socket, &TcpSocket::finished, this, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }

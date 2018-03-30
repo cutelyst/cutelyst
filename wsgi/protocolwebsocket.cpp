@@ -190,16 +190,15 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         return false;
     } else if (!failed) {
         protoRequest->websocket_start_of_frame = protoRequest->websocket_message.size();
-        request->webSocketTextFrame(frame,
-                                    protoRequest->websocket_finn_opcode & 0x80,
-                                    protoRequest->context);
+        Q_EMIT request->webSocketTextFrame(frame,
+                                           protoRequest->websocket_finn_opcode & 0x80,
+                                           protoRequest->context);
     }
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
         protoRequest->websocket_continue_opcode = 0;
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
-            request->webSocketTextMessage(frame,
-                                          protoRequest->context);
+            Q_EMIT request->webSocketTextMessage(frame, protoRequest->context);
         } else {
             QTextCodec::ConverterState stateMsg;
             const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &stateMsg);
@@ -208,8 +207,7 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
                 sock->connectionClose();
                 return false;
             }
-            request->webSocketTextMessage(msg,
-                                          protoRequest->context);
+            Q_EMIT request->webSocketTextMessage(msg, protoRequest->context);
         }
         protoRequest->websocket_message = QByteArray();
         protoRequest->websocket_payload = QByteArray();
@@ -226,18 +224,17 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
     protoRequest->websocket_message.append(protoRequest->websocket_payload);
 
     const QByteArray frame = protoRequest->websocket_payload;
-    request->webSocketBinaryFrame(frame,
-                                  protoRequest->websocket_finn_opcode & 0x80,
-                                  protoRequest->context);
+    Q_EMIT request->webSocketBinaryFrame(frame,
+                                         protoRequest->websocket_finn_opcode & 0x80,
+                                         protoRequest->context);
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
         protoRequest->websocket_continue_opcode = 0;
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
-            request->webSocketBinaryMessage(frame,
-                                            protoRequest->context);
+            Q_EMIT request->webSocketBinaryMessage(frame, protoRequest->context);
         } else {
-            request->webSocketBinaryMessage(protoRequest->websocket_message,
-                                            protoRequest->context);
+            Q_EMIT request->webSocketBinaryMessage(protoRequest->websocket_message,
+                                                   protoRequest->context);
         }
         protoRequest->websocket_message = QByteArray();
         protoRequest->websocket_payload = QByteArray();
@@ -260,7 +257,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
         closeCode = ws_be16(protoRequest->websocket_payload.data());
         reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2, protoRequest->websocket_payload.size() - 2, &state);
     }
-    c->request()->webSocketClosed(closeCode, reason);
+    Q_EMIT c->request()->webSocketClosed(closeCode, reason);
 
     if (state.invalidChars || state.remainingChars) {
         reason = QString();
@@ -453,8 +450,8 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, uint le
         send_pong(io, protoRequest->websocket_payload.left(125));
         break;
     case ProtoRequestHttp::OpCodePong:
-        request->webSocketPong(protoRequest->websocket_payload,
-                               protoRequest->context);
+        Q_EMIT request->webSocketPong(protoRequest->websocket_payload,
+                                      protoRequest->context);
         break;
     default:
         break;

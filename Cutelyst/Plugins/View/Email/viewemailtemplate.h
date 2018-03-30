@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,8 @@ class ViewEmailTemplatePrivate;
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
 {
     Q_OBJECT
-    Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix)
-    Q_PROPERTY(QString defaultView READ defaultView WRITE setDefaultView)
+    Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix NOTIFY changedProp)
+    Q_PROPERTY(QString defaultView READ defaultView WRITE setDefaultView NOTIFY changedProp)
 public:
     /*!
      * Constructs a new ViewEmailTemplate object with the given \p parent and \p name.
@@ -66,6 +66,9 @@ public:
     void setDefaultView(const QString &view);
 
     QByteArray render(Context *c) const override;
+
+Q_SIGNALS:
+    void changedProp();
 
 protected:
     Q_DECLARE_PRIVATE(ViewEmailTemplate)

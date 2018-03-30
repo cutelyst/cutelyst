@@ -391,7 +391,7 @@ void TcpServerBalancer::incomingConnection(qintptr handle)
 {
     TcpServer *serverIdle = m_servers.at(m_currentServer++ % m_servers.size());
 
-    serverIdle->createConnection(handle);
+    Q_EMIT serverIdle->createConnection(handle);
 }
 
 TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)

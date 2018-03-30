@@ -31,8 +31,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
 
-static const QString SESSION_STORE_FILE_SAVE = QLatin1String("_c_session_store_file_save");
-static const QString SESSION_STORE_FILE_DATA = QLatin1String("_c_session_store_file_data");
+#define SESSION_STORE_FILE_SAVE QStringLiteral("_c_session_store_file_save")
+#define SESSION_STORE_FILE_DATA QStringLiteral("_c_session_store_file_data")
 
 static QVariantHash loadSessionData(Context *c, const QString &sid);
 

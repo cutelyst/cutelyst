@@ -98,7 +98,7 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
     connect(this, &uWSGI::enableSockets,
             socketNotifier, &QSocketNotifier::setEnabled);
-    connect(socketNotifier, &QSocketNotifier::activated,
+    connect(socketNotifier, &QSocketNotifier::activated, this,
             [=](int fd) {
         if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
@@ -173,7 +173,7 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
     QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
     connect(this, &uWSGI::enableSockets,
             socketNotifier, &QSocketNotifier::setEnabled);
-    connect(socketNotifier, &QSocketNotifier::activated,
+    connect(socketNotifier, &QSocketNotifier::activated, this,
             [=](int fd) {
         if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
@@ -215,7 +215,7 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         timeoutTimer->setInterval(15 * 1000);
 #endif // UWSGI_GO_CHEAP_CODE
 
-        connect(timeoutTimer, &QTimer::timeout,
+        connect(timeoutTimer, &QTimer::timeout, this,
                 [=]() {
             requestNotifier->setEnabled(false);
             uwsgi_close_request(wsgi_req);
@@ -223,7 +223,7 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
             m_unusedReq.push_back(wsgi_req);
         });
 
-        connect(requestNotifier, &QSocketNotifier::activated,
+        connect(requestNotifier, &QSocketNotifier::activated, this,
                 [=]() {
             int status = wsgi_req->socket->proto(wsgi_req);
             if (status > 0) {

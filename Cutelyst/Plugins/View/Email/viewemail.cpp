@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,6 +53,7 @@ void ViewEmail::setStashKey(const QString &stashKey)
 {
     Q_D(ViewEmail);
     d->stashKey = stashKey;
+    Q_EMIT changed();
 }
 
 QByteArray ViewEmail::defaultContentType() const
@@ -65,6 +66,7 @@ void ViewEmail::setDefaultContentType(const QByteArray &contentType)
 {
     Q_D(ViewEmail);
     d->defaultContentType = contentType;
+    Q_EMIT changed();
 }
 
 QByteArray ViewEmail::defaultCharset() const
@@ -77,6 +79,7 @@ void ViewEmail::setDefaultCharset(const QByteArray &charset)
 {
     Q_D(ViewEmail);
     d->defaultCharset = charset;
+    Q_EMIT changed();
 }
 
 QByteArray ViewEmail::defaultEncoding() const
@@ -89,6 +92,7 @@ void ViewEmail::setDefaultEncoding(const QByteArray &encoding)
 {
     Q_D(ViewEmail);
     d->defaultEncoding = encoding;
+    Q_EMIT changed();
 }
 
 QString ViewEmail::senderHost() const

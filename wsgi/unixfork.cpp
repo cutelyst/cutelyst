@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -218,14 +218,14 @@ void UnixFork::stopWSGI(const QString &pidfile)
     exit(0);
 }
 
-bool UnixFork::setUmask(const QString &valueStr)
+bool UnixFork::setUmask(const QByteArray &valueStr)
 {
     if (valueStr.size() < 3) {
         std::cerr << "umask too small" << std::endl;
         return false;
     }
 
-    const char *value = valueStr.toLatin1().constData();
+    const char *value = valueStr.constData();
     mode_t mode = 0;
     if (valueStr.size() == 3) {
         mode = (mode << 3) + (value[0] - '0');

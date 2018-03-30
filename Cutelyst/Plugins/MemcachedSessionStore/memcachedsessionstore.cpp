@@ -30,8 +30,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore")
 
-static const QString SESSION_STORE_MEMCD_SAVE = QLatin1String("_c_session_store_memcd_save");
-static const QString SESSION_STORE_MEMCD_DATA = QLatin1String("_c_session_store_memcd_data");
+#define SESSION_STORE_MEMCD_SAVE QStringLiteral("_c_session_store_memcd_save")
+#define SESSION_STORE_MEMCD_DATA QStringLiteral("_c_session_store_memcd_data")
 
 static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey);
 

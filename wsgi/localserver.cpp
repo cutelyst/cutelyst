@@ -107,7 +107,7 @@ void LocalServer::incomingConnection(quintptr handle)
             sock->timeout = false;
             sock->proto->parse(sock, sock);
         });
-        connect(sock, &LocalSocket::finished, [this, sock] () {
+        connect(sock, &LocalSocket::finished, this, [this, sock] () {
             sock->resetSocket();
             m_socks.push_back(sock);
             if (--m_processing == 0) {
@@ -150,7 +150,7 @@ void LocalServer::shutdown()
             auto socket = qobject_cast<LocalSocket*>(child);
             if (socket) {
                 socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
-                connect(socket, &LocalSocket::finished, [this] () {
+                connect(socket, &LocalSocket::finished, this, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }
