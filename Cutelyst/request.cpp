@@ -556,11 +556,14 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 
         int equal = data.indexOf('=');
         if (equal != -1) {
-            QByteArray value = data.mid(equal + 1);
-            if (value.length()) {
-                QByteArray key = data.mid(0, equal);
+            QByteArray key = data.mid(0, equal);
+            if (++equal < data.size()) {
+                QByteArray value = data.mid(equal);
                 ret.insertMulti(Utils::decodePercentEncoding(&key),
                                 Utils::decodePercentEncoding(&value));
+            } else {
+                ret.insertMulti(Utils::decodePercentEncoding(&key),
+                                QString());
             }
         } else {
             ret.insertMulti(Utils::decodePercentEncoding(&data),

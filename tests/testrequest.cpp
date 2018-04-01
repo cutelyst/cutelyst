@@ -598,6 +598,9 @@ void TestRequest::testController_data()
     QTest::newRow("queryParams-test06") << get << QStringLiteral("/request/test/queryParams?a=1&a=2&b=0&a=0&a=1&a=3&a=2")
                                         << headers << QByteArray()
                                         << QByteArrayLiteral("a=1&a=2&a=0&a=1&a=3&a=2&b=0");
+    QTest::newRow("queryParams-test07") << get << QStringLiteral("/request/test/queryParams?foo=bar&baz=")
+                                        << headers << QByteArray()
+                                        << QByteArrayLiteral("baz&foo=bar");
 
     query.clear();
     query.addQueryItem(QStringLiteral("some text to ask"), QString());
@@ -683,6 +686,12 @@ void TestRequest::testController_data()
     QTest::newRow("bodyParams-test00") << get << QStringLiteral("/request/test/bodyParams")
                                        << headers << query.toString(QUrl::FullyEncoded).toLatin1()
                                        << QByteArrayLiteral("and%20yet%20another%20is%20fine&another%20keyword&some%20text%20to%20ask");
+
+    query.clear();
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("bodyParams-test01") << get << QStringLiteral("/request/test/bodyParams")
+                                      << headers << QByteArrayLiteral("foo=bar&baz=")
+                                      << QByteArrayLiteral("baz&foo=bar");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
