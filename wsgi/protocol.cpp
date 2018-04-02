@@ -32,8 +32,8 @@ using namespace CWSGI;
 ProtocolData::ProtocolData(Socket *_sock, int bufferSize)
     : sock(_sock)
     , io(dynamic_cast<QIODevice *>(_sock))
+    , buffer(new char[bufferSize])
 {
-    buffer = new char[bufferSize];
 }
 
 ProtocolData::~ProtocolData()

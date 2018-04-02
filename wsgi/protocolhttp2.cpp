@@ -148,6 +148,7 @@ quint16 h2_be16(const char *buf) {
 #define PREFACE_SIZE 24
 
 ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
+  , m_headerTableSize(wsgi->http2HeaderTableSize())
 {
     m_bufferSize = qMin(m_bufferSize, qint64(2147483647));
 
@@ -157,7 +158,6 @@ ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
                QByteArray::number(m_bufferSize).constData());
     }
 
-    m_headerTableSize = wsgi->http2HeaderTableSize();
     m_maxFrameSize = m_bufferSize - 9;
 }
 
