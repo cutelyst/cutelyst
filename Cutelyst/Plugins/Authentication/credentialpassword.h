@@ -93,6 +93,7 @@ public:
 
     /*!
      * Creates a password hash string.
+     * \note That is you want pre and post salts you must manualy add them.
      * \param password
      * \param method
      * \param iterations
@@ -101,6 +102,22 @@ public:
      * \return the pbkdf2 representation of the password
      */
     static QByteArray createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize);
+
+    /*!
+     * Creates a password hash string using sensible defaults
+     * \note That is you want pre and post salts you must manualy add them.
+     * \param password
+     * \return the pbkdf2 representation of the password
+     */
+    static QByteArray createPassword(const QByteArray &password);
+
+    /*!
+     * Creates a password hash string using sensible defaults
+     * \note That is you want pre and post salts you must manualy add them.
+     * \param password
+     * \return the pbkdf2 representation of the password
+     */
+    inline static QByteArray createPassword(const QString &password);
 
     /*!
      * \brief Generates a pbkdf2 string for the given \p password
@@ -123,6 +140,11 @@ public:
 protected:
     CredentialPasswordPrivate *d_ptr;
 };
+
+QByteArray CredentialPassword::createPassword(const QString &password)
+{
+    return createPassword(password.toUtf8());
+}
 
 } // namespace Plugin
 

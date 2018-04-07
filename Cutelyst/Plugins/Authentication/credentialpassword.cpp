@@ -168,6 +168,11 @@ QByteArray CredentialPassword::createPassword(const QByteArray &password, QCrypt
                 ).toBase64();
 }
 
+QByteArray CredentialPassword::createPassword(const QByteArray &password)
+{
+    return createPassword(password, QCryptographicHash::Sha512, 10000, 16, 16);
+}
+
 // TODO https://crackstation.net/hashing-security.htm
 // shows a different Algorithm that seems a bit simpler
 // this one does passes the RFC6070 tests
