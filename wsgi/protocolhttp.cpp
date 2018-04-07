@@ -97,7 +97,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 return;
             }
             bytesAvailable -= len;
-//            qCDebug(CWSGI_HTTP) << "WRITE body" << protoRequest->contentLength << remaining << len << (remaining == len) << protoRequest->bytesAvailable();
+//            qCDebug(CWSGI_HTTP) << "WRITE body" << protoRequest->contentLength << remaining << len << (remaining == len) << io->bytesAvailable();
             body->write(m_postBuffer, len);
         } while (bytesAvailable);
 
@@ -156,7 +156,12 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 
                         if (protoRequest->contentLength > len) {
 //                            qCDebug(CWSGI_HTTP) << "WRITE more..." << protoRequest->contentLength << len;
-                            // need to wait for more data
+                            // body is not completed yet
+                            if (io->bytesAvailable()) {
+                                // since we still have bytes available call this function
+                                // so that the body parser reads the rest of available data
+                                parse(sock, io);
+                            }
                             return;
                         }
                     }
