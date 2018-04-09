@@ -108,7 +108,8 @@ class CSRFProtectionPrivate;
  * will be set to the stash key defined by setErrorMsgStashKey(). You can set a default action the application
  * should detach to if the check failed via setDefaultDetachTo(), optionally there is the attribute <CODE>:CSRFDetachTo</CODE>
  * that can be used to define a detach to action per method. If the detach to action is not set or could not be found
- * a default error page will be generated.
+ * it will either set the response body to the content set by setGenericErrorMessage() of if that is absent it will generate
+ * a generic HTML content containing error information.
  *
  * @note If you are using redirects, the default generated message will not work. Use either an action to detach to
  * or check the result of the CSRF protection with CSRFProtection::checkPassed() to handle failed checks in your
@@ -245,7 +246,7 @@ public:
     /**
      * Sets a default action the application will @link Context::detach() detach to @endlink if
      * the check for token and cookie failed. The default value is empty, so that there will be
-     * no detaching and a generic error page will be generated.
+     * no detaching and a @link setGenericErrorMessage() generic error@endlink page will be generated.
      */
     void setDefaultDetachTo(const QString &actionNameOrPath);
 
@@ -256,7 +257,7 @@ public:
     void setFormFieldName(const QString &fieldName);
 
     /**
-     * Sets the name of the stash key that contains the error message if the CSRF protection check failed.
+     * Sets the name of the stash key that that will contains the error message if the CSRF protection check failed.
      */
     void setErrorMsgStashKey(const QString &keyName);
 
@@ -303,6 +304,21 @@ public:
      * have a input form on your protected site. The default value is @a "X-CSRFTOKEN".
      */
     void setHeaderName(const QString &headerName);
+
+    /**
+     * Sets a generic error @a message that will be set to the Response::body() if the check fails
+     * and if there is no action defined it should be detached to.
+     * @sa setGenericErrorContentType()
+     * @since Cuteyst 2.2.0
+     */
+    void setGenericErrorMessage(const QString &message);
+
+    /**
+     * Sets the content @a type for the error message set by setGenericErrorMessage(), defaults
+     * to <code>text/plain; charset=utf-8</code>.
+     * @since Cutelyst 2.2.0
+     */
+    void setGenericErrorContentTyp(const QString &type);
 
     /**
      * Returns the current token.

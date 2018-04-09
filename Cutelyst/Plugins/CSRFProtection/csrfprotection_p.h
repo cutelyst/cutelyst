@@ -28,10 +28,6 @@ namespace Cutelyst {
 class CSRFProtectionPrivate
 {
 public:
-    CSRFProtectionPrivate() {}
-
-    ~CSRFProtectionPrivate() {}
-
     static QByteArray getNewCsrfString();
     static QByteArray saltCipherSecret(const QByteArray &secret);
     static QByteArray unsaltCipherToken(const QByteArray &token);
@@ -45,7 +41,7 @@ public:
 
     void beforeDispatch(Context *c);
 
-    qint64 cookieAge;
+    qint64 cookieAge {0};
     QStringList trustedOrigins;
     static const QStringList secureMethods;
     QStringList ignoredNamespaces;
@@ -56,11 +52,13 @@ public:
     QString formInputName;
     QString defaultDetachTo;
     QString errorMsgStashKey;
+    QString genericErrorMessage;
+    QString genericContentType {QStringLiteral("text/plain; charset=utf8")};
     static const QRegularExpression sanitizeRe;
-    bool cookieHttpOnly = false;
-    bool cookieSecure = false;
-    bool useSessions = false;
-    bool logFailedIp = false;
+    bool cookieHttpOnly {false};
+    bool cookieSecure {false};
+    bool useSessions {false};
+    bool logFailedIp {false};
 };
 
 }
