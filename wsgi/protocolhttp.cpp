@@ -204,13 +204,13 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     }
 
     sock->engine->processRequest(request);
-    sock->requestFinished();
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         sock->proto = m_websocketProto;
 
         return false; // Must read remaining data
     }
+    sock->requestFinished();
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
         sock->connectionClose();
@@ -454,7 +454,10 @@ bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
     }
 
     const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
-    return doWrite(reply) == reply.size();
+    bool ret = doWrite(reply) == reply.size();
+    sock->requestFinished();
+    sock->connectionClose();
+    return ret;
 }
 
 void ProtoRequestHttp::socketDisconnected()

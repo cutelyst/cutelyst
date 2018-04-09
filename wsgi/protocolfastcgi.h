@@ -52,7 +52,7 @@ public:
         status = InitialState;
         delete body;
         body = nullptr;
-        delete context;
+        context->deleteLater();
         context = nullptr;
 
         stream_id = 0;
