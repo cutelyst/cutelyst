@@ -191,7 +191,7 @@ void TestCsrfProtection::doTest_data()
     for (const QString &method : {QStringLiteral("POST"), QStringLiteral("PUT"), QStringLiteral("PATCH"), QStringLiteral("DELETE")}) {
         const QString cookieValid = QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
         QString cookieInvalid = cookieValid;
-        QCharRef cookieLast = cookieInvalid.back();
+        QCharRef cookieLast = cookieInvalid[cookieInvalid.size() - 1];
         if (cookieLast.isDigit()) {
             if (cookieLast.unicode() < 57) {
                 cookieLast.unicode()++;
