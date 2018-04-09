@@ -170,6 +170,18 @@ void CSRFProtection::setHeaderName(const QString &headerName)
     d->headerName = headerName;
 }
 
+void CSRFProtection::setGenericErrorMessage(const QString &message)
+{
+    Q_D(CSRFProtection);
+    d->genericErrorMessage = message;
+}
+
+void CSRFProtection::setGenericErrorContentTyp(const QString &type)
+{
+    Q_D(CSRFProtection);
+    d->genericContentType = type;
+}
+
 QByteArray CSRFProtection::getToken(Context *c)
 {
     QByteArray token;
@@ -426,15 +438,22 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
             detachToAction = c->dispatcher()->getActionByPath(detachToCsrf);
         }
         if (!detachToAction) {
-            qCDebug(C_CSRFPROTECTION, "Can not find action for \"%s\" to detach to.", qPrintable(detachToCsrf));
+            qCWarning(C_CSRFPROTECTION, "Can not find action for \"%s\" to detach to.", qPrintable(detachToCsrf));
         }
     }
 
     if (detachToAction) {
         c->detach(detachToAction);
     } else {
-        const QString title = c->translate("Cutelyst::CSRFProtection", "403 Forbidden - CSRF protection check failed");
-        c->res()->setBody(QStringLiteral("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>") + title + QStringLiteral("</title></head><body><h1>") + title + QStringLiteral("</h1><p>") + displayReason + QStringLiteral("</p></body></html>"));
+        if (!csrf->d_ptr->genericErrorMessage.isEmpty()) {
+            c->res()->setBody(csrf->d_ptr->genericErrorMessage);
+            c->res()->setContentType(csrf->d_ptr->genericContentType);
+        } else {
+            const QString title = c->translate("Cutelyst::CSRFProtection", "403 Forbidden - CSRF protection check failed");
+            c->res()->setBody(QStringLiteral("<!DOCTYPE html><html><head><meta charset='utf-8'><title>") + title + QStringLiteral("</title></head><body><h1>") + title + QStringLiteral("</h1><p>") + displayReason + QStringLiteral("</p></body></html>"));
+            c->res()->setContentType(QStringLiteral("text/html; charset=utf-8"));
+        }
+        c->detach();
     }
 }
 
