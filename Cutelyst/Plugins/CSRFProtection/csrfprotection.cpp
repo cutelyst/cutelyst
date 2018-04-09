@@ -597,7 +597,8 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
             } else {
 
                 QByteArray requestCsrfToken;
-                if (c->req()->method() == QLatin1String("POST")) {
+                // delete does not have body data
+                if (c->req()->method() != QLatin1String("DELETE")) {
                     requestCsrfToken = c->req()->bodyParam(csrf->d_ptr->formInputName).toLatin1();
                 }
 
