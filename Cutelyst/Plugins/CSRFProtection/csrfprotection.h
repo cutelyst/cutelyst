@@ -111,10 +111,6 @@ class CSRFProtectionPrivate;
  * it will either set the response body to the content set by setGenericErrorMessage() of if that is absent it will generate
  * a generic HTML content containing error information.
  *
- * @note If you are using redirects, the default generated message will not work. Use either an action to detach to
- * or check the result of the CSRF protection with CSRFProtection::checkPassed() to handle failed checks in your
- * contoller methods.
- *
  * @code{.cpp}
  * bool MyCutelystApp::init()
  * {
