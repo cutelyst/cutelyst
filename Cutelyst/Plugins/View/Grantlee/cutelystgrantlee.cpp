@@ -28,10 +28,10 @@ QHash<QString, Grantlee::AbstractNodeFactory *> CutelystGrantlee::nodeFactories(
 {
     Q_UNUSED(name)
 
-    QHash<QString, Grantlee::AbstractNodeFactory *> ret;
-
-    ret.insert(QStringLiteral("c_uri_for"), new UriForTag());
-    ret.insert(QStringLiteral("c_csrf_token"), new CSRFTag());
+    QHash<QString, Grantlee::AbstractNodeFactory *> ret {
+        {QStringLiteral("c_uri_for"), new UriForTag()},
+        {QStringLiteral("c_csrf_token"), new CSRFTag()},
+    };
 
     return ret;
 }
