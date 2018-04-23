@@ -214,6 +214,12 @@ QByteArray GrantleeView::render(Context *c) const
     gc.setLocalizer(localizer);
 
     Grantlee::Template tmpl = d->engine->loadByName(templateFile);
+    if (tmpl->error() != Grantlee::NoError) {
+        c->res()->setBody(c->translate("Cutelyst::GrantleeView", "Internal server error."));
+        c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+        return ret;
+    }
+
     QString content = tmpl->render(&gc);
     if (tmpl->error() != Grantlee::NoError) {
         c->res()->setBody(c->translate("Cutelyst::GrantleeView", "Internal server error."));
@@ -223,6 +229,12 @@ QByteArray GrantleeView::render(Context *c) const
 
     if (!d->wrapper.isEmpty()) {
         Grantlee::Template wrapper = d->engine->loadByName(d->wrapper);
+        if (tmpl->error() != Grantlee::NoError) {
+            c->res()->setBody(c->translate("Cutelyst::GrantleeView", "Internal server error."));
+            c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+            return ret;
+        }
+
         Grantlee::SafeString safeContent(content, true);
         gc.insert(QStringLiteral("content"), safeContent);
         content = wrapper->render(&gc);
