@@ -42,7 +42,7 @@ TcpSocket::TcpSocket(Cutelyst::Engine *engine, QObject *parent) : QTcpSocket(par
 
 void TcpSocket::connectionClose()
 {
-    flush();
+    QTcpSocket::flush();
     disconnectFromHost();
 }
 
@@ -51,6 +51,11 @@ void TcpSocket::requestFinished()
     if (!--processing && state() != ConnectedState) {
         Q_EMIT finished();
     }
+}
+
+void TcpSocket::flush()
+{
+    QTcpSocket::flush();
 }
 
 void TcpSocket::socketDisconnected()
@@ -69,7 +74,7 @@ LocalSocket::LocalSocket(Cutelyst::Engine *engine, QObject *parent) : QLocalSock
 
 void LocalSocket::connectionClose()
 {
-    flush();
+    QLocalSocket::flush();
     disconnectFromServer();
 }
 
@@ -78,6 +83,11 @@ void LocalSocket::requestFinished()
     if (!--processing && state() != ConnectedState) {
         Q_EMIT finished();
     }
+}
+
+void LocalSocket::flush()
+{
+    QLocalSocket::flush();
 }
 
 void LocalSocket::socketDisconnected()
@@ -96,7 +106,7 @@ SslSocket::SslSocket(Cutelyst::Engine *engine, QObject *parent) : QSslSocket(par
 
 void SslSocket::connectionClose()
 {
-    flush();
+    QSslSocket::flush();
     disconnectFromHost();
 }
 
@@ -105,6 +115,11 @@ void SslSocket::requestFinished()
     if (!--processing && state() != ConnectedState) {
         Q_EMIT finished();
     }
+}
+
+void SslSocket::flush()
+{
+    QSslSocket::flush();
 }
 
 void SslSocket::socketDisconnected()

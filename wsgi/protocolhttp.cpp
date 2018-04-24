@@ -204,6 +204,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     }
 
     sock->engine->processRequest(request);
+    sock->flush();
 
     if (request->headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         sock->proto = m_websocketProto;
