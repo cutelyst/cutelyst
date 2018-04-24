@@ -27,6 +27,7 @@
 #include <QVariantHash>
 #include <QStack>
 
+class QEventLoop;
 namespace Cutelyst {
 
 class Stats;
@@ -61,6 +62,8 @@ public:
     Action *action = nullptr;
     View *view = nullptr;
     Stats *stats = nullptr;
+    QEventLoop *loop = nullptr;
+    uint loopWait = 0;
     bool detached = false;
     bool state = false;
 };

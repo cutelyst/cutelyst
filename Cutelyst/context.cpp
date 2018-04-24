@@ -418,6 +418,35 @@ QString Context::translate(const char *context, const char *sourceText, const ch
     return d->app->translate(d->locale, context, sourceText, disambiguation, n);
 }
 
+bool Context::wait(uint count)
+{
+    Q_D(Context);
+    if (d->loop) {
+        d->loopWait += count;
+        return false;
+    }
+
+    if (count) {
+        d->loopWait = count;
+        d->loop = new QEventLoop(this);
+        d->loop->exec();
+        return true;
+    }
+    return false;
+}
+
+void Context::next(bool force)
+{
+    Q_D(Context);
+    if (!d->loop || (--d->loopWait && !force)) {
+        return;
+    }
+
+    d->loop->quit();
+    d->loop->deleteLater();
+    d->loop = nullptr;
+}
+
 QString ContextPrivate::statsStartExecute(Component *code)
 {
     QString actionName;
