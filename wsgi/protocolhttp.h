@@ -89,10 +89,6 @@ public:
 
         startOfRequest = 0;
         status = InitialState;
-        delete body;
-        body = nullptr;
-        context->deleteLater();
-        context = nullptr;
 
         websocketUpgraded = false;
         last = 0;

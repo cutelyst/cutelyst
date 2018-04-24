@@ -405,6 +405,8 @@ qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
 
 void ProtoRequestHttp::processingFinished()
 {
+    EngineRequest::processingFinished();
+
     if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         // need 2 byte header
         websocket_need = 2;
