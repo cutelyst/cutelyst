@@ -148,15 +148,15 @@ void CWsgiEngine::postFork(int workerId)
 {
     m_workerId = workerId;
 
+#ifdef Q_OS_UNIX
+    UnixFork::setSched(m_wsgi, workerId, workerCore());
+#endif
+
     if (!postForkApplication()) {
         // CHEAP
         Q_EMIT shutdown();
         return;
     }
-
-#ifdef Q_OS_UNIX
-    UnixFork::setSched(m_wsgi, workerId, workerCore());
-#endif
 
     Q_EMIT started();
 }

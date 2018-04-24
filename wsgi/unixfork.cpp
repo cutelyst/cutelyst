@@ -578,7 +578,7 @@ void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
             qFatal("cpuset_setaffinity");
         }
 #endif
-        qCDebug(WSGI_UNIX) << buf;
+        std::cout << buf << std::endl;
     }
 }
 
