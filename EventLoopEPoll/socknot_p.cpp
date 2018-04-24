@@ -127,11 +127,6 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
     if (Q_LIKELY(it != m_notifiers.end())) {
         SocketNotifierInfo *info = it.value();
 
-        m_notifiers.erase(it); // Hash is not rehashed
-
-        auto hi = m_handles.find(info->fd);
-        Q_ASSERT(hi != m_handles.end());
-
         struct epoll_event e;
         e.data.ptr = info;
 
@@ -163,9 +158,13 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
             if (Q_UNLIKELY(res != 0 && EBADF == errno)) {
                 res = 0;
             }
-
-            m_handles.erase(hi);
             info->deref();
+
+            m_notifiers.erase(it); // Hash is not rehashed
+
+            auto hi = m_handles.find(info->fd);
+            Q_ASSERT(hi != m_handles.end());
+            m_handles.erase(hi);
         }
 
         if (Q_UNLIKELY(res != 0)) {
