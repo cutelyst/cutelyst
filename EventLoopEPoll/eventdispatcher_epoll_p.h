@@ -61,7 +61,7 @@ public:
     QSocketNotifier *r = nullptr;
     QSocketNotifier *w = nullptr;
     QSocketNotifier *x = nullptr;
-    int events;
+    quint32 events;
 };
 
 class ZeroTimer : public EpollAbastractEvent
