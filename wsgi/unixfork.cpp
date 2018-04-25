@@ -480,14 +480,18 @@ void UnixFork::handleSigChld()
         /* Handle the death of pid p */
 //        qCDebug(WSGI_UNIX) << "SIGCHLD worker died" << p << status;
         // SIGTERM is used when CHEAPED (ie post fork failed)
+        int exitStatus = WEXITSTATUS(status);
+
         Worker worker;
         auto it = m_childs.find(p);
         if (it != m_childs.end()) {
             worker = it.value();
             m_childs.erase(it);
+        } else {
+            std::cout << "DAMN ! *UNKNOWN* worker (pid: " << p << ") died, killed by signal " << exitStatus << " :( ignoring .." << std::endl;
+            continue;
         }
 
-        int exitStatus = WEXITSTATUS(status);
         if (WIFEXITED(status) && exitStatus == 15) {
             // Child process cheaping
             worker.null = true;
