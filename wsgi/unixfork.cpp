@@ -526,11 +526,11 @@ void UnixFork::handleSigChld()
 
 void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
 {
-    char buf[4096];
-    int ret;
-    int pos = 0;
     int cpu_affinity = wsgi->cpuAffinity();
     if (cpu_affinity) {
+        char buf[4096];
+        int ret;
+        int pos = 0;
         int coreCount = idealThreadCount();
         int base_cpu;
         if (wsgi->threads().toInt() > 0) {
