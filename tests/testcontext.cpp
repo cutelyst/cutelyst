@@ -56,7 +56,7 @@ class ContextTest_NS : public Controller
 {
     Q_OBJECT
 public:
-    ContextTest_NS(QObject *parent) : Controller(parent) {}
+    explicit ContextTest_NS(QObject *parent) : Controller(parent) {}
 
     C_ATTR(actionName, :Local :AutoArgs)
     void actionName(Context *c) {

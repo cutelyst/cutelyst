@@ -52,7 +52,7 @@ class AuthenticationTest : public Controller
 {
     Q_OBJECT
 public:
-    AuthenticationTest(QObject *parent) : Controller(parent) {}
+    explicit AuthenticationTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(authenticate, :Local :AutoArgs)
     void authenticate(Context *c) {
