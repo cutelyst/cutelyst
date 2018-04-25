@@ -83,6 +83,9 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
+    // Always connect this in queued mode as the client might have
+    // triggered the disconnect event like websocket close, and deleting
+    // it's context from this event will crash
     void finished();
 };
 
@@ -98,6 +101,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
+    // See TcpSocket note
     void finished();
 };
 
@@ -113,6 +117,7 @@ public:
     void socketDisconnected();
 
 Q_SIGNALS:
+    // See TcpSocket note
     void finished();
 };
 

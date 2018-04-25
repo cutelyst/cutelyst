@@ -909,8 +909,6 @@ bool H2Stream::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 
 void H2Stream::processingFinished()
 {
-    EngineRequest::processingFinished();
-
     state = Closed;
     protoRequest->streams.remove(streamId);
     protoRequest->sock->requestFinished();

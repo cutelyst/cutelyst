@@ -87,6 +87,12 @@ public:
     inline virtual void resetData() override final {
         ProtocolData::resetData();
 
+        // EngineRequest
+        delete context;
+        context = nullptr;
+        delete body;
+        body = nullptr;
+
         startOfRequest = 0;
         status = InitialState;
 
@@ -136,6 +142,9 @@ private:
     inline bool processRequest(Socket *sock, QIODevice *io) const;
     inline void parseMethod(const char *ptr, const char *end, Socket *sock) const;
     inline void parseHeader(const char *ptr, const char *end, Socket *sock) const;
+
+protected:
+    friend class ProtoRequestHttp;
 
     ProtocolWebSocket *m_websocketProto;
     ProtocolHttp2 *m_upgradeH2c;

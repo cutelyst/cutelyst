@@ -545,8 +545,6 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 
 void ProtoRequestFastCGI::processingFinished()
 {
-    EngineRequest::processingFinished();
-
     char end_request[] = FCGI_END_REQUEST_DATA;
     char *sid = (char *) &stream_id;
     // update with request id

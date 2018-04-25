@@ -64,7 +64,7 @@ void TcpServer::incomingConnection(qintptr handle)
             sock->resetSocket();
             m_socks.push_back(sock);
             --m_processing;
-        });
+        }, Qt::QueuedConnection);
     }
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {

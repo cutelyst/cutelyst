@@ -113,7 +113,7 @@ void LocalServer::incomingConnection(quintptr handle)
             if (--m_processing == 0) {
                 m_engine->stopSocketTimeout();
             }
-        });
+        }, Qt::QueuedConnection);
     }
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {

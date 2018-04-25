@@ -48,15 +48,16 @@ public:
         ProtocolData::resetData();
 
         // EngineRequest
+        delete context;
+        context = nullptr;
+        delete body;
+        body = nullptr;
+
         startOfRequest = 0;
         status = InitialState;
 
         stream_id = 0;
         pktsize = 0;
-
-        serverAddress = sock->serverAddress;
-        remoteAddress = sock->remoteAddress;
-        remotePort = sock->remotePort;
     }
 
 public:

@@ -193,7 +193,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
 {
     auto request = static_cast<ProtoRequestHttp *>(sock->protoData);
 //    qCDebug(CWSGI_HTTP) << "processRequest" << sock->protoData->contentLength;
-    sock->processing = true;
+    sock->processing = 1;
     if (request->body) {
         request->body->seek(0);
     }
@@ -206,9 +206,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     sock->engine->processRequest(request);
     sock->flush();
 
-    if (request->headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
-        sock->proto = m_websocketProto;
-
+    if (request->websocketUpgraded) {
         return false; // Must read remaining data
     }
     sock->requestFinished();
@@ -405,9 +403,7 @@ qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
 
 void ProtoRequestHttp::processingFinished()
 {
-    EngineRequest::processingFinished();
-
-    if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
+    if (websocketUpgraded) {
         // need 2 byte header
         websocket_need = 2;
         websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
@@ -510,6 +506,8 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
 
     headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
     websocketUpgraded = true;
+    auto httpProto = static_cast<ProtocolHttp *>(sock->proto);
+    sock->proto = httpProto->m_websocketProto;
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }
