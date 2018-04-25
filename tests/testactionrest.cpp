@@ -57,6 +57,8 @@ public:
 class TestActionREST : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestActionREST(QObject *parent = nullptr) : CoverageObject(parent) {}
 
 private Q_SLOTS:
     void initTestCase();

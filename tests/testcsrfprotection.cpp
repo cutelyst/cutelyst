@@ -49,7 +49,7 @@ class CsrfprotectionTest : public Controller
 {
     Q_OBJECT
 public:
-    CsrfprotectionTest(QObject *parent) : Controller(parent) {}
+    explicit CsrfprotectionTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(testCsrf, :Local :AutoArgs)
     void testCsrf(Context *c)

@@ -33,7 +33,7 @@ class TestValidator : public CoverageObject
 {
     Q_OBJECT
 public:
-    TestValidator(QObject *parent = nullptr) :
+    explicit TestValidator(QObject *parent = nullptr) :
         CoverageObject(parent)
     {
     }
@@ -65,7 +65,7 @@ class ValidatorTest : public Controller
 {
     Q_OBJECT
 public:
-    ValidatorTest(QObject *parent) : Controller(parent) {}
+    explicit ValidatorTest(QObject *parent) : Controller(parent) {}
 
     // ***** Endpoint for checking Validator::BodyParamsOnly
     C_ATTR(bodyParamsOnly, :Local :AutoArgs)

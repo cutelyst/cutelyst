@@ -16,7 +16,7 @@ class StatusMessageTest : public Controller
 {
     Q_OBJECT
 public:
-    StatusMessageTest(QObject *parent) : Controller(parent) {}
+    explicit StatusMessageTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(error, :Local :AutoArgs)
     void error(Context *c) {
@@ -77,6 +77,9 @@ private:
 class TestStatusMessage : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestStatusMessage(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 

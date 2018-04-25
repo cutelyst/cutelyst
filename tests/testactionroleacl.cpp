@@ -23,7 +23,7 @@ class ActionRoleACL : public Controller
 {
     Q_OBJECT
 public:
-    ActionRoleACL(QObject *parent) : Controller(parent) {}
+    explicit ActionRoleACL(QObject *parent) : Controller(parent) {}
 
     C_ATTR(acl_admin,
            :Local
@@ -104,7 +104,7 @@ class DeniedRoleACL : public Controller
 {
     Q_OBJECT
 public:
-    DeniedRoleACL(QObject *parent) : Controller(parent) {}
+    explicit DeniedRoleACL(QObject *parent) : Controller(parent) {}
 
 private Q_SLOTS:
     void denied(Context *c) {

@@ -24,6 +24,9 @@ using namespace Cutelyst;
 class TestRequest : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestRequest(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 
@@ -52,7 +55,7 @@ class RequestTest : public Controller
 {
     Q_OBJECT
 public:
-    RequestTest(QObject *parent) : Controller(parent) {}
+    explicit RequestTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(address, :Local :AutoArgs)
     void address(Context *c) {

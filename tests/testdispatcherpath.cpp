@@ -16,6 +16,8 @@ using namespace Cutelyst;
 class TestDispatcherPath : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestDispatcherPath(QObject *parent = nullptr) : CoverageObject(parent) {}
 
 private Q_SLOTS:
     void initTestCase();

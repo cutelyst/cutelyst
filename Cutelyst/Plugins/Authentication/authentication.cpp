@@ -209,11 +209,9 @@ AuthenticationUser AuthenticationPrivate::restoreUser(Context *c, const QVariant
 
 AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c, const QMap<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder)
 {
-    AuthenticationRealm *realm;
-
     const QVariant realmVariant = Session::value(c, AUTHENTICATION_USER_REALM);
     if (!realmVariant.isNull()) {
-        realm = realms.value(realmVariant.toString());
+        AuthenticationRealm *realm = realms.value(realmVariant.toString());
         if (realm && !realm->userIsRestorable(c).isNull()) {
             return realm;
         }

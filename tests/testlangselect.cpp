@@ -57,7 +57,7 @@ class LangselectTest : public Controller
 {
     Q_OBJECT
 public:
-    LangselectTest(QObject *parent) : Controller(parent) {}
+    explicit LangselectTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(testLang, :Local :AutoArgs)
     void testLang(Context *c) {

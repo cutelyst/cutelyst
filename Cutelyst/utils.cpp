@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -167,9 +167,8 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     int len = ba->count();
     int outlen = 0;
     int a, b;
-    char c;
     while (i < len) {
-        c = inputPtr[i];
+        const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
             a = inputPtr[++i];
             b = inputPtr[++i];

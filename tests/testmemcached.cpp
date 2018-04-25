@@ -47,7 +47,7 @@ class MemcachedTest : public Controller
 {
     Q_OBJECT
 public:
-    MemcachedTest(QObject *parent) : Controller(parent) {}
+    explicit MemcachedTest(QObject *parent) : Controller(parent) {}
 
     // **** Start testing setting byte array ****
     C_ATTR(setByteArray, :Local :AutoArgs)
