@@ -18,7 +18,7 @@ class TestViewJSON : public Controller
 {
     Q_OBJECT
 public:
-    TestViewJSON(QObject *parent) : Controller(parent) {}
+    explicit TestViewJSON(QObject *parent) : Controller(parent) {}
 
     C_ATTR(test0, :Local)
     void test0(Context *c) {

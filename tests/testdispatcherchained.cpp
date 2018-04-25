@@ -16,6 +16,8 @@ using namespace Cutelyst;
 class TestDispatcherChained : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestDispatcherChained(QObject *parent = nullptr) : CoverageObject(parent) {}
 
 private Q_SLOTS:
     void initTestCase();

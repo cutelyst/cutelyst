@@ -1595,7 +1595,7 @@ QString ValidatorEmail::categoryString(Context *c, Diagnose diagnose, const QStr
 
 bool ValidatorEmail::validate(const QString &email, Category threshold, Options options, QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
 {
-    bool ret = false;
+    bool ret;
 
     ValidatorEmailDiagnoseStruct diag;
     ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);

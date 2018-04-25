@@ -17,6 +17,9 @@ using namespace Cutelyst;
 class TestContext : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestContext(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 
@@ -41,7 +44,7 @@ class ContextGetActionsTest : public Controller
     Q_OBJECT
     C_NAMESPACE("context")
 public:
-    ContextGetActionsTest(QObject *parent) : Controller(parent) {}
+    explicit ContextGetActionsTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(actionName, :Local :AutoArgs)
     void actionName(Context *c) {

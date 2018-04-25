@@ -29,8 +29,7 @@ Q_LOGGING_CATEGORY(CWSGI_PROTO, "cwsgi.proto")
 
 using namespace CWSGI;
 
-ProtocolData::ProtocolData(Socket *_sock, int bufferSize)
-    : sock(_sock)
+ProtocolData::ProtocolData(Socket *_sock, int bufferSize) : sock(_sock)
     , io(dynamic_cast<QIODevice *>(_sock))
     , buffer(new char[bufferSize])
 {

@@ -67,11 +67,6 @@ QString Request::hostname() const
     if (!d->remoteHostname.isEmpty()) {
         ret = d->remoteHostname;
         return ret;
-    } else {
-        // We tried to get the client hostname but failed
-        if (!d->remoteHostname.isEmpty()) {
-            return ret;
-        }
     }
 
     const QHostInfo ptr = QHostInfo::fromName(d->engineRequest->remoteAddress.toString());

@@ -41,16 +41,16 @@ static thread_local LangSelect *lsp = nullptr;
 
 #define SELECTION_TRIED QStringLiteral("_c_langselect_tried")
 
-LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source) :
-    Plugin(parent), d_ptr(new LangSelectPrivate)
+LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source) : Plugin(parent)
+  , d_ptr(new LangSelectPrivate)
 {
     Q_D(LangSelect);
     d->source = source;
     d->autoDetect = true;
 }
 
-LangSelect::LangSelect(Application *parent) :
-    Plugin(parent), d_ptr(new LangSelectPrivate)
+LangSelect::LangSelect(Application *parent) : Plugin(parent)
+  , d_ptr(new LangSelectPrivate)
 {
     Q_D(LangSelect);
     d->source = AcceptHeader;
