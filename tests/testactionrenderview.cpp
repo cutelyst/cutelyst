@@ -28,7 +28,7 @@ class ActionRenderView : public Controller
 {
     Q_OBJECT
 public:
-    ActionRenderView(QObject *parent) : Controller(parent) {}
+    explicit ActionRenderView(QObject *parent) : Controller(parent) {}
 
     C_ATTR(test0, :Local :ActionClass(RenderView))
     void test0(Context *c) {
@@ -79,6 +79,9 @@ public:
 class TestActionRenderView : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestActionRenderView(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 

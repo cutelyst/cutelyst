@@ -14,7 +14,7 @@ class CoverageObject : public QObject
 {
     Q_OBJECT
 public:
-    CoverageObject(QObject *parent = 0) : QObject(parent) {}
+    explicit CoverageObject(QObject *parent = nullptr) : QObject(parent) {}
     virtual void initTest() {}
     virtual void cleanupTest() {}
 protected Q_SLOTS:

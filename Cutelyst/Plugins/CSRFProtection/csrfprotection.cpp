@@ -62,8 +62,8 @@ const QRegularExpression CSRFProtectionPrivate::sanitizeRe = QRegularExpression(
 // Assume that anything not defined as 'safe' by RFC7231 needs protection
 const QStringList CSRFProtectionPrivate::secureMethods = QStringList({QStringLiteral("GET"), QStringLiteral("HEAD"), QStringLiteral("OPTIONS"), QStringLiteral("TRACE")});
 
-CSRFProtection::CSRFProtection(Application *parent) :
-    Plugin(parent), d_ptr(new CSRFProtectionPrivate)
+CSRFProtection::CSRFProtection(Application *parent) : Plugin(parent)
+  , d_ptr(new CSRFProtectionPrivate)
 {
 
 }

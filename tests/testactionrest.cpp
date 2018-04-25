@@ -16,7 +16,7 @@ class ActionREST : public Controller
 {
     Q_OBJECT
 public:
-    ActionREST(QObject *parent) : Controller(parent) {}
+    explicit ActionREST(QObject *parent) : Controller(parent) {}
 
     C_ATTR(test1, :Local :ActionClass(REST))
     void test1(Context *c) {

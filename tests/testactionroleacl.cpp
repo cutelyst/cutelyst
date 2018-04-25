@@ -117,6 +117,8 @@ private Q_SLOTS:
 class TestActionRoleACL : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestActionRoleACL(QObject *parent = nullptr) : CoverageObject(parent) {}
 
 private Q_SLOTS:
     void initTestCase();

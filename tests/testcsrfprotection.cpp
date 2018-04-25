@@ -95,7 +95,7 @@ class CsrfprotectionNsTest : public Controller
     Q_OBJECT
     C_NAMESPACE("testns")
 public:
-    CsrfprotectionNsTest(QObject *parent) : Controller(parent) {}
+    explicit CsrfprotectionNsTest(QObject *parent) : Controller(parent) {}
 
     C_ATTR(testCsrf, :Local :AutoArgs)
     void testCsrf(Context *c)

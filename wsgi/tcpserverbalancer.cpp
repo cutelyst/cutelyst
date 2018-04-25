@@ -84,7 +84,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
 
     bool ok;
     quint16 port = portString.toUInt(&ok);
-    if (!ok || (port < 1 && port > 35554)) {
+    if (!ok || (port >= 1 && port <= 35554)) {
         port = 80;
     }
 
