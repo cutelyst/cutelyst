@@ -88,7 +88,7 @@ void uwsgi_cutelyst_on_load()
     }
 #endif
 
-    QCoreApplication *app = new QCoreApplication(uwsgi.argc, uwsgi.argv);
+    auto app = new QCoreApplication(uwsgi.argc, uwsgi.argv);
     app->setProperty("UWSGI_OPTS", opts);
 
     if (qEnvironmentVariableIsSet("CUTELYST_UWSGI_LOG")) {
@@ -187,7 +187,7 @@ void uwsgi_cutelyst_init_apps()
     QDir cwd(QString::fromLocal8Bit(uwsgi.cwd));
     QString path = cwd.absoluteFilePath(QString::fromLocal8Bit(options.app));
 
-    QPluginLoader *loader = new QPluginLoader(path);
+    auto loader = new QPluginLoader(path);
     if (!loader->load()) {
         qCCritical(CUTELYST_UWSGI) << "Could not load application:" << loader->errorString();
         exit(1);
@@ -199,7 +199,7 @@ void uwsgi_cutelyst_init_apps()
         exit(1);
     }
 
-    Application *app = qobject_cast<Application *>(instance);
+    auto app = qobject_cast<Application *>(instance);
     if (!app) {
         qCCritical(CUTELYST_UWSGI) << "Could not cast Cutelyst::Application from instance: %s\n" << loader->errorString();
         exit(1);

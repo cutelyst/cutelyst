@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,7 @@ void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
 
 uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 {
-    QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
+    auto socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
     connect(this, &uWSGI::enableSockets,
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated, this,
@@ -170,7 +170,7 @@ void uWSGI::validateAndExecuteRequest(wsgi_request *wsgi_req, int status)
 
 uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 {
-    QSocketNotifier *socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
+    auto socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
     connect(this, &uWSGI::enableSockets,
             socketNotifier, &QSocketNotifier::setEnabled);
     connect(socketNotifier, &QSocketNotifier::activated, this,
@@ -206,8 +206,8 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         }
 #endif // UWSGI_GO_CHEAP_CODE
 
-        QSocketNotifier *requestNotifier = new QSocketNotifier(wsgi_req->fd, QSocketNotifier::Read, this);
-        QTimer *timeoutTimer = new QTimer(requestNotifier);
+        auto requestNotifier = new QSocketNotifier(wsgi_req->fd, QSocketNotifier::Read, this);
+        auto timeoutTimer = new QTimer(requestNotifier);
 
 #ifdef UWSGI_GO_CHEAP_CODE
         timeoutTimer->setInterval(uwsgi.socket_timeout * 1000);
