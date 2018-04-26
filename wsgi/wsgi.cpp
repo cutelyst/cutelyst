@@ -557,8 +557,8 @@ int WSGI::exec(Cutelyst::Application *app)
 
     d->writePidFile(d->pidfile);
 
-    bool isListeningLocalSockets = false;
 #ifdef Q_OS_UNIX
+    bool isListeningLocalSockets = false;
     if (!d->chownSocket.isEmpty()) {
         d->listenLocalSockets();
         isListeningLocalSockets = true;
@@ -570,11 +570,13 @@ int WSGI::exec(Cutelyst::Application *app)
     }
 
     UnixFork::setGidUid(d->gid, d->uid, d->noInitgroups);
-#endif
 
     if (!isListeningLocalSockets) {
+#endif
         d->listenLocalSockets();
+#ifdef Q_OS_UNIX
     }
+#endif
 
     if (!d->servers.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
