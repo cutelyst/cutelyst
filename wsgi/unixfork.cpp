@@ -533,9 +533,20 @@ void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
     int cpu_affinity = wsgi->cpuAffinity();
     if (cpu_affinity) {
         char buf[4096];
-        int ret;
-        int pos = 0;
+
+        int pos = snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
+        if (pos < 25 || pos >= 4096) {
+            qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
+            exit(1);
+        }
+#if defined(__linux__) || defined(__GNU_kFreeBSD__)
+        cpu_set_t cpuset;
+#elif defined(__FreeBSD__)
+        cpuset_t cpuset;
+#endif
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__GNU_kFreeBSD__)
         int coreCount = idealThreadCount();
+
         int base_cpu;
         if (wsgi->threads().toInt() > 0) {
             base_cpu = workerCore * cpu_affinity;
@@ -546,25 +557,13 @@ void UnixFork::setSched(CWSGI::WSGI *wsgi, int workerId, int workerCore)
         if (base_cpu >= coreCount) {
             base_cpu = base_cpu % coreCount;
         }
-        ret = snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
-        if (ret < 25 || ret >= 4096) {
-            qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
-            exit(1);
-        }
-        pos += ret;
-#if defined(__linux__) || defined(__GNU_kFreeBSD__)
-        cpu_set_t cpuset;
-#elif defined(__FreeBSD__)
-        cpuset_t cpuset;
-#endif
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__GNU_kFreeBSD__)
+
         CPU_ZERO(&cpuset);
-        int i;
-        for (i = 0; i < cpu_affinity; i++) {
+        for (int i = 0; i < cpu_affinity; i++) {
             if (base_cpu >= coreCount)
                 base_cpu = 0;
             CPU_SET(base_cpu, &cpuset);
-            ret = snprintf(buf + pos, 4096 - pos, " %d", base_cpu);
+            int ret = snprintf(buf + pos, 4096 - pos, " %d", base_cpu);
             if (ret < 2 || ret >= 4096) {
                 qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
                 exit(1);

@@ -68,6 +68,9 @@ public:
 class TestActionRenderView : public CoverageObject
 {
     Q_OBJECT
+public:
+    explicit TestActionRenderView(QObject *parent = nullptr) : CoverageObject(parent) {}
+
 private Q_SLOTS:
     void initTestCase();
 
