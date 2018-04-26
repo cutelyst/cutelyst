@@ -1218,10 +1218,9 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
 
     if (memcached_success(rt)) {
         ok = true;
-        memcached_result_st *result;
         ret.reserve(keys.size());
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
-            result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
+            memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
             if (result) {
                 const QString rk = QString::fromUtf8(memcached_result_key_value(result), memcached_result_key_length(result));
                 QByteArray rd(memcached_result_value(result), memcached_result_length(result));
