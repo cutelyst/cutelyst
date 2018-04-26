@@ -132,12 +132,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     m_address = address;
     m_port = port;
 
-    bool reusePort = false;
 #ifdef Q_OS_LINUX
-    reusePort = m_wsgi->reusePort();
-#endif
-    if (reusePort) {
-#ifdef Q_OS_LINUX
+    if (m_wsgi->reusePort()) {
         int socket = listenReuse(address, port, false);
         if (socket > 0) {
             setSocketDescriptor(socket);
@@ -147,8 +143,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
                       << " : " << qPrintable(errorString()) << std::endl;
             exit(1);
         }
-#endif
     } else {
+#endif
         bool ret = QTcpServer::listen(address, port);
         if (ret) {
             pauseAccepting();
@@ -157,7 +153,9 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
                       << " : " << qPrintable(errorString()) << std::endl;
             exit(1);
         }
+#ifdef Q_OS_LINUX
     }
+#endif
 
     m_serverName = serverAddress().toString() + QLatin1Char(':') + QString::number(port);
     return true;
