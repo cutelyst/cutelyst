@@ -54,6 +54,7 @@ void uwsgi_cutelyst_loop(void);
 void uwsgi_cutelyst_on_load()
 {
     uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
+    config = new QVariantMap;
 
     // Get the uwsgi options
     QVariantMap opts;
@@ -119,7 +120,6 @@ int uwsgi_cutelyst_init()
     uwsgi.loop = (char *) "CutelystQtLoop";
 
     coreEngines = new QVector<uWSGI *>();
-    config = new QVariantMap;
 
     return 0;
 }
@@ -167,8 +167,8 @@ void uwsgi_cutelyst_atexit()
     const auto engines = *coreEngines;
     for (uWSGI *engine : engines) {
         engine->stop();
+        delete engine;
     }
-    qDeleteAll(*coreEngines);
 
     delete coreEngines;
     delete config;
