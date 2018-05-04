@@ -31,9 +31,18 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI_CONN, "cutelyst.uwsgi.connection")
 
 using namespace Cutelyst;
 
-static inline uint16_t notSlash(char *str, uint16_t length) {
-    for (uint16_t i = 0; i < length; ++i) {
+static inline quint16 notSlash(char *str, quint16 length) {
+    for (quint16 i = 0; i < length; ++i) {
         if (str[i] != '/') {
+            return i;
+        }
+    }
+    return length;
+}
+
+static inline quint16 questionMark(char *str, quint16 length) {
+    for (quint16 i = 0; i < length; ++i) {
+        if (str[i] == '?') {
             return i;
         }
     }
@@ -43,8 +52,9 @@ static inline uint16_t notSlash(char *str, uint16_t length) {
 uwsgiConnection::uwsgiConnection(wsgi_request *req)
   : request(req)
 {
-    uint16_t pos = notSlash(req->path_info, req->path_info_len);
-    path = QString::fromLatin1(req->path_info + pos, req->path_info_len - pos);
+    quint16 len = questionMark(req->uri, req->uri_len);
+    quint16 pos = notSlash(req->uri, len);
+    path = QString::fromLatin1(req->uri + pos, len - pos);
 
     serverAddress = QString::fromLatin1(req->host, req->host_len);
     query = QByteArray::fromRawData(req->query_string, req->query_string_len);
