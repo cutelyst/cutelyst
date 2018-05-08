@@ -578,7 +578,7 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
             len = pos - from;
         }
 
-        if (len == 0 || len == 1 && line[from] == '=') {
+        if (len == 0 || (len == 1 && line[from] == '=')) {
             // Skip empty strings
             ++from;
             continue;
