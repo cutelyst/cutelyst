@@ -474,7 +474,7 @@ void TestRequest::testController_data()
     headers.setHeader(QStringLiteral("Cookie"), QStringLiteral("FIRST=10186486272; SECOND=AF6bahuOZFc_P7-oCw; S=foo=TGp743-6uvY:first=MnBbT3wcrA-uy=MnwcrA:bla=0L7g; S=something=qjgNs_EA:more=n1Ki8xVsQ:andmore=FSg:andmore=nQMU_0VRlTJAbs_4fw:gmail=j4yGWsKuoZg"));
     QTest::newRow("cookies-test02") << get << QStringLiteral("/request/test/cookies")
                                     << headers << QByteArray()
-                                    << QByteArrayLiteral("FIRST=10186486272&S=foo%3DTGp743-6uvY:first%3DMnBbT3wcrA-uy%3DMnwcrA:bla%3D0L7g&S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%3DnQMU_0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg&SECOND=AF6bahuOZFc_P7-oCw");
+                                    << QByteArrayLiteral("FIRST=10186486272&S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%3DnQMU_0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg&S=foo%3DTGp743-6uvY:first%3DMnBbT3wcrA-uy%3DMnwcrA:bla%3D0L7g&SECOND=AF6bahuOZFc_P7-oCw");
 
     query.clear();
     headers.setHeader(QStringLiteral("Cookie"), QString());
@@ -486,7 +486,7 @@ void TestRequest::testController_data()
     headers.setHeader(QStringLiteral("Cookie"), QStringLiteral("FIRST=10186486272; SECOND=AF6bahuOZFc_P7-oCw; S=foo=TGp743-6uvY:first=MnBbT3wcrA-uy=MnwcrA:bla=0L7g; S=something=qjgNs_EA:more=n1Ki8xVsQ:andmore=FSg:andmore=nQMU_0VRlTJAbs_4fw:gmail=j4yGWsKuoZg"));
     QTest::newRow("cookie-test01") << get << QStringLiteral("/request/test/cookie/S")
                                    << headers << QByteArray()
-                                   << QByteArrayLiteral("S=foo%3DTGp743-6uvY:first%3DMnBbT3wcrA-uy%3DMnwcrA:bla%3D0L7g");
+                                   << QByteArrayLiteral("S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%3DnQMU_0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg");
 
     query.clear();
     query.addQueryItem(QStringLiteral("some text to ask"), QString());
