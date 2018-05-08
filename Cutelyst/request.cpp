@@ -215,6 +215,19 @@ ParamsMultiMap Request::bodyParameters() const
     return d->bodyParam;
 }
 
+QStringList Request::bodyParameters(const QString &key) const
+{
+    QStringList ret;
+
+    const ParamsMultiMap query = bodyParameters();
+    auto it = query.constFind(key);
+    while (it != query.constEnd() && it.key() == key) {
+        ret.prepend(it.value());
+        ++it;
+    }
+    return ret;
+}
+
 QString Request::queryKeywords() const
 {
     Q_D(const Request);
@@ -236,6 +249,19 @@ ParamsMultiMap Request::queryParameters() const
         d->parseUrlQuery();
     }
     return d->queryParam;
+}
+
+QStringList Request::queryParameters(const QString &key) const
+{
+    QStringList ret;
+
+    const ParamsMultiMap query = queryParameters();
+    auto it = query.constFind(key);
+    while (it != query.constEnd() && it.key() == key) {
+        ret.prepend(it.value());
+        ++it;
+    }
+    return ret;
 }
 
 QString Request::cookie(const QString &name) const
@@ -540,21 +566,25 @@ void RequestPrivate::parseCookies() const
 ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 {
     ParamsMultiMap ret;
-    int from = line.length();
-    int pos = from;
 
-    while (pos > 0) {
-        from = pos - 1;
-        pos = line.lastIndexOf('&', from);
+    int from = 0;
+    while (from < line.length()) {
+        const int pos = line.indexOf('&', from);
 
-        int len = from - pos;
-        if (len == 0) {
+        int len;
+        if (pos == -1) {
+            len = line.length() - from;
+        } else {
+            len = pos - from;
+        }
+
+        if (len == 0 || len == 1 && line[from] == '=') {
             // Skip empty strings
-            --from;
+            ++from;
             continue;
         }
 
-        QByteArray data = line.mid(pos + 1, len);
+        QByteArray data = line.mid(from, len);
 
         int equal = data.indexOf('=');
         if (equal != -1) {
@@ -571,6 +601,11 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
             ret.insertMulti(Utils::decodePercentEncoding(&data),
                             QString());
         }
+
+        if (pos == -1) {
+            break;
+        }
+        from = pos + 1;
     }
 
     return ret;
@@ -589,3 +624,4 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
 }
 
 #include "moc_request.cpp"
+

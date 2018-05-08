@@ -222,8 +222,10 @@ public:
 
     /**
      * Convenience method for geting all body values passing a key
+     *
+     * \note Unlike QMap::values() this return values in insertion order.
      */
-    inline QStringList bodyParameters(const QString &key) const;
+    QStringList bodyParameters(const QString &key) const;
 
     /**
      * Short for bodyParameters()
@@ -237,6 +239,8 @@ public:
 
     /**
      * Convenience method for geting all body values passing a key
+     *
+     * \note Unlike QMap::values() this return values in insertion order.
      */
     inline QStringList bodyParams(const QString &key) const;
 
@@ -268,8 +272,10 @@ public:
 
     /**
      * Convenience method for geting all query values passing a key
+     *
+     * \note Unlike QMap::values() this return values in insertion order.
      */
-    inline QStringList queryParameters(const QString &key) const;
+    QStringList queryParameters(const QString &key) const;
 
     /**
      * Short for queryParameters()
@@ -283,6 +289,8 @@ public:
 
     /**
      * Convenience method for geting all query values passing a key
+     *
+     * \note Unlike QMap::values() this return values in insertion order.
      */
     inline QStringList queryParams(const QString &key) const;
 
@@ -481,9 +489,6 @@ inline QStringList Request::args() const
 inline QString Request::bodyParameter(const QString &key, const QString &defaultValue) const
 { return bodyParameters().value(key, defaultValue); }
 
-inline QStringList Request::bodyParameters(const QString &key) const
-{ return bodyParameters().values(key); }
-
 inline ParamsMultiMap Request::bodyParams() const
 { return bodyParameters(); }
 
@@ -491,13 +496,10 @@ inline QString Request::bodyParam(const QString &key, const QString &defaultValu
 { return bodyParameters().value(key, defaultValue); }
 
 inline QStringList Request::bodyParams(const QString &key) const
-{ return bodyParameters().values(key); }
+{ return bodyParameters(key); }
 
 inline QString Request::queryParameter(const QString &key, const QString &defaultValue) const
 { return queryParameters().value(key, defaultValue); }
-
-inline QStringList Request::queryParameters(const QString &key) const
-{ return queryParameters().values(key); }
 
 inline ParamsMultiMap Request::queryParams() const
 { return queryParameters(); }
@@ -506,7 +508,7 @@ inline QString Request::queryParam(const QString &key, const QString &defaultVal
 { return queryParameters().value(key, defaultValue); }
 
 inline QStringList Request::queryParams(const QString &key) const
-{ return queryParameters().values(key); }
+{ return queryParameters(key); }
 
 inline QString Request::contentEncoding() const
 { return headers().contentEncoding(); }

@@ -257,6 +257,12 @@ public:
         c->response()->setBody(c->request()->queryParameter(param, defaultValue));
     }
 
+    C_ATTR(queryParametersList, :Local :AutoArgs)
+    void queryParametersList(Context *c, const QString &param) {
+        const QStringList params = c->request()->queryParams(param);
+        c->response()->setBody(params.join(QLatin1Char('&')));
+    }
+
     C_ATTR(queryParam, :Local :AutoArgs)
     void queryParam(Context *c, const QString &param, const QString &defaultValue) {
         c->response()->setBody(c->request()->queryParam(param, defaultValue));
@@ -284,6 +290,12 @@ public:
             ++it;
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
+    }
+
+    C_ATTR(bodyParametersList, :Local :AutoArgs)
+    void bodyParametersList(Context *c) {
+        const QStringList params = c->request()->bodyParameters(c->request()->queryParam(QStringLiteral("param")));
+        c->response()->setBody(params.join(QLatin1Char('&')));
     }
 
     C_ATTR(bodyParameter, :Local :AutoArgs)
@@ -599,23 +611,23 @@ void TestRequest::testController_data()
 
     QTest::newRow("queryParams-test02") << get << QStringLiteral("/request/test/queryParams?&=&=&foo&&&=ooo&=bar")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("=ooo&=bar&foo");
+                                        << QByteArrayLiteral("=bar&=ooo&foo");
 
     QTest::newRow("queryParams-test03") << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+                                        << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test04") << get << QStringLiteral("/request/test/queryParams?foo=bar&=&something&&&=ooo&=bar&")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+                                        << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test05") << get << QStringLiteral("/request/test/queryParams?&foo=bar&=&something&&&=ooo&=bar&")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("=ooo&=bar&foo=bar&something");
+                                        << QByteArrayLiteral("=bar&=ooo&foo=bar&something");
 
     QTest::newRow("queryParams-test06") << get << QStringLiteral("/request/test/queryParams?a=1&a=2&b=0&a=0&a=1&a=3&a=2")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("a=1&a=2&a=0&a=1&a=3&a=2&b=0");
+                                        << QByteArrayLiteral("a=2&a=3&a=1&a=0&a=2&a=1&b=0");
     QTest::newRow("queryParams-test07") << get << QStringLiteral("/request/test/queryParams?foo=bar&baz=")
                                         << headers << QByteArray()
                                         << QByteArrayLiteral("baz&foo=bar");
@@ -661,6 +673,17 @@ void TestRequest::testController_data()
     QTest::newRow("queryParameter-test02") << get << QStringLiteral("/request/test/queryParameter/y/gotDefault?") + query.toString(QUrl::FullyEncoded)
                                            << headers << QByteArray()
                                            << QByteArrayLiteral("gotDefault");
+
+    query.clear();
+    body = QUuid::createUuid().toByteArray();
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral(""));
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("x"), QString());
+    QTest::newRow("queryParametersList-test00") << get << QStringLiteral("/request/test/queryParametersList/foo?") + query.toString(QUrl::FullyEncoded)
+                                                << headers << QByteArray()
+                                                << QByteArrayLiteral("&bar&baz");
+
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("Cutelyst"));
@@ -710,6 +733,19 @@ void TestRequest::testController_data()
     QTest::newRow("bodyParams-test01") << get << QStringLiteral("/request/test/bodyParams")
                                       << headers << QByteArrayLiteral("foo=bar&baz=")
                                       << QByteArrayLiteral("baz&foo=bar");
+
+
+    query.clear();
+    body = QUuid::createUuid().toByteArray();
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral(""));
+    query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baa"));
+    query.addQueryItem(QStringLiteral("bar"), QStringLiteral("baz"));
+    query.addQueryItem(QStringLiteral("and yet another is fine"), QString());
+    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    QTest::newRow("bodyParametersList-test00") << get << QStringLiteral("/request/test/bodyParametersList?param=foo")
+                                               << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+                                               << QByteArrayLiteral("bar&&baa");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
