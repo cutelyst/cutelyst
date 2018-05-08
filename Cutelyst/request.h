@@ -304,7 +304,7 @@ public:
     /**
      * Returns all the cookies from the request
      */
-    QMap<QString, QString> cookies() const;
+    ParamsMultiMap cookies() const;
 
     /**
      * Short for headers().header(key);

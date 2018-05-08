@@ -248,7 +248,7 @@ QString Request::cookie(const QString &name) const
     return d->cookies.value(name);
 }
 
-QMap<QString, QString> Request::cookies() const
+Cutelyst::ParamsMultiMap Request::cookies() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
@@ -500,7 +500,6 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 
 void RequestPrivate::parseCookies() const
 {
-    std::vector<std::pair<QString, QString> > ret;
     const QString cookieString = engineRequest->headers.header(QStringLiteral("COOKIE"));
     int position = 0;
     const int length = cookieString.length();
@@ -516,15 +515,8 @@ void RequestPrivate::parseCookies() const
             ++position;
             continue;
         }
-        ret.push_back(field);
+        cookies.insertMulti(field.first, field.second);
         ++position;
-    }
-
-    auto i = ret.crbegin();
-    const auto end = ret.crend();
-    while (i != end) {
-        cookies.insertMulti(i->first, i->second);
-        ++i;
     }
 
     parserStatus |= RequestPrivate::CookiesParsed;
