@@ -248,6 +248,23 @@ QString Request::cookie(const QString &name) const
     return d->cookies.value(name);
 }
 
+QStringList Request::cookies(const QString &name) const
+{
+    QStringList ret;
+    Q_D(const Request);
+
+    if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
+        d->parseCookies();
+    }
+
+    auto it = d->cookies.constFind(name);
+    while (it != d->cookies.constEnd() && it.key() == name) {
+        ret.prepend(it.value());
+        ++it;
+    }
+    return ret;
+}
+
 Cutelyst::ParamsMultiMap Request::cookies() const
 {
     Q_D(const Request);

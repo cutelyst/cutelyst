@@ -302,6 +302,13 @@ public:
     QString cookie(const QString &name) const;
 
     /**
+     * Returns a list of cookies that match with the given name
+     *
+     * \note Unlike QMap::values() this return values in insertion order.
+     */
+    QStringList cookies(const QString &name) const;
+
+    /**
      * Returns all the cookies from the request
      */
     ParamsMultiMap cookies() const;

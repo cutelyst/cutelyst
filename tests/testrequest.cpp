@@ -175,6 +175,16 @@ public:
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
 
+    C_ATTR(cookies_list, :Path('cookies') :AutoArgs)
+    void cookies_list(Context *c, const QString &name) {
+        QUrlQuery ret;
+        const QStringList values = c->request()->cookies(name);
+        for (const QString &value : values) {
+            ret.addQueryItem(name, value);
+        }
+        c->response()->setBody(ret.toString(QUrl::FullyEncoded));
+    }
+
     C_ATTR(queryKeywords, :Local :AutoArgs)
     void queryKeywords(Context *c) {
         c->response()->setBody(c->request()->queryKeywords());
@@ -475,6 +485,12 @@ void TestRequest::testController_data()
     QTest::newRow("cookies-test02") << get << QStringLiteral("/request/test/cookies")
                                     << headers << QByteArray()
                                     << QByteArrayLiteral("FIRST=10186486272&S=something%3DqjgNs_EA:more%3Dn1Ki8xVsQ:andmore%3DFSg:andmore%3DnQMU_0VRlTJAbs_4fw:gmail%3Dj4yGWsKuoZg&S=foo%3DTGp743-6uvY:first%3DMnBbT3wcrA-uy%3DMnwcrA:bla%3D0L7g&SECOND=AF6bahuOZFc_P7-oCw");
+
+    query.clear();
+    headers.setHeader(QStringLiteral("Cookie"), QStringLiteral("b=1; a=1; a=2; a=3; b=0"));
+    QTest::newRow("cookies-test03") << get << QStringLiteral("/request/test/cookies/a")
+                                   << headers << QByteArray()
+                                   << QByteArrayLiteral("a=1&a=2&a=3");
 
     query.clear();
     headers.setHeader(QStringLiteral("Cookie"), QString());
