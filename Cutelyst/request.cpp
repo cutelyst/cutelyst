@@ -367,17 +367,14 @@ Uploads Request::uploads(const QString &name) const
 
 ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) const
 {
-    ParamsMultiMap ret;
+    ParamsMultiMap ret = queryParams();
     if (append) {
-        ret = args;
-        ret.unite(queryParams());
+        ret.unite(args);
     } else {
-        ret = queryParams();
-        auto it = args.constBegin();
-        const auto end = args.constEnd();
-        while (it != end) {
+        auto it = args.constEnd();
+        while (it != args.constBegin()) {
+            --it;
             ret.insert(it.key(), it.value());
-            ++it;
         }
     }
 
@@ -388,12 +385,11 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
 {
     QUrl ret = uri();
     QUrlQuery urlQuery;
-    ParamsMultiMap query = mangleParams(args, append);
-    auto it = query.constBegin();
-    const auto end = query.constEnd();
-    while (it != end) {
+    const ParamsMultiMap query = mangleParams(args, append);
+    auto it = query.constEnd();
+    while (it != query.constBegin()) {
+        --it;
         urlQuery.addQueryItem(it.key(), it.value());
-        ++it;
     }
     ret.setQuery(urlQuery);
 
@@ -614,9 +610,8 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)
 {
     QVariantMap ret;
-    auto begin = params.constBegin();
     auto end = params.constEnd();
-    while (begin != end) {
+    while (params.constBegin() != end) {
         --end;
         ret.insertMulti(ret.constBegin(), end.key(), end.value());
     }
@@ -624,4 +619,3 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
 }
 
 #include "moc_request.cpp"
-

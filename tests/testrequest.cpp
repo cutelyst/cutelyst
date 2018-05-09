@@ -200,7 +200,9 @@ public:
     C_ATTR(mangleParams, :Local :AutoArgs)
     void mangleParams(Context *c, const QString &append) {
         QUrlQuery ret;
-        auto params = c->request()->mangleParams(c->request()->bodyParameters(), QVariant(append).toBool());
+        auto params = c->request()->mangleParams(ParamsMultiMap{
+                                                     {QStringLiteral("foo"),QStringLiteral("baz")},
+                                                 }, QVariant(append).toBool());
         auto it = params.constBegin();
         while (it != params.constEnd()) {
             ret.addQueryItem(it.key(), it.value());
@@ -544,13 +546,13 @@ void TestRequest::testController_data()
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
     QTest::newRow("uriWith-test00") << get << QStringLiteral("/request/test/uriWith/false?") + query.toString(QUrl::FullyEncoded)
                                     << headers << QByteArray()
-                                    << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/false?foo=baz&fooz=bar");
+                                    << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/false?fooz=bar&foo=baz");
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("bar"));
     QTest::newRow("uriWith-test01") << get << QStringLiteral("/request/test/uriWith/true?") + query.toString(QUrl::FullyEncoded)
-                                    << headers << QByteArray()
-                                    << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/true?foo=bar&foo=baz&fooz=bar");
+                                          << headers << QByteArray()
+                                          << QByteArrayLiteral("http://127.0.0.1/request/test/uriWith/true?fooz=bar&foo=bar&foo=baz");
 
     query.clear();
     query.addQueryItem(QStringLiteral("foo"), QStringLiteral("baz"));
@@ -564,7 +566,7 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("mangleParams-test01") << post << QStringLiteral("/request/test/mangleParams/true?foo=bar&x=y")
                                          << headers << query.toString(QUrl::FullyEncoded).toLatin1()
-                                         << QByteArrayLiteral("foo=bar&foo=baz&x=y");
+                                         << QByteArrayLiteral("foo=baz&foo=bar&x=y");
 
     query.clear();
     QTest::newRow("body-test00") << get << QStringLiteral("/request/test/body")

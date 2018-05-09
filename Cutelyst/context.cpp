@@ -245,11 +245,10 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     if (!queryValues.isEmpty()) {
         // Avoid a trailing '?'
         if (queryValues.size()) {
-            auto it = queryValues.constBegin();
-            const auto end = queryValues.constEnd();
-            while (it != end) {
+            auto it = queryValues.constEnd();
+            while (it != queryValues.constBegin()) {
+                --it;
                 query.addQueryItem(it.key(), it.value());
-                ++it;
             }
         }
     }
