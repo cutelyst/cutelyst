@@ -53,11 +53,6 @@ void TcpSocket::requestFinished()
     }
 }
 
-void TcpSocket::flush()
-{
-    QTcpSocket::flush();
-}
-
 void TcpSocket::socketDisconnected()
 {
     protoData->socketDisconnected();
@@ -85,11 +80,6 @@ void LocalSocket::requestFinished()
     }
 }
 
-void LocalSocket::flush()
-{
-    QLocalSocket::flush();
-}
-
 void LocalSocket::socketDisconnected()
 {
     protoData->socketDisconnected();
@@ -115,11 +105,6 @@ void SslSocket::requestFinished()
     if (!--processing && state() != ConnectedState) {
         Q_EMIT finished();
     }
-}
-
-void SslSocket::flush()
-{
-    QSslSocket::flush();
 }
 
 void SslSocket::socketDisconnected()

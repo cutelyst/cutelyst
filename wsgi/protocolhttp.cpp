@@ -204,7 +204,6 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     }
 
     sock->engine->processRequest(request);
-    sock->flush();
 
     if (request->websocketUpgraded) {
         return false; // Must read remaining data
@@ -222,8 +221,6 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
         memmove(request->buffer, request->buffer + request->last, remaining);
         request->resetData();
         request->buf_size = remaining;
-
-        QCoreApplication::processEvents();
     } else {
         request->resetData();
     }
