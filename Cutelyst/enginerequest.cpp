@@ -40,9 +40,8 @@ EngineRequest::~EngineRequest()
 
 void EngineRequest::finalizeBody()
 {
-    Response *response = context->response();
-
     if (!(status & EngineRequest::Chunked)) {
+        Response *response = context->response();
         QIODevice *body = response->bodyDevice();
 
         if (body) {
