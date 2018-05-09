@@ -98,6 +98,51 @@ public:
     char *m_postBuffer;
 };
 
+inline quint64 net_be64(const char *buf) {
+    quint64 ret = 0;
+    auto src = reinterpret_cast<const quint64 *>(buf);
+    auto ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 56) & 0xff);
+    ptr[1] = static_cast<quint8>((*src >> 48) & 0xff);
+    ptr[2] = static_cast<quint8>((*src >> 40) & 0xff);
+    ptr[3] = static_cast<quint8>((*src >> 32) & 0xff);
+    ptr[4] = static_cast<quint8>((*src >> 24) & 0xff);
+    ptr[5] = static_cast<quint8>((*src >> 16) & 0xff);
+    ptr[6] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[7] = static_cast<quint8>(*src & 0xff);
+    return ret;
+}
+
+inline quint32 net_be32(const char *buf) {
+    quint32 ret = 0;
+    auto src = reinterpret_cast<const quint32 *>(buf);
+    auto ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 24) & 0xff);
+    ptr[1] = static_cast<quint8>((*src >> 16) & 0xff);
+    ptr[2] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[3] = static_cast<quint8>(*src & 0xff);
+    return ret;
+}
+
+inline quint32 net_be24(const char *buf) {
+    quint32 ret = 0;
+    auto src = reinterpret_cast<const quint32 *>(buf);
+    auto ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 16) & 0xff);
+    ptr[1] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[2] = static_cast<quint8>(*src & 0xff);
+    return ret;
+}
+
+inline quint16 net_be16(const char *buf) {
+    quint16 ret = 0;
+    auto src = reinterpret_cast<const quint16 *>(buf);
+    auto ptr = reinterpret_cast<quint8 *>(&ret);
+    ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
+    ptr[1] = static_cast<quint8>(*src & 0xff);
+    return ret;
+}
+
 }
 
 #endif // PROTOCOL_H

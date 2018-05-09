@@ -94,30 +94,6 @@ QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quin
     return payload;
 }
 
-quint16 ws_be16(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint16 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[1] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
-quint64 ws_be64(const char *buf) {
-    const quint64 *src = reinterpret_cast<const quint64 *>(buf);
-    quint64 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 56) & 0xff);
-    ptr[1] = static_cast<quint8>((*src >> 48) & 0xff);
-    ptr[2] = static_cast<quint8>((*src >> 40) & 0xff);
-    ptr[3] = static_cast<quint8>((*src >> 32) & 0xff);
-    ptr[4] = static_cast<quint8>((*src >> 24) & 0xff);
-    ptr[5] = static_cast<quint8>((*src >> 16) & 0xff);
-    ptr[6] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[7] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
 void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
 {
     qint64 bytesAvailable = io->bytesAvailable();
@@ -254,7 +230,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     QString reason;
     QTextCodec::ConverterState state;
     if (protoRequest->websocket_payload.size() >= 2) {
-        closeCode = ws_be16(protoRequest->websocket_payload.data());
+        closeCode = net_be16(protoRequest->websocket_payload.data());
         reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2, protoRequest->websocket_payload.size() - 2, &state);
     }
     Q_EMIT c->request()->webSocketClosed(closeCode, reason);
@@ -359,9 +335,9 @@ bool ProtocolWebSocket::websocket_parse_size(Socket *sock, const char *buf, int 
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     quint64 size;
     if (protoRequest->websocket_payload_size == 126) {
-        size = ws_be16(buf);
+        size = net_be16(buf);
     } else if (protoRequest->websocket_payload_size == 127) {
-        size = ws_be64(buf);
+        size = net_be64(buf);
     } else {
         qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << protoRequest->websocket_payload_size;
         sock->connectionClose();
@@ -383,7 +359,7 @@ bool ProtocolWebSocket::websocket_parse_size(Socket *sock, const char *buf, int 
 
 void ProtocolWebSocket::websocket_parse_mask(Socket *sock, char *buf, QIODevice *io) const
 {
-    const quint32 *ptr = reinterpret_cast<const quint32 *>(buf);
+    auto ptr = reinterpret_cast<const quint32 *>(buf);
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     protoRequest->websocket_mask = *ptr;
 
@@ -401,7 +377,7 @@ void ProtocolWebSocket::websocket_parse_mask(Socket *sock, char *buf, QIODevice 
 bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
-    quint8 *mask = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
+    auto mask = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
     for (uint i = 0, maskIx = protoRequest->websocket_payload.size(); i < len; ++i, ++maskIx) {
         buf[i] = buf[i] ^ mask[maskIx % 4];
     }

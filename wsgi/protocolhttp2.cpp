@@ -115,36 +115,6 @@ enum Settings {
     SETTINGS_MAX_HEADER_LIST_SIZE = 0x6
 };
 
-quint32 h2_be32(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint32 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 24) & 0xff);
-    ptr[1] = static_cast<quint8>((*src >> 16) & 0xff);
-    ptr[2] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[3] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
-quint32 h2_be24(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint32 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 16) & 0xff);
-    ptr[1] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[2] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
-quint16 h2_be16(const char *buf) {
-    const quint32 *src = reinterpret_cast<const quint32 *>(buf);
-    quint16 ret = 0;
-    quint8 *ptr = reinterpret_cast<quint8 *>(&ret);
-    ptr[0] = static_cast<quint8>((*src >> 8) & 0xff);
-    ptr[1] = static_cast<quint8>(*src & 0xff);
-    return ret;
-}
-
 #define PREFACE_SIZE 24
 
 ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
@@ -321,8 +291,8 @@ int ProtocolHttp2::parseSettings(ProtoRequestHttp2 *request, QIODevice *io, cons
         QVector<std::pair<quint16, quint32>> settings;
         uint pos = 0;
         while (request->pktsize > pos) {
-            quint16 identifier = h2_be16(request->buffer + 9 + pos);
-            quint32 value = h2_be32(request->buffer + 9 + 2 + pos);
+            quint16 identifier = net_be16(request->buffer + 9 + pos);
+            quint32 value = net_be32(request->buffer + 9 + 2 + pos);
             settings.push_back({ identifier, value });
             pos += 6;
 //            qDebug() << "SETTINGS" << identifier << value;
@@ -439,7 +409,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
 //    quint8 weight = 0;
     if (fr.flags & FlagHeadersPriority) {
         // TODO disable exclusive bit
-        streamDependency = h2_be32(ptr + pos);
+        streamDependency = net_be32(ptr + pos);
         if (fr.streamId == streamDependency) {
 //            qCDebug(CWSGI_H2) << "header stream dep";
             return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
@@ -538,7 +508,7 @@ int ProtocolHttp2::parsePriority(ProtoRequestHttp2 *sock, QIODevice *io, const H
     uint pos = 0;
     while (fr.len > pos) {
         // TODO store/disable EXCLUSIVE bit
-        quint32 exclusiveAndStreamDep = h2_be32(sock->buffer + 9 + pos);
+        quint32 exclusiveAndStreamDep = net_be32(sock->buffer + 9 + pos);
 //        quint8 weigth = *reinterpret_cast<quint8 *>(sock->buffer + 9 + 4 + pos) + 1;
 //                            settings.push_back({ identifier, value });
 //                            sock->pktsize -= 6;
@@ -608,7 +578,7 @@ int ProtocolHttp2::parseWindowUpdate(ProtoRequestHttp2 *request, QIODevice *io, 
         return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
     }
 
-    quint32 windowSizeIncrement = h2_be32(request->buffer + 9);
+    quint32 windowSizeIncrement = net_be32(request->buffer + 9);
     if (windowSizeIncrement == 0) {
         return sendGoAway(io, request->maxStreamId, ErrorProtocolError);
     }
