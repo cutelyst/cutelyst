@@ -131,9 +131,9 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
             timeout = -1;
         }
 
-        struct epoll_event events[1024];
+        struct epoll_event events[10024];
         do {
-            n_events = epoll_wait(m_epoll_fd, events, 1024, timeout);
+            n_events = epoll_wait(m_epoll_fd, events, 10024, timeout);
         } while (Q_UNLIKELY(-1 == n_events && errno == EINTR));
 
         for (int i = 0; i < n_events; ++i) {

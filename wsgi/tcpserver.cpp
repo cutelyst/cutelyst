@@ -48,6 +48,9 @@ TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsg
 
 void TcpServer::incomingConnection(qintptr handle)
 {
+    static int count1 = 0;
+    qCritical() << "incomingConnection conn" << ++count1;
+
     TcpSocket *sock;
     if (!m_socks.empty()) {
         sock = m_socks.back();
@@ -55,6 +58,8 @@ void TcpServer::incomingConnection(qintptr handle)
     } else {
         sock = new TcpSocket(m_engine, this);
         sock->protoData = m_protocol->createData(sock);
+        static int count = 0;
+        qCritical() << "New socket" << ++count;
 
         connect(sock, &QIODevice::readyRead, [sock] () {
             sock->timeout = false;
