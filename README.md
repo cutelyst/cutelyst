@@ -46,7 +46,7 @@ http://www.techempower.com/benchmarks/
  * C++11
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
- * Asynchronous processing (optional and dependent on application code)
+ * ~~Asynchronous processing~~ (was broken and will be redesigned, don't use local QEventLoops or it will eventually crash)
  * Unit tested
  * QtCreator integration
 
