@@ -493,7 +493,7 @@ public Q_SLOTS:
      * If you set force to true it will quit the loop immediately
      * regardless of it's counter.
      */
-    Q_DECL_DEPRECATED void next(bool force = false);
+    void next(bool force = false);
 
 protected:
     /*!
