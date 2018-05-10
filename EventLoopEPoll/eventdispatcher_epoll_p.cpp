@@ -146,7 +146,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
             struct epoll_event &e = events[i];
             auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
             if (data->canProcess()) {
-                data->process(e);
+                data->process(e.events);
             }
 
             data->deref();
@@ -176,33 +176,33 @@ void EventDispatcherEPollPrivate::wake_up_handler()
     }
 }
 
-void SocketNotifierInfo::process(epoll_event &ee)
+void SocketNotifierInfo::process(quint32 events)
 {
     QEvent e(QEvent::SockAct);
 
-    if (r && (ee.events & EPOLLIN)) {
+    if (r && (events & EPOLLIN)) {
         QCoreApplication::sendEvent(r, &e);
     }
 
-    if (w && (ee.events & EPOLLOUT)) {
+    if (w && (events & EPOLLOUT)) {
         QCoreApplication::sendEvent(w, &e);
     }
 
-    if (x && (ee.events & EPOLLPRI)) {
+    if (x && (events & EPOLLPRI)) {
         QCoreApplication::sendEvent(x, &e);
     }
 }
 
-void EventFdInfo::process(epoll_event &e)
+void EventFdInfo::process(quint32 events)
 {
-    if (Q_LIKELY(e.events & EPOLLIN)) {
+    if (Q_LIKELY(events & EPOLLIN)) {
         epPriv->wake_up_handler();
     }
 }
 
-void TimerInfo::process(epoll_event &e)
+void TimerInfo::process(quint32 events)
 {
-    Q_UNUSED(e)
+    Q_UNUSED(events)
 
     uint64_t value;
     int res;
@@ -239,7 +239,7 @@ void TimerInfo::process(epoll_event &e)
     }
 }
 
-void ZeroTimer::process(epoll_event &e)
+void ZeroTimer::process(quint32 events)
 {
-    Q_UNUSED(e)
+    Q_UNUSED(events)
 }

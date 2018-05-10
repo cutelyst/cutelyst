@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@ public:
     explicit EpollAbastractEvent(int _fd = 0) : fd(_fd) {}
     virtual ~EpollAbastractEvent() {}
 
-    virtual void process(struct epoll_event &e) = 0;
+    virtual void process(quint32 events) = 0;
 
     inline bool canProcess() { return refs > 1; }
     inline void ref() { ++refs; }
@@ -46,7 +46,7 @@ class EventFdInfo : public EpollAbastractEvent
 public:
     EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv) : EpollAbastractEvent(_fd), epPriv(prv) {}
 
-    virtual void process(struct epoll_event &e);
+    virtual void process(quint32 events);
 
     EventDispatcherEPollPrivate *epPriv;
 };
@@ -56,7 +56,7 @@ class SocketNotifierInfo : public EpollAbastractEvent
 public:
     SocketNotifierInfo(int _fd) : EpollAbastractEvent(_fd) { }
 
-    virtual void process(struct epoll_event &ee);
+    virtual void process(quint32 events);
 
     QSocketNotifier *r = nullptr;
     QSocketNotifier *w = nullptr;
@@ -69,7 +69,7 @@ class ZeroTimer : public EpollAbastractEvent
 public:
     ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
 
-    virtual void process(struct epoll_event &e);
+    virtual void process(quint32 events);
 
     QObject *object;
     int timerId;
@@ -82,7 +82,7 @@ public:
     TimerInfo(int fd, int _timerId, int _interval, QObject *obj)
         : EpollAbastractEvent(fd), object(obj), timerId(_timerId), interval(_interval) {}
 
-    virtual void process(struct epoll_event &e);
+    virtual void process(quint32 events);
 
     QObject *object;
     struct timeval when;
