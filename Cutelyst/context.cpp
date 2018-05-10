@@ -419,7 +419,8 @@ QString Context::translate(const char *context, const char *sourceText, const ch
 
 bool Context::wait(uint count)
 {
-    Q_D(Context);
+    Q_UNUSED(count)
+//    Q_D(Context);
 //    if (d->loop) {
 //        d->loopWait += count;
 //        return false;
@@ -436,7 +437,7 @@ bool Context::wait(uint count)
 
 void Context::next(bool force)
 {
-    Q_D(Context);
+//    Q_D(Context);
     Q_UNUSED(force)
 //    if (!d->loop || (--d->loopWait && !force)) {
 //        return;
