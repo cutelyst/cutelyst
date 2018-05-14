@@ -88,7 +88,9 @@ void TcpServer::incomingConnection(qintptr handle)
 
 void TcpServer::shutdown()
 {
-    pauseAccepting();
+    if (isListening()) {
+        pauseAccepting();
+    }
 
     if (m_processing == 0) {
         m_engine->serverShutdown();

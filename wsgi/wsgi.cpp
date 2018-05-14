@@ -1359,7 +1359,7 @@ void WSGIPrivate::setupApplication()
     }
 
     if (!chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData()  << std::endl;;
+        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData()  << std::endl;
         if (!QDir::setCurrent(chdir2)) {
             qFatal("Failed to chdir2 to: '%s'", chdir2.toLatin1().constData());
         }
@@ -1378,7 +1378,8 @@ void WSGIPrivate::setupApplication()
     }
 
     if (!engine) {
-        qFatal("Main engine failed to init");
+        std::cerr << "Application failed to init, cheaping..." << std::endl;
+        exit(15);
     }
 }
 
@@ -1397,7 +1398,10 @@ void WSGIPrivate::engineShutdown(CWsgiEngine *engine)
             Q_Q(WSGI);
             Q_EMIT q->stopped();
         } else {
-            QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+            std::cerr << "Application failed to init, shut cheaping..." << std::endl;
+            QTimer::singleShot(0, this, [] {
+                qApp->exit(15);
+            });
         }
     }
 }
@@ -1476,7 +1480,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
     engine->setConfig(config);
     engine->setServers(servers);
     if (!engine->init()) {
-        qCCritical(CUTELYST_WSGI) << "Failed to init engine for core:" << core;
+        std::cerr << "Application failed to init(), cheaping core: " << core << std::endl;
         delete engine;
         return nullptr;
     }

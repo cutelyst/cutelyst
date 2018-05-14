@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@
 #endif
 
 #include <typeinfo>
+#include <iostream>
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
@@ -152,13 +153,12 @@ void CWsgiEngine::postFork(int workerId)
     UnixFork::setSched(m_wsgi, workerId, workerCore());
 #endif
 
-    if (!postForkApplication()) {
-        // CHEAP
+    if (Q_LIKELY(postForkApplication())) {
+        Q_EMIT started();
+    } else {
+        std::cerr << "Application failed to post fork, cheaping worker: " << workerId << ", core: " << workerCore() << std::endl;
         Q_EMIT shutdown();
-        return;
     }
-
-    Q_EMIT started();
 }
 
 QByteArray CWsgiEngine::dateHeader()
@@ -199,12 +199,11 @@ Protocol *CWsgiEngine::getProtoFastCgi()
 
 bool CWsgiEngine::init()
 {
-    if (!initApplication()) {
-        qCCritical(CWSGI_ENGINE) << "Failed to init application, cheaping...";
-        return false;
+    if (Q_LIKELY(initApplication())) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 #include "moc_cwsgiengine.cpp"
