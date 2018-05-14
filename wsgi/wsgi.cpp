@@ -1398,7 +1398,6 @@ void WSGIPrivate::engineShutdown(CWsgiEngine *engine)
             Q_Q(WSGI);
             Q_EMIT q->stopped();
         } else {
-            std::cerr << "Application failed to init, shut cheaping..." << std::endl;
             QTimer::singleShot(0, this, [] {
                 qApp->exit(15);
             });
