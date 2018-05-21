@@ -204,6 +204,24 @@ public:
     QVariant bodyData() const;
 
     /**
+     * When request Content-Type is 'application/json' this will
+     * contain the parsed JSON representation document.
+     */
+    QJsonDocument bodyJsonDocument() const;
+
+    /**
+     * When request Content-Type is 'application/json' this will
+     * contain the parsed JSON representation object.
+     */
+    QJsonObject bodyJsonObject() const;
+
+    /**
+     * When request Content-Type is 'application/json' this will
+     * contain the parsed JSON representation array.
+     */
+    QJsonArray bodyJsonArray() const;
+
+    /**
      * Returns a QVariantMap of body (POST/PUT) parameters, this method
      * is expensive as it creates the map each time it's called, cache
      * it's result instead of calling multiple times

@@ -22,8 +22,10 @@
 #include "multipartformdataparser.h"
 #include "utils.h"
 
-#include <QtCore/QJsonDocument>
-#include <QtNetwork/QHostInfo>
+#include <QHostInfo>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 using namespace Cutelyst;
 
@@ -199,6 +201,21 @@ QVariant Request::bodyData() const
         d->parseBody();
     }
     return d->bodyData;
+}
+
+QJsonDocument Request::bodyJsonDocument() const
+{
+    return bodyData().toJsonDocument();
+}
+
+QJsonObject Request::bodyJsonObject() const
+{
+    return bodyData().toJsonDocument().object();
+}
+
+QJsonArray Request::bodyJsonArray() const
+{
+    return bodyData().toJsonDocument().array();
 }
 
 QVariantMap Request::bodyParametersVariant() const
