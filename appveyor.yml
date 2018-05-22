@@ -73,12 +73,13 @@ environment:
   - CMAKE_GENERATOR: "Ninja"
     QT5: C:\Qt\5.10\msvc2017_64
     PLATFORM: X64
-    VSVER: 15
+    VSVER: 17
     ENABLE_MAINTAINER_CFLAGS: off
-  - CMAKE_GENERATOR: "Visual Studio 15"
+  - CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     QT5: C:\Qt\5.10\msvc2017_64
     PLATFORM: X64
-    VSVER: 15
+    VSVER: 17
     ENABLE_MAINTAINER_CFLAGS: off
 
   - CMAKE_GENERATOR: "Ninja"
