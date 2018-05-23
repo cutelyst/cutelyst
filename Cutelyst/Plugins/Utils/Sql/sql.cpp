@@ -94,6 +94,22 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
     return ret;
 }
 
+QVariantList Sql::queryToList(QSqlQuery &query)
+{
+    QVariantList ret;
+
+    const int columns = query.record().count();
+    while (query.next()) {
+        QVariantList line;
+        for (int i = 0; i < columns; ++i) {
+            line.push_back(query.value(i));
+        }
+        ret.push_back(line);
+    }
+
+    return ret;
+}
+
 QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
 {
     QVariantHash ret;
@@ -115,7 +131,7 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
     while (query.next()) {
         QVariantHash line;
         for (int i = 0; i < columns; ++i) {
-            line.insertMulti(cols.at(i),query.value(i));
+            line.insertMulti(cols.at(i), query.value(i));
         }
 
         ret.insertMulti(query.value(key).toString(), line);

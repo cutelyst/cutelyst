@@ -58,6 +58,12 @@ namespace Sql
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToMapList(QSqlQuery &query);
 
     /**
+     * Returns a list of QVariantLists for all the rows in the query object, it's fastest option to
+     * pass to Grantlee view as columns are indexed by it's position instead of a QString hash lookup.
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToList(QSqlQuery &query);
+
+    /**
      * Returns a QVariantHash of QVariantHashes where the key parameter
      * is the field name in the query result. This is useful when you
      * want to access specific user by user name or user id.
