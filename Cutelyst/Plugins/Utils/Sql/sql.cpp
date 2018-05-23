@@ -32,10 +32,11 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 {
     QVariantHash ret;
     if (query.next()) {
-        int columns = query.record().count();
-        for (int i = 0; i < columns; ++i) {
-            ret.insert(query.record().fieldName(i), query.value(i));
-        }
+		QSqlRecord record = query.record();
+		int columns = record.count();
+		for (int i = 0; i < columns; ++i) {
+			ret.insert(record.fieldName(i), query.value(i));
+		}
     }
     return ret;
 }
@@ -43,11 +44,11 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 QVariantList Sql::queryToHashList(QSqlQuery &query)
 {
     QVariantList ret;
-
-    int columns = query.record().count();
+	QSqlRecord record = query.record();
+    int columns = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
-        cols.append(query.record().fieldName(i));
+        cols.append(record.fieldName(i));
     }
 
     while (query.next()) {
@@ -64,9 +65,10 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 {
     QVariantMap ret;
     if (query.next()) {
-        int columns = query.record().count();
+		QSqlRecord record = query.record();
+        int columns = record.count();
         for (int i = 0; i < columns; ++i) {
-            ret.insert(query.record().fieldName(i), query.value(i));
+            ret.insert(record.fieldName(i), query.value(i));
         }
     }
     return ret;
@@ -75,11 +77,11 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
     QVariantList ret;
-
-    int columns = query.record().count();
+	QSqlRecord record = query.record();
+    int columns = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
-        cols.append(query.record().fieldName(i));
+        cols.append(record.fieldName(i));
     }
 
     while (query.next()) {
@@ -95,6 +97,7 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
 QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
 {
     QVariantHash ret;
+
     QSqlRecord record = query.record();
 
     if (!record.contains(key)) {
