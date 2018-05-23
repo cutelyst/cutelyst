@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,11 +32,11 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 {
     QVariantHash ret;
     if (query.next()) {
-		QSqlRecord record = query.record();
-		int columns = record.count();
-		for (int i = 0; i < columns; ++i) {
-			ret.insert(record.fieldName(i), query.value(i));
-		}
+        const QSqlRecord record = query.record();
+        const int columns = record.count();
+        for (int i = 0; i < columns; ++i) {
+            ret.insert(record.fieldName(i), query.value(i));
+        }
     }
     return ret;
 }
@@ -44,8 +44,8 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
 QVariantList Sql::queryToHashList(QSqlQuery &query)
 {
     QVariantList ret;
-	QSqlRecord record = query.record();
-    int columns = record.count();
+    const QSqlRecord record = query.record();
+    const int columns = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(record.fieldName(i));
@@ -65,8 +65,8 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 {
     QVariantMap ret;
     if (query.next()) {
-		QSqlRecord record = query.record();
-        int columns = record.count();
+        const QSqlRecord record = query.record();
+        const int columns = record.count();
         for (int i = 0; i < columns; ++i) {
             ret.insert(record.fieldName(i), query.value(i));
         }
@@ -77,8 +77,8 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
 QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
     QVariantList ret;
-	QSqlRecord record = query.record();
-    int columns = record.count();
+    const QSqlRecord record = query.record();
+    const int columns = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(record.fieldName(i));
@@ -98,15 +98,14 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
 {
     QVariantHash ret;
 
-    QSqlRecord record = query.record();
-
+    const QSqlRecord record = query.record();
     if (!record.contains(key)) {
         qCCritical(C_SQL) << "Field Name " << key <<
                              " not found in result set";
         return ret;
     }
 
-    int columns = record.count();
+    const int columns = record.count();
     QStringList cols;
 
     for (int i = 0; i < columns; ++i) {
