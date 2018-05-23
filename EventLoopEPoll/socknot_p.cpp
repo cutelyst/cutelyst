@@ -34,7 +34,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
     epoll_event e;
 
     SocketNotifierInfo *data;
-    HandleHash::Iterator it = m_handles.find(fd);
+    auto it = m_handles.find(fd);
     if (it == m_handles.end()) {
         data = new SocketNotifierInfo(fd);
         e.data.ptr = data;
@@ -108,6 +108,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
                 qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
                 return;
             }
+            data->ref(); //we are reusing data
         }
         else {
             Q_UNREACHABLE();
@@ -152,15 +153,11 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
 
         if (info->r || info->w || info->x) {
             res = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, info->fd, &e);
-        }
-        else {
+        } else {
             res = epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, info->fd, &e);
             if (Q_UNLIKELY(res != 0 && EBADF == errno)) {
                 res = 0;
             }
-            info->deref();
-
-            m_notifiers.erase(it); // Hash is not rehashed
 
             auto hi = m_handles.find(info->fd);
             Q_ASSERT(hi != m_handles.end());
@@ -170,6 +167,9 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
         if (Q_UNLIKELY(res != 0)) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
         }
+
+        m_notifiers.erase(it); // Hash is not rehashed
+        info->deref();
     }
 }
 

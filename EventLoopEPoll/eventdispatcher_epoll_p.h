@@ -111,11 +111,6 @@ public:
 
     static void calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta);
 
-    typedef QHash<int, EpollAbastractEvent*> HandleHash;
-    typedef QHash<int, TimerInfo*> TimerHash;
-    typedef QHash<QSocketNotifier*, SocketNotifierInfo*> SocketNotifierHash;
-    typedef QHash<int, ZeroTimer*> ZeroTimerHash;
-
 private:
     Q_DISABLE_COPY(EventDispatcherEPollPrivate)
     Q_DECLARE_PUBLIC(EventDispatcherEPoll)
@@ -126,10 +121,10 @@ private:
     bool m_interrupt = false;
     EventFdInfo *m_event_fd_info;
     QAtomicInt m_wakeups;
-    HandleHash m_handles;
-    SocketNotifierHash m_notifiers;
-    TimerHash m_timers;
-    ZeroTimerHash m_zero_timers;
+    QHash<int, EpollAbastractEvent*> m_handles;
+    QHash<QSocketNotifier*, SocketNotifierInfo*> m_notifiers;
+    QHash<int, TimerInfo*> m_timers;
+    QHash<int, ZeroTimer*> m_zero_timers;
 
     bool disableSocketNotifiers(bool disable);
     bool disableTimers(bool disable);
