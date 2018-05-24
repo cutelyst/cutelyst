@@ -365,6 +365,26 @@ public:
     bool isGet() const;
 
     /**
+     * Returns true if the request method is HEAD.
+     */
+    bool isHead() const;
+
+    /**
+     * Returns true if the request method is PUT.
+     */
+    bool isPut() const;
+
+    /**
+     * Returns true if the request method is PATCH.
+     */
+    bool isPatch() const;
+
+    /**
+     * Returns true if the request method is DELETE.
+     */
+    bool isDelete() const;
+
+    /**
      * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
     QString protocol() const;

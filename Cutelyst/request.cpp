@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -339,6 +339,30 @@ bool Request::isGet() const
 {
     Q_D(const Request);
     return d->engineRequest->method == QStringLiteral("GET");
+}
+
+bool Request::isHead() const
+{
+    Q_D(const Request);
+    return d->engineRequest->method == QStringLiteral("HEAD");
+}
+
+bool Request::isPut() const
+{
+    Q_D(const Request);
+    return d->engineRequest->method == QStringLiteral("PUT");
+}
+
+bool Request::isPatch() const
+{
+    Q_D(const Request);
+    return d->engineRequest->method == QStringLiteral("PATCH");
+}
+
+bool Request::isDelete() const
+{
+    Q_D(const Request);
+    return d->engineRequest->method == QStringLiteral("DELETE");
 }
 
 QString Request::protocol() const
