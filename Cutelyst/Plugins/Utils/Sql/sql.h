@@ -50,6 +50,12 @@ namespace Sql
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantMap queryToMapObject(QSqlQuery &query);
 
     /**
+     * Returns a QJsonObject for the first (if any) row in the query object.
+     * Each column name is a key in the object
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonObject queryToJsonObject(QSqlQuery &query);
+
+    /**
      * Returns a variant list of QVariant maps for all the rows
      * in the query object, it's useful for creating
      * stash objects for say a list of users to be used by
@@ -58,10 +64,21 @@ namespace Sql
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToMapList(QSqlQuery &query);
 
     /**
+     * Returns an array of QJsonObject objects for all the rows in the query object
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonArray queryToJsonObjectArray(QSqlQuery &query);
+
+    /**
      * Returns a list of QVariantLists for all the rows in the query object, it's fastest option to
      * pass to Grantlee view as columns are indexed by it's position instead of a QString hash lookup.
      */
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantList queryToList(QSqlQuery &query);
+
+    /**
+     * Returns a QJsonArray of arrays for all the rows in the query object,
+     * columns are indexed by it's position instead of a QString map lookup.
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonArray queryToJsonArray(QSqlQuery &query);
 
     /**
      * Returns a QVariantHash of QVariantHashes where the key parameter
@@ -69,6 +86,13 @@ namespace Sql
      * want to access specific user by user name or user id.
      */
     CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedHash(QSqlQuery &query, const QString &key);
+
+    /**
+     * Returns a QJsonObject of QJsonObject where the key parameter
+     * is the field name in the query result. This is useful when you
+     * want to access specific user by user name or user id.
+     */
+    CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonObject queryToIndexedJsonObject(QSqlQuery &query, const QString &key);
 
     /**
      * Bind params to the query, using the param name as

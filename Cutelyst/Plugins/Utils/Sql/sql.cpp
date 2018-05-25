@@ -17,8 +17,12 @@
  */
 #include "sql.h"
 
-#include <QtCore/QLoggingCategory>
+#include <QLoggingCategory>
 #include <QThread>
+
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
@@ -74,6 +78,19 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
     return ret;
 }
 
+QJsonObject Sql::queryToJsonObject(QSqlQuery &query)
+{
+    QJsonObject ret;
+    if (query.next()) {
+        const QSqlRecord record = query.record();
+        const int columns = record.count();
+        for (int i = 0; i < columns; ++i) {
+            ret.insert(record.fieldName(i), QJsonValue::fromVariant(query.value(i)));
+        }
+    }
+    return ret;
+}
+
 QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
     QVariantList ret;
@@ -94,6 +111,26 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
     return ret;
 }
 
+QJsonArray Sql::queryToJsonObjectArray(QSqlQuery &query)
+{
+    QJsonArray ret;
+    const QSqlRecord record = query.record();
+    const int columns = record.count();
+    QStringList cols;
+    for (int i = 0; i < columns; ++i) {
+        cols.append(record.fieldName(i));
+    }
+
+    while (query.next()) {
+        QJsonObject line;
+        for (int i = 0; i < columns; ++i) {
+            line.insert(cols.at(i), QJsonValue::fromVariant(query.value(i)));
+        }
+        ret.append(line);
+    }
+    return ret;
+}
+
 QVariantList Sql::queryToList(QSqlQuery &query)
 {
     QVariantList ret;
@@ -102,9 +139,25 @@ QVariantList Sql::queryToList(QSqlQuery &query)
     while (query.next()) {
         QVariantList line;
         for (int i = 0; i < columns; ++i) {
-            line.push_back(query.value(i));
+            line.append(query.value(i));
         }
-        ret.push_back(line);
+        ret.append(line);
+    }
+
+    return ret;
+}
+
+QJsonArray Sql::queryToJsonArray(QSqlQuery &query)
+{
+    QJsonArray ret;
+
+    const int columns = query.record().count();
+    while (query.next()) {
+        QJsonArray array;
+        for (int i = 0; i < columns; ++i) {
+            array.append(QJsonValue::fromVariant(query.value(i)));
+        }
+        ret.append(array);
     }
 
     return ret;
@@ -115,7 +168,8 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
     QVariantHash ret;
 
     const QSqlRecord record = query.record();
-    if (!record.contains(key)) {
+    int index = record.indexOf(key);
+    if (index == -1) {
         qCCritical(C_SQL) << "Field Name " << key <<
                              " not found in result set";
         return ret;
@@ -131,10 +185,45 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
     while (query.next()) {
         QVariantHash line;
         for (int i = 0; i < columns; ++i) {
-            line.insertMulti(cols.at(i), query.value(i));
+            if (i != index) {
+                line.insertMulti(cols.at(i), query.value(i));
+            }
         }
 
-        ret.insertMulti(query.value(key).toString(), line);
+        ret.insertMulti(query.value(index).toString(), line);
+    }
+
+    return ret;
+}
+
+QJsonObject Sql::queryToIndexedJsonObject(QSqlQuery &query, const QString &key)
+{
+    QJsonObject ret;
+
+    const QSqlRecord record = query.record();
+    int index = record.indexOf(key);
+    if (index == -1) {
+        qCCritical(C_SQL) << "Field Name " << key <<
+                             " not found in result set";
+        return ret;
+    }
+
+    const int columns = record.count();
+    QStringList cols;
+
+    for (int i = 0; i < columns; ++i) {
+        cols.append(record.fieldName(i));
+    }
+
+    while (query.next()) {
+        QJsonObject obj;
+        for (int i = 0; i < columns; ++i) {
+            if (i != index) {
+                obj.insert(cols.at(i), QJsonValue::fromVariant(query.value(i)));
+            }
+        }
+
+        ret.insert(query.value(index).toString(), obj);
     }
 
     return ret;
