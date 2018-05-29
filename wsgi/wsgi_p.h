@@ -102,7 +102,7 @@ public:
     AbstractFork *genericFork = nullptr;
     int bufferSize = 4096;
     int workersNotRunning = 1;
-    int threads = 0;
+    int threads = 1;
     int processes = 0;
     int socketSendBuf = -1;
     int socketReceiveBuf = -1;

@@ -808,7 +808,7 @@ void WSGI::setThreads(const QString &threads)
     if (threads.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
         d->threads = -1;
     } else {
-        d->threads = threads.toInt();
+        d->threads = qMax(1, threads.toInt());
     }
     Q_EMIT changed();
 }
@@ -1365,8 +1365,7 @@ void WSGIPrivate::setupApplication()
         }
     }
 
-    std::cout << "Threads:" << threads << std::endl;
-    if (threads) {
+    if (threads > 1) {
         engine = createEngine(localApp, 0);
         for (int i = 1; i < threads; ++i) {
             if (createEngine(localApp, i)) {
@@ -1486,7 +1485,7 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
     engines.push_back(engine);
 
-    if (threads) {
+    if (threads > 1) {
         auto thread = new QThread(this);
         engine->moveToThread(thread);
     } else {
