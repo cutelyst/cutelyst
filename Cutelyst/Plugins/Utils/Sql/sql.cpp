@@ -141,7 +141,7 @@ QVariantList Sql::queryToList(QSqlQuery &query)
         for (int i = 0; i < columns; ++i) {
             line.append(query.value(i));
         }
-        ret.append(line);
+        ret.append(QVariant::fromValue(line));
     }
 
     return ret;
