@@ -277,3 +277,8 @@ QString Sql::databaseNameThread(const QString &dbName)
 {
     return dbName + QLatin1Char('-') + QThread::currentThread()->objectName();
 }
+
+QSqlDatabase Sql::databaseThread(const QString &dbName)
+{
+    return QSqlDatabase::database(databaseNameThread(dbName));
+}
