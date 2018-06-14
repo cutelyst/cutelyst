@@ -86,7 +86,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     Q_Q(const ActionREST);
     const QString restMethod = q->name() + QLatin1Char('_') + httpMethod;
 
-    Controller *controller = c->controller();
+    Controller *controller = q->controller();
     Action *action = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
