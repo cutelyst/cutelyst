@@ -279,6 +279,9 @@ const char *Engine::httpStatusMessage(quint16 status, int *len)
     case Response::ServiceUnavailable:
         ret = "HTTP/1.1 503 Service Unavailable";
         break;
+    case Response::MultiStatus:
+        ret = "HTTP/1.1 207 Multi-Status";
+        break;
     case Response::GatewayTimeout:
         ret = "HTTP/1.1 504 Gateway Timeout";
         break;

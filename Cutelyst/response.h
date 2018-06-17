@@ -47,6 +47,7 @@ public:
         NoContent                    = 204,
         ResetContent                 = 205,
         PartialContent               = 206,
+        MultiStatus                  = 207,
         MultipleChoices              = 300,
         MovedPermanently             = 301,
         Found                        = 302,
