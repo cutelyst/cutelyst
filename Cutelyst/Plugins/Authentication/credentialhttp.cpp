@@ -205,7 +205,7 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, Authe
 
     // Create Basic response
     if (isAuthTypeBasic()) {
-        createBasicAuthResponse(c);
+        createBasicAuthResponse(c, realm);
     }
 
     return AuthenticationUser();
@@ -216,18 +216,22 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
     return type == CredentialHttp::Basic || type == CredentialHttp::Any;
 }
 
-void CredentialHttpPrivate::createBasicAuthResponse(Context *c)
+void CredentialHttpPrivate::createBasicAuthResponse(Context *c, AuthenticationRealm *realm)
 {
     c->res()->headers().setWwwAuthenticate(joinAuthHeaderParts(QStringLiteral("Basic"),
-                                                               buildAuthHeaderCommon()));
+                                                               buildAuthHeaderCommon(realm)));
 }
 
-QStringList CredentialHttpPrivate::buildAuthHeaderCommon() const
+QStringList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *realm) const
 {
+    QStringList ret;
     // TODO
     // return realm="realmname"
     // return domain="realmname"
-    return QStringList();
+    if (!realm->name().isEmpty()) {
+        ret.append(QLatin1String("realm=\"") + realm->name() + QLatin1Char('"'));
+    }
+    return ret;
 }
 
 QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QStringList &parts) const
