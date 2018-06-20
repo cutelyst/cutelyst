@@ -61,6 +61,15 @@ public:
         c->response()->setBody(c->request()->address().toString());
     }
 
+    C_ATTR(args, :Local :AutoArgs)
+    void args(Context *c, const QStringList &args) {
+        if (c->request()->args() == args) {
+            c->response()->setBody(args.join(QLatin1Char('/')));
+        } else {
+            c->response()->setBody(QByteArrayLiteral("error"));
+        }
+    }
+
     C_ATTR(hostname, :Local :AutoArgs)
     void hostname(Context *c) {
         c->response()->setBody(c->request()->hostname());
@@ -406,7 +415,7 @@ void TestRequest::doTest()
     QUrl urlAux(url.mid(1));
 
     QVariantMap result = m_engine->createRequest(method,
-                                                 urlAux.path(),
+                                                 urlAux.path(QUrl::FullyEncoded),
                                                  urlAux.query(QUrl::FullyEncoded).toLatin1(),
                                                  headers,
                                                  &body);
@@ -432,6 +441,10 @@ void TestRequest::testController_data()
     QByteArray body;
 
     QTest::newRow("address-test00") << get << QStringLiteral("/request/test/address") << headers << QByteArray() << QByteArrayLiteral("127.0.0.1");
+
+    QTest::newRow("args-test00") << get << QStringLiteral("/request/test/args/a%C3%A9%C3%A3u") << headers << QByteArray()
+                                 << QByteArrayLiteral("a\xC3\xA9\xC3\xA3u");
+
     QTest::newRow("hostname-test00") << get << QStringLiteral("/request/test/hostname") << headers << QByteArray()
                                      << QHostInfo::fromName(QStringLiteral("127.0.0.1")).hostName().toLatin1();
     QTest::newRow("port-test00") << get << QStringLiteral("/request/test/port") << headers << QByteArray() << QByteArrayLiteral("3000");

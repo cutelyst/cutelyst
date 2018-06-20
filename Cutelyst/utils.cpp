@@ -126,14 +126,19 @@ QString Utils::decodePercentEncoding(QString *s)
         return *s;
     }
 
-    QChar *data = s->data();
-    int len = s->size();
+    QByteArray ba = s->toLatin1();
+
+    char *data = ba.data();
+    const char *inputPtr = data;
+
+    const int len = ba.count();
     int outlen = 0;
-    for (int i = 0 ; i < len ; ++i, ++outlen) {
-        QChar c = (*s)[i];
-        if (c == QLatin1Char('%') && i + 2 < len) {
-            int a = (*s)[++i].unicode();
-            int b = (*s)[++i].unicode();
+    bool skipUtf8 = true;
+    for (int i = 0 ; i < len; ++i, ++outlen) {
+        const char c = inputPtr[i];
+        if (c == '%' && i + 2 < len) {
+            int a = inputPtr[++i];
+            int b = inputPtr[++i];
 
             if (a >= '0' && a <= '9') a -= '0';
             else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
@@ -143,16 +148,24 @@ QString Utils::decodePercentEncoding(QString *s)
             else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
             else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
 
-            *data++ = (ushort)((a << 4) | b);
+            *data++ = (char)((a << 4) | b);
+            skipUtf8 = false;
+        } else if (c == '+') {
+            *data++ = ' ';
+            skipUtf8 = false;
         } else {
             *data++ = c;
         }
     }
 
-    if (outlen != len)
-        s->truncate(outlen);
+    if (skipUtf8) {
+        return *s;
+    }
 
-    return *s;
+    if (outlen != len)
+        ba.truncate(outlen);
+
+    return QString::fromUtf8(ba);
 }
 
 QString Utils::decodePercentEncoding(QByteArray *ba)
@@ -163,15 +176,13 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
     char *data = ba->data();
     const char *inputPtr = data;
 
-    int i = 0;
     int len = ba->count();
     int outlen = 0;
-    int a, b;
-    while (i < len) {
+    for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
-            a = inputPtr[++i];
-            b = inputPtr[++i];
+            int a = inputPtr[++i];
+            int b = inputPtr[++i];
 
             if (a >= '0' && a <= '9') a -= '0';
             else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
@@ -187,9 +198,6 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
         } else {
             *data++ = c;
         }
-
-        ++i;
-        ++outlen;
     }
 
     if (outlen != len)
