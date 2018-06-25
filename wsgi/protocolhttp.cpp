@@ -29,7 +29,6 @@
 #include <QIODevice>
 #include <QEventLoop>
 #include <QCoreApplication>
-#include <QTemporaryFile>
 #include <QBuffer>
 #include <QTimer>
 #include <QLoggingCategory>
@@ -138,7 +137,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 if (len) {
                     parseHeader(ptr, ptr + len, sock);
                 } else {
-                    if (protoRequest->contentLength != -1) {
+                    if (protoRequest->contentLength > 0) {
                         protoRequest->connState = ProtoRequestHttp::ContentBody;
                         protoRequest->body = createBody(protoRequest->contentLength);
                         if (!protoRequest->body) {
