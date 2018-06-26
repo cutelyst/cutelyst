@@ -26,7 +26,7 @@
 #include <QStringList>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached")
+Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached", QtWarningMsg)
 
 using namespace Cutelyst;
 

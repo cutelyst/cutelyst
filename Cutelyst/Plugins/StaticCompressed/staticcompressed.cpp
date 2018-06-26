@@ -44,7 +44,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed")
+Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed", QtWarningMsg)
 
 StaticCompressed::StaticCompressed(Application *parent) :
     Plugin(parent), d_ptr(new StaticCompressedPrivate)

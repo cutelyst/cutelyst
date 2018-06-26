@@ -27,7 +27,7 @@
 #include <QTemporaryFile>
 #include <QBuffer>
 
-Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi")
+Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi", QtWarningMsg)
 
 /*
  * Listening socket file number

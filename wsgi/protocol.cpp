@@ -25,7 +25,7 @@
 
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CWSGI_PROTO, "cwsgi.proto")
+Q_LOGGING_CATEGORY(CWSGI_PROTO, "cwsgi.proto", QtWarningMsg)
 
 using namespace CWSGI;
 

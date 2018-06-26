@@ -46,7 +46,7 @@
 #include <QLoggingCategory>
 #include <QFileSystemWatcher>
 
-Q_LOGGING_CATEGORY(WSGI_UNIX, "wsgi.unix")
+Q_LOGGING_CATEGORY(WSGI_UNIX, "wsgi.unix", QtWarningMsg)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"

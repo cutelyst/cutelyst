@@ -33,7 +33,7 @@
 #include <Cutelyst/response.h>
 #include <Cutelyst/request.h>
 
-Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi")
+Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi", QtWarningMsg)
 
 using namespace Cutelyst;
 

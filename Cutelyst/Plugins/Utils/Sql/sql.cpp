@@ -28,7 +28,7 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlRecord>
 
-Q_LOGGING_CATEGORY(C_SQL, "cutelyst.utils.sql")
+Q_LOGGING_CATEGORY(C_SQL, "cutelyst.utils.sql", QtWarningMsg)
 
 using namespace Cutelyst;
 

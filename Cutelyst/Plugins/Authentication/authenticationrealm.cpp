@@ -26,7 +26,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm")
+Q_LOGGING_CATEGORY(C_AUTH_REALM, "cutelyst.plugin.authentication.realm", QtWarningMsg)
 
 #define SESSION_AUTHENTICATION_USER "__authentication_user"
 #define SESSION_AUTHENTICATION_USER_REALM "__authentication_user_realm" // in authentication.cpp

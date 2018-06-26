@@ -21,7 +21,7 @@
 
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CWSGI_SOCK, "cwsgi.socket")
+Q_LOGGING_CATEGORY(CWSGI_SOCK, "cwsgi.socket", QtWarningMsg)
 
 using namespace CWSGI;
 

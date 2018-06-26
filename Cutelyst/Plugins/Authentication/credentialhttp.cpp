@@ -28,7 +28,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp")
+Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp", QtWarningMsg)
 
 CredentialHttp::CredentialHttp(QObject *parent) : AuthenticationCredential(parent)
   , d_ptr(new CredentialHttpPrivate)

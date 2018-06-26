@@ -37,7 +37,7 @@
 
 using namespace CWSGI;
 
-Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http")
+Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http", QtWarningMsg)
 Q_DECLARE_LOGGING_CATEGORY(CWSGI_SOCK)
 
 ProtocolHttp::ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c) : Protocol(wsgi)

@@ -27,7 +27,7 @@
 #include <Cutelyst/Response>
 #include <Cutelyst/Request>
 
-Q_LOGGING_CATEGORY(CUTELYST_SM, "cwsgi.staticmap")
+Q_LOGGING_CATEGORY(CUTELYST_SM, "cwsgi.staticmap", QtWarningMsg)
 
 using namespace CWSGI;
 using namespace Cutelyst;

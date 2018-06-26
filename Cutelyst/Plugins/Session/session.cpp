@@ -31,7 +31,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session")
+Q_LOGGING_CATEGORY(C_SESSION, "cutelyst.plugin.session", QtWarningMsg)
 
 #define SESSION_VALUES QStringLiteral("_c_session_values")
 #define SESSION_EXPIRES QStringLiteral("_c_session_expires")

@@ -27,7 +27,7 @@
 #include <SimpleMail/emailaddress.h>
 #include <SimpleMail/mimetext.h>
 
-Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email")
+Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email", QtWarningMsg)
 
 using namespace Cutelyst;
 using namespace SimpleMail;

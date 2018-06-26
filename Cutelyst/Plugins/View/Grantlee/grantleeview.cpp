@@ -30,7 +30,7 @@
 #include <QtCore/QLoggingCategory>
 #include <QTranslator>
 
-Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee")
+Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee", QtWarningMsg)
 
 using namespace Cutelyst;
 

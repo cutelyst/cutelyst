@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,9 +60,6 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
     Q_D(Engine);
 
     connect(this, &Engine::processRequestAsync, this, &Engine::processRequest, Qt::QueuedConnection);
-
-    // Debug messages should be disabled by default
-    QLoggingCategory::setFilterRules(QLatin1String("cutelyst.*.debug=false"));
 
     d->opts = opts;
     d->workerCore = workerCore;

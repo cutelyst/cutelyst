@@ -27,7 +27,7 @@
 
 using namespace CWSGI;
 
-Q_LOGGING_CATEGORY(CWSGI_H2, "cwsgi.http2")
+Q_LOGGING_CATEGORY(CWSGI_H2, "cwsgi.http2", QtWarningMsg)
 
 #ifdef Q_CC_MSVC
 #pragma pack(push)

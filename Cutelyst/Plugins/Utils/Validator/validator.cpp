@@ -24,7 +24,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator")
+Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator", QtWarningMsg)
 
 Validator::Validator(QLatin1String translationContext) :
     d_ptr(new ValidatorPrivate(translationContext))

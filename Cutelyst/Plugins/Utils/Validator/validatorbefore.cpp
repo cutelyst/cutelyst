@@ -22,7 +22,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before")
+Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before", QtWarningMsg)
 
 ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey) :
     ValidatorRule(*new ValidatorBeforePrivate(field, comparison, timeZone, inputFormat, messages, defValKey))

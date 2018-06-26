@@ -52,7 +52,7 @@
 
 #include <iostream>
 
-Q_LOGGING_CATEGORY(CUTELYST_WSGI, "wsgi")
+Q_LOGGING_CATEGORY(CUTELYST_WSGI, "wsgi", QtWarningMsg)
 
 using namespace CWSGI;
 using namespace Cutelyst;

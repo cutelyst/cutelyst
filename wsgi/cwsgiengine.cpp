@@ -48,7 +48,7 @@
 
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CWSGI_ENGINE, "cwsgi.engine")
+Q_LOGGING_CATEGORY(CWSGI_ENGINE, "cwsgi.engine", QtWarningMsg)
 
 using namespace CWSGI;
 using namespace Cutelyst;

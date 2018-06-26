@@ -33,7 +33,7 @@
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-Q_LOGGING_CATEGORY(WSGI_SYSTEMD, "wsgi.systemd")
+Q_LOGGING_CATEGORY(WSGI_SYSTEMD, "wsgi.systemd", QtWarningMsg)
 
 using namespace CWSGI;
 

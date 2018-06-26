@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@
 #endif
 
 
-Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer")
+Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer", QtWarningMsg)
 
 using namespace CWSGI;
 

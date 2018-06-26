@@ -41,19 +41,19 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QLocale>
 
-Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher")
-Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_PATH, "cutelyst.dispatcher.path")
-Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained")
-Q_LOGGING_CATEGORY(CUTELYST_CONTROLLER, "cutelyst.controller")
-Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core")
-Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine")
-Q_LOGGING_CATEGORY(CUTELYST_UPLOAD, "cutelyst.upload")
-Q_LOGGING_CATEGORY(CUTELYST_MULTIPART, "cutelyst.multipart")
-Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view")
-Q_LOGGING_CATEGORY(CUTELYST_REQUEST, "cutelyst.request")
-Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response")
-Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats")
-Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component")
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_PATH, "cutelyst.dispatcher.path", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_CHAINED, "cutelyst.dispatcher.chained", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_CONTROLLER, "cutelyst.controller", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_CORE, "cutelyst.core", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_ENGINE, "cutelyst.engine", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_UPLOAD, "cutelyst.upload", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_MULTIPART, "cutelyst.multipart", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_VIEW, "cutelyst.view", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_REQUEST, "cutelyst.request", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_RESPONSE, "cutelyst.response", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component", QtWarningMsg)
 
 using namespace Cutelyst;
 

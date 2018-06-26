@@ -25,7 +25,7 @@
 #include <QFile>
 #include <QtCore/QLoggingCategory>
 
-Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver")
+Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver", QtWarningMsg)
 
 using namespace Cutelyst;
 

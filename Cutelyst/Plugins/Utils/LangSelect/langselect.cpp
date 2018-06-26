@@ -33,7 +33,7 @@
 #include <map>
 #include <utility>
 
-Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect")
+Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 
 using namespace Cutelyst;
 

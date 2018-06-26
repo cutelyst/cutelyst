@@ -28,7 +28,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore")
+Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore", QtWarningMsg)
 
 #define SESSION_STORE_MEMCD_SAVE QStringLiteral("_c_session_store_memcd_save")
 #define SESSION_STORE_MEMCD_DATA QStringLiteral("_c_session_store_memcd_data")

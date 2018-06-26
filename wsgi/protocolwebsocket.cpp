@@ -31,7 +31,7 @@
 
 using namespace CWSGI;
 
-Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket")
+Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket", QtWarningMsg)
 
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
   , m_codec(QTextCodec::codecForName(QByteArrayLiteral("UTF-8")))

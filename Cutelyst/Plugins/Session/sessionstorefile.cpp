@@ -29,7 +29,7 @@
 
 using namespace Cutelyst;
 
-Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile")
+Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile", QtWarningMsg)
 
 #define SESSION_STORE_FILE_SAVE QStringLiteral("_c_session_store_file_save")
 #define SESSION_STORE_FILE_DATA QStringLiteral("_c_session_store_file_data")

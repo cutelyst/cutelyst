@@ -53,7 +53,7 @@
 #define CONTEXT_CSRF_COOKIE_SET QStringLiteral("_c_csrfcookieset")
 #define CONTEXT_CSRF_CHECK_PASSED QStringLiteral("_c_csrfcheckpassed")
 
-Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection")
+Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection", QtWarningMsg)
 
 using namespace Cutelyst;
 
