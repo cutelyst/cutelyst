@@ -28,6 +28,7 @@
 #include <Cutelyst/Action>
 #include <Cutelyst/Dispatcher>
 #include <Cutelyst/Controller>
+#include <Cutelyst/Upload>
 
 #include <QLoggingCategory>
 #include <QNetworkCookie>
@@ -599,7 +600,14 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                 QByteArray requestCsrfToken;
                 // delete does not have body data
                 if (c->req()->method() != QLatin1String("DELETE")) {
-                    requestCsrfToken = c->req()->bodyParam(csrf->d_ptr->formInputName).toLatin1();
+                    if (c->req()->contentType() == QLatin1String("multipart/form-data")) {
+                        // everything is an upload, even our token
+                        Upload *upload = c->req()->upload(csrf->d_ptr->formInputName);
+                        if (upload && upload->size() < 1024 /*FIXME*/) {
+                            requestCsrfToken = upload->readAll();
+                        }
+                    } else
+                        requestCsrfToken = c->req()->bodyParam(csrf->d_ptr->formInputName).toLatin1();
                 }
 
                 if (requestCsrfToken.isEmpty()) {
