@@ -44,7 +44,6 @@
 #include <QThread>
 #include <QFile>
 #include <QLoggingCategory>
-#include <QFileSystemWatcher>
 
 Q_LOGGING_CATEGORY(WSGI_UNIX, "wsgi.unix", QtWarningMsg)
 
@@ -482,7 +481,7 @@ void UnixFork::handleSigChld()
     while ((p = waitpid(-1, &status, WNOHANG)) > 0)
     {
         /* Handle the death of pid p */
-//        qCDebug(WSGI_UNIX) << "SIGCHLD worker died" << p << status;
+//        qCDebug(WSGI_UNIX) << "SIGCHLD worker died" << p << WEXITSTATUS(status);
         // SIGTERM is used when CHEAPED (ie post fork failed)
         int exitStatus = WEXITSTATUS(status);
 
@@ -496,13 +495,16 @@ void UnixFork::handleSigChld()
             continue;
         }
 
-        if (WIFEXITED(status) && exitStatus == 15) {
+        if (WIFEXITED(status) && exitStatus == 15 && worker.restart == 0) {
             // Child process cheaping
             worker.null = true;
         }
 
-        if (!worker.null && !m_terminating/* && status != SIGTERM*/) {
-            std::cout << "DAMN ! worker " << worker.id << " (pid: " << p << ") died, killed by signal " << exitStatus << " :( trying respawn .." << std::endl;
+        if (!worker.null && !m_terminating) {
+            if (worker.restart == 0) {
+                std::cout << "DAMN ! worker " << worker.id << " (pid: " << p << ") died, killed by signal " << exitStatus << " :( trying respawn .." << std::endl;
+            }
+            worker.restart = 0;
             ++worker.respawn;
             QTimer::singleShot(1 * 1000, this, &UnixFork::decreaseWorkerRespawn);
             m_recreateWorker.push_back(worker);
