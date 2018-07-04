@@ -128,6 +128,11 @@ public:
      */
     void setPath(char *rawPath, const int len);
 
+    inline void setPath(const QString &path) {
+        QByteArray rawPath = path.toLatin1();
+        setPath(rawPath.data(), rawPath.size());
+    }
+
     /*! The method used (GET, POST...) */
     QString method;
 
