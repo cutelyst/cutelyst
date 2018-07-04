@@ -205,4 +205,46 @@ bool EngineRequest::webSocketHandshakeDo(const QString &key, const QString &orig
     return false;
 }
 
+void EngineRequest::setPath(char *rawPath, const int len)
+{
+    qDebug() << "PATH" << QByteArray(rawPath, len);
+    if (len == 0) {
+        return;
+    }
+
+    char *data = rawPath;
+    const char *inputPtr = data;
+
+    bool skipUtf8 = true;
+    int outlen = 0;
+    for (int i = 0; i < len; ++i, ++outlen) {
+        const char c = inputPtr[i];
+        if (c == '%' && i + 2 < len) {
+            int a = inputPtr[++i];
+            int b = inputPtr[++i];
+
+            if (a >= '0' && a <= '9') a -= '0';
+            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+
+            if (b >= '0' && b <= '9') b -= '0';
+            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+
+            *data++ = (char)((a << 4) | b);
+            skipUtf8 = false;
+        } else if (c == '+') {
+            *data++ = ' ';
+        } else {
+            *data++ = c;
+        }
+    }
+
+    if (skipUtf8) {
+        path = QString::fromLatin1(rawPath, outlen);
+    } else {
+        path = QString::fromUtf8(rawPath, outlen);
+    }
+}
+
 #include "moc_enginerequest.cpp"

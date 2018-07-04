@@ -97,7 +97,8 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
 
     TestEngineConnection req;
     req.method = method;
-    req.path = path;
+    QByteArray rawPath = path.toLatin1();
+    req.setPath(rawPath.data(), rawPath.size());
     req.query = query;
     req.protocol = QStringLiteral("HTTP/1.1");
     req.isSecure = false;

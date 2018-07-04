@@ -180,10 +180,10 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
         const char *pch = static_cast<const char *>(memchr(val, '?', vallen));
         if (pch) {
             int pos = pch - val;
-            request->path = QString::fromLatin1(val + 1, pos - 1);
+            request->setPath(const_cast<char *>(val + 1), pos - 1);
             request->query = QByteArray(pch + 1, vallen - pos - 1);
         } else {
-            request->path = QString::fromLatin1(val + 1, vallen - 1);
+            request->setPath(const_cast<char *>(val + 1), vallen - 1);
             request->query = QByteArray();
         }
     } else if (memcmp(key, "SERVER_PROTOCOL", 15) == 0) {

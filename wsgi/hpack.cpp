@@ -248,9 +248,11 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
         if (stream->path.isEmpty() && !v.isEmpty()) {
             int pos = v.indexOf(QLatin1Char('?'));
             if (pos == -1) {
-                stream->path = v;
+                QByteArray rawPath = v.toLatin1();
+                stream->setPath(rawPath.data(), rawPath.size());
             } else {
-                stream->path = v.left(pos);
+                QByteArray rawPath = v.left(pos).toLatin1();
+                stream->setPath(rawPath.data(), rawPath.size());
                 stream->query = v.mid(++pos).toLatin1();
             }
             return true;

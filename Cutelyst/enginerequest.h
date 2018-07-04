@@ -120,10 +120,18 @@ protected:
     virtual bool webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol);
 
 public:
+    /*!
+     * This method sets the path and already does the decoding so that it is
+     * done a single time.
+     *
+     * The path requested by the user agent '/index', MUST NOT have a leading slash
+     */
+    void setPath(char *rawPath, const int len);
+
     /*! The method used (GET, POST...) */
     QString method;
 
-    /*! The path requested by the user agent '/index', MUST NOT have a leading slash */
+    /*! Call setPath() instead */
     QString path;
 
     /*! The query string requested by the user agent 'foo=bar&baz' */

@@ -132,8 +132,8 @@ QString Utils::decodePercentEncoding(QString *s)
     const char *inputPtr = data;
 
     const int len = ba.count();
-    int outlen = 0;
     bool skipUtf8 = true;
+    int outlen = 0;
     for (int i = 0 ; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
@@ -152,7 +152,6 @@ QString Utils::decodePercentEncoding(QString *s)
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';
-            skipUtf8 = false;
         } else {
             *data++ = c;
         }
@@ -162,21 +161,19 @@ QString Utils::decodePercentEncoding(QString *s)
         return *s;
     }
 
-    if (outlen != len)
-        ba.truncate(outlen);
-
-    return QString::fromUtf8(ba);
+    return QString::fromUtf8(ba.data(), outlen);
 }
 
 QString Utils::decodePercentEncoding(QByteArray *ba)
 {
     if (ba->isEmpty())
-        return QString::fromLatin1(*ba);
+        return QString();
 
     char *data = ba->data();
     const char *inputPtr = data;
 
     int len = ba->count();
+    bool skipUtf8 = true;
     int outlen = 0;
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
@@ -193,6 +190,7 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
             else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
 
             *data++ = (char)((a << 4) | b);
+            skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';
         } else {
@@ -200,8 +198,9 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
         }
     }
 
-    if (outlen != len)
-        ba->truncate(outlen);
-
-    return QString::fromUtf8(*ba);
+    if (skipUtf8) {
+        return QString::fromLatin1(ba->data(), outlen);
+    } else {
+        return QString::fromUtf8(ba->data(), outlen);
+    }
 }

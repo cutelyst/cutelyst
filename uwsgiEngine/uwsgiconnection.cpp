@@ -54,7 +54,8 @@ uwsgiConnection::uwsgiConnection(wsgi_request *req)
 {
     quint16 len = questionMark(req->uri, req->uri_len);
     quint16 pos = notSlash(req->uri, len);
-    path = QString::fromLatin1(req->uri + pos, len - pos);
+    QByteArray rawPath(req->uri + pos, len - pos);
+    setPath(rawPath.data(), rawPath.size());
 
     serverAddress = QString::fromLatin1(req->host, req->host_len);
     query = QByteArray::fromRawData(req->query_string, req->query_string_len);

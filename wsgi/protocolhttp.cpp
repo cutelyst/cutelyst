@@ -251,7 +251,9 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ' ' && *word_boundary != '?' && word_boundary < end) {
         ++word_boundary;
     }
-    protoRequest->path = QString::fromLatin1(ptr, word_boundary - ptr);
+
+    // This will change the ptr but will only change less than size
+    protoRequest->setPath(const_cast<char *>(ptr), word_boundary - ptr);
 
     if (*word_boundary == '?') {
         ptr = word_boundary + 1;

@@ -205,8 +205,8 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
 
         int pos = path.lastIndexOf(QLatin1Char('/'));
 
-        QString arg = path.mid(pos + 1);
-        args.prepend(Utils::decodePercentEncoding(&arg));
+        const QString arg = path.mid(pos + 1);
+        args.prepend(arg);
 
         path.resize(pos);
     }
