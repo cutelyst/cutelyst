@@ -89,6 +89,8 @@ void LocalSocket::socketDisconnected()
     }
 }
 
+#ifndef QT_NO_SSL
+
 SslSocket::SslSocket(Cutelyst::Engine *engine, QObject *parent) : QSslSocket(parent), Socket(true, engine)
 {
     connect(this, &QSslSocket::disconnected, this, &SslSocket::socketDisconnected, Qt::DirectConnection);
@@ -115,5 +117,7 @@ void SslSocket::socketDisconnected()
         Q_EMIT finished();
     }
 }
+
+#endif // QT_NO_SSL
 
 #include "moc_socket.cpp"

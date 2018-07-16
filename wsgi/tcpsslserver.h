@@ -18,6 +18,8 @@
 #ifndef TCPSSLSERVER_H
 #define TCPSSLSERVER_H
 
+#ifndef QT_NO_SSL
+
 #include "tcpserver.h"
 
 #include <QSslConfiguration>
@@ -49,5 +51,7 @@ private:
 };
 
 }
+
+#endif // QT_NO_SSL
 
 #endif // TCPSSLSERVER_H

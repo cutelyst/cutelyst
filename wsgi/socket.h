@@ -87,6 +87,8 @@ Q_SIGNALS:
     void finished();
 };
 
+#ifndef QT_NO_SSL
+
 class SslSocket : public QSslSocket, public Socket
 {
     Q_OBJECT
@@ -101,6 +103,8 @@ Q_SIGNALS:
     // See TcpSocket note
     void finished();
 };
+
+#endif // QT_NO_SSL
 
 class LocalSocket : public QLocalSocket, public Socket
 {

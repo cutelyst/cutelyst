@@ -31,6 +31,7 @@
 #include <QCoreApplication>
 #include <QBuffer>
 #include <QTimer>
+#include <QCryptographicHash>
 #include <QLoggingCategory>
 
 #include <typeinfo>

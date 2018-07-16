@@ -21,6 +21,8 @@
 #include "socket.h"
 #include "wsgi.h"
 
+#ifndef QT_NO_SSL
+
 #include <QSslError>
 
 using namespace CWSGI;
@@ -126,3 +128,5 @@ void TcpSslServer::setHttp2Protocol(Protocol *protocol)
 }
 
 #include "moc_tcpsslserver.cpp"
+
+#endif // QT_NO_SSL

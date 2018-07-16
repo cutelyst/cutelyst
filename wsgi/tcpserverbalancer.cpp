@@ -52,7 +52,9 @@ TcpServerBalancer::TcpServerBalancer(WSGI *wsgi) : QTcpServer(wsgi)
 
 TcpServerBalancer::~TcpServerBalancer()
 {
+#ifndef QT_NO_SSL
     delete m_sslConfiguration;
+#endif // QT_NO_SSL
 }
 
 bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool secure)
@@ -88,6 +90,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         port = 80;
     }
 
+#ifndef QT_NO_SSL
     if (secure) {
         if (commaPos == -1) {
             std::cerr << "No SSL certificate specified" << std::endl;
@@ -128,6 +131,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
             m_sslConfiguration->setAllowedNextProtocols({ QByteArrayLiteral("h2") });
         }
     }
+#endif // QT_NO_SSL
 
     m_address = address;
     m_port = port;
@@ -396,9 +400,11 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 {
     TcpServer *server;
     if (m_sslConfiguration) {
+#ifndef QT_NO_SSL
         auto sslServer = new TcpSslServer(m_serverName, m_protocol, m_wsgi, engine);
         sslServer->setSslConfiguration(*m_sslConfiguration);
         server = sslServer;
+#endif //QT_NO_SSL
     } else {
         server = new TcpServer(m_serverName, m_protocol, m_wsgi, engine);
     }
