@@ -112,8 +112,14 @@ endif()
 
 target_link_libraries(cutelyst-wsgi2
     PRIVATE Qt5::Core
+    PRIVATE Cutelyst2Qt5::Core
     PRIVATE Cutelyst2Qt5::WSGI
 )
+if (LINUX)
+target_link_libraries(cutelyst-wsgi2
+    PRIVATE Cutelyst2Qt5::EventLoopEPoll
+)
+endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5WSGI.pc.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5WSGI.pc
