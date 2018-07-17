@@ -240,7 +240,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     }
 
     if (!args.isEmpty()) {
-        if (_path == QLatin1Char('/')) {
+        if (_path == QLatin1String("/")) {
             _path += args.join(QLatin1Char('/'));
         } else {
             _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
