@@ -228,16 +228,23 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
 
     QUrl uri = d->request->uri();
 
-    QString _path = path;
-    if (_path.isEmpty()) {
-        // ns must NOT return a leading slash
-        _path = QLatin1Char('/') + d->action->controller()->ns();
-    } else if (!_path.startsWith(QLatin1Char('/'))) {
-        _path.prepend(QLatin1Char('/'));
+    QString _path;
+    if (args.isEmpty()) {
+        _path = path;
+    } else {
+        _path = path + QLatin1Char('/') + args.join(QLatin1Char('/'));
     }
 
-    if (!args.isEmpty()) {
-        _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
+    if (path.isEmpty()) {
+        // ns must NOT return a leading slash
+        const QString controllerNS = d->action->controller()->ns();
+        if (!controllerNS.isEmpty()) {
+            _path.prepend(controllerNS);
+        }
+    }
+
+    if (!_path.startsWith(QLatin1Char('/'))) {
+        _path.prepend(QLatin1Char('/'));
     }
     uri.setPath(_path, QUrl::DecodedMode);
 
