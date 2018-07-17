@@ -208,6 +208,7 @@ bool EngineRequest::webSocketHandshakeDo(const QString &key, const QString &orig
 void EngineRequest::setPath(char *rawPath, const int len)
 {
     if (len == 0) {
+        path = QString();
         return;
     }
 
