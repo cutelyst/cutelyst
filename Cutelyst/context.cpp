@@ -229,17 +229,21 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     QUrl uri = d->request->uri();
 
     QString _path;
-    if (args.isEmpty()) {
-        _path = path;
-    } else {
-        _path = path + QLatin1Char('/') + args.join(QLatin1Char('/'));
-    }
-
     if (path.isEmpty()) {
         // ns must NOT return a leading slash
         const QString controllerNS = d->action->controller()->ns();
         if (!controllerNS.isEmpty()) {
             _path.prepend(controllerNS);
+        }
+    } else {
+        _path = path;
+    }
+
+    if (!args.isEmpty()) {
+        if (_path == QLatin1Char('/')) {
+            _path += args.join(QLatin1Char('/'));
+        } else {
+            _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
         }
     }
 
