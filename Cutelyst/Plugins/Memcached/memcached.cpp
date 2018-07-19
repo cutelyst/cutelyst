@@ -1401,6 +1401,11 @@ QString Memcached::errorString(Context *c, MemcachedReturnType rt)
     }
 }
 
+QVersionNumber Memcached::libMemcachedVersion()
+{
+    return QVersionNumber::fromString(QLatin1String(memcached_lib_version()));
+}
+
 void MemcachedPrivate::_q_postFork(Application *app)
 {
     mcd = app->plugin<Memcached *>();

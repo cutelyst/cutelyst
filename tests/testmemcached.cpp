@@ -30,6 +30,7 @@ private Q_SLOTS:
     void testController() {
         doTest();
     }
+    void testLibMemcachedVersion();
 
     void cleanupTestCase();
 
@@ -1126,6 +1127,13 @@ void TestMemcached::testController_data()
     for (const std::pair<QString,QByteArray> &test : testVect) {
         QTest::newRow(test.first.toLocal8Bit().constData()) << QStringLiteral("/memcached/test/") + test.first << headers << QByteArray() << test.second;
     }
+}
+
+void TestMemcached::testLibMemcachedVersion()
+{
+    const QVersionNumber version = Memcached::libMemcachedVersion();
+    qDebug() << "libMemcached version:" << version.toString();
+    QVERIFY(!version.isNull());
 }
 
 QTEST_MAIN(TestMemcached)

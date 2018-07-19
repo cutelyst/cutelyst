@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Matthias Fehring <kontakt@buschmann23.de>
+ * Copyright (C) 2017-2018 Matthias Fehring <kontakt@buschmann23.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@
 #include <Cutelyst/plugin.h>
 
 #include <QDataStream>
+#include <QVersionNumber>
 
 namespace Cutelyst {
 
@@ -949,6 +950,11 @@ public:
      * Converts the return type @a rt into human readable error string.
      */
     static QString errorString(Context *c, MemcachedReturnType rt);
+
+    /*!
+     * Returns the version of the currently used libmemcached.
+     */
+    static QVersionNumber libMemcachedVersion();
 
 protected:
     const QScopedPointer<MemcachedPrivate> d_ptr;
