@@ -7,5 +7,5 @@ Name: Cutelyst Qt5 WSGI
 Description: Cutelyst WSGI module
 Version: @PROJECT_VERSION@
 Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core
-Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@WsgiQt5
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5Wsgi
 Cflags: -I${includedir}/Cutelyst -I${includedir}
