@@ -254,11 +254,12 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
     const ActionList containers = d->getContainers(ns);
-
-    for (Action *action : containers) {
-        if (action->name() == name) {
-            ret.prepend(action);
+    auto rIt = containers.rbegin();
+    while (rIt != containers.rend()) {
+        if ((*rIt)->name() == name) {
+            ret.append(*rIt);
         }
+        ++rIt;
     }
     return ret;
 }
