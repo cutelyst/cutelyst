@@ -100,15 +100,14 @@ public:
     void setThreads(const QString &threads);
     QString threads() const;
 
-#ifdef Q_OS_UNIX
     /**
      * Defines the number of processes to use, if set to "auto" the ideal processes count is used
      * @accessors threads(), setThreads()
+     * \note UNIX only
      */
     Q_PROPERTY(QString processes READ processes WRITE setProcesses NOTIFY changed)
     void setProcesses(const QString &process);
     QString processes() const;
-#endif
 
     /**
      * Defines directory to chdir to before application loading
@@ -261,8 +260,8 @@ public:
      * Defines the buffer size used when parsing requests
      * @accessors bufferSize(), setBufferSize()
      */
-    Q_PROPERTY(qint64 buffer_size READ bufferSize WRITE setBufferSize NOTIFY changed)
-    void setBufferSize(qint64 size);
+    Q_PROPERTY(int buffer_size READ bufferSize WRITE setBufferSize NOTIFY changed)
+    void setBufferSize(int size);
     int bufferSize() const;
 
     /**
@@ -338,10 +337,10 @@ public:
     void setPidfile2(const QString &file);
     QString pidfile2() const;
 
-#ifdef Q_OS_UNIX
     /**
      * Defines user id of the process.
      * @accessors uid(), setUid()
+     * \note UNIX only
      */
     Q_PROPERTY(QString uid READ uid WRITE setUid NOTIFY changed)
     void setUid(const QString &uid);
@@ -350,6 +349,7 @@ public:
     /**
      * Defines group id of the process.
      * @accessors gid(), setGid()
+     * \note UNIX only
      */
     Q_PROPERTY(QString gid READ gid WRITE setGid NOTIFY changed)
     void setGid(const QString &gid);
@@ -358,6 +358,7 @@ public:
     /**
      * Disable additional groups set via initgroups()
      * @accessors noInitgroups(), setNoInitgroups()
+     * \note UNIX only
      */
     Q_PROPERTY(bool no_initgroups READ noInitgroups WRITE setNoInitgroups NOTIFY changed)
     void setNoInitgroups(bool enable);
@@ -366,6 +367,7 @@ public:
     /**
      * Defines owner of UNIX sockets.
      * @accessors chownSocket(), setChownSocket()
+     * \note UNIX only
      */
     Q_PROPERTY(QString chown_socket READ chownSocket WRITE setChownSocket NOTIFY changed)
     void setChownSocket(const QString &chownSocket);
@@ -374,6 +376,7 @@ public:
     /**
      * Defines file mode creation mask
      * @accessors umask(), setUmask()
+     * \note UNIX only
      */
     Q_PROPERTY(QString umask READ umask WRITE setUmask NOTIFY changed)
     void setUmask(const QString &value);
@@ -382,21 +385,20 @@ public:
     /**
      * Defines CPU affinity
      * @accessors cpuAffinity(), setCpuAffinity()
+     * \note UNIX only
      */
     Q_PROPERTY(int cpu_affinity READ cpuAffinity WRITE setCpuAffinity NOTIFY changed)
     void setCpuAffinity(int value);
     int cpuAffinity() const;
-#endif
 
-#ifdef Q_OS_LINUX
     /**
      * Enable SO_REUSEPORT for the sockets
      * @accessors reusePort(), setReusePort()
+     * \note Linux only
      */
     Q_PROPERTY(bool reuse_port READ reusePort WRITE setReusePort NOTIFY changed)
     void setReusePort(bool enable);
     bool reusePort() const;
-#endif
 
     /**
      * Defines is the Application should be lazy loaded.

@@ -83,17 +83,13 @@ public:
     QString socketAccess;
     QString pidfile;
     QString pidfile2;
-#ifdef Q_OS_UNIX
     QString uid;
     QString gid;
     QString chownSocket;
     QString umask;
     bool noInitgroups = false;
     int cpuAffinity = 0;
-#endif
-#ifdef Q_OS_LINUX
     bool reusePort = false;
-#endif
     qint64 postBuffering = -1;
     qint64 postBufferingBufsize = 4096;
     Protocol *protoHTTP = nullptr;

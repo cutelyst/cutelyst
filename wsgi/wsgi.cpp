@@ -822,9 +822,9 @@ QString WSGI::threads() const
     return QString::number(d->threads);
 }
 
-#ifdef Q_OS_UNIX
 void WSGI::setProcesses(const QString &process)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     if (process.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
         d->processes = -1;
@@ -832,6 +832,7 @@ void WSGI::setProcesses(const QString &process)
         d->processes = process.toInt();
     }
     Q_EMIT changed();
+#endif
 }
 
 QString WSGI::processes() const
@@ -841,8 +842,8 @@ QString WSGI::processes() const
         return QStringLiteral("auto");
     }
     return QString::number(d->processes);
+
 }
-#endif
 
 void WSGI::setChdir(const QString &chdir)
 {
@@ -1082,7 +1083,7 @@ QStringList WSGI::touchReload() const
     return d->touchReload;
 }
 
-void WSGI::setBufferSize(qint64 size)
+void WSGI::setBufferSize(int size)
 {
     Q_D(WSGI);
     if (size < 4096) {
@@ -1220,12 +1221,13 @@ QString WSGI::pidfile2() const
     return d->pidfile2;
 }
 
-#ifdef Q_OS_UNIX
 void WSGI::setUid(const QString &uid)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->uid = uid;
     Q_EMIT changed();
+#endif
 }
 
 QString WSGI::uid() const
@@ -1236,9 +1238,11 @@ QString WSGI::uid() const
 
 void WSGI::setGid(const QString &gid)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->gid = gid;
     Q_EMIT changed();
+#endif
 }
 
 QString WSGI::gid() const
@@ -1249,9 +1253,11 @@ QString WSGI::gid() const
 
 void WSGI::setNoInitgroups(bool enable)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->noInitgroups = enable;
     Q_EMIT changed();
+#endif
 }
 
 bool WSGI::noInitgroups() const
@@ -1262,9 +1268,11 @@ bool WSGI::noInitgroups() const
 
 void WSGI::setChownSocket(const QString &chownSocket)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->chownSocket = chownSocket;
     Q_EMIT changed();
+#endif
 }
 
 QString WSGI::chownSocket() const
@@ -1275,9 +1283,11 @@ QString WSGI::chownSocket() const
 
 void WSGI::setUmask(const QString &value)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->umask = value;
     Q_EMIT changed();
+#endif
 }
 
 QString WSGI::umask() const
@@ -1288,9 +1298,11 @@ QString WSGI::umask() const
 
 void WSGI::setCpuAffinity(int value)
 {
+#ifdef Q_OS_UNIX
     Q_D(WSGI);
     d->cpuAffinity = value;
     Q_EMIT changed();
+#endif
 }
 
 int WSGI::cpuAffinity() const
@@ -1298,14 +1310,14 @@ int WSGI::cpuAffinity() const
     Q_D(const WSGI);
     return d->cpuAffinity;
 }
-#endif
 
-#ifdef Q_OS_LINUX
 void WSGI::setReusePort(bool enable)
 {
+#ifdef Q_OS_LINUX
     Q_D(WSGI);
     d->reusePort = enable;
     Q_EMIT changed();
+#endif
 }
 
 bool WSGI::reusePort() const
@@ -1313,7 +1325,6 @@ bool WSGI::reusePort() const
     Q_D(const WSGI);
     return d->reusePort;
 }
-#endif
 
 void WSGI::setLazy(bool enable)
 {
