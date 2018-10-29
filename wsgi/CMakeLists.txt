@@ -90,7 +90,9 @@ endif ()
 set_property(TARGET Cutelyst2Qt5Wsgi PROPERTY PUBLIC_HEADER ${cutelyst_wsgi_HEADERS})
 install(TARGETS Cutelyst2Qt5Wsgi
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/WSGI
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/WSGI COMPONENT devel
 )
 
 set(cutelyst_wsgi_SRCS
@@ -127,4 +129,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5WSGI.pc.in
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5WSGI.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-install(TARGETS cutelyst-wsgi2 DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS cutelyst-wsgi2
+    RUNTIME DESTINATION bin COMPONENT runtime
+)

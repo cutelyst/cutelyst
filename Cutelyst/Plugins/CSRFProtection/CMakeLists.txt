@@ -28,7 +28,9 @@ target_link_libraries(Cutelyst2Qt5CSRFProtection
 set_property(TARGET Cutelyst2Qt5CSRFProtection PROPERTY PUBLIC_HEADER ${plugin_csrfprotection_HEADERS})
 install(TARGETS Cutelyst2Qt5CSRFProtection
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/CSRFProtection
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/CSRFProtection COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5CSRFProtection.pc.in

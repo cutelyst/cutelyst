@@ -32,7 +32,9 @@ target_link_libraries(Cutelyst2Qt5ViewClearSilver
 set_property(TARGET Cutelyst2Qt5ViewClearSilver PROPERTY PUBLIC_HEADER ${plugin_view_clearsilver_HEADERS})
 install(TARGETS Cutelyst2Qt5ViewClearSilver
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/ClearSilver
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/ClearSilver COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewClearSilver.pc.in

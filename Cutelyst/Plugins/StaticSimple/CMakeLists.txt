@@ -28,7 +28,9 @@ target_link_libraries(Cutelyst2Qt5StaticSimple
 set_property(TARGET Cutelyst2Qt5StaticSimple PROPERTY PUBLIC_HEADER ${plugin_staticsimple_HEADERS})
 install(TARGETS Cutelyst2Qt5StaticSimple
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/StaticSimple
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/StaticSimple COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5StaticSimple.pc.in

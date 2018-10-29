@@ -34,7 +34,9 @@ target_link_libraries(Cutelyst2Qt5ViewEmail
 set_property(TARGET Cutelyst2Qt5ViewEmail PROPERTY PUBLIC_HEADER ${plugin_view_email_HEADERS})
 install(TARGETS Cutelyst2Qt5ViewEmail
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Email
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Email COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5ViewEmail.pc.in

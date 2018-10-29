@@ -29,7 +29,9 @@ target_link_libraries(Cutelyst2Qt5MemcachedSessionStore
 set_property(TARGET Cutelyst2Qt5MemcachedSessionStore PROPERTY PUBLIC_HEADER ${plugin_memcachedsessionstore_HEADERS})
 install(TARGETS Cutelyst2Qt5MemcachedSessionStore
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/MemcachedSessionStore
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/MemcachedSessionStore COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5MemcachedSessionStore.pc.in

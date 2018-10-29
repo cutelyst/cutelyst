@@ -123,7 +123,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
 set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
 install(TARGETS Cutelyst2Qt5
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst
+    RUNTIME DESTINATION bin COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst COMPONENT devel
 )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
