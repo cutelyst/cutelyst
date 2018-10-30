@@ -44,15 +44,13 @@ public:
 
     void encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWSGI::CWsgiEngine *engine);
 
-    void encodeHeader(const QByteArray &key, const QByteArray &value);
-
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 
 private:
     QVector<DynamicTableEntry> m_dynamicTable;
-    quint32 m_dynamicTableSize = 0;
-    quint32 m_currentMaxDynamicTableSize = 0;
-    quint32 m_maxTableSize;
+    int m_dynamicTableSize = 0;
+    int m_currentMaxDynamicTableSize = 0;
+    int m_maxTableSize;
 };
 
 }

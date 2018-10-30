@@ -43,7 +43,7 @@ unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 
         int M = 0;
         do {
             if (++src >= src_end) {
-                dst = -1;
+                dst = quint16(-1);
                 return nullptr;
             }
 
@@ -55,20 +55,20 @@ unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 
     return ++src;
 }
 
-void encodeUInt16(QByteArray &buf, quint16 I, quint8 mask)
+void encodeUInt16(QByteArray &buf, int I, quint8 mask)
 {
     if (I < mask) {
-        buf.append(I);
+        buf.append(char(I));
         return;
     }
 
     I -= mask;
-    buf.append(mask);
+    buf.append(char(mask));
     while (I >= 128) {
-        buf.append((I & 0x7f) | 0x80);
+        buf.append(char((I & 0x7f) | 0x80));
         I = I >> 7;
     }
-    buf.append(I);
+    buf.append(char(I));
 }
 
 static inline void encodeH2caseHeader(QByteArray &buf, const QString &key) {
@@ -132,7 +132,7 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
             itEnd = buf + str_len;
 
             while (buf < itEnd) {
-                QChar c = QLatin1Char(*(buf++));
+                QChar c = QLatin1Char(char(*(buf++)));
                 if (c.isUpper()) {
                     return nullptr;
                 }
@@ -158,21 +158,21 @@ HPack::~HPack()
 void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
 {
     if (status == 200) {
-        buf.append(0x88);
+        buf.append(char(0x88));
     } else if (status == 204) {
-        buf.append(0x89);
+        buf.append(char(0x89));
     } else if (status == 206) {
-        buf.append(0x8A);
+        buf.append(char(0x8A));
     } else if (status == 304) {
-        buf.append(0x8B);
+        buf.append(char(0x8B));
     } else if (status == 400) {
-        buf.append(0x8C);
+        buf.append(char(0x8C));
     } else if (status == 404) {
-        buf.append(0x8D);
+        buf.append(char(0x8D));
     } else if (status == 500) {
-        buf.append(0x8E);
+        buf.append(char(0x8E));
     } else {
-        buf.append(0x08);
+        buf.append(char(0x08));
 
         const QByteArray statusStr = QByteArray::number(status);
         encodeUInt16(buf, statusStr.length(), INT_MASK(4));
@@ -217,11 +217,6 @@ void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QB
         buf.append("\x0f\x12\x1d", 3);
         buf.append(date);
     }
-}
-
-void HPack::encodeHeader(const QByteArray &key, const QByteArray &value)
-{
-
 }
 
 enum ErrorCodes {
@@ -441,7 +436,7 @@ unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
           }
 
           if (entry->flags & HPackPrivate::HUFF_SYM) {
-              value.append(QLatin1Char(entry->sym));
+              value.append(QLatin1Char(char(entry->sym)));
           }
 
           entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
@@ -452,7 +447,7 @@ unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
           }
 
           if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-              value.append(QLatin1Char(entry->sym));
+              value.append(QLatin1Char(char(entry->sym)));
           }
 
       } while (++src < src_end);
