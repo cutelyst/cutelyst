@@ -46,7 +46,7 @@ bool ValidatorFileSize::validate(const QString &value, double min, double max, C
     bool byteSignFound = false;
     qint8 startsWith = 0; // 0 not set, -1 digit part, 1 symbol part
 
-    for (const QChar ch : value) {
+    for (const QChar &ch : value) {
         if (valid) {
             const ushort &uc = ch.unicode();
             if (((uc > 47) && (uc < 58)) || (ch == decimalPoint)) {
