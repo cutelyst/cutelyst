@@ -155,7 +155,7 @@ bool Engine::postForkApplication()
 
 quint64 Engine::time()
 {
-    return QDateTime::currentMSecsSinceEpoch() * 1000;
+    return quint64(QDateTime::currentMSecsSinceEpoch() * 1000);
 }
 
 const char *Engine::httpStatusMessage(quint16 status, int *len)
@@ -294,7 +294,7 @@ const char *Engine::httpStatusMessage(quint16 status, int *len)
     }
 
     if (len) {
-        *len = strlen(ret);
+        *len = int(strlen(ret));
     }
     return ret;
 }

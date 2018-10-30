@@ -64,7 +64,7 @@ public:
     Socket *sock;//temporary
     QIODevice *io;
     ProtocolData *upgradedFrom = nullptr;
-    quint32 buf_size = 0;
+    int buf_size = 0;
     ParserState connState = MethodLine;
     HeaderConnection headerConnection = HeaderConnectionNotSet;
     char *buffer;
@@ -93,8 +93,8 @@ public:
     QIODevice *createBody(qint64 contentLength) const;
 
     qint64 m_postBufferSize;
-    qint64 m_bufferSize;
     qint64 m_postBuffering;
+    int m_bufferSize;
     char *m_postBuffer;
 };
 

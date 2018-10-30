@@ -120,7 +120,7 @@ enum Settings {
 ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
   , m_headerTableSize(wsgi->http2HeaderTableSize())
 {
-    m_bufferSize = qMin(m_bufferSize, qint64(2147483647));
+    m_bufferSize = qMin(m_bufferSize, 2147483647);
 
     // 2^14 + 9 (octects)
     if (m_bufferSize < 16393) {
@@ -128,7 +128,7 @@ ProtocolHttp2::ProtocolHttp2(WSGI *wsgi) : Protocol(wsgi)
                QByteArray::number(m_bufferSize).constData());
     }
 
-    m_maxFrameSize = m_bufferSize - 9;
+    m_maxFrameSize = quint32(m_bufferSize - 9);
 }
 
 ProtocolHttp2::~ProtocolHttp2()

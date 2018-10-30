@@ -179,7 +179,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
     } else if (memcmp(key, "REQUEST_URI", 11) == 0) {
         const char *pch = static_cast<const char *>(memchr(val, '?', vallen));
         if (pch) {
-            int pos = pch - val;
+            int pos = int(pch - val);
             request->setPath(const_cast<char *>(val + 1), pos - 1);
             request->query = QByteArray(pch + 1, vallen - pos - 1);
         } else {
@@ -191,7 +191,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
     } else if (memcmp(key, "REMOTE_ADDR", 11) == 0) {
         request->remoteAddress.setAddress(QString::fromLatin1(val, vallen));
     } else if (memcmp(key, "REMOTE_PORT", 11) == 0) {
-        request->remotePort = QByteArray(val, vallen).toUInt();
+        request->remotePort = quint16(QByteArray(val, vallen).toUInt());
     } else if (memcmp(key, "CONTENT_TYPE", 12) == 0) {
         if (vallen) {
             request->headers.setContentType(QString::fromLatin1(val, vallen));
@@ -264,9 +264,9 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
             auto fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
 
             quint8 fcgi_type = fr->type;
-            quint16 fcgi_len = fr->cl0 | (fr->cl1 << 8);
-            quint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
-            request->stream_id = fr->req0 | (fr->req1 << 8);
+            quint16 fcgi_len = quint16(fr->cl0 | (fr->cl1 << 8));
+            qint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
+            request->stream_id = quint16(fr->req0 | (fr->req1 << 8));
 
             // if STDIN, end of the loop
             if (fcgi_type == FCGI_STDIN) {
@@ -335,7 +335,7 @@ qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvaila
     qint64 len;
     auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
     QIODevice *body = request->body;
-    quint32 &pad = request->buf_size;
+    int &pad = request->buf_size;
     while (bytesAvailable && request->pktsize + pad) {
         // We need to read and ignore ending PAD data
         len = io->read(m_postBuffer, qMin(m_postBufferSize, static_cast<qint64>(request->pktsize + pad)));
@@ -481,7 +481,7 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
 qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 {
     // reset for next write
-    int write_pos = 0;
+    qint64 write_pos = 0;
     quint32 proto_parser_status = 0;
 
     Q_FOREVER {
@@ -491,7 +491,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
         if (proto_parser_status == 0) {
             quint16 fcgi_len;
             if (len - write_pos < 0xffff) {
-                fcgi_len = len - write_pos;
+                fcgi_len = quint16(len - write_pos);
             } else {
                 fcgi_len = 0xffff;
             }
@@ -506,7 +506,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 
             quint16 padded_len = FCGI_ALIGN(fcgi_len);
             if (padded_len > fcgi_len) {
-                padding = padded_len - fcgi_len;
+                padding = quint8(padded_len - fcgi_len);
             }
             fr.pad = padding;
 
