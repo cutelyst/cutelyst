@@ -9,7 +9,7 @@ set(server_01_SRCS
 add_executable(server_01 ${server_01_SRCS})
 
 # Link to Cutelyst
-target_link_libraries(server_01
+target_link_libraries(server_01 PRIVATE
     Cutelyst::Core
     Qt5::Core
     Qt5::Network
