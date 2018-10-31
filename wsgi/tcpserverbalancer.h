@@ -34,7 +34,7 @@ class TcpServerBalancer : public QTcpServer
     Q_OBJECT
 public:
     TcpServerBalancer(WSGI *parent);
-    ~TcpServerBalancer();
+    ~TcpServerBalancer() override;
 
     bool listen(const QString &address, Protocol *protocol, bool secure);
 

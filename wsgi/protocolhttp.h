@@ -65,7 +65,7 @@ public:
     Q_ENUM(OpCode)
 
     ProtoRequestHttp(Socket *sock, int bufferSize);
-    virtual ~ProtoRequestHttp();
+    ~ProtoRequestHttp() override;
 
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
@@ -109,13 +109,13 @@ public:
 
     QByteArray websocket_message;
     QByteArray websocket_payload;
+    quint64 websocket_payload_size;
     quint32 websocket_need;
     quint32 websocket_mask;
-    quint32 last = 0;
+    int last = 0;
     int beginLine = 0;
     int websocket_start_of_frame = 0;
     int websocket_phase = 0;
-    int websocket_payload_size;
     quint8 websocket_continue_opcode = 0;
     quint8 websocket_finn_opcode;
     bool websocketUpgraded = false;
@@ -130,7 +130,7 @@ class ProtocolHttp : public Protocol
 {
 public:
     ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c = nullptr);
-    ~ProtocolHttp();
+    ~ProtocolHttp() override;
 
     virtual Type type() const override;
 

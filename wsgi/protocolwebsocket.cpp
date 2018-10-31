@@ -46,29 +46,29 @@ ProtocolWebSocket::~ProtocolWebSocket()
 QByteArray ProtocolWebSocket::createWebsocketHeader(quint8 opcode, quint64 len)
 {
     QByteArray ret;
-    ret.append(0x80 + opcode);
+    ret.append(char(0x80 + opcode));
 
     if (len < 126) {
-        ret.append(static_cast<quint8>(len));
+        ret.append(static_cast<char>(len));
     } else if (len <= static_cast<quint16>(0xffff)) {
-        ret.append(126);
+        ret.append(char(126));
 
         quint8 buf[2];
-        buf[1] = (quint8) (len & 0xff);
-        buf[0] = (quint8) ((len >> 8) & 0xff);
+        buf[1] = quint8(len & 0xff);
+        buf[0] = quint8((len >> 8) & 0xff);
         ret.append(reinterpret_cast<char*>(buf), 2);
     } else {
         ret.append(127);
 
         quint8 buf[8];
-        buf[7] = (quint8) (len & 0xff);
-        buf[6] = (quint8) ((len >> 8) & 0xff);
-        buf[5] = (quint8) ((len >> 16) & 0xff);
-        buf[4] = (quint8) ((len >> 24) & 0xff);
-        buf[3] = (quint8) ((len >> 32) & 0xff);
-        buf[2] = (quint8) ((len >> 40) & 0xff);
-        buf[1] = (quint8) ((len >> 48) & 0xff);
-        buf[0] = (quint8) ((len >> 56) & 0xff);
+        buf[7] = quint8(len & 0xff);
+        buf[6] = quint8((len >> 8) & 0xff);
+        buf[5] = quint8((len >> 16) & 0xff);
+        buf[4] = quint8((len >> 24) & 0xff);
+        buf[3] = quint8((len >> 32) & 0xff);
+        buf[2] = quint8((len >> 40) & 0xff);
+        buf[1] = quint8((len >> 48) & 0xff);
+        buf[0] = quint8((len >> 56) & 0xff);
         ret.append(reinterpret_cast<char*>(buf), 8);
     }
 
@@ -81,11 +81,11 @@ QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quin
 
     const QByteArray data = msg.toUtf8().left(123);
 
-    payload = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeClose, data.size() + 2);
+    payload = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeClose, quint64(data.size() + 2));
 
     quint8 buf[2];
-    buf[1] = (quint8) (closeCode & 0xff);
-    buf[0] = (quint8) ((closeCode >> 8) & 0xff);
+    buf[1] = quint8(closeCode & 0xff);
+    buf[0] = quint8((closeCode >> 8) & 0xff);
     payload.append(reinterpret_cast<char*>(buf), 2);
 
     // 125 is max payload - 2 of the above bytes
@@ -131,7 +131,7 @@ void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
             websocket_parse_mask(sock, m_postBuffer, io);
             break;
         case ProtoRequestHttp::WebSocketPhasePayload:
-            if (!websocket_parse_payload(sock, m_postBuffer, len, io)) {
+            if (!websocket_parse_payload(sock, m_postBuffer, int(len), io)) {
                 return;
             }
             break;
@@ -219,7 +219,7 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
 
 void ProtocolWebSocket::send_pong(QIODevice *io, const QByteArray data) const
 {
-    io->write(ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePong, data.size()));
+    io->write(ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePong, quint64(data.size())));
     io->write(data);
 }
 
@@ -276,11 +276,11 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
 
 bool ProtocolWebSocket::websocket_parse_header(Socket *sock, const char *buf, QIODevice *io) const
 {
-    quint8 byte1 = buf[0];
-    quint8 byte2 = buf[1];
+    const char byte1 = buf[0];
+    const char byte2 = buf[1];
 
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
-    protoRequest->websocket_finn_opcode = byte1;
+    protoRequest->websocket_finn_opcode = quint8(byte1);
     protoRequest->websocket_payload_size = byte2 & 0x7f;
 
     quint8 opcode = byte1 & 0xf;
@@ -364,28 +364,28 @@ void ProtocolWebSocket::websocket_parse_mask(Socket *sock, char *buf, QIODevice 
     protoRequest->websocket_mask = *ptr;
 
     protoRequest->websocket_phase = ProtoRequestHttp::WebSocketPhasePayload;
-    protoRequest->websocket_need = protoRequest->websocket_payload_size;
+    protoRequest->websocket_need = quint32(protoRequest->websocket_payload_size);
 
     protoRequest->websocket_payload = QByteArray();
     if (protoRequest->websocket_payload_size == 0) {
         websocket_parse_payload(sock, buf, 0, io);
     } else {
-        protoRequest->websocket_payload.reserve(protoRequest->websocket_payload_size);
+        protoRequest->websocket_payload.reserve(int(protoRequest->websocket_payload_size));
     }
 }
 
-bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io) const
+bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, int len, QIODevice *io) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     auto mask = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
-    for (uint i = 0, maskIx = protoRequest->websocket_payload.size(); i < len; ++i, ++maskIx) {
+    for (int i = 0, maskIx = protoRequest->websocket_payload.size(); i < len; ++i, ++maskIx) {
         buf[i] = buf[i] ^ mask[maskIx % 4];
     }
 
     protoRequest->websocket_payload.append(buf, len);
-    if (protoRequest->websocket_payload.size() < protoRequest->websocket_payload_size) {
+    if (quint64(protoRequest->websocket_payload.size()) < protoRequest->websocket_payload_size) {
         // need more data
-        protoRequest->websocket_need -= len;
+        protoRequest->websocket_need -= uint(len);
         return true;
     }
 

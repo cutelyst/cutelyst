@@ -73,13 +73,13 @@ QIODevice *Protocol::createBody(qint64 contentLength) const
     } else if (m_postBuffering && contentLength <= m_postBuffering) {
         auto buffer = new QBuffer;
         buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(contentLength);
+        buffer->buffer().reserve(int(contentLength));
         body = buffer;
     } else {
         // Unbuffered
         auto buffer = new QBuffer;
         buffer->open(QIODevice::ReadWrite);
-        buffer->buffer().reserve(contentLength);
+        buffer->buffer().reserve(int(contentLength));
         body = buffer;
     }
     return body;

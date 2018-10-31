@@ -116,7 +116,7 @@ void LocalServer::incomingConnection(quintptr handle)
         }, Qt::QueuedConnection);
     }
 
-    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
+    if (Q_LIKELY(sock->setSocketDescriptor(qintptr(handle)))) {
         sock->proto = m_protocol;
 
         sock->serverAddress = QStringLiteral("localhost");
@@ -209,9 +209,9 @@ void LocalServer::socketNotifierActivated()
 
     ::sockaddr_un addr;
     uint length = sizeof(sockaddr_un);
-    int connectedSocket = cutelyst_safe_accept(m_socket, (sockaddr *)&addr, &length);
+    int connectedSocket = cutelyst_safe_accept(int(m_socket), reinterpret_cast<sockaddr *>(&addr), &length);
     if (-1 != connectedSocket) {
-        incomingConnection(connectedSocket);
+        incomingConnection(quintptr(connectedSocket));
     }
 }
 

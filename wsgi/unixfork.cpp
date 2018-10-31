@@ -627,14 +627,14 @@ int UnixFork::setupUnixSignalHandlers()
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
-    if (sigaction(SIGINT, &action, 0) > 0)
+    if (sigaction(SIGINT, &action, nullptr) > 0)
         return SIGINT;
 
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_handler = UnixFork::signalHandler;
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
-    if (sigaction(SIGQUIT, &action, 0) > 0)
+    if (sigaction(SIGQUIT, &action, nullptr) > 0)
         return SIGQUIT;
 
     memset(&action, 0, sizeof(struct sigaction));
@@ -642,7 +642,7 @@ int UnixFork::setupUnixSignalHandlers()
     sigemptyset(&action.sa_mask);
     action.sa_flags |= SA_RESTART;
 
-    if (sigaction(SIGCHLD, &action, 0) > 0)
+    if (sigaction(SIGCHLD, &action, nullptr) > 0)
         return SIGCHLD;
 
     return 0;

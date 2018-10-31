@@ -51,7 +51,7 @@ public:
         Closed
     };
     H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protoRequestH2);
-    ~H2Stream();
+    ~H2Stream() override;
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
 
@@ -77,7 +77,7 @@ class ProtoRequestHttp2 : public ProtocolData
     Q_GADGET
 public:
     ProtoRequestHttp2(Socket *sock, int bufferSize);
-    virtual ~ProtoRequestHttp2();
+    ~ProtoRequestHttp2() override;
 
     inline virtual void resetData() override final {
         ProtocolData::resetData();
@@ -97,13 +97,13 @@ public:
         canPush = false;
     }
 
-    quint64 stream_id = 0;
+    quint32 stream_id = 0;
     quint32 pktsize = 0;
 
     QByteArray headersBuffer;
     HPack *hpack = nullptr;
-    quint64 maxStreamId = 0;
     quint64 streamForContinuation = 0;
+    quint32 maxStreamId = 0;
     qint32 dataSent = 0;
     qint32 windowSize = 65535;
     qint32 settingsInitialWindowSize = 65535;
@@ -118,7 +118,7 @@ class ProtocolHttp2 : public Protocol
 {
 public:
     explicit ProtocolHttp2(WSGI *wsgi);
-    ~ProtocolHttp2();
+    ~ProtocolHttp2() override;
 
     virtual Type type() const override;
 

@@ -41,10 +41,10 @@ class UnixFork : public AbstractFork
 {
     Q_OBJECT
 public:
-    explicit UnixFork(int process, int threads, bool setupSignals, QObject *parent = 0);
-    ~UnixFork();
+    explicit UnixFork(int process, int threads, bool setupSignals, QObject *parent = nullptr);
+    ~UnixFork() override;
 
-    virtual bool continueMaster(int *exit = 0) override;
+    virtual bool continueMaster(int *exit = nullptr) override;
 
     virtual int exec(bool lazy, bool master) override;
 

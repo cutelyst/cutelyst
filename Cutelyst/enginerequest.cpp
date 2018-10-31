@@ -138,9 +138,9 @@ qint64 EngineRequest::write(const char *data, qint64 len)
     } else if (!(status & EngineRequest::ChunkedDone)) {
         const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
-        chunk.reserve(len + chunkSize.size() + 4);
+        chunk.reserve(int(len + chunkSize.size() + 4));
         chunk.append(chunkSize).append("\r\n", 2)
-                .append(data, len).append("\r\n", 2);
+                .append(data, int(len)).append("\r\n", 2);
 
         qint64 retWrite = doWrite(chunk.data(), chunk.size());
 
@@ -231,7 +231,7 @@ void EngineRequest::setPath(char *rawPath, const int len)
             else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
             else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
 
-            *data++ = (char)((a << 4) | b);
+            *data++ = char((a << 4) | b);
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';

@@ -394,7 +394,7 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     if (parser.isSet(bufferSize)) {
         bool ok;
-        auto size = parser.value(bufferSize).toLongLong(&ok);
+        auto size = parser.value(bufferSize).toInt(&ok);
         setBufferSize(size);
         if (!ok || size < 1) {
             parser.showHelp(1);

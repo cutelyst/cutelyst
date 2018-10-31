@@ -29,10 +29,6 @@ using namespace CWSGI;
 
 Q_LOGGING_CATEGORY(CWSGI_H2, "cwsgi.http2", QtWarningMsg)
 
-#ifdef Q_CC_MSVC
-#pragma pack(push)
-#pragma pack(1)
-#endif
 struct h2_frame {
     quint8 size2;
     quint8 size1;
@@ -43,13 +39,7 @@ struct h2_frame {
     quint8 rbit_stream_id2;
     quint8 rbit_stream_id1;
     quint8 rbit_stream_id0;
-}
-#ifdef Q_CC_MSVC
-;
-#pragma pack(pop)
-#else
-__attribute__ ((__packed__));
-#endif
+};
 
 enum SettingsFlags {
     FlagSettingsAck = 0x1
@@ -149,7 +139,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
 //    qCDebug(CWSGI_H2) << sock << "READ available" << bytesAvailable << "buffer size" << request->buf_size << "default buffer size" << m_bufferSize ;
 
     do {
-        int len = io->read(request->buffer + request->buf_size, m_bufferSize - request->buf_size);
+        const qint64 len = io->read(request->buffer + request->buf_size, m_bufferSize - request->buf_size);
         bytesAvailable -= len;
 
         if (len > 0) {
@@ -162,7 +152,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                         if (memcmp(request->buffer, "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n", 24) == 0) {
 //                            qCDebug(CWSGI_H2) << "Got MAGIC" << sizeof(struct h2_frame);
                             request->buf_size -= PREFACE_SIZE;
-                            memmove(request->buffer, request->buffer + PREFACE_SIZE, request->buf_size);
+                            memmove(request->buffer, request->buffer + PREFACE_SIZE, size_t(request->buf_size));
                             request->connState = ProtoRequestHttp2::H2Frames;
 
                             sendSettings(io, {
@@ -178,21 +168,21 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                         break;
                     }
                 } else if (request->connState == ProtoRequestHttp2::H2Frames) {
-                    if (request->buf_size >= sizeof(struct h2_frame)) {
+                    if (request->buf_size >= int(sizeof(struct h2_frame))) {
                         auto fr = reinterpret_cast<struct h2_frame *>(request->buffer);
                         H2Frame frame;
-                        frame.len = fr->size0 | (fr->size1 << 8) | (fr->size2 << 16);
-                        frame.streamId = fr->rbit_stream_id0 |
-                                (fr->rbit_stream_id1 << 8) |
-                                (fr->rbit_stream_id2 << 16) |
-                                ((fr->rbit_stream_id3 & ~0x80) << 24); // Ignore first bit
+                        frame.len = quint32(fr->size0 | (fr->size1 << 8) | (fr->size2 << 16));
+                        frame.streamId = quint32(fr->rbit_stream_id0 |
+                                                 (fr->rbit_stream_id1 << 8) |
+                                                 (fr->rbit_stream_id2 << 16) |
+                                                 ((fr->rbit_stream_id3 & ~0x80) << 24)); // Ignore first bit
                         frame.type = fr->type;
                         frame.flags = fr->flags;
-                        request->pktsize = fr->size0 | (fr->size1 << 8) | (fr->size2 << 16);
-                        request->stream_id = fr->rbit_stream_id0 |
-                                (fr->rbit_stream_id1 << 8) |
-                                (fr->rbit_stream_id2 << 16) |
-                                ((fr->rbit_stream_id3 & ~0x80) << 24); // Ignore first bit
+                        request->pktsize = quint32(fr->size0 | (fr->size1 << 8) | (fr->size2 << 16));
+                        request->stream_id = quint32(fr->rbit_stream_id0 |
+                                                     (fr->rbit_stream_id1 << 8) |
+                                                     (fr->rbit_stream_id2 << 16) |
+                                                     ((fr->rbit_stream_id3 & ~0x80) << 24)); // Ignore first bit
 
 //                        qDebug() << "Frame type" << fr->type
 //                                 << "flags" << fr->flags
@@ -211,7 +201,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                             break;
                         }
 
-                        if (request->pktsize > (request->buf_size - sizeof(struct h2_frame))) {
+                        if (request->pktsize > (quint32(request->buf_size) - sizeof(struct h2_frame))) {
 //                            qDebug() << "need more data" << bytesAvailable;
                             break;
                         }
@@ -255,7 +245,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                         }
 
                         request->buf_size -= 9 + request->pktsize;
-                        memmove(request->buffer, request->buffer + 9 + request->pktsize, request->buf_size);
+                        memmove(request->buffer, request->buffer + 9 + request->pktsize, size_t(request->buf_size));
                     }
                 }
             }
@@ -629,14 +619,14 @@ int ProtocolHttp2::sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error
 {
 //    qDebug() << "GOAWAY" << error;
     QByteArray data;
-    data.append(quint8(lastStreamId >> 24));
-    data.append(quint8(lastStreamId >> 16));
-    data.append(quint8(lastStreamId >> 8));
-    data.append(quint8(lastStreamId));
-    data.append(quint8(error >> 24));
-    data.append(quint8(error >> 16));
-    data.append(quint8(error >> 8));
-    data.append(quint8(error));
+    data.append(char(lastStreamId >> 24));
+    data.append(char(lastStreamId >> 16));
+    data.append(char(lastStreamId >> 8));
+    data.append(char(lastStreamId));
+    data.append(char(error >> 24));
+    data.append(char(error >> 16));
+    data.append(char(error >> 8));
+    data.append(char(error));
 //    quint64 data = error;
 //    sendFrame(io, FrameGoaway, 0, 0, reinterpret_cast<const char *>(&data), 4);
     int ret = sendFrame(io, FrameGoaway, 0, 0, data.constData(), 8);
@@ -648,10 +638,10 @@ int ProtocolHttp2::sendRstStream(QIODevice *io, quint32 streamId, quint32 error)
 {
 //    qDebug() << "RST_STREAM" << streamId << error;
     QByteArray data;
-    data.append(quint8(error >> 24));
-    data.append(quint8(error >> 16));
-    data.append(quint8(error >> 8));
-    data.append(quint8(error));
+    data.append(char(error >> 24));
+    data.append(char(error >> 16));
+    data.append(char(error >> 8));
+    data.append(char(error));
 //    quint64 data = error;
 //    sendFrame(io, FrameGoaway, 0, 0, reinterpret_cast<const char *>(&data), 4);
     int ret = sendFrame(io, FrameRstStream, 0, streamId, data.constData(), 4);
@@ -663,12 +653,12 @@ int ProtocolHttp2::sendSettings(QIODevice *io, const std::vector<std::pair<quint
 {
     QByteArray data;
     for (const std::pair<quint16, quint32> &pair : settings) {
-        data.append(quint8(pair.first >> 8));
-        data.append(quint8(pair.first));
-        data.append(quint8(pair.second >> 24));
-        data.append(quint8(pair.second >> 16));
-        data.append(quint8(pair.second >> 8));
-        data.append(quint8(pair.second));
+        data.append(char(pair.first >> 8));
+        data.append(char(pair.first));
+        data.append(char(pair.second >> 24));
+        data.append(char(pair.second >> 16));
+        data.append(char(pair.second >> 8));
+        data.append(char(pair.second));
     }
 //    qDebug() << "Send settings" << data.toHex();
     return sendFrame(io, FrameSettings, 0, 0, data.constData(), data.length());

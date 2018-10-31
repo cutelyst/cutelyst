@@ -33,7 +33,7 @@ class ProtocolWebSocket : public Protocol
 {
 public:
     ProtocolWebSocket(WSGI *wsgi);
-    ~ProtocolWebSocket();
+    ~ProtocolWebSocket() override;
 
     static QByteArray createWebsocketHeader(quint8 opcode, quint64 len);
     static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);
@@ -50,10 +50,10 @@ private:
     bool websocket_parse_header(Socket *sock, const char *buf, QIODevice *io) const;
     bool websocket_parse_size(Socket *sock, const char *buf, int websockets_max_message_size) const;
     void websocket_parse_mask(Socket *sock, char *buf, QIODevice *io) const;
-    bool websocket_parse_payload(Socket *sock, char *buf, uint len, QIODevice *io) const;
+    bool websocket_parse_payload(Socket *sock, char *buf, int len, QIODevice *io) const;
 
     QTextCodec *m_codec;
-    quint32 m_websockets_max_size;
+    int m_websockets_max_size;
 };
 
 }

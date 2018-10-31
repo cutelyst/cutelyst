@@ -61,9 +61,9 @@ Protocol::Type ProtocolHttp::type() const
 inline int CrLfIndexIn(const char *str, int len, int from)
 {
     do {
-        const char *pch = static_cast<const char *>(memchr(str + from, '\r', len - from));
-        if (pch != NULL) {
-            int pos = pch - str;
+        const char *pch = static_cast<const char *>(memchr(str + from, '\r', size_t(len - from)));
+        if (pch != nullptr) {
+            int pos = int(pch - str);
             if ((pos + 1) < len) {
                 if (*++pch == '\n') {
                     return pos;
@@ -85,7 +85,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     if (protoRequest->connState == ProtoRequestHttp::ContentBody) {
         qint64 bytesAvailable = io->bytesAvailable();
-        int len;
+        qint64 len;
         qint64 remaining;
 
         QIODevice *body = protoRequest->body;
@@ -108,7 +108,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
         return;
     }
 
-    int len = io->read(protoRequest->buffer + protoRequest->buf_size, m_bufferSize - protoRequest->buf_size);
+    qint64 len = io->read(protoRequest->buffer + protoRequest->buf_size, m_bufferSize - protoRequest->buf_size);
     if (len == -1) {
         qCWarning(CWSGI_HTTP) << "Failed to read from socket" << io->errorString();
         return;
@@ -119,7 +119,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 //        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(protoRequest->buffer, protoRequest->buf_size);
         int ix = CrLfIndexIn(protoRequest->buffer, protoRequest->buf_size, protoRequest->last);
         if (ix != -1) {
-            int len = ix - protoRequest->beginLine;
+            qint64 len = ix - protoRequest->beginLine;
             char *ptr = protoRequest->buffer + protoRequest->beginLine;
             protoRequest->beginLine = ix + 2;
             protoRequest->last = protoRequest->beginLine;
@@ -218,7 +218,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
     if (request->last < request->buf_size) {
         // move pipelined request to 0
         int remaining = request->buf_size - request->last;
-        memmove(request->buffer, request->buffer + request->last, remaining);
+        memmove(request->buffer, request->buffer + request->last, size_t(remaining));
         request->resetData();
         request->buf_size = remaining;
     } else {
@@ -235,7 +235,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
     }
-    protoRequest->method = QString::fromLatin1(ptr, word_boundary - ptr);
+    protoRequest->method = QString::fromLatin1(ptr, int(word_boundary - ptr));
 
     // skip spaces
     while (*word_boundary == ' ' && word_boundary < end) {
@@ -254,14 +254,14 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     }
 
     // This will change the ptr but will only change less than size
-    protoRequest->setPath(const_cast<char *>(ptr), word_boundary - ptr);
+    protoRequest->setPath(const_cast<char *>(ptr), int(word_boundary - ptr));
 
     if (*word_boundary == '?') {
         ptr = word_boundary + 1;
         while (*word_boundary != ' ' && word_boundary < end) {
             ++word_boundary;
         }
-        protoRequest->query = QByteArray(ptr, word_boundary - ptr);
+        protoRequest->query = QByteArray(ptr, int(word_boundary - ptr));
     } else {
         protoRequest->query = QByteArray();
     }
@@ -275,7 +275,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
     }
-    protoRequest->protocol = QString::fromLatin1(ptr, word_boundary - ptr);
+    protoRequest->protocol = QString::fromLatin1(ptr, int(word_boundary - ptr));
 }
 
 
@@ -304,12 +304,12 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ':' && word_boundary < end) {
         ++word_boundary;
     }
-    const QString key = normalizeHeaderKey(ptr, word_boundary - ptr);
+    const QString key = normalizeHeaderKey(ptr, int(word_boundary - ptr));
 
     while ((*word_boundary == ':' || *word_boundary == ' ') && word_boundary < end) {
         ++word_boundary;
     }
-    const QString value = QString::fromLatin1(word_boundary, end - word_boundary);
+    const QString value = QString::fromLatin1(word_boundary, int(end - word_boundary));
 
     if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
         if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
@@ -417,7 +417,7 @@ bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
     }
 
     const QByteArray rawMessage = message.toUtf8();
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeText, rawMessage.size());
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeText, quint64(rawMessage.size()));
     doWrite(headers);
     return doWrite(rawMessage) == rawMessage.size();
 }
@@ -428,7 +428,7 @@ bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
         return false;
     }
 
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeBinary, message.size());
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeBinary, quint64(message.size()));
     doWrite(headers);
     return doWrite(message) == message.size();
 }
@@ -440,7 +440,7 @@ bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
     }
 
     const QByteArray rawMessage = payload.left(125);
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePing, rawMessage.size());
+    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePing, quint64(rawMessage.size()));
     doWrite(headers);
     return doWrite(rawMessage) == rawMessage.size();
 }

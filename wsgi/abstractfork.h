@@ -34,7 +34,7 @@ public:
      * continue setting up the listening socked or exit
      * with exit code
      */
-    virtual bool continueMaster(int *exit = 0) = 0;
+    virtual bool continueMaster(int *exit = nullptr) = 0;
 
     /**
      * Start event loop, it's useful for doing
