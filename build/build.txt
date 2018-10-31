@@ -1,0 +1,15 @@
+export LD_LIBRARY_PATH=/home/pvn/cutelyst/lib/x86_64-linux-gnu:/home/pvn/Qt5.7.1/5.7/gcc_64/lib
+cmake .. -DCMAKE_INSTALL_PREFIX=/home/pvn/cutelyst -DCMAKE_PREFIX_PATH=/home/pvn/Qt5.7.1/5.7/gcc_64
+cmake .. -DCMAKE_INSTALL_PREFIX=F:\cutelyst -DCMAKE_PREFIX_PATH=C:\Qt\Qt5.7.1\5.7\msvc2015
+make && make install
+cd ../..
+/home/pvn/cutelyst/bin/cutelyst2 --create-app server_01
+cmake .. -DCMAKE_PREFIX_PATH="/home/pvn/Qt5.7.1/5.7/gcc_64;/home/pvn/cutelyst/lib/x86_64-linux-gnu/cmake/Cutelyst2Qt5"
+PATH=F:\cutelyst\lib
+F:\cutelyst\bin\cutelyst2.exe --create-app server_01
+cmake .. -DCMAKE_PREFIX_PATH="C:\Qt\Qt5.7.1\5.7\msvc2015;F:\cutelyst\lib\cmake\Cutelyst2Qt5"
+make
+/home/pvn/cutelyst/bin/cutelyst2 -r --server --app-file $PWD/src/libserver_01.so -- --chdir ..
+F:\cutelyst\bin\cutelyst2.exe -r --server --app-file J:\qt\cutelyst\server_01\build\src\Debug\server_01.dll -- --chdir ..
+http://localhost:3000/
+
