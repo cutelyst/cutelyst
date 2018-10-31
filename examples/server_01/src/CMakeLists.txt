@@ -6,12 +6,13 @@ set(server_01_SRCS
 )
 
 # Create the application
-add_library(server_01 SHARED ${server_01_SRCS})
+add_executable(server_01 ${server_01_SRCS})
 
 # Link to Cutelyst
 target_link_libraries(server_01
     Cutelyst::Core
     Qt5::Core
     Qt5::Network
+    Cutelyst::WSGI
 )
 
