@@ -490,6 +490,10 @@ void RequestPrivate::parseBody() const
 
         const Uploads ups = MultiPartFormDataParser::parse(engineRequest->body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
         for (Upload *upload : ups) {
+            if (upload->filename().isEmpty() && upload->contentType().isEmpty()) {
+                bodyParam.insertMulti(upload->name(), QString::fromUtf8(upload->readAll()));
+                upload->seek(0);
+            }
             uploadsMap.insertMulti(upload->name(), upload);
         }
         uploads = ups;
