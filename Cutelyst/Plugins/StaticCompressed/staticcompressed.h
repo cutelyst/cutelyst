@@ -148,7 +148,7 @@ public:
     /**
      * Deconstructs the StaticCompressed object.
      */
-    virtual ~StaticCompressed();
+    virtual ~StaticCompressed() override;
 
     /**
      * Sets a list of directories in which to search for your static files.

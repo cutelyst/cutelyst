@@ -74,8 +74,23 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
         return;
     }
 
-    QString path = c->req()->path();
-    QRegularExpression re = d->re; // Thread-safe
+    const QString path = c->req()->path();
+    const QRegularExpression re = d->re; // Thread-safe
+
+    for (const QString &dir : d->dirs) {
+        if (path.startsWith(dir)) {
+            if (!locateStaticFile(c, path)) {
+                Response *res = c->response();
+                res->setStatus(Response::NotFound);
+                res->setContentType(QStringLiteral("text/html"));
+                res->setBody(QStringLiteral("File not found: ") + path);
+            }
+
+            *skipMethod = true;
+            return;
+        }
+    }
+
     QRegularExpressionMatch match = re.match(path);
     if (match.hasMatch() && locateStaticFile(c, path)) {
         *skipMethod = true;

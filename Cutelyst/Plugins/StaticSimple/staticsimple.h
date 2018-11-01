@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ public:
      * Constructs a new static simple object with the given parent.
      */
     StaticSimple(Application *parent);
-    virtual ~StaticSimple();
+    virtual ~StaticSimple() override;
 
     /**
      * Sets a list of directories in which to search for your static files.
@@ -53,7 +53,7 @@ public:
     /**
      * Reimplemented from Plugin::setup().
      */
-    virtual bool setup(Application *app);
+    virtual bool setup(Application *app) override;
 
 protected:
     StaticSimplePrivate *d_ptr;

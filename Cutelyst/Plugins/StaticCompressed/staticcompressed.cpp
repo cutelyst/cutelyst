@@ -146,8 +146,22 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
 
     const QString path = c->req()->path();
     const QRegularExpression _re = re; // Thread-safe
-    const QRegularExpressionMatch match = _re.match(path);
 
+    for (const QString &dir : dirs) {
+        if (path.startsWith(dir)) {
+            if (!locateCompressedFile(c, path)) {
+                Response *res = c->response();
+                res->setStatus(Response::NotFound);
+                res->setContentType(QStringLiteral("text/html"));
+                res->setBody(QStringLiteral("File not found: ") + path);
+            }
+
+            *skipMethod = true;
+            return;
+        }
+    }
+
+    const QRegularExpressionMatch match = _re.match(path);
     if (match.hasMatch() && locateCompressedFile(c, path)) {
         *skipMethod = true;
     }
