@@ -749,6 +749,19 @@ void TestRequest::testController_data()
                                       << headers << QByteArrayLiteral("foo=bar&baz=")
                                       << QByteArrayLiteral("baz&foo=bar");
 
+    query.clear();
+    headers.clear();
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("bodyParams-test02") << get << QStringLiteral("/request/test/bodyParams")
+                                       << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntextooooo\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"wifi\"\r\nContent-Type: application/octet-stream\r\n\r\nMOTOCM\nMOTOCM\n00000000\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
+                                       << QByteArrayLiteral("path=textooooo");
+
+    query.clear();
+    headers.clear();
+    headers.setContentType(QStringLiteral("multipart/form-data; boundary=----WebKitFormBoundaryoPPQLwBBssFnOTVH"));
+    QTest::newRow("bodyParams-test03") << get << QStringLiteral("/request/test/bodyParams")
+                                       << headers << QByteArrayLiteral("------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntexto1\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"path\"\r\n\r\ntexto2\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH\r\nContent-Disposition: form-data; name=\"file1\"; filename=\"example.txt\"\r\nContent-Type: application/octet-stream\r\n\r\nhttps://example.com/admin\n\n\r\n------WebKitFormBoundaryoPPQLwBBssFnOTVH--\r\n")
+                                       << QByteArrayLiteral("path=texto2&path=texto1");
 
     query.clear();
     body = QUuid::createUuid().toByteArray();
