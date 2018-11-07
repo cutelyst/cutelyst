@@ -2,11 +2,14 @@
 file(GLOB_RECURSE hello_SRCS *)
 
 # Create the application
-add_library(hello SHARED ${hello_SRCS})
+add_executable(hello ${hello_SRCS})
 
 # Link to Cutelyst
-target_link_libraries(hello
+target_link_libraries(hello PRIVATE
     Cutelyst::Core
+    Qt5::Core
+    Qt5::Network
+    Cutelyst::WSGI
     Cutelyst::Session
 )
 

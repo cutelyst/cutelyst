@@ -185,6 +185,8 @@ add_subdirectory(i18n)
 
 add_subdirectory(dox)
 
+add_subdirectory(examples)
+
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
