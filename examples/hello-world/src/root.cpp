@@ -49,7 +49,7 @@ void Root::json(Context *c)
 
 void Root::echo(Context *c)
 {
-  QUrl websocket_url = c->uriFor(actionFor(QStringLiteral("ws"))).toString();
+    QUrl websocket_url = c->uriFor(actionFor(QStringLiteral("ws")));
     websocket_url.setScheme(QStringLiteral("ws"));
     c->response()->setBody(
                 QStringLiteral("<!DOCTYPE html>\n"
