@@ -431,6 +431,13 @@ ProtoRequestFastCGI::~ProtoRequestFastCGI()
 
 }
 
+void ProtoRequestFastCGI::setupNewConnection(Socket *sock)
+{
+    serverAddress = sock->serverAddress;
+    remoteAddress = sock->remoteAddress;
+    remotePort = sock->remotePort;
+}
+
 bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     static thread_local QByteArray headerBuffer = ([]() -> QByteArray {

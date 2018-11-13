@@ -54,6 +54,7 @@ void TcpServer::incomingConnection(qintptr handle)
         m_socks.pop_back();
     } else {
         sock = new TcpSocket(m_engine, this);
+        sock->serverAddress = m_serverAddress;
         sock->protoData = m_protocol->createData(sock);
 
         connect(sock, &QIODevice::readyRead, [sock] () {
@@ -70,9 +71,9 @@ void TcpServer::incomingConnection(qintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
         sock->proto = m_protocol;
 
-        sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();
+        sock->protoData->setupNewConnection(sock);
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);

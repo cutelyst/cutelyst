@@ -340,6 +340,13 @@ ProtoRequestHttp::~ProtoRequestHttp()
 
 }
 
+void ProtoRequestHttp::setupNewConnection(Socket *sock)
+{
+    serverAddress = sock->serverAddress;
+    remoteAddress = sock->remoteAddress;
+    remotePort = sock->remotePort;
+}
+
 bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     if (websocketUpgraded && status != Cutelyst::Response::SwitchingProtocols) {

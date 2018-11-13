@@ -32,7 +32,9 @@ class ProtoRequestFastCGI : public ProtocolData, public Cutelyst::EngineRequest
     Q_GADGET
 public:
     ProtoRequestFastCGI(Socket *sock, int bufferSize);
-    virtual ~ProtoRequestFastCGI();
+    virtual ~ProtoRequestFastCGI() override;
+
+    virtual void setupNewConnection(Socket *sock) override;
 
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
@@ -69,7 +71,7 @@ class ProtocolFastCGI : public Protocol
 {
 public:
     ProtocolFastCGI(WSGI *wsgi);
-    virtual ~ProtocolFastCGI();
+    virtual ~ProtocolFastCGI() override;
 
     virtual Type type() const override;
 

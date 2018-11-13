@@ -59,6 +59,7 @@ public:
     }
 
     virtual void socketDisconnected() {}
+    virtual void setupNewConnection(Socket *sock) = 0;
 
     qint64 contentLength;
     Socket *sock;//temporary

@@ -792,6 +792,11 @@ ProtoRequestHttp2::~ProtoRequestHttp2()
 
 }
 
+void ProtoRequestHttp2::setupNewConnection(Socket *sock)
+{
+    Q_UNUSED(sock)
+}
+
 H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHttp2 *protoRequestH2)
     : protoRequest(protoRequestH2)
     , streamId(_streamId)

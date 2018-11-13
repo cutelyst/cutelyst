@@ -79,6 +79,8 @@ public:
     ProtoRequestHttp2(Socket *sock, int bufferSize);
     ~ProtoRequestHttp2() override;
 
+    virtual void setupNewConnection(Socket *sock) override final;
+
     inline virtual void resetData() override final {
         ProtocolData::resetData();
 

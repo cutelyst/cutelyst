@@ -54,6 +54,7 @@ void TcpSslServer::incomingConnection(qintptr handle)
         sock->serverAddress = m_serverAddress;
         sock->remoteAddress = sock->peerAddress();
         sock->remotePort = sock->peerPort();
+        sock->protoData->setupNewConnection(sock);
 
         for (const auto &opt : m_socketOptions) {
             sock->setSocketOption(opt.first, opt.second);

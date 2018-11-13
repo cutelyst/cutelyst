@@ -67,6 +67,8 @@ public:
     ProtoRequestHttp(Socket *sock, int bufferSize);
     ~ProtoRequestHttp() override;
 
+    virtual void setupNewConnection(Socket *sock) override final;
+
     virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     virtual qint64 doWrite(const char *data, qint64 len) override final;
