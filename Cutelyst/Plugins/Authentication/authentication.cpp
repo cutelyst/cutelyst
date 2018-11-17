@@ -172,6 +172,43 @@ void Authentication::logout(Context *c)
     }
 }
 
+bool Authentication::refresh(Context *c)
+{
+    if (!auth) {
+        qCCritical(C_AUTHENTICATION) << "Authentication plugin not registered";
+        return false;
+    }
+
+    AuthenticationUser u = user(c);
+    if (u.isNull())
+        return false;
+
+    // remember user's realm
+    AuthenticationRealm *realm = AuthenticationPrivate::findRealmForPersistedUser(c, auth->d_ptr->realms, auth->d_ptr->realmsOrder);
+
+    // remove user from stash and from session
+    logout(c);
+
+    // find and reload user
+    // we expect to find the user by providing all known attributes to findUser()
+    // FIXME: better if we could use AuthenticationUser::value("id") with findUser()
+    ParamsMultiMap u_map;
+    auto it = u.data().constBegin();
+    auto end = u.data().constEnd();
+    while (it != end) {
+        u_map[it.key()] = it.value().toString();
+        it++;
+    }
+    u = findUser(c, u_map);
+    if (u.isNull())
+        return false;
+
+    // add user to session
+    realm->persistUser(c, u);
+
+    return true;
+}
+
 bool Authentication::setup(Application *app)
 {
     connect(app, &Application::postForked, this, &AuthenticationPrivate::_q_postFork);

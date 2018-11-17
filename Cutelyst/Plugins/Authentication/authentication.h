@@ -120,6 +120,12 @@ public:
      */
     static void logout(Context *c);
 
+    /**
+     * Refreshs the current user. Reloads the user from store.
+     * Use this, if you modified the user object in the store.
+     */
+    static bool refresh(Context *c);
+
 protected:
     virtual bool setup(Application *app) override;
 
