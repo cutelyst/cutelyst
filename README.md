@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/cutelyst/cutelyst.svg?branch=master)](https://travis-ci.org/cutelyst/cutelyst)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/github/cutelyst/cutelyst?branch=master&svg=true)](https://ci.appveyor.com/project/dantti/cutelyst/branch/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/61f30208fbf64666b716b3fad9efd18a)](https://www.codacy.com/app/dantti/cutelyst?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cutelyst/cutelyst&amp;utm_campaign=Badge_Grade)
+[![Code Quality: Cpp](https://img.shields.io/lgtm/grade/cpp/g/cutelyst/cutelyst.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cutelyst/cutelyst/context:cpp)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/cutelyst/cutelyst.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cutelyst/cutelyst/alerts)
 
 A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
