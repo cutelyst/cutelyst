@@ -70,11 +70,11 @@ environment:
     MINGW_PATH: C:\Qt\Tools\mingw530_32
     ENABLE_MAINTAINER_CFLAGS: on
 
-  - CMAKE_GENERATOR: "Ninja"
-    QT5: C:\Qt\5.11.1\msvc2017_64
-    PLATFORM: X64
-    VSVER: 17
-    ENABLE_MAINTAINER_CFLAGS: off
+  #- CMAKE_GENERATOR: "Ninja"
+    #QT5: C:\Qt\5.11.1\msvc2017_64
+    #PLATFORM: X64
+    #VSVER: 17
+    #ENABLE_MAINTAINER_CFLAGS: off
   - CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     QT5: C:\Qt\5.10\msvc2017_64
