@@ -14,7 +14,7 @@ class %{CN} : public Controller
      C_NAMESPACE("%{CustomNamespaceValue}")
 @endif
 public:
-    explicit %{CN}(QObject *parent = 0);
+    explicit %{CN}(QObject *parent = nullptr);
 
     C_ATTR(index, :Path)
     void index(Context *c);
