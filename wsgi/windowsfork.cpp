@@ -17,6 +17,8 @@
  */
 #include "windowsfork.h"
 
+#include <windows.h>
+
 #include <QLoggingCategory>
 #include <QCoreApplication>
 #include <QTimer>

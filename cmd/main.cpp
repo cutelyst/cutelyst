@@ -127,7 +127,7 @@ bool buildApplicationHeader(const QString &filename, const QString &appName)
         out << "    Q_OBJECT" << "\n";
         out << "    CUTELYST_APPLICATION(IID \""<< appName << "\")" << "\n";
         out << "public:" << "\n";
-        out << "    Q_INVOKABLE explicit " << appName << "(QObject *parent = 0);" << "\n";
+        out << "    Q_INVOKABLE explicit " << appName << "(QObject *parent = nullptr);" << "\n";
         out << "    ~" << appName << "();" << "\n";
         out << "\n";
         out << "    bool init();" << "\n";
@@ -219,7 +219,7 @@ bool buildControllerHeader(const QString &filename, const QString &controllerNam
             out << "    C_NAMESPACE(\"\")" << "\n";
         }
         out << "public:" << "\n";
-        out << "    explicit " << controllerName << "(QObject *parent = 0);" << "\n";
+        out << "    explicit " << controllerName << "(QObject *parent = nullptr);" << "\n";
         out << "    ~" << controllerName << "();" << "\n";
         out << "\n";
         out << "    C_ATTR(index, :Path :AutoArgs)" << "\n";

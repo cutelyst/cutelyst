@@ -276,7 +276,7 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
     bool ok;
 
     if (!gid.isEmpty()) {
-        int gidInt = gid.toInt(&ok);
+        uint gidInt = gid.toUInt(&ok);
         if (!ok) {
             struct group *ugroup = getgrnam(qUtf8Printable(gid));
             if (ugroup) {
@@ -292,12 +292,12 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
         std::cout << "setgid() to " << gidInt << std::endl;
 
         if (noInitgroups || uid.isEmpty()) {
-            if (setgroups(0, NULL)) {
+            if (setgroups(0, nullptr)) {
                 qFatal("Failed to setgroups()");
             }
         } else {
             char *uidname = nullptr;
-            int uidInt = uid.toInt(&ok);
+            uint uidInt = uid.toUInt(&ok);
             if (ok) {
                 struct passwd *pw = getpwuid(uidInt);
                 if (pw) {
@@ -314,7 +314,7 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
     }
 
     if (!uid.isEmpty()) {
-        int uidInt = uid.toInt(&ok);
+        uint uidInt = uid.toUInt(&ok);
         if (!ok) {
             struct passwd *upasswd = getpwnam(qUtf8Printable(uid));
             if (upasswd) {
@@ -333,15 +333,13 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
 
 void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
 {
-    uid_t new_uid = -1;
-    uid_t new_gid = -1;
-    struct group *new_group = NULL;
-    struct passwd *new_user = NULL;
+    struct group *new_group = nullptr;
+    struct passwd *new_user = nullptr;
 
     const QString owner = uidGid.section(QLatin1Char(':'), 0, 0);
 
     bool ok;
-    new_uid = owner.toInt(&ok);
+    uid_t new_uid = owner.toUInt(&ok);
 
     if (!ok) {
         new_user = getpwnam(qUtf8Printable(owner));
@@ -351,9 +349,10 @@ void UnixFork::chownSocket(const QString &filename, const QString &uidGid)
         new_uid = new_user->pw_uid;
     }
 
+    gid_t new_gid = -1u;
     const QString group = uidGid.section(QLatin1Char(':'), 1, 1);
     if (!group.isEmpty()) {
-        new_gid = group.toInt(&ok);
+        new_gid = group.toUInt(&ok);
         if (!ok) {
             new_group = getgrnam(qUtf8Printable(group));
             if (!new_group) {
@@ -391,7 +390,7 @@ int parseProcCpuinfo() {
     QByteArrayList physicalIds;
 //    cpuCores = 0;
     while ((lineLength = file.readLine(buf, sizeof(buf))) != -1) {
-        const QByteArray line(buf, lineLength);
+        const QByteArray line(buf, int(lineLength));
         if (line.startsWith("physical id\t: ")) {
             const QByteArray id = line.mid(14).trimmed();
             if (!physicalIds.contains(id)) {

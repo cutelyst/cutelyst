@@ -28,9 +28,9 @@ class WindowsFork : public AbstractFork
 {
     Q_OBJECT
 public:
-    explicit WindowsFork(QObject *parent = 0);
+    explicit WindowsFork(QObject *parent = nullptr);
 
-    virtual bool continueMaster(int *exit = 0) override;
+    virtual bool continueMaster(int *exit = nullptr) override;
 
     virtual int exec(bool lazy, bool master) override;
 
