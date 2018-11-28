@@ -160,6 +160,12 @@ public:
     QDateTime ifModifiedSinceDateTime() const;
 
     /**
+     * Checks if Last-Modified's content has changed in comparison to the
+     * If-Modified-Since header.
+     */
+    bool ifModifiedSince(const QDateTime &lastModified) const;
+
+    /**
      * This header indicates the date and time at which the resource was last modified.
      */
     QString lastModified() const;

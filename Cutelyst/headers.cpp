@@ -225,6 +225,12 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     return ret;
 }
 
+bool Headers::ifModifiedSince(const QDateTime &lastModified) const
+{
+    const QDateTime lastModifiedWithoutMS = lastModified.addMSecs(-lastModified.time().msec());
+    return ifModifiedSinceDateTime() != lastModifiedWithoutMS;
+}
+
 QString Headers::lastModified() const
 {
     return m_data.value(QStringLiteral("LAST_MODIFIED"));
