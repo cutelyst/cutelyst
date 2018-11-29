@@ -34,6 +34,11 @@ Headers::Headers()
 
 }
 
+Headers::Headers(const Headers &other)
+{
+    m_data = other.m_data;
+}
+
 QString Headers::contentDisposition() const
 {
     return m_data.value(QStringLiteral("CONTENT_DISPOSITION"));

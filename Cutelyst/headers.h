@@ -34,6 +34,11 @@ public:
      */
     Headers();
 
+    /**
+     * Constructs a copy of \pa other.
+     */
+    Headers(const Headers &other);
+
 #ifdef Q_COMPILER_INITIALIZER_LISTS
     /**
      * Construct a header from a std::initializer_list given by list.

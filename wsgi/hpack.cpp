@@ -395,8 +395,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             if (addToDynamicTable) {
                 const int size = key.length() + value.length() + 32;
                 while (size + m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
-                    auto it = m_dynamicTable.takeLast();
-                    m_dynamicTableSize -= it.key.length() + it.value.length() + 32;
+                    const DynamicTableEntry entry = m_dynamicTable.takeLast();
+                    m_dynamicTableSize -= entry.key.length() + entry.value.length() + 32;
                 }
 
                 if (size + m_dynamicTableSize <= m_currentMaxDynamicTableSize) {

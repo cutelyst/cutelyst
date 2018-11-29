@@ -303,7 +303,7 @@ public:
     /*!
      * \brief Deconstructs the ValidatorRule.
      */
-    ~ValidatorRule();
+    virtual ~ValidatorRule();
 
 protected:
     const QScopedPointer<ValidatorRulePrivate> d_ptr;
