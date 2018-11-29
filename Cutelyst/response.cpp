@@ -136,6 +136,13 @@ void Response::setJsonBody(const QJsonDocument &documment)
     d->headers.setContentType(QStringLiteral("application/json"));
 }
 
+void Response::setJsonBody(const QString &json)
+{
+    Q_D(Response);
+    d->setBodyData(json.toUtf8());
+    d->headers.setContentType(QStringLiteral("application/json"));
+}
+
 void Response::setJsonObjectBody(const QJsonObject &object)
 {
     Q_D(Response);

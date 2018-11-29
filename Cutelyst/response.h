@@ -162,6 +162,12 @@ public:
     void setJsonBody(const QJsonDocument &documment);
 
     /**
+     * Sets a JSON string as the response body,
+     * this method is provided for convenience as it sets the content-type to application/json.
+     */
+    void setJsonBody(const QString &json);
+
+    /**
      * Sets a QJsonObject on a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
