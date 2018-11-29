@@ -44,6 +44,11 @@ QString Headers::contentDisposition() const
     return m_data.value(QStringLiteral("CONTENT_DISPOSITION"));
 }
 
+void Headers::setCacheControl(const QString &value)
+{
+    m_data.insert(QStringLiteral("CACHE_CONTROL"), value);
+}
+
 void Headers::setContentDisposition(const QString &contentDisposition)
 {
     m_data.insert(QStringLiteral("CONTENT_DISPOSITION"), contentDisposition);

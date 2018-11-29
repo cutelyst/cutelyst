@@ -58,6 +58,11 @@ public:
     QString contentDisposition() const;
 
     /**
+     * Defines the Cache-Control header
+     */
+    void setCacheControl(const QString &value);
+
+    /**
      * Defines the Content-Disposition header
      * \sa contentDisposition()
      */
