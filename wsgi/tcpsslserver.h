@@ -18,6 +18,8 @@
 #ifndef TCPSSLSERVER_H
 #define TCPSSLSERVER_H
 
+#include <qtnetwork-config.h>
+
 #ifndef QT_NO_SSL
 
 #include "tcpserver.h"
