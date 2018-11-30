@@ -160,8 +160,11 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                                              { SETTINGS_HEADER_TABLE_SIZE, m_headerTableSize },
                                          });
                         } else {
-//                            qCDebug(CWSGI_H2) << "Wrong preface";
-                            ret = sendGoAway(io, request->maxStreamId, ErrorProtocolError);
+                            qCDebug(CWSGI_H2) << "Protocol Error: Invalid connection preface" << sock->remoteAddress.toString();
+                            // RFC 7540 says this MAY be omitted, so let's reduce further processing
+//                            ret = sendGoAway(io, request->maxStreamId, ErrorProtocolError);
+                            sock->connectionClose();
+                            return;
                         }
                     } else {
 //                        qDebug() << "MAGIC needs more data" << bytesAvailable;
