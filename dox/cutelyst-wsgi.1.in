@@ -102,20 +102,20 @@ Balances new connections to threads using round-robin.
 .BI "\-\^\-h1\fR,\fP \-\^\-http-socket" " address"
 Bind to the specified TCP socket using HTTP protocol.
 .TP
-.BI "\-\^\-h1\fR,\fP \-\^\-http2-socket" " address"
-Bind to the specified TCP socket using HTTP/2 protocol.
-.TP
-.BI "\-\^\-h1\fR,\fP \-\^\-http2-header-table-size" " size"
-Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
-.TP
 .B \-\^\-upgrade-h2c
 Defines if an HTTP/1 connection can be upgraded to H2C (HTTP 2 Clear Text)
+.TP
+.BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " address"
+Bind to the specified TCP socket using HTTPS protocol
 .TP
 .B \-\^\-https-h2
 Defines if HTTPS sockect should use ALPN to negotiate HTTP/2
 .TP
-.BI "\-\^\-hs1\fR,\fP \-\^\-https-socket" " address"
-Bind to the specified TCP socket using HTTPS protocol
+.BI "\-\^\-h2\fR,\fP \-\^\-http2-socket" " address"
+Bind to the specified TCP socket using HTTP/2 only protocol.
+.TP
+.B "\-\^\-http2-header-table-size" " size"
+Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
 .TP
 .BI \-\^\-fastcgi-socket " address"
 Bind to the specified UNIX/TCP socket using FastCGI protocol.
