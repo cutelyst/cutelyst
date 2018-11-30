@@ -18,7 +18,9 @@
 #ifndef TCPSSLSERVER_H
 #define TCPSSLSERVER_H
 
-#include <qtnetwork-config.h>
+#ifndef Q_OS_LINUX
+	#include <qtnetwork-config.h>
+#endif
 
 #ifndef QT_NO_SSL
 
