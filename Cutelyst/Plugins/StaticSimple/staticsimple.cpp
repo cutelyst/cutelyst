@@ -107,7 +107,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
         if (fileInfo.exists()) {
             Response *res = c->res();
             const QDateTime currentDateTime = fileInfo.lastModified();
-            if (currentDateTime == c->req()->headers().ifModifiedSinceDateTime()) {
+            if (!c->req()->headers().ifModifiedSince(currentDateTime)) {
                 res->setStatus(Response::NotModified);
                 return true;
             }

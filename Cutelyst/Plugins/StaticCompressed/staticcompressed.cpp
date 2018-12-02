@@ -175,7 +175,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
         if (fileInfo.exists()) {
             Response *res = c->res();
             const QDateTime currentDateTime = fileInfo.lastModified();
-            if (currentDateTime == c->req()->headers().ifModifiedSinceDateTime()) {
+            if (!c->req()->headers().ifModifiedSince(currentDateTime)) {
                 res->setStatus(Response::NotModified);
                 return true;
             }
@@ -395,7 +395,7 @@ static const quint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
 
 quint32 updateCRC32(unsigned char ch, quint32 crc)
 {
-    return (crc_32_tab[((crc) ^ ((quint8)ch)) & 0xff] ^ ((crc) >> 8));
+    return (crc_32_tab[((crc) ^ (quint8(ch))) & 0xff] ^ ((crc) >> 8));
 }
 
 quint32 crc32buf(const QByteArray& data)

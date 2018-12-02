@@ -98,7 +98,7 @@ bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
 {
     auto res = c->response();
     const QDateTime currentDateTime = QFileInfo(filename).lastModified();
-    if (currentDateTime == c->request()->headers().ifModifiedSinceDateTime()) {
+    if (!c->request()->headers().ifModifiedSince(currentDateTime)) {
         res->setStatus(Response::NotModified);
         return true;
     }
