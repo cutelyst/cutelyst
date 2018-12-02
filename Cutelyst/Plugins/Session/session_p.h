@@ -33,33 +33,33 @@ public:
     static inline QString generateSessionId();
     static QString loadSessionId(Context *c, const QString &sessionName);
     static QString getSessionId(Context *c, const QString &sessionName);
-    static QString createSessionIdIfNeeded(Session *session, Context *c, quint64 expires);
-    static inline QString createSessionId(Session *session, Context *c, quint64 expires);
+    static QString createSessionIdIfNeeded(Session *session, Context *c, qint64 expires);
+    static inline QString createSessionId(Session *session, Context *c, qint64 expires);
     static void _q_saveSession(Context *c);
     static void _q_postFork(Application *app);
     static void deleteSession(Session *session, Context *c, const QString &reason);
     static inline void deleteSessionId(Session *session, Context *c, const QString &sid);
     static QVariant loadSession(Context *c);
     static bool validateSessionId(const QString &id);
-    static quint64 extendSessionExpires(Session *session, Context *c, quint64 expires);
-    static quint64 getStoredSessionExpires(Session *session, Context *c, const QString &sessionid);
+    static qint64 extendSessionExpires(Session *session, Context *c, qint64 expires);
+    static qint64 getStoredSessionExpires(Session *session, Context *c, const QString &sessionid);
 
     static inline QVariant initializeSessionData(Session *session, Context *c);
     static void saveSessionExpires(Context *c);
     static QVariant loadSessionExpires(Session *session, Context *c, const QString &sessionId);
-    static inline quint64 initialSessionExpires(Session *session, Context *c);
-    static inline quint64 calculateInitialSessionExpires(Session *session, Context *c, const QString &sessionId);
-    static inline quint64 resetSessionExpires(Session *session, Context *c, const QString &sessionId);
+    static inline qint64 initialSessionExpires(Session *session, Context *c);
+    static inline qint64 calculateInitialSessionExpires(Session *session, Context *c, const QString &sessionId);
+    static inline qint64 resetSessionExpires(Session *session, Context *c, const QString &sessionId);
 
     static inline void updateSessionCookie(Context *c, const QNetworkCookie &updated);
     static inline QNetworkCookie makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
-    static inline void extendSessionId(Session *session, Context *c, const QString &sid, quint64 expires);
+    static inline void extendSessionId(Session *session, Context *c, const QString &sid, qint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
 
     Session *q_ptr;
 
-    quint64 sessionExpires;
-    quint64 expiryThreshold;
+    qint64 sessionExpires;
+    qint64 expiryThreshold;
     SessionStore *store = nullptr;
     QString sessionName;
     bool cookieHttpOnly = true;
