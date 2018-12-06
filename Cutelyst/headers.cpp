@@ -212,7 +212,7 @@ QDateTime Headers::date() const
 
 QString Headers::ifModifiedSince() const
 {
-    return header(QStringLiteral("IF_MODIFIED_SINCE"));
+    return m_data.value(QStringLiteral("IF_MODIFIED_SINCE"));
 }
 
 QDateTime Headers::ifModifiedSinceDateTime() const
@@ -237,8 +237,12 @@ QDateTime Headers::ifModifiedSinceDateTime() const
 
 bool Headers::ifModifiedSince(const QDateTime &lastModified) const
 {
-    const QDateTime lastModifiedWithoutMS = lastModified.addMSecs(-lastModified.time().msec());
-    return ifModifiedSinceDateTime() != lastModifiedWithoutMS;
+    auto it = m_data.constFind(QStringLiteral("IF_MODIFIED_SINCE"));
+    if (it != m_data.constEnd()) {
+        return it.value() != QLocale::c().toString(lastModified.toUTC(),
+                                                   QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    }
+    return true;
 }
 
 QString Headers::lastModified() const
