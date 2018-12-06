@@ -141,8 +141,8 @@ public:
 
 protected:
     /**
-     * This method is called after the application
-     * has registered all controllers.
+     * This method is called right after Controller has been setup
+     * and before application forks and \sa postFork() is called.
      *
      * Reimplement this method if you need to configure
      * internal variable and you need to know for
