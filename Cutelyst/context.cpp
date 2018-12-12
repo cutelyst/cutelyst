@@ -204,6 +204,18 @@ QVariant Context::stash(const QString &key) const
     return d->stash.value(key);
 }
 
+QVariant Context::stashTake(const QString &key)
+{
+    Q_D(Context);
+    return d->stash.take(key);
+}
+
+bool Context::stashRemove(const QString &key)
+{
+    Q_D(Context);
+    return d->stash.remove(key);
+}
+
 void Context::setStash(const QString &key, const QVariant &value)
 {
     Q_D(Context);
