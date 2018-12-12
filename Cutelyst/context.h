@@ -238,6 +238,12 @@ public:
     QVariant stashTake(const QString &key);
 
     /**
+     * Removes the item that has the key from the stash.
+     * Returns true if any item was removed removed.
+     */
+    bool stashRemove(const QString &key);
+
+    /**
      * A convenient method to set a single value to the stash
      */
     void setStash(const QString &key, const QVariant &value);
