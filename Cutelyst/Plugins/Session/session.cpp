@@ -68,7 +68,9 @@ bool Session::setup(Application *app)
     d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
-    connect(app, &Application::postForked, this, &SessionPrivate::_q_postFork);
+    connect(app, &Application::postForked, this, [=] {
+        m_instance = this;
+    });
 
     if (!d->store) {
         d->store = new SessionStoreFile(this);
@@ -347,11 +349,6 @@ void SessionPrivate::_q_saveSession(Context *c)
 
     const QString sid = c->stash(SESSION_ID).toString();
     store->storeSessionData(c, sid,  QStringLiteral("session"), sessionData);
-}
-
-void SessionPrivate::_q_postFork(Application *app)
-{
-    m_instance = app->plugin<Session *>();
 }
 
 void SessionPrivate::deleteSession(Session *session, Context *c, const QString &reason)
