@@ -53,8 +53,6 @@ public:
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
-    static void _q_postFork(Application *app);
-
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
     static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
 

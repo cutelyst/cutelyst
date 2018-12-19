@@ -232,7 +232,9 @@ bool Memcached::setup(Application *app)
     }
 
     if (ok) {
-        connect(app, &Application::postForked, this, &MemcachedPrivate::_q_postFork);
+        connect(app, &Application::postForked, this, [=] {
+            mcd = this;
+        });
         app->loadTranslations(QStringLiteral("plugin_memcached"));
     } else {
         qCCritical(C_MEMCACHED) << "Failed to configure the connection to the memcached server(s)";
@@ -1404,11 +1406,6 @@ QString Memcached::errorString(Context *c, MemcachedReturnType rt)
 QVersionNumber Memcached::libMemcachedVersion()
 {
     return QVersionNumber::fromString(QLatin1String(memcached_lib_version()));
-}
-
-void MemcachedPrivate::_q_postFork(Application *app)
-{
-    mcd = app->plugin<Memcached *>();
 }
 
 Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_return_t rt)

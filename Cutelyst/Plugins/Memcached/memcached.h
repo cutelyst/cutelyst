@@ -152,7 +152,7 @@ public:
     /**
      * Deconstructs the Memcached object.
      */
-    virtual ~Memcached();
+    virtual ~Memcached() override;
 
     /**
      * Return types for memcached operations.
@@ -963,9 +963,6 @@ protected:
      * Reads the configuration and sets up the plugin.
      */
     virtual bool setup(Application *app) override;
-
-private:
-    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
 };
 
 template< typename T>
