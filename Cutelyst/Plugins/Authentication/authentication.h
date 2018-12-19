@@ -124,9 +124,6 @@ protected:
     virtual bool setup(Application *app) override;
 
     AuthenticationPrivate *d_ptr;
-
-private:
-    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
 };
 
 inline bool Authentication::authenticate(Context *c, const QString &realm) {

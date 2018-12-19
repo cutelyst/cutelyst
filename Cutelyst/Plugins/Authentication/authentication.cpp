@@ -174,8 +174,9 @@ void Authentication::logout(Context *c)
 
 bool Authentication::setup(Application *app)
 {
-    connect(app, &Application::postForked, this, &AuthenticationPrivate::_q_postFork);
-    return true;
+    return connect(app, &Application::postForked, this, [=] {
+        auth = this;
+    });
 }
 
 AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const
@@ -261,11 +262,6 @@ void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &us
             realm->persistUser(c, user);
         }
     }
-}
-
-void AuthenticationPrivate::_q_postFork(Application *app)
-{
-    auth = app->plugin<Authentication *>();
 }
 
 Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)
