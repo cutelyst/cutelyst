@@ -160,7 +160,7 @@ install(EXPORT CutelystTargets
 
 add_subdirectory(Cutelyst)
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT (APPLE OR HAIKU))
     set(LINUX TRUE)
 endif()
 
