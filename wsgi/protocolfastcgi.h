@@ -55,7 +55,7 @@ public:
         delete body;
         body = nullptr;
 
-        startOfRequest = 0;
+        elapsed.invalidate();
         status = InitialState;
 
         stream_id = 0;

@@ -19,7 +19,7 @@
 
 #include "dispatchtype.h"
 #include "application.h"
-#include "engine.h"
+#include "enginerequest.h"
 #include "utils.h"
 
 #include "common.h"
@@ -28,10 +28,10 @@
 
 using namespace Cutelyst;
 
-Stats::Stats(Application *app) : d_ptr(new StatsPrivate)
+Stats::Stats(EngineRequest *request) : d_ptr(new StatsPrivate)
 {
     Q_D(Stats);
-    d->engine = app->engine();
+    d->engineRequest = request;
 }
 
 Stats::~Stats()
@@ -44,7 +44,7 @@ void Stats::profileStart(const QString &action)
     Q_D(Stats);
     StatsAction stat;
     stat.action = action;
-    stat.begin = d->engine->time();
+    stat.begin = d->engineRequest->elapsed.nsecsElapsed();
     d->actions.push_back(stat);
 }
 
@@ -53,7 +53,7 @@ void Stats::profileEnd(const QString &action)
     Q_D(Stats);
     for (auto &stat : d->actions) {
         if (stat.action == action) {
-            stat.end = d->engine->time();
+            stat.end = d->engineRequest->elapsed.nsecsElapsed();
             break;
         }
     }
@@ -71,7 +71,7 @@ QByteArray Stats::report()
     QVector<QStringList> table;
     for (const auto &stat : d->actions) {
         table.append({ stat.action,
-                       QString::number((stat.end - stat.begin)/1000000.0, 'f') + QLatin1Char('s') });
+                       QString::number((stat.end - stat.begin)/1000000000.0, 'f') + QLatin1Char('s') });
     }
 
     ret = Utils::buildTable(table, {

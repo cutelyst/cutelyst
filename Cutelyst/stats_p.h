@@ -26,16 +26,16 @@ namespace Cutelyst {
 
 struct StatsAction {
     QString action;
-    quint64 begin = 0;
-    quint64 end = 0;
+    qint64 begin = 0;
+    qint64 end = 0;
 };
 
-class Engine;
+class EngineRequest;
 class StatsPrivate
 {
 public:
     std::vector<StatsAction> actions;
-    Engine *engine;
+    EngineRequest *engineRequest;
 };
 
 }

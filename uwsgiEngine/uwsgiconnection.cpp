@@ -66,6 +66,7 @@ uwsgiConnection::uwsgiConnection(wsgi_request *req)
     remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
     isSecure = req->https_len;
     startOfRequest = req->start_of_request;
+    elapsed.start();
 
     remotePort = 0;
     // we scan the table in reverse, as updated values are at the end

@@ -373,8 +373,8 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
         if (len > 0) {
             request->buf_size += len;
 
-            if (!request->startOfRequest) {
-                request->startOfRequest = sock->engine->time();
+            if (!request->elapsed.isValid()) {
+                request->elapsed.start();
             }
 
             if (request->buf_size < int(sizeof(struct fcgi_record))) {
@@ -423,7 +423,7 @@ ProtocolData *ProtocolFastCGI::createData(Socket *sock) const
 
 ProtoRequestFastCGI::ProtoRequestFastCGI(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
-    startOfRequest = 0;
+
 }
 
 ProtoRequestFastCGI::~ProtoRequestFastCGI()

@@ -95,7 +95,7 @@ public:
         delete body;
         body = nullptr;
 
-        startOfRequest = 0;
+        elapsed.invalidate();
         status = InitialState;
 
         websocketUpgraded = false;

@@ -125,8 +125,8 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
             protoRequest->last = protoRequest->beginLine;
 
             if (protoRequest->connState == ProtoRequestHttp::MethodLine) {
-                if (!protoRequest->startOfRequest) {
-                    protoRequest->startOfRequest = sock->engine->time();
+                if (!protoRequest->elapsed.isValid()) {
+                    protoRequest->elapsed.start();
                 }
                 parseMethod(ptr, ptr + len, sock);
                 protoRequest->connState = ProtoRequestHttp::HeaderLine;
@@ -172,8 +172,8 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 }
             }
         } else {
-            if (!protoRequest->startOfRequest) {
-                protoRequest->startOfRequest = sock->engine->time();
+            if (!protoRequest->elapsed.isValid()) {
+                protoRequest->elapsed.start();
             }
             protoRequest->last = protoRequest->buf_size;
         }
@@ -332,7 +332,7 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
 
 ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
-    startOfRequest = 0;
+
 }
 
 ProtoRequestHttp::~ProtoRequestHttp()

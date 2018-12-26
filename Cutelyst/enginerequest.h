@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <QHostAddress>
+#include <QElapsedTimer>
 
 #include <Cutelyst/Headers>
 
@@ -158,7 +159,7 @@ public:
     /*! The request headers */
     Headers headers;
 
-    /*! The timestamp of the start of headers */
+    /*! The timestamp of the start of request, TODO remove in Cutelyst 3 */
     quint64 startOfRequest;
 
     /*! Connection status */
@@ -177,6 +178,9 @@ public:
 
     /*! If the connection is secure HTTPS */
     bool isSecure = false;
+
+    /*! The elapsed timer since the start of request */
+    QElapsedTimer elapsed;
 };
 
 }

@@ -433,7 +433,7 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         request->maxStreamId = fr.streamId;
 
         stream = new H2Stream(fr.streamId, request->settingsInitialWindowSize, request);
-        stream->startOfRequest = request->sock->engine->time();
+        stream->elapsed.start();
         request->streams.insert(fr.streamId, stream);
     }
 
@@ -763,7 +763,7 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::En
             stream->query = request.query;
             stream->remoteUser = request.remoteUser;
             stream->headers = request.headers;
-            stream->startOfRequest = request.startOfRequest;
+            stream->elapsed.start();
             stream->status = request.status;
             stream->body = request.body;
 

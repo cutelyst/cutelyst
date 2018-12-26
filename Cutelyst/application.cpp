@@ -375,7 +375,7 @@ void Application::handleRequest(EngineRequest *request)
 
     Stats *stats = nullptr;
     if (d->useStats) {
-        stats = new Stats(this);
+        stats = new Stats(request);
         priv->stats = stats;
     }
 
@@ -406,8 +406,7 @@ void Application::handleRequest(EngineRequest *request)
                 qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))),
                 qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
 
-        quint64 endOfRequest = engine->time();
-        double enlapsed = (endOfRequest - request->startOfRequest) / 1000000.0;
+        const double enlapsed = request->elapsed.nsecsElapsed() / 1000000000.0;
         QString average;
         if (enlapsed == 0.0) {
             average = QStringLiteral("??");

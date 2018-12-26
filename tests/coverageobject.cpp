@@ -106,7 +106,7 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     req.remotePort = 3000;
     req.remoteUser = QString();
     req.headers = headersCL;
-    req.startOfRequest = QDateTime::currentMSecsSinceEpoch();
+    req.elapsed.start();
     req.body = bodyDevice;
 
     processRequest(&req);

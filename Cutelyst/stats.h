@@ -24,16 +24,16 @@
 
 namespace Cutelyst {
 
-class Application;
+class EngineRequest;
 class StatsPrivate;
-class CUTELYST_LIBRARY Stats
+class Stats
 {
     Q_DECLARE_PRIVATE(Stats)
 public:
     /**
      * Constructs a new stats object with the given parent.
      */
-    explicit Stats(Application *app);
+    explicit Stats(EngineRequest *request);
     virtual ~Stats();
 
     /**
