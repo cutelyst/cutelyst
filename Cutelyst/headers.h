@@ -187,6 +187,16 @@ public:
     bool ifMatch(const QString &etag) const;
 
     /**
+     * Checks for If-None-Match header to see if the client has the most recent
+     * version of a cached resource.
+     * Returns true if the etag value matches the value between double quotes of the client header.
+     *
+     * In case of true client should usually return an empty body along with a
+     * status code of 304 - Response::NotModified.
+     */
+    bool ifNoneMatch(const QString &etag) const;
+
+    /**
      * Sets the ETag header including a 'W/' (weak etag) if \p strong is false
      * This method will place the etag value between double quotes, like:
      * ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
