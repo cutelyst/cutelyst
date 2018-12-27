@@ -184,7 +184,7 @@ public:
      * In case of false client should usually discard posted data and return
      * status code of 412 - Response::PreconditionFailed
      */
-    bool ifMatch(const QString &etag, bool weak = false) const;
+    bool ifMatch(const QString &etag) const;
 
     /**
      * Checks for If-None-Match header to see if the client has the most recent
@@ -194,15 +194,14 @@ public:
      * In case of true client should usually return an empty body along with a
      * status code of 304 - Response::NotModified.
      */
-    bool ifNoneMatch(const QString &etag, bool weak = false) const;
+    bool ifNoneMatch(const QString &etag) const;
 
     /**
-     * Sets the ETag header including a 'W/' (weak etag) if \p weak is true
+     * Sets the ETag header in strong form by not prepending a 'W/' (weak etag)
      * This method will place the etag value between double quotes, like:
      * ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
-     * ETag: W/"0815"
      */
-    void setETag(const QString &etag, bool weak = false);
+    void setETag(const QString &etag);
 
     /**
      * This header indicates the date and time at which the resource was last modified.

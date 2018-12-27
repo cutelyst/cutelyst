@@ -245,41 +245,29 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
     return true;
 }
 
-bool Headers::ifMatch(const QString &etag, bool weak) const
+bool Headers::ifMatch(const QString &etag) const
 {
     auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        if (Q_LIKELY(!weak)) {
-            return clientETag.midRef(1, clientETag.size() - 2) == etag;
-        } else {
-            return clientETag.midRef(2, clientETag.size() - 3) == etag;
-        }
+        return clientETag.midRef(1, clientETag.size() - 2) == etag;
     }
     return true;
 }
 
-bool Headers::ifNoneMatch(const QString &etag, bool weak) const
+bool Headers::ifNoneMatch(const QString &etag) const
 {
     auto it = m_data.constFind(QStringLiteral("IF_NONE_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        if (Q_LIKELY(!weak)) {
-            return clientETag.midRef(1, clientETag.size() - 2) == etag;
-        } else {
-            return clientETag.midRef(2, clientETag.size() - 3) == etag;
-        }
+        return clientETag.midRef(1, clientETag.size() - 2) == etag;
     }
     return false;
 }
 
-void Headers::setETag(const QString &etag, bool weak)
+void Headers::setETag(const QString &etag)
 {
-    if (Q_LIKELY(!weak)) {
-        m_data.insert(QStringLiteral("ETAG"), QLatin1Char('"') + etag + QLatin1Char('"'));
-    } else {
-        m_data.insert(QStringLiteral("ETAG"), QLatin1String("W/\"") + etag + QLatin1Char('"'));
-    }
+    m_data.insert(QStringLiteral("ETAG"), QLatin1Char('"') + etag + QLatin1Char('"'));
 }
 
 QString Headers::lastModified() const
