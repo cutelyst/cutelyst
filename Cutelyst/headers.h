@@ -176,6 +176,14 @@ public:
     bool ifModifiedSince(const QDateTime &lastModified) const;
 
     /**
+     * Sets the ETag header including a 'W/' (weak etag) if \p strong is false
+     * This method will place the etag value between double quotes, like:
+     * ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+     * ETag: W/"0815"
+     */
+    void setETag(const QString &etag, bool strong = true);
+
+    /**
      * This header indicates the date and time at which the resource was last modified.
      */
     QString lastModified() const;

@@ -245,6 +245,15 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
     return true;
 }
 
+void Headers::setETag(const QString &etag, bool strong)
+{
+    if (Q_LIKELY(strong)) {
+        m_data.insert(QStringLiteral("ETAG"), QLatin1Char('"') + etag + QLatin1Char('"'));
+    } else {
+        m_data.insert(QStringLiteral("ETAG"), QLatin1String("W/\"") + etag + QLatin1Char('"'));
+    }
+}
+
 QString Headers::lastModified() const
 {
     return m_data.value(QStringLiteral("LAST_MODIFIED"));
