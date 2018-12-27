@@ -176,6 +176,17 @@ public:
     bool ifModifiedSince(const QDateTime &lastModified) const;
 
     /**
+     * Checks for If-Match header usually used on POST to avoid mid-air collisions, making sure
+     * the content has not changed while the client changes it.
+     * Returns true if the etag value matches the value between double quotes of the client header
+     * or if the client did not provide the If-Match header.
+     *
+     * In case of false client should usually discard posted data and return
+     * status code of 412 - Response::PreconditionFailed
+     */
+    bool ifMatch(const QString &etag) const;
+
+    /**
      * Sets the ETag header including a 'W/' (weak etag) if \p strong is false
      * This method will place the etag value between double quotes, like:
      * ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"

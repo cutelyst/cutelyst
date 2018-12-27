@@ -245,6 +245,16 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
     return true;
 }
 
+bool Headers::ifMatch(const QString &etag) const
+{
+    auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
+    if (it != m_data.constEnd()) {
+        const QString &clientETag = it.value();
+        return clientETag.midRef(1, clientETag.size() - 2) == etag;
+    }
+    return true;
+}
+
 void Headers::setETag(const QString &etag, bool strong)
 {
     if (Q_LIKELY(strong)) {
