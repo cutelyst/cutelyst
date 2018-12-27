@@ -202,7 +202,7 @@ public:
      * ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
      * ETag: W/"0815"
      */
-    void setETag(const QString &etag, bool weak = true);
+    void setETag(const QString &etag, bool weak = false);
 
     /**
      * This header indicates the date and time at which the resource was last modified.
