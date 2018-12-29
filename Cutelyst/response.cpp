@@ -118,6 +118,9 @@ void Response::setBody(QIODevice *body)
 
     if (!(d->engineRequest->status & EngineRequest::IOWrite)) {
         d->bodyData = QByteArray();
+        if (d->bodyIODevice) {
+            delete d->bodyIODevice;
+        }
         d->bodyIODevice = body;
     }
 }
