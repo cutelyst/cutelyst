@@ -50,6 +50,9 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
     while (mp.startsWith(QLatin1Char('/'))) {
         mp.remove(0, 1);
     }
+    if (!mp.endsWith(QLatin1Char('/'))) {
+        mp += QLatin1Char('/');
+    }
 
     qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
 
@@ -70,6 +73,7 @@ void StaticMap::beforePrepareAction(Cutelyst::Context *c, bool *skipMethod)
         if (path.startsWith(mp.mountPoint)) {
             if (tryToServeFile(c, mp, path)) {
                 *skipMethod = true;
+                break;
             }
         }
     }
