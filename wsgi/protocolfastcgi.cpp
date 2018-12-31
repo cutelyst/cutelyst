@@ -472,7 +472,7 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     }
     headerBuffer.append("\r\n\r\n", 4);
 
-    return doWrite(headerBuffer.constData(), headerBuffer.size()) == 0;
+    return doWrite(headerBuffer.constData(), headerBuffer.size()) != -1;
 }
 
 qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
@@ -524,7 +524,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             write_pos += wlen;
             proto_parser_status -= wlen;
             if (write_pos == len) {
-                return WSGI_OK;
+                return write_pos;
             }
             continue;
         }
