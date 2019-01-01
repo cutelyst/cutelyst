@@ -408,6 +408,16 @@ public:
     void setLazy(bool enable);
     bool lazy() const;
 
+    /**
+     * Defines if a reverse proxy operates in front of this application server.
+     * If enabled, parses the http headers X-Forwarded-For, X-Forwarded-Host and X-Forwarded-Proto
+     * and uses this info to update Cutelyst::EngineRequest
+     * @accessors usingFrontendProxy(), setUsingFrontendProxy()
+     */
+    Q_PROPERTY(bool using_frontend_proxy READ usingFrontendProxy WRITE setUsingFrontendProxy NOTIFY changed)
+    void setUsingFrontendProxy(bool enable);
+    bool usingFrontendProxy() const;
+
 Q_SIGNALS:
     /**
      * It is emitted once the server is ready.

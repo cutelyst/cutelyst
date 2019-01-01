@@ -1339,6 +1339,19 @@ bool WSGI::lazy() const
     return d->lazy;
 }
 
+void WSGI::setUsingFrontendProxy(bool enable)
+{
+    Q_D(WSGI);
+    d->usingFrontendProxy = enable;
+    Q_EMIT changed();
+}
+
+bool WSGI::usingFrontendProxy() const
+{
+    Q_D(const WSGI);
+    return d->usingFrontendProxy;
+}
+
 void WSGIPrivate::setupApplication()
 {
     Cutelyst::Application *localApp = app;
