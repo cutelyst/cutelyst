@@ -335,10 +335,7 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
         protoRequest->X_Forwarded_Host = true;
         protoRequest->headerHost = true; // ignore a following Host: header (if any)
     } else if (usingFrontendProxy && !protoRequest->X_Forwarded_Proto && key == QLatin1String("X_FORWARDED_PROTO")) {
-        if (value == QLatin1String("http"))
-            protoRequest->isSecure = false;
-        else if (value == QLatin1String("https"))
-            protoRequest->isSecure = true;
+        protoRequest->isSecure = (value == QLatin1String("https"));
         protoRequest->X_Forwarded_Proto = true;
     }
     protoRequest->headers.pushRawHeader(key, value);

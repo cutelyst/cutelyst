@@ -105,6 +105,7 @@ public:
         serverAddress = sock->serverAddress;
         remoteAddress = sock->remoteAddress;
         remotePort = sock->remotePort;
+        isSecure = sock->isSecure;
     }
 
     virtual void socketDisconnected() override final;
