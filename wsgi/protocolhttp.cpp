@@ -45,7 +45,7 @@ ProtocolHttp::ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c) : Protocol(wsg
   , m_websocketProto(new ProtocolWebSocket(wsgi))
   , m_upgradeH2c(upgradeH2c)
 {
-
+    usingFrontendProxy = wsgi->usingFrontendProxy();
 }
 
 ProtocolHttp::~ProtocolHttp()
@@ -326,6 +326,20 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     } else if (!protoRequest->headerHost && key == QLatin1String("HOST")) {
         protoRequest->serverAddress = value;
         protoRequest->headerHost = true;
+    } else if (usingFrontendProxy && !protoRequest->X_Forwarded_For && key == QLatin1String("X_FORWARDED_FOR")) {
+        protoRequest->remoteAddress = QHostAddress(value); // configure your reverse-proxy to list only one IP address
+        protoRequest->remotePort = 0; // unknown
+        protoRequest->X_Forwarded_For = true;
+    } else if (usingFrontendProxy && !protoRequest->X_Forwarded_Host && key == QLatin1String("X_FORWARDED_HOST")) {
+        protoRequest->serverAddress = value;
+        protoRequest->X_Forwarded_Host = true;
+        protoRequest->headerHost = true; // ignore a following Host: header (if any)
+    } else if (usingFrontendProxy && !protoRequest->X_Forwarded_Proto && key == QLatin1String("X_FORWARDED_PROTO")) {
+        if (value == QLatin1String("http"))
+            protoRequest->isSecure = false;
+        else if (value == QLatin1String("https"))
+            protoRequest->isSecure = true;
+        protoRequest->X_Forwarded_Proto = true;
     }
     protoRequest->headers.pushRawHeader(key, value);
 }

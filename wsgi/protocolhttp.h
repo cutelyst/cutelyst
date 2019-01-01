@@ -150,6 +150,7 @@ protected:
 
     ProtocolWebSocket *m_websocketProto;
     ProtocolHttp2 *m_upgradeH2c;
+    bool usingFrontendProxy;
 };
 
 }

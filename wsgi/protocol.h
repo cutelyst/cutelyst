@@ -70,6 +70,9 @@ public:
     HeaderConnection headerConnection = HeaderConnectionNotSet;
     char *buffer;
     bool headerHost = false;
+    bool X_Forwarded_For = false;
+    bool X_Forwarded_Host = false;
+    bool X_Forwarded_Proto = false;
 };
 
 class Protocol
