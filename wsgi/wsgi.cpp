@@ -293,6 +293,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                                          QCoreApplication::translate("main", "balances new connections to threads using round-robin"));
     parser.addOption(threadBalancerOpt);
 
+    QCommandLineOption frontendProxy(QStringLiteral("using-frontend-proxy"),
+                                     QCoreApplication::translate("main", "Enable frontend (reverse-)proxy support"));
+    parser.addOption(frontendProxy);
+
+
     // Process the actual command line arguments given by the user
     parser.process(arguments);
 
@@ -481,6 +486,10 @@ void WSGI::parseCommandLine(const QStringList &arguments)
         if (!ok || size < 1) {
             parser.showHelp(1);
         }
+    }
+
+    if (parser.isSet(frontendProxy)) {
+        setUsingFrontendProxy(true);
     }
 
     setHttpSocket(httpSocket() + parser.values(httpSocketOpt));
