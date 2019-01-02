@@ -113,6 +113,7 @@ public:
     bool userEventLoop = false;
     bool upgradeH2c = false;
     bool httpsH2 = false;
+    bool usingFrontendProxy = false;
 
 Q_SIGNALS:
     void postForked(int workerId);

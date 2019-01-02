@@ -56,6 +56,9 @@ public:
         buf_size = 0;
         headerConnection = HeaderConnectionNotSet;
         headerHost = false;
+        X_Forwarded_For = false;
+        X_Forwarded_Host = false;
+        X_Forwarded_Proto = false;
     }
 
     virtual void socketDisconnected() {}
@@ -70,6 +73,9 @@ public:
     HeaderConnection headerConnection = HeaderConnectionNotSet;
     char *buffer;
     bool headerHost = false;
+    bool X_Forwarded_For = false;
+    bool X_Forwarded_Host = false;
+    bool X_Forwarded_Proto = false;
 };
 
 class Protocol

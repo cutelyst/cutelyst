@@ -105,6 +105,7 @@ public:
         serverAddress = sock->serverAddress;
         remoteAddress = sock->remoteAddress;
         remotePort = sock->remotePort;
+        isSecure = sock->isSecure;
     }
 
     virtual void socketDisconnected() override final;
@@ -150,6 +151,7 @@ protected:
 
     ProtocolWebSocket *m_websocketProto;
     ProtocolHttp2 *m_upgradeH2c;
+    bool usingFrontendProxy;
 };
 
 }
