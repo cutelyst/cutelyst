@@ -1,11 +1,8 @@
 project(HelloWorld)
 
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
-find_package(Qt5 COMPONENTS
-    Core
-    Network
-)
-find_package(Cutelyst2Qt5 2.0.0 REQUIRED)
+find_package(Qt5 COMPONENTS Core Network REQUIRED)
+find_package(Cutelyst2Qt5 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)

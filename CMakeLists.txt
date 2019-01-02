@@ -52,6 +52,7 @@ endif ()
 #
 option( ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF )
 option( BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL} )
+option( BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL} )
 
 if (BUILD_TESTS)
   enable_testing()
@@ -185,7 +186,9 @@ add_subdirectory(i18n)
 
 add_subdirectory(dox)
 
-add_subdirectory(examples)
+if (BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
 if (BUILD_TESTS)
   add_subdirectory(tests)
