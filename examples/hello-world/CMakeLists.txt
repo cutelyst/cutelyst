@@ -1,5 +1,3 @@
-project(HelloWorld)
-
 # Our sources
 file(GLOB_RECURSE hello_SRCS *)
 
@@ -15,5 +13,5 @@ target_link_libraries(cutelyst-hello-world PRIVATE
     Cutelyst::Session
 )
 
-# TODO install to a place where uWSGI Cutelyst plugin searches for
+# install the application executable
 install(TARGETS cutelyst-hello-world DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
