@@ -212,7 +212,7 @@ QString CSRFProtection::getTokenFormField(Context *c)
         return form;
     }
 
-    form = QStringLiteral("<input type=\"hidden\" name=\"%1\" value=\"%2\">").arg(csrf->d_ptr->formInputName, QString::fromLatin1(CSRFProtection::getToken(c)));
+    form = QStringLiteral("<input type=\"hidden\" name=\"%1\" value=\"%2\" />").arg(csrf->d_ptr->formInputName, QString::fromLatin1(CSRFProtection::getToken(c)));
 
     return form;
 }
@@ -451,7 +451,19 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
             c->res()->setContentType(csrf->d_ptr->genericContentType);
         } else {
             const QString title = c->translate("Cutelyst::CSRFProtection", "403 Forbidden - CSRF protection check failed");
-            c->res()->setBody(QStringLiteral("<!DOCTYPE html><html><head><meta charset='utf-8'><title>") + title + QStringLiteral("</title></head><body><h1>") + title + QStringLiteral("</h1><p>") + displayReason + QStringLiteral("</p></body></html>"));
+            c->res()->setBody(QStringLiteral("<!DOCTYPE html>\n"
+                                             "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+                                             "  <head>\n"
+                                             "    <title>") + title +
+                              QStringLiteral("</title>\n"
+                                             "  </head>\n"
+                                             "  <body>\n"
+                                             "    <h1>") + title +
+                              QStringLiteral("</h1>\n"
+                                             "    <p>") + displayReason +
+                              QStringLiteral("</p>\n"
+                                             "  </body>\n"
+                                             "</html>\n"));
             c->res()->setContentType(QStringLiteral("text/html; charset=utf-8"));
         }
         c->detach();
