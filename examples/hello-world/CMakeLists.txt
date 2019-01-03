@@ -1,19 +1,19 @@
 project(HelloWorld)
 
-cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
-find_package(Cutelyst2Qt5 REQUIRED)
+# Our sources
+file(GLOB_RECURSE hello_SRCS *)
 
-# Auto generate moc files
-set(CMAKE_AUTOMOC ON)
-# As moc files are generated in the binary dir, tell CMake
-# to always look for includes there:
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Create the application
+add_executable(cutelyst-hello-world ${hello_SRCS})
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${Cutelyst2Qt5_INCLUDE_DIR}
+# Link to Cutelyst
+target_link_libraries(cutelyst-hello-world PRIVATE
+    Qt5::Core
+    Qt5::Network
+    Cutelyst::Core
+    Cutelyst::WSGI
+    Cutelyst::Session
 )
 
-add_subdirectory(src)
+# TODO install to a place where uWSGI Cutelyst plugin searches for
+install(TARGETS cutelyst-hello-world DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
