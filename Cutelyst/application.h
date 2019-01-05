@@ -414,6 +414,13 @@ Q_SIGNALS:
      */
     void postForked(Application *app);
 
+    /**
+     * This signal is likely to be emitted when the worker process should
+     * stop, at this point the application has a limited time to finish it's
+     * operations, if a timeout is reached the application will get killed.
+     */
+    void shuttingDown(Application *app);
+
 protected:
     /**
      * Change the value of the configuration key

@@ -81,6 +81,10 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
         m_socketTimeout = new QTimer(this);
         m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
     }
+
+    connect(this, &CWsgiEngine::shutdown, this, [localApp] {
+        Q_EMIT localApp->shuttingDown(localApp);
+    });
 }
 
 CWsgiEngine::~CWsgiEngine()
