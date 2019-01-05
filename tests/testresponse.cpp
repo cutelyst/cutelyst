@@ -338,15 +338,15 @@ void TestResponse::testController_data()
     query.addQueryItem(QStringLiteral("url"), QStringLiteral("http://cutelyst.org/foo#something"));
     QTest::newRow("redirect-test00") << get << QStringLiteral("/response/test/redirect?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
                                      << QByteArrayLiteral("302 Found")
-                                     << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("308")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
-                                     << QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=http://cutelyst.org/foo#something>here</a>.</p>\n  </body>\n</html>\n");
+                                     << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("217")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
+                                     << QByteArrayLiteral("<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=\"http://cutelyst.org/foo#something\">here</a>.</p>\n  </body>\n</html>\n");
 
     query.clear();
     query.addQueryItem(QStringLiteral("url"), QStringLiteral("http://cutelyst.org/foo#something"));
-    QTest::newRow("redirecturl-test00") << get << QStringLiteral("/response/test/redirectUrl?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
+    QTest::newRow("redirecturl-test0") << get << QStringLiteral("/response/test/redirectUrl?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray()
                                         << QByteArrayLiteral("302 Found")
-                                        << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("308")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
-                                        << QByteArrayLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=http://cutelyst.org/foo#something>here</a>.</p>\n  </body>\n</html>\n");
+                                        << Headers{ {QStringLiteral("Content-Length"), QStringLiteral("217")}, {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")}, {QStringLiteral("Location"),QStringLiteral("http://cutelyst.org/foo#something")} }
+                                        << QByteArrayLiteral("<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    <title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a href=\"http://cutelyst.org/foo#something\">here</a>.</p>\n  </body>\n</html>\n");
 
     query.clear();
     query.addQueryItem(QStringLiteral("name"), QStringLiteral("foo"));
