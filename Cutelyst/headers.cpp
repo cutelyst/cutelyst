@@ -250,7 +250,8 @@ bool Headers::ifMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag;
+        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
+                clientETag.midRef(2, clientETag.size() - 3) == etag; // Weak ETag
     }
     return true;
 }
@@ -260,7 +261,8 @@ bool Headers::ifNoneMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_NONE_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag;
+        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
+                clientETag.midRef(2, clientETag.size() - 3) == etag; // Weak ETag
     }
     return false;
 }
