@@ -166,6 +166,15 @@ bool Headers::contentIsXml() const
             ct.endsWith(QLatin1String("xml"));
 }
 
+bool Headers::contentIsJson() const
+{
+    const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
+    if (it != m_data.constEnd()) {
+        return it.value() == QLatin1String("application/json");
+    }
+    return false;
+}
+
 qint64 Headers::contentLength() const
 {
     auto it = m_data.constFind(QStringLiteral("CONTENT_LENGTH"));

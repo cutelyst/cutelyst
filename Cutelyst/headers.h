@@ -134,6 +134,11 @@ public:
     bool contentIsXml() const;
 
     /**
+     * Returns TRUE if the Content-Type header field indicate that the content is JSON.
+     */
+    bool contentIsJson() const;
+
+    /**
      * Returns the size in bytes of the message content
      */
     qint64 contentLength() const;
