@@ -204,6 +204,12 @@ QVariant Context::stash(const QString &key) const
     return d->stash.value(key);
 }
 
+QVariant Context::stash(const QString &key, const QVariant &defaultValue) const
+{
+    Q_D(const Context);
+    return d->stash.value(key, defaultValue);
+}
+
 QVariant Context::stashTake(const QString &key)
 {
     Q_D(Context);

@@ -231,6 +231,11 @@ public:
     QVariant stash(const QString &key) const;
 
     /**
+     * A convenient method to retrieve a single value with a default value from the stash
+     */
+    QVariant stash(const QString &key, const QVariant &defaultValue) const;
+
+    /**
      * Removes the item with the key from the stash and returns the value associated with it.
      * If the item does not exist in the stash, the function simply returns a default-constructed value.
      * If you don't use the return value, stashRemove() is more efficient.
