@@ -348,8 +348,9 @@ void Context::detach(Action *action)
     Q_D(Context);
     if (action) {
         d->dispatcher->forward(this, action);
+    } else {
+        d->detached = true;
     }
-    d->detached = true;
 }
 
 bool Context::forward(Component *action)

@@ -354,8 +354,8 @@ public:
     bool detached() const;
 
     /**
-     * The same as forward(action), but doesn't return to the previous
-     * action when processing is finished.
+     * The same as forward(action)
+     *
      * When called with no arguments it escapes the processing chain entirely.
      */
     void detach(Action *action = nullptr);
