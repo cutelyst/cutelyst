@@ -357,8 +357,12 @@ qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvaila
 void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
 {
     // Post buffering
-    qint64 bytesAvailable = io->bytesAvailable();
     auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
+    if (request->status & Cutelyst::EngineRequest::Async) {
+        return;
+    }
+
+    qint64 bytesAvailable = io->bytesAvailable();
     if (request->connState == ProtoRequestFastCGI::ContentBody) {
         bytesAvailable = readBody(sock, io, bytesAvailable);
         if (bytesAvailable == -1) {
@@ -388,17 +392,9 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
             } else if (ret == WSGI_OK) {
                 sock->processing++;
                 sock->engine->processRequest(request);
-                sock->requestFinished();
-
-                if (request->headerConnection == ProtoRequestFastCGI::HeaderConnectionClose) {
-                    // Web server did not set FCGI_KEEP_CONN
-                    sock->connectionClose();
-                    return;
+                if (request->status & Cutelyst::EngineRequest::Async) {
+                    return; // We are in async mode
                 }
-
-                auto size = request->buf_size;
-                request->resetData();
-                request->buf_size = size;
             } else if (ret == WSGI_BODY) {
                 bytesAvailable = readBody(sock, io, bytesAvailable);
                 if (bytesAvailable == -1) {
@@ -547,6 +543,27 @@ void ProtoRequestFastCGI::processingFinished()
     end_request[10] = sid[1];
     end_request[11] = sid[0];
     io->write(end_request, 24);
+
+    if (!sock->requestFinished()) {
+        // disconnected
+        return;
+    }
+
+    if (headerConnection == ProtoRequestFastCGI::HeaderConnectionClose) {
+        // Web server did not set FCGI_KEEP_CONN
+        sock->connectionClose();
+        return;
+    }
+
+    if (status & EngineRequest::Async && buf_size) {
+        QTimer::singleShot(0, io, [=] {
+            sock->proto->parse(sock, io);
+        });
+    }
+
+    const auto size = buf_size;
+    resetData();
+    buf_size = size;
 }
 
 #include "moc_protocolfastcgi.cpp"

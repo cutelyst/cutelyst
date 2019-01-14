@@ -52,7 +52,8 @@ public:
 
     // Pointer to Engine data
     Engine *engine;
-    EngineRequest *engineRequest = nullptr;
+    EngineRequest *engineRequest;
+    QIODevice *body;
 
     // Engines don't need to touch this
     QStringList args;

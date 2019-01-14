@@ -26,6 +26,7 @@
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QTimer>
 
 Root::Root(QObject *app) : Controller(app)
 {
@@ -184,4 +185,28 @@ void Root::read_session(Context *c)
 {
     QString foo = Session::value(c, QStringLiteral("foo")).toString();
     c->response()->setBody(QLatin1String("Foo: ") + foo + QLatin1Char('\n'));
+}
+
+void Root::async(Context *c, const QString &timeout)
+{
+    auto t = new QTimer(c);
+    t->setInterval(timeout.toInt() * 1000);
+    connect(t, &QTimer::timeout, c, [=] {
+        qDebug() << "Finished async" << timeout;
+        c->response()->setBody(QStringLiteral("Hello async in %1 seconds.\n").arg(timeout));
+        c->attachAsync();
+    });
+    t->start();
+    c->detachAsync();
+}
+
+bool Root::Auto(Context *c)
+{
+    qDebug() << "Auto was called";
+    return true;
+}
+
+void Root::End(Context *c)
+{
+    qDebug() << "End was called";
 }

@@ -50,6 +50,16 @@ public:
 
     C_ATTR(read_session, :Local :AutoArgs)
     void read_session(Context *c);
+
+    C_ATTR(async, :Local :AutoArgs)
+    void async(Context *c, const QString &timeout);
+
+private Q_SLOTS:
+    bool Auto(Context *c);
+
+private:
+    C_ATTR(End,)
+    void End(Context *c);
 };
 
 #endif // ROOT_H

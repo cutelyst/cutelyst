@@ -361,6 +361,28 @@ public:
     void detach(Action *action = nullptr);
 
     /**
+     * Detaches the processing chain telling the Engine that
+     * the request is not finished yet.
+     *
+     * It's often useful to call async API's, while convenient the use of QEventLoop
+     * will only work for the first request or lead to a crash due stacking of calls.
+     *
+     * This method, tells the Engine that this request is not finished yet, making
+     * it return to the event loop to process other requests or the task that was
+     * created prior to calling this.
+     *
+     * Once done call attachAsync() in order to process the remaining of the action chain.
+     */
+    void detachAsync();
+
+    /*!
+     * \brief attachAsync
+     *
+     * Reattaches to the remaining actions
+     */
+    void attachAsync();
+
+    /**
      * This is one way of calling another action (method) in the same or
      * a different controller. You can also use directly call another method
      * to the same or a different controller.
@@ -519,11 +541,14 @@ protected:
      */
     Context(ContextPrivate *priv);
 
+    void finalize();
+
     friend class Application;
     friend class Action;
     friend class DispatchType;
     friend class Plugin;
     friend class Engine;
+    friend class Controller;
     ContextPrivate *d_ptr;
 
 private:

@@ -39,6 +39,7 @@ public:
         IOWrite = 0x02,
         Chunked = 0x04,
         ChunkedDone = 0x08,
+        Async = 0x10,
     };
     Q_DECLARE_FLAGS(Status, StatusFlag)
 
@@ -166,7 +167,7 @@ public:
     Status status = InitialState;
 
     /*! The QIODevice containing the body (if any) of the request
-     * \note It's deleted on processingFinished() or destructor */
+     * \note It's deleted when Context gets deleted */
     QIODevice *body = nullptr;
 
     /*! The Cutelyst::Context of this request

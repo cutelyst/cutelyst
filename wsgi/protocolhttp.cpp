@@ -83,6 +83,10 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 {
     // Post buffering
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
+    if (protoRequest->status & Cutelyst::EngineRequest::Async) {
+        return;
+    }
+
     if (protoRequest->connState == ProtoRequestHttp::ContentBody) {
         qint64 bytesAvailable = io->bytesAvailable();
         qint64 len;
@@ -193,7 +197,6 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
 {
     auto request = static_cast<ProtoRequestHttp *>(sock->protoData);
 //    qCDebug(CWSGI_HTTP) << "processRequest" << sock->protoData->contentLength;
-    sock->processing = 1;
     if (request->body) {
         request->body->seek(0);
     }
@@ -203,26 +206,15 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
         return false;
     }
 
+    ++sock->processing;
     sock->engine->processRequest(request);
 
     if (request->websocketUpgraded) {
         return false; // Must read remaining data
     }
-    sock->requestFinished();
 
-    if (request->headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
-        sock->connectionClose();
-        return false;
-    } 
-
-    if (request->last < request->buf_size) {
-        // move pipelined request to 0
-        int remaining = request->buf_size - request->last;
-        memmove(request->buffer, request->buffer + request->last, size_t(remaining));
-        request->resetData();
-        request->buf_size = remaining;
-    } else {
-        request->resetData();
+    if (request->status & Cutelyst::EngineRequest::Async) {
+        return false; // Need to break now
     }
 
     return true;
@@ -427,6 +419,33 @@ void ProtoRequestHttp::processingFinished()
         websocket_need = 2;
         websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
         buf_size = 0;
+        return;
+    }
+
+    if (!sock->requestFinished()) {
+        // disconnected
+        return;
+    }
+
+    if (headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
+        sock->connectionClose();
+        return;
+    }
+
+    if (last < buf_size) {
+        if (status & EngineRequest::Async) {
+            QTimer::singleShot(0, io, [=] {
+                sock->proto->parse(sock, io);
+            });
+        }
+
+        // move pipelined request to 0
+        int remaining = buf_size - last;
+        memmove(buffer, buffer + last, size_t(remaining));
+        resetData();
+        buf_size = remaining;
+    } else {
+        resetData();
     }
 }
 
@@ -484,6 +503,7 @@ void ProtoRequestHttp::socketDisconnected()
         if (websocket_finn_opcode != 0x88) {
             Q_EMIT context->request()->webSocketClosed(1005, QString());
         }
+        sock->requestFinished();
     }
 }
 

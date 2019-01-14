@@ -46,19 +46,21 @@ void TcpSocket::connectionClose()
     disconnectFromHost();
 }
 
-void TcpSocket::requestFinished()
+bool TcpSocket::requestFinished()
 {
-    if (!--processing && state() != ConnectedState) {
+    bool disconnected = state() != ConnectedState;
+    if (!--processing && disconnected) {
         Q_EMIT finished();
     }
+    return !disconnected;
 }
 
 void TcpSocket::socketDisconnected()
 {
-    protoData->socketDisconnected();
-
     if (!processing) {
         Q_EMIT finished();
+    } else {
+        protoData->socketDisconnected();
     }
 }
 
@@ -73,19 +75,21 @@ void LocalSocket::connectionClose()
     disconnectFromServer();
 }
 
-void LocalSocket::requestFinished()
+bool LocalSocket::requestFinished()
 {
-    if (!--processing && state() != ConnectedState) {
+    bool disconnected = state() != ConnectedState;
+    if (!--processing && disconnected) {
         Q_EMIT finished();
     }
+    return !disconnected;
 }
 
 void LocalSocket::socketDisconnected()
 {
-    protoData->socketDisconnected();
-
     if (!processing) {
         Q_EMIT finished();
+    } else {
+        protoData->socketDisconnected();
     }
 }
 
@@ -102,19 +106,21 @@ void SslSocket::connectionClose()
     disconnectFromHost();
 }
 
-void SslSocket::requestFinished()
+bool SslSocket::requestFinished()
 {
-    if (!--processing && state() != ConnectedState) {
+    bool disconnected = state() != ConnectedState;
+    if (!--processing && disconnected) {
         Q_EMIT finished();
     }
+    return !disconnected;
 }
 
 void SslSocket::socketDisconnected()
 {
-    protoData->socketDisconnected();
-
     if (!processing) {
         Q_EMIT finished();
+    } else {
+        protoData->socketDisconnected();
     }
 }
 

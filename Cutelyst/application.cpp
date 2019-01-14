@@ -395,29 +395,14 @@ void Application::handleRequest(EngineRequest *request)
 
         d->dispatcher->dispatch(c);
 
+        if (request->status & EngineRequest::Async) {
+            return;
+        }
+
         Q_EMIT afterDispatch(c);
     }
 
-    request->finalize();
-
-    if (stats) {
-        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
-                c->response()->status(),
-                qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))),
-                qPrintable(c->response()->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
-
-        const double enlapsed = request->elapsed.nsecsElapsed() / 1000000000.0;
-        QString average;
-        if (enlapsed == 0.0) {
-            average = QStringLiteral("??");
-        } else {
-            average = QString::number(1.0 / enlapsed, 'f');
-            average.truncate(average.size() - 3);
-        }
-        qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                             .arg(QString::number(enlapsed, 'f'), average, QString::fromLatin1(stats->report())));
-        delete stats;
-    }
+    c->finalize();
 }
 
 bool Application::enginePostFork()

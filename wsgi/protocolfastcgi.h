@@ -52,7 +52,6 @@ public:
         // EngineRequest
         delete context;
         context = nullptr;
-        delete body;
         body = nullptr;
 
         elapsed.invalidate();

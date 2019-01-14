@@ -34,7 +34,6 @@ EngineRequest::EngineRequest()
 
 EngineRequest::~EngineRequest()
 {
-    delete body;
     delete context;
 }
 
@@ -94,11 +93,11 @@ void EngineRequest::finalize()
         finalizeError();
     }
 
-    if (!(status & EngineRequest::FinalizedHeaders) && !finalizeHeaders()) {
-        return;
+    if ((status & EngineRequest::FinalizedHeaders) || finalizeHeaders()) {
+        finalizeBody();
     }
 
-    finalizeBody();
+    processingFinished();
 }
 
 void EngineRequest::finalizeCookies()

@@ -90,9 +90,12 @@ public:
         ProtocolData::resetData();
 
         // EngineRequest
-        delete context;
+        if (status & EngineRequest::Async) {
+            context->deleteLater();
+        } else {
+            delete context;
+        }
         context = nullptr;
-        delete body;
         body = nullptr;
 
         elapsed.invalidate();

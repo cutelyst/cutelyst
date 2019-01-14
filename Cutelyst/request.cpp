@@ -33,11 +33,13 @@ Request::Request(Cutelyst::EngineRequest *engineRequest) :
     d_ptr(new RequestPrivate)
 {
     d_ptr->engineRequest = engineRequest;
+    d_ptr->body = engineRequest->body;
 }
 
 Request::~Request()
 {
     qDeleteAll(d_ptr->uploads);
+    delete d_ptr->body;
     delete d_ptr;
 }
 
@@ -191,7 +193,7 @@ bool Request::secure() const
 QIODevice *Request::body() const
 {
     Q_D(const Request);
-    return d->engineRequest->body;
+    return d->body;
 }
 
 QVariant Request::bodyData() const
@@ -460,13 +462,13 @@ void RequestPrivate::parseUrlQuery() const
 
 void RequestPrivate::parseBody() const
 {
-    if (!engineRequest->body) {
+    if (!body) {
         parserStatus |= RequestPrivate::BodyParsed;
         return;
     }
 
-    bool sequencial = engineRequest->body->isSequential();
-    qint64 posOrig = engineRequest->body->pos();
+    bool sequencial = body->isSequential();
+    qint64 posOrig = body->pos();
     if (sequencial && posOrig) {
         qCWarning(CUTELYST_REQUEST) << "Can not parse sequential post body out of beginning";
         parserStatus |= RequestPrivate::BodyParsed;
@@ -478,17 +480,17 @@ void RequestPrivate::parseBody() const
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
-            engineRequest->body->seek(0);
+            body->seek(0);
         }
 
-        bodyParam = parseUrlEncoded(engineRequest->body->readLine());
+        bodyParam = parseUrlEncoded(body->readLine());
         bodyData = QVariant::fromValue(bodyParam);
     } else if (contentType == QLatin1String("multipart/form-data")) {
         if (posOrig) {
-            engineRequest->body->seek(0);
+            body->seek(0);
         }
 
-        const Uploads ups = MultiPartFormDataParser::parse(engineRequest->body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
+        const Uploads ups = MultiPartFormDataParser::parse(body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
         for (Upload *upload : ups) {
             if (upload->filename().isEmpty() && upload->contentType().isEmpty()) {
                 bodyParam.insertMulti(upload->name(), QString::fromUtf8(upload->readAll()));
@@ -500,14 +502,14 @@ void RequestPrivate::parseBody() const
         bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
         if (posOrig) {
-            engineRequest->body->seek(0);
+            body->seek(0);
         }
 
-        bodyData = QJsonDocument::fromJson(engineRequest->body->readAll());
+        bodyData = QJsonDocument::fromJson(body->readAll());
     }
 
     if (!sequencial) {
-        engineRequest->body->seek(posOrig);
+        body->seek(posOrig);
     }
 
     parserStatus |= RequestPrivate::BodyParsed;

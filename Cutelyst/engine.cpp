@@ -308,10 +308,7 @@ Headers &Engine::defaultHeaders()
 void Engine::processRequest(EngineRequest *request)
 {
     Q_D(Engine);
-
     d->app->handleRequest(request);
-
-    request->processingFinished();
 }
 
 QVariantMap Engine::opts() const
