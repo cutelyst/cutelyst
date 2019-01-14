@@ -230,7 +230,7 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
     return key;
 }
 
-QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteArray key, const QByteArray &message)
+QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, const QByteArray &key, const QByteArray &message)
 {
     QByteArray ret;
     const int blocksize = 64;
@@ -239,8 +239,9 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
         return ret;
     }
 
+    ret = key;
     while (key.length() < blocksize) {
-        key.append('\0');
+        ret.append('\0');
     }
 
     QByteArray o_key_pad('\x5c', blocksize);
@@ -250,8 +251,8 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, QByteA
     i_key_pad.fill('\x36', blocksize);
 
     for (int i=0; i < blocksize; i++) {
-        o_key_pad[i] = o_key_pad[i] ^ key[i];
-        i_key_pad[i] = i_key_pad[i] ^ key[i];
+        o_key_pad[i] = o_key_pad[i] ^ ret[i];
+        i_key_pad[i] = i_key_pad[i] ^ ret[i];
     }
 
     ret = QCryptographicHash::hash(o_key_pad + QCryptographicHash::hash(i_key_pad + message, method),

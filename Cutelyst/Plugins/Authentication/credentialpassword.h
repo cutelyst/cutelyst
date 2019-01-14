@@ -135,7 +135,7 @@ public:
     /*!
      * Generates the Hash-based message authentication code.
      */
-    QByteArray hmac(QCryptographicHash::Algorithm method, QByteArray key, const QByteArray& message);
+    static QByteArray hmac(QCryptographicHash::Algorithm method, const QByteArray &key, const QByteArray &message);
 
 protected:
     CredentialPasswordPrivate *d_ptr;
