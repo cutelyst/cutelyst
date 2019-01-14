@@ -4,6 +4,7 @@ add_subdirectory(StaticSimple)
 add_subdirectory(StatusMessage)
 add_subdirectory(Authentication)
 add_subdirectory(Utils)
+add_subdirectory(UserAgent)
 
 if (PLUGIN_MEMCACHED)
     message(STATUS "PLUGIN: Memcached, enabled.")

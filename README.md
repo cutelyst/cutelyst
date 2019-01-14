@@ -43,6 +43,7 @@ http://www.techempower.com/benchmarks/
    * Validator (to validate user input)
    * CSRF protection
    * Memcached
+   * UserAgent
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11

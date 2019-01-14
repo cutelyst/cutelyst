@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt5
+
+Name: Cutelyst Qt5 UserAgent Plugin
+Description: Cutelyst UserAgent plugin
+Version: @PROJECT_VERSION@
+Requires: Qt5Core Cutelyst@PROJECT_VERSION_MAJOR@Qt5Core
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt5UserAgent
+Cflags: -I${includedir}/Cutelyst -I${includedir}
