@@ -19,7 +19,7 @@
 #define C_USERAGENT_H
 
 #include <Cutelyst/cutelyst_global.h>
-#include <QtNetwork/qtnetworkglobal.h>
+#include <QtGlobal>
 
 #include <QNetworkReply>
 
@@ -54,17 +54,17 @@ namespace UA {
 #endif
 
     // These methods set the Content-Type header to 'application/json'
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *post(const QNetworkRequest &request, const QJsonDocument &doc);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *put(const QNetworkRequest &request, const QJsonDocument &doc);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, const QJsonDocument &doc);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *postJson(const QNetworkRequest &request, const QJsonDocument &doc);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *putJson(const QNetworkRequest &request, const QJsonDocument &doc);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequestJson(const QNetworkRequest &request, const QByteArray &verb, const QJsonDocument &doc);
 
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *post(const QNetworkRequest &request, const QJsonObject &obj);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *put(const QNetworkRequest &request, const QJsonObject &obj);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, const QJsonObject &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *postJsonObject(const QNetworkRequest &request, const QJsonObject &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *putJsonObject(const QNetworkRequest &request, const QJsonObject &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequestJsonObject(const QNetworkRequest &request, const QByteArray &verb, const QJsonObject &obj);
 
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *post(const QNetworkRequest &request, const QJsonArray &obj);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *put(const QNetworkRequest &request, const QJsonArray &obj);
-    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, const QJsonArray &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *postJsonArray(const QNetworkRequest &request, const QJsonArray &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *putJsonArray(const QNetworkRequest &request, const QJsonArray &obj);
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequestJsonArray(const QNetworkRequest &request, const QByteArray &verb, const QJsonArray &obj);
 }
 
 }
