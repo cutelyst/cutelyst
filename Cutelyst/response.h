@@ -102,7 +102,7 @@ public:
     };
     Q_ENUM(CloseCode)
 
-    virtual ~Response();
+    virtual ~Response() override;
 
     /**
      * The current response code status

@@ -37,7 +37,7 @@ public:
      * Constructs a new role ACL object with the given parent.
      */
     explicit RoleACL(QObject *parent = nullptr);
-    virtual ~RoleACL();
+    virtual ~RoleACL() override;
 
     /**
      * Reimplemented from Component::modifiers().

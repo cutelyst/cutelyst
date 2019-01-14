@@ -42,7 +42,7 @@ public:
      * Constructs a new CredentialPassword object with the given parent.
      */
     explicit CredentialPassword(QObject *parent = nullptr);
-    virtual ~CredentialPassword();
+    virtual ~CredentialPassword() override;
 
     AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 

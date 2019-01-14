@@ -34,7 +34,7 @@ public:
      * Constructs a DispatchTypeChained object with the given \p parent.
      */
     explicit DispatchTypeChained(QObject *parent = nullptr);
-    ~DispatchTypeChained();
+    virtual ~DispatchTypeChained() override;
 
     virtual QByteArray list() const override;
 

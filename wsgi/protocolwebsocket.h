@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ class ProtocolWebSocket : public Protocol
 {
 public:
     ProtocolWebSocket(WSGI *wsgi);
-    ~ProtocolWebSocket() override;
+    virtual ~ProtocolWebSocket() override;
 
     static QByteArray createWebsocketHeader(quint8 opcode, quint64 len);
     static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);

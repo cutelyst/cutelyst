@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ class PostUnbuffered : public QIODevice
 {
     Q_OBJECT
 public:
-    explicit PostUnbuffered(QObject *parent = 0);
+    explicit PostUnbuffered(QObject *parent = nullptr);
 
     qint64 m_contentLength = 0;
 };

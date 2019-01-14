@@ -58,7 +58,7 @@ public:
      * Constructs a new Authentication object with the given parent.
      */
     Authentication(Application *parent);
-    virtual ~Authentication();
+    virtual ~Authentication() override;
 
     /*!
      * Adds the \p realm with \p name.

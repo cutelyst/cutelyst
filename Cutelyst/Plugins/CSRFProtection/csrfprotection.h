@@ -237,7 +237,7 @@ public:
     /**
      * Deconstructs the CSRFProtection object.
      */
-    virtual ~CSRFProtection();
+    virtual ~CSRFProtection() override;
 
     /**
      * Sets a default action the application will @link Context::detach() detach to @endlink if

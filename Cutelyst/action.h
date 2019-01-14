@@ -52,7 +52,7 @@ public:
      * Constructs a Action object with the given \p parent.
      */
     explicit Action(QObject *parent = nullptr);
-    virtual ~Action();
+    virtual ~Action() override;
 
     virtual Modifiers modifiers() const override;
 

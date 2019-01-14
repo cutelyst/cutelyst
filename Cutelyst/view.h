@@ -39,7 +39,7 @@ public:
      * for the view should be set to be found by Context->view()
      */
     explicit View(QObject *parent, const QString &name);
-    virtual ~View();
+    virtual ~View() override;
 
     /**
      * The default implementation returns Component::OnlyExecute

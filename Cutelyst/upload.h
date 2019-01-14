@@ -41,7 +41,7 @@ public:
      * This class provides access to client upload requests
      */
     Upload(UploadPrivate *prv);
-    virtual ~Upload();
+    virtual ~Upload() override;
 
     /**
      * Returns the name of the form field

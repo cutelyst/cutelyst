@@ -32,7 +32,7 @@ public:
      * Constructs a new minimal authentication store object with the given parent.
      */
     explicit StoreMinimal(const QString &idField, QObject *parent = nullptr);
-    virtual ~StoreMinimal();
+    virtual ~StoreMinimal() override;
 
     /**
      * Appends the user to internal memory storage

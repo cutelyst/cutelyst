@@ -39,7 +39,7 @@ public:
      * \note This class will take ownership of store and credential.
      */
     explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm), QObject *parent = nullptr);
-    virtual ~AuthenticationRealm();
+    virtual ~AuthenticationRealm() override;
 
     /*!
      * Returns the authentication store object

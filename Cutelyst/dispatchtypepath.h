@@ -34,7 +34,7 @@ public:
      * Constructs a DispatchTypePath object with the given \p parent.
      */
     explicit DispatchTypePath(QObject *parent = nullptr);
-    virtual ~DispatchTypePath();
+    virtual ~DispatchTypePath() override;
 
     virtual QByteArray list() const override;
 

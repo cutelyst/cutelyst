@@ -34,7 +34,7 @@ public:
      * Constructs a new ActionREST object with the given parent.
      */
     explicit ActionREST(QObject *parent = nullptr);
-    virtual ~ActionREST();
+    virtual ~ActionREST() override;
 
 protected:
     ActionRESTPrivate *d_ptr;

@@ -351,7 +351,7 @@ public:
     /**
      * Deconstructs the %LangSelect object.
      */
-    virtual ~LangSelect();
+    virtual ~LangSelect() override;
 
     /**
      * Sets the list of supported @a locales.

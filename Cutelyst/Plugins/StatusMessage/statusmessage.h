@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ public:
      * Constructs a new status message object with the given Application parent.
      */
     StatusMessage(Application *parent);
-    virtual ~StatusMessage();
+    virtual ~StatusMessage() override;
 
     /**
      * Returns the key prefix inside Session where messages will be stored.
