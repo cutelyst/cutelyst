@@ -19,7 +19,6 @@
 #define C_USERAGENT_H
 
 #include <Cutelyst/cutelyst_global.h>
-#include <QtGlobal>
 
 #include <QNetworkReply>
 
@@ -47,11 +46,9 @@ namespace UA {
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, QIODevice *data = nullptr);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, const QByteArray &data);
 
-#if QT_CONFIG(http)
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *post(const QNetworkRequest &request, QHttpMultiPart *multiPart);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *put(const QNetworkRequest &request, QHttpMultiPart *multiPart);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, QHttpMultiPart *multiPart);
-#endif
 
     // These methods set the Content-Type header to 'application/json'
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *postJson(const QNetworkRequest &request, const QJsonDocument &doc);
