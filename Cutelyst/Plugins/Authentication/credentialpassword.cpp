@@ -232,32 +232,7 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
 
 QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method, const QByteArray &key, const QByteArray &message)
 {
-    QByteArray ret;
-    const int blocksize = 64;
-    if (key.length() > blocksize) {
-        ret = QCryptographicHash::hash(key, method);
-        return ret;
-    }
-
-    ret = key;
-    while (key.length() < blocksize) {
-        ret.append('\0');
-    }
-
-    QByteArray o_key_pad('\x5c', blocksize);
-    o_key_pad.fill('\x5c', blocksize);
-
-    QByteArray i_key_pad;
-    i_key_pad.fill('\x36', blocksize);
-
-    for (int i=0; i < blocksize; i++) {
-        o_key_pad[i] = o_key_pad[i] ^ ret[i];
-        i_key_pad[i] = i_key_pad[i] ^ ret[i];
-    }
-
-    ret = QCryptographicHash::hash(o_key_pad + QCryptographicHash::hash(i_key_pad + message, method),
-                                   method);
-    return ret;
+    return QMessageAuthenticationCode::hash(key, message, method);
 }
 
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
