@@ -48,6 +48,7 @@ namespace UA {
 
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *post(const QNetworkRequest &request, QHttpMultiPart *multiPart);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *put(const QNetworkRequest &request, QHttpMultiPart *multiPart);
+    // On Qt < 5.8 it returns nullptr
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, QHttpMultiPart *multiPart);
 
     // These methods set the Content-Type header to 'application/json'
