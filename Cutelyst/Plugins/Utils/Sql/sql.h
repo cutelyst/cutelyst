@@ -28,6 +28,31 @@ namespace Cutelyst {
 
 namespace Sql
 {
+
+/**
+ * @brief The Transaction class - This is a helper class to create scoped transactions
+ *
+ * This is a helper class to create scoped transactions, when you create a
+ * local Transaction object it will automatically open a transaction, you
+ * can check if the transaction was created successfully by calling transaction(),
+ *
+ * Once this object goes out of scope it will automatically rollback the transaction
+ * if the transaction was open and commit() was not called. It helps you forgetting to
+ * rollback a transaction in case of an error.
+ */
+class CUTELYST_PLUGIN_UTILS_SQL_EXPORT Transaction {
+public:
+    Transaction(const QString &databaseName = QString());
+    ~Transaction();
+
+    bool transaction() const;
+    bool commit();
+
+private:
+    QSqlDatabase m_db;
+    bool m_transactionRunning;
+};
+
     /**
      * Returns a QVariant hash for the first (if any) row
      * in the query object, it's useful for creating

@@ -282,3 +282,27 @@ QSqlDatabase Sql::databaseThread(const QString &dbName)
 {
     return QSqlDatabase::database(databaseNameThread(dbName));
 }
+
+Sql::Transaction::Transaction(const QString &databaseName) : m_db(databaseThread(databaseName))
+{
+    m_transactionRunning = m_db.transaction();
+}
+
+Sql::Transaction::~Transaction()
+{
+    if (m_transactionRunning) {
+        m_db.rollback();
+    }
+}
+
+bool Sql::Transaction::transaction() const
+{
+    return m_transactionRunning;
+}
+
+bool Sql::Transaction::commit()
+{
+    // In case we fail to commit we will still call rollback, not sure it's really needed
+    m_transactionRunning = !m_db.commit();
+    return !m_transactionRunning;
+}
