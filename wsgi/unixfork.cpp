@@ -459,16 +459,25 @@ void UnixFork::handleSigInt()
     if (m_child || (m_childs.isEmpty())) {
         Q_EMIT shutdown();
     } else {
-        std::cout << "SIGINT/SIGQUIT received, killing workers..." << std::endl;
+        std::cout << "SIGINT/SIGQUIT received, terminating workers..." << std::endl;
         setupCheckChildTimer();
 
-        QTimer::singleShot(30 * 1000, [this]() {
-            std::cout << "workers terminating timeout, KILL ..." << std::endl;
+        static int count = 0;
+        if (count++ > 2) {
+            std::cout << "KILL workers..." << std::endl;
             killChild();
             QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);
-        });
+        } else if (count > 1) {
+            terminateChild();
+        } else {
+            QTimer::singleShot(30 * 1000, [this]() {
+                std::cout << "workers terminating timeout, KILL ..." << std::endl;
+                killChild();
+                QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);
+            });
 
-        terminateChild();
+            terminateChild();
+        }
     }
 }
 
