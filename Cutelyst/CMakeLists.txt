@@ -105,6 +105,11 @@ target_compile_definitions(Cutelyst2Qt5
     PLUGINS_PREFER_DEBUG_POSTFIX=$<CONFIG:Debug>
 )
 
+target_include_directories(Cutelyst2Qt5 PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include/cutelyst2-qt5>
+)
+
 set_target_properties(Cutelyst2Qt5 PROPERTIES
     EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
