@@ -23,6 +23,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#if defined(__FreeBSD__) || defined(__GNU_kFreeBSD__)
+#include <sys/param.h>
+#include <sys/cpuset.h>
+#endif
+
 #include <errno.h>
 #include <stdio.h>
 #include <sys/wait.h>
