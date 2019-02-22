@@ -317,12 +317,6 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "# to always look for includes there:" << "\n";
         out << "set(CMAKE_INCLUDE_CURRENT_DIR ON)" << "\n";
         out << "\n";
-        out << "include_directories(" << "\n";
-        out << "    ${CMAKE_SOURCE_DIR}" << "\n";
-        out << "    ${CMAKE_CURRENT_BINARY_DIR}" << "\n";
-        out << "    ${Cutelyst2Qt5_INCLUDE_DIR}" << "\n";
-        out << ")" << "\n";
-        out << "\n";
         out << "file(GLOB_RECURSE TEMPLATES_SRC root/*)" << "\n";
         out << "\n";
         out << "add_subdirectory(src)" << "\n";
