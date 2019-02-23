@@ -127,6 +127,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         m_sslConfiguration = new QSslConfiguration;
         m_sslConfiguration->setLocalCertificate(cert);
         m_sslConfiguration->setPrivateKey(key);
+        m_sslConfiguration->setPeerVerifyMode(QSslSocket::VerifyNone); // prevent asking for client certificate
         if (m_wsgi->httpsH2()) {
             m_sslConfiguration->setAllowedNextProtocols({ QByteArrayLiteral("h2") });
         }
