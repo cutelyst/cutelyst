@@ -241,11 +241,16 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
 //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->authority << stream->scheme;
     if (k == QLatin1String(":path")) {
         if (stream->path.isEmpty() && !v.isEmpty()) {
+            int leadingSlash = 0;
+            while (v[leadingSlash] == QLatin1Char('/')) {
+                ++leadingSlash;
+            }
+
             int pos = v.indexOf(QLatin1Char('?'));
             if (pos == -1) {
-                stream->setPath(v);
+                stream->setPath(v.mid(leadingSlash));
             } else {
-                stream->setPath(v.left(pos));
+                stream->setPath(v.mid(leadingSlash, pos - leadingSlash));
                 stream->query = v.mid(++pos).toLatin1();
             }
             return true;
