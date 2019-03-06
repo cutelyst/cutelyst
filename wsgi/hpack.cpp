@@ -238,9 +238,9 @@ enum ErrorCodes {
 
 inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
 {
-//    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->authority << stream->scheme;
+//    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->scheme;
     if (k == QLatin1String(":path")) {
-        if (stream->path.isEmpty() && !v.isEmpty()) {
+        if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
             while (v[leadingSlash] == QLatin1Char('/')) {
                 ++leadingSlash;
@@ -253,6 +253,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
                 stream->setPath(v.mid(leadingSlash, pos - leadingSlash));
                 stream->query = v.mid(++pos).toLatin1();
             }
+            stream->gotPath = true;
             return true;
         }
     } else if (k == QLatin1String(":method")) {
@@ -416,7 +417,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
         allowedToUpdate = false;
     }
 
-    if (stream->path.isEmpty() || stream->method.isEmpty() || stream->scheme.isEmpty()) {
+    if (!stream->gotPath || stream->method.isEmpty() || stream->scheme.isEmpty()) {
         return ErrorProtocolError;
     }
 

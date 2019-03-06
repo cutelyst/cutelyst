@@ -70,6 +70,7 @@ public:
     qint32 dataSent = 0;
     qint64 consumedData = 0;
     quint8 state = Idle;
+    bool gotPath = false;
 };
 
 class ProtoRequestHttp2 : public ProtocolData
