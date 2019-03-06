@@ -151,7 +151,7 @@ public:
 
 public:
     quint32 m_maxFrameSize;
-    quint32 m_headerTableSize;
+    qint32 m_headerTableSize;
 };
 
 }
