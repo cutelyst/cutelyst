@@ -31,15 +31,9 @@ using namespace Cutelyst;
  *
  * Cutelyst::ViewJSON is a Cutelyst View handler that returns stash data in JSON format.
  */
-ViewJson::ViewJson(QObject *parent, const QString &name) : View(parent, name)
-  , d_ptr(new ViewJsonPrivate)
+ViewJson::ViewJson(QObject *parent, const QString &name) : View(new ViewJsonPrivate, parent, name)
 {
 
-}
-
-ViewJson::~ViewJson()
-{
-    delete d_ptr;
 }
 
 ViewJson::JsonFormat ViewJson::outputFormat() const

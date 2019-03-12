@@ -34,8 +34,7 @@ Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee", QtWarningMsg)
 
 using namespace Cutelyst;
 
-GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, name)
-  , d_ptr(new GrantleeViewPrivate)
+GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(new GrantleeViewPrivate, parent, name)
 {
     Q_D(GrantleeView);
 
@@ -60,11 +59,6 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
         // make sure templates can be found on the current directory
         setIncludePaths({ QDir::currentPath() });
     }
-}
-
-GrantleeView::~GrantleeView()
-{
-    delete d_ptr;
 }
 
 QStringList GrantleeView::includePaths() const

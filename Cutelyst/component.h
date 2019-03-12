@@ -99,6 +99,11 @@ public:
     bool execute(Context *c);
 
 protected:
+    /*!
+     * A derived class using pimpl should call this constructor, to reduce the number of memory allocations
+     */
+    explicit Component(ComponentPrivate *d, QObject *parent = nullptr);
+
     /**
      * Reimplement this if you want to do processing before doExecute
      */
@@ -135,7 +140,7 @@ protected:
 
 protected:
     friend class Controller;
-    ComponentPrivate *d_ptr;
+    ComponentPrivate *d_ptr; //!< we cannot inherit from QObjectPrivate and therefore need our own d_ptr
 };
 
 }

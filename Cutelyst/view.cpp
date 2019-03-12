@@ -33,8 +33,9 @@ View::View(QObject *parent, const QString &name) : Component(parent)
     setName(name);
 }
 
-View::~View()
+View::View(ComponentPrivate *d, QObject *parent, const QString &name) : Component(d, parent)
 {
+    setName(name);
 }
 
 Component::Modifiers View::modifiers() const
