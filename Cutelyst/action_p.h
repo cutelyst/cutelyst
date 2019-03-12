@@ -19,10 +19,11 @@
 #define CUTELYST_ACTION_P_H
 
 #include "action.h"
+#include "component_p.h"
 
 namespace Cutelyst {
 
-class ActionPrivate
+class ActionPrivate : public ComponentPrivate
 {
 public:
     QString ns;

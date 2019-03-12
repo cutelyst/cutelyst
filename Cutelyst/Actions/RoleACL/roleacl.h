@@ -37,7 +37,6 @@ public:
      * Constructs a new role ACL object with the given parent.
      */
     explicit RoleACL(QObject *parent = nullptr);
-    virtual ~RoleACL() override;
 
     /**
      * Reimplemented from Component::modifiers().
@@ -64,8 +63,6 @@ protected:
      * Reimplemented from Component::dispatcherReady().
      */
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
-
-    RoleACLPrivate *d_ptr;
 };
 
 class RoleACLFactory : public QObject, public ComponentFactory

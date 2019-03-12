@@ -22,14 +22,16 @@
 
 using namespace Cutelyst;
 
-Action::Action(QObject *parent) : Component(parent)
-    , d_ptr(new ActionPrivate)
+Action::Action(QObject *parent) : Component(new ActionPrivate, parent)
+{
+}
+
+Action::Action(ActionPrivate *ptr, QObject *parent) : Component(ptr, parent)
 {
 }
 
 Action::~Action()
 {
-    delete d_ptr;
 }
 
 Component::Modifiers Action::modifiers() const

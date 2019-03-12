@@ -26,6 +26,11 @@ Component::Component(QObject *parent) : QObject(parent)
 {
 }
 
+Component::Component(ComponentPrivate* d, QObject *parent) : QObject(parent)
+  , d_ptr(d)
+{
+}
+
 Component::~Component()
 {
     delete d_ptr;

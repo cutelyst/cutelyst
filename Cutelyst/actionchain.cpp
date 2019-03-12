@@ -22,8 +22,7 @@
 
 using namespace Cutelyst;
 
-ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(parent)
-  , d_ptr(new ActionChainPrivate)
+ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new ActionChainPrivate, parent)
 {
     Q_D(ActionChain);
     d->chain = chain;
@@ -45,11 +44,6 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(pare
             d->captures += action->numberOfCaptures();
         }
     }
-}
-
-ActionChain::~ActionChain()
-{
-    delete d_ptr;
 }
 
 ActionList ActionChain::chain() const

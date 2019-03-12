@@ -62,15 +62,9 @@ using namespace Cutelyst;
  * ...
  * \endcode
  */
-RenderView::RenderView(QObject *parent) : Action(parent)
-    , d_ptr(new RenderViewPrivate)
+RenderView::RenderView(QObject *parent) : Action(new RenderViewPrivate, parent)
 {
     setObjectName(QString::fromLatin1(metaObject()->className()) + QLatin1String("->execute"));
-}
-
-RenderView::~RenderView()
-{
-    delete d_ptr;
 }
 
 bool RenderView::init(Cutelyst::Application *application, const QVariantHash &args)
