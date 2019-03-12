@@ -322,13 +322,12 @@ bool ProtocolFastCGI::writeBody(ProtoRequestFastCGI *request, char *buf, qint64 
 
 qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const
 {
-    qint64 len;
     auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
     QIODevice *body = request->body;
     int &pad = request->buf_size;
     while (bytesAvailable && request->pktsize + pad) {
         // We need to read and ignore ending PAD data
-        len = io->read(m_postBuffer, qMin(m_postBufferSize, static_cast<qint64>(request->pktsize + pad)));
+        qint64 len = io->read(m_postBuffer, qMin(m_postBufferSize, static_cast<qint64>(request->pktsize + pad)));
         if (len == -1) {
             sock->connectionClose();
             return -1;

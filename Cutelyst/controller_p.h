@@ -46,9 +46,9 @@ public:
     QString pathPrefix;
     ActionList beginAutoList;
     Action *end = nullptr;
-    Application *application;
+    Application *application = nullptr;
     Controller *q_ptr;
-    Dispatcher *dispatcher;
+    Dispatcher *dispatcher = nullptr;
     QMap<QString, Action *> actions;
     ActionList actionList;
     bool parsedActions = false;

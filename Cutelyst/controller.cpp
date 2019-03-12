@@ -279,8 +279,8 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
 
             // Build up the list of attributes for the class info
             QByteArray attributeArray;
-            for (int i = meta->classInfoCount() - 1; i >= 0; --i) {
-                QMetaClassInfo classInfo = meta->classInfo(i);
+            for (int i2 = meta->classInfoCount() - 1; i2 >= 0; --i2) {
+                QMetaClassInfo classInfo = meta->classInfo(i2);
                 if (name == classInfo.name()) {
                     attributeArray.append(classInfo.value());
                 }
@@ -432,8 +432,8 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             // If the signature is not QStringList we count them
             if (!(method.parameterCount() == 2 && method.parameterType(1) == QMetaType::QStringList)) {
                 int parameterCount = 0;
-                for (int i = 1; i < method.parameterCount(); ++i) {
-                    int typeId = method.parameterType(i);
+                for (int i2 = 1; i2 < method.parameterCount(); ++i2) {
+                    int typeId = method.parameterType(i2);
                     if (typeId == QMetaType::QString) {
                         ++parameterCount;
                     }

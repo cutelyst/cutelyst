@@ -108,7 +108,7 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
     }
 
     // Commit data when Context gets deleted
-    QObject::connect(c->app(), &Application::afterDispatch, c, [=] () {
+    QObject::connect(c->app(), &Application::afterDispatch, c, [c,file] {
         if (!c->stash(SESSION_STORE_FILE_SAVE).toBool()) {
             return;
         }

@@ -115,15 +115,15 @@ public:
 
     QByteArray websocket_message;
     QByteArray websocket_payload;
-    quint64 websocket_payload_size;
-    quint32 websocket_need;
-    quint32 websocket_mask;
+    quint64 websocket_payload_size = 0;
+    quint32 websocket_need = 0;
+    quint32 websocket_mask = 0;
     int last = 0;
     int beginLine = 0;
     int websocket_start_of_frame = 0;
     int websocket_phase = 0;
     quint8 websocket_continue_opcode = 0;
-    quint8 websocket_finn_opcode;
+    quint8 websocket_finn_opcode = 0;
     bool websocketUpgraded = false;
 
 protected:

@@ -53,7 +53,7 @@ class RenderViewFactory : public QObject, public ComponentFactory
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    Component *createComponent(QObject *parent) { return new RenderView(parent); }
+    virtual Component *createComponent(QObject *parent) override { return new RenderView(parent); }
 };
 
 }

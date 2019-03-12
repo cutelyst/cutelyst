@@ -202,7 +202,7 @@ public:
         return var;
     }
 
-    QTimeZone extractTimeZone(Context *c, const ParamsMultiMap &params, const QString &field) const
+    static QTimeZone extractTimeZone(Context *c, const ParamsMultiMap &params, const QString &field)
     {
         QTimeZone tz;
 
@@ -225,7 +225,7 @@ public:
         return tz;
     }
 
-    qlonglong extractLongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok) const
+    static qlonglong extractLongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         qlonglong val = 0;
 
@@ -253,7 +253,7 @@ public:
         return val;
     }
 
-    qulonglong extractULongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok) const
+    static qulonglong extractULongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         qulonglong val = 0;
 
@@ -281,7 +281,7 @@ public:
         return val;
     }
 
-    double extractDouble(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok) const
+    static double extractDouble(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         double val = 0.0;
 
@@ -309,7 +309,7 @@ public:
         return val;
     }
 
-    int extractInt(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok) const
+    static int extractInt(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         int val = 0;
 
@@ -337,7 +337,7 @@ public:
         return val;
     }
 
-    QVariant valueToNumber(Context *c, const QString &value, QMetaType::Type type) const
+    static QVariant valueToNumber(Context *c, const QString &value, QMetaType::Type type)
     {
         QVariant var;
 

@@ -296,7 +296,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
         if (*it & 0x80){
             it = decodeUInt16(it, itEnd, intValue, INT_MASK(7));
 //            qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << it;
-            if (!it || intValue <= 0) {
+            if (!it || intValue == 0) {
                 return ErrorCompressionError;
             }
 
