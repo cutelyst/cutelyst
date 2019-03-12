@@ -57,14 +57,14 @@ public:
 
     Session *q_ptr;
 
-    qint64 sessionExpires;
-    qint64 expiryThreshold;
+    qint64 sessionExpires = 7200;
+    qint64 expiryThreshold = 0;
     SessionStore *store = nullptr;
     QString sessionName;
     bool cookieHttpOnly = true;
     bool cookieSecure = false;
-    bool verifyAddress;
-    bool verifyUserAgent;
+    bool verifyAddress = false;
+    bool verifyUserAgent = false;
 };
 
 }

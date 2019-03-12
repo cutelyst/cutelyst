@@ -34,9 +34,8 @@ Headers::Headers()
 
 }
 
-Headers::Headers(const Headers &other)
+Headers::Headers(const Headers &other) : m_data(other.m_data)
 {
-    m_data = other.m_data;
 }
 
 QString Headers::contentDisposition() const

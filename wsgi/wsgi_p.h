@@ -63,7 +63,7 @@ public:
     std::vector<QObject *> servers;
     std::vector<CWsgiEngine *> engines;
     Cutelyst::Application *app = nullptr;
-    CWsgiEngine *engine;
+    CWsgiEngine *engine = nullptr;
 
     QVariantMap opt;
     QVariantMap config;

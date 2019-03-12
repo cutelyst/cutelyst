@@ -47,11 +47,11 @@ public:
 
 private:
     QHostAddress m_address;
-    quint16 m_port;
+    quint16 m_port = 0;
     QString m_serverName;
     std::vector<TcpServer *> m_servers;
     WSGI *m_wsgi;
-    Protocol *m_protocol;
+    Protocol *m_protocol = nullptr;
     QSslConfiguration *m_sslConfiguration = nullptr;
     int m_currentServer = 0;
     bool m_balancer = false;

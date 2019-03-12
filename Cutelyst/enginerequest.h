@@ -161,7 +161,7 @@ public:
     Headers headers;
 
     /*! The timestamp of the start of request, TODO remove in Cutelyst 3 */
-    quint64 startOfRequest;
+    quint64 startOfRequest = 0;
 
     /*! Connection status */
     Status status = InitialState;
