@@ -59,15 +59,8 @@ using namespace Cutelyst;
  * with the list of implemented request methods. If you do not provide an _HEAD either, we will auto dispatch to the _GET one
  * in case it exists.
  */
-ActionREST::ActionREST(QObject *parent) : Action(parent)
-    , d_ptr(new ActionRESTPrivate)
+ActionREST::ActionREST(QObject *parent) : Action(new ActionRESTPrivate(this), parent)
 {
-    d_ptr->q_ptr = this;
-}
-
-ActionREST::~ActionREST()
-{
-    delete d_ptr;
 }
 
 bool ActionREST::doExecute(Context *c)
@@ -79,6 +72,10 @@ bool ActionREST::doExecute(Context *c)
     }
 
     return d->dispatchRestMethod(c, c->request()->method());
+}
+
+ActionRESTPrivate::ActionRESTPrivate(ActionREST* q) : q_ptr(q)
+{
 }
 
 bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
