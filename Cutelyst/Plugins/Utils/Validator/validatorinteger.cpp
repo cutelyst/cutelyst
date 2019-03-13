@@ -86,40 +86,40 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
         break;
     case QMetaType::Short:
         min = c->locale().toString(std::numeric_limits<short>::min());
-        min = c->locale().toString(std::numeric_limits<short>::max());
+        max = c->locale().toString(std::numeric_limits<short>::max());
         break;
     case QMetaType::Int:
         min = c->locale().toString(std::numeric_limits<int>::min());
-        min = c->locale().toString(std::numeric_limits<int>::max());
+        max = c->locale().toString(std::numeric_limits<int>::max());
         break;
     case QMetaType::Long:
         min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::min()));
-        min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::max()));
+        max = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::max()));
         break;
     case QMetaType::LongLong:
         min = c->locale().toString(std::numeric_limits<qlonglong>::min());
-        min = c->locale().toString(std::numeric_limits<qlonglong>::max());
+        max = c->locale().toString(std::numeric_limits<qlonglong>::max());
         break;
     case QMetaType::UChar:
         min = c->locale().toString(std::numeric_limits<uchar>::min());
-        min = c->locale().toString(std::numeric_limits<uchar>::max());
+        max = c->locale().toString(std::numeric_limits<uchar>::max());
         break;
     case QMetaType::UShort:
         min = c->locale().toString(std::numeric_limits<ushort>::min());
-        min = c->locale().toString(std::numeric_limits<ushort>::max());
+        max = c->locale().toString(std::numeric_limits<ushort>::max());
         break;
     case QMetaType::UInt:
         min = c->locale().toString(std::numeric_limits<uint>::min());
-        min = c->locale().toString(std::numeric_limits<uint>::max());
+        max = c->locale().toString(std::numeric_limits<uint>::max());
         break;
     case QMetaType::ULong:
         min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::min()));
-        min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::max()));
+        max = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::max()));
         break;
     case QMetaType::ULongLong:
     default:
         min = c->locale().toString(std::numeric_limits<qulonglong>::min());
-        min = c->locale().toString(std::numeric_limits<qulonglong>::max());
+        max = c->locale().toString(std::numeric_limits<qulonglong>::max());
         break;
     }
     if (_label.isEmpty()) {
