@@ -9,7 +9,7 @@ set(plugin_sql_HEADERS
     Sql
 )
 
-add_library(Cutelyst2Qt5UtilsSql SHARED
+add_library(Cutelyst2Qt5UtilsSql
     ${plugin_sql_SRC}
     ${plugin_sql_HEADERS}
 )

@@ -8,7 +8,7 @@ set(plugin_statusmessage_HEADERS
     StatusMessage
 )
 
-add_library(Cutelyst2Qt5StatusMessage SHARED
+add_library(Cutelyst2Qt5StatusMessage
     ${plugin_statusmessage_SRC}
     ${plugin_statusmessage_HEADERS}
 )

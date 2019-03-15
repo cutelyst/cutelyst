@@ -12,7 +12,7 @@ set(plugin_view_clearsilver_HEADERS
     clearsilver.h
 )
 
-add_library(Cutelyst2Qt5ViewClearSilver SHARED
+add_library(Cutelyst2Qt5ViewClearSilver
     ${clearsilver_plugin_SRC}
 )
 add_library(Cutelyst2Qt5::View::ClearSilver ALIAS Cutelyst2Qt5ViewClearSilver)

@@ -50,9 +50,10 @@ endif ()
 #
 # Options
 #
-option( ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF )
-option( BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL} )
-option( BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL} )
+option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
+option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
+option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
+option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 
 if (BUILD_TESTS)
   enable_testing()

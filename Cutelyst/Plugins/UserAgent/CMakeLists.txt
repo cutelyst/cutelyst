@@ -7,7 +7,7 @@ set(plugin_useragent_HEADERS
     UserAgent
 )
 
-add_library(Cutelyst2Qt5UserAgent SHARED
+add_library(Cutelyst2Qt5UserAgent
     ${plugin_useragent_SRC}
     ${plugin_useragent_HEADERS}
 )

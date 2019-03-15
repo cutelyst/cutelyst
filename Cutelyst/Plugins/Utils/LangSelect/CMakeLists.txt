@@ -9,7 +9,7 @@ set(plugin_langselect_HEADERS
     LangSelect
 )
 
-add_library(Cutelyst2Qt5UtilsLangSelect SHARED
+add_library(Cutelyst2Qt5UtilsLangSelect
     ${plugin_langselect_SRC}
     ${plugin_langselect_HEADERS}
 )

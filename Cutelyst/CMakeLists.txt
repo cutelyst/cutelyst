@@ -83,7 +83,7 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-add_library(Cutelyst2Qt5 SHARED
+add_library(Cutelyst2Qt5
     ${cutelystqt_SRC}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
