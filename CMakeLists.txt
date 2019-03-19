@@ -240,3 +240,5 @@ if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
     ${DOCS_ARGS}
   )
 endif()
+
+include(CPackConfig)
