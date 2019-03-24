@@ -955,9 +955,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF);
                     break;
                 }
-            } else if ((token == QChar(QChar::Space)) || (token == QChar(QChar::Tabulation))) {
-
-            } else {
+            } else if ((token != QChar(QChar::Space)) && (token != QChar(QChar::Tabulation))) {
                 if (tokenPrior == QChar(QChar::CarriageReturn)) {
                     returnStatus.push_back(ValidatorEmail::ErrorFWSCRLFEnd); // Fatal error
                     break;
