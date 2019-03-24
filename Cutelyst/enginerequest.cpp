@@ -160,7 +160,7 @@ bool EngineRequest::webSocketHandshake(const QString &key, const QString &origin
     }
 
     if (webSocketHandshakeDo(key, origin, protocol)) {
-        status |= EngineRequest::FinalizedHeaders;
+        status |= EngineRequest::FinalizedHeaders | EngineRequest::Async;
         return true;
     }
 
