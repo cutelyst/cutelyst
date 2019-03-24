@@ -74,12 +74,7 @@ WSGI::WSGI(QObject *parent) : QObject(parent),
 
 WSGI::~WSGI()
 {
-    Q_D(WSGI);
-
-    delete d->protoHTTP;
-    delete d->protoHTTP2;
-    delete d->protoFCGI;
-
+    delete d_ptr;
     std::cout << "Cutelyst-WSGI terminated" << std::endl;
 }
 
@@ -644,6 +639,12 @@ void WSGI::stop()
     if (d->userEventLoop) {
         Q_EMIT d->shutdown();
     }
+}
+
+WSGIPrivate::~WSGIPrivate() {
+    delete protoHTTP;
+    delete protoHTTP2;
+    delete protoFCGI;
 }
 
 void WSGIPrivate::listenTcpSockets()

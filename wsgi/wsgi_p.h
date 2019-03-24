@@ -38,6 +38,7 @@ class WSGIPrivate : public QObject
     Q_DECLARE_PUBLIC(WSGI)
 public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
+    ~WSGIPrivate();
 
     void listenTcpSockets();
     bool listenTcp(const QString &line, Protocol *protocol, bool secure);
