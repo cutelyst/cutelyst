@@ -816,7 +816,7 @@ H2Stream::~H2Stream()
 {
     if (loop) {
         loop->exit(-1);
-        loop->deleteLater();
+        delete loop;
     }
 }
 
