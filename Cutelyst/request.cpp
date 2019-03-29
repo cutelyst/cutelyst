@@ -376,7 +376,7 @@ QString Request::protocol() const
 bool Request::xhr() const
 {
     Q_D(const Request);
-    return d->engineRequest->headers.header(QStringLiteral("X-Requested-With")) == QStringLiteral("XMLHttpRequest");
+    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH")) == QStringLiteral("XMLHttpRequest");
 }
 
 QString Request::remoteUser() const
