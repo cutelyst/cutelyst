@@ -390,6 +390,12 @@ public:
     QString protocol() const;
 
     /**
+     * Returns true if the request's X-Requested-With header field is "XMLHttpRequest",
+     * indicating that the request was issued by a client library such as jQuery.
+     */
+    bool xhr() const;
+
+    /**
      * Returns the user agent (browser) version string.
      */
     inline QString userAgent() const;
