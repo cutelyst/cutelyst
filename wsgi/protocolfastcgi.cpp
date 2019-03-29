@@ -390,6 +390,9 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
                 continue;
             } else if (ret == WSGI_OK) {
                 sock->processing++;
+                if (request->body) {
+                    request->body->seek(0);
+                }
                 sock->engine->processRequest(request);
                 if (request->status & Cutelyst::EngineRequest::Async) {
                     return; // We are in async mode

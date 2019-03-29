@@ -736,6 +736,9 @@ int ProtocolHttp2::sendFrame(QIODevice *io, quint8 type, quint8 flags, quint32 s
 void ProtocolHttp2::queueStream(Socket *socket, H2Stream *stream) const
 {
     ++socket->processing;
+    if (stream->body) {
+        stream->body->seek(0);
+    }
     Q_EMIT socket->engine->processRequestAsync(stream);
 }
 
