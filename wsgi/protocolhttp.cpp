@@ -337,7 +337,7 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
 
 ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
-
+    isSecure = sock->isSecure;
 }
 
 ProtoRequestHttp::~ProtoRequestHttp()
