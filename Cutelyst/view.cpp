@@ -57,8 +57,16 @@ bool View::doExecute(Context *c)
             qCCritical(CUTELYST_VIEW) << error;
         }
     }
-    response->setBody(output);
-
+    auto acceptEncoding = c->req()->header(QStringLiteral("Accept-Encoding"));
+    if (output.count() > 1024 &&  acceptEncoding.contains(QLatin1String("deflate"), Qt::CaseInsensitive)) {
+        QByteArray compressedData = qCompress(output, 9);
+        compressedData.remove(0, 6);
+        compressedData.chop(4);
+        response->headers().setContentEncoding(QStringLiteral("deflate"));
+        response->setBody(compressedData);
+    } else {
+        response->setBody(output);
+    }
     return !c->error();
 }
 
