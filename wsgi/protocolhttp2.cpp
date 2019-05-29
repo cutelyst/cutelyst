@@ -844,7 +844,7 @@ qint64 H2Stream::doWrite(const char *data, qint64 len)
 //        qCDebug(CWSGI_H2) << "H2Stream::doWrite" << len << streamId << "availableWindowSize" << availableWindowSize
 //                          << "remaining data" << remainingData
 //                          << "stream" << this << protoRequest;
-
+        availableWindowSize = qMin(availableWindowSize, (qint64) protoRequest->settingsMaxFrameSize);
         if (availableWindowSize == 0) {
             if (!loop) {
                 loop = new QEventLoop;
