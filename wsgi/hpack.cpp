@@ -364,12 +364,21 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
             }
 
-            if (intValue > 61) {
-                return ErrorCompressionError;
-            }
-
             QString key;
-            if (intValue != 0) {
+            if (intValue > 61) {
+                if (addToDynamicTable) {
+                    // 6.2.1 Literal Header Field with Incremental Indexing
+                    // Indexed Name
+                    if (intValue - 62 < qint64(m_dynamicTable.size())) {
+                        const auto h = m_dynamicTable[intValue - 62];
+                        key = h.key;
+                    } else {
+                        return ErrorCompressionError;
+                    }
+                } else {
+                    return ErrorCompressionError;
+                }
+            } else if (intValue != 0) {
                 const auto h = HPackPrivate::hpackStaticHeaders[intValue];
                 key = h.key;
             } else {
