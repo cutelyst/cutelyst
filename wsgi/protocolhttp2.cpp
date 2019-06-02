@@ -102,7 +102,8 @@ enum Settings {
     SETTINGS_MAX_CONCURRENT_STREAMS = 0x3,
     SETTINGS_INITIAL_WINDOW_SIZE = 0x4,
     SETTINGS_MAX_FRAME_SIZE = 0x5,
-    SETTINGS_MAX_HEADER_LIST_SIZE = 0x6
+    SETTINGS_MAX_HEADER_LIST_SIZE = 0x6,
+    SETTINGS_ENABLE_CONNECT_PROTOCOL = 0x8,
 };
 
 #define PREFACE_SIZE 24
@@ -156,6 +157,7 @@ void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
                             request->connState = ProtoRequestHttp2::H2Frames;
 
                             sendSettings(io, {
+                                             { SETTINGS_ENABLE_CONNECT_PROTOCOL, 0 },
                                              { SETTINGS_MAX_FRAME_SIZE, m_maxFrameSize },
                                              { SETTINGS_HEADER_TABLE_SIZE, m_headerTableSize },
                                          });
