@@ -32,6 +32,9 @@ class QNetworkAccessManager;
 
 namespace Cutelyst {
 
+class Context;
+class Request;
+
 namespace UA {
 
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkAccessManager *networkAccessManager();
@@ -63,6 +66,25 @@ namespace UA {
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *postJsonArray(const QNetworkRequest &request, const QJsonArray &obj);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *putJsonArray(const QNetworkRequest &request, const QJsonArray &obj);
     CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *sendCustomRequestJsonArray(const QNetworkRequest &request, const QByteArray &verb, const QJsonArray &obj);
+
+    /**
+     * This will forward your request to destination, the entire response processing should be done by your code.
+     */
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequest(Request *request, const QUrl &destination);
+
+    /**
+     * This will forward your request to destination, handlying both request and response
+     * but it will not call detachAsync() and attachAsync().
+     *
+     * Do not call deleteLater on the returned object as it will be set as the response body.
+     */
+    CUTELYST_PLUGIN_USERAGENT_EXPORT QNetworkReply *forwardRequestResponse(Context *c, const QUrl &destination);
+
+    /**
+     * This will forward your request to destination, handlying both request and response
+     * and it will also call detachAsync() and attachAsync().
+     */
+    CUTELYST_PLUGIN_USERAGENT_EXPORT void forwardAsync(Context *c, const QUrl &destination);
 }
 
 }
