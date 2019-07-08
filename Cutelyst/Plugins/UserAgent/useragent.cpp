@@ -200,7 +200,7 @@ QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
 QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)
 {
     QNetworkReply *reply = forwardRequest(c->request(), destination);
-    QObject::connect(reply, &QNetworkReply::finished, reply, [=] {
+    QObject::connect(reply, &QNetworkReply::finished, c, [=] {
         Headers &responseHeaders = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
@@ -215,7 +215,7 @@ QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)
 void UA::forwardAsync(Context *c, const QUrl &destination)
 {
     QNetworkReply *reply = forwardRequest(c->request(), destination);
-    QObject::connect(reply, &QNetworkReply::finished, reply, [=] {
+    QObject::connect(reply, &QNetworkReply::finished, c, [=] {
         Headers &responseHeaders = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
