@@ -44,7 +44,10 @@ void EngineRequest::finalizeBody()
         QIODevice *body = response->bodyDevice();
 
         if (body) {
-            body->seek(0);
+            if (!body->isSequential()) {
+                body->seek(0);
+            }
+
             char block[64 * 1024];
             while (!body->atEnd()) {
                 qint64 in = body->read(block, sizeof(block));
