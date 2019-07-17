@@ -46,6 +46,12 @@ public:
     void parseCommandLine(const QStringList &args);
 
     /**
+    * Loads configuration files \p configFiles.
+    * The files are either interpreted as json or ini format depending value of \p json
+    */
+    void loadConfig(const QStringList& configFiles, bool json);
+
+    /**
      * This function will start the WSGI server.
      *
      * If an application is provided it will ignore the value of

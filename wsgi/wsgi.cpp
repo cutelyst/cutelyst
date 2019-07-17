@@ -504,6 +504,26 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     d->threadBalancer = parser.isSet(threadBalancerOpt);
 }
 
+void WSGI::loadConfig(const QStringList& configFiles, bool json)
+{
+	Q_D(WSGI);
+
+	for (const QString &config : configFiles) {
+		d->loadConfig(config, json);
+	}
+
+	if (json)
+	{	
+		setJson(configFiles);
+	}
+	else
+	{	
+		setIni(configFiles);
+	}
+
+	d->applyConfig(d->opt);
+}
+
 int WSGI::exec(Cutelyst::Application *app)
 {
     Q_D(WSGI);
