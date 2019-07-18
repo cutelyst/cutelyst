@@ -43,7 +43,13 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(parent, 
 
     d->engine = new Grantlee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
-    d->engine->addPluginPath(QStringLiteral(CUTELYST_PLUGINS_DIR));
+    
+	// Set also the paths from CUTELYST_PLUGINS_DIR env variable as plugin paths of grantlee engine 
+	const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+	for (const QByteArray &dir : dirs) {
+		d->engine->addPluginPath(QString::fromLocal8Bit(dir));
+	}
+
     d->engine->addDefaultLibrary(QStringLiteral("grantlee_cutelyst"));
 
     auto app = qobject_cast<Application *>(parent);
