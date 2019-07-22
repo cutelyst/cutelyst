@@ -78,6 +78,7 @@ public:
     QStringList touchReload;
     QStringList ini;
     QStringList json;
+    QStringList configLoaded;
     QString application;
     QString chdir;
     QString chdir2;
