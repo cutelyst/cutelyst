@@ -990,10 +990,10 @@ QString WSGI::chdir2() const
     return d->chdir2;
 }
 
-void WSGI::setIni(const QStringList &ini)
+void WSGI::setIni(const QStringList &files)
 {
     Q_D(WSGI);
-    d->ini.append(ini);
+    d->ini.append(files);
     d->ini.removeDuplicates();
     Q_EMIT changed();
 
