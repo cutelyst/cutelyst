@@ -513,10 +513,10 @@ Q_SIGNALS:
 
     /*!
      * Emitted when the websocket receives a close frame, including a close code and a reason,
-     * it's also emitted when the conection closes without the client sending the close frame.
+     * it's also emitted when the connection closes without the client sending the close frame.
      *
      * \note This signal is NOT emitted when explicit calling \sa Response::webSocketClose(). If
-     * you need to track when the conextion was closed, the proper way is to rely on
+     * you need to track when the connection was closed, the proper way is to rely on
      * Context::destroyed() signal.
      */
     void webSocketClosed(quint16 closeCode, const QString &reason);

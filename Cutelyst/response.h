@@ -318,7 +318,7 @@ public:
      * \note Most WebSockets client doesn't handle when a call to a WebSocket endpoint ends
      * on an HTTP authentication failure or other HTTP status that is not the update. Due that
      * it's best to always do the proper websocket handshake and then \sa webSocketClose() the
-     * conection, with some meaning reason.
+     * connection, with some meaning reason.
      */
     bool webSocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
 
@@ -337,7 +337,7 @@ public:
      * which will be truncated if larger.
      *
      * \note Some front-end servers will close the conetion if no activity is seem, NGINX closes in 60 seconds by default,
-     * in order to avoid that, sending a ping is the best to way to keep the conection alive and to know that your
+     * in order to avoid that, sending a ping is the best to way to keep the connection alive and to know that your
      * client is still there.
      */
     bool webSocketPing(const QByteArray &payload = QByteArray());
@@ -346,7 +346,7 @@ public:
      * Sends a WebSocket close frame, with both optional close code and a string reason.
      *
      * \note This method does not emit Request::webSocketClosed() signal. If
-     * you need to track when the conextion was closed, the proper way is to rely on
+     * you need to track when the connection was closed, the proper way is to rely on
      * Context::destroyed() signal.
      */
     bool webSocketClose(quint16 code = Response::CloseCodeNormal, const QString &reason = QString());
