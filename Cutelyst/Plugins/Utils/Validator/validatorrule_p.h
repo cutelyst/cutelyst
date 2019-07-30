@@ -341,7 +341,7 @@ public:
     {
         QVariant var;
 
-        Q_UNUSED(c);
+        Q_UNUSED(c)
 
         bool ok = false;
 
@@ -370,7 +370,7 @@ public:
 //            const int v = c->locale().toInt(value, &ok);
             const int v = value.toInt(&ok);
             if (ok) {
-                var.setValue<short>(v);
+                var.setValue<int>(v);
             }
         }
             break;
