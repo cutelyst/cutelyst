@@ -51,6 +51,7 @@ QString ValidatorPresent::genericValidationError(Context *c, const QVariant &err
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorPresent", "Has to be present in input data.");
     } else {
+        //: %1 will be replaced by the field label
         error =  c->translate("Cutelyst::ValidatorPresent", "The “%1” field was not found in the input data.").arg(_label);
     }
     return error;

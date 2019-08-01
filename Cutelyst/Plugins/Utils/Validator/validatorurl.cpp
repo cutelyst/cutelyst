@@ -111,6 +111,7 @@ QString ValidatorUrl::genericValidationError(Context *c, const QVariant &errorDa
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorUrl", "Not a valid URL.");
     } else {
+        //: %1 will be replaced by the field label
         error = c->translate("Cutelyst::ValidatorUrl", "The value in the “%1” field is not a valid URL.").arg(_label);
     }
     return error;

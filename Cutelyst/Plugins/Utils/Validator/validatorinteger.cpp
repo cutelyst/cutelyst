@@ -126,7 +126,7 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
         //: %1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit
         error = c->translate("ValidatorInteger", "Not a valid integer value between %1 and %2.").arg(min, max);
     } else {
-        //: %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
+        //: %1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
         error = c->translate("ValidatorInteger", "The value in the “%1“ field is not a valid integer between %2 and %3.").arg(_label, min, max);
     }
     return error;

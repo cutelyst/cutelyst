@@ -54,6 +54,7 @@ QString ValidatorFilled::genericValidationError(Context *c, const QVariant &erro
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorFilled", "Must be filled.");
     } else {
+        //: %1 will be replaced by the field label
         error = c->translate("Cutelyst::ValidatorFilled", "You must fill in the “%1” field.");
     }
     return error;

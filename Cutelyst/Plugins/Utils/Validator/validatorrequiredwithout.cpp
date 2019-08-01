@@ -77,8 +77,9 @@ QString ValidatorRequiredWithout::genericValidationError(Context *c, const QVari
     const QString _label = label(c);
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorRequiredWithout", "This is required.");
-    } else {        
-        error = c->translate("Cutelyst::ValidatorRequiredWithout", "You must fill in the “%1” field.").arg(_label);
+    } else {
+        //: %1 will be replaced by the field label
+        error = c->translate("Cutelyst::ValidatorRequiredWithout", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

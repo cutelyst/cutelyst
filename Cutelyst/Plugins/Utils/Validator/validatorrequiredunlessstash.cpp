@@ -65,7 +65,8 @@ QString ValidatorRequiredUnlessStash::genericValidationError(Context *c, const Q
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorRequiredUnlessStash", "This is required.");
     } else {
-        error = c->translate("Cutelyst::ValidatorRequiredUnlessStash", "You must fill in the “%1” field.").arg(_label);
+        //: %1 will be replaced by the field label
+        error = c->translate("Cutelyst::ValidatorRequiredUnlessStash", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

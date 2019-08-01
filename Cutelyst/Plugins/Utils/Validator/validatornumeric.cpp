@@ -59,7 +59,8 @@ QString ValidatorNumeric::genericValidationError(Context *c, const QVariant &err
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorNumeric", "Must be numeric, like 1, -2.5 or 3.454e3.");
     } else {
-        error = c->translate("Cutelyst::ValidatorNumeric", "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3").arg(_label);
+        //: %1 will be replaced by the field label
+        error = c->translate("Cutelyst::ValidatorNumeric", "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3.").arg(_label);
     }
     return error;
 }
