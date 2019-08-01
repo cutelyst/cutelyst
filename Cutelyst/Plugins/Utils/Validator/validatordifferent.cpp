@@ -67,9 +67,11 @@ QString ValidatorDifferent::genericValidationError(Context *c, const QVariant &e
     const QString _otherLabel = d->otherLabel ? c->translate(d->translationContext.data(), d->otherLabel) : QString();
 
     if (_label.isEmpty()) {
+        //: %1 will be replaced by the other field's label to compare with
         error = c->translate("Cutelyst::ValidatorDifferent", "Has to be different from the value in the “%1” field.").arg(!_otherLabel.isEmpty() ? _otherLabel : d->otherField);
     } else {
-        error = c->translate("Cutelyst::ValidatorDifferent", "The value in the field “%1” has to be different from the value in the field “%2“.").arg(_label, !_otherLabel.isEmpty() ? _otherLabel : d->otherField);
+        //: %1 will be replaced by the field label, %2 will be replaced by the other field's label to compare with
+        error = c->translate("Cutelyst::ValidatorDifferent", "The value in the “%1” field has to be different from the value in the “%2“ field.").arg(_label, !_otherLabel.isEmpty() ? _otherLabel : d->otherField);
     }
 
     return error;

@@ -66,7 +66,8 @@ QString ValidatorRequiredUnless::genericValidationError(Context *c, const QVaria
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorRequiredUnless", "This is required.");
     } else {
-        error = c->translate("Cutelyst::ValidatorRequiredUnless", "You must fill in the “%1” field.").arg(_label);
+        //: %1 will be replaced by the field label
+        error = c->translate("Cutelyst::ValidatorRequiredUnless", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

@@ -76,11 +76,22 @@ QString ValidatorAlpha::genericValidationError(Context *c, const QVariant &error
 {
     QString error;
     Q_UNUSED(errorData)
+    Q_D(const ValidatorAlpha);
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorAlhpa", "Must be entirely alphabetic characters.");
+        if (d->asciiOnly) {
+            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical latin characters.");
+        } else {
+            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical characters.");
+        }
     } else {
-        error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must be entirely alphabetic characters.").arg(_label);
+        if (d->asciiOnly) {
+            //: %1 will be replaced by the field label
+            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical latin characters.").arg(_label);
+        } else {
+            //: %1 will be replaced by the field label
+            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical characters.").arg(_label);
+        }
     }
     return error;
 }

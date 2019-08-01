@@ -265,6 +265,7 @@ QString ValidatorBetween::genericValidationDataError(Context *c, const QVariant 
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorBetween", "The minimum comparison value is not valid.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorBetween", "The minimum comparison value for the “%1” field is not valid.").arg(_label);
         }
     } else if (field == 0) {
@@ -272,12 +273,14 @@ QString ValidatorBetween::genericValidationDataError(Context *c, const QVariant 
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorBetween", "The comparison type with ID %1 is not supported.").arg(static_cast<int>(d->type));
         } else {
+            //: %1 will be replaced by the type id, %2 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorBetween", "The comparison type with ID %1 for the “%2” field is not supported.").arg(QString::number(static_cast<int>(d->type)), _label);
         }
     } else if (field == 1) {
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorBetween", "The maximum comparison value is not valid.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorBetween", "The maximum comparison value for the “%1” field is not valid.").arg(_label);
         }
     }
@@ -296,12 +299,14 @@ QString ValidatorBetween::genericParsingError(Context *c, const QVariant &errorD
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorBetween", "Failed to parse the input value into a floating point number.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorBetween", "Failed to parse the input value for the “%1” field into a floating point number.").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorBetween", "Failed to parse the input value into an integer number.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorBetween", "Failed to parse the input value for the “%1” field into an integer number.").arg(_label);
         }
     }

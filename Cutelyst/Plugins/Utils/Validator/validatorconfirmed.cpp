@@ -57,11 +57,12 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    Q_UNUSED(errorData);
+    Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorConfirmed", "Confirmation failed.");
     } else {
+        //: %1 will be replaced by the field label
         error = c->translate("Cutelyst::ValidatorConfirmed", "The value in the “%1“ field has not been confirmed.").arg(_label);
     }
     return error;
