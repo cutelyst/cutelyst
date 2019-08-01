@@ -5,6 +5,7 @@
     <name>Cutelyst::Validator</name>
     <message>
         <source>“%1” has to be accepted.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -54,37 +55,60 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as date and time.</source>
+        <source>The value in the “%1” field could not be parsed as date and time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as time.</source>
+        <source>The value in the “%1” field could not be parsed as time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as date.</source>
+        <source>The value in the “%1” field could not be parsed as date.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorAlhpa</name>
     <message>
-        <source>Must be entirely alphabetic characters.</source>
+        <source>Must only contain alphabetical latin characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The text in the “%1” field must be entirely alphabetic characters.</source>
+        <source>Must only contain alphabetical characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alphabetical latin characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alphabetical characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric latin characters, dashes and underscores.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric characters, dashes and underscores.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorAlphaDash</name>
     <message>
-        <source>Can only contain alpha-numeric characters, dashes and underscores.</source>
+        <source>Must only contain alpha-numeric latin characters, dashes and underscores.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The “%1” field can only contain alpha-numeric characters, as well as dashes and underscores, but nothing else.</source>
+        <source>Must only contain alpha-numeric characters, dashes and underscores.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -108,10 +132,12 @@
     </message>
     <message>
         <source>Could not be parsed according to the follwing date and/or time format: %1</source>
+        <extracomment>%1 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -127,15 +153,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as date and time.</source>
+        <source>The value in the “%1” field could not be parsed as date and time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as time.</source>
+        <source>The value in the “%1” field could not be parsed as time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed as date.</source>
+        <source>The value in the “%1” field could not be parsed as date.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -163,6 +192,7 @@
     </message>
     <message>
         <source>The minimum comparison value for the “%1” field is not valid.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -171,6 +201,7 @@
     </message>
     <message>
         <source>The comparison type with ID %1 for the “%2” field is not supported.</source>
+        <extracomment>%1 will be replaced by the type id, %2 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -179,6 +210,7 @@
     </message>
     <message>
         <source>The maximum comparison value for the “%1” field is not valid.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -187,6 +219,7 @@
     </message>
     <message>
         <source>Failed to parse the input value for the “%1” field into a floating point number.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -195,6 +228,7 @@
     </message>
     <message>
         <source>Failed to parse the input value for the “%1” field into an integer number.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -206,6 +240,7 @@
     </message>
     <message>
         <source>The value in the “%1” field can not be interpreted as a boolean value.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -217,6 +252,7 @@
     </message>
     <message>
         <source>The value in the “%1“ field has not been confirmed.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -224,6 +260,7 @@
     <name>Cutelyst::ValidatorDate</name>
     <message>
         <source>Not a valid date according to the following date format: %1</source>
+        <extracomment>%1 will be replaced by the date format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -232,29 +269,34 @@
     </message>
     <message>
         <source>The value in the “%1” field can not be parsed as date according to the following scheme: %2</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the date format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value in the “%1” field can not be parsed as date.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorDateTime</name>
     <message>
-        <source>Not a valid date and time according to the following date format: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Not a valid date and time.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value in the “%1” field can not be parsed as date and time according to the following date and time format: %2</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value in the “%1” field can not be prased as date and time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not a valid date and time according to the following format: %1</source>
+        <extracomment>%1 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -262,10 +304,12 @@
     <name>Cutelyst::ValidatorDifferent</name>
     <message>
         <source>Has to be different from the value in the “%1” field.</source>
+        <extracomment>%1 will be replaced by the other field&apos;s label to compare with</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value in the field “%1” has to be different from the value in the field “%2“.</source>
+        <source>The value in the “%1” field has to be different from the value in the “%2“ field.</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the other field&apos;s label to compare with</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -284,6 +328,7 @@
     </message>
     <message numerus="yes">
         <source>The “%1” field must contain exactly %n digit(s).</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished">
             <numerusform></numerusform>
             <numerusform></numerusform>
@@ -291,6 +336,7 @@
     </message>
     <message>
         <source>The “%1” field must only contain digits.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -302,6 +348,7 @@
     </message>
     <message>
         <source>The “%1” field must contain between %2 and %3 digits.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -316,23 +363,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>At least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names may be internally longer than they are displayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The full name of the domain must not be longer than 253 characters. Note that internationalized domain names may be internally longer than they are displayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This is not a valid domain name because it has either no parts (is empty) or only has a top level domain.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>At least one of the sections separated by dots is empty. Check whether you have entered two dots consecutively.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The top level domain (last part) contains characters that are not allowed, like digits and or dashes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -364,19 +399,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The domain name in the “%1“ field is not valid because at least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names may be internally longer than they are displayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The full name of the domain in the “%1” field must not be longer than 253 characters. Note that internationalized domain names may be internally longer than they are displayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The “%1” field does not contain a valid domain name because it has either no parts (is empty) or only has a top level domain.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The domain name in the “%1“ field is not valid because at least on of the sections separated by dots is empty. Check whether you have entered two dots consecutively.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -400,16 +423,36 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The DNS lookup for the name in the “%1” field was aborted because it took too long.</source>
+        <source>At least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names can be longer internally than they are displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The full name of the domain must not be longer than 253 characters. Note that internationalized domain names can be longer internally than they are displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The top level domain (last part) contains characters that are not allowed, like digits and/or dashes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The domain name in the “%1“ field is not valid because at least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names can be longer internally than they are displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The full name of the domain in the “%1” field must not be longer than 253 characters. Note that internationalized domain names can be longer internally than they are displayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The domain name in the “%1“ field is not valid because at least one of the sections separated by dots is empty. Check whether you have entered two dots consecutively.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The DNS lookup for the domain name in the “%1” field was aborted because it took too long.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorEmail</name>
-    <message>
-        <source>Address is valid. Please note that this does not mean the address actually exists, nor even that the domain actually exists. This address could be issued by the domain owner without breaking the rules of any RFCs.</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Could not find an MX record for this address’ domain but an A record does exist.</source>
         <translation type="unfinished"></translation>
@@ -459,10 +502,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A quoted pair contains a deprecate character.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Address contains a comment in a position that is deprecated.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -472,10 +511,6 @@
     </message>
     <message>
         <source>Address contains a comment or folding white space around the @ sign.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Address is RFC 5322 compliant but contains domain charachters that are not allowed by DNS.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -539,10 +574,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The address may not contain consecutive dots.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Address contains text after a comment or folding white space.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,10 +599,6 @@
     </message>
     <message>
         <source>A comment contains a character that is not allowed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The address can&apos;t end with a backslash.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -619,10 +646,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The address in the “%1” field is valid. Please note that this does not mean the address actually exists, nor even that the domain actually exists. This address could be issued by the domain owner without breaking the rules of any RFCs.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not find an MX record for the address’ domain in the “%1” field but an A record does exist.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -636,10 +659,6 @@
     </message>
     <message>
         <source>The address in the “%1” field is valid but the Top Level Domain begins with a number.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The address in the “%1” is valid but contains a quoted string.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -751,10 +770,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The address in the “%1” field may not contain consecutive dots.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The address in the “%1” field contains text after a comment or folding white space.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -835,10 +850,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Address is valid but a dns check was not successful.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Address is valid for SMTP but has unusual elements.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -863,10 +874,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The address in the “%1” field is valid but a dns check was not successful.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The address in the “%1” field is valid for SMTP but has unusual elements.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -884,6 +891,46 @@
     </message>
     <message>
         <source>The address in the “%1” field is invalid for any purpose.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A quoted pair contains a deprecated character.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address is RFC 5322 compliant but contains domain characters that are not allowed by DNS.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address must not contain consecutive dots.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address can not end with a backslash.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address in the “%1” field is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address in the “%1” field is valid but contains a quoted string.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address in the “%1” field must not contain consecutive dots.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Address is valid but a DNS check was not successful.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The address in the “%1” field is valid but a DNS check was not successful.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -930,25 +977,29 @@
     </message>
     <message>
         <source>You must fill in the “%1” field.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorIn</name>
     <message>
-        <source>Has to be one of the following: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The value in the “%1” field has to be one of the following: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The list of comparison values is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The list of comparison values for the “%1” field is empty.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Has to be one of the following values: %1</source>
+        <extracomment>%1 will be replaced by a comma separated list of allowed values</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The value in the “%1” field has to be one of the following values: %2</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by a comma separated list of allowed values</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -960,6 +1011,7 @@
     </message>
     <message>
         <source>The IP address in the “%1” field is invalid or not acceptable.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -981,6 +1033,7 @@
     </message>
     <message>
         <source>The data entered in the “%1” field is not valid JSON.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1112,7 +1165,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3</source>
+        <source>You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1124,6 +1178,7 @@
     </message>
     <message>
         <source>The “%1” field was not found in the input data.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1174,31 +1229,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The password contains less than %ld non-alphanumeric characters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password is too short.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The password is just rotated old one.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password does not contain enough character classes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password contains too many same characters consecutively.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password contains too many characters of the same class consecutively.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password contains too long of a monotonic character sequence.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1274,10 +1309,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The password in the “%1” field contains words from the real name of the user in some form.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password in the “%1” field contains forbidden words in some form.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1294,31 +1325,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The password in the “%1” field contains less than %ld non-alphanumeric characters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password in the “%1” field is too short.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The password in the “%1” field is just rotated old one.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password in the “%1” field does not contain enough character classes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password in the “%1” field contains too many same characters consecutively.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password in the “%1” field contains too many characters of the same class consecutively.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The password in the “%1” field contains too long of a monotonic character sequence.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1369,6 +1380,50 @@
         <source>The quality score of %1 for the password in the “%2” field is below the threshold of %3.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The password contains too few non-alphanumeric characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password is just the rotated old one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password does not contain enough different character types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password contains too many characters of the same type consecutively.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password contains too long a monotonous string.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field contains words from the real name of the user name in some form.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field contains too few non-alphanumeric characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field is just the rotated old one.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field does not contain enough character types.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field contains too many characters of the same type consecutively.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The password in the “%1” field contains contains too long a monotonous string.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Cutelyst::ValidatorRegularExpression</name>
@@ -1378,6 +1433,7 @@
     </message>
     <message>
         <source>The “%1” field does not match the desired format.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1389,6 +1445,7 @@
     </message>
     <message>
         <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1399,7 +1456,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1410,7 +1468,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1421,7 +1480,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1432,7 +1492,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1443,7 +1504,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1454,7 +1516,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1465,7 +1528,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1476,7 +1540,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You must fill in the “%1” field.</source>
+        <source>The “%1” field is required.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1508,21 +1573,38 @@
     </message>
 </context>
 <context>
+    <name>Cutelyst::ValidatorSame</name>
+    <message>
+        <source>Must be the same as in the “%1” field.</source>
+        <extracomment>%1 will be replaced by the label of the other field</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The “%1” field must have the same value as the “%2” field.</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the label of the other field</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Cutelyst::ValidatorSize</name>
     <message>
         <source>The text must be exactly %1 characters long.</source>
+        <extracomment>%1 will be replaced by the required string size</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value must be %1.</source>
+        <extracomment>%1 will be replaced by the required size/value</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The text in the “%1“ field must be exactly %2 characters long.</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the required string size</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value in the “%1” field must be %2.</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the required size/value</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1539,6 +1621,7 @@
     </message>
     <message>
         <source>The comparison value for the “%1” field is not valid.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1547,6 +1630,7 @@
     </message>
     <message>
         <source>Failed to parse the input value for the “%1” field into a floating point number.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1555,6 +1639,7 @@
     </message>
     <message>
         <source>Failed to parse the input value for the “%1” field into an integer number.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1562,6 +1647,7 @@
     <name>Cutelyst::ValidatorTime</name>
     <message>
         <source>Not a valid time according to the following date format: %1</source>
+        <extracomment>%1 will be replaced by the erquired time format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1570,10 +1656,12 @@
     </message>
     <message>
         <source>The value in the “%1” field can not be parsed as time according to the following scheme: %2</source>
+        <extracomment>%1 will be replaced by the field label, %2 will be replaced by the required time format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The value in the “%1” field can not be parse as time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1585,17 +1673,28 @@
     </message>
     <message>
         <source>The value in the “%1” field is not a valid URL.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ValidatorAlphaNum</name>
     <message>
-        <source>Must be entierly alpha-numeric characters.</source>
+        <source>Must only contain alpha-numeric latin characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The text in the “%1” field must be entirely alpha-numeric characters.</source>
+        <source>Must only contain alpha-numeric characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric latin characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1608,7 +1707,7 @@
     </message>
     <message>
         <source>The value in the “%1“ field is not a valid integer between %2 and %3.</source>
-        <extracomment>%2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit</extracomment>
+        <extracomment>%1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
