@@ -64,7 +64,7 @@ QString ValidatorAccepted::genericValidationError(Cutelyst::Context *c, const QV
         error = c->translate("Cutelyst::ValidatorAccepted", "Has to be accepted.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::Validator", "“%1” has to be accepted.");
+        error = c->translate("Cutelyst::ValidatorAccepted", "“%1” has to be accepted.");
     }
     return error;
 }

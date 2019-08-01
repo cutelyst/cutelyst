@@ -82,7 +82,7 @@ QString ValidatorDateTime::genericValidationError(Context *c, const QVariant &er
             error = c->translate("Cutelyst::ValidatorDateTime", "The value in the “%1” field can not be parsed as date and time according to the following date and time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDateTime", "The value in the “%1” field can not be prased as date and time.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorDateTime", "The value in the “%1” field can not be parsed as date and time.").arg(_label);
         }
     }
 

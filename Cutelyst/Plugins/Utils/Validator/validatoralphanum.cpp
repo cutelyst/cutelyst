@@ -79,17 +79,17 @@ QString ValidatorAlphaNum::genericValidationError(Context *c, const QVariant &er
     const QString _label = label(c);
     if (_label.isEmpty()) {
         if (d->asciiOnly) {
-            error = c->translate("ValidatorAlphaNum", "Must only contain alpha-numeric latin characters.");
+            error = c->translate("Cutelyst::ValidatorAlphaNum", "Must only contain alpha-numeric latin characters.");
         } else {
-            error = c->translate("ValidatorAlphaNum", "Must only contain alpha-numeric characters.");
+            error = c->translate("Cutelyst::ValidatorAlphaNum", "Must only contain alpha-numeric characters.");
         }
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error = c->translate("ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric latin characters.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric latin characters.").arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric characters.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric characters.").arg(_label);
         }
     }
     return error;
