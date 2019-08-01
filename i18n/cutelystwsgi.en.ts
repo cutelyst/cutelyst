@@ -219,5 +219,29 @@
         <source>balances new connections to threads using round-robin</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>bind to the specified TCP socket using HTTP/2 protocol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Defined the HTTP/2 header table size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upgrades HTTP/1 to H2c (HTTP/2 Clear Text)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Negotiate HTTP/2 on HTTPS socket</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable frontend (reverse-)proxy support</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
