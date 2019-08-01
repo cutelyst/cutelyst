@@ -2,17 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en" sourcelanguage="en">
 <context>
-    <name>Cutelyst::Validator</name>
-    <message>
-        <source>“%1” has to be accepted.</source>
-        <extracomment>%1 will be replaced by the field label</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>Cutelyst::ValidatorAccepted</name>
     <message>
         <source>Has to be accepted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>“%1” has to be accepted.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -90,6 +87,17 @@
         <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>Cutelyst::ValidatorAlphaDash</name>
+    <message>
+        <source>Must only contain alpha-numeric latin characters, dashes and underscores.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Must only contain alpha-numeric characters, dashes and underscores.</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>The text in the “%1” field must only contain alpha-numeric latin characters, dashes and underscores.</source>
         <extracomment>%1 will be replaced by the field label</extracomment>
@@ -102,13 +110,23 @@
     </message>
 </context>
 <context>
-    <name>Cutelyst::ValidatorAlphaDash</name>
+    <name>Cutelyst::ValidatorAlphaNum</name>
     <message>
-        <source>Must only contain alpha-numeric latin characters, dashes and underscores.</source>
+        <source>Must only contain alpha-numeric latin characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Must only contain alpha-numeric characters, dashes and underscores.</source>
+        <source>Must only contain alpha-numeric characters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric latin characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text in the “%1” field must only contain alpha-numeric characters.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -290,13 +308,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value in the “%1” field can not be prased as date and time.</source>
-        <extracomment>%1 will be replaced by the field label</extracomment>
+        <source>Not a valid date and time according to the following format: %1</source>
+        <extracomment>%1 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Not a valid date and time according to the following format: %1</source>
-        <extracomment>%1 will be replaced by the datetime format</extracomment>
+        <source>The value in the “%1” field can not be parsed as date and time.</source>
+        <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1004,6 +1022,19 @@
     </message>
 </context>
 <context>
+    <name>Cutelyst::ValidatorInteger</name>
+    <message>
+        <source>Not a valid integer value between %1 and %2.</source>
+        <extracomment>%1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The value in the “%1“ field is not a valid integer between %2 and %3.</source>
+        <extracomment>%1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Cutelyst::ValidatorIp</name>
     <message>
         <source>IP address is invalid or not acceptable.</source>
@@ -1241,10 +1272,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Password quality check failed because we cannot obtain random numbers from the RNG device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password fails the dictionary check.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1337,10 +1364,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The password in the “%1” field fails the dictionary check.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1422,6 +1445,14 @@
     </message>
     <message>
         <source>The password in the “%1” field contains contains too long a monotonous string.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Password quality check failed because we cannot obtain random numbers from the RNG device.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1660,7 +1691,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value in the “%1” field can not be parse as time.</source>
+        <source>The value in the “%1” field can not be parsed as time.</source>
         <extracomment>%1 will be replaced by the field label</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -1674,40 +1705,6 @@
     <message>
         <source>The value in the “%1” field is not a valid URL.</source>
         <extracomment>%1 will be replaced by the field label</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ValidatorAlphaNum</name>
-    <message>
-        <source>Must only contain alpha-numeric latin characters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Must only contain alpha-numeric characters.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The text in the “%1” field must only contain alpha-numeric latin characters.</source>
-        <extracomment>%1 will be replaced by the field label</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The text in the “%1” field must only contain alpha-numeric characters.</source>
-        <extracomment>%1 will be replaced by the field label</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ValidatorInteger</name>
-    <message>
-        <source>Not a valid integer value between %1 and %2.</source>
-        <extracomment>%1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The value in the “%1“ field is not a valid integer between %2 and %3.</source>
-        <extracomment>%1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -175,7 +175,7 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
             error = c->translate("Cutelyst::ValidatorPwQuality", "No password supplied.");
             break;
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check failed because we cannot obtain random numbers from the RNG device");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check failed because we cannot obtain random numbers from the RNG device.");
             break;
         case PWQ_ERROR_CRACKLIB_CHECK:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password fails the dictionary check.");
@@ -273,7 +273,7 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
             error = c->translate("Cutelyst::ValidatorPwQuality", "No password supplied in the “%1” field.").arg(label);
             break;
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device.").arg(label);
             break;
         case PWQ_ERROR_CRACKLIB_CHECK:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field fails the dictionary check.").arg(label);

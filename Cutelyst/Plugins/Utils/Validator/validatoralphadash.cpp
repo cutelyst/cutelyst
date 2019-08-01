@@ -85,10 +85,10 @@ QString ValidatorAlphaDash::genericValidationError(Cutelyst::Context *c, const Q
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alpha-numeric latin characters, dashes and underscores.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorAlphaDash", "The text in the “%1” field must only contain alpha-numeric latin characters, dashes and underscores.").arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alpha-numeric characters, dashes and underscores.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorAlphaDash", "The text in the “%1” field must only contain alpha-numeric characters, dashes and underscores.").arg(_label);
         }
     }
     return error;

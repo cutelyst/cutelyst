@@ -81,7 +81,7 @@ QString ValidatorTime::genericValidationError(Context *c, const QVariant &errorD
             error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parsed as time according to the following scheme: %2").arg(_label, c->translate(d->translationContext.data(), d->format));
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parse as time.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parsed as time.").arg(_label);
         }
     }
 
