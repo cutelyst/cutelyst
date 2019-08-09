@@ -432,6 +432,7 @@ protected:
 
     friend class Engine;
     friend class Context;
+    friend class Prometheus;
 
     /*!
      * Called by the Engine to setup the internal data

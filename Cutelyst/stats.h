@@ -52,6 +52,7 @@ public:
     virtual QByteArray report();
 
 protected:
+    friend class Prometheus;
     StatsPrivate *d_ptr;
 };
 
