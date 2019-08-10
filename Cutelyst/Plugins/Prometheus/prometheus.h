@@ -23,13 +23,10 @@
 #include <Cutelyst/context.h>
 #include <Cutelyst/controller.h>
 
-namespace prometheus {
-class Registry;
-}
-
 namespace Cutelyst {
 
 class PrometheusPrivate;
+class Prometheus_Registry;
 
 /*!
  * \brief Provides metrics for <a href="https://prometheus.io">Prometheus</a>.
@@ -82,14 +79,7 @@ class PrometheusPrivate;
  * {
  *     // other initialization stuff
  *
- *     static Prometheus* prometheus;
- *     if (engine()->isZeroWorker()) {
- *         // only one per process
- *         prometheus = new Prometheus(this);
- *     } else {
- *         // every thread get a controller
- *         new Prometheus_Controller(this, prometheus);
- *     }
+ *     new Prometheus(this);
  *
  *     // more initialization stuff
  * }
@@ -163,13 +153,13 @@ public:
      * The registry can be used to provide additional metrics.
      * \returns a pointer to the registry
      */
-    prometheus::Registry* get_Registry();
+    Prometheus_Registry* registry();
 
     /*!
      * \brief get_Accesstoken
      * \returns the access token from ini-file
      */
-    QString get_Accesstoken() const;
+    QString accesstoken() const;
 
 public Q_SLOTS:
     /*!

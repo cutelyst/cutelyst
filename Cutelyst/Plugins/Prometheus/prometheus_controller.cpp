@@ -18,6 +18,7 @@
 #include "prometheus_controller.h"
 #include "prometheus_controller_p.h"
 #include "prometheus_p.h"
+#include "prometheus_registry.h"
 
 #include <prometheus/text_serializer.h>
 
@@ -42,7 +43,7 @@ void Prometheus_Controller_Base::endpoint(Context *c)
     Q_D(Prometheus_Controller);
 
     // check authorization
-    QString access_token = m_prometheus_plugin->get_Accesstoken();
+    QString access_token = m_prometheus_plugin->accesstoken();
     if (!access_token.isEmpty()) {
         QString auth = c->request()->headers().authorization();
         if (!auth.startsWith(QLatin1String("Bearer ")) || auth.mid(7) != access_token) {
@@ -55,7 +56,7 @@ void Prometheus_Controller_Base::endpoint(Context *c)
 
     m_prometheus_plugin->update_metrics();
 
-    std::string metrics = prometheus::TextSerializer().Serialize( d->CollectMetrics( m_prometheus_plugin->get_Registry() ) );
+    std::string metrics = prometheus::TextSerializer().Serialize( d->CollectMetrics( m_prometheus_plugin->registry()->registry() ) );
     if (!metrics.empty()) {
         c->response()->setBody( QString::fromStdString(metrics) );
         c->response()->setContentType( QStringLiteral("text/plain; version=0.0.4") );

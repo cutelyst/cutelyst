@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "prometheus_standard_metrics.h"
+#include "prometheus_registry.h"
 
 #include <prometheus/registry.h>
 
@@ -25,10 +26,10 @@
 
 using namespace Cutelyst;
 
-Prometheus_Standard_Metrics::Prometheus_Standard_Metrics(Prometheus *prometheus_plugin) :
-    QObject(prometheus_plugin), m_prometheus_plugin(prometheus_plugin)
+Prometheus_Standard_Metrics::Prometheus_Standard_Metrics(Prometheus *prometheus_plugin, int update_interval_s) :
+    QObject(prometheus_plugin)
 {
-    prometheus::Registry* registry = prometheus_plugin->get_Registry();
+    prometheus::Registry* registry = prometheus_plugin->registry()->registry();
 
     prometheus::Family<prometheus::Gauge>* family = &(prometheus::BuildGauge()
         .Name("process_cpu_seconds_total")
@@ -85,14 +86,17 @@ Prometheus_Standard_Metrics::Prometheus_Standard_Metrics(Prometheus *prometheus_
 #endif
 
     // attach to update signal
-    connect(m_prometheus_plugin, &Prometheus::on_update_metrics, this, &Prometheus_Standard_Metrics::on_update_metrics);
+    if (update_interval_s > 0) {
+        connect(&m_updateTimer, &QTimer::timeout, this, &Prometheus_Standard_Metrics::update_metrics);
+        m_updateTimer.start(update_interval_s * 1000);
+    }
 }
 
 Prometheus_Standard_Metrics::~Prometheus_Standard_Metrics()
 {
 }
 
-void Prometheus_Standard_Metrics::on_update_metrics()
+void Prometheus_Standard_Metrics::update_metrics()
 {
     // calculate standard metrics
 #ifdef Q_OS_LINUX

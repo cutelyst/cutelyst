@@ -9,6 +9,8 @@ set(plugin_prometheus_SRC
     prometheus_controller_p.h
     prometheus_standard_metrics.cpp
     prometheus_standard_metrics.h
+    prometheus_registry.cpp
+    prometheus_registry.h
 )
 
 set(plugin_prometheus_HEADERS
@@ -16,6 +18,7 @@ set(plugin_prometheus_HEADERS
     Prometheus
     prometheus_controller.h
     prometheus_standard_metrics.h
+    prometheus_registry.h
 )
 
 add_library(Cutelyst2Qt5Prometheus

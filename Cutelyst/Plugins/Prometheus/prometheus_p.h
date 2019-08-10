@@ -4,6 +4,7 @@
 #include "prometheus.h"
 
 #include <prometheus/registry.h>
+#include <QSharedPointer>
 
 namespace Cutelyst {
 
@@ -11,9 +12,7 @@ class PrometheusPrivate
 {
 public:
     QString access_token;
-    bool no_process_metrics = false;
 
-    prometheus::Registry* registry = nullptr;
     struct FamilyGauge {
         prometheus::Family<prometheus::Gauge>* family;
         QHash<QString, prometheus::Gauge*> gauge;

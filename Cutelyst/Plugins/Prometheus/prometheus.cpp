@@ -18,6 +18,7 @@
 #include "prometheus_p.h"
 #include "prometheus_controller.h"
 #include "prometheus_standard_metrics.h"
+#include "prometheus_registry.h"
 
 #include "application.h"
 #include "application_p.h"
@@ -33,13 +34,24 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_PROMETHEUS, "cutelyst.plugin.prometheus", QtWarningMsg)
 
+// we need one Registry per application
+static QScopedPointer<Prometheus_Registry> prometheus_registry;
+
 Prometheus::Prometheus(Application *parent) : Plugin(parent), d_ptr(new PrometheusPrivate)
 {
-    Q_D(Prometheus);
-
-    d->registry = new prometheus::Registry;
-
     const QVariantMap config = parent->engine()->config(QLatin1String("Cutelyst_Prometheus_Plugin"));
+
+    if (!prometheus_registry) {
+        prometheus_registry.reset( new Prometheus_Registry );
+
+        // create standard metrics according to https://prometheus.io/docs/instrumenting/writing_clientlibs/#standard-and-runtime-collectors
+        // once per registry
+        bool no_process_metrics = config.value(QStringLiteral("no_process_metrics"), false).toBool();
+        if (!no_process_metrics) {
+            new Prometheus_Standard_Metrics(this);
+        }
+    }
+
     bool no_controller = config.value(QStringLiteral("no_controller")).toBool();
     if (!no_controller) {
         new Prometheus_Controller(parent, this);
@@ -48,9 +60,6 @@ Prometheus::Prometheus(Application *parent) : Plugin(parent), d_ptr(new Promethe
 
 Prometheus::~Prometheus()
 {
-    Q_D(Prometheus);
-
-    delete d->registry;
     delete d_ptr;
 }
 
@@ -66,51 +75,25 @@ bool Prometheus::setup(Application *app)
     // enable collection of statistics
     app->d_ptr->useStats = true;
 
-    // create standard metrics according to https://prometheus.io/docs/instrumenting/writing_clientlibs/#standard-and-runtime-collectors
-    d->no_process_metrics = config.value(QStringLiteral("no_process_metrics"), false).toBool();
-    if (!d->no_process_metrics) {
-        new Prometheus_Standard_Metrics(this);
-    }
-
     return true;
 }
 
-void Prometheus::afterDispatch(Context *c)
+void Prometheus::afterDispatch( Context *c )
 {
-    Q_D(Prometheus);
-
-    Stats* stats = c->d_ptr->stats;
-    if (!stats)
+    const Stats* stats = c->d_ptr->stats;
+    if (Q_UNLIKELY(!stats))
         return;
-    StatsPrivate* statsPrivate = stats->d_ptr;
+    const StatsPrivate* statsPrivate = stats->d_ptr;
 
-    if (Q_UNLIKELY(!d->gauges[c->controllerName()].contains(c->actionName()))) {
-        // create gauges for this action
-        PrometheusPrivate::FamilyGauge familyGauge;
-        familyGauge.family = &(prometheus::BuildGauge()
-            .Name("processing_time")
-            .Help("How many seconds does this action take?")
-            .Labels({{"controllerName", c->controllerName().toStdString()}, {"actionName", c->actionName().toStdString()}})
-            .Register(*d->registry));
-        for (const auto &stat : statsPrivate->actions) {
-            familyGauge.gauge[stat.action] = &familyGauge.family->Add({{"action", stat.action.toStdString()}});
-        }
-        d->gauges[c->controllerName()].insert( c->actionName(), familyGauge );
-    }
-
-    PrometheusPrivate::FamilyGauge& familyGauge = d->gauges[c->controllerName()][c->actionName()];
-    for (const auto &stat : statsPrivate->actions) {
-        auto gauge = familyGauge.gauge.value(stat.action);
-        if (gauge)
-            gauge->Set((stat.end - stat.begin)/1e9);
+    auto familyGauge = registry()->familyGauge( c->controllerName(), c->actionName() );
+    for (const auto& stat : statsPrivate->actions) {
+        registry()->setGauge( familyGauge, stat.action, (stat.end - stat.begin)/1e9 );
     }
 }
 
-prometheus::Registry* Prometheus::get_Registry()
+Prometheus_Registry* Prometheus::registry()
 {
-    Q_D(Prometheus);
-
-    return d->registry;
+    return prometheus_registry.data();
 }
 
 void Prometheus::update_metrics()
@@ -118,7 +101,7 @@ void Prometheus::update_metrics()
     Q_EMIT on_update_metrics();
 }
 
-QString Prometheus::get_Accesstoken() const
+QString Prometheus::accesstoken() const
 {
     Q_D(const Prometheus);
 

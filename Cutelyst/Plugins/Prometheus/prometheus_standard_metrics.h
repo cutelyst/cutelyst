@@ -22,6 +22,7 @@
 
 #include <QFile>
 #include <QDir>
+#include <QTimer>
 
 namespace prometheus {
 class Gauge;
@@ -32,15 +33,14 @@ namespace Cutelyst {
 class CUTELYST_PLUGIN_PROMETHEUS_EXPORT Prometheus_Standard_Metrics : public QObject
 {
 public:
-    explicit Prometheus_Standard_Metrics(Prometheus *prometheus_plugin);
+    explicit Prometheus_Standard_Metrics(Prometheus *prometheus_plugin, int update_interval_s = 5);
     virtual ~Prometheus_Standard_Metrics() override;
 
-protected Q_SLOTS:
-    void on_update_metrics();
+public Q_SLOTS:
+    void update_metrics();
 
 protected:
-    Prometheus *m_prometheus_plugin;
-
+    QTimer m_updateTimer;
     QHash<QString, prometheus::Gauge*> m_standard_metrics;
     unsigned long m_btime = 0;
     QFile m_stat;
