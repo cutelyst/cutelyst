@@ -48,7 +48,8 @@ Prometheus::Prometheus(Application *parent) : Plugin(parent), d_ptr(new Promethe
         // once per registry
         bool no_process_metrics = config.value(QStringLiteral("no_process_metrics"), false).toBool();
         if (!no_process_metrics) {
-            new Prometheus_Standard_Metrics(this);
+            int update_interval_s = config.value(QStringLiteral("update_interval_s"), 5).toInt();
+            new Prometheus_Standard_Metrics(this, update_interval_s);
         }
     }
 

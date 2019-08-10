@@ -116,6 +116,13 @@ class Prometheus_Registry;
  * If set, the access to the endpoint /metrics is restricted to request with this token set as the Bearer token.
  * \endparblock
  *
+ * \par update_interval_s
+ * \parblock
+ * Integer value, default: 5
+ *
+ * Determines the time between updates of Prometheus standard metrics.
+ * \endparblock
+ *
  *
  * <H3>Build options</H3>
  * This plugin is not enabled by default. Use <CODE>-DPLUGIN_PROMETHEUS:BOOL=ON</CODE> for your cmake configuration. To link it to your
