@@ -32,7 +32,7 @@ public:
     /**
      * Construct an empty header object.
      */
-    Headers();
+    Headers() = default;
 
     /**
      * Constructs a copy of \pa other.
