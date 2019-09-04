@@ -27,7 +27,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     Q_D(ActionChain);
     d->chain = chain;
 
-    Action *final = d->chain.last();
+    const Action *final = d->chain.last();
 
     QVariantHash args;
     args.insert(QStringLiteral("namespace"), final->ns());
@@ -46,6 +46,10 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     }
 }
 
+ActionChain::~ActionChain()
+{
+}
+
 ActionList ActionChain::chain() const
 {
     Q_D(const ActionChain);
@@ -60,7 +64,7 @@ qint8 ActionChain::numberOfCaptures() const
 
 bool ActionChain::doExecute(Context *c)
 {
-    Q_D(ActionChain);
+    Q_D(const ActionChain);
 
     Request *request =  c->request();
     const QStringList captures = request->captures();
