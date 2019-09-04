@@ -27,7 +27,6 @@ class ActionChainPrivate : public ActionPrivate
 {
 public:
     ActionList chain;
-    Action *final;
     qint8 captures = 0;
 };
 

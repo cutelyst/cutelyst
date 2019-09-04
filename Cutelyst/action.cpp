@@ -71,12 +71,12 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     const QString argsAttr = attributes.value(QLatin1String("Args"));
     if (!argsAttr.isEmpty()) {
-        d->numberOfArgs = argsAttr.toInt();
+        d->numberOfArgs = qint8(argsAttr.toInt());
     }
 
     const QString capturesAttr = attributes.value(QLatin1String("CaptureArgs"));
     if (!capturesAttr.isEmpty()) {
-        d->numberOfCaptures = capturesAttr.toInt();
+        d->numberOfCaptures = qint8(capturesAttr.toInt());
     }
 }
 
