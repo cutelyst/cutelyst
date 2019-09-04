@@ -26,6 +26,8 @@ namespace Cutelyst {
 class ActionChainPrivate : public ActionPrivate
 {
 public:
+    virtual ~ActionChainPrivate() override = default;
+
     ActionList chain;
     qint8 captures = 0;
 };
