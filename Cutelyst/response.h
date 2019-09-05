@@ -301,6 +301,11 @@ public:
     Headers &headers();
 
     /**
+     * Returns if Headers are finalized (sent to the client)
+     */
+    bool isFinalizedHeaders() const;
+
+    /**
      * Writting to user-agent is always sequential
      */
     virtual bool isSequential() const override;
