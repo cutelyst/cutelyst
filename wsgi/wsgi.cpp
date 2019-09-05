@@ -1000,8 +1000,6 @@ void WSGI::setIni(const QStringList &files)
     for (const QString &ini : d->ini) {
         d->loadConfig(ini, false);
     }
-
-    d->applyConfig(d->opt);
 }
 
 QStringList WSGI::ini() const
@@ -1020,8 +1018,6 @@ void WSGI::setJson(const QStringList &files)
     for (const QString &json : d->json) {
         d->loadConfig(json, true);
     }
-
-    d->applyConfig(d->opt);
 }
 
 QStringList WSGI::json() const
@@ -1562,6 +1558,9 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
     }
 
     QVariantMap sessionConfig = loadedConfig.value(section).toMap();
+
+    applyConfig(sessionConfig);
+
     sessionConfig.unite(opt);
     opt = sessionConfig;
 
