@@ -8,7 +8,7 @@ set(plugin_csrfprotection_HEADERS
     CSRFProtection
 )
 
-add_library(Cutelyst2Qt5CSRFProtection SHARED
+add_library(Cutelyst2Qt5CSRFProtection
     ${plugin_csrfprotection_SRC}
     ${plugin_csrfprotection_HEADERS}
 )

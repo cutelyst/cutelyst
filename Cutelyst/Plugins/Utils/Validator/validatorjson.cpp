@@ -70,6 +70,7 @@ QString ValidatorJson::genericValidationError(Context *c, const QVariant &errorD
             //: %1 will contain the field label, %2 will contain the json error
             error = c->translate("Cutelyst::ValidatorJson", "The data entered in the “%1” field is not valid JSON: %2").arg(_label, jsonError);
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorJson", "The data entered in the “%1” field is not valid JSON.").arg(_label);
         }
     }

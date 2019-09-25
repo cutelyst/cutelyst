@@ -19,10 +19,11 @@
 #define ROLEACL_P_H
 
 #include "roleacl.h"
+#include "component_p.h"
 
 namespace Cutelyst {
 
-class RoleACLPrivate
+class RoleACLPrivate : public ComponentPrivate
 {
 public:
     QStringList requiresRole;

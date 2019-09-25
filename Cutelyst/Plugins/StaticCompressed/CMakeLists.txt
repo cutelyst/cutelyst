@@ -11,7 +11,7 @@ set(plugin_staticcompressed_HEADERS
     StaticCompressed
 )
 
-add_library(Cutelyst2Qt5StaticCompressed SHARED
+add_library(Cutelyst2Qt5StaticCompressed
     ${plugin_staticcompressed_SRC}
     ${plugin_staticcompressed_HEADERS}
 )

@@ -337,7 +337,7 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
 
 ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
 {
-
+    isSecure = sock->isSecure;
 }
 
 ProtoRequestHttp::~ProtoRequestHttp()
@@ -384,7 +384,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
             hasDate = true;
         }
 
-        QString ret(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) + QLatin1String(": ") + value);
+        QString ret(QLatin1String("\r\n") + Cutelyst::Engine::camelCaseHeader(key) + QLatin1String(": ") + value);
         io->write(ret.toLatin1());
 
         ++it;

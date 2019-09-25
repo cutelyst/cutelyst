@@ -26,6 +26,7 @@
 namespace Cutelyst {
 
 class Context;
+class ViewPrivate;
 
 /*! \class View view.h Cutelyst/View
  * @brief %Cutelyst %View abstract view component
@@ -33,6 +34,7 @@ class Context;
 class CUTELYST_LIBRARY View : public Component
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(View)
 public:
     /**
      * The base implementation for a View class, a name
@@ -53,6 +55,13 @@ public:
      */
     virtual QByteArray render(Context *c) const = 0;
 
+    /**
+     * Set deflate minimal size to @p minSize.
+     * When @p minSize is not negative and view render output is larger than @p minSize,
+     * if ACCEPT_ENCODING contains 'deflate', then deflate view render output.
+     * To disable Deflate, set @p minSize to a negative integer.
+     */
+    void setMinimalSizeToDeflate(qint32 minSize = -1);
 private:
     /**
      * This is used by Component execute() when

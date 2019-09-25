@@ -204,7 +204,7 @@ public:
      * @accessors ini(), setIni()
      */
     Q_PROPERTY(QStringList ini READ ini WRITE setIni NOTIFY changed)
-    void setIni(const QStringList &ini);
+    void setIni(const QStringList &files);
     QStringList ini() const;
 
     /**

@@ -64,7 +64,7 @@ public:
     virtual void socketDisconnected() {}
     virtual void setupNewConnection(Socket *sock) = 0;
 
-    qint64 contentLength;
+    qint64 contentLength = 0;
     Socket *sock;//temporary
     QIODevice *io;
     ProtocolData *upgradedFrom = nullptr;

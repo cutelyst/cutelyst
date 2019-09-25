@@ -8,7 +8,7 @@ set(plugin_pagination_HEADERS
     Pagination
 )
 
-add_library(Cutelyst2Qt5UtilsPagination SHARED
+add_library(Cutelyst2Qt5UtilsPagination
     ${plugin_pagination_SRC}
     ${plugin_pagination_HEADERS}
 )

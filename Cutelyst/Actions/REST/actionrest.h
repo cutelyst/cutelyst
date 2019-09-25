@@ -34,11 +34,8 @@ public:
      * Constructs a new ActionREST object with the given parent.
      */
     explicit ActionREST(QObject *parent = nullptr);
-    virtual ~ActionREST() override;
 
 protected:
-    ActionRESTPrivate *d_ptr;
-
     bool doExecute(Context *c) override;
 };
 
@@ -48,7 +45,7 @@ class ActionRESTFactory : public QObject, public ComponentFactory
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    Component *createComponent(QObject *parent) { return new ActionREST(parent); }
+    virtual Component *createComponent(QObject *parent) override { return new ActionREST(parent); }
 };
 
 }

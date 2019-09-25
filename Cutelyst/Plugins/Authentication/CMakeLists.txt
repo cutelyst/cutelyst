@@ -23,7 +23,7 @@ set(plugin_authentication_HEADERS
     credentialhttp.h
 )
 
-add_library(Cutelyst2Qt5Authentication SHARED
+add_library(Cutelyst2Qt5Authentication
     ${plugin_authentication_SRC}
     ${plugin_authentication_HEADERS}
 )

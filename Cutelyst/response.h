@@ -168,6 +168,12 @@ public:
     void setJsonBody(const QString &json);
 
     /**
+     * Sets a JSON string as the response body,
+     * this method is provided for convenience as it sets the content-type to application/json.
+     */
+    void setJsonBody(const QByteArray &json);
+
+    /**
      * Sets a QJsonObject on a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
@@ -295,6 +301,11 @@ public:
     Headers &headers();
 
     /**
+     * Returns if Headers are finalized (sent to the client)
+     */
+    bool isFinalizedHeaders() const;
+
+    /**
      * Writting to user-agent is always sequential
      */
     virtual bool isSequential() const override;
@@ -304,11 +315,15 @@ public:
      */
     virtual qint64 size() const override;
 
-
     /*!
      * Sends the websocket handshake, if no parameters are defined it will use header data.
      * Returns true in case of success, false otherwise, which can be due missing support on
      * the engine or missing the appropriate headers.
+     *
+     * \note Most WebSockets client doesn't handle when a call to a WebSocket endpoint ends
+     * on an HTTP authentication failure or other HTTP status that is not the update. Due that
+     * it's best to always do the proper websocket handshake and then \sa webSocketClose() the
+     * connection, with some meaning reason.
      */
     bool webSocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
 
@@ -325,11 +340,19 @@ public:
     /*!
      * Sends a WebSocket ping with an optional payload limited to 125 bytes,
      * which will be truncated if larger.
+     *
+     * \note Some front-end servers will close the conetion if no activity is seem, NGINX closes in 60 seconds by default,
+     * in order to avoid that, sending a ping is the best to way to keep the connection alive and to know that your
+     * client is still there.
      */
     bool webSocketPing(const QByteArray &payload = QByteArray());
 
     /*!
      * Sends a WebSocket close frame, with both optional close code and a string reason.
+     *
+     * \note This method does not emit Request::webSocketClosed() signal. If
+     * you need to track when the connection was closed, the proper way is to rely on
+     * Context::destroyed() signal.
      */
     bool webSocketClose(quint16 code = Response::CloseCodeNormal, const QString &reason = QString());
 

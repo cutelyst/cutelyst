@@ -19,12 +19,13 @@
 #define RENDERVIEW_P_H
 
 #include "renderview.h"
+#include "action_p.h"
 
 #include <Cutelyst/view.h>
 
 namespace Cutelyst {
 
-class RenderViewPrivate
+class RenderViewPrivate : public ActionPrivate
 {
 public:
     View *view;

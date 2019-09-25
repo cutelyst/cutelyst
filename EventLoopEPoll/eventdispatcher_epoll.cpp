@@ -39,9 +39,10 @@ bool EventDispatcherEPoll::processEvents(QEventLoop::ProcessEventsFlags flags)
     return d->processEvents(flags);
 }
 
+extern uint qGlobalPostedEventsCount();
+
 bool EventDispatcherEPoll::hasPendingEvents()
 {
-    extern uint qGlobalPostedEventsCount();
     return qGlobalPostedEventsCount() > 0;
 }
 

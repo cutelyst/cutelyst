@@ -390,6 +390,12 @@ public:
     QString protocol() const;
 
     /**
+     * Returns true if the request's X-Requested-With header field is "XMLHttpRequest",
+     * indicating that the request was issued by a client library such as jQuery.
+     */
+    bool xhr() const;
+
+    /**
      * Returns the user agent (browser) version string.
      */
     inline QString userAgent() const;
@@ -506,7 +512,12 @@ Q_SIGNALS:
     void webSocketPong(const QByteArray &payload, Context *c);
 
     /*!
-     * Emitted when the websocket receives a close frame, including a close code and a reason
+     * Emitted when the websocket receives a close frame, including a close code and a reason,
+     * it's also emitted when the connection closes without the client sending the close frame.
+     *
+     * \note This signal is NOT emitted when explicit calling \sa Response::webSocketClose(). If
+     * you need to track when the connection was closed, the proper way is to rely on
+     * Context::destroyed() signal.
      */
     void webSocketClosed(quint16 closeCode, const QString &reason);
 

@@ -56,10 +56,10 @@ public:
     Dispatcher *dispatcher;
 
     // Pointer to Engine data
-    EngineRequest *engineRequest;
+    EngineRequest *engineRequest = nullptr;
 
-    Request *request;
-    Response *response;
+    Request *request = nullptr;
+    Response *response = nullptr;
     Action *action = nullptr;
     View *view = nullptr;
     Stats *stats = nullptr;
@@ -74,12 +74,12 @@ class DummyRequest : public QObject, public EngineRequest
 public:
     DummyRequest(QObject *parent) : QObject(parent) {}
 
-    virtual qint64 doWrite(const char *, qint64) { return -1; }
+    virtual qint64 doWrite(const char *, qint64) override { return -1; }
 
     /*!
      * Reimplement this to write the headers back to the client
      */
-    virtual bool writeHeaders(quint16 , const Headers &) { return false; }
+    virtual bool writeHeaders(quint16 , const Headers &) override { return false; }
 };
 
 }

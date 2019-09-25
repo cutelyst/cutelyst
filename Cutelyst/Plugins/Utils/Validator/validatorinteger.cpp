@@ -86,48 +86,48 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
         break;
     case QMetaType::Short:
         min = c->locale().toString(std::numeric_limits<short>::min());
-        min = c->locale().toString(std::numeric_limits<short>::max());
+        max = c->locale().toString(std::numeric_limits<short>::max());
         break;
     case QMetaType::Int:
         min = c->locale().toString(std::numeric_limits<int>::min());
-        min = c->locale().toString(std::numeric_limits<int>::max());
+        max = c->locale().toString(std::numeric_limits<int>::max());
         break;
     case QMetaType::Long:
         min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::min()));
-        min = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::max()));
+        max = c->locale().toString(static_cast<qlonglong>(std::numeric_limits<long>::max()));
         break;
     case QMetaType::LongLong:
         min = c->locale().toString(std::numeric_limits<qlonglong>::min());
-        min = c->locale().toString(std::numeric_limits<qlonglong>::max());
+        max = c->locale().toString(std::numeric_limits<qlonglong>::max());
         break;
     case QMetaType::UChar:
         min = c->locale().toString(std::numeric_limits<uchar>::min());
-        min = c->locale().toString(std::numeric_limits<uchar>::max());
+        max = c->locale().toString(std::numeric_limits<uchar>::max());
         break;
     case QMetaType::UShort:
         min = c->locale().toString(std::numeric_limits<ushort>::min());
-        min = c->locale().toString(std::numeric_limits<ushort>::max());
+        max = c->locale().toString(std::numeric_limits<ushort>::max());
         break;
     case QMetaType::UInt:
         min = c->locale().toString(std::numeric_limits<uint>::min());
-        min = c->locale().toString(std::numeric_limits<uint>::max());
+        max = c->locale().toString(std::numeric_limits<uint>::max());
         break;
     case QMetaType::ULong:
         min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::min()));
-        min = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::max()));
+        max = c->locale().toString(static_cast<qulonglong>(std::numeric_limits<ulong>::max()));
         break;
     case QMetaType::ULongLong:
     default:
         min = c->locale().toString(std::numeric_limits<qulonglong>::min());
-        min = c->locale().toString(std::numeric_limits<qulonglong>::max());
+        max = c->locale().toString(std::numeric_limits<qulonglong>::max());
         break;
     }
     if (_label.isEmpty()) {
         //: %1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit
-        error = c->translate("ValidatorInteger", "Not a valid integer value between %1 and %2.").arg(min, max);
+        error = c->translate("Cutelyst::ValidatorInteger", "Not a valid integer value between %1 and %2.").arg(min, max);
     } else {
-        //: %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
-        error = c->translate("ValidatorInteger", "The value in the “%1“ field is not a valid integer between %2 and %3.").arg(_label, min, max);
+        //: %1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
+        error = c->translate("Cutelyst::ValidatorInteger", "The value in the “%1“ field is not a valid integer between %2 and %3.").arg(_label, min, max);
     }
     return error;
 }

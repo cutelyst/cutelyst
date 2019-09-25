@@ -7,7 +7,7 @@ set(plugin_view_json_HEADERS
     viewjson.h
 )
 
-add_library(Cutelyst2Qt5ViewJson SHARED
+add_library(Cutelyst2Qt5ViewJson
     ${plugin_view_json_SRC}
     ${plugin_view_json_HEADERS}
 )

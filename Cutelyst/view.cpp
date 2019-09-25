@@ -26,9 +26,16 @@
 #include <QtCore/QVariant>
 #include <QtCore/QLoggingCategory>
 
+namespace Cutelyst {
+class ViewPrivate {
+public:
+    qint32 minimalSizeToDeflate = -1;
+};
+}
+
 using namespace Cutelyst;
 
-View::View(QObject *parent, const QString &name) : Component(parent)
+View::View(QObject *parent, const QString &name) : Component(parent), d_ptr(new ViewPrivate)
 {
     setName(name);
 }
@@ -45,6 +52,7 @@ Component::Modifiers View::modifiers() const
 
 bool View::doExecute(Context *c)
 {
+    Q_D(const View);
     Response *response = c->response();
     if (response->hasBody()) {
         // Ignore if we already have a body
@@ -58,9 +66,22 @@ bool View::doExecute(Context *c)
             qCCritical(CUTELYST_VIEW) << error;
         }
     }
-    response->setBody(output);
-
+    const QString acceptEncoding = c->req()->header(QStringLiteral("ACCEPT_ENCODING"));
+    if (d->minimalSizeToDeflate >= 0 && output.count() > d->minimalSizeToDeflate &&
+        acceptEncoding.contains(QLatin1String("deflate"), Qt::CaseInsensitive)) {
+        QByteArray compressedData = qCompress(output); // Use  zlib's default compression
+        compressedData.remove(0, 6); // Remove qCompress and zlib headers
+        compressedData.chop(4); // Remove zlib tailer
+        response->headers().setContentEncoding(QStringLiteral("deflate"));
+        response->setBody(compressedData);
+    } else {
+        response->setBody(output);
+    }
     return !c->error();
 }
 
+void View::setMinimalSizeToDeflate(qint32 minSize) {
+    Q_D(View);
+    d->minimalSizeToDeflate = minSize;
+}
 #include "moc_view.cpp"

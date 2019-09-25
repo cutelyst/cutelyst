@@ -67,7 +67,7 @@ if (LINUX)
         )
 endif ()
 
-add_library(Cutelyst2Qt5Wsgi SHARED ${cutelyst_wsgi_SRC})
+add_library(Cutelyst2Qt5Wsgi ${cutelyst_wsgi_SRC})
 
 add_library(Cutelyst2Qt5::WSGI ALIAS Cutelyst2Qt5Wsgi)
 

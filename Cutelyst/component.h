@@ -58,7 +58,7 @@ public:
      * and modifiers to customize execution.
      */
     explicit Component(QObject *parent = nullptr);
-    virtual ~Component();
+    virtual ~Component() override;
 
     /**
      * Reimplement to return custom Modifiers, default is None

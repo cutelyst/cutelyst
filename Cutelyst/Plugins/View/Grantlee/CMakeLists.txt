@@ -12,7 +12,7 @@ set(plugin_view_grantlee_HEADERS
     grantleeview.h
 )
 
-add_library(Cutelyst2Qt5ViewGrantlee SHARED ${grantlee_plugin_SRC})
+add_library(Cutelyst2Qt5ViewGrantlee ${grantlee_plugin_SRC})
 
 add_library(CutelystQt5::View::Grantlee ALIAS Cutelyst2Qt5ViewGrantlee)
 

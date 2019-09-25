@@ -46,7 +46,7 @@ class EventFdInfo : public EpollAbastractEvent
 public:
     EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv) : EpollAbastractEvent(_fd), epPriv(prv) {}
 
-    virtual void process(quint32 events);
+    virtual void process(quint32 events) override;
 
     EventDispatcherEPollPrivate *epPriv;
 };
@@ -56,12 +56,12 @@ class SocketNotifierInfo : public EpollAbastractEvent
 public:
     SocketNotifierInfo(int _fd) : EpollAbastractEvent(_fd) { }
 
-    virtual void process(quint32 events);
+    virtual void process(quint32 events) override;
 
     QSocketNotifier *r = nullptr;
     QSocketNotifier *w = nullptr;
     QSocketNotifier *x = nullptr;
-    quint32 events;
+    quint32 events = 0;
 };
 
 class ZeroTimer : public EpollAbastractEvent
@@ -69,7 +69,7 @@ class ZeroTimer : public EpollAbastractEvent
 public:
     ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
 
-    virtual void process(quint32 events);
+    virtual void process(quint32 events) override;
 
     QObject *object;
     int timerId;
@@ -82,7 +82,7 @@ public:
     TimerInfo(int fd, int _timerId, int _interval, QObject *obj)
         : EpollAbastractEvent(fd), object(obj), timerId(_timerId), interval(_interval) {}
 
-    virtual void process(quint32 events);
+    virtual void process(quint32 events) override;
 
     QObject *object;
     struct timeval when;

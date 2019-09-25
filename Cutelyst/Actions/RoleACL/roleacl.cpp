@@ -123,14 +123,8 @@ using namespace Cutelyst;
  *
  * Any user with either the 'admin' or 'user' role may execute this action.
  */
-RoleACL::RoleACL(QObject *parent) : Component(parent)
-    , d_ptr(new RoleACLPrivate)
+RoleACL::RoleACL(QObject *parent) : Component(new RoleACLPrivate, parent)
 {
-}
-
-RoleACL::~RoleACL()
-{
-    delete d_ptr;
 }
 
 Component::Modifiers RoleACL::modifiers() const

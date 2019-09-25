@@ -57,8 +57,6 @@ public:
 
 protected:
     virtual bool doExecute(Context *c) override;
-
-    ActionChainPrivate *d_ptr;
 };
 
 }

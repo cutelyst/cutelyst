@@ -58,7 +58,7 @@ ValidatorReturnType ValidatorNotIn::validate(Cutelyst::Context *c, const ParamsM
 QString ValidatorNotIn::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    Q_UNUSED(errorData);
+    Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorNotIn", "Value is not allowed.");
@@ -71,7 +71,7 @@ QString ValidatorNotIn::genericValidationError(Context *c, const QVariant &error
 QString ValidatorNotIn::genericValidationDataError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    Q_UNUSED(errorData);
+    Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorNotIn", "The list of comparison values is empty.");

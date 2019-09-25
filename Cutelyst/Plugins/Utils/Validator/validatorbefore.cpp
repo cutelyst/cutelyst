@@ -186,8 +186,10 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
     const QString _label = label(c);
     if (d->inputFormat) {
         if (_label.isEmpty()) {
+            //: %1 will be replaced by the datetime format
             error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed according to the follwing date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
         } else {
+            //: %1 will be replaced by the field label, %2 will be replaced by the datetime format
             error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         }
     } else {
@@ -210,13 +212,16 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
         } else {
             switch (errorData.type()) {
             case QMetaType::QDateTime:
-                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as date and time.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date and time.").arg(_label);
                 break;
             case QMetaType::QTime:
-                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as time.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as time.").arg(_label);
                 break;
             case QMetaType::QDate:
-                error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed as date.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date.").arg(_label);
                 break;
             default:
                 error = validationDataError(c);

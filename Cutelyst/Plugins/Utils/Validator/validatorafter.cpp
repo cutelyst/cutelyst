@@ -210,13 +210,16 @@ QString ValidatorAfter::genericParsingError(Context *c, const QVariant &errorDat
         } else {
             switch (errorData.type()) {
             case QMetaType::QDateTime:
-                error = c->translate("Cutelyst::ValidatorAfter", "The value of the “%1” field could not be parsed as date and time.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorAfter", "The value in the “%1” field could not be parsed as date and time.").arg(_label);
                 break;
             case QMetaType::QTime:
-                error = c->translate("Cutelyst::ValidatorAfter", "The value of the “%1” field could not be parsed as time.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorAfter", "The value in the “%1” field could not be parsed as time.").arg(_label);
                 break;
             case QMetaType::QDate:
-                error = c->translate("Cutelyst::ValidatorAfter", "The value of the “%1” field could not be parsed as date.").arg(_label);
+                //: %1 will be replaced by the field label
+                error = c->translate("Cutelyst::ValidatorAfter", "The value in the “%1” field could not be parsed as date.").arg(_label);
                 break;
             default:
                 error = validationDataError(c);

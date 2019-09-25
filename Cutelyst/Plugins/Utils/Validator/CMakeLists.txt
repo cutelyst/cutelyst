@@ -149,7 +149,7 @@ if (PLUGIN_VALIDATOR_PWQUALITY)
     list(APPEND plugin_validator_HEADERS validatorpwquality.h)
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
-add_library(Cutelyst2Qt5UtilsValidator SHARED
+add_library(Cutelyst2Qt5UtilsValidator
     ${plugin_validator_SRC}
     ${plugin_validator_HEADERS}
 )

@@ -10,7 +10,7 @@ set(eventloop_epoll_HEADERS
     eventdispatcher_epoll.h
 )
 
-add_library(Cutelyst2Qt5EventLoopEpoll SHARED
+add_library(Cutelyst2Qt5EventLoopEpoll
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )

@@ -34,7 +34,6 @@ public:
      * Constructs a RenderView object with the given \arg parent.
      */
     explicit RenderView(QObject *parent = nullptr);
-    virtual ~RenderView() override;
 
     /**
      * Reimplemented from Plugin::init()
@@ -43,8 +42,6 @@ public:
 
 protected:
     virtual bool doExecute(Cutelyst::Context *c) override;
-
-    RenderViewPrivate *d_ptr;
 };
 
 class RenderViewFactory : public QObject, public ComponentFactory
@@ -53,7 +50,7 @@ class RenderViewFactory : public QObject, public ComponentFactory
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    Component *createComponent(QObject *parent) { return new RenderView(parent); }
+    virtual Component *createComponent(QObject *parent) override { return new RenderView(parent); }
 };
 
 }

@@ -73,12 +73,13 @@ ValidatorReturnType ValidatorRequiredWithoutAll::validate(Context *c, const Para
 QString ValidatorRequiredWithoutAll::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    Q_UNUSED(errorData);
+    Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorRequiredWithoutAll", "This is required.");
     } else {
-        error = c->translate("Cutelyst::ValidatorRequiredWithoutAll", "You must fill in the “%1” field.").arg(_label);
+        //: %1 will be replaced by the field label
+        error = c->translate("Cutelyst::ValidatorRequiredWithoutAll", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

@@ -8,7 +8,7 @@ set(plugin_memcachedsessionstore_HEADERS
     MemcachedSessionStore
 )
 
-add_library(Cutelyst2Qt5MemcachedSessionStore SHARED
+add_library(Cutelyst2Qt5MemcachedSessionStore
     ${plugin_memcachedsessionstore_SRC}
     ${plugin_memcachedsessionstore_HEADERS}
 )

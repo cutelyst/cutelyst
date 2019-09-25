@@ -38,6 +38,7 @@ class WSGIPrivate : public QObject
     Q_DECLARE_PUBLIC(WSGI)
 public:
     inline WSGIPrivate(WSGI *parent) : QObject(parent), q_ptr(parent) { }
+    ~WSGIPrivate();
 
     void listenTcpSockets();
     bool listenTcp(const QString &line, Protocol *protocol, bool secure);
@@ -63,7 +64,7 @@ public:
     std::vector<QObject *> servers;
     std::vector<CWsgiEngine *> engines;
     Cutelyst::Application *app = nullptr;
-    CWsgiEngine *engine;
+    CWsgiEngine *engine = nullptr;
 
     QVariantMap opt;
     QVariantMap config;
@@ -77,6 +78,7 @@ public:
     QStringList touchReload;
     QStringList ini;
     QStringList json;
+    QStringList configLoaded;
     QString application;
     QString chdir;
     QString chdir2;

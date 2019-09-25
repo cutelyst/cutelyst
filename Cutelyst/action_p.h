@@ -19,20 +19,24 @@
 #define CUTELYST_ACTION_P_H
 
 #include "action.h"
+#include "component_p.h"
 
 namespace Cutelyst {
 
-class ActionPrivate
+class ActionPrivate : public ComponentPrivate
 {
 public:
+    virtual ~ActionPrivate() override = default;
+
     QString ns;
     QMetaMethod method;
     QMap<QString, QString> attributes;
     Controller *controller = nullptr;
-    QStringList emptyArgs = QStringList()
-            << QString() << QString() << QString()
-            << QString() << QString() << QString()
-            << QString() << QString() << QString();
+    QStringList emptyArgs = {
+        QString(), QString(), QString(),
+        QString(), QString(), QString(),
+        QString(), QString(), QString(),
+    };
     qint8 numberOfArgs = -1;
     qint8 numberOfCaptures = -1;
     bool evaluateBool = false;

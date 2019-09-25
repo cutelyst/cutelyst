@@ -10,7 +10,7 @@ set(plugin_session_HEADERS
     Session
 )
 
-add_library(Cutelyst2Qt5Session SHARED
+add_library(Cutelyst2Qt5Session
     ${plugin_session_SRC}
     ${plugin_session_HEADERS}
 )

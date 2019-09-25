@@ -11,7 +11,7 @@ set(plugin_memcached_HEADERS
     Memcached
 )
 
-add_library(Cutelyst2Qt5Memcached SHARED
+add_library(Cutelyst2Qt5Memcached
     ${plugin_memcached_SRC}
     ${plugin_memcached_HEADERS}
 )

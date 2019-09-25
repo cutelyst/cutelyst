@@ -17,6 +17,11 @@
  */
 #include "useragent.h"
 
+#include <Cutelyst/Engine>
+#include <Cutelyst/Context>
+#include <Cutelyst/Request>
+#include <Cutelyst/Response>
+
 #include <QHostAddress>
 #include <QLoggingCategory>
 #include <QNetworkAccessManager>
@@ -170,4 +175,55 @@ QNetworkReply *UA::sendCustomRequestJsonArray(const QNetworkRequest &request, co
     QNetworkRequest jsonRequest(request);
     jsonRequest.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/json"));
     return UA::sendCustomRequest(jsonRequest, verb, QJsonDocument(array).toJson(QJsonDocument::Compact));
+}
+
+QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
+{
+    QUrl dest(request->uri());
+    dest.setHost(destination.host());
+    dest.setPort(destination.port());
+    dest.setScheme(destination.scheme());
+
+    QNetworkRequest proxyReq(dest);
+
+    const Headers reqHeaders = request->headers();
+    const auto headersData = reqHeaders.data();
+    auto it = headersData.constBegin();
+    while (it != headersData.constEnd()) {
+        proxyReq.setRawHeader(Cutelyst::Engine::camelCaseHeader(it.key()).toLatin1(), it.value().toLatin1());
+        ++it;
+    }
+
+    return m_instance.sendCustomRequest(proxyReq, request->method().toLatin1(), request->body());
+}
+
+QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)
+{
+    QNetworkReply *reply = forwardRequest(c->request(), destination);
+    QObject::connect(reply, &QNetworkReply::finished, c, [=] {
+        Headers &responseHeaders = c->response()->headers();
+        const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
+        for (const QNetworkReply::RawHeaderPair &pair : headers) {
+            responseHeaders.setHeader(QString::fromLatin1(pair.first), QString::fromLatin1(pair.second));
+        }
+        c->response()->setStatus(quint16(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt()));
+        c->response()->setBody(reply);
+    });
+    return reply;
+}
+
+void UA::forwardAsync(Context *c, const QUrl &destination)
+{
+    QNetworkReply *reply = forwardRequest(c->request(), destination);
+    QObject::connect(reply, &QNetworkReply::finished, c, [=] {
+        Headers &responseHeaders = c->response()->headers();
+        const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
+        for (const QNetworkReply::RawHeaderPair &pair : headers) {
+            responseHeaders.setHeader(QString::fromLatin1(pair.first), QString::fromLatin1(pair.second));
+        }
+        c->response()->setStatus(quint16(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt()));
+        c->response()->setBody(reply);
+        c->attachAsync();
+    });
+    c->detachAsync();
 }

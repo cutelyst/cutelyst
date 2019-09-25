@@ -35,7 +35,7 @@ class CUTELYST_PLUGIN_UTILS_PAGINATION_EXPORT Pagination : public QVariantMap
     Q_PROPERTY(bool enableLast READ enableLast CONSTANT)
     Q_PROPERTY(QVector<int> pages READ pages CONSTANT)
 public:
-    Pagination();
+    Pagination() = default;
     /**
      * Contructs a pagination object
      * @param numberOfItems should be set to the total of items to be displayed

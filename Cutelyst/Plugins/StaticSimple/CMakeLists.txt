@@ -9,7 +9,7 @@ set(plugin_staticsimple_HEADERS
     StaticSimple
 )
 
-add_library(Cutelyst2Qt5StaticSimple SHARED
+add_library(Cutelyst2Qt5StaticSimple
     ${plugin_staticsimple_SRC}
     ${plugin_staticsimple_HEADERS}
 )

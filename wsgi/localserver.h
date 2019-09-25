@@ -55,7 +55,7 @@ private:
     void socketNotifierActivated();
 #endif
 
-    QSocketNotifier *m_socketNotifier;
+    QSocketNotifier *m_socketNotifier = nullptr;
     CWsgiEngine *m_engine = nullptr;
     WSGI *m_wsgi;
 

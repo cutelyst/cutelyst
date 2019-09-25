@@ -63,9 +63,9 @@ public:
 
     QString serverAddress;
     QHostAddress remoteAddress;
-    quint16 remotePort;
+    quint16 remotePort = 0;
     Cutelyst::Engine *engine;
-    Protocol *proto;
+    Protocol *proto = nullptr;
     ProtocolData *protoData = nullptr;
     qint8 processing = 0;
     bool isSecure;

@@ -99,9 +99,9 @@ QByteArray DispatchTypeChained::list() const
         for (Action *p : parents) {
             QString name = QLatin1Char('/') + p->reverse();
 
-            QString extra = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
-            if (!extra.isEmpty()) {
-                name.prepend(extra + QLatin1Char(' '));
+            QString extraHttpMethod = DispatchTypeChainedPrivate::listExtraHttpMethods(p);
+            if (!extraHttpMethod.isEmpty()) {
+                name.prepend(extraHttpMethod + QLatin1Char(' '));
             }
 
             const auto attributes = p->attributes();
@@ -280,8 +280,8 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     QStringList parts;
     Action *curr = action;
     while (curr) {
-        const QMap<QString, QString> attributes = curr->attributes();
-        if (attributes.contains(QStringLiteral("CaptureArgs"))) {
+        const QMap<QString, QString> curr_attributes = curr->attributes();
+        if (curr_attributes.contains(QStringLiteral("CaptureArgs"))) {
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
                 qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures" << curr->numberOfCaptures() << captures.size();
@@ -292,12 +292,12 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
             localCaptures = localCaptures.mid(0, localCaptures.size() - curr->numberOfCaptures());
         }
 
-        const QString pp = attributes.value(QStringLiteral("PathPart"));
+        const QString pp = curr_attributes.value(QStringLiteral("PathPart"));
         if (!pp.isEmpty()) {
             parts.prepend(pp);
         }
 
-        parent = attributes.value(QStringLiteral("Chained"));
+        parent = curr_attributes.value(QStringLiteral("Chained"));
         curr = d->actions.value(parent);
     }
 

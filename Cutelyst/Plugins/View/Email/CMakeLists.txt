@@ -14,7 +14,7 @@ set(plugin_view_email_HEADERS
     viewemailtemplate.h
 )
 
-add_library(Cutelyst2Qt5ViewEmail SHARED
+add_library(Cutelyst2Qt5ViewEmail
     ${plugin_view_email_SRC}
     ${plugin_view_email_HEADERS}
 )

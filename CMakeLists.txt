@@ -8,7 +8,7 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-project(cutelyst VERSION 2.8.0 LANGUAGES CXX)
+project(cutelyst VERSION 2.9.0 LANGUAGES CXX)
 
 find_package(Qt5 5.6.0 REQUIRED COMPONENTS
     Core
@@ -50,9 +50,10 @@ endif ()
 #
 # Options
 #
-option( ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF )
-option( BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL} )
-option( BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL} )
+option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
+option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
+option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
+option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 
 if (BUILD_TESTS)
   enable_testing()
@@ -239,3 +240,5 @@ if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
     ${DOCS_ARGS}
   )
 endif()
+
+include(CPackConfig)

@@ -37,7 +37,6 @@ public:
      * Constructs a new role ACL object with the given parent.
      */
     explicit RoleACL(QObject *parent = nullptr);
-    virtual ~RoleACL() override;
 
     /**
      * Reimplemented from Component::modifiers().
@@ -64,8 +63,6 @@ protected:
      * Reimplemented from Component::dispatcherReady().
      */
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
-
-    RoleACLPrivate *d_ptr;
 };
 
 class RoleACLFactory : public QObject, public ComponentFactory
@@ -74,7 +71,7 @@ class RoleACLFactory : public QObject, public ComponentFactory
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
     Q_INTERFACES(Cutelyst::ComponentFactory)
 public:
-    Component *createComponent(QObject *parent) { return new RoleACL(parent); }
+    virtual Component *createComponent(QObject *parent) override { return new RoleACL(parent); }
 };
 
 

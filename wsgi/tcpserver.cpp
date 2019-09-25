@@ -26,10 +26,10 @@
 using namespace CWSGI;
 
 TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsgi, QObject *parent) : QTcpServer(parent)
+  , m_serverAddress(serverAddress)
   , m_wsgi(wsgi)
   , m_protocol(protocol)
 {
-    m_serverAddress = serverAddress;
     m_engine = qobject_cast<CWsgiEngine*>(parent);
 
     if (m_wsgi->tcpNodelay()) {
