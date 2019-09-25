@@ -42,7 +42,7 @@ public:
      * Constructs a ActionChain object with the folloing \p chain and the given \p parent.
      */
     explicit ActionChain(const ActionList &chain, QObject *parent = nullptr);
-    virtual ~ActionChain() override;
+    virtual ~ActionChain() override = default;
 
     /**
      * The action chain

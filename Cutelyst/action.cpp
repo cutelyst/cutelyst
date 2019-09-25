@@ -30,10 +30,6 @@ Action::Action(ActionPrivate *ptr, QObject *parent) : Component(ptr, parent)
 {
 }
 
-Action::~Action()
-{
-}
-
 Component::Modifiers Action::modifiers() const
 {
     return Component::OnlyExecute;

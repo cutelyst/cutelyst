@@ -41,6 +41,7 @@ public:
      * for the view should be set to be found by Context->view()
      */
     explicit View(QObject *parent, const QString &name);
+    virtual ~View() override = default;
 
     /**
      * The default implementation returns Component::OnlyExecute
@@ -73,7 +74,7 @@ protected:
     /*!
      * A derived class using pimpl should call this constructor, to reduce the number of memory allocations
      */
-    explicit View(ComponentPrivate *d, QObject *parent, const QString &name);
+    explicit View(ViewPrivate *d, QObject *parent, const QString &name);
 };
 
 }

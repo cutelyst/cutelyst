@@ -46,10 +46,6 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     }
 }
 
-ActionChain::~ActionChain()
-{
-}
-
 ActionList ActionChain::chain() const
 {
     Q_D(const ActionChain);

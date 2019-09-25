@@ -73,6 +73,7 @@ set(cutelystqt_HEADERS
     upload.h
     Upload
     view.h
+    view_p.h
     View
     plugin.h
     Plugin
