@@ -29,15 +29,9 @@ Q_LOGGING_CATEGORY(CUTELYST_CLEARSILVER, "cutelyst.clearsilver", QtWarningMsg)
 
 using namespace Cutelyst;
 
-ClearSilver::ClearSilver(QObject *parent, const QString &name) : View(parent, name)
-  , d_ptr(new ClearSilverPrivate)
+ClearSilver::ClearSilver(QObject *parent, const QString &name) : View(new ClearSilverPrivate, parent, name)
 {
 
-}
-
-ClearSilver::~ClearSilver()
-{
-    delete d_ptr;
 }
 
 QStringList ClearSilver::includePaths() const

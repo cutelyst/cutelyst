@@ -20,12 +20,13 @@
 #define CLEARSILVER_P_H
 
 #include "clearsilver.h"
+#include "component_p.h"
 
 #include <ClearSilver/ClearSilver.h>
 
 namespace Cutelyst {
 
-class ClearSilverPrivate
+class ClearSilverPrivate : public ComponentPrivate
 {
 public:
     HDF *hdfForStash(Context *c, const QVariantHash &stash) const;

@@ -32,15 +32,9 @@ Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email", QtWarningMsg)
 using namespace Cutelyst;
 using namespace SimpleMail;
 
-ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(parent, name)
-  , d_ptr(new ViewEmailPrivate)
+ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(new ViewEmailPrivate, parent, name)
 {
     initSender();
-}
-
-ViewEmail::~ViewEmail()
-{
-    delete d_ptr;
 }
 
 QString ViewEmail::stashKey() const

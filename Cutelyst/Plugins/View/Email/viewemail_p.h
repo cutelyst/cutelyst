@@ -19,6 +19,7 @@
 #define VIEWJSON_P_H
 
 #include "viewemail.h"
+#include "component_p.h"
 
 #include <QtCore/QStringList>
 
@@ -27,7 +28,7 @@
 using namespace SimpleMail;
 namespace Cutelyst {
 
-class ViewEmailPrivate
+class ViewEmailPrivate : public ComponentPrivate
 {
 public:
     void setupAttributes(MimePart *part, const QVariantHash &attrs) const;

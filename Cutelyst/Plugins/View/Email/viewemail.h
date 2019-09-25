@@ -31,6 +31,7 @@ class ViewEmailPrivate;
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(ViewEmail)
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey NOTIFY changed)
     Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType NOTIFY changed)
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset NOTIFY changed)
@@ -58,7 +59,6 @@ public:
      * Constructs a new ViewEmail object with the given \p parent and \p name.
      */
     explicit ViewEmail(QObject *parent, const QString &name = QString());
-    virtual ~ViewEmail();
 
     /**
      * Returns the stash key that will contain the email data
@@ -176,9 +176,6 @@ protected:
      * Constructs a new ViewEmail object using the private class, \p parent and \p name.
      */
     ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
-
-    Q_DECLARE_PRIVATE(ViewEmail)
-    ViewEmailPrivate *d_ptr;
 
 Q_SIGNALS:
     void changed();

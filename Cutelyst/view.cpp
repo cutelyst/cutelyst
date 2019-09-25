@@ -40,9 +40,9 @@ View::View(QObject *parent, const QString &name) : Component(parent), d_ptr(new 
     setName(name);
 }
 
-View::~View()
+View::View(ComponentPrivate *d, QObject *parent, const QString &name) : Component(d, parent)
 {
-    delete d_ptr;
+    setName(name);
 }
 
 Component::Modifiers View::modifiers() const

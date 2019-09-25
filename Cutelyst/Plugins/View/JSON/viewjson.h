@@ -33,7 +33,6 @@ public:
      * Main constructor
      */
     explicit ViewJson(QObject *parent, const QString &name = QString());
-    virtual ~ViewJson();
 
     /**  This value defines the format of the JSON byte array produced when rendering the view */
     enum JsonFormat {
@@ -98,9 +97,6 @@ public:
     bool xJsonHeader() const;
 
     QByteArray render(Context *c) const final;
-
-protected:
-    ViewJsonPrivate *d_ptr;
 };
 
 }
