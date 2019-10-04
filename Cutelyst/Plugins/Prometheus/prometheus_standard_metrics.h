@@ -40,10 +40,10 @@ public Q_SLOTS:
     void update_metrics();
 
 protected:
-    QTimer m_updateTimer;
+    QTimer m_updateTimer {this};
     QHash<QString, prometheus::Gauge*> m_standard_metrics;
     unsigned long m_btime = 0;
-    QFile m_stat;
+    QFile m_stat {this};
     QDir m_fd_dir;
 };
 
