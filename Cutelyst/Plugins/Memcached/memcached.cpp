@@ -649,6 +649,8 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, Memcach
         qCWarning(C_MEMCACHED, "Failed to remove data for key \"%s\" on group \"%s\": %s", _key.constData(), _groupKey.constData(), memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
+    MemcachedPrivate::setReturnType(returnType, rt);
+
     return ok;
 }
 
