@@ -263,6 +263,25 @@
     </message>
 </context>
 <context>
+    <name>Cutelyst::ValidatorCharNotAllowed</name>
+    <message>
+        <source>Must not contain the following characters: “%1”. But contains the following illegal character: “%2”.</source>
+        <translation>Darf die folgenden Zeichen nicht enthalten: „%1“. Enthält aber das folgende nicht erlaubte Zeichen: „%2“.</translation>
+    </message>
+    <message>
+        <source>The text in the “%1“ field must not contain the following characters: “%2“. But contains the following illegal character: “%3”.</source>
+        <translation>Das Feld „%1“ darf die folgenden Zeichen nicht enthalten: „%2“. Es enthält aber das folgende nicht erlaubte Zeichen: „%3“.</translation>
+    </message>
+    <message>
+        <source>The list of illegal characters for this field is empty.</source>
+        <translation>Die Liste nicht erlaubter Zeichen für dieses Feld ist leer.</translation>
+    </message>
+    <message>
+        <source>The list of illegal characters for the “%1“ field is empty.</source>
+        <translation>Die Liste nicht erlaubter Zeichen für das Feld „%1“ ist leer.</translation>
+    </message>
+</context>
+<context>
     <name>Cutelyst::ValidatorConfirmed</name>
     <message>
         <source>Confirmation failed.</source>

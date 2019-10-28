@@ -19,6 +19,8 @@ set(plugin_validator_SRC
     validatorbetween_p.h
     validatorboolean.cpp
     validatorboolean_p.h
+    validatorcharnotallowed.cpp
+    validatorcharnotallowed_p.h
     validatorconfirmed.cpp
     validatorconfirmed_p.h
     validatordate.cpp
@@ -103,6 +105,7 @@ set(plugin_validator_HEADERS
     validatorbefore.h
     validatorbetween.h
     validatorboolean.h
+    validatorcharnotallowed.h
     validatorconfirmed.h
     validatordate.h
     validatordatetime.h

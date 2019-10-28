@@ -6,6 +6,7 @@
 #include "validatorbefore.h"
 #include "validatorbetween.h"
 #include "validatorboolean.h"
+#include "validatorcharnotallowed.h"
 #include "validatorconfirmed.h"
 #include "validatordate.h"
 #include "validatordatetime.h"
