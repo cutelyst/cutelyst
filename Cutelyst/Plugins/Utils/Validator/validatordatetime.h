@@ -68,7 +68,7 @@ public:
     /*!
      * \brief Deconstructs the datetime validator.
      */
-    ~ValidatorDateTime();
+    ~ValidatorDateTime() override;
 
 protected:
     /*!

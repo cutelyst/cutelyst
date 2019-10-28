@@ -105,7 +105,7 @@ public:
     /*!
      * \brief Deconstructs the before validator.
      */
-    ~ValidatorBefore();
+    ~ValidatorBefore() override;
 
 protected:
     /*!

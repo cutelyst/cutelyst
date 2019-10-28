@@ -68,7 +68,7 @@ public:
     /*!
      * \brief Deconstructs the same validator.
      */
-    ~ValidatorSame();
+    ~ValidatorSame() override;
     
 protected:
     /*!

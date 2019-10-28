@@ -70,7 +70,7 @@ public:
     /*!
      * \brief Deconstructs the between validator.
      */
-    ~ValidatorBetween();
+    ~ValidatorBetween() override;
 
 protected:
     /*!

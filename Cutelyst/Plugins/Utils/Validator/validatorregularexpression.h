@@ -58,7 +58,7 @@ public:
     /*!
      * \brief Deconstructs the regex validator.
      */
-    ~ValidatorRegularExpression();
+    ~ValidatorRegularExpression() override;
     
 protected:
     /*!

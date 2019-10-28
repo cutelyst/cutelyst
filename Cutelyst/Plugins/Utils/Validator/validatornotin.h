@@ -59,7 +59,7 @@ public:
     /*!
      * \brief Deconstructs the validator.
      */
-    ~ValidatorNotIn();
+    ~ValidatorNotIn() override;
     
 protected:
     /*!

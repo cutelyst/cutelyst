@@ -68,7 +68,7 @@ public:
     /*!
      * \brief Deconstructs the size validator.
      */
-    ~ValidatorSize();
+    ~ValidatorSize() override;
     
 protected:
     /*!

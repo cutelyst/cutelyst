@@ -70,7 +70,7 @@ public:
     /*!
      * \brief Deconstructs the ip validator.
      */
-    ~ValidatorIp();
+    ~ValidatorIp() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

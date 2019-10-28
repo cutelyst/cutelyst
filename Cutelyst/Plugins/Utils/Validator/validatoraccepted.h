@@ -52,7 +52,7 @@ public:
     /*!
      * \brief Deconstructs the accepted validator.
      */
-    ~ValidatorAccepted();
+    ~ValidatorAccepted() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules
