@@ -58,7 +58,7 @@ public:
     /*!
      * \brief Deconstructs the required if validator.
      */
-    ~ValidatorRequiredIfStash();
+    ~ValidatorRequiredIfStash() override;
 
 protected:
     /*!

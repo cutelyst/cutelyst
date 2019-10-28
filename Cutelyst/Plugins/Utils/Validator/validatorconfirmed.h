@@ -56,7 +56,7 @@ public:
     /*!
      * \brief Deconstructs the confirmed validator.
      */
-    ~ValidatorConfirmed();
+    ~ValidatorConfirmed() override;
     
 protected:
     /*!

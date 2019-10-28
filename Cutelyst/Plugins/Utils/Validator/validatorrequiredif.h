@@ -57,7 +57,7 @@ public:
     /*!
      * \brief Deconstructs the required if validator.
      */
-    ~ValidatorRequiredIf();
+    ~ValidatorRequiredIf() override;
        
 protected:
     /*!

@@ -57,7 +57,7 @@ public:
     /*!
      * \brief Deconstructs the different validator.
      */
-    ~ValidatorDifferent();
+    ~ValidatorDifferent() override;
     
 protected:
     /*!

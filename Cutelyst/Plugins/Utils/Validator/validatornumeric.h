@@ -60,7 +60,7 @@ public:
     /*!
      * \brief Deconstructs the numeric validator.
      */
-    ~ValidatorNumeric();
+    ~ValidatorNumeric() override;
     
 protected:
     /*!

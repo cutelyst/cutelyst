@@ -53,7 +53,7 @@ public:
     /*!
      * \brief Deconstructs the filled validator.
      */
-    ~ValidatorFilled();
+    ~ValidatorFilled() override;
      
 protected:
     /*!

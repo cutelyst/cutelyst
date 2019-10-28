@@ -95,7 +95,7 @@ public:
     /*!
      * \brief Deconstructs the file size validator.
      */
-    ~ValidatorFileSize();
+    ~ValidatorFileSize() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

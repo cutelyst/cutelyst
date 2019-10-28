@@ -60,7 +60,7 @@ public:
     /*!
      * \brief Deconstructs the digits between validator.
      */
-    ~ValidatorDigitsBetween();
+    ~ValidatorDigitsBetween() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

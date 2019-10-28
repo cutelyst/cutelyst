@@ -68,7 +68,7 @@ public:
     /*!
      * \brief Deconstructs the validator.
      */
-    ~ValidatorUrl();
+    ~ValidatorUrl() override;
     
 protected:
     /*!

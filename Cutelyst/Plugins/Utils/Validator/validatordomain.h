@@ -78,7 +78,7 @@ public:
     /*!
      * Deconstructs %ValidatorDomain
      */
-    ~ValidatorDomain();
+    ~ValidatorDomain() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

@@ -66,7 +66,7 @@ public:
     /*!
      * \brief Deconstructs the min validator.
      */
-    ~ValidatorMin();
+    ~ValidatorMin() override;
     
 protected:
     /*!

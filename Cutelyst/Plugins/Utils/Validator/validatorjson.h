@@ -54,7 +54,7 @@ public:
     /*!
      * \brief Deconstructs the json validator.
      */
-    ~ValidatorJson();
+    ~ValidatorJson() override;
        
 protected:
     /*!

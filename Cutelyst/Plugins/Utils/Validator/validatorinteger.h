@@ -59,7 +59,7 @@ public:
     /*!
      * \brief Deconstructs the integer validator.
      */
-    ~ValidatorInteger();
+    ~ValidatorInteger() override;
        
 protected:
     /*!
