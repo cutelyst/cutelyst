@@ -176,7 +176,7 @@ void ViewEmail::setSenderPassword(const QString &password)
     Q_D(ViewEmail);
     d->sender->setPassword(password);
     if (d->server) {
-        d->server->setUsername(password);
+        d->server->setPassword(password);
     }
 }
 
@@ -194,7 +194,6 @@ void ViewEmail::setAsync(bool enable)
             d->server = new Server(this);
             d->server->setHost(d->sender->host());
             d->server->setPort(d->sender->port());
-            d->server->setHostname(d->sender->name());
             d->server->setUsername(d->sender->user());
             d->server->setPassword(d->sender->password());
             d->server->setAuthMethod(static_cast<Server::AuthMethod>(d->sender->authMethod()));
