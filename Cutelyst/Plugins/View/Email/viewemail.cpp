@@ -298,10 +298,8 @@ QByteArray ViewEmail::render(Context *c) const
     return ret;
 }
 
-ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(parent, name)
+ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(d, parent, name)
 {
-    d_ptr = d;
-
     initSender();
 }
 
