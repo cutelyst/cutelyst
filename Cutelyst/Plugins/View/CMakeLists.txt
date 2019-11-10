@@ -18,7 +18,7 @@ endif (PLUGIN_VIEW_CLEARSILVER)
 add_subdirectory(JSON)
 
 if (PLUGIN_VIEW_EMAIL)
-    find_package(SimpleMailQt5 REQUIRED)
+    find_package(SimpleMail2Qt5 2.0.0 REQUIRED)
     message(STATUS "PLUGIN: View::Email, enabled.")
     add_subdirectory(Email)
 endif (PLUGIN_VIEW_EMAIL)

@@ -1,7 +1,3 @@
-include_directories(
-    ${SimpleMailQt5_INCLUDE_DIR}
-)
-
 set(plugin_view_email_SRC
     viewemail.cpp
     viewemail_p.h

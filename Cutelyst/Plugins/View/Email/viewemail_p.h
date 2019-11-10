@@ -24,6 +24,8 @@
 #include <QtCore/QStringList>
 
 #include <SimpleMail/sender.h>
+#include <SimpleMail/server.h>
+#include <SimpleMail/mimepart.h>
 
 using namespace SimpleMail;
 namespace Cutelyst {
@@ -41,6 +43,7 @@ public:
     QByteArray defaultEncoding;
     QStringList exposeKeys;
     Sender *sender;
+    Server *server = nullptr;
 };
 
 }
