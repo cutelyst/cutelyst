@@ -31,8 +31,8 @@ target_link_libraries(Cutelyst2Qt5ViewGrantlee
 set_property(TARGET Cutelyst2Qt5ViewGrantlee PROPERTY PUBLIC_HEADER ${plugin_view_grantlee_HEADERS})
 install(TARGETS Cutelyst2Qt5ViewGrantlee
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Grantlee COMPONENT devel
 )
 
