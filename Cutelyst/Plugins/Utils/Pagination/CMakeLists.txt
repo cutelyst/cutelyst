@@ -27,8 +27,8 @@ target_link_libraries(Cutelyst2Qt5UtilsPagination
 set_property(TARGET Cutelyst2Qt5UtilsPagination PROPERTY PUBLIC_HEADER ${plugin_pagination_HEADERS})
 install(TARGETS Cutelyst2Qt5UtilsPagination
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils COMPONENT devel
 )
 

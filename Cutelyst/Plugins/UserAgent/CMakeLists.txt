@@ -28,8 +28,8 @@ target_link_libraries(Cutelyst2Qt5UserAgent
 set_property(TARGET Cutelyst2Qt5UserAgent PROPERTY PUBLIC_HEADER ${plugin_useragent_HEADERS})
 install(TARGETS Cutelyst2Qt5UserAgent
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/ COMPONENT devel
 )
 
