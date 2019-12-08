@@ -35,7 +35,7 @@
 #include <QLockFile>
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-#include <zopfli/gzip_container.h>
+#include <zopfli.h>
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
@@ -557,7 +557,7 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
     unsigned char* out = 0;
     size_t outSize = 0;
 
-    ZopfliGzipCompress(&options, reinterpret_cast<const unsigned char *>(data.constData()), data.size(), &out, &outSize);
+    ZopfliCompress(&options, ZopfliFormat::ZOPFLI_FORMAT_GZIP, reinterpret_cast<const unsigned char *>(data.constData()), data.size(), &out, &outSize);
 
     bool ok = false;
     if (outSize > 0) {
