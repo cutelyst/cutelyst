@@ -1,6 +1,7 @@
 if (PLUGIN_VIEW_GRANTLEE)
     find_package(Grantlee5 REQUIRED)
     message(STATUS "PLUGIN: View::Grantlee, enabled.")
+    set (GRANTLEE_PLUGINS_DIR "${CMAKE_INSTALL_LIBDIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}" CACHE PATH "Output directory for grantlee plugins")
     add_subdirectory(Grantlee)
 endif (PLUGIN_VIEW_GRANTLEE)
 

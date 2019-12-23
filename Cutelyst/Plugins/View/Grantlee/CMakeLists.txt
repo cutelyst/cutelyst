@@ -63,7 +63,7 @@ endif (PLUGIN_CSRFPROTECTION)
 grantlee_adjust_plugin_name(grantlee_cutelyst)
 
 install(TARGETS grantlee_cutelyst EXPORT CutelystTargets
-        LIBRARY DESTINATION "${CUTELYST_PLUGINS_DIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
+        LIBRARY DESTINATION "${GRANTLEE_PLUGINS_DIR}"
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Grantlee.pc.in
