@@ -161,6 +161,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
             return component;
         }
     }
+    qCDebug(CUTELYST_CORE) << "Did not find plugin" << name << "on" << dirs << "for" << parent;
 
     return nullptr;
 }
