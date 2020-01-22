@@ -27,8 +27,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     Q_D(ActionChain);
     d->chain = chain;
 
-    Action *final = d->chain.takeLast();
-    d->final = final;
+    const Action *final = d->chain.last();
 
     QVariantHash args;
     args.insert(QStringLiteral("namespace"), final->ns());
@@ -40,7 +39,8 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     setController(final->controller());
 
     for (Action *action : chain) {
-        if (action->numberOfCaptures() > 0) {
+        // FINAL should not have captures?
+        if (/*action != final && */action->numberOfCaptures() > 0) {
             d->captures += action->numberOfCaptures();
         }
     }
@@ -60,24 +60,26 @@ qint8 ActionChain::numberOfCaptures() const
 
 bool ActionChain::doExecute(Context *c)
 {
-    Q_D(ActionChain);
+    Q_D(const ActionChain);
 
     Request *request =  c->request();
     const QStringList captures = request->captures();
     const QStringList currentArgs = request->args();
     const ActionList chain = d->chain;
-    Action *final = d->final;
+    Action *final = d->chain.last();
 
     int captured = 0;
     for (Action *action : chain) {
-        QStringList args;
-        while (args.size() < action->numberOfCaptures() && captured < captures.size()) {
-            args.append(captures.at(captured++));
-        }
+        if (action != final) {
+            QStringList args;
+            while (args.size() < action->numberOfCaptures() && captured < captures.size()) {
+                args.append(captures.at(captured++));
+            }
 
-        request->setArguments(args);
-        if (!action->dispatch(c)) {
-            return false;
+            request->setArguments(args);
+            if (!action->dispatch(c)) {
+                return false;
+            }
         }
     }
     request->setArguments(currentArgs);

@@ -285,6 +285,13 @@ public:
         checkResponse(c, v.validate(c));
     }
 
+    // ***** Endpoint for ValidatorCharNotAllowed ******
+    C_ATTR(charNotAllowed, :Local :AutoArgs)
+    void charNotAllowed(Context *c) {
+        Validator v({new ValidatorCharNotAllowed(QStringLiteral("char_not_allowed_field"), QStringLiteral("#%*."), m_validatorMessages)});
+        checkResponse(c, v.validate(c));
+    }
+
     // ***** Endpoint for ValidatorConfirmed ******
     C_ATTR(confirmed, :Local :AutoArgs)
     void confirmed(Context *c) {
@@ -1193,6 +1200,14 @@ void TestValidator::testController_data()
 
     QTest::newRow("boolean-empty") << QStringLiteral("/boolean?boolean_field=") << headers << QByteArray() << valid;
 
+
+    // **** Start testing ValidatorCharNotAllowed *****
+
+    QTest::newRow("charnotallowed-empty") << QStringLiteral("/charNotAllowed?char_not_allowed_field=") << headers << QByteArray() << valid;
+
+    QTest::newRow("charnotallowed-valid") << QStringLiteral("/charNotAllowed?char_not_allowed_field=holladiewaldfee") << headers << QByteArray() << valid;
+
+    QTest::newRow("charnotallowed-invalid") << QStringLiteral("/charNotAllowed?char_not_allowed_field=holla.die.waldfee") << headers << QByteArray() << invalid;
 
 
 

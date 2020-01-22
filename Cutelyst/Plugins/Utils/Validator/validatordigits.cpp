@@ -98,8 +98,10 @@ QString ValidatorDigits::genericValidationError(Context *c, const QVariant &erro
         }
     } else {
         if (_length > 0) {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorDigits", "The “%1” field must contain exactly %n digit(s).", "", _length).arg(_label);
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorDigits", "The “%1” field must only contain digits.").arg(_label);
         }
     }

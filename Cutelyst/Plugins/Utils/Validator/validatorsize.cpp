@@ -204,14 +204,18 @@ QString ValidatorSize::genericValidationError(Context *c, const QVariant &errorD
 
     if (_label.isEmpty()) {
         if (d->type == QMetaType::QString) {
+            //: %1 will be replaced by the required string size
             error = c->translate("Cutelyst::ValidatorSize", "The text must be exactly %1 characters long.").arg(size);
         } else {
+            //: %1 will be replaced by the required size/value
             error = c->translate("Cutelyst::ValidatorSize", "The value must be %1.").arg(size);
         }
     } else {
         if (d->type == QMetaType::QString) {
+            //: %1 will be replaced by the field label, %2 will be replaced by the required string size
             error = c->translate("Cutelyst::ValidatorSize", "The text in the “%1“ field must be exactly %2 characters long.").arg(_label, size);
         } else {
+            //: %1 will be replaced by the field label, %2 will be replaced by the required size/value
             error = c->translate("Cutelyst::ValidatorSize", "The value in the “%1” field must be %2.").arg(_label, size);
         }
     }
@@ -237,6 +241,7 @@ QString ValidatorSize::genericValidationDataError(Context *c, const QVariant &er
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorSize", "The comparison value is not valid.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorSize", "The comparison value for the “%1” field is not valid.").arg(_label);
         }
     }
@@ -255,12 +260,14 @@ QString ValidatorSize::genericParsingError(Context *c, const QVariant &errorData
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorSize", "Failed to parse the input value into a floating point number.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorSize", "Failed to parse the input value for the “%1” field into a floating point number.").arg(_label);
         }
     } else {
         if (_label.isEmpty()) {
             error = c->translate("Cutelyst::ValidatorSize", "Failed to parse the input value into an integer number.");
         } else {
+            //: %1 will be replaced by the field label
             error = c->translate("Cutelyst::ValidatorSize", "Failed to parse the input value for the “%1” field into an integer number.").arg(_label);
         }
     }

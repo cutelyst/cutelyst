@@ -151,31 +151,31 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too few lowercase letters.");
             break;
         case PWQ_ERROR_MIN_OTHERS:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains less than %ld non-alphanumeric characters.");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too few non-alphanumeric characters.");
             break;
         case PWQ_ERROR_MIN_LENGTH:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password is too short.");
             break;
         case PWQ_ERROR_ROTATED:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password is just rotated old one.");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password is just the rotated old one.");
             break;
         case PWQ_ERROR_MIN_CLASSES:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password does not contain enough character classes.");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password does not contain enough different character types.");
             break;
         case PWQ_ERROR_MAX_CONSECUTIVE:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too many same characters consecutively.");
             break;
         case PWQ_ERROR_MAX_CLASS_REPEAT:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too many characters of the same class consecutively.");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too many characters of the same type consecutively.");
             break;
         case PWQ_ERROR_MAX_SEQUENCE:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too long of a monotonic character sequence.");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password contains too long a monotonous string.");
             break;
         case PWQ_ERROR_EMPTY_PASSWORD:
             error = c->translate("Cutelyst::ValidatorPwQuality", "No password supplied.");
             break;
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check failed because we cannot obtain random numbers from the RNG device");
+            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check failed because we cannot obtain random numbers from the RNG device.");
             break;
         case PWQ_ERROR_CRACKLIB_CHECK:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password fails the dictionary check.");
@@ -234,7 +234,7 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains the user name in some form.").arg(label);
             break;
         case PWQ_ERROR_GECOS_CHECK:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains words from the real name of the user in some form.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains words from the real name of the user name in some form.").arg(label);
             break;
         case PWQ_ERROR_BAD_WORDS:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains forbidden words in some form.").arg(label);
@@ -249,31 +249,31 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too few lowercase letters.").arg(label);
             break;
         case PWQ_ERROR_MIN_OTHERS:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains less than %ld non-alphanumeric characters.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too few non-alphanumeric characters.").arg(label);
             break;
         case PWQ_ERROR_MIN_LENGTH:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field is too short.").arg(label);
             break;
         case PWQ_ERROR_ROTATED:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field is just rotated old one.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field is just the rotated old one.").arg(label);
             break;
         case PWQ_ERROR_MIN_CLASSES:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field does not contain enough character classes.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field does not contain enough character types.").arg(label);
             break;
         case PWQ_ERROR_MAX_CONSECUTIVE:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too many same characters consecutively.").arg(label);
             break;
         case PWQ_ERROR_MAX_CLASS_REPEAT:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too many characters of the same class consecutively.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too many characters of the same type consecutively.").arg(label);
             break;
         case PWQ_ERROR_MAX_SEQUENCE:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains too long of a monotonic character sequence.").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field contains contains too long a monotonous string.").arg(label);
             break;
         case PWQ_ERROR_EMPTY_PASSWORD:
             error = c->translate("Cutelyst::ValidatorPwQuality", "No password supplied in the “%1” field.").arg(label);
             break;
         case PWQ_ERROR_RNG:
-            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device").arg(label);
+            error = c->translate("Cutelyst::ValidatorPwQuality", "Password quality check for the “%1“ field failed because we cannot obtain random numbers from the RNG device.").arg(label);
             break;
         case PWQ_ERROR_CRACKLIB_CHECK:
             error = c->translate("Cutelyst::ValidatorPwQuality", "The password in the “%1” field fails the dictionary check.").arg(label);

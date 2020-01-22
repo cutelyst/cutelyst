@@ -19,6 +19,7 @@
 #define GRANTLEE_VIEW_P_H
 
 #include "grantleeview.h"
+#include "view_p.h"
 
 #include <grantlee/engine.h>
 #include <grantlee/templateloader.h>
@@ -26,9 +27,11 @@
 
 namespace Cutelyst {
 
-class GrantleeViewPrivate
+class GrantleeViewPrivate : public ViewPrivate
 {
 public:
+    virtual ~GrantleeViewPrivate() override = default;
+
     QStringList includePaths;
     QString extension = QStringLiteral(".html");
     QString wrapper;

@@ -65,7 +65,7 @@ public:
     /*!
      * \brief Deconstructs the alpha num validator.
      */
-    ~ValidatorAlphaNum();
+    ~ValidatorAlphaNum() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

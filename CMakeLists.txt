@@ -8,7 +8,9 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-project(cutelyst VERSION 2.9.0 LANGUAGES CXX)
+project(cutelyst VERSION 2.10.0 LANGUAGES CXX)
+
+include(GNUInstallDirs)
 
 find_package(Qt5 5.6.0 REQUIRED COMPONENTS
     Core
@@ -86,23 +88,22 @@ endif()
 #
 set (PREFIXDIR "${CMAKE_INSTALL_PREFIX}")
 set (CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${LIBNAME}/")
-set (DATADIR "${CMAKE_INSTALL_PREFIX}/share")
-set (PKGDATADIR "${DATA_INSTALL_DIR}")
-set (LIBDIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
+set (DATADIR "${CMAKE_INSTALL_DATADIR}")
+set (PKGDATADIR "${CMAKE_INSTALL_DATADIR}")
+set (LIBDIR "${CMAKE_INSTALL_LIBDIR}")
 set (PKGLIBDIR "${LIBDIR}/cutelyst")
 set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
-set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/cutelyst2-plugins" CACHE PATH "Output directory for cutelyst plugins")
+set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
+message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
 set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 set (I18NDIR "${DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
-
-set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}" CACHE PATH "Output directory for libraries")
 
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 

@@ -31,6 +31,7 @@ class ViewEmailTemplatePrivate;
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(ViewEmailTemplate)
     Q_PROPERTY(QString templatePrefix READ templatePrefix WRITE setTemplatePrefix NOTIFY changedProp)
     Q_PROPERTY(QString defaultView READ defaultView WRITE setDefaultView NOTIFY changedProp)
 public:
@@ -69,9 +70,6 @@ public:
 
 Q_SIGNALS:
     void changedProp();
-
-protected:
-    Q_DECLARE_PRIVATE(ViewEmailTemplate)
 };
 
 }

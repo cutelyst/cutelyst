@@ -73,6 +73,7 @@ set(cutelystqt_HEADERS
     upload.h
     Upload
     view.h
+    view_p.h
     View
     plugin.h
     Plugin
@@ -120,23 +121,21 @@ target_link_libraries(Cutelyst2Qt5
     Qt5::Network
 )
 
+set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
+install(TARGETS Cutelyst2Qt5
+    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst COMPONENT devel
+)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
   @ONLY
 )
-
-set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
-install(TARGETS Cutelyst2Qt5
-    EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst COMPONENT devel
-)
-
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
-
 
 add_subdirectory(Plugins)
 add_subdirectory(Actions)

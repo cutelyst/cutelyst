@@ -23,11 +23,6 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_PAGINATION, "cutelyst.utils.pagination", QtWarningMsg)
 
-Pagination::Pagination()
-{
-
-}
-
 Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
 {
     if (itemsPerPage <= 0) {

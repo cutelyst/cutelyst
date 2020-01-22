@@ -19,17 +19,21 @@
 #define VIEWJSON_P_H
 
 #include "viewemail.h"
+#include "view_p.h"
 
 #include <QtCore/QStringList>
 
 #include <SimpleMail/sender.h>
+#include <SimpleMail/server.h>
+#include <SimpleMail/mimepart.h>
 
 using namespace SimpleMail;
 namespace Cutelyst {
 
-class ViewEmailPrivate
+class ViewEmailPrivate : public ViewPrivate
 {
 public:
+    virtual ~ViewEmailPrivate() override = default;
     void setupAttributes(MimePart *part, const QVariantHash &attrs) const;
     void setupEncoding(MimePart *part, const QByteArray &encoding) const;
 
@@ -39,6 +43,7 @@ public:
     QByteArray defaultEncoding;
     QStringList exposeKeys;
     Sender *sender;
+    Server *server = nullptr;
 };
 
 }

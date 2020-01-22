@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,21 +26,16 @@
 #include <SimpleMail/mimemessage.h>
 #include <SimpleMail/emailaddress.h>
 #include <SimpleMail/mimetext.h>
+#include <SimpleMail/serverreply.h>
 
 Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email", QtWarningMsg)
 
 using namespace Cutelyst;
 using namespace SimpleMail;
 
-ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(parent, name)
-  , d_ptr(new ViewEmailPrivate)
+ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(new ViewEmailPrivate, parent, name)
 {
     initSender();
-}
-
-ViewEmail::~ViewEmail()
-{
-    delete d_ptr;
 }
 
 QString ViewEmail::stashKey() const
@@ -105,6 +100,9 @@ void ViewEmail::setSenderHost(const QString &host)
 {
     Q_D(ViewEmail);
     d->sender->setHost(host);
+    if (d->server) {
+        d->server->setHost(host);
+    }
 }
 
 int ViewEmail::senderPort() const
@@ -116,7 +114,10 @@ int ViewEmail::senderPort() const
 void ViewEmail::setSenderPort(int port)
 {
     Q_D(ViewEmail);
-    d->sender->setPort(port);
+    d->sender->setPort(quint16(port));
+    if (d->server) {
+        d->server->setPort(quint16(port));
+    }
 }
 
 ViewEmail::ConnectionType ViewEmail::senderConnectionType() const
@@ -129,6 +130,9 @@ void ViewEmail::setSenderConnectionType(ViewEmail::ConnectionType ct)
 {
     Q_D(ViewEmail);
     d->sender->setConnectionType(static_cast<Sender::ConnectionType>(ct));
+    if (d->server) {
+        d->server->setConnectionType(static_cast<Server::ConnectionType>(ct));
+    }
 }
 
 ViewEmail::AuthMethod ViewEmail::senderAuthMethod() const
@@ -141,6 +145,9 @@ void ViewEmail::setSenderAuthMethod(ViewEmail::AuthMethod method)
 {
     Q_D(ViewEmail);
     d->sender->setAuthMethod(static_cast<Sender::AuthMethod>(method));
+    if (d->server) {
+        d->server->setAuthMethod(static_cast<Server::AuthMethod>(method));
+    }
 }
 
 QString ViewEmail::senderUser() const
@@ -153,6 +160,9 @@ void ViewEmail::setSenderUser(const QString &user)
 {
     Q_D(ViewEmail);
     d->sender->setUser(user);
+    if (d->server) {
+        d->server->setUsername(user);
+    }
 }
 
 QString ViewEmail::senderPassword() const
@@ -165,6 +175,34 @@ void ViewEmail::setSenderPassword(const QString &password)
 {
     Q_D(ViewEmail);
     d->sender->setPassword(password);
+    if (d->server) {
+        d->server->setPassword(password);
+    }
+}
+
+bool ViewEmail::async() const
+{
+    Q_D(const ViewEmail);
+    return d->server;
+}
+
+void ViewEmail::setAsync(bool enable)
+{
+    Q_D(ViewEmail);
+    if (enable) {
+        if (!d->server) {
+            d->server = new Server(this);
+            d->server->setHost(d->sender->host());
+            d->server->setPort(d->sender->port());
+            d->server->setUsername(d->sender->user());
+            d->server->setPassword(d->sender->password());
+            d->server->setAuthMethod(static_cast<Server::AuthMethod>(d->sender->authMethod()));
+            d->server->setConnectionType(static_cast<Server::ConnectionType>(d->sender->connectionType()));
+        }
+    } else {
+        delete d->server;
+        d->server = nullptr;
+    }
 }
 
 QByteArray ViewEmail::render(Context *c) const
@@ -183,22 +221,35 @@ QByteArray ViewEmail::render(Context *c) const
     value = email.value(QStringLiteral("to"));
     if (value.type() == QVariant::String && !value.toString().isEmpty()) {
         message.addTo(value.toString());
+    } else if (value.type() == QVariant::StringList) {
+        const auto rcpts = value.toStringList();
+        for (const QString &rcpt : rcpts) {
+            message.addTo(rcpt);
+        }
     }
 
     value = email.value(QStringLiteral("cc"));
     if (value.type() == QVariant::String && !value.toString().isEmpty()) {
         message.addCc(value.toString());
+    } else if (value.type() == QVariant::StringList) {
+        const auto rcpts = value.toStringList();
+        for (const QString &rcpt : rcpts) {
+            message.addCc(rcpt);
+        }
     }
 
-    value = email.value(QStringLiteral("from"));
+    value = email.value(QStringLiteral("bcc"));
     if (value.type() == QVariant::String && !value.toString().isEmpty()) {
-        message.setSender(value.toString());
+        message.addBcc(value.toString());
+    } else if (value.type() == QVariant::StringList) {
+        const auto rcpts = value.toStringList();
+        for (const QString &rcpt : rcpts) {
+            message.addBcc(rcpt);
+        }
     }
 
-    value = email.value(QStringLiteral("subject"));
-    if (value.type() == QVariant::String && !value.toString().isEmpty()) {
-        message.setSubject(value.toString());
-    }
+    message.setSender(email.value(QStringLiteral("from")).toString());
+    message.setSubject(email.value(QStringLiteral("subject")).toString());
 
     QVariant body = email.value(QStringLiteral("body"));
     QVariant parts = email.value(QStringLiteral("parts"));
@@ -210,7 +261,7 @@ QByteArray ViewEmail::render(Context *c) const
     if (!parts.isNull()) {
         const QVariantList partsVariant = parts.toList();
         for (const QVariant &part : partsVariant) {
-            MimePart *mime = part.value<MimePart*>();
+            auto mime = part.value<MimePart*>();
             if (mime) {
                 message.addPart(mime);
             } else {
@@ -230,12 +281,15 @@ QByteArray ViewEmail::render(Context *c) const
             message.getContent().setContentType(d->defaultContentType);
         }
     } else {
-        MimeText *part = new MimeText(body.toString());
+        auto part = new MimeText(body.toString());
         d->setupAttributes(part, email);
         message.setContent(part);
     }
 
-    if (!d->sender->sendMail(message)) {
+    if (d->server) {
+        ServerReply *reply = d->server->sendMail(message);
+        connect(reply, &ServerReply::finished, reply, &ServerReply::deleteLater);
+    } else if (!d->sender->sendMail(message)) {
         c->error(QString::fromLatin1(d->sender->responseText()));
         return ret;
     }
@@ -243,10 +297,8 @@ QByteArray ViewEmail::render(Context *c) const
     return ret;
 }
 
-ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(parent, name)
+ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(d, parent, name)
 {
-    d_ptr = d;
-
     initSender();
 }
 
@@ -267,7 +319,7 @@ void ViewEmail::initSender()
         d->sender->setHost(config.value(QStringLiteral("sender_host")).toString());
     }
     if (!config.value(QStringLiteral("sender_port")).isNull()) {
-        d->sender->setPort(config.value(QStringLiteral("sender_port")).toInt());
+        d->sender->setPort(quint16(config.value(QStringLiteral("sender_port")).toInt()));
     }
     if (!config.value(QStringLiteral("sender_username")).isNull()) {
         d->sender->setUser(config.value(QStringLiteral("sender_username")).toString());

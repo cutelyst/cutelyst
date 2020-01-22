@@ -288,6 +288,11 @@ Sql::Transaction::Transaction(const QString &databaseName) : m_db(databaseThread
     m_transactionRunning = m_db.transaction();
 }
 
+Sql::Transaction::Transaction(const QSqlDatabase &database) : m_db(database)
+{
+    m_transactionRunning = m_db.transaction();
+}
+
 Sql::Transaction::~Transaction()
 {
     if (m_transactionRunning) {

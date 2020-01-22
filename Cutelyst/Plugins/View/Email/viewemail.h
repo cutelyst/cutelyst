@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2015-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,17 +31,19 @@ class ViewEmailPrivate;
 class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(ViewEmail)
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey NOTIFY changed)
     Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType NOTIFY changed)
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset NOTIFY changed)
     Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
+    Q_PROPERTY(bool async READ async WRITE setAsync NOTIFY changed)
 public:
     /**  This value defines which kind of connection should be used */
     enum ConnectionType
     {
         TcpConnection,
         SslConnection,
-        TlsConnection
+        TlsConnection,
     };
     Q_ENUM(ConnectionType)
 
@@ -50,7 +52,8 @@ public:
     {
         AuthNone,
         AuthPlain,
-        AuthLogin
+        AuthLogin,
+        AuthCramMd5,
     };
     Q_ENUM(AuthMethod)
 
@@ -58,7 +61,6 @@ public:
      * Constructs a new ViewEmail object with the given \p parent and \p name.
      */
     explicit ViewEmail(QObject *parent, const QString &name = QString());
-    virtual ~ViewEmail();
 
     /**
      * Returns the stash key that will contain the email data
@@ -167,6 +169,17 @@ public:
     void setSenderPassword(const QString &password);
 
     /**
+     * Returns true if async mode is on.
+     */
+    bool async() const;
+
+    /**
+     * Enable sending mails in async mode, it will use SimpleMail::Server class,
+     * and render() will always return true regardless of mail sending success.
+     */
+    void setAsync(bool enable);
+
+    /**
      * Renders the EMail
      */
     QByteArray render(Context *c) const override;
@@ -176,9 +189,6 @@ protected:
      * Constructs a new ViewEmail object using the private class, \p parent and \p name.
      */
     ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name = QString());
-
-    Q_DECLARE_PRIVATE(ViewEmail)
-    ViewEmailPrivate *d_ptr;
 
 Q_SIGNALS:
     void changed();

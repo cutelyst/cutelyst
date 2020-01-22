@@ -161,6 +161,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
             return component;
         }
     }
+    qCDebug(CUTELYST_CORE) << "Did not find plugin" << name << "on" << dirs << "for" << parent;
 
     return nullptr;
 }
@@ -373,10 +374,8 @@ void Application::handleRequest(EngineRequest *request)
     priv->response = new Response(d->headers, request);
     priv->request = new Request(request);
 
-    Stats *stats = nullptr;
     if (d->useStats) {
-        stats = new Stats(request);
-        priv->stats = stats;
+        priv->stats = new Stats(request);
     }
 
     // Process request

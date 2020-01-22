@@ -85,7 +85,7 @@ public:
     /*!
      * \brief Deconstructs the %ValidatorPwQuality.
      */
-    ~ValidatorPwQuality();
+    ~ValidatorPwQuality() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

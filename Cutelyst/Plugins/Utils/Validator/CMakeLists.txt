@@ -19,6 +19,8 @@ set(plugin_validator_SRC
     validatorbetween_p.h
     validatorboolean.cpp
     validatorboolean_p.h
+    validatorcharnotallowed.cpp
+    validatorcharnotallowed_p.h
     validatorconfirmed.cpp
     validatorconfirmed_p.h
     validatordate.cpp
@@ -103,6 +105,7 @@ set(plugin_validator_HEADERS
     validatorbefore.h
     validatorbetween.h
     validatorboolean.h
+    validatorcharnotallowed.h
     validatorconfirmed.h
     validatordate.h
     validatordatetime.h
@@ -183,8 +186,8 @@ endif (PLUGIN_VALIDATOR_PWQUALITY)
 set_property(TARGET Cutelyst2Qt5UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
 install(TARGETS Cutelyst2Qt5UtilsValidator
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils COMPONENT devel
 )
 

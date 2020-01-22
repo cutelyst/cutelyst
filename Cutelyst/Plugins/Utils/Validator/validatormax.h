@@ -66,7 +66,7 @@ public:
     /*!
      * \brief Deconstructs the max validator.
      */
-    ~ValidatorMax();
+    ~ValidatorMax() override;
     
 protected:
     /*!

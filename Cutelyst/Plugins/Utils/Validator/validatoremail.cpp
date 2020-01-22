@@ -1171,7 +1171,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
     if (label.isEmpty()) {
         switch (diagnose) {
         case ValidAddress:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid. Please note that this does not mean the address actually exists, nor even that the domain actually exists. This address could be issued by the domain owner without breaking the rules of any RFCs.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.");
             break;
         case DnsWarnNoMxRecord:
             ret = c->translate("Cutelyst::ValidatorEmail", "Could not find an MX record for this address’ domain but an A record does exist.");
@@ -1210,7 +1210,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "A quoted string contains a deprecated character.");
             break;
         case DeprecatedQP:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted pair contains a deprecate character.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted pair contains a deprecated character.");
             break;
         case DeprecatedComment:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a comment in a position that is deprecated.");
@@ -1222,7 +1222,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a comment or folding white space around the @ sign.");
             break;
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is RFC 5322 compliant but contains domain charachters that are not allowed by DNS.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "Address is RFC 5322 compliant but contains domain characters that are not allowed by DNS.");
             break;
         case RFC5322TooLong:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is too long.");
@@ -1270,7 +1270,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address has no domain part.");
             break;
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address may not contain consecutive dots.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address must not contain consecutive dots.");
             break;
         case ErrorATextAfterCFWS:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address contains text after a comment or folding white space.");
@@ -1294,7 +1294,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "A comment contains a character that is not allowed.");
             break;
         case ErrorBackslashEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address can't end with a backslash.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address can not end with a backslash.");
             break;
         case ErrorDotStart:
             ret = c->translate("Cutelyst::ValidatorEmail", "Neither part of the address may begin with a dot.");
@@ -1339,7 +1339,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
 
         switch (diagnose) {
         case ValidAddress:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid. Please note that this does not mean the address actually exists, nor even that the domain actually exists. This address could be issued by the domain owner without breaking the rules of any RFCs.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.").arg(label);
             break;
         case DnsWarnNoMxRecord:
             ret = c->translate("Cutelyst::ValidatorEmail", "Could not find an MX record for the address’ domain in the “%1” field but an A record does exist.").arg(label);
@@ -1354,7 +1354,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but the Top Level Domain begins with a number.").arg(label);
             break;
         case RFC5321QuotedString:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” is valid but contains a quoted string.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but contains a quoted string.").arg(label);
             break;
         case RFC5321AddressLiteral:
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but uses an IP address instead of a domain name.").arg(label);
@@ -1438,7 +1438,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field has no domain part.").arg(label);
             break;
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field may not contain consecutive dots.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field must not contain consecutive dots.").arg(label);
             break;
         case ErrorATextAfterCFWS:
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains text after a comment or folding white space.").arg(label);
@@ -1514,7 +1514,7 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid.");
             break;
         case DNSWarn:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but a dns check was not successful.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but a DNS check was not successful.");
             break;
         case RFC5321:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid for SMTP but has unusual elements.");
@@ -1538,7 +1538,7 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid.").arg(label);
             break;
         case DNSWarn:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but a dns check was not successful.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but a DNS check was not successful.").arg(label);
             break;
         case RFC5321:
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid for SMTP but has unusual elements.").arg(label);

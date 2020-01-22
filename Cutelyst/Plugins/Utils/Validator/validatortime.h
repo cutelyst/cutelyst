@@ -61,7 +61,7 @@ public:
     /*!
      * \brief Deconstructs time the validator.
      */
-    ~ValidatorTime();
+    ~ValidatorTime() override;
     
 protected:
     /*!

@@ -66,7 +66,7 @@ public:
     /*!
      * \brief Deconstructs the alpha dash validator.
      */
-    ~ValidatorAlphaDash();
+    ~ValidatorAlphaDash() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules

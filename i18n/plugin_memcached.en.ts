@@ -8,39 +8,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown failure has occurred in the server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>A DNS failure has occurred.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An unknown error has occured while trying to connect to a server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error has occured while trying to write to a server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An error has occured while trying to read from a server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An unknown error has occured while trying to read from a server. This only occures when either there is a bug in the server, or in rare cases where an ethernet NIC is reporting dubious information.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An unknown error has occured in the protocol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An unknown client error has occured internally.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>An unknown error has occured in the server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -84,27 +52,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The server has completed returning all of the objects requested.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The object requested by the key has been deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A &quot;stat&quot; command has been returned in the protocol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>An error has occurred in the driver which has set errno.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The given method is not supported in the server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>A request has been made, but the server has not finished the fetch of the last request.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -120,35 +72,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The server you are connecting to has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The requested server has been marked dead.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The server you are communicating with has a stat key which has not be defined in the protocol.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Item is too large for the server to store.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>The arguments supplied to the given function were not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The key that has been provided is too large for the given server.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>An unknown issue has occured during SASL authentication.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The credentials provided are not valid for this server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -173,6 +101,78 @@
     </message>
     <message>
         <source>An unknown error has occured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown failure has occurred in the Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown error has occured while trying to connect to a Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error has occured while trying to write to a Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An error has occured while trying to read from a Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown error has occured while trying to read from a Memcached server. This only occures when either there is a bug in the server, or in rare cases where an ethernet NIC is reporting dubious information.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown error has occured in the Memcached protocol.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown Memcached client error has occured internally.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An unknown error has occured in the Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A “stat” command has been returned in the protocol.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Memcached server you are connecting to has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The requested Memcached server has been marked dead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Memcached server you are communicating with has a stat key which has not be defined in the protocol.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Memcached server has completed returning all of the objects requested.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The given method is not supported in the Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A request has been made, but the Memcached server has not finished the fetch of the last request.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item is too large for the Memcached server to store.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The key that has been provided is too large for the given Memcached server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The credentials provided are not valid for this Memcached server.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

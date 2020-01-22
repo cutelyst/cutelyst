@@ -152,7 +152,7 @@ public:
     /*!
      * \brief Deconstructs the email validator.
      */
-    ~ValidatorEmail();
+    ~ValidatorEmail() override;
 
     /*!
      * \brief Returns a descriptive and translated string for the \a diagnose.

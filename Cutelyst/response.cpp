@@ -309,6 +309,12 @@ Headers &Response::headers()
     return d->headers;
 }
 
+bool Response::isFinalizedHeaders() const
+{
+    Q_D(const Response);
+    return d->engineRequest->status & EngineRequest::FinalizedHeaders;
+}
+
 bool Response::isSequential() const
 {
     return true;

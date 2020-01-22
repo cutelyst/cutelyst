@@ -56,7 +56,7 @@ public:
     /*!
      * \brief Deconstructs the required without all validator.
      */
-    ~ValidatorRequiredWithoutAll();
+    ~ValidatorRequiredWithoutAll() override;
     
 protected:
     /*!

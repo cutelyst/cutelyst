@@ -19,6 +19,7 @@
 #define VIEWJSON_P_H
 
 #include "viewjson.h"
+#include "view_p.h"
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QStringList>
@@ -26,9 +27,11 @@
 
 namespace Cutelyst {
 
-class ViewJsonPrivate
+class ViewJsonPrivate : public ViewPrivate
 {
 public:
+    virtual ~ViewJsonPrivate() override = default;
+
     ViewJson::ExposeMode exposeMode = ViewJson::All;
     QString exposeKey;
     QStringList exposeKeys;

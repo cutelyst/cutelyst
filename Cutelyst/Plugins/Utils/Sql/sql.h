@@ -42,7 +42,11 @@ namespace Sql
  */
 class CUTELYST_PLUGIN_UTILS_SQL_EXPORT Transaction {
 public:
-    Transaction(const QString &databaseName = QString());
+    /**
+     * Creates a transaction using the database name that you would pass to Sql::databaseNameThread
+     */
+    explicit Transaction(const QString &databaseName = QString());
+    Transaction(const QSqlDatabase &database);
     ~Transaction();
 
     bool transaction() const;

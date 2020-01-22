@@ -68,6 +68,7 @@ QString ValidatorTime::genericValidationError(Context *c, const QVariant &errorD
     if (_label.isEmpty()) {
 
         if (d->format) {
+            //: %1 will be replaced by the erquired time format
             error = c->translate("Cutelyst::ValidatorTime", "Not a valid time according to the following date format: %1").arg(c->translate(d->translationContext.data(), d->format));
         } else {
             error = c->translate("Cutelyst::ValidatorTime", "Not a valid time.");
@@ -76,9 +77,11 @@ QString ValidatorTime::genericValidationError(Context *c, const QVariant &errorD
     } else {
 
         if (d->format) {
+            //: %1 will be replaced by the field label, %2 will be replaced by the required time format
             error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parsed as time according to the following scheme: %2").arg(_label, c->translate(d->translationContext.data(), d->format));
         } else {
-            error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parse as time.").arg(_label);
+            //: %1 will be replaced by the field label
+            error = c->translate("Cutelyst::ValidatorTime", "The value in the “%1” field can not be parsed as time.").arg(_label);
         }
     }
 

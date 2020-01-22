@@ -223,10 +223,10 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             error = c->translate("Cutelyst::ValidatorDomain", "The domain name contains characters that are not allowed.");
             break;
         case LabelTooLong:
-            error = c->translate("Cutelyst::ValidatorDomain", "At least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names may be internally longer than they are displayed.");
+            error = c->translate("Cutelyst::ValidatorDomain", "At least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names can be longer internally than they are displayed.");
             break;
         case TooLong:
-            error = c->translate("Cutelyst::ValidatorDomain", "The full name of the domain must not be longer than 253 characters. Note that internationalized domain names may be internally longer than they are displayed.");
+            error = c->translate("Cutelyst::ValidatorDomain", "The full name of the domain must not be longer than 253 characters. Note that internationalized domain names can be longer internally than they are displayed.");
             break;
         case InvalidLabelCount:
             error = c->translate("Cutelyst::ValidatorDomain", "This is not a valid domain name because it has either no parts (is empty) or only has a top level domain.");
@@ -235,7 +235,7 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             error = c->translate("Cutelyst::ValidatorDomain", "At least one of the sections separated by dots is empty. Check whether you have entered two dots consecutively.");
             break;
         case InvalidTLD:
-            error = c->translate("Cutelyst::ValidatorDomain", "The top level domain (last part) contains characters that are not allowed, like digits and or dashes.");
+            error = c->translate("Cutelyst::ValidatorDomain", "The top level domain (last part) contains characters that are not allowed, like digits and/or dashes.");
             break;
         case DashStart:
             error = c->translate("Cutelyst::ValidatorDomain", "Domain name sections are not allowed to start with a dash.");
@@ -265,16 +265,16 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1“ field contains characters that are not allowed.").arg(label);
             break;
         case LabelTooLong:
-            error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1“ field is not valid because at least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names may be internally longer than they are displayed.").arg(label);
+            error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1“ field is not valid because at least one of the sections separated by dots exceeds the maximum allowed length of 63 characters. Note that internationalized domain names can be longer internally than they are displayed.").arg(label);
             break;
         case TooLong:
-            error = c->translate("Cutelyst::ValidatorDomain", "The full name of the domain in the “%1” field must not be longer than 253 characters. Note that internationalized domain names may be internally longer than they are displayed.").arg(label);
+            error = c->translate("Cutelyst::ValidatorDomain", "The full name of the domain in the “%1” field must not be longer than 253 characters. Note that internationalized domain names can be longer internally than they are displayed.").arg(label);
             break;
         case InvalidLabelCount:
             error = c->translate("Cutelyst::ValidatorDomain", "The “%1” field does not contain a valid domain name because it has either no parts (is empty) or only has a top level domain.").arg(label);
             break;
         case EmptyLabel:
-            error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1“ field is not valid because at least on of the sections separated by dots is empty. Check whether you have entered two dots consecutively.").arg(label);
+            error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1“ field is not valid because at least one of the sections separated by dots is empty. Check whether you have entered two dots consecutively.").arg(label);
             break;
         case InvalidTLD:
             error = c->translate("Cutelyst::ValidatorDomain", "The top level domain (last part) of the domain name in the “%1” field contains characters that are not allowed, like digits and or dashes.").arg(label);
@@ -292,7 +292,7 @@ QString ValidatorDomain::diagnoseString(Context *c, Diagnose diagnose, const QSt
             error = c->translate("Cutelyst::ValidatorDomain", "The domain name in the “%1” field is valid.").arg(label);
             break;
         case DNSTimeout:
-            error = c->translate("Cutelyst::ValidatorDomain", "The DNS lookup for the name in the “%1” field was aborted because it took too long.").arg(label);
+            error = c->translate("Cutelyst::ValidatorDomain", "The DNS lookup for the domain name in the “%1” field was aborted because it took too long.").arg(label);
             break;
         default:
             Q_ASSERT_X(false, "domain validation diagnose", "invalid diagnose");

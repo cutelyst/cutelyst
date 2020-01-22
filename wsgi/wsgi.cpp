@@ -296,19 +296,9 @@ void WSGI::parseCommandLine(const QStringList &arguments)
     // Process the actual command line arguments given by the user
     parser.process(arguments);
 
-    const auto inis = parser.values(iniOpt);
-    for (const QString &ini : inis) {
-        d->loadConfig(ini, false);
-    }
-    setIni(inis);
+    setIni(parser.values(iniOpt));
 
-    const auto jsons = parser.values(jsonOpt);
-    for (const QString &json : jsons) {
-        d->loadConfig(json, true);
-    }
-    setJson(jsons);
-
-    d->applyConfig(d->opt);
+    setJson(parser.values(jsonOpt));
 
     if (parser.isSet(chdir)) {
         setChdir(parser.value(chdir));
@@ -528,6 +518,8 @@ int WSGI::exec(Cutelyst::Application *app)
 {
     Q_D(WSGI);
     std::cout << "Cutelyst-WSGI starting" << std::endl;
+
+
 
     if (!qEnvironmentVariableIsSet("CUTELYST_WSGI_IGNORE_MASTER") && !d->master) {
         std::cout << "*** WARNING: you are running Cutelyst-WSGI without its master process manager ***" << std::endl;
@@ -1018,11 +1010,16 @@ QString WSGI::chdir2() const
     return d->chdir2;
 }
 
-void WSGI::setIni(const QStringList &ini)
+void WSGI::setIni(const QStringList &files)
 {
     Q_D(WSGI);
-    d->ini = ini;
+    d->ini.append(files);
+    d->ini.removeDuplicates();
     Q_EMIT changed();
+
+    for (const QString &ini : d->ini) {
+        d->loadConfig(ini, false);
+    }
 }
 
 QStringList WSGI::ini() const
@@ -1034,8 +1031,13 @@ QStringList WSGI::ini() const
 void WSGI::setJson(const QStringList &files)
 {
     Q_D(WSGI);
-    d->json = files;
+    d->json.append(files);
+    d->json.removeDuplicates();
     Q_EMIT changed();
+
+    for (const QString &json : d->json) {
+        d->loadConfig(json, true);
+    }
 }
 
 QStringList WSGI::json() const
@@ -1551,7 +1553,12 @@ CWsgiEngine *WSGIPrivate::createEngine(Application *app, int core)
 
 void WSGIPrivate::loadConfig(const QString &file, bool json)
 {
+    if (configLoaded.contains(file)) {
+        return;
+    }
+
     QString filename = file;
+    configLoaded.append(file);
 
     QString section = QStringLiteral("wsgi");
     if (filename.contains(QLatin1Char(':'))) {
@@ -1571,6 +1578,9 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
     }
 
     QVariantMap sessionConfig = loadedConfig.value(section).toMap();
+
+    applyConfig(sessionConfig);
+
     sessionConfig.unite(opt);
     opt = sessionConfig;
 

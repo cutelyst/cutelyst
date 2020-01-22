@@ -35,7 +35,6 @@ public:
      * Constructs a ClearSilver object with the given parent and name.
      */
     explicit ClearSilver(QObject *parent = nullptr, const QString &name = QString());
-    ~ClearSilver();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /*!
@@ -75,9 +74,6 @@ public:
 
 Q_SIGNALS:
     void changed();
-
-protected:
-    ClearSilverPrivate *d_ptr;
 };
 
 }

@@ -57,7 +57,7 @@ QString ValidatorSame::genericValidationError(Context *c, const QVariant &errorD
     QString error;
 
     Q_D(const ValidatorSame);
-    Q_UNUSED(errorData);
+    Q_UNUSED(errorData)
     const QString _label = label(c);
     QString _olabel;
     if (d->otherLabel) {
@@ -67,9 +67,11 @@ QString ValidatorSame::genericValidationError(Context *c, const QVariant &errorD
     }
 
     if (_label.isEmpty()) {
-        error = QStringLiteral("Must be the same as in the “%1” field.").arg(_olabel);
+        //: %1 will be replaced by the label of the other field
+        error = c->translate("Cutelyst::ValidatorSame", "Must be the same as in the “%1” field.").arg(_olabel);
     } else {
-        error = QStringLiteral("The “%1” field must have the same value as the “%2” field.").arg(_label, _olabel);
+        //: %1 will be replaced by the field label, %2 will be replaced by the label of the other field
+        error = c->translate("Cutelyst::ValidatorSame", "The “%1” field must have the same value as the “%2” field.").arg(_label, _olabel);
     }
 
     return error;

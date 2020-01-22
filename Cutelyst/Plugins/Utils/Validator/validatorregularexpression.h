@@ -40,6 +40,8 @@ class ValidatorRegularExpressionPrivate;
  * field to be present and not empty.
  *
  * \sa Validator for general usage of validators.
+ *
+ * \sa ValidatorCharNotAllowed
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRegularExpression : public ValidatorRule
 {
@@ -56,7 +58,7 @@ public:
     /*!
      * \brief Deconstructs the regex validator.
      */
-    ~ValidatorRegularExpression();
+    ~ValidatorRegularExpression() override;
     
 protected:
     /*!

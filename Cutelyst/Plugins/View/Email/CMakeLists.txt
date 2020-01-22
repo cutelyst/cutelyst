@@ -1,7 +1,3 @@
-include_directories(
-    ${SimpleMailQt5_INCLUDE_DIR}
-)
-
 set(plugin_view_email_SRC
     viewemail.cpp
     viewemail_p.h
@@ -34,8 +30,8 @@ target_link_libraries(Cutelyst2Qt5ViewEmail
 set_property(TARGET Cutelyst2Qt5ViewEmail PROPERTY PUBLIC_HEADER ${plugin_view_email_HEADERS})
 install(TARGETS Cutelyst2Qt5ViewEmail
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION bin COMPONENT runtime
-    ARCHIVE DESTINATION lib COMPONENT devel
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/View/Email COMPONENT devel
 )
 

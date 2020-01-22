@@ -50,7 +50,7 @@ public:
     /*!
      * \brief Deconstructs the present validator.
      */
-    ~ValidatorPresent();
+    ~ValidatorPresent() override;
         
 protected:
     /*!

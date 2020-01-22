@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2019 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@
  */
 
 #include "view.h"
+#include "view_p.h"
 
 #include "common.h"
 
@@ -26,23 +27,16 @@
 #include <QtCore/QVariant>
 #include <QtCore/QLoggingCategory>
 
-namespace Cutelyst {
-class ViewPrivate {
-public:
-    qint32 minimalSizeToDeflate = -1;
-};
-}
-
 using namespace Cutelyst;
 
-View::View(QObject *parent, const QString &name) : Component(parent), d_ptr(new ViewPrivate)
+View::View(QObject *parent, const QString &name) : Component(new ViewPrivate, parent)
 {
     setName(name);
 }
 
-View::~View()
+View::View(ViewPrivate *d, QObject *parent, const QString &name) : Component(d, parent)
 {
-    delete d_ptr;
+    setName(name);
 }
 
 Component::Modifiers View::modifiers() const

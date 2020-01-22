@@ -29,11 +29,6 @@ inline QString normalizeHeaderKey(const QString &field);
 inline QByteArray decodeBasicAuth(const QString &auth);
 inline std::pair<QString, QString> decodeBasicAuthPair(const QString &auth);
 
-Headers::Headers()
-{
-
-}
-
 Headers::Headers(const Headers &other) : m_data(other.m_data)
 {
 }

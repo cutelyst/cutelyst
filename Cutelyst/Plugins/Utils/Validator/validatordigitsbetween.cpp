@@ -106,6 +106,7 @@ QString ValidatorDigitsBetween::genericValidationError(Context *c, const QVarian
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorDigitsBetween", "Must contain between %1 and %2 digits.").arg(min, max);
     } else {
+        //: %1 will be replaced by the field label
         error = c->translate("Cutelyst::ValidatorDigitsBetween", "The “%1” field must contain between %2 and %3 digits.").arg(_label, min, max);
     }
 

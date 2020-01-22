@@ -42,8 +42,8 @@ ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c, const ParamsM
     if (!v.isEmpty()) {
         if (Q_LIKELY(ValidatorAlpha::validate(v, d->asciiOnly))) {
             result.value.setValue<QString>(v);
-            qCDebug(C_VALIDATOR, "ValidatorAlhpa: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
         } else {
+            qCDebug(C_VALIDATOR, "ValidatorAlhpa: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
             result.errorMessage = validationError(c);
         }
     } else {
@@ -76,11 +76,22 @@ QString ValidatorAlpha::genericValidationError(Context *c, const QVariant &error
 {
     QString error;
     Q_UNUSED(errorData)
+    Q_D(const ValidatorAlpha);
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorAlhpa", "Must be entirely alphabetic characters.");
+        if (d->asciiOnly) {
+            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical latin characters.");
+        } else {
+            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical characters.");
+        }
     } else {
-        error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must be entirely alphabetic characters.").arg(_label);
+        if (d->asciiOnly) {
+            //: %1 will be replaced by the field label
+            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical latin characters.").arg(_label);
+        } else {
+            //: %1 will be replaced by the field label
+            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical characters.").arg(_label);
+        }
     }
     return error;
 }

@@ -54,7 +54,6 @@ public:
      * Constructs a GrantleeView object with the given parent and name.
      */
     explicit GrantleeView(QObject *parent = nullptr, const QString &name = QString());
-    ~GrantleeView();
 
     Q_PROPERTY(QStringList includePaths READ includePaths WRITE setIncludePaths NOTIFY changed)
     /*!
@@ -228,9 +227,6 @@ public:
 
 Q_SIGNALS:
     void changed();
-
-protected:
-    GrantleeViewPrivate *d_ptr;
 };
 
 }

@@ -60,7 +60,7 @@ public:
     /*!
      * \brief Deconstructs the digits validator.
      */
-    ~ValidatorDigits();
+    ~ValidatorDigits() override;
 
     /*!
      * \ingroup plugins-utils-validator-rules
