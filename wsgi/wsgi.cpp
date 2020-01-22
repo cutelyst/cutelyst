@@ -1567,11 +1567,11 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
     auto it = config.begin();
     while (it != config.end()) {
         auto itLoaded = loadedConfig.find(it.key());
-        while (itLoaded == loadedConfig.end()) {
+        while (itLoaded != loadedConfig.end()) {
             QVariantMap loadedMap = itLoaded.value().toMap();
             loadedMap.unite(it.value().toMap());
             it.value() = loadedMap;
-            loadedConfig.erase(itLoaded);
+            itLoaded = loadedConfig.erase(itLoaded);
         }
         ++it;
     }
