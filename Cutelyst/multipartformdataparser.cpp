@@ -160,7 +160,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
 
                 if (state == EndBoundaryCR) {
 //                    qCDebug(CUTELYST_MULTIPART) << "EndData" << body->pos() - len + i - boundaryLength - 1;
-                    int endOffset = pos - len + i - boundarySize - 1;
+                    const qint64 endOffset = pos - len + i - boundarySize - 1;
                     auto upload = new Upload(new UploadPrivate(body, headers, startOffset, endOffset));
                     ret.append(upload);
 
