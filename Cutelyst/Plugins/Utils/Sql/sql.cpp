@@ -311,3 +311,9 @@ bool Sql::Transaction::commit()
     m_transactionRunning = !m_db.commit();
     return !m_transactionRunning;
 }
+
+bool Sql::Transaction::rollback()
+{
+    m_transactionRunning = false;
+    return m_db.rollback();
+}

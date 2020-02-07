@@ -51,6 +51,7 @@ public:
 
     bool transaction() const;
     bool commit();
+    bool rollback();
 
 private:
     QSqlDatabase m_db;
