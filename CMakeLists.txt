@@ -101,7 +101,7 @@ message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
 set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
-set (I18NDIR "${DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
+set (I18NDIR "${CMAKE_INSTALL_FULL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
