@@ -30,7 +30,7 @@ namespace CWSGI {
 class WSGI;
 class Socket;
 
-class ProtoRequestHttp : public ProtocolData, public Cutelyst::EngineRequest
+class ProtoRequestHttp final : public ProtocolData, public Cutelyst::EngineRequest
 {
     Q_GADGET
 public:
@@ -132,7 +132,7 @@ protected:
 
 class ProtocolHttp2;
 class ProtocolWebSocket;
-class ProtocolHttp : public Protocol
+class ProtocolHttp final : public Protocol
 {
 public:
     ProtocolHttp(WSGI *wsgi, ProtocolHttp2 *upgradeH2c = nullptr);

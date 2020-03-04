@@ -39,7 +39,7 @@ typedef QVector<Upload *> Uploads;
 
 class EngineRequest;
 class RequestPrivate;
-class CUTELYST_LIBRARY Request : public QObject
+class CUTELYST_LIBRARY Request final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString hostname READ hostname CONSTANT)

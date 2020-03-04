@@ -29,7 +29,7 @@ class WSGI;
 class TcpServer;
 class CWsgiEngine;
 class Protocol;
-class TcpServerBalancer : public QTcpServer
+class TcpServerBalancer final : public QTcpServer
 {
     Q_OBJECT
 public:

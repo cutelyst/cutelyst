@@ -28,7 +28,7 @@ class ViewEmailTemplatePrivate;
  * ViewEmailTemplate is a Cutelyst::View handler that renders stash
  * data using another view and send the result via e-mail.
  */
-class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate : public ViewEmail
+class CUTELYST_VIEW_EMAIL_EXPORT ViewEmailTemplate final : public ViewEmail
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewEmailTemplate)
@@ -66,7 +66,7 @@ public:
      */
     void setDefaultView(const QString &view);
 
-    QByteArray render(Context *c) const override;
+    virtual QByteArray render(Context *c) const override;
 
 Q_SIGNALS:
     void changedProp();

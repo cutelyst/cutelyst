@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class ActionRESTPrivate;
-class CUTELYST_PLUGIN_ACTION_REST_EXPORT ActionREST : public Action
+class CUTELYST_PLUGIN_ACTION_REST_EXPORT ActionREST final : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ActionREST)
@@ -39,7 +39,7 @@ protected:
     bool doExecute(Context *c) override;
 };
 
-class ActionRESTFactory : public QObject, public ComponentFactory
+class ActionRESTFactory final : public QObject, public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")

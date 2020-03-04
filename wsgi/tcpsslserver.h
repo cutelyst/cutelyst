@@ -32,7 +32,7 @@ class WSGI;
 class Protocol;
 class SslSocket;
 class CWsgiEngine;
-class TcpSslServer : public TcpServer
+class TcpSslServer final : public TcpServer
 {
     Q_OBJECT
 public:

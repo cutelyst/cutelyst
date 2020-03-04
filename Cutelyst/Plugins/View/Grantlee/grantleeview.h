@@ -45,7 +45,7 @@ class GrantleeViewPrivate;
  *
  * Where only the path is required, and QUERY keyword must preceed query parameters
  */
-class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView : public View
+class CUTELYST_VIEW_GRANTLEE_EXPORT GrantleeView final : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GrantleeView)

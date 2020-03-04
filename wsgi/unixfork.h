@@ -37,7 +37,7 @@ class WSGI;
 
 class QTimer;
 class QSocketNotifier;
-class UnixFork : public AbstractFork
+class UnixFork final : public AbstractFork
 {
     Q_OBJECT
 public:

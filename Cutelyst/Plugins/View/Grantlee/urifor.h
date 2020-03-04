@@ -25,12 +25,12 @@
 #include <grantlee/util.h>
 #include <grantlee/node.h>
 
-class UriForTag : public Grantlee::AbstractNodeFactory
+class UriForTag final : public Grantlee::AbstractNodeFactory
 {
     Grantlee::Node *getNode(const QString &tagContent, Grantlee::Parser *p) const override;
 };
 
-class UriFor : public Grantlee::Node
+class UriFor final : public Grantlee::Node
 {
     Q_OBJECT
 public:

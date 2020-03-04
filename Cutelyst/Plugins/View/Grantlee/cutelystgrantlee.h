@@ -28,7 +28,7 @@
 #  define CUTELYST_GRANTLEE_URIFOR_EXPORT Q_DECL_IMPORT
 #endif
 
-class CutelystGrantlee : public QObject, public Grantlee::TagLibraryInterface
+class CutelystGrantlee final : public QObject, public Grantlee::TagLibraryInterface
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.grantlee.TagLibraryInterface/1.0")

@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class DispatchTypeChainedPrivate;
-class CUTELYST_LIBRARY DispatchTypeChained : public DispatchType
+class CUTELYST_LIBRARY DispatchTypeChained final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypeChained)

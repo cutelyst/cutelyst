@@ -34,7 +34,7 @@ class ProtocolFastCGI;
 class ProtocolHttp;
 class ProtocolHttp2;
 class WSGI;
-class CWsgiEngine : public Cutelyst::Engine
+class CWsgiEngine final : public Cutelyst::Engine
 {
     Q_OBJECT
 public:

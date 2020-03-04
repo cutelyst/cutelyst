@@ -34,7 +34,7 @@ struct MountPoint {
 };
 
 class Socket;
-class StaticMap : public Cutelyst::Plugin
+class StaticMap final : public Cutelyst::Plugin
 {
     Q_OBJECT
 public:

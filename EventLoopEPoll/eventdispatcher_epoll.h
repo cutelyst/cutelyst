@@ -28,7 +28,7 @@ class EventDispatcherEPollPrivate;
 #  define CUTELYST_EVENTLOOP_EPOLL_EXPORT Q_DECL_IMPORT
 #endif
 
-class CUTELYST_EVENTLOOP_EPOLL_EXPORT EventDispatcherEPoll : public QAbstractEventDispatcher {
+class CUTELYST_EVENTLOOP_EPOLL_EXPORT EventDispatcherEPoll final : public QAbstractEventDispatcher {
     Q_OBJECT
 public:
     explicit EventDispatcherEPoll(QObject *parent = nullptr);

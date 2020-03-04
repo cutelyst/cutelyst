@@ -27,7 +27,7 @@
 namespace CWSGI {
 
 class WSGI;
-class ProtoRequestFastCGI : public ProtocolData, public Cutelyst::EngineRequest
+class ProtoRequestFastCGI final : public ProtocolData, public Cutelyst::EngineRequest
 {
     Q_GADGET
 public:
@@ -66,7 +66,7 @@ public:
     quint16 pktsize = 0;
 };
 
-class ProtocolFastCGI : public Protocol
+class ProtocolFastCGI final : public Protocol
 {
 public:
     ProtocolFastCGI(WSGI *wsgi);

@@ -29,7 +29,7 @@ class Context;
 namespace CWSGI {
 
 class WSGI;
-class ProtocolWebSocket : public Protocol
+class ProtocolWebSocket final : public Protocol
 {
 public:
     ProtocolWebSocket(WSGI *wsgi);

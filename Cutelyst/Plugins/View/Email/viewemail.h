@@ -182,7 +182,7 @@ public:
     /**
      * Renders the EMail
      */
-    QByteArray render(Context *c) const override;
+    virtual QByteArray render(Context *c) const override;
 
 protected:
     /*!

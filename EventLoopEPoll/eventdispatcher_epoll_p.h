@@ -41,7 +41,7 @@ public:
 };
 
 class EventDispatcherEPollPrivate;
-class EventFdInfo : public EpollAbastractEvent
+class EventFdInfo final : public EpollAbastractEvent
 {
 public:
     EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv) : EpollAbastractEvent(_fd), epPriv(prv) {}
@@ -51,7 +51,7 @@ public:
     EventDispatcherEPollPrivate *epPriv;
 };
 
-class SocketNotifierInfo : public EpollAbastractEvent
+class SocketNotifierInfo final : public EpollAbastractEvent
 {
 public:
     SocketNotifierInfo(int _fd) : EpollAbastractEvent(_fd) { }
@@ -64,7 +64,7 @@ public:
     quint32 events = 0;
 };
 
-class ZeroTimer : public EpollAbastractEvent
+class ZeroTimer final : public EpollAbastractEvent
 {
 public:
     ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
@@ -76,7 +76,7 @@ public:
     bool active = true;
 };
 
-class TimerInfo : public EpollAbastractEvent
+class TimerInfo final : public EpollAbastractEvent
 {
 public:
     TimerInfo(int fd, int _timerId, int _interval, QObject *obj)

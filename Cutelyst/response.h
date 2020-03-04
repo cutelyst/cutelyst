@@ -31,7 +31,7 @@ class Context;
 class Engine;
 class EngineRequest;
 class ResponsePrivate;
-class CUTELYST_LIBRARY Response : public QIODevice
+class CUTELYST_LIBRARY Response final : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Response)

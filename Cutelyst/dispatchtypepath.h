@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class DispatchTypePathPrivate;
-class CUTELYST_LIBRARY DispatchTypePath : public DispatchType
+class CUTELYST_LIBRARY DispatchTypePath final : public DispatchType
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DispatchTypePath)

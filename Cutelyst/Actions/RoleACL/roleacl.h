@@ -28,7 +28,7 @@
 namespace Cutelyst {
 
 class RoleACLPrivate;
-class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL : public Component
+class CUTELYST_PLUGIN_ACTION_ROLEACL_EXPORT RoleACL final : public Component
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RoleACL)
@@ -65,7 +65,7 @@ protected:
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 };
 
-class RoleACLFactory : public QObject, public ComponentFactory
+class RoleACLFactory final : public QObject, public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")

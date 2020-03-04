@@ -41,7 +41,7 @@ public:
 };
 
 class ProtoRequestHttp2;
-class H2Stream : public Cutelyst::EngineRequest
+class H2Stream final : public Cutelyst::EngineRequest
 {
 public:
     enum State {
@@ -73,7 +73,7 @@ public:
     bool gotPath = false;
 };
 
-class ProtoRequestHttp2 : public ProtocolData
+class ProtoRequestHttp2 final : public ProtocolData
 {
     Q_GADGET
 public:
@@ -117,7 +117,7 @@ public:
     QHash<quint32, H2Stream *> streams;
 };
 
-class ProtocolHttp2 : public Protocol
+class ProtocolHttp2 final : public Protocol
 {
 public:
     explicit ProtocolHttp2(WSGI *wsgi);

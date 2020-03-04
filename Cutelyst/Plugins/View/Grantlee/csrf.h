@@ -25,14 +25,14 @@
 #include <grantlee/util.h>
 #include <grantlee/node.h>
 
-class CSRFTag : public Grantlee::AbstractNodeFactory
+class CSRFTag final : public Grantlee::AbstractNodeFactory
 {
     Q_OBJECT
 public:
     Grantlee::Node *getNode(const QString &tagContent, Grantlee::Parser *p) const override;
 };
 
-class CSRF : public Grantlee::Node
+class CSRF final : public Grantlee::Node
 {
     Q_OBJECT
 public:

@@ -27,7 +27,7 @@ class WSGI;
 class Protocol;
 class LocalSocket;
 class CWsgiEngine;
-class LocalServer : public QLocalServer
+class LocalServer final : public QLocalServer
 {
     Q_OBJECT
 public:

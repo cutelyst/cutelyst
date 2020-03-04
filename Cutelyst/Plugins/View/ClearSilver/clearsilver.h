@@ -26,7 +26,7 @@
 namespace Cutelyst {
 
 class ClearSilverPrivate;
-class CUTELYST_VIEW_CLEARSILVER_EXPORT ClearSilver : public View
+class CUTELYST_VIEW_CLEARSILVER_EXPORT ClearSilver final : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClearSilver)

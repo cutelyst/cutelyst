@@ -24,7 +24,7 @@
 namespace Cutelyst {
 
 class ViewJsonPrivate;
-class CUTELYST_VIEW_JSON_EXPORT ViewJson : public View
+class CUTELYST_VIEW_JSON_EXPORT ViewJson final : public View
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewJson)

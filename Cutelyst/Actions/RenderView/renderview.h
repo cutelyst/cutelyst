@@ -25,7 +25,7 @@
 namespace Cutelyst {
 
 class RenderViewPrivate;
-class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView : public Action
+class CUTELYST_PLUGIN_ACTION_RENDERVIEW_EXPORT RenderView final : public Action
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(RenderView)
@@ -44,7 +44,7 @@ protected:
     virtual bool doExecute(Cutelyst::Context *c) override;
 };
 
-class RenderViewFactory : public QObject, public ComponentFactory
+class RenderViewFactory final : public QObject, public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")

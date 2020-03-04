@@ -32,7 +32,7 @@ class UploadPrivate;
 /*! \class Upload upload.h Cutelyst/Upload
  * @brief %Cutelyst %Upload handles file upload request
  */
-class CUTELYST_LIBRARY Upload : public QIODevice
+class CUTELYST_LIBRARY Upload final : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Upload)
