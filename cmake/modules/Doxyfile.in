@@ -85,10 +85,10 @@ FILE_VERSION_FILTER    =
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
-QUIET                  = NO
-WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = YES
-WARN_IF_DOC_ERROR      = YES
+QUIET                  = @DOXYGEN_QUIET@
+WARNINGS               = @DOXYGEN_WARNINGS@
+WARN_IF_UNDOCUMENTED   = @DOXYGEN_WARN_IF_UNDOCUMENTED@
+WARN_IF_DOC_ERROR      = @DOXYGEN_WARN_IF_DOC_ERROR@
 WARN_NO_PARAMDOC       = NO
 WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =

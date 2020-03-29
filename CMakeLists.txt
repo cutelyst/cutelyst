@@ -52,11 +52,13 @@ endif ()
 #
 # Options
 #
+include(CMakeDependentOption)
 option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
 option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
 option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
 option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 option(BUILD_DOCS "Add the make docs target to build the documentationn. Requires doxygen and dot" ${BUILD_ALL})
+cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building the documentation." OFF "BUILD_DOCS" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
@@ -65,7 +67,6 @@ endif()
 #
 # Plugin options
 #
-include(CMakeDependentOption)
 option(BUILD_ALL "Build all available modules/plugins" OFF)
 option(PLUGIN_MEMCACHED "Enables the memcached plugin" ${BUILD_ALL})
 cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based session store" ON "PLUGIN_MEMCACHED" OFF)
@@ -211,6 +212,18 @@ if (BUILD_DOCS)
     if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
         message (STATUS "Doxygen and dot found. make docs target is available")
         # Add support for a docs target
+
+        if (BUILD_DOCS_QUIET)
+            set(DOXYGEN_QUIET "YES")
+            set(DOXYGEN_WARNINGS "NO")
+            set(DOXYGEN_WARN_IF_UNDOCUMENTED "NO")
+            set(DOXYGEN_WARN_IF_DOC_ERROR "NO")
+        else(BUILD_DOCS_QUIET)
+            set(DOXYGEN_QUIET "NO")
+            set(DOXYGEN_WARNINGS "YES")
+            set(DOXYGEN_WARN_IF_UNDOCUMENTED "YES")
+            set(DOXYGEN_WARN_IF_DOC_ERROR "YES")
+        endif(BUILD_DOCS_QUIET)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
         set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen")
