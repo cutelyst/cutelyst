@@ -4,6 +4,12 @@ if (PLUGIN_VIEW_GRANTLEE)
     add_subdirectory(Grantlee)
 endif (PLUGIN_VIEW_GRANTLEE)
 
+if (PLUGIN_VIEW_CUTELEE)
+    find_package(Cutelee5 REQUIRED)
+    message(STATUS "PLUGIN: View::Cutelee, enabled.")
+    add_subdirectory(Cutelee)
+endif ()
+
 if (PLUGIN_VIEW_CLEARSILVER)
     find_library(ClearSilver_CS   libneo_cs.a)
     find_library(ClearSilver_Util libneo_utl.a)

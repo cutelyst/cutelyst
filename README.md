@@ -28,6 +28,7 @@ http://www.techempower.com/benchmarks/
  * WebSockets
  * REST with ActionREST
  * Plugin based views
+   * [Cutelee](https://github.com/cutelyst/cutelee) (A Qt implementation of Django's template engine)
    * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
    * [Clearsilver](http://www.clearsilver.net)
    * JSON
