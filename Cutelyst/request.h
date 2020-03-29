@@ -488,28 +488,28 @@ Q_SIGNALS:
      * Emitted when the websocket receives a text frame, this is usefull for parsing
      * big chunks of data without waiting till the whole message arives.
      */
-    void webSocketTextFrame(const QString &message, bool isLastFrame, Context *c);
+    void webSocketTextFrame(const QString &message, bool isLastFrame, Cutelyst::Context *c);
 
     /*!
      * Emitted when the websocket receives a text message, this accounts for all text frames till the last one.
      */
-    void webSocketTextMessage(const QString &message, Context *c);
+    void webSocketTextMessage(const QString &message, Cutelyst::Context *c);
 
     /*!
      * Emitted when the websocket receives a binary frame, this is usefull for parsing
      * big chunks of data without waiting till the whole message arives.
      */
-    void webSocketBinaryFrame(const QByteArray &message, bool isLastFrame, Context *c);
+    void webSocketBinaryFrame(const QByteArray &message, bool isLastFrame, Cutelyst::Context *c);
 
     /*!
      * Emitted when the websocket receives a binary message, this accounts for all binary frames till the last one.
      */
-    void webSocketBinaryMessage(const QByteArray &message, Context *c);
+    void webSocketBinaryMessage(const QByteArray &message, Cutelyst::Context *c);
 
     /*!
      * Emitted when the websocket receives a pong frame, which might include a payload
      */
-    void webSocketPong(const QByteArray &payload, Context *c);
+    void webSocketPong(const QByteArray &payload, Cutelyst::Context *c);
 
     /*!
      * Emitted when the websocket receives a close frame, including a close code and a reason,

@@ -125,6 +125,7 @@ QByteArray ClearSilver::render(Context *c) const
 
 NEOERR* findFile(void *c, HDF *hdf, const char *filename, char **contents)
 {
+    Q_UNUSED(hdf)
     const ClearSilverPrivate *priv = static_cast<ClearSilverPrivate*>(c);
     if (!priv) {
         return nerr_raise(NERR_NOMEM, "Cound not cast ClearSilverPrivate");
@@ -250,16 +251,16 @@ void ClearSilverPrivate::serializeVariant(HDF *hdf, const QVariant &value, const
 //    qDebug() << key;
 
     switch (value.type()) {
-    case QMetaType::QString:
+    case QVariant::String:
         hdf_set_value(hdf, key.toLatin1().data(), value.toString().toLatin1().data());
         break;
-    case QMetaType::Int:
+    case QVariant::Int:
         hdf_set_int_value(hdf, key.toLatin1().data(), value.toInt());
         break;
-    case QMetaType::QVariantHash:
+    case QVariant::Hash:
         serializeHash(hdf, value.toHash(), key);
         break;
-    case QMetaType::QVariantMap:
+    case QVariant::Map:
         serializeMap(hdf, value.toMap(), key);
         break;
     default:

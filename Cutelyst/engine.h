@@ -167,7 +167,7 @@ Q_SIGNALS:
      * This method allows for engines to keep the Context alive
      * while processing websocket data.
      */
-    void processRequestAsync(EngineRequest *request);
+    void processRequestAsync(Cutelyst::EngineRequest *request);
 
 protected:
     /**

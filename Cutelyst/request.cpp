@@ -76,7 +76,6 @@ QString Request::hostname() const
     const QHostInfo ptr = QHostInfo::fromName(d->engineRequest->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
         qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->engineRequest->remoteAddress;
-        d->remoteHostname = QStringLiteral("");
         return ret;
     }
 

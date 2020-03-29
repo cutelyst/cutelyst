@@ -389,37 +389,37 @@ Q_SIGNALS:
      * In case you want to stop further processing set
      * skipMethod to true.
      */
-    void beforePrepareAction(Context *c, bool *skipMethod);
+    void beforePrepareAction(Cutelyst::Context *c, bool *skipMethod);
 
     /**
      * This signal is emitted right after the Dispatcher
      * returns the Action that will be executed.
      */
-    void beforeDispatch(Context *c);
+    void beforeDispatch(Cutelyst::Context *c);
 
     /**
      * This signal is emitted right after the Action
      * found by the dispatcher got executed.
      */
-    void afterDispatch(Context *c);
+    void afterDispatch(Cutelyst::Context *c);
 
     /**
      * This signal is emitted right after application has been setup
      * and before application forks and \sa postFork() is called.
      */
-    void preForked(Application *app);
+    void preForked(Cutelyst::Application *app);
 
     /**
      * This signal is emitted after before \sa postFork() is called.
      */
-    void postForked(Application *app);
+    void postForked(Cutelyst::Application *app);
 
     /**
      * This signal is likely to be emitted when the worker process should
      * stop, at this point the application has a limited time to finish it's
      * operations, if a timeout is reached the application will get killed.
      */
-    void shuttingDown(Application *app);
+    void shuttingDown(Cutelyst::Application *app);
 
 protected:
     /**
