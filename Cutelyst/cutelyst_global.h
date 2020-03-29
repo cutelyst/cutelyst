@@ -99,6 +99,11 @@
 #else
 #  define CUTELYST_VIEW_GRANTLEE_EXPORT Q_DECL_IMPORT
 #endif
+#if defined(Cutelyst2Qt5ViewCutelee_EXPORTS)
+#  define CUTELYST_VIEW_CUTELEE_EXPORT Q_DECL_EXPORT
+#else
+#  define CUTELYST_VIEW_CUTELEE_EXPORT Q_DECL_IMPORT
+#endif
 #if defined(Cutelyst2Qt5ViewJson_EXPORTS)
 #  define CUTELYST_VIEW_JSON_EXPORT Q_DECL_EXPORT
 #else
