@@ -196,50 +196,52 @@ if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-find_package(Doxygen)
-if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
-  message (STATUS "Doxygen and dot found. make docs target is available")
-  # Add support for a docs target
+if (BUILD_DOCS)
+    find_package(Doxygen REQUIRED dot)
+    if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
+    message (STATUS "Doxygen and dot found. make docs target is available")
+    # Add support for a docs target
 
-  # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
-  set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen")
-  set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=http://qt.nokia.com/doc/${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}")
-
-  set(TAGFILES "${QTTAGFILE} ${STLTAGFILE}")
-  set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-  configure_file(
-    "${CMAKE_MODULE_PATH}/Doxyfile.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
-    @ONLY)
-
-  # Add support for a Qt assistant docs target
-  # qttags.tag is too big to distribute with Grantlee. Get it
-  # from http://api.kde.org/kdereview-api/kdereview.tar.gz for example.
-  if(EXISTS ${CMAKE_SOURCE_DIR}/scripts/qttags.tag)
-    set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qtdocs")
-
-    # Available from http://steveire.com/libstdc++-longnames.tag
-    # Also recommended: http://www.steveire.com/libstdc++-v3.qch
-    set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++-longnames.tag=qthelp://org.gnu.libstdcxx/libstdc++-v3/")
-    set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=qthelp://com.trolltech.qt/qdoc/")
+    # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
+    set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen")
+    set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=http://qt.nokia.com/doc/${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}")
 
     set(TAGFILES "${QTTAGFILE} ${STLTAGFILE}")
-    set(GENERATE_QHP "yes")
-
+    set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     configure_file(
-      "${CMAKE_MODULE_PATH}/Doxyfile.in"
-      "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
-      @ONLY)
-  endif()
+        "${CMAKE_MODULE_PATH}/Doxyfile.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+        @ONLY)
 
-  set( DOCS_ARGS ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
-  if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt")
-    set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt" )
-  endif()
+    # Add support for a Qt assistant docs target
+    # qttags.tag is too big to distribute with Grantlee. Get it
+    # from http://api.kde.org/kdereview-api/kdereview.tar.gz for example.
+    if(EXISTS ${CMAKE_SOURCE_DIR}/scripts/qttags.tag)
+        set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qtdocs")
 
-  add_custom_target(docs
-    ${DOCS_ARGS}
-  )
+        # Available from http://steveire.com/libstdc++-longnames.tag
+        # Also recommended: http://www.steveire.com/libstdc++-v3.qch
+        set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++-longnames.tag=qthelp://org.gnu.libstdcxx/libstdc++-v3/")
+        set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=qthelp://com.trolltech.qt/qdoc/")
+
+        set(TAGFILES "${QTTAGFILE} ${STLTAGFILE}")
+        set(GENERATE_QHP "yes")
+
+        configure_file(
+        "${CMAKE_MODULE_PATH}/Doxyfile.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
+        @ONLY)
+    endif()
+
+    set( DOCS_ARGS ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
+    if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt")
+        set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt" )
+    endif()
+
+    add_custom_target(docs
+        ${DOCS_ARGS}
+    )
+    endif()
 endif()
 
 include(CPackConfig)
