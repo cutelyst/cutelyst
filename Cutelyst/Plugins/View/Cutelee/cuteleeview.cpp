@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2020 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "cuteleeview_p.h"
+#include "cutelystcutelee.h"
 
 #include "application.h"
 #include "context.h"
@@ -49,7 +50,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
         d->engine->addPluginPath(QString::fromLocal8Bit(dir));
     }
 
-    d->engine->addDefaultLibrary(QStringLiteral("cutelee_cutelyst"));
+    d->engine->insertLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(d->engine));
 
     auto app = qobject_cast<Application *>(parent);
     if (app) {
