@@ -240,6 +240,12 @@ if (BUILD_DOCS)
             set(DOXYGEN_HTML_TIMESTAMP "NO")
         endif (BUILD_DOCS_TIMESTAMP)
 
+        set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
+        set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_SOURCE_DIR})
+        set(DOXYGEN_IMAGE_PATH ${CMAKE_SOURCE_DIR}/dox)
+        set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)
+        set(DOXYGEN_DOTFILE_DIRS ${CMAKE_SOURCE_DIR}/dox)
+
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
         set (DOCS_STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
         set (DOCS_STLLOCALHTMLDIR "${CMAKE_SOURCE_DIR}/scripts/libstdc++" CACHE PATH "Path to the directory containing the libstdc++ HTML doxygen documentation")

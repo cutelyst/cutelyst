@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Cutelyst
-PROJECT_NUMBER         = @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
+PROJECT_NUMBER         = @DOXYGEN_PROJECT_NUMBER@
 OUTPUT_DIRECTORY       = @DOXYGEN_OUTPUT_DIRECTORY@
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
@@ -25,7 +25,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
 ALWAYS_DETAILED_SEC    = NO
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
-STRIP_FROM_PATH        = @CMAKE_SOURCE_DIR@
+STRIP_FROM_PATH        = @DOXYGEN_STRIP_FROM_PATH@
 STRIP_FROM_INC_PATH    =
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
@@ -108,7 +108,7 @@ EXCLUDE_SYMBOLS        = d_ptr
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
-IMAGE_PATH             = @CMAKE_SOURCE_DIR@/dox
+IMAGE_PATH             = @DOXYGEN_IMAGE_PATH@
 INPUT_FILTER           =
 FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
@@ -230,7 +230,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = @DOXYGEN_TAGFILES@
-GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/"cutelyst@PROJECT_VERSION_MAJOR@.tags"
+GENERATE_TAGFILE       = @DOXYGEN_GENERATE_TAGFILE@
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
 PERL_PATH              = /usr/bin/perl
@@ -256,7 +256,7 @@ GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
 DOT_PATH               =
-DOTFILE_DIRS           = @CMAKE_SOURCE_DIR@/dox
+DOTFILE_DIRS           = @DOXYGEN_DOTFILE_DIRS@
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 1000
 DOT_TRANSPARENT        = YES
