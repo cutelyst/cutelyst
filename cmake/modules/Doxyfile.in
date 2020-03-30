@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = Cutelyst
 PROJECT_NUMBER         = @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
-OUTPUT_DIRECTORY       = @DOCS_OUTPUT_DIRECTORY@
+OUTPUT_DIRECTORY       = @DOXYGEN_OUTPUT_DIRECTORY@
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -133,7 +133,7 @@ IGNORE_PREFIX          =
 # configuration options related to the HTML output
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
-HTML_OUTPUT            = apidox
+HTML_OUTPUT            = @DOXYGEN_HTML_OUTPUT@
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            =
 HTML_FOOTER            =
@@ -155,15 +155,15 @@ ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NONE
 TREEVIEW_WIDTH         = 250
 FORMULA_FONTSIZE       = 10
-HTML_TIMESTAMP         = @DOXYGEN_TIMESTAMP@
+HTML_TIMESTAMP         = @DOXYGEN_HTML_TIMESTAMP@
 #---------------------------------------------------------------------------
 # configuration options related to the Qt Docs output
 #---------------------------------------------------------------------------
-GENERATE_QHP       = @GENERATE_QHP@
-QHP_NAMESPACE      = "org.cutelyst.@PROJECT_VERSION_MAJOR@@PROJECT_VERSION_MINOR@@PROJECT_VERSION_PATCH@"
-QHP_VIRTUAL_FOLDER = "cutelyst@PROJECT_VERSION_MAJOR@"
-QCH_FILE           = @CMAKE_BINARY_DIR@/"cutelyst@PROJECT_VERSION_MAJOR@.qch"
-QHG_LOCATION       = @QHG_LOCATION@
+GENERATE_QHP       = @DOXYGEN_GENERATE_QHP@
+QHP_NAMESPACE      = @DOXYGEN_QHP_NAMESPACE@
+QHP_VIRTUAL_FOLDER = @DOXYGEN_QHP_VIRTUAL_FOLDER@
+QCH_FILE           = @DOXYGEN_QCH_FILE@
+QHG_LOCATION       = @DOXYGEN_QHG_LOCATION@
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
@@ -229,7 +229,7 @@ SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
-TAGFILES               = @TAGFILES@
+TAGFILES               = @DOXYGEN_TAGFILES@
 GENERATE_TAGFILE       = @CMAKE_BINARY_DIR@/"cutelyst@PROJECT_VERSION_MAJOR@.tags"
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES

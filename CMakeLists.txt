@@ -59,6 +59,7 @@ option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
 option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 option(BUILD_DOCS "Add the make docs target to build the documentationn. Requires doxygen and dot" ${BUILD_ALL})
 cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building the documentation." OFF "BUILD_DOCS" OFF)
+cmake_dependent_option(BUILD_DOCS_TIMESTAMP "Tell doxygen to insert a build timestamp on every HTML page." ON "BUILD_DOCS" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
@@ -198,6 +199,15 @@ if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
+# Adds the make docs target. make docs will create three types of documentation.
+# It will create html documentation linked to the online documentation of Qt
+# and libstdc++, this will be created into the directory "webdox" in the CMAKE_BINARY_DIR.
+# A second html documentation will be created that is linked to local available html
+# documentation, this will be created into the directory "htmldox" in the CMAKE_BINARY_DIR.
+# The third documentation is a QCH file, that will be created as cutelyst2.qch in the
+# CMAKE_BINARY_DIR. The QCH documentation will only be created if qhelpgenerator can be found.
+# Linkage to third party documentation will only be available if the appropriate tag files
+# can be found.
 if (BUILD_DOCS)
     find_package(Doxygen REQUIRED dot)
 
@@ -211,7 +221,6 @@ if (BUILD_DOCS)
 
     if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
         message (STATUS "Doxygen and dot found. make docs target is available")
-        # Add support for a docs target
 
         if (BUILD_DOCS_QUIET)
             set(DOXYGEN_QUIET "YES")
@@ -225,41 +234,107 @@ if (BUILD_DOCS)
             set(DOXYGEN_WARN_IF_DOC_ERROR "YES")
         endif(BUILD_DOCS_QUIET)
 
-        # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
-        set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen")
-        set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=http://qt.nokia.com/doc/${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}")
+        if (BUILD_DOCS_TIMESTAMP)
+            set(DOXYGEN_HTML_TIMESTAMP "YES")
+        else (BUILD_DOCS_TIMESTAMP)
+            set(DOXYGEN_HTML_TIMESTAMP "NO")
+        endif (BUILD_DOCS_TIMESTAMP)
 
-        set(TAGFILES "${QTTAGFILE} ${STLTAGFILE}")
-        set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
+        set (DOCS_STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
+        set (DOCS_STLLOCALHTMLDIR "${CMAKE_SOURCE_DIR}/scripts/libstdc++" CACHE PATH "Path to the directory containing the libstdc++ HTML doxygen documentation")
+        if (EXISTS DOCS_STLTAGFILE)
+            list(APPEND ONLINETAGS "${DOCS_STLTAGFILE}=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/")
+            if (IS_DIRECTORY "${DOCS_STLLOCALHTMLDIR}")
+                list(APPEND LOCALHTMLTAGS "${DOCS_STLTAGFILE}=${DOCS_STLLOCALHTMLDIR}/")
+            endif (IS_DIRECTORY "${DOCS_STLLOCALHTMLDIR}")
+            list(APPEND QCHTAGS "${DOCS_STLTAGFILE}=qthelp://org.gnu.libstdcxx/libstdc++/")
+        endif (EXISTS DOCS_STLTAGFILE)
+
+        find_program(QMAKE_EXE_PATH NAMES qmake-qt5 qmake5 qmake)
+        if (QMAKE_EXE_PATH)
+            execute_process(COMMAND ${QMAKE_EXE_PATH} -query QT_INSTALL_DOCS OUTPUT_VARIABLE QT_INSTALL_DOCS OUTPUT_STRIP_TRAILING_WHITESPACE)
+            if (NOT IS_DIRECTORY "${QT_INSTALL_DOCS}")
+                set(QT_INSTALL_DOCS "/usr/share/qt5/doc")
+            endif (NOT IS_DIRECTORY "${QT_INSTALL_DOCS}")
+        else(QMAKE_EXE_PATH)
+            set(QT_INSTALL_DOCS "/usr/share/qt5/doc")
+        endif(QMAKE_EXE_PATH)
+
+        set(QT_ONLINE_DOCS_URL "https://doc.qt.io/qt-5/")
+
+        # Qt normally ships with documentation and tagfiles installed into QT_INSTALL_DOCS directory.
+        # If your distribution does not provide the tag files for Qt, yout can get a complete one
+        # from http://api.kde.org/kdereview-api/kdereview.tar.gz for example. If you have one single
+        # big tag file for complete Qt, use DOCS_QTTAGFILE to set the path to it. If you have the
+        # modularized tag files from Qt, use DOCS_QTDOCSDIR to set the path to the directory that contains
+        # the tag files. The files will be searched there and in subdirectories named by the Qt component.
+        set (DOCS_QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag" CACHE FILEPATH "Path to a single complete doxygen tag file for Qt")
+        set (DOCS_QTDOCSDIR ${QT_INSTALL_DOCS} CACHE PATH "Path to a directory containingthe Qt Documentation")
+        if (EXISTS DOCS_QTTAGFILE)
+            list(APPEND ONLINETAGS "${DOCS_QTTAGFILE}=${QT_ONLINE_DOCS_URL}")
+            foreach(_QTDOCCOMP "qtcore" "qtsql" "qtnetwork")
+                if (IS_DIRECTORY "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}")
+                    list(APPEND LOCALHTMLTAGS "${DOCS_QTTAGFILE}=${DOCS_QTDOCSDIR}/${_QTDOCCOMP}/")
+                endif (IS_DIRECTORY "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}")
+                if (EXISTS "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}.qch")
+                    list(APPEND QCHTAGS "${DOCS_QTTAGFILE}=qthelp://org.qt-project.${_QTDOCCOMP}.${Qt5_VERSION_MAJOR}${Qt5_VERSION_MINOR}${Qt5_VERSION_PATCH}/${_QTDOCCOMP}/")
+                endif (EXISTS "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}.qch")
+            endforeach(_QTDOCCOMP "qtcore" "qtsql" "qtnetwork")
+        else(EXISTS DOCS_QTTAGFILE)
+            foreach(_QTDOCCOMP "qtcore" "qtsql" "qtnetwork")
+                find_file(_QTDOCCOMPTAGS "${_QTDOCCOMP}.tags" PATHS "${DOCS_QTDOCSDIR}" PATH_SUFFIXES "${_QTDOCCOMP}" NO_DEFAULT_PATH)
+                if (_QTDOCCOMPTAGS)
+                    list(APPEND ONLINETAGS "${_QTDOCCOMPTAGS}=${QT_ONLINE_DOCS_URL}")
+                    if (IS_DIRECTORY "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}")
+                        list(APPEND LOCALHTMLTAGS "${_QTDOCCOMPTAGS}=${DOCS_QTDOCSDIR}/${_QTDOCCOMP}/")
+                    endif (IS_DIRECTORY "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}")
+                    if (EXISTS "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}.qch")
+                        list(APPEND QCHTAGS "${_QTDOCCOMPTAGS}=qthelp://org.qt-project.${_QTDOCCOMP}.${Qt5_VERSION_MAJOR}${Qt5_VERSION_MINOR}${Qt5_VERSION_PATCH}/${_QTDOCCOMP}/")
+                    endif (EXISTS "${DOCS_QTDOCSDIR}/${_QTDOCCOMP}.qch")
+                endif (_QTDOCCOMPTAGS)
+                unset(_QTDOCCOMPTAGS CACHE)
+            endforeach(_QTDOCCOMP "qtcore" "qtsql" "qtnetwork")
+        endif(EXISTS DOCS_QTTAGFILE)
+
+        string(REPLACE ";" " " DOXYGEN_TAGFILES "${ONLINETAGS}")
+        set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        set(DOXYGEN_HTML_OUTPUT "webdox")
+
         configure_file(
             "${CMAKE_MODULE_PATH}/Doxyfile.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.web"
             @ONLY)
 
-        # Add support for a Qt assistant docs target
-        # qttags.tag is too big to distribute with Grantlee. Get it
-        # from http://api.kde.org/kdereview-api/kdereview.tar.gz for example.
-        if(EXISTS ${CMAKE_SOURCE_DIR}/scripts/qttags.tag)
-            set(DOCS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qtdocs")
+        set(DOCS_ARGS ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.web")
 
-            # Available from http://steveire.com/libstdc++-longnames.tag
-            # Also recommended: http://www.steveire.com/libstdc++-v3.qch
-            set(STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++-longnames.tag=qthelp://org.gnu.libstdcxx/libstdc++-v3/")
-            set(QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag=qthelp://com.trolltech.qt/qdoc/")
+        string(REPLACE ";" " " DOXYGEN_TAGFILES "${LOCALHTMLTAGS}")
+        set(DOXYGEN_HTML_OUTPUT "htmldox")
 
-            set(TAGFILES "${QTTAGFILE} ${STLTAGFILE}")
-            set(GENERATE_QHP "yes")
+        configure_file(
+            "${CMAKE_MODULE_PATH}/Doxyfile.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.html"
+            @ONLY)
+
+        set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.html")
+
+        find_program(DOXYGEN_QHG_LOCATION NAMES qhelpgenerator-qt5 qhelpgenerator5 qhelpgenerator)
+        if(DOXYGEN_QHG_LOCATION)
+            message(STATUS "qhelpgenerator found. QCH documentation will be created")
+            set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qtdocs")
+            string(REPLACE ";" " " DOXYGEN_TAGFILES "${QCHTAGS}")
+            set(DOXYGEN_GENERATE_QHP "YES")
+            set(DOXYGEN_QHP_NAMESPACE "org.cutelyst.${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
+            set(DOXYGEN_QHP_VIRTUAL_FOLDER "cutelyst${PROJECT_VERSION_MAJOR}")
+            set(DOXYGEN_QCH_FILE "${CMAKE_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
 
             configure_file(
-            "${CMAKE_MODULE_PATH}/Doxyfile.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
-            @ONLY)
-        endif()
+                "${CMAKE_MODULE_PATH}/Doxyfile.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
+                @ONLY)
 
-        set( DOCS_ARGS ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
-        if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt")
-            set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt" )
-        endif()
+            set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt")
+        endif(DOXYGEN_QHG_LOCATION)
 
         add_custom_target(docs
             ${DOCS_ARGS}
