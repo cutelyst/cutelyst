@@ -151,6 +151,7 @@ build_script:
     -DPLUGIN_UWSGI=off
     -DPLUGIN_VALIDATOR_PWQUALITY=off
     -DUSE_JEMALLOC=off
+    -DBUILD_DOCS=off
   - cmake --build . --config Debug
   - cmake --build . --config Release
 
