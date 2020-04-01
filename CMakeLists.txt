@@ -215,9 +215,9 @@ if (BUILD_DOCS)
     # as package component, at least not on cmake 3.10 and 3.16. CMake 3.9
     # introduced an improved FindDoxygen module, so lets set this manually
     # for CMake 3.9 or newer.
-    if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.9)
+    if (CMAKE_VERSION VERSION_GREATER 3.8.2)
         set(DOXYGEN_DOT_FOUND YES)
-    endif (CMAKE_VERSION VERSION_GREATER_EQUAL 3.9)
+    endif (CMAKE_VERSION VERSION_GREATER 3.8.2)
 
     if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
         message (STATUS "Doxygen and dot found. make docs target is available")
