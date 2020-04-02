@@ -22,6 +22,8 @@ $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $L
 
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/CSRFProtection -ts i18n/plugin_csrfprotection.$LANG.ts
 
+$QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/View/Cutelee -ts i18n/plugin_view_cutelee.$LANG.ts
+
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/View/Grantlee -ts i18n/plugin_view_grantlee.$LANG.ts
 
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/Utils/Validator -ts i18n/plugin_utils_validator.$LANG.ts
