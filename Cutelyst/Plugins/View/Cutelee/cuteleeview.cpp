@@ -50,7 +50,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
         d->engine->addPluginPath(QString::fromLocal8Bit(dir));
     }
 
-    d->engine->insertLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(d->engine));
+    d->engine->insertDefaultLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(d->engine));
 
     auto app = qobject_cast<Application *>(parent);
     if (app) {
