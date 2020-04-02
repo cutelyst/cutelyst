@@ -13,6 +13,7 @@ if (LRELEASE_CMD)
         cutelystcore
         plugin_memcached
         plugin_csrfprotection
+        plugin_view_cutelee
         plugin_view_grantlee
         plugin_utils_validator)
 
