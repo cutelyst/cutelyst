@@ -557,6 +557,7 @@ void ProtoRequestFastCGI::processingFinished()
         return;
     }
 
+    sock->flush();
     if (status & EngineRequest::Async && buf_size) {
         QTimer::singleShot(0, io, [=] {
             sock->proto->parse(sock, io);

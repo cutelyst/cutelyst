@@ -49,6 +49,7 @@ public:
 
     // Returns false if disconnected
     virtual bool requestFinished() = 0;
+    virtual bool flush() = 0;
 
     inline void resetSocket() {
         if (protoData->upgradedFrom) {
@@ -80,6 +81,7 @@ public:
 
     virtual void connectionClose() override final;
     virtual bool requestFinished() override final;
+    virtual bool flush() override final;
     void socketDisconnected();
 
 Q_SIGNALS:
@@ -99,6 +101,7 @@ public:
 
     virtual void connectionClose() override final;
     virtual bool requestFinished() override final;
+    virtual bool flush() override final;
     void socketDisconnected();
 
 Q_SIGNALS:
@@ -116,6 +119,7 @@ public:
 
     virtual void connectionClose() override final;
     virtual bool requestFinished() override final;
+    virtual bool flush() override final;
     void socketDisconnected();
 
 Q_SIGNALS:

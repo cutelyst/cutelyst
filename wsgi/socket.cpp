@@ -55,6 +55,11 @@ bool TcpSocket::requestFinished()
     return !disconnected;
 }
 
+bool TcpSocket::flush()
+{
+    return QTcpSocket::flush();
+}
+
 void TcpSocket::socketDisconnected()
 {
     if (!processing) {
@@ -82,6 +87,11 @@ bool LocalSocket::requestFinished()
         Q_EMIT finished();
     }
     return !disconnected;
+}
+
+bool LocalSocket::flush()
+{
+    return QLocalSocket::flush();
 }
 
 void LocalSocket::socketDisconnected()
@@ -113,6 +123,11 @@ bool SslSocket::requestFinished()
         Q_EMIT finished();
     }
     return !disconnected;
+}
+
+bool SslSocket::flush()
+{
+    return QSslSocket::flush();
 }
 
 void SslSocket::socketDisconnected()

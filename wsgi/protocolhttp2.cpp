@@ -896,7 +896,9 @@ void H2Stream::processingFinished()
 {
     state = Closed;
     protoRequest->streams.remove(streamId);
-    protoRequest->sock->requestFinished();
+    if (protoRequest->sock->requestFinished()) {
+        protoRequest->sock->flush();
+    }
     delete this;
 }
 
