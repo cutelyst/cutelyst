@@ -60,6 +60,8 @@ using namespace Cutelyst;
 WSGI::WSGI(QObject *parent) : QObject(parent),
     d_ptr(new WSGIPrivate(this))
 {
+    QCoreApplication::addLibraryPath(QDir().absolutePath());
+
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(QLatin1String("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
@@ -794,7 +796,15 @@ bool WSGIPrivate::listenLocal(const QString &line, Protocol *protocol)
 void WSGI::setApplication(const QString &application)
 {
     Q_D(WSGI);
-    d->application = application;
+
+    QPluginLoader loader(application);
+    if (loader.fileName().isEmpty()) {
+        d->application = application;
+    } else {
+        // We use the loader filename since it can provide
+        // the suffix for the file watcher
+        d->application = loader.fileName();
+    }
     Q_EMIT changed();
 }
 
