@@ -56,6 +56,52 @@ public:
 };
 
 class SessionPrivate;
+/**
+ * Plugin providing methods for session management.
+ *
+ * <H3>Configuration file options</H3>
+ *
+ * There are some options you can set in your application configuration file in the @c Cutelyst_Session_Plugin section.
+ *
+ * @par expires
+ * @parblock
+ * Integer value, default: 7200
+ *
+ * Expiration duration of the session in seconds.
+ * @endparblock
+ *
+ * @par verify_address
+ * @parblock
+ * Boolean value, default: false
+ *
+ * If enabled, the plugin will check if the IP address of the requesting user matches the
+ * address stored in the session data. In case of a mismatch, the session will be deleted.
+ * @endparblock
+ *
+ * @par verify_user_agent
+ * @parblock
+ * Boolean value, default: false
+ *
+ * If true, the plugin will check if the user agent of the requesting user matches the user
+ * agent stored in the session data. In case of a mismatch, the session will be deleted.
+ * @endparblock
+ *
+ * @par cookie_http_only
+ * @parblock
+ * Boolean value, default: true
+ *
+ * If true, the session cookie will have the httpOnly flag set so that the cookie is not
+ * accessible to JavaScript's Document.cookie API.
+ * @endparblock
+ *
+ * @par cookie_secure
+ * @parblock
+ * Boolean value, default: false
+ *
+ * If true, the session cookie will have the secure flag set so that the cookie is only
+ * sent to the server with an encrypted request over the HTTPS protocol.
+ * @endparblock
+ */
 class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
 {
     Q_OBJECT
@@ -68,10 +114,7 @@ public:
     virtual ~Session();
 
     /**
-     * If config has
-     * [Cutelyst_Session_Plugin]
-     * expires = 1234
-     * it will change the default expires which is 7200 (two hours)
+     * Sets up the plugin and loads the configuration.
      */
     virtual bool setup(Application *app) final;
 
