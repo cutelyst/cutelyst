@@ -26,6 +26,18 @@ If enabled, the plugin will check if the IP address of the requesting user match
 .RS 4
 If true, the plugin will check if the user agent of the requesting user matches the user agent stored in the session data. In case of a mismatch, the session will be deleted.
 .RE
+.PP
+.I cookie_http_only
+(boolean value, default: true)
+.RS 4
+If true, the session cookie will have the httpOnly flag set so that the cookie is not accessible to JavaScript's Document.cookie API.
+.RE
+.PP
+.I cookie_secure
+(boolean value, default: false)
+.RS 4
+If true, the session cookie will have the secure flag set so that the cookie is only sent to the server with an encrypted request over the HTTPS protocol.
+.RE
 .SH EXAMPLES
 .RS 0
 [Cutelyst_Session_Plugin]
