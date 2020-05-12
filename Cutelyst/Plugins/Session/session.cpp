@@ -66,6 +66,8 @@ bool Session::setup(Application *app)
     d->expiryThreshold = config.value(QLatin1String("expiry_threshold"), 0).toLongLong();
     d->verifyAddress = config.value(QLatin1String("verify_address"), false).toBool();
     d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
+    d->cookieHttpOnly = config.value(QLatin1String("cookie_http_only"), true).toBool();
+    d->cookieSecure = config.value(QLatin1String("cookie_secure"), false).toBool();
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
     connect(app, &Application::postForked, this, [=] {
