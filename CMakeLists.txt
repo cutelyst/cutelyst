@@ -8,7 +8,7 @@ if (POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-project(cutelyst VERSION 2.11.0 LANGUAGES CXX)
+project(cutelyst VERSION 2.12.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
