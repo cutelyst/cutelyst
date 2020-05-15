@@ -281,6 +281,16 @@ void Response::redirect(const QString &url, quint16 status)
     redirect(QUrl(url), status);
 }
 
+void Response::redirectSafe(const QUrl &url, const QUrl &fallback)
+{
+    Q_D(const Response);
+    if (url.matches(d->engineRequest->context->req()->uri(), QUrl::RemovePath | QUrl::RemoveQuery)) {
+        redirect(url);
+    } else {
+        redirect(fallback);
+    }
+}
+
 QUrl Response::location() const
 {
     Q_D(const Response);

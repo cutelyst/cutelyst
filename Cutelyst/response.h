@@ -281,6 +281,25 @@ public:
     void redirect(const QString &url, quint16 status = Found);
 
     /**
+     * Open Redirect Vulnerability is when you get an user provided URL and redirect
+     * to it without checking if it's safe.
+     *
+     * This can be used on login forms that receive some "redir" parameter that once
+     * logged in allows the user to go straight to that page instead of some home page.
+     *
+     * It's then possible to receive a link like
+     * http://example.com/login?redir=http://exemple.com/login notice how both domain names
+     * are similar for malicious porpuses, once logged in it redirects to a similar login page that
+     * will pretent the auth didn't work, user might then type their credentials on that page.
+     *
+     * This method validades that the url scheme, domain name and port are the same of the
+     * request to your server if it isn't it will send the user to \p fallback url that you
+     * know it's safe. If you need to redirect the user to some other domain/port
+     * validate the URL manually an use the regular \sa redirect method instead.
+     */
+    void redirectSafe(const QUrl &url, const QUrl &fallback);
+
+    /**
      * Returns the HTTP location set by the redirect
      */
     QUrl location() const;
