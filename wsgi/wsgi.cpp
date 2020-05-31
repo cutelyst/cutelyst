@@ -564,8 +564,11 @@ int WSGI::exec(Cutelyst::Application *app)
     systemdNotify::install_systemd_notifier(this);
 #endif
 
-    // TCP needs root privileges
-    d->listenTcpSockets();
+    // TCP needs root privileges, but SO_REUSEPORT must have an effective user ID that
+    // matches the effective user ID used to perform the first bind on the socket.
+    if (!d->reusePort) {
+        d->listenTcpSockets();
+    }
 
     d->writePidFile(d->pidfile);
 
@@ -589,6 +592,10 @@ int WSGI::exec(Cutelyst::Application *app)
 #ifdef Q_OS_UNIX
     }
 #endif
+
+    if (d->reusePort) {
+        d->listenTcpSockets();
+    }
 
     if (!d->servers.size()) {
         std::cout << "Please specify a socket to listen to" << std::endl;
