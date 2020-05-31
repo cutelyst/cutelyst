@@ -42,7 +42,7 @@ Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer", QtWarningMsg)
 using namespace CWSGI;
 
 #ifdef Q_OS_LINUX
-int listenReuse(const QHostAddress &address, quint16 port, bool startListening);
+int listenReuse(const QHostAddress &address, int listenQueue, quint16 port, bool reusePort, bool startListening);
 #endif
 
 TcpServerBalancer::TcpServerBalancer(WSGI *wsgi) : QTcpServer(wsgi)
@@ -138,27 +138,23 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     m_port = port;
 
 #ifdef Q_OS_LINUX
-    if (m_wsgi->reusePort()) {
-        int socket = listenReuse(address, port, false);
-        if (socket > 0) {
-            setSocketDescriptor(socket);
-            pauseAccepting();
-        } else {
-            std::cerr << "Failed to listen on TCP: " << qPrintable(line)
-                      << " : " << qPrintable(errorString()) << std::endl;
-            exit(1);
-        }
+    int socket = listenReuse(address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), false);
+    if (socket > 0) {
+        setSocketDescriptor(socket);
+        pauseAccepting();
     } else {
-#endif
-        bool ret = QTcpServer::listen(address, port);
-        if (ret) {
-            pauseAccepting();
-        } else {
-            std::cerr << "Failed to listen on TCP: " << qPrintable(line)
-                      << " : " << qPrintable(errorString()) << std::endl;
-            exit(1);
-        }
-#ifdef Q_OS_LINUX
+        std::cerr << "Failed to listen on TCP: " << qPrintable(line)
+                  << " : " << qPrintable(errorString()) << std::endl;
+        exit(1);
+    }
+#else
+    bool ret = QTcpServer::listen(address, port);
+    if (ret) {
+        pauseAccepting();
+    } else {
+        std::cerr << "Failed to listen on TCP: " << qPrintable(line)
+                  << " : " << qPrintable(errorString()) << std::endl;
+        exit(1);
     }
 #endif
 
@@ -355,7 +351,7 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
     return true;
 }
 
-int listenReuse(const QHostAddress &address, quint16 port, bool startListening)
+int listenReuse(const QHostAddress &address, int listenQueue, quint16 port, bool reusePort, bool startListening)
 {
     QAbstractSocket::NetworkLayerProtocol proto = address.protocol();
 
@@ -365,10 +361,12 @@ int listenReuse(const QHostAddress &address, quint16 port, bool startListening)
         return -1;
     }
 
-    int optval = 1;
-    if (::setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
-        qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
-        return -1;
+    if (reusePort) {
+        int optval = 1;
+        if (::setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
+            qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
+            return -1;
+        }
     }
 
     if (!nativeBind(socket, address, port)) {
@@ -376,7 +374,7 @@ int listenReuse(const QHostAddress &address, quint16 port, bool startListening)
         return -1;
     }
 
-    if (startListening && ::listen(socket, 100) < 0) {
+    if (startListening && ::listen(socket, listenQueue) < 0) {
         qCCritical(CWSGI_BALANCER) << "Failed to listen to socket" << socket;
         return -1;
     }
@@ -422,7 +420,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 #ifdef Q_OS_LINUX
         if (m_wsgi->reusePort()) {
             connect(engine, &CWsgiEngine::started, this, [=] () {
-                int socket = listenReuse(m_address, m_port, true);
+                int socket = listenReuse(m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
                 if (!server->setSocketDescriptor(socket)) {
                     qFatal("Failed to set server socket descriptor, reuse-port");
                 }

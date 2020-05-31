@@ -257,6 +257,16 @@ public:
     QStringList touchReload() const;
 
     /**
+     * Defines the socket listen queue size.
+     * This setting currently works only on Linux for TCP sockets.
+     *
+     * @accessors listenQueue(), setListenQueue()
+     */
+    Q_PROPERTY(int listenQueue READ listenQueue WRITE setListenQueue NOTIFY changed)
+    void setListenQueue(int size);
+    int listenQueue() const;
+
+    /**
      * Defines the buffer size used when parsing requests
      * @accessors bufferSize(), setBufferSize()
      */

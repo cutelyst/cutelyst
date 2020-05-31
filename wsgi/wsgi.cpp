@@ -134,6 +134,11 @@ void WSGI::parseCommandLine(const QStringList &arguments)
                               QCoreApplication::translate("main", "Enable master process"));
     parser.addOption(master);
 
+    QCommandLineOption listenQueue({ QStringLiteral("listen"), QStringLiteral("l") },
+                                  QCoreApplication::translate("main", "set the socket listen queue size"),
+                                  QCoreApplication::translate("main", "size"));
+    parser.addOption(listenQueue);
+
     QCommandLineOption bufferSize({ QStringLiteral("buffer-size"), QStringLiteral("b") },
                                   QCoreApplication::translate("main", "set internal buffer size"),
                                   QCoreApplication::translate("main", "bytes"));
@@ -382,6 +387,15 @@ void WSGI::parseCommandLine(const QStringList &arguments)
 
     if (parser.isSet(lazyOption)) {
         setLazy(true);
+    }
+
+    if (parser.isSet(listenQueue)) {
+        bool ok;
+        auto size = parser.value(listenQueue).toInt(&ok);
+        setListenQueue(size);
+        if (!ok || size < 1) {
+            parser.showHelp(1);
+        }
     }
 
     if (parser.isSet(bufferSize)) {
@@ -1103,6 +1117,19 @@ QStringList WSGI::touchReload() const
 {
     Q_D(const WSGI);
     return d->touchReload;
+}
+
+void WSGI::setListenQueue(int size)
+{
+    Q_D(WSGI);
+    d->listenQueue = size;
+    Q_EMIT changed();
+}
+
+int WSGI::listenQueue() const
+{
+    Q_D(const WSGI);
+    return d->listenQueue;
 }
 
 void WSGI::setBufferSize(int size)
