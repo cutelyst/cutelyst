@@ -262,7 +262,7 @@ public:
      *
      * @accessors listenQueue(), setListenQueue()
      */
-    Q_PROPERTY(int listenQueue READ listenQueue WRITE setListenQueue NOTIFY changed)
+    Q_PROPERTY(int listen READ listenQueue WRITE setListenQueue NOTIFY changed)
     void setListenQueue(int size);
     int listenQueue() const;
 
