@@ -97,6 +97,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
             remaining = protoRequest->contentLength - body->size();
             len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             if (len == -1) {
+                qCWarning(CWSGI_HTTP) << "error while reading body" << len << protoRequest->headers;
                 sock->connectionClose();
                 return;
             }
@@ -146,6 +147,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                         protoRequest->connState = ProtoRequestHttp::ContentBody;
                         protoRequest->body = createBody(protoRequest->contentLength);
                         if (!protoRequest->body) {
+                            qCWarning(CWSGI_HTTP) << "error while creating body, closing socket";
                             sock->connectionClose();
                             return;
                         }

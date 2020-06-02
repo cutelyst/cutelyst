@@ -22,6 +22,9 @@
 
 #include <Cutelyst/Engine>
 #include <QDateTime>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CWSGI_TCPSERVER, "cwsgi.tcpserver", QtWarningMsg)
 
 using namespace CWSGI;
 
@@ -119,6 +122,7 @@ void TcpServer::timeoutConnections()
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
                 if (socket->timeout) {
+                    qCInfo(CWSGI_TCPSERVER) << "timing out connection" << socket->peerAddress().toString() << socket->peerPort();
                     socket->connectionClose();
                 } else {
                     socket->timeout = true;
