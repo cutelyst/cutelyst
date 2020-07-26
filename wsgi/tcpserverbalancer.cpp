@@ -138,9 +138,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     m_port = port;
 
 #ifdef Q_OS_LINUX
-    int socket = listenReuse(address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), false);
-    if (socket > 0) {
-        setSocketDescriptor(socket);
+    int socket = listenReuse(address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), !m_wsgi->reusePort());
+    if (socket > 0 && setSocketDescriptor(socket)) {
         pauseAccepting();
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line)
