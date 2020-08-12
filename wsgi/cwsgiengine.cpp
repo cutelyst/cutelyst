@@ -58,8 +58,6 @@ QByteArray dateHeader();
 CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMap &opts, WSGI *wsgi) : Engine(localApp, workerCore, opts)
   , m_wsgi(wsgi)
 {
-    defaultHeaders().setServer(QLatin1String("cutelyst/") + QLatin1String(VERSION));
-
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
 

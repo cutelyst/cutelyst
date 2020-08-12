@@ -344,6 +344,11 @@ protected:
     Headers &defaultHeaders();
 
     /**
+     * Adds a X-Cutelyst header with our version on each request
+     */
+    void addXCutelystVersionHeader();
+
+    /**
      * Registers a global plugin ie one that doesn't need
      * to be created explicity for a single request and returns
      * true on plugin->isApplicationPlugin();

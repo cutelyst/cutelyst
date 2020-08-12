@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2020 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -64,7 +64,6 @@ Application::Application(QObject *parent) :
     Q_D(Application);
 
     d->q_ptr = this;
-    d->headers.setHeader(QStringLiteral("X_CUTELYST"), QStringLiteral(VERSION));
 
     qRegisterMetaType<ParamsMultiMap>();
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
@@ -95,6 +94,12 @@ Headers &Application::defaultHeaders()
 {
     Q_D(Application);
     return d->headers;
+}
+
+void Application::addXCutelystVersionHeader()
+{
+    Q_D(Application);
+    d->headers.setHeader(QStringLiteral("X_CUTELYST"), QStringLiteral(VERSION));
 }
 
 bool Application::registerPlugin(Plugin *plugin)
