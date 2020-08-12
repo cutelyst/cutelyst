@@ -424,6 +424,7 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, int len
         return false;
     case ProtoRequestHttp::OpCodePing:
         send_pong(io, protoRequest->websocket_payload.left(125));
+        sock->flush();
         break;
     case ProtoRequestHttp::OpCodePong:
         Q_EMIT request->webSocketPong(protoRequest->websocket_payload,
