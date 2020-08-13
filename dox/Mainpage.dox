@@ -47,6 +47,7 @@ namespace Cutelyst
       - Memcached
       - MemcachedSessionStore
       - Pagination
+      - Prometheus
       - Session
       - StaticSimple
       - StaticCompressed

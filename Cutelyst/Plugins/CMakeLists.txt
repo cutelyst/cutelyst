@@ -33,3 +33,11 @@ if (PLUGIN_CSRFPROTECTION)
 else (PLUGIN_CSRFPROTECTION)
     message(STATUS "PLUGIN: CSRFProtection, disabled")
 endif (PLUGIN_CSRFPROTECTION)
+
+if (PLUGIN_PROMETHEUS)
+    message(STATUS "PLUGIN: Prometheus, enabled")
+    add_subdirectory(Prometheus)
+else (PLUGIN_PROMETHEUS)
+    message(STATUS "PLUGIN: Prometheus, disabled")
+endif (PLUGIN_PROMETHEUS)
+

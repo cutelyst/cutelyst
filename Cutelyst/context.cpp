@@ -499,23 +499,27 @@ void Context::finalize()
     Q_D(Context);
 
     if (d->stats) {
-        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
-                d->response->status(),
-                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))),
-                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
+        // statistics collection is enabled
+        // either by enabling logging category cutelyst.stats.debug=true
+        // or by using the Prometheus plugin
+        if (CUTELYST_STATS().isDebugEnabled()) {
+            qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",
+                    d->response->status(),
+                    qPrintable(d->response->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))),
+                    qPrintable(d->response->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
 
-        const double enlapsed = d->engineRequest->elapsed.nsecsElapsed() / 1000000000.0;
-        QString average;
-        if (enlapsed == 0.0) {
-            average = QStringLiteral("??");
-        } else {
-            average = QString::number(1.0 / enlapsed, 'f');
-            average.truncate(average.size() - 3);
+            const double elapsed = d->engineRequest->elapsed.nsecsElapsed() / 1000000000.0;
+            QString average;
+            if (elapsed == 0.0) {
+                average = QStringLiteral("??");
+            } else {
+                average = QString::number(1.0 / elapsed, 'f', 1);
+            }
+            qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
+                                                 .arg(QString::number(elapsed, 'f'),
+                                                      average,
+                                                      QString::fromLatin1(d->stats->report())));
         }
-        qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                             .arg(QString::number(enlapsed, 'f'),
-                                                  average,
-                                                  QString::fromLatin1(d->stats->report())));
         delete d->stats;
         d->stats = nullptr;
     }

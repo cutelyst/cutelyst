@@ -549,6 +549,7 @@ protected:
     friend class Plugin;
     friend class Engine;
     friend class Controller;
+    friend class Prometheus;
     ContextPrivate *d_ptr;
 
 private:
