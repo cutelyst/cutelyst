@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2020 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -700,18 +700,18 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
         return false;
     }
 
-    if (worker.respawn >= 5) {
-        std::cout << "WSGI worker " << worker.id << " respawned too much!" << std::endl;
-        return false;
-    }
-
     delete m_signalNotifier;
     m_signalNotifier = nullptr;
 
     qint64 childPID = fork();
 
-    if(childPID >= 0) {
-        if(childPID == 0) {
+    if (childPID >= 0) {
+        if (childPID == 0) {
+            if (worker.respawn >= 5) {
+                std::cout << "WSGI worker " << worker.id << " respawned too much, sleeping a bit" << std::endl;
+                sleep(2);
+            }
+
             QAbstractEventDispatcher::instance()->flush();
 
             setupSocketPair(true, true);
