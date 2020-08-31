@@ -23,7 +23,7 @@
 #include <Cutelyst/Context>
 
 #include <QLoggingCategory>
-Q_LOGGING_CATEGORY(CUTELYST_ENGINEREQUEST, "cutelyst.engine_request", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_ENGINEREQUEST, "cutelyst.engine_request"/*, QtWarningMsg*/)
 
 using namespace Cutelyst;
 
@@ -34,7 +34,12 @@ EngineRequest::EngineRequest()
 
 EngineRequest::~EngineRequest()
 {
-    delete context;
+    qDebug() << "~EngineRequest()" << context << (status & EngineRequest::Async);
+    if (status & EngineRequest::Async && context) {
+        context->deleteLater();
+    } else {
+        delete context;
+    }
 }
 
 void EngineRequest::finalizeBody()
@@ -92,15 +97,22 @@ void EngineRequest::finalizeError()
 
 void EngineRequest::finalize()
 {
+    qDebug() << "EngineRequest::finalize() 1";
+
     if (context->error()) {
+        qDebug() << "EngineRequest::finalize() 2";
         finalizeError();
     }
 
+    qDebug() << "EngineRequest::finalize() 3";
     if ((status & EngineRequest::FinalizedHeaders) || finalizeHeaders()) {
+        qDebug() << "EngineRequest::finalize() 4";
         finalizeBody();
     }
 
+    qDebug() << "EngineRequest::finalize() 5";
     processingFinished();
+    qDebug() << "EngineRequest::finalize() 6";
 }
 
 void EngineRequest::finalizeCookies()

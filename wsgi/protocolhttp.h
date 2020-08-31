@@ -24,6 +24,7 @@
 #include "socket.h"
 
 #include <Cutelyst/Context>
+#include <QDebug>
 
 namespace CWSGI {
 
@@ -91,8 +92,10 @@ public:
 
         // EngineRequest
         if (status & EngineRequest::Async) {
+            qCritical() << "resetData::deleteLater" << context;
             context->deleteLater();
         } else {
+            qCritical() << "resetData::delete" << context;
             delete context;
         }
         context = nullptr;

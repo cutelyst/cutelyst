@@ -416,6 +416,7 @@ qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
 
 void ProtoRequestHttp::processingFinished()
 {
+    qDebug() << "processingFinished() 1";
     if (websocketUpgraded) {
         // need 2 byte header
         websocket_need = 2;
@@ -423,17 +424,19 @@ void ProtoRequestHttp::processingFinished()
         buf_size = 0;
         return;
     }
-
+qDebug() << "processingFinished() 2";
     if (!sock->requestFinished()) {
         // disconnected
         return;
     }
 
+    qDebug() << "processingFinished() 3";
     if (headerConnection == ProtoRequestHttp::HeaderConnectionClose) {
         sock->connectionClose();
         return;
     }
 
+    qDebug() << "processingFinished() 4";
     sock->flush();
     if (last < buf_size) {
         if (status & EngineRequest::Async) {
@@ -441,15 +444,17 @@ void ProtoRequestHttp::processingFinished()
                 sock->proto->parse(sock, io);
             });
         }
-
+qDebug() << "processingFinished() 5";
         // move pipelined request to 0
         int remaining = buf_size - last;
         memmove(buffer, buffer + last, size_t(remaining));
         resetData();
         buf_size = remaining;
     } else {
+        qDebug() << "processingFinished() 6";
         resetData();
     }
+    qDebug() << "processingFinished() 7";
 }
 
 bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)

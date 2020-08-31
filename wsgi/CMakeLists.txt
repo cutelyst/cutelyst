@@ -1,6 +1,12 @@
 option(USE_JEMALLOC "Use jemalloc memory allocator" ${BUILD_ALL})
+option(USE_MIMALLOC "Use mimalloc memory allocator" ${BUILD_ALL})
+option(USE_MIMALLOC_STATIC "Use mimalloc-static memory allocator" ${BUILD_ALL})
 if (USE_JEMALLOC)
     find_package(JeMalloc REQUIRED)
+elseif (USE_MIMALLOC OR USE_MIMALLOC_STATIC)
+    find_package(mimalloc 1.4 REQUIRED)
+    add_definitions(-DUSE_MIMALLOC)
+    include_directories(${mimalloc_INCLUDE_DIRECTORIES})
 endif ()
 
 set(cutelyst_wsgi_SRC
@@ -110,7 +116,11 @@ target_compile_features(cutelyst-wsgi2
 if (JEMALLOC_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} " -Wl,--no-as-needed")
     target_link_libraries(cutelyst-wsgi2 PRIVATE ${JEMALLOC_LIBRARIES})
-endif()
+elseif (USE_MIMALLOC)
+    target_link_libraries(cutelyst-wsgi2 PUBLIC mimalloc)
+elseif (USE_MIMALLOC_STATIC)
+    target_link_libraries(cutelyst-wsgi2 PUBLIC mimalloc-static)
+endif ()
 
 target_link_libraries(cutelyst-wsgi2
     PRIVATE Qt5::Core

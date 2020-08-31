@@ -659,6 +659,11 @@ int UnixFork::setupUnixSignalHandlers()
     if (sigaction(SIGCHLD, &action, nullptr) > 0)
         return SIGCHLD;
 
+    struct sigaction noaction;
+    memset(&noaction, 0, sizeof(struct sigaction));
+    noaction.sa_handler = SIG_IGN;
+    ::sigaction(SIGPIPE, &noaction, 0);
+
     return 0;
 }
 
