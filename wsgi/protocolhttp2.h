@@ -20,6 +20,9 @@
 
 #include <QObject>
 
+#include <enginerequest.h>
+#include <context.h>
+
 #include "protocol.h"
 #include "socket.h"
 #include "hpack.h"
@@ -89,8 +92,18 @@ public:
         pktsize = 0;
         delete hpack;
         hpack = nullptr;
-        qDeleteAll(streams);
+
+        auto it = streams.constBegin();
+        while (it != streams.constEnd()) {
+            if (it.value()->status & Cutelyst::EngineRequest::Async) {
+                it.value()->context->deleteLater();
+                it.value()->context = nullptr;
+            }
+            delete it.value();
+            ++it;
+        }
         streams.clear();
+
         headersBuffer.clear();
         maxStreamId = 0;
         streamForContinuation = 0;
