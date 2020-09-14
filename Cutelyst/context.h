@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2020 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QStack>
 
+#include <Cutelyst/async.h>
 #include <Cutelyst/request.h>
 #include <Cutelyst/cutelyst_global.h>
 
@@ -364,6 +365,8 @@ public:
      * Detaches the processing chain telling the Engine that
      * the request is not finished yet.
      *
+     * The scoped \sa Async class can make handlying async requests easier.
+     *
      * It's often useful to call async API's, while convenient the use of QEventLoop
      * will only work for the first request or lead to a crash due stacking of calls.
      *
@@ -377,6 +380,8 @@ public:
 
     /*!
      * \brief attachAsync
+     *
+     * The scoped \sa Async class can make handlying async requests easier.
      *
      * Reattaches to the remaining actions
      */
@@ -549,6 +554,7 @@ protected:
     friend class Plugin;
     friend class Engine;
     friend class Controller;
+    friend class Async;
     ContextPrivate *d_ptr;
 
 private:

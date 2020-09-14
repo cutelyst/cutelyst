@@ -12,6 +12,7 @@ set(cutelystqt_SRC
     request_p.h
     response.cpp
     response_p.h
+    async.cpp
     context.cpp
     context_p.h
     action.cpp
@@ -50,6 +51,7 @@ set(cutelystqt_HEADERS
     Action
     application.h
     Application
+    async.h
     context.h
     Context
     controller.h
