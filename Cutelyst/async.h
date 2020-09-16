@@ -25,7 +25,7 @@ namespace Cutelyst {
 
 class Context;
 class ASyncPrivate;
-class ASync
+class CUTELYST_LIBRARY ASync
 {
 public:
     ASync();
