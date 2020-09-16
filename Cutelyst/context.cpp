@@ -434,7 +434,9 @@ bool Context::execute(Component *code)
 
         ret = code->execute(this);
 
-        if (!statsInfo.isEmpty()) {
+        // The request might finalize execution before returning
+        // so it's wise to check for d->stats again
+        if (d->stats && !statsInfo.isEmpty()) {
             d->statsFinishExecute(statsInfo);
         }
     } else {

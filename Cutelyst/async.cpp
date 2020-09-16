@@ -17,7 +17,11 @@
  */
 #include "async.h"
 #include "context.h"
+
 #include <QPointer>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CUTELYST_ASYNC, "cutelyst.async", QtInfoMsg)
 
 using namespace Cutelyst;
 
@@ -28,6 +32,7 @@ public:
     ASyncPrivate(Context *_c) : c(_c) {}
     ~ASyncPrivate() {
         if (!c.isNull()) {
+            qDebug(CUTELYST_ASYNC) << "Attaching async" << c;
             c->attachAsync();
         }
     }
@@ -44,6 +49,7 @@ ASync::ASync()
 
 ASync::ASync(Context *c)
 {
+    qDebug(CUTELYST_ASYNC) << "Detaching async" << c;
     c->detachAsync();
     d = QSharedPointer<ASyncPrivate>(new ASyncPrivate(c));
 }
