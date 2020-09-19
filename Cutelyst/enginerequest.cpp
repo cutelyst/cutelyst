@@ -100,6 +100,7 @@ void EngineRequest::finalize()
         finalizeBody();
     }
 
+    status |= EngineRequest::Finalized;
     processingFinished();
 }
 

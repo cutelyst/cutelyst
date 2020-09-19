@@ -363,6 +363,11 @@ void Context::detachAsync()
 void Context::attachAsync()
 {
     Q_D(Context);
+    if (Q_UNLIKELY(d->engineRequest->status & EngineRequest::Finalized)) {
+        qCWarning(CUTELYST_ASYNC) << "Trying to async attach to a finalized request! Skipping...";
+        return;
+    }
+
     bool &asyncDetached = d->asyncDetached;
     asyncDetached = false;
 
@@ -499,6 +504,11 @@ bool Context::wait(uint count)
 void Context::finalize()
 {
     Q_D(Context);
+
+    if (Q_UNLIKELY(d->engineRequest->status & EngineRequest::Finalized)) {
+        qCWarning(CUTELYST_CORE) << "Trying to finalize a finalized request! Skipping...";
+        return;
+    }
 
     if (d->stats) {
         qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s",

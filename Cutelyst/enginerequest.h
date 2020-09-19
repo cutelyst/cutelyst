@@ -40,6 +40,7 @@ public:
         Chunked = 0x04,
         ChunkedDone = 0x08,
         Async = 0x10,
+        Finalized = 0x20,
     };
     Q_DECLARE_FLAGS(Status, StatusFlag)
 
