@@ -38,7 +38,7 @@ AuthenticationUser::~AuthenticationUser()
 
 QVariant AuthenticationUser::id() const
 {
-    return m_data.value(QStringLiteral("id")).toString();
+    return m_data.value(QStringLiteral("id"));
 }
 
 void AuthenticationUser::setId(const QVariant &id)
