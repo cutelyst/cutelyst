@@ -45,7 +45,7 @@ public:
 
     ~ASync();
 
-     ASync &operator =(const ASync &copy);
+    ASync &operator =(const ASync &copy);
 
 private:
     QSharedPointer<ASyncPrivate> d;
