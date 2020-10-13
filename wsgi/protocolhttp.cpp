@@ -393,7 +393,8 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     }
 
     if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
-        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep) {
+        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep
+                || (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose && protocol == QLatin1String("HTTP/1.1"))) {
             headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             data.append("\r\nConnection: keep-alive", 24);
         } else {
