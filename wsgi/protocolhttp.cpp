@@ -363,7 +363,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
 
     int msgLen;
     const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
-    io->write(msg, msgLen);
+    QByteArray data(msg, msgLen);
 
     const auto headersData = headers.data();
     ProtoRequestHttp::HeaderConnection fallbackConnection = headerConnection;
@@ -387,7 +387,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
         }
 
         QString ret(QLatin1String("\r\n") + Cutelyst::Engine::camelCaseHeader(key) + QLatin1String(": ") + value);
-        io->write(ret.toLatin1());
+        data.append(ret.toLatin1());
 
         ++it;
     }
@@ -395,18 +395,19 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
         if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep) {
             headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
-            io->write("\r\nConnection: keep-alive", 24);
+            data.append("\r\nConnection: keep-alive", 24);
         } else {
             headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            io->write("\r\nConnection: close", 19);
+            data.append("\r\nConnection: close", 19);
         }
     }
 
     if (!hasDate) {
-        io->write(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
+        data.append(static_cast<CWsgiEngine *>(sock->engine)->lastDate());
     }
+    data.append("\r\n\r\n", 4);
 
-    return io->write("\r\n\r\n", 4) == 4;
+    return io->write(data) == data.size();
 }
 
 qint64 ProtoRequestHttp::doWrite(const char *data, qint64 len)
