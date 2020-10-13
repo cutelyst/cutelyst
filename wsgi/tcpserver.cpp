@@ -71,7 +71,7 @@ void TcpServer::incomingConnection(qintptr handle)
         }, Qt::QueuedConnection);
     }
 
-    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
+    if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
 
         sock->remoteAddress = sock->peerAddress();

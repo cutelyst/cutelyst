@@ -48,7 +48,7 @@ void TcpSslServer::incomingConnection(qintptr handle)
         --m_processing;
     });
 
-    if (Q_LIKELY(sock->setSocketDescriptor(handle))) {
+    if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
 
         sock->serverAddress = m_serverAddress;
