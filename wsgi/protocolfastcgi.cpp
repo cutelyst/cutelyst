@@ -558,15 +558,14 @@ void ProtoRequestFastCGI::processingFinished()
     }
 
     sock->flush();
-    if (status & EngineRequest::Async && buf_size) {
-        QTimer::singleShot(0, io, [=] {
-            sock->proto->parse(sock, io);
-        });
-    }
 
     const auto size = buf_size;
     resetData();
     buf_size = size;
+
+    if (status & EngineRequest::Async && buf_size) {
+        sock->proto->parse(sock, io);
+    }
 }
 
 #include "moc_protocolfastcgi.cpp"

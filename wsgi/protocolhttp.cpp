@@ -438,17 +438,15 @@ void ProtoRequestHttp::processingFinished()
 
     sock->flush();
     if (last < buf_size) {
-        if (status & EngineRequest::Async) {
-            QTimer::singleShot(0, io, [=] {
-                sock->proto->parse(sock, io);
-            });
-        }
-
         // move pipelined request to 0
         int remaining = buf_size - last;
         memmove(buffer, buffer + last, size_t(remaining));
         resetData();
         buf_size = remaining;
+
+        if (status & EngineRequest::Async) {
+            sock->proto->parse(sock, io);
+        }
     } else {
         resetData();
     }
