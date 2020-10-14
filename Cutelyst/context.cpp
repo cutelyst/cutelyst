@@ -371,8 +371,8 @@ void Context::attachAsync()
     bool &asyncDetached = d->asyncDetached;
     asyncDetached = false;
 
-    while (!d->pendingAsync.isEmpty()) {
-        Component *action = d->pendingAsync.takeLast();
+    while (d->asyncAction < d->pendingAsync.size()) {
+        Action *action = d->pendingAsync[d->asyncAction++];
         if (!execute(action)) {
             break; // we are finished
         } else if (asyncDetached) {

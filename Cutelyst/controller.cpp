@@ -167,55 +167,55 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-    QVector<Component *> stack;
-    if (d->end) {
-        stack.append(d->end);
-    }
-    stack.append(c->action());
+//    QVector<Action *> stack;
+//    if (d->end) {
+//        stack.append(d->end);
+//    }
+//    stack.append(c->action());
 
-    auto rit = d->beginAutoList.crbegin();
-    while (rit != d->beginAutoList.crend()) {
-        stack.append(*rit);
-        ++rit;
-    }
-    c->d_ptr->pendingAsync = stack;
-    c->attachAsync();
+//    auto rit = d->beginAutoList.crbegin();
+//    while (rit != d->beginAutoList.crend()) {
+//        stack.append(*rit);
+//        ++rit;
+//    }
+//    c->d_ptr->pendingAsync = stack;
+//    c->attachAsync();
 
 //    ActionList stack = d->beginAutoList;
 //    stack.append(c->action());
 //    if (d->end) {
 //        stack.append(d->end);
 //    }
-//    bool &asyncDetached = c->d_ptr->engineRequest->asyncDetached;
+    bool &asyncDetached = c->d_ptr->asyncDetached;
 
-//    // Dispatch to Begin and Auto
-//    const auto beginAutoList = d->beginAutoList;
-//    for (Action *action : beginAutoList) {
-//        if (asyncDetached) {
-//            c->d_ptr->pendingAsync.append(action);
-//        } else if (!action->dispatch(c)) {
-//            ret = false;
-//            break;
-//        }
-//    }
+    // Dispatch to Begin and Auto
+    const auto beginAutoList = d->beginAutoList;
+    for (Action *action : beginAutoList) {
+        if (asyncDetached) {
+            c->d_ptr->pendingAsync.append(action);
+        } else if (!action->dispatch(c)) {
+            ret = false;
+            break;
+        }
+    }
 
-//    // Dispatch to Action
-//    if (ret) {
-//        if (asyncDetached) {
-//            c->d_ptr->pendingAsync.append(c->action());
-//        } else if (!c->action()->dispatch(c)) {
-//            ret = false;
-//        }
-//    }
+    // Dispatch to Action
+    if (ret) {
+        if (asyncDetached) {
+            c->d_ptr->pendingAsync.append(c->action());
+        } else if (!c->action()->dispatch(c)) {
+            ret = false;
+        }
+    }
 
-//    // Dispatch to End
-//    if (d->end) {
-//        if (asyncDetached) {
-//            c->d_ptr->pendingAsync.append(d->end);
-//        } else if (!d->end->dispatch(c)) {
-//            ret = false;
-//        }
-//    }
+    // Dispatch to End
+    if (d->end) {
+        if (asyncDetached) {
+            c->d_ptr->pendingAsync.append(d->end);
+        } else if (!d->end->dispatch(c)) {
+            ret = false;
+        }
+    }
 
     return ret;
 }

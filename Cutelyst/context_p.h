@@ -49,7 +49,7 @@ public:
     QLocale locale;
     QStack<Component *> stack;
     QVector<Plugin *> plugins;
-    QVector<Component *> pendingAsync;
+    QVector<Action*> pendingAsync;
 
     Application *app;
     Engine *engine;
@@ -63,6 +63,7 @@ public:
     Action *action = nullptr;
     View *view = nullptr;
     Stats *stats = nullptr;
+    int asyncAction = 0;
     bool asyncDetached = false;
     bool detached = false;
     bool state = false;
