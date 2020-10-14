@@ -30,14 +30,19 @@ namespace Cutelyst {
 class ASyncPrivate {
 public:
     ASyncPrivate(Context *_c) : c(_c) {}
+    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb) : c(_c), cb(_cb) {}
     ~ASyncPrivate() {
         if (!c.isNull()) {
-            qDebug(CUTELYST_ASYNC) << "Attaching async" << c;
+            if (cb) {
+                cb(c);
+            }
+//            qDebug(CUTELYST_ASYNC, "Attaching async %s", qPrintable(c->objectName()));
             c->attachAsync();
         }
     }
 
     QPointer<Context> c;
+    std::function<void(Context *c)> cb;
 };
 
 }
@@ -47,13 +52,44 @@ ASync::ASync()
 
 }
 
+/*!
+ * \brief ASync class should be used in a scoped manner
+ *
+ * This constructor will call c->detachAsync() and once it goes
+ * out of scope it will call c->attachAsync() if Context pointer is still valid.
+ *
+ * Make sure it is captured by lambdas to avoid it leaving scope.
+ *
+ * \param c
+ */
 ASync::ASync(Context *c)
 {
-    qDebug(CUTELYST_ASYNC) << "Detaching async" << c;
+//    qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
     c->detachAsync();
     d = QSharedPointer<ASyncPrivate>(new ASyncPrivate(c));
 }
 
+/*!
+ * \brief ASync class should be used in a scoped manner
+ *
+ * This constructor will call c->detachAsync() and once it goes
+ * out of scope if Context pointer is still valid it will call the callback
+ * function and then c->attachAsync().
+ *
+ * Make sure it is captured by lambdas to avoid it leaving scope.
+ *
+ * \param c
+ * \param cb callback to be called when async tasks are finished
+ */
+ASync::ASync(Context *c, std::function<void (Context *)> cb)
+{
+    c->detachAsync();
+    d = QSharedPointer<ASyncPrivate>(new ASyncPrivate(c, cb));
+}
+
+/*!
+ * Copy constructor
+ */
 ASync::ASync(const ASync &other)
 {
     d = other.d;

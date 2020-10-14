@@ -21,6 +21,8 @@
 #include <Cutelyst/cutelyst_global.h>
 #include <QSharedPointer>
 
+#include <functional>
+
 namespace Cutelyst {
 
 class Context;
@@ -29,18 +31,8 @@ class CUTELYST_LIBRARY ASync
 {
 public:
     ASync();
-
-    /*!
-     * \brief ASync class should be used in a scoped manner
-     *
-     * This constructor will call c->detachAsync() and once it goes
-     * out of scope it will call c->attachAsync() if Context pointer is still valid.
-     *
-     * Make sure it is captured by lambdas to avoid it leaving scope.
-     *
-     * \param c
-     */
     ASync(Context *c);
+    ASync(Context *c, std::function<void(Context *c)> cb);
     ASync(const ASync &other);
 
     ~ASync();
