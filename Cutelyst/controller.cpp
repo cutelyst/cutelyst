@@ -167,25 +167,6 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-//    QVector<Action *> stack;
-//    if (d->end) {
-//        stack.append(d->end);
-//    }
-//    stack.append(c->action());
-
-//    auto rit = d->beginAutoList.crbegin();
-//    while (rit != d->beginAutoList.crend()) {
-//        stack.append(*rit);
-//        ++rit;
-//    }
-//    c->d_ptr->pendingAsync = stack;
-//    c->attachAsync();
-
-//    ActionList stack = d->beginAutoList;
-//    stack.append(c->action());
-//    if (d->end) {
-//        stack.append(d->end);
-//    }
     bool &asyncDetached = c->d_ptr->asyncDetached;
 
     // Dispatch to Begin and Auto
