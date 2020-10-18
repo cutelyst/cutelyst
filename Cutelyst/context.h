@@ -540,13 +540,17 @@ public Q_SLOTS:
      */
     void next(bool force = false);
 
+    /*!
+     * \brief finalize the request right away this is automatically called
+     * at the end of the actions chain
+     */
+    void finalize();
+
 protected:
     /*!
      * Constructs a new Context object using private implementation.
      */
     Context(ContextPrivate *priv);
-
-    void finalize();
 
     friend class Application;
     friend class Action;
