@@ -167,7 +167,7 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-    bool &asyncDetached = c->d_ptr->asyncDetached;
+    int &asyncDetached = c->d_ptr->asyncDetached;
 
     // Dispatch to Begin and Auto
     const auto beginAutoList = d->beginAutoList;

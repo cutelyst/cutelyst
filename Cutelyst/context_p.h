@@ -64,7 +64,7 @@ public:
     View *view = nullptr;
     Stats *stats = nullptr;
     int asyncAction = 0;
-    bool asyncDetached = false;
+    int asyncDetached = 0;
     bool detached = false;
     bool state = false;
 };

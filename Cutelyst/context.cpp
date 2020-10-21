@@ -356,26 +356,27 @@ void Context::detach(Action *action)
 void Context::detachAsync()
 {
     Q_D(Context);
-    d->asyncDetached = true;
+    ++d->asyncDetached;
     d->engineRequest->status |= EngineRequest::Async;
 }
 
 void Context::attachAsync()
 {
     Q_D(Context);
+    if (--d->asyncDetached) {
+        return;
+    }
+
     if (Q_UNLIKELY(d->engineRequest->status & EngineRequest::Finalized)) {
         qCWarning(CUTELYST_ASYNC) << "Trying to async attach to a finalized request! Skipping...";
         return;
     }
 
-    bool &asyncDetached = d->asyncDetached;
-    asyncDetached = false;
-
     while (d->asyncAction < d->pendingAsync.size()) {
         Action *action = d->pendingAsync[d->asyncAction++];
         if (!execute(action)) {
             break; // we are finished
-        } else if (asyncDetached) {
+        } else if (d->asyncDetached) {
             return;
         }
     }
