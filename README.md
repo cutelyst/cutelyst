@@ -45,12 +45,13 @@ http://www.techempower.com/benchmarks/
    * CSRF protection
    * Memcached
    * UserAgent
+ * Asynchronous processing (just don't use local QEventLoops or it will eventually crash)
+   * Async SQL with [ASql](https://github.com/cutelyst/asql)
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
  * C++11
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
- * Asynchronous processing (just don't use local QEventLoops or it will eventually crash)
  * Unit tested
  * QtCreator integration
 
