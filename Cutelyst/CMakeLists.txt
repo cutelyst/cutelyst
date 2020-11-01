@@ -64,6 +64,7 @@ set(cutelystqt_HEADERS
     dispatchtype.h
     DispatchType
     engine.h
+    enginerequest.h
     Engine
     headers.h
     Headers
