@@ -15,6 +15,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+/*!
+ * \file
+ * \warning
+ * This header file is part of the internal private api.
+ * It is meant to be used by unit tests. See TestEngineConnection in tests/coverageobject.cpp
+ * for an example on how to use it.
+ */
 #ifndef ENGINEREQUEST_H
 #define ENGINEREQUEST_H
 
