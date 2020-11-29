@@ -52,7 +52,6 @@ protected:
     WSGI *m_wsgi;
 
     std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
-    std::vector<TcpSocket *> m_socks;
     Protocol *m_protocol;
     int m_processing = 0;
 };

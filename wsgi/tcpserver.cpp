@@ -51,25 +51,19 @@ TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, WSGI *wsg
 
 void TcpServer::incomingConnection(qintptr handle)
 {
-    TcpSocket *sock;
-    if (!m_socks.empty()) {
-        sock = m_socks.back();
-        m_socks.pop_back();
-    } else {
-        sock = new TcpSocket(m_engine, this);
-        sock->serverAddress = m_serverAddress;
-        sock->protoData = m_protocol->createData(sock);
+    auto sock = new TcpSocket(m_engine, this);
+    sock->serverAddress = m_serverAddress;
+    sock->protoData = m_protocol->createData(sock);
 
-        connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->timeout = false;
-            sock->proto->parse(sock, sock);
-        });
-        connect(sock, &TcpSocket::finished, this, [this, sock] () {
-            sock->resetSocket();
-            m_socks.push_back(sock);
-            --m_processing;
-        }, Qt::QueuedConnection);
-    }
+    connect(sock, &QIODevice::readyRead, [sock] {
+        sock->timeout = false;
+        sock->proto->parse(sock, sock);
+    });
+    connect(sock, &TcpSocket::finished, this, [this, sock] {
+        sock->resetSocket();
+        sock->deleteLater();
+        --m_processing;
+    }, Qt::QueuedConnection);
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
@@ -86,7 +80,7 @@ void TcpServer::incomingConnection(qintptr handle)
             m_engine->startSocketTimeout();
         }
     } else {
-        m_socks.push_back(sock);
+        delete sock;
     }
 }
 
