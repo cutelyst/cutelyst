@@ -82,6 +82,19 @@ int Pagination::offset() const
     return value(QStringLiteral("offset")).toInt();
 }
 
+int Pagination::offset(int itemsPerPage, int currentPage)
+{
+    if (itemsPerPage <= 0) {
+        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 1";
+        itemsPerPage = 1;
+    }
+    if (currentPage <= 0) {
+        qCWarning(C_PAGINATION) << "Invalid current page:" << currentPage  << "failing back to 1";
+        currentPage = 1;
+    }
+    return (currentPage - 1) * itemsPerPage;
+}
+
 int Pagination::currentPage() const
 {
     return value(QStringLiteral("currentPage")).toInt();

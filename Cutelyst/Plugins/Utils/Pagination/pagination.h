@@ -57,6 +57,11 @@ public:
     int offset() const;
 
     /**
+     * Returns the current page offset for use in SQL taking the number of items per page and the current page
+     */
+    static int offset(int itemsPerPage, int currentPage);
+
+    /**
      * Returns the current page number
      */
     int currentPage() const;
