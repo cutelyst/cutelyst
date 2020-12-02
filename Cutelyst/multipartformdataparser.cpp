@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2020 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 
     int start = contentType.indexOf(QLatin1String("boundary="));
     if (start == -1) {
-        qCWarning(CUTELYST_MULTIPART) << "No boudary match" << contentType;
+        qCWarning(CUTELYST_MULTIPART) << "No boundary match" << contentType;
         return ret;
     }
 
@@ -54,7 +54,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
     }
 
     if (boundary.isEmpty()) {
-        qCWarning(CUTELYST_MULTIPART) << "Boudary match was empty" << contentType;
+        qCWarning(CUTELYST_MULTIPART) << "Boundary match was empty" << contentType;
         return ret;
     }
     boundary.prepend("--", 2);
