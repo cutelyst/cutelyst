@@ -82,7 +82,7 @@ bool Authentication::authenticate(Cutelyst::Context *c, const ParamsMultiMap &us
     if (realmPtr) {
         const AuthenticationUser user = realmPtr->authenticate(c, userinfo);
         if (!user.isNull()) {
-            AuthenticationPrivate::setAuthenticated(c, user, realm, auth->d_ptr->realm(realm));
+            AuthenticationPrivate::setAuthenticated(c, user, realm, realmPtr);
         }
 
         return !user.isNull();
@@ -231,7 +231,7 @@ AuthenticationRealm *AuthenticationPrivate::findRealmForPersistedUser(Context *c
 
 void AuthenticationPrivate::setAuthenticated(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm)
 {
-    AuthenticationPrivate::setUser(c, user);
+    AuthenticationPrivate::setUser(c, user, realmName);
 
     if (!realm) {
         qCWarning(C_AUTHENTICATION) << "Called with invalid realm" << realmName;
@@ -253,10 +253,8 @@ void AuthenticationPrivate::setUser(Context *c, const AuthenticationUser &user, 
 
 void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &user, const QString &realmName, AuthenticationRealm *realm)
 {
-    if (Authentication::userExists(c)) {
-        if (Session::isValid(c)) {
-            Session::setValue(c, AUTHENTICATION_USER_REALM, realmName);
-        }
+    if (Authentication::userInRealm(c, realmName)) {
+        Session::setValue(c, AUTHENTICATION_USER_REALM, realmName);
 
         if (realm) {
             realm->persistUser(c, user);

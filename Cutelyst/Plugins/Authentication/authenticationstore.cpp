@@ -38,6 +38,8 @@ bool AuthenticationStore::canAutoCreateUser() const
 
 AuthenticationUser AuthenticationStore::autoCreateUser(Context *c, const ParamsMultiMap &userinfo) const
 {
+    Q_UNUSED(c)
+    Q_UNUSED(userinfo)
     return AuthenticationUser();
 }
 
@@ -48,6 +50,8 @@ bool AuthenticationStore::canAutoUpdateUser() const
 
 AuthenticationUser AuthenticationStore::autoUpdateUser(Context *c, const ParamsMultiMap &userinfo) const
 {
+    Q_UNUSED(c)
+    Q_UNUSED(userinfo)
     return AuthenticationUser();
 }
 
