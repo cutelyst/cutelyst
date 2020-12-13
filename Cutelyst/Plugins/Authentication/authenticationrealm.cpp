@@ -65,8 +65,14 @@ AuthenticationUser AuthenticationRealm::findUser(Context *c, const ParamsMultiMa
         if (m_store->canAutoCreateUser()) {
             ret = m_store->autoCreateUser(c, userinfo);
         }
-    } else if (m_store->canAutoUpdateUser()) {
-        ret = m_store->autoUpdateUser(c, userinfo);
+    } else {
+        if (m_store->canAutoUpdateUser()) {
+            ret = m_store->autoUpdateUser(c, userinfo);
+        }
+    }
+
+    if (!ret.isNull() && ret.authRealm() != name()) {
+        ret.setAuthRealm(name());
     }
 
     return ret;
