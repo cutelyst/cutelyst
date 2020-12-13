@@ -6,7 +6,13 @@ branches:
     - master
     - travis_macos
 
-osx_image: xcode10.1
+osx_image: xcode12.2
+addons:
+  homebrew:
+    packages:
+    - cmake
+    - qt5
+
 os:
   - linux
   - osx
@@ -35,9 +41,9 @@ before_install:
       && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew update;
-      brew outdated cmake || brew upgrade cmake;
-      brew install qt5;
+#      brew update;
+#      brew outdated cmake || brew upgrade cmake;
+#      brew install qt5;
       export CMAKE_PREFIX_PATH=$(brew --prefix qt5);
     fi
 
