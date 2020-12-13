@@ -40,9 +40,6 @@ before_install:
       && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-#      brew update;
-#      brew outdated cmake || brew upgrade cmake;
-#      brew install qt5;
       export CMAKE_PREFIX_PATH=$(brew --prefix qt5);
     fi
 

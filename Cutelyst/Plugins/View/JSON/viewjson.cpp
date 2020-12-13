@@ -43,7 +43,7 @@ ViewJson::JsonFormat ViewJson::outputFormat() const
     case QJsonDocument::Indented:
         return Indented;
         break;
-    case Compact:
+    case QJsonDocument::Compact:
         return Compact;
     }
     return Compact;
