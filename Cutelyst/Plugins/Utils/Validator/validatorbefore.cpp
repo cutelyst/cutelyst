@@ -196,13 +196,13 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
 
         if (_label.isEmpty()) {
             switch (errorData.type()) {
-            case QMetaType::QDateTime:
+            case QVariant::DateTime:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date and time.");
                 break;
-            case QMetaType::QTime:
+            case QVariant::Time:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as time.");
                 break;
-            case QMetaType::QDate:
+            case QVariant::Date:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date.");
                 break;
             default:
@@ -211,15 +211,15 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
             }
         } else {
             switch (errorData.type()) {
-            case QMetaType::QDateTime:
+            case QVariant::DateTime:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date and time.").arg(_label);
                 break;
-            case QMetaType::QTime:
+            case QVariant::Time:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as time.").arg(_label);
                 break;
-            case QMetaType::QDate:
+            case QVariant::Date:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date.").arg(_label);
                 break;

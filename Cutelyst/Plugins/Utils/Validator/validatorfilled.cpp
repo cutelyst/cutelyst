@@ -49,6 +49,7 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
 
 QString ValidatorFilled::genericValidationError(Context *c, const QVariant &errorData) const
 {
+    Q_UNUSED(errorData)
     QString error;
     const QString _label = label(c);
     if (_label.isEmpty()) {
