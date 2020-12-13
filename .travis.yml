@@ -4,6 +4,7 @@ dist: trusty
 branches:
   only:
     - master
+    - travis_macos
 
 osx_image: xcode10.1
 os:
