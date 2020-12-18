@@ -127,7 +127,9 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
                 if (!lastWasUpper) {
                     controlerNS.append(QLatin1Char('/'));
                 }
-                controlerNS.append(c.toLower());
+                if (c != QLatin1Char(':')) {
+                    controlerNS.append(c.toLower());
+                }
                 lastWasUpper = true;
             }
         }
