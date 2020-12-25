@@ -47,11 +47,8 @@ bool StaticMap::setup(Cutelyst::Application *app)
 void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, bool append)
 {
     QString mp = mountPoint;
-    while (mp.startsWith(QLatin1Char('/'))) {
-        mp.remove(0, 1);
-    }
-    if (!mp.endsWith(QLatin1Char('/'))) {
-        mp += QLatin1Char('/');
+    if (!mp.startsWith(QLatin1Char('/'))) {
+        mp.prepend(QLatin1Char('/'));
     }
 
     qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
@@ -68,7 +65,7 @@ void StaticMap::beforePrepareAction(Cutelyst::Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path = c->req()->path();
+    const QString path = QLatin1Char('/') + c->req()->path();
     for (const MountPoint &mp : m_staticMaps) {
         if (path.startsWith(mp.mountPoint)) {
             if (tryToServeFile(c, mp, path)) {
