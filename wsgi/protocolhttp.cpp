@@ -436,7 +436,6 @@ void ProtoRequestHttp::processingFinished()
         return;
     }
 
-    sock->flush();
     if (last < buf_size) {
         // move pipelined request to 0
         int remaining = buf_size - last;
@@ -460,11 +459,7 @@ bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
 
     const QByteArray rawMessage = message.toUtf8();
     const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeText, quint64(rawMessage.size()));
-    if (doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size()) {
-        sock->flush();
-        return true;
-    }
-    return false;
+    return doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size();
 }
 
 bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
@@ -474,11 +469,7 @@ bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
     }
 
     const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeBinary, quint64(message.size()));
-    if (doWrite(headers) == headers.size() && doWrite(message) == message.size()) {
-        sock->flush();
-        return true;
-    }
-    return false;
+    return doWrite(headers) == headers.size() && doWrite(message) == message.size();
 }
 
 bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
@@ -489,11 +480,7 @@ bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
 
     const QByteArray rawMessage = payload.left(125);
     const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePing, quint64(rawMessage.size()));
-    if (doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size()) {
-        sock->flush();
-        return true;
-    }
-    return false;
+    return doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size();
 }
 
 bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
@@ -504,9 +491,7 @@ bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
 
     const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
     bool ret = doWrite(reply) == reply.size();
-    if (sock->requestFinished()) {
-        sock->flush();
-    }
+    sock->requestFinished();
     sock->connectionClose();
     return ret;
 }
@@ -562,11 +547,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
     auto httpProto = static_cast<ProtocolHttp *>(sock->proto);
     sock->proto = httpProto->m_websocketProto;
 
-    if (writeHeaders(Cutelyst::Response::SwitchingProtocols, headers)) {
-        sock->flush();
-        return true;
-    }
-    return false;
+    return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }
 
 #include "moc_protocolhttp.cpp"

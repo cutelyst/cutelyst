@@ -557,8 +557,6 @@ void ProtoRequestFastCGI::processingFinished()
         return;
     }
 
-    sock->flush();
-
     const auto size = buf_size;
     resetData();
     buf_size = size;
