@@ -31,8 +31,6 @@
 class CutelystCutelee final : public QObject, public Cutelee::TagLibraryInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.cutelee.TagLibraryInterface/1.0")
-    Q_INTERFACES(Cutelee::TagLibraryInterface)
 public:
     explicit CutelystCutelee(QObject *parent = nullptr);
 
