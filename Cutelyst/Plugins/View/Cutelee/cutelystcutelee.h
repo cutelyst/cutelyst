@@ -31,6 +31,7 @@
 class CutelystCutelee final : public QObject, public Cutelee::TagLibraryInterface
 {
     Q_OBJECT
+    Q_INTERFACES(Cutelee::TagLibraryInterface)
 public:
     explicit CutelystCutelee(QObject *parent = nullptr);
 
