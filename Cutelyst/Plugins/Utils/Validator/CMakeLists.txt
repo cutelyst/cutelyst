@@ -147,9 +147,11 @@ set(plugin_validator_HEADERS
 if (PLUGIN_VALIDATOR_PWQUALITY)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(PWQUALITY REQUIRED pwquality>=1.2.2)
-    message(STATUS "PLUGIN: Validator, enable PwQuality")
+    message(STATUS "PLUGIN: Validator, enable PwQuality, enabled.")
     list(APPEND plugin_validator_SRC validatorpwquality.cpp validatorpwquality_p.h)
     list(APPEND plugin_validator_HEADERS validatorpwquality.h)
+else ()
+    message(STATUS "PLUGIN: Validator, enable PwQuality, disabled.")
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
 add_library(Cutelyst2Qt5UtilsValidator
