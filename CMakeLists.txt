@@ -175,7 +175,31 @@ if(UNIX AND NOT (APPLE OR HAIKU))
 endif()
 
 if (LINUX)
-    add_subdirectory(EventLoopEPoll)
+    if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+        # FreeBSD isn't Linux, but it gets claimed as Linux, because it is
+        # UNIX and not APPLE (see just above).
+        #
+        # Try to find the EPOLL implementation from libepoll-shim; while
+        # epoll.h is found, and timerfd.h is found, the FreeBSD implementation
+        # in timerfd is insufficient (missing timerfd_gettime), and besides
+        # that there is also no eventfd.h in the FreeBSD shims.
+        #
+        # So, do the work of finding EPOLL, but don't use that subdirectory.
+        # Also, decide that we're not Linux after all.
+        find_file(EPOLL_H sys/epoll.h
+            HINTS libepoll-shim /usr/local/include/libepoll-shim
+        )
+        if (EPOLL_H)
+            get_filename_component(EPOLL_SYS_DIR ${EPOLL_H} DIRECTORY)
+            get_filename_component(EPOLL_DIR ${EPOLL_SYS_DIR} DIRECTORY)
+            include_directories(${EPOLL_DIR})
+            # add_subdirectory(EventLoopEPoll)
+        endif()
+        set(LINUX FALSE)
+    else()
+        # Real Linux
+        add_subdirectory(EventLoopEPoll)
+    endif()
 endif()
 
 add_subdirectory(wsgi)
