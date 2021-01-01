@@ -187,6 +187,8 @@ if (PLUGIN_UWSGI)
     set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
     add_subdirectory(uwsgiEngine)
     message(STATUS "PLUGIN: uWSGI, enabled.")
+else()
+    message(STATUS "PLUGIN: uWSGI, disabled.")
 endif ()
 
 add_subdirectory(cmd)
