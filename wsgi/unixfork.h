@@ -24,12 +24,12 @@
 
 #include "abstractfork.h"
 
-typedef struct {
+struct Worker {
     bool null = true;
     int id;
     int restart = 0;
     int respawn = 0;
-} Worker;
+};
 
 namespace CWSGI {
 class WSGI;
