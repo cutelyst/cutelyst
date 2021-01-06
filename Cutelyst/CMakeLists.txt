@@ -17,7 +17,6 @@ set(cutelystqt_SRC
     context_p.h
     action.cpp
     actionchain.cpp
-    actionchain.h
     actionchain_p.h
     action_p.h
     enginerequest.cpp
@@ -49,6 +48,8 @@ set(cutelystqt_HEADERS
     ParamsMultiMap
     action.h
     Action
+    actionchain.h
+    ActionChain
     application.h
     Application
     async.h
