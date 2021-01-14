@@ -11,7 +11,7 @@ if (POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
 endif()
 
-project(cutelyst VERSION 2.14.0 LANGUAGES CXX)
+project(cutelyst VERSION 2.14.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -27,7 +27,7 @@ set(CUTELYST_API_LEVEL "2")
 set(CMAKE_AUTOMOC ON)
 
 # Include our cmake modules
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
