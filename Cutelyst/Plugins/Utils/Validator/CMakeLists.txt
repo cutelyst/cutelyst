@@ -170,7 +170,7 @@ target_link_libraries(Cutelyst2Qt5UtilsValidator
     PUBLIC
         Cutelyst2Qt5::Core
     PRIVATE
-        Qt5::Network
+        Qt${QT_VERSION_MAJOR}::Network
 )
 
 if (PLUGIN_VALIDATOR_PWQUALITY)

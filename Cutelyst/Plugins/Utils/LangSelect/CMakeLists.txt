@@ -26,7 +26,7 @@ target_link_libraries(Cutelyst2Qt5UtilsLangSelect
         Cutelyst2Qt5::Core
     PRIVATE
         Cutelyst2Qt5::Session
-        Qt5::Network
+        Qt${QT_VERSION_MAJOR}::Network
 )
 
 set_property(TARGET Cutelyst2Qt5UtilsLangSelect PROPERTY PUBLIC_HEADER ${plugin_langselect_HEADERS})

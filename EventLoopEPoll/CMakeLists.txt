@@ -23,7 +23,7 @@ set_target_properties(Cutelyst2Qt5EventLoopEpoll PROPERTIES
 )
 
 target_link_libraries(Cutelyst2Qt5EventLoopEpoll
-    Qt5::Core
+    Qt${QT_VERSION_MAJOR}::Core
 )
 
 install(TARGETS Cutelyst2Qt5EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})

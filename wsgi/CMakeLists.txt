@@ -113,7 +113,7 @@ if (JEMALLOC_FOUND)
 endif()
 
 target_link_libraries(cutelyst-wsgi2
-    PRIVATE Qt5::Core
+    PRIVATE Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst2Qt5::Core
     PRIVATE Cutelyst2Qt5::WSGI
 )

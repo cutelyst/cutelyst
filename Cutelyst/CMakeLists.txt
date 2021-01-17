@@ -121,8 +121,8 @@ set_target_properties(Cutelyst2Qt5 PROPERTIES
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 target_link_libraries(Cutelyst2Qt5
-    Qt5::Core
-    Qt5::Network
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Network
 )
 
 set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})

@@ -21,8 +21,8 @@ set_target_properties(Cutelyst2Qt5UserAgent PROPERTIES
 
 target_link_libraries(Cutelyst2Qt5UserAgent
     PRIVATE Cutelyst2Qt5::Core
-    PRIVATE Qt5::Core
-    PRIVATE Qt5::Network
+    PRIVATE Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Qt${QT_VERSION_MAJOR}::Network
 )
 
 set_property(TARGET Cutelyst2Qt5UserAgent PROPERTY PUBLIC_HEADER ${plugin_useragent_HEADERS})

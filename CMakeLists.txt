@@ -15,11 +15,8 @@ project(cutelyst VERSION 2.14.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-find_package(Qt5 5.6.0 REQUIRED COMPONENTS
-    Core
-    Network
-    Sql
-)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql REQUIRED)
 
 set(CUTELYST_API_LEVEL "2")
 
@@ -134,7 +131,7 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
     -DQT_NO_SIGNALS_SLOTS_KEYWORDS
     -DQT_USE_FAST_OPERATOR_PLUS
-    -DQT_DISABLE_DEPRECATED_BEFORE=0x050c00
+    -DQT_DISABLE_DEPRECATED_BEFORE=0x050E00
 )
 
 set(CMAKE_CXX_STANDARD 11)
