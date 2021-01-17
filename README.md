@@ -67,7 +67,7 @@ Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutely
 
 ## REQUIREMENTS
 
- * CMake - for the build system (>= 3.1)
+ * CMake - for the build system (>= 3.9)
  * Qt - the core library of this framework (>= 5.6)
 
 ## OPTIONAL

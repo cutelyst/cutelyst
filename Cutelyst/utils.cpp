@@ -77,11 +77,11 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
     QByteArray div = buildTableDivision(columnsSize);
 
     if (!title.isEmpty()) {
-        out << title << Qt::endl;
+        out << title << '\n';
     }
 
     // Top line
-    out << div << Qt::endl;
+    out << div << '\n';
 
     if (!headers.isEmpty()) {
         // header titles
@@ -94,10 +94,10 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
             out.setFieldWidth(0);
             out << ' ';
         }
-        out << '|' << Qt::endl;
+        out << '|' << '\n';
 
         // header bottom line
-        out << div << Qt::endl;
+        out << div << '\n';
     }
 
     for (const QStringList &row : table) {
@@ -111,7 +111,7 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
             out.setFieldWidth(0);
             out << ' ';
         }
-        out << '|' << Qt::endl;
+        out << '|' << '\n';
     }
 
     // table bottom line
