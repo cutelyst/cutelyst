@@ -6,7 +6,7 @@ add_library(ActionRenderView MODULE
 )
 
 target_link_libraries(ActionRenderView
-    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
 )
 
 install(TARGETS ActionRenderView DESTINATION ${CUTELYST_PLUGINS_DIR})

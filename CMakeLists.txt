@@ -1,24 +1,13 @@
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.9)
 
-if (POLICY CMP0043)
-  cmake_policy(SET CMP0043 NEW)
-endif()
-if (POLICY CMP0063)
-  cmake_policy(SET CMP0063 NEW)
-endif()
-if (POLICY CMP0069)
-  cmake_policy(SET CMP0069 NEW)
-endif()
-
-project(cutelyst VERSION 2.15.0 LANGUAGES CXX)
+project(cutelyst VERSION 3.0.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql REQUIRED)
 
-set(CUTELYST_API_LEVEL "2")
+set(CUTELYST_API_LEVEL "3")
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)

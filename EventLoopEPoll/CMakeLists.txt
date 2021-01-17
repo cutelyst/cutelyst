@@ -10,21 +10,21 @@ set(eventloop_epoll_HEADERS
     eventdispatcher_epoll.h
 )
 
-add_library(Cutelyst2Qt5EventLoopEpoll
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
-add_library(Cutelyst2Qt5::EventLoopEPoll ALIAS Cutelyst2Qt5EventLoopEpoll)
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
 
-set_target_properties(Cutelyst2Qt5EventLoopEpoll PROPERTIES
+set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll PROPERTIES
     EXPORT_NAME EventLoopEPoll
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst2Qt5EventLoopEpoll
+target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
     Qt${QT_VERSION_MAJOR}::Core
 )
 
-install(TARGETS Cutelyst2Qt5EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
 

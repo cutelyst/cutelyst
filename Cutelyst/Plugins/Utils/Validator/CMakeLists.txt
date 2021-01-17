@@ -154,47 +154,47 @@ else ()
     message(STATUS "PLUGIN: Validator, enable PwQuality, disabled.")
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
-add_library(Cutelyst2Qt5UtilsValidator
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
     ${plugin_validator_SRC}
     ${plugin_validator_HEADERS}
 )
-add_library(Cutelyst2Qt5::Utils::Validator ALIAS Cutelyst2Qt5UtilsValidator)
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::Validator ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator)
 
-set_target_properties(Cutelyst2Qt5UtilsValidator PROPERTIES
+set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTIES
     EXPORT_NAME Utils::Validator
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst2Qt5UtilsValidator
+target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
     PUBLIC
-        Cutelyst2Qt5::Core
+        Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE
         Qt${QT_VERSION_MAJOR}::Network
 )
 
 if (PLUGIN_VALIDATOR_PWQUALITY)
-    target_link_libraries(Cutelyst2Qt5UtilsValidator
+    target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
         PRIVATE
             ${PWQUALITY_LIBRARIES}
     )
-    target_compile_definitions(Cutelyst2Qt5UtilsValidator
+    target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
         PUBLIC
             CUTELYST_VALIDATOR_WITH_PWQUALITY
     )
     set(CUTELYST_VALIDATOR_DEFINES "-DCUTELYST_VALIDATOR_WITH_PWQUALITY")
 endif (PLUGIN_VALIDATOR_PWQUALITY)
 
-set_property(TARGET Cutelyst2Qt5UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
-install(TARGETS Cutelyst2Qt5UtilsValidator
+set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTY PUBLIC_HEADER ${plugin_validator_HEADERS})
+install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst/Plugins/Utils COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst/Plugins/Utils COMPONENT devel
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5UtilsValidator.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsValidator.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst2Qt5UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

@@ -6,7 +6,7 @@ add_library(ActionREST MODULE
 )
 
 target_link_libraries(ActionREST
-    PRIVATE Cutelyst2Qt5::Core
+    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
 )
 
 install(TARGETS ActionREST DESTINATION ${CUTELYST_PLUGINS_DIR})
