@@ -253,8 +253,8 @@ bool Headers::ifMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
-                clientETag.midRef(3, clientETag.size() - 4) == etag; // Weak ETag
+        return clientETag.mid(1, clientETag.size() - 2) == etag ||
+                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return true;
 }
@@ -264,8 +264,8 @@ bool Headers::ifNoneMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_NONE_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
-                clientETag.midRef(3, clientETag.size() - 4) == etag; // Weak ETag
+        return clientETag.mid(1, clientETag.size() - 2) == etag ||
+                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return false;
 }
@@ -445,13 +445,13 @@ QString normalizeHeaderKey(const QString &field)
     QString key = field;
     int i = 0;
     while (i < key.size()) {
-        QCharRef c = key[i];
+        QChar c = key[i];
         if (c.isLetter()) {
             if (c.isLower()) {
-                c = c.toUpper();
+                key[i] = c.toUpper();
             }
         } else if (c == QLatin1Char('-')) {
-            c = QLatin1Char('_');
+            key[i] = QLatin1Char('_');
         }
         ++i;
     }
@@ -488,7 +488,7 @@ std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
 
 QDebug operator<<(QDebug debug, const Headers &headers)
 {
-    const QHash<QString, QString> data = headers.data();
+    const QMultiHash<QString, QString> data = headers.data();
     const bool oldSetting = debug.autoInsertSpaces();
     debug.nospace() << "Headers(";
     for (auto it = data.constBegin();

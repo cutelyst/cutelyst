@@ -120,12 +120,12 @@ public:
         QString key = headerKey;
         bool lastWasLetter = false;
         for (int i = 0 ; i < key.size() ; ++i) {
-            QCharRef c = key[i];
+            QChar c = key[i];
             if (c == QLatin1Char('_')) {
-                c = QLatin1Char('-');
+                key[i] = QLatin1Char('-');
                 lastWasLetter = false;
             } else if (lastWasLetter) {
-                c = c.toLower();
+                key[i] = c.toLower();
             } else if (c.isLetter()) {
                 lastWasLetter = true;
             }
@@ -142,12 +142,12 @@ public:
         // if the headers are not on camel case form.
         bool lastWasLetter = false;
         for (int i = 0 ; i < key.size() ; ++i) {
-            QByteRef c = key[i];
+            char c = key[i];
             if (c == '_') {
-                c = '-';
+                key[i] = '-';
                 lastWasLetter = false;
             } else if (lastWasLetter) {
-                c = QChar::toLower(c);
+                key[i] = QChar::toLower(c);
             } else if (QChar::isLetter(c)) {
                 lastWasLetter = true;
             }

@@ -66,7 +66,9 @@ Application::Application(QObject *parent) :
     d->q_ptr = this;
 
     qRegisterMetaType<ParamsMultiMap>();
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
+#endif
 
     d->dispatcher = new Dispatcher(this);
 
@@ -308,7 +310,7 @@ bool Application::setup(Engine *engine)
                 qCDebug(CUTELYST_CORE) << "Couldn't find home";
             }
         } else {
-            QFileInfo homeInfo = home;
+            QFileInfo homeInfo(home);
             if (homeInfo.isDir()) {
                 if (zeroCore) {
                     qCDebug(CUTELYST_CORE) << "Found home" << home;

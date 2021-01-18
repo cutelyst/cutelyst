@@ -578,10 +578,10 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
         return ret; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    ret.first = text.midRef(position, equalsPosition - position).trimmed().toString();
+    ret.first = text.mid(position, equalsPosition - position).trimmed();
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0) {
-        ret.second = text.midRef(equalsPosition + 1, secondLength).trimmed().toString();
+        ret.second = text.mid(equalsPosition + 1, secondLength).trimmed();
     }
 
     position = semiColonPosition;

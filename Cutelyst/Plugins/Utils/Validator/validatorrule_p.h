@@ -174,24 +174,24 @@ public:
             const QString fieldName = field.left(sepPos);
             const QString value = params.value(fieldName);
             if (!value.isEmpty()) {
-                const QStringRef type = field.midRef(sepPos + 1);
+                const QString type = field.mid(sepPos + 1);
                 if (type.startsWith(QLatin1String("dt"))) {
                     QDateTime dt = extractDateTime(c, value, format);
                     if (dt.isValid()) {
                         if (tz.isValid()) {
                             dt.setTimeZone(tz);
                         }
-                        var.setValue<QDateTime>(dt);
+                        var = dt;
                     }
                 } else if (type.startsWith(QLatin1Char('t'))) {
                     const QTime t = extractTime(c, value, format);
                     if (t.isValid()) {
-                        var.setValue<QTime>(t);
+                        var = t;
                     }
                 } else if (type.startsWith(QLatin1Char('d'))) {
                     const QDate d = extractDate(c, value, format);
                     if (d.isValid()) {
-                        var.setValue<QDate>(d);
+                        var = d;
                     }
                 }
             }
@@ -233,7 +233,7 @@ public:
         Q_ASSERT(ok);
         Q_UNUSED(params)
 
-        if (value.type() == QVariant::String) {
+        if (value.userType() == QMetaType::QString) {
             const QString field = value.toString();
 /*            if (params.contains(field)) {
                 const QString v = params.value(field);
