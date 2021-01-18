@@ -62,13 +62,13 @@ public:
 
     mutable QUrl url;
     mutable QString base;
-    mutable QMap<QString, QString> cookies;
+    mutable QMultiMap<QString, QString> cookies;
     mutable ParamsMultiMap queryParam;
     mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable QString remoteHostname;
-    mutable QMap<QString, Upload *> uploadsMap;
+    mutable QMultiMap<QString, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -377,7 +377,7 @@ public:
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline QHash<QString, QString> data() const {
+    inline QMultiHash<QString, QString> data() const {
         return m_data;
     }
 
@@ -389,12 +389,12 @@ public:
     /**
      * Returns the value reference associated with key.
      */
-    QString &operator[](const QString &key);
+//    QString &operator[](const QString &key);
 
     /**
      * Returns the const value associated with key.
      */
-    const QString operator[](const QString &key) const;
+//    const QString operator[](const QString &key) const;
 
     /**
      * Assigns \p other to this Header and returns a reference to this Header.
@@ -419,19 +419,12 @@ public:
         return m_data != other.m_data;
     }
 
-    /**
-     * Returns this Header internal data as a QVariant for easiness with Q_PROPERTY.
-     */
-    inline operator QVariant() const {
-        return QVariant::fromValue(m_data);
-    }
-
 private:
-    QHash<QString, QString> m_data;
+    QMultiHash<QString, QString> m_data;
 };
 
 void Headers::pushRawHeader(const QString &field, const QString &value) {
-    m_data.insertMulti(field, value);
+    m_data.insert(field, value);
 }
 
 }

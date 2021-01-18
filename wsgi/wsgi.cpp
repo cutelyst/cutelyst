@@ -1605,7 +1605,11 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
 
     applyConfig(sessionConfig);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    sessionConfig.insert(opt);
+#else
     sessionConfig.unite(opt);
+#endif
     opt = sessionConfig;
 
     auto it = config.begin();
@@ -1613,14 +1617,23 @@ void WSGIPrivate::loadConfig(const QString &file, bool json)
         auto itLoaded = loadedConfig.find(it.key());
         while (itLoaded != loadedConfig.end()) {
             QVariantMap loadedMap = itLoaded.value().toMap();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+            loadedMap.insert(it.value().toMap());
+#else
             loadedMap.unite(it.value().toMap());
+#endif
             it.value() = loadedMap;
             itLoaded = loadedConfig.erase(itLoaded);
         }
         ++it;
     }
 
-    loadedConfig.unite(config);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    sessionConfig.insert(config);
+#else
+    sessionConfig.unite(config);
+#endif
+
     config = loadedConfig;
 }
 

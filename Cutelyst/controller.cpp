@@ -205,7 +205,7 @@ bool Controller::_DISPATCH(Context *c)
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
     const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
     QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
@@ -268,7 +268,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                     attributeArray.append(classInfo.value());
                 }
             }
-            QMap<QString, QString> attrs = parseAttributes(method, attributeArray, name);
+            ParamsMultiMap attrs = parseAttributes(method, attributeArray, name);
 
             QString reverse;
             if (controller->ns().isEmpty()) {
@@ -287,15 +287,15 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                           controller,
                                           app);
 
-            actions.insertMulti(action->reverse(), action);
+            actions.replace(action->reverse(), action);
             actionList.append(action);
         }
     }
 }
 
-QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
+ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
-    QMap<QString, QString> ret;
+    ParamsMultiMap ret;
     std::vector<std::pair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
@@ -393,7 +393,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             value = parseChainedAttr(value);
         }
 
-        ret.insertMulti(key, value);
+        ret.insert(key, value);
         ++i;
     }
 
@@ -421,7 +421,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
                         ++parameterCount;
                     }
                 }
-                ret.insert(parameterName, QString::number(parameterCount));
+                ret.replace(parameterName, QString::number(parameterCount));
             }
         }
 
@@ -429,7 +429,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 
     // If the method is private add a Private attribute
     if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
-        ret.insert(QStringLiteral("Private"), QString());
+        ret.replace(QStringLiteral("Private"), QString());
     }
 
     return ret;

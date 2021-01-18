@@ -186,11 +186,11 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
         QVariantHash line;
         for (int i = 0; i < columns; ++i) {
             if (i != index) {
-                line.insertMulti(cols.at(i), query.value(i));
+                line.insert(cols.at(i), query.value(i));
             }
         }
 
-        ret.insertMulti(query.value(index).toString(), line);
+        ret.insert(query.value(index).toString(), line);
     }
 
     return ret;

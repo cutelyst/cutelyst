@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2020 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -204,6 +204,8 @@ public:
      * (for this you must use a session; see Cutelyst::Plugin::Session
      * for a complete system integrated with Cutelyst).
      *
+     * If a given key is present it will be replaced
+     *
      * \code{.cpp}
      * c->stash({
      *              {"foo", 10},
@@ -211,7 +213,7 @@ public:
      *            });
      * \endcode
      */
-    inline void stash(const QVariantHash &unite);
+    void stash(const QVariantHash &unite);
 
     /**
      * Returns a QVariantHash reference to the stash,
@@ -564,9 +566,6 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Context)
 };
-
-inline void Context::stash(const QVariantHash &unite)
-{ stash().unite(unite); }
 
 inline QUrl Context::uriFor(const QString &path, const ParamsMultiMap &queryValues) const
 { return uriFor(path, QStringList(), queryValues); }

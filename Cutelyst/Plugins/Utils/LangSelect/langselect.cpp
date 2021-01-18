@@ -592,7 +592,12 @@ bool LangSelectPrivate::getFromSubdomain(Context *c, const QMap<QString, QLocale
         }
         ++i;
     }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    const auto domainParts = domain.split(QLatin1Char('.'), Qt::SkipEmptyParts);
+#else
     const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
+#endif
     if (domainParts.size() > 2) {
         const QLocale l(domainParts.at(0));
         if (l.language() != QLocale::C && locales.contains(l)) {
@@ -617,7 +622,12 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
         }
         ++i;
     }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    const auto domainParts = domain.split(QLatin1Char('.'), Qt::SkipEmptyParts);
+#else
     const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
+#endif
     if (domainParts.size() > 1) {
         const QLocale l(domainParts.at(domainParts.size() - 1));
         if (l.language() != QLocale::C && locales.contains(l)) {
@@ -633,7 +643,11 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
 bool LangSelectPrivate::getFromHeader(Context *c, const QString &name) const
 {
     if (detectFromHeader) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        const auto accpetedLangs = c->req()->header(name).split(QLatin1Char(','), Qt::SkipEmptyParts);
+#else
         const auto accpetedLangs = c->req()->header(name).split(QLatin1Char(','), QString::SkipEmptyParts);
+#endif
         if (Q_LIKELY(!accpetedLangs.empty())) {
             std::map<float,QLocale> langMap;
             for (const QString &al : accpetedLangs) {

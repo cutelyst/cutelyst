@@ -62,7 +62,7 @@ void Action::setupAction(const QVariantHash &args, Application *app)
 
     d->ns = args.value(QLatin1String("namespace")).toString();
 
-    const auto attributes = args.value(QLatin1String("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
     d->attributes = attributes;
 
     const QString argsAttr = attributes.value(QLatin1String("Args"));
@@ -76,7 +76,7 @@ void Action::setupAction(const QVariantHash &args, Application *app)
     }
 }
 
-QMap<QString, QString> Action::attributes() const
+ParamsMultiMap Action::attributes() const
 {
     Q_D(const Action);
     return d->attributes;
@@ -88,7 +88,7 @@ QString Action::attribute(const QString &name, const QString &defaultValue) cons
     return d->attributes.value(name, defaultValue);
 }
 
-void Action::setAttributes(const QMap<QString, QString> &attributes)
+void Action::setAttributes(const ParamsMultiMap &attributes)
 {
     Q_D(Action);
     d->attributes = attributes;

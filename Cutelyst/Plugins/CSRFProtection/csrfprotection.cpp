@@ -95,7 +95,12 @@ bool CSRFProtection::setup(Application *app)
     if (d->headerName.isEmpty()) {
         d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
     }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+#else
     d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(QLatin1Char(','), QString::SkipEmptyParts);
+#endif
     if (d->formInputName.isEmpty()) {
         d->formInputName = QStringLiteral(DEFAULT_FORM_INPUT_NAME);
     }
