@@ -25,7 +25,11 @@ using namespace Cutelyst;
 QByteArray buildTableDivision(const QVector<int> &columnsSize)
 {
     QByteArray buffer;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QTextStream out(&buffer, QTextStream::WriteOnly);
+#else
     QTextStream out(&buffer, QIODevice::WriteOnly);
+#endif
     for (int i = 0; i < columnsSize.size(); ++i) {
         if (i) {
             out << '+';
@@ -72,7 +76,12 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
     }
 
     // printing
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QTextStream out(&buffer, QTextStream::WriteOnly);
+#else
     QTextStream out(&buffer, QIODevice::WriteOnly);
+#endif
+
     out.setFieldAlignment(QTextStream::AlignLeft);
     QByteArray div = buildTableDivision(columnsSize);
 

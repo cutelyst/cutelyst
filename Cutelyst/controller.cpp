@@ -490,6 +490,60 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
     if (!instanceName.isEmpty()) {
         instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());
+        if (!id.isValid()) {
+            if (!instanceName.endsWith(QLatin1Char('*'))) {
+                instanceName.append(QLatin1Char('*'));
+            }
+
+            id = QMetaType::fromName(instanceName.toLatin1().data());
+            if (!id.isValid() && !instanceName.startsWith(QStringLiteral("Cutelyst::"))) {
+                instanceName = QLatin1String("Cutelyst::") + instanceName;
+                id = QMetaType::fromName(instanceName.toLatin1().data());
+            }
+        }
+
+        if (id.isValid()) {
+            const QMetaObject *metaObj = id.metaObject();
+            if (metaObj) {
+                if (!superIsClassName(metaObj->superClass(), super)) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Class name"
+                            << instanceName
+                            << "is not a derived class of"
+                            << super;
+                }
+
+                QObject *object = metaObj->newInstance();
+                if (!object) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Could create a new instance of"
+                            << instanceName
+                            << "make sure it's default constructor is "
+                               "marked with the Q_INVOKABLE macro";
+                }
+
+                return object;
+            }
+        } else {
+            Component *component = application->createComponentPlugin(name);
+            if (component) {
+                return component;
+            }
+
+            component = application->createComponentPlugin(instanceName);
+            if (component) {
+                return component;
+            }
+        }
+
+        if (!id.isValid()) {
+            qFatal("Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                   qPrintable(instanceName), qPrintable(instanceName));
+        }
+    }
+#else
         int id = QMetaType::type(instanceName.toLatin1().data());
         if (!id) {
             if (!instanceName.endsWith(QLatin1Char('*'))) {
@@ -542,6 +596,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
                    qPrintable(instanceName), qPrintable(instanceName));
         }
     }
+#endif
     return nullptr;
 }
 
