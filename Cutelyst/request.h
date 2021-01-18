@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,7 +54,6 @@ class CUTELYST_LIBRARY Request final : public QObject
     Q_PROPERTY(QVariant bodyData READ bodyData CONSTANT)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParams READ bodyParameters CONSTANT)
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters CONSTANT)
-    Q_PROPERTY(QVariant headers READ headers() CONSTANT)
     Q_PROPERTY(QString contentEncoding READ contentEncoding CONSTANT)
     Q_PROPERTY(QString contentType READ contentType CONSTANT)
     Q_PROPERTY(QString method READ method CONSTANT)
@@ -419,7 +418,7 @@ public:
      * Returns a map containing uploads, where their key is
      * the field name.
      */
-    QMap<QString, Upload *> uploadsMap() const;
+    QMultiMap<QString, Upload *> uploadsMap() const;
 
     /**
      * Returns all (if any) Upload objects for the given field.

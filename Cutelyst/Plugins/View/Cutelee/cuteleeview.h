@@ -196,7 +196,7 @@ public:
      *
      * \since Cutelyst 1.5.0
      */
-    void addTranslationCatalogs(const QHash<QString, QString> &catalogs);
+    void addTranslationCatalogs(const QMultiHash<QString, QString> &catalogs);
 
     /**
      * Loads translations for a specific @p filename from a single directory and returns a list of added locales.

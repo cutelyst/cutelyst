@@ -1,3 +1,5 @@
+configure_file(cutelyst_global.h.in cutelyst_global.h @ONLY)
+
 set(cutelystqt_SRC
     utils.cpp
     upload.cpp
@@ -43,7 +45,6 @@ set(cutelystqt_SRC
 )
 
 set(cutelystqt_HEADERS
-    cutelyst_global.h
     paramsmultimap.h
     ParamsMultiMap
     action.h
@@ -131,6 +132,9 @@ install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
     PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst COMPONENT devel
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_global.h
+        DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in

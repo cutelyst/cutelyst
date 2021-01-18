@@ -33,7 +33,7 @@ namespace Cutelyst {
  * QMap::insertMulti() order they perfectly
  * fit our body or query parameters need.
  */
-typedef QMap<QString, QString> ParamsMultiMap;
+typedef QMultiMap<QString, QString> ParamsMultiMap;
 
 }
 

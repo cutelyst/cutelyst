@@ -461,7 +461,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
 
 bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name) const
 {
-    const QMap<QString, QString> attributes = action->attributes();
+    const auto attributes = action->attributes();
     if (!attributes.contains(name)) {
         return true;
     }

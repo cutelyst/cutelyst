@@ -393,7 +393,7 @@ QVector<Upload *> Request::uploads() const
     return d->uploads;
 }
 
-QMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
+QMultiMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
@@ -422,7 +422,7 @@ ParamsMultiMap Request::mangleParams(const ParamsMultiMap &args, bool append) co
         auto it = args.constEnd();
         while (it != args.constBegin()) {
             --it;
-            ret.insert(it.key(), it.value());
+            ret.replace(it.key(), it.value());
         }
     }
 
@@ -459,6 +459,7 @@ void RequestPrivate::parseUrlQuery() const
             QByteArray aux = engineRequest->query;
             queryKeywords = Utils::decodePercentEncoding(&aux);
         } else {
+            qDebug() << "engineRequest->query" << engineRequest->query;
             queryParam = parseUrlEncoded(engineRequest->query);
         }
     }
@@ -498,13 +499,13 @@ void RequestPrivate::parseBody() const
         const Uploads ups = MultiPartFormDataParser::parse(body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
         for (Upload *upload : ups) {
             if (upload->filename().isEmpty() && upload->contentType().isEmpty()) {
-                bodyParam.insertMulti(upload->name(), QString::fromUtf8(upload->readAll()));
+                bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
                 upload->seek(0);
             }
-            uploadsMap.insertMulti(upload->name(), upload);
+            uploadsMap.insert(upload->name(), upload);
         }
         uploads = ups;
-        bodyData = QVariant::fromValue(uploadsMap);
+//        bodyData = QVariant::fromValue(uploadsMap);
     } else if (contentType == QLatin1String("application/json")) {
         if (posOrig) {
             body->seek(0);
@@ -604,7 +605,7 @@ void RequestPrivate::parseCookies() const
             ++position;
             continue;
         }
-        cookies.insertMulti(field.first, field.second);
+        cookies.insert(field.first, field.second);
         ++position;
     }
 
@@ -639,15 +640,12 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
             QByteArray key = data.mid(0, equal);
             if (++equal < data.size()) {
                 QByteArray value = data.mid(equal);
-                ret.insertMulti(Utils::decodePercentEncoding(&key),
-                                Utils::decodePercentEncoding(&value));
+                ret.insert(Utils::decodePercentEncoding(&key), Utils::decodePercentEncoding(&value));
             } else {
-                ret.insertMulti(Utils::decodePercentEncoding(&key),
-                                QString());
+                ret.insert(Utils::decodePercentEncoding(&key), QString());
             }
         } else {
-            ret.insertMulti(Utils::decodePercentEncoding(&data),
-                            QString());
+            ret.insert(Utils::decodePercentEncoding(&data), QString());
         }
 
         if (pos == -1) {
@@ -665,7 +663,7 @@ QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &par
     auto end = params.constEnd();
     while (params.constBegin() != end) {
         --end;
-        ret.insertMulti(ret.constBegin(), end.key(), end.value());
+        ret.insert(ret.constBegin(), end.key(), end.value());
     }
     return ret;
 }

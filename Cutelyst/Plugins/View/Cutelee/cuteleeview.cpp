@@ -271,7 +271,7 @@ void CuteleeView::addTranslationCatalog(const QString &path, const QString &cata
     d->translationCatalogs.insert(catalog, path);
 }
 
-void CuteleeView::addTranslationCatalogs(const QHash<QString, QString> &catalogs)
+void CuteleeView::addTranslationCatalogs(const QMultiHash<QString, QString> &catalogs)
 {
     Q_D(CuteleeView);
     Q_ASSERT_X(!catalogs.empty(), "add translation catalogs to GranteleeView", "empty QHash");

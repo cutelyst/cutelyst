@@ -857,7 +857,7 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("multipart/form-data"));
     QTest::newRow("bodyData-test05") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
-                                     << QByteArrayLiteral("QMap<QString,Cutelyst::Upload*>");
+                                     << QByteArrayLiteral("");
 
     query.clear();
     QJsonObject obj;

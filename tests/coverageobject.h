@@ -214,7 +214,13 @@ public:
     void uriForAction(Context *c, const QStringList &args) {
         QStringList arguments = args;
         auto query = c->request()->queryParameters();
-        QStringList captures = query.take(QStringLiteral("captures")).split(QLatin1Char('/'), QString::SkipEmptyParts);
+
+        QStringList captures = query.take(QStringLiteral("captures")).split(QLatin1Char('/'),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        Qt::SkipEmptyParts);
+#else
+        QString::SkipEmptyParts);
+#endif
         QString action = query.take(QStringLiteral("action"));
         QUrl uri = c->uriForAction(action, captures, arguments, query);
         if (uri.isEmpty()) {
