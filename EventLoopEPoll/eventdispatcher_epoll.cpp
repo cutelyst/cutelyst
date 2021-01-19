@@ -39,13 +39,6 @@ bool EventDispatcherEPoll::processEvents(QEventLoop::ProcessEventsFlags flags)
     return d->processEvents(flags);
 }
 
-extern uint qGlobalPostedEventsCount();
-
-bool EventDispatcherEPoll::hasPendingEvents()
-{
-    return qGlobalPostedEventsCount() > 0;
-}
-
 void EventDispatcherEPoll::registerSocketNotifier(QSocketNotifier* notifier)
 {
 #ifndef QT_NO_DEBUG
@@ -80,33 +73,6 @@ void EventDispatcherEPoll::unregisterSocketNotifier(QSocketNotifier* notifier)
 
     Q_D(EventDispatcherEPoll);
     d->unregisterSocketNotifier(notifier);
-}
-
-void EventDispatcherEPoll::registerTimer(
-        int timerId,
-        int interval,
-        Qt::TimerType timerType,
-        QObject *object
-        )
-{
-#ifndef QT_NO_DEBUG
-    if (timerId < 1 || interval < 0 || !object) {
-        qWarning("%s: invalid arguments", Q_FUNC_INFO);
-        return;
-    }
-
-    if (object->thread() != thread() && thread() != QThread::currentThread()) {
-        qWarning("%s: timers cannot be started from another thread", Q_FUNC_INFO);
-        return;
-    }
-#endif
-
-    Q_D(EventDispatcherEPoll);
-    if (interval) {
-        d->registerTimer(timerId, interval, timerType, object);
-    } else {
-        d->registerZeroTimer(timerId, object);
-    }
 }
 
 bool EventDispatcherEPoll::unregisterTimer(int timerId)
@@ -187,10 +153,46 @@ void EventDispatcherEPoll::interrupt()
     wakeUp();
 }
 
+extern uint qGlobalPostedEventsCount();
+
+bool EventDispatcherEPoll::hasPendingEvents()
+{
+    return qGlobalPostedEventsCount() > 0;
+}
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+void EventDispatcherEPoll::registerTimer(
+        int timerId,
+        int interval,
+        Qt::TimerType timerType,
+        QObject *object
+        )
+{
+#ifndef QT_NO_DEBUG
+    if (timerId < 1 || interval < 0 || !object) {
+        qWarning("%s: invalid arguments", Q_FUNC_INFO);
+        return;
+    }
+
+    if (object->thread() != thread() && thread() != QThread::currentThread()) {
+        qWarning("%s: timers cannot be started from another thread", Q_FUNC_INFO);
+        return;
+    }
+#endif
+
+    Q_D(EventDispatcherEPoll);
+    if (interval) {
+        d->registerTimer(timerId, interval, timerType, object);
+    } else {
+        d->registerZeroTimer(timerId, object);
+    }
+}
+
 void EventDispatcherEPoll::flush()
 {
     Q_D(EventDispatcherEPoll);
     d->createEpoll();
 }
+#endif
 
 #include "moc_eventdispatcher_epoll.cpp"
