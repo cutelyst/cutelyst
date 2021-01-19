@@ -3,6 +3,7 @@ dist: trusty
 branches:
   only:
     - master
+    - v2
     - travis_macos
 
 osx_image: xcode12.2
