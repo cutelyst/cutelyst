@@ -423,8 +423,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
 
     QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    bool loadedTr = qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+                                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#else
+                                      QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#endif
+    if (!loadedTr) {
+        std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: could not load translations")) << std::endl;
+    }
+
     QCoreApplication::installTranslator(&qtTranslator);
 
     QTranslator appTranslator;

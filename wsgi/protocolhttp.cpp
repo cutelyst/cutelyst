@@ -278,13 +278,13 @@ inline QString normalizeHeaderKey(const char *str, int size)
     int i = 0;
     QString key = QString::fromLatin1(str, size);
     while (i < key.size()) {
-        QCharRef c = key[i];
+        QChar c = key[i];
         if (c.isLetter()) {
             if (c.isLower()) {
-                c = c.toUpper();
+                key[i] = c.toUpper();
             }
         } else if (c == QLatin1Char('-')) {
-            c = QLatin1Char('_');
+            key[i] = QLatin1Char('_');
         }
         ++i;
     }

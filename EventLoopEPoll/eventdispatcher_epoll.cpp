@@ -193,6 +193,28 @@ void EventDispatcherEPoll::flush()
     Q_D(EventDispatcherEPoll);
     d->createEpoll();
 }
+#else
+void EventDispatcherEPoll::registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object)
+{
+#ifndef QT_NO_DEBUG
+    if (timerId < 1 || interval < 0 || !object) {
+        qWarning("%s: invalid arguments", Q_FUNC_INFO);
+        return;
+    }
+
+    if (object->thread() != thread() && thread() != QThread::currentThread()) {
+        qWarning("%s: timers cannot be started from another thread", Q_FUNC_INFO);
+        return;
+    }
+#endif
+
+    Q_D(EventDispatcherEPoll);
+    if (interval) {
+        d->registerTimer(timerId, interval, timerType, object);
+    } else {
+        d->registerZeroTimer(timerId, object);
+    }
+}
 #endif
 
 #include "moc_eventdispatcher_epoll.cpp"
