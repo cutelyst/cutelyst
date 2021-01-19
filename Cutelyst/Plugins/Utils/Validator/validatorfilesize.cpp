@@ -40,7 +40,7 @@ bool ValidatorFileSize::validate(const QString &value, double min, double max, C
     QString digitPart;
     QString symbolPart;
     bool decimalPointFound = false;
-    const QChar decimalPoint = locale.decimalPoint();
+    const QString decimalPoint(locale.decimalPoint());
     int multiplier = 0;
     bool binary = false;
     bool byteSignFound = false;
@@ -268,7 +268,7 @@ ValidatorReturnType ValidatorFileSize::validate(Context *c, const ParamsMultiMap
                 if (size < static_cast<double>(std::numeric_limits<qulonglong>::max())) {
                     result.value.setValue<qulonglong>(static_cast<qulonglong>(size + 0.5));
                 } else {
-                    result.value.setValue<double>(size);
+                    result.value.setValue(size);
                 }
             } else {
                 result.errorMessage = validationError(c);

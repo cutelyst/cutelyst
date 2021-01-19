@@ -160,7 +160,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     result.errorMessage = parsingError(c);
                 }
             } else {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     } else {

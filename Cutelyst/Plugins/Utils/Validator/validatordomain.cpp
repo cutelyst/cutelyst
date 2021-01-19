@@ -318,7 +318,7 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
         QString exVal;
         Diagnose diag;
         if (ValidatorDomain::validate(v, d->checkDNS, &diag, &exVal)) {
-            result.value.setValue<QString>(exVal);
+            result.value.setValue(exVal);
         } else {
             result.errorMessage = validationError(c, diag);
         }

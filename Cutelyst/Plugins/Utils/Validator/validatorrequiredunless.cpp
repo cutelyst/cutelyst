@@ -43,14 +43,14 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c, const ParamsMu
         const QString ov = trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
         if (!d->otherValues.contains(ov)) {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR, "ValidatorRequiredUnless: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             }
         } else {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     }

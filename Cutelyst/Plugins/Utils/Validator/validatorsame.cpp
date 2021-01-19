@@ -43,7 +43,7 @@ ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &pa
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR, "ValidatorSame: Validation failed for field %s at %s::%s: value is not the same as in the field %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->otherField));
         } else {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         }
     } else {
         defaultValue(c, &result, "ValidatorSame");

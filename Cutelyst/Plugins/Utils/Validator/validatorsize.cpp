@@ -159,7 +159,7 @@ ValidatorReturnType ValidatorSize::validate(Context *c, const ParamsMultiMap &pa
                     result.errorMessage = parsingError(c);
                 }
             } else {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     } else {

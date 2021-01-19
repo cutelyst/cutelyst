@@ -55,14 +55,14 @@ ValidatorReturnType ValidatorRequiredWithoutAll::validate(Context *c, const Para
 
         if (withoutAll) {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR, "ValidatorRequiredWithoutAll: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             }
         } else {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     }

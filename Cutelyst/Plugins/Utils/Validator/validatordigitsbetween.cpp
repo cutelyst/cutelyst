@@ -62,7 +62,7 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     if (!v.isEmpty()) {
 
         if (Q_LIKELY(ValidatorDigitsBetween::validate(v, _min, _max))) {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c, QVariantList{_min, _max});
             qCDebug(C_VALIDATOR, "ValidatorDigitsBetween: Validation failed for value \"%s\" in field %s at %s::%s: length not between %i and %i and/or non-digit characters.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), _min, _max);

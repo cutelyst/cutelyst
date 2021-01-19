@@ -48,7 +48,7 @@ ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMa
                     qPrintable(c->actionName()),
                     qPrintable(d->otherField));
         } else {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         }
     }
 

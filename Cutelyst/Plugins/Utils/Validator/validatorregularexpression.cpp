@@ -40,7 +40,7 @@ ValidatorReturnType ValidatorRegularExpression::validate(Context *c, const Param
     if (d->regex.isValid()) {
         if (!v.isEmpty()) {
             if (v.contains(d->regex)) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR, "ValidatorRegularExpression: Validation failed for field %s at %s::%s because value does not match the following regular expression: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->regex.pattern()));
