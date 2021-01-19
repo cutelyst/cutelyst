@@ -1654,14 +1654,14 @@ void WSGIPrivate::applyConfig(const QVariantMap &config)
 
         const QVariant value = it.value();
         const QMetaProperty prop = q->metaObject()->property(ix);
-        if (prop.type() == value.type()) {
-            if (prop.type() == QVariant::StringList) {
+        if (prop.userType() == value.userType()) {
+            if (prop.userType() == QMetaType::QStringList) {
                 const QStringList currentValues = prop.read(q).toStringList();
                 prop.write(q, currentValues + value.toStringList());
             } else {
                 prop.write(q, value);
             }
-        } else if (prop.type() == QVariant::StringList) {
+        } else if (prop.userType() == QMetaType::QStringList) {
             const QStringList currentValues = prop.read(q).toStringList();
             prop.write(q, currentValues + QStringList{ value.toString() });
         } else {

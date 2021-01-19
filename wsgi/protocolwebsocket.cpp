@@ -27,14 +27,20 @@
 
 #include <QLoggingCategory>
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 #include <QTextCodec>
+#else
+#include <QStringConverter>
+#endif
 
 using namespace CWSGI;
 
 Q_LOGGING_CATEGORY(CWSGI_WS, "cwsgi.websocket", QtWarningMsg)
 
 ProtocolWebSocket::ProtocolWebSocket(CWSGI::WSGI *wsgi) : Protocol(wsgi)
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
   , m_codec(QTextCodec::codecForName(QByteArrayLiteral("UTF-8")))
+#endif
   , m_websockets_max_size(wsgi->websocketMaxSize() * 1024)
 {
 }
@@ -158,9 +164,15 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         payload = protoRequest->websocket_message.mid(protoRequest->websocket_start_of_frame);
     }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QTextCodec::ConverterState state;
     const QString frame = m_codec->toUnicode(payload.data(), payload.size(), &state);
     const bool failed = state.invalidChars || state.remainingChars;
+#else
+    auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
+    const QString frame = toUtf16(payload);
+    const bool failed = false;//FIXME
+#endif
     if (singleFrame && (failed || (frame.isEmpty() && payload.size()))) {
         sock->connectionClose();
         return false;
@@ -176,9 +188,15 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         if (singleFrame || protoRequest->websocket_payload == protoRequest->websocket_message) {
             Q_EMIT request->webSocketTextMessage(frame, protoRequest->context);
         } else {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             QTextCodec::ConverterState stateMsg;
             const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &stateMsg);
-            const bool failed = state.invalidChars || state.remainingChars;
+            const bool failed = stateMsg.invalidChars || stateMsg.remainingChars;
+#else
+            auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
+            const QString msg = toUtf16(protoRequest->websocket_message);
+            const bool failed = false;//FIXME
+#endif
             if (failed) {
                 sock->connectionClose();
                 return false;
@@ -228,14 +246,26 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     quint16 closeCode = Cutelyst::Response::CloseCodeMissingStatusCode;
     QString reason;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QTextCodec::ConverterState state;
+    const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &state);
+    const bool failed = state.invalidChars || state.remainingChars;
+#else
+    const bool failed = false;//FIXME
+#endif
+
     if (protoRequest->websocket_payload.size() >= 2) {
         closeCode = net_be16(protoRequest->websocket_payload.data());
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2, protoRequest->websocket_payload.size() - 2, &state);
+#else
+        auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
+        reason = toUtf16(protoRequest->websocket_payload.mid(2));
+#endif
     }
     Q_EMIT c->request()->webSocketClosed(closeCode, reason);
 
-    if (state.invalidChars || state.remainingChars) {
+    if (failed) {
         reason = QString();
         closeCode = Cutelyst::Response::CloseCodeProtocolError;
     } else if (closeCode < 3000 || closeCode > 4999) {

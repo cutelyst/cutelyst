@@ -155,7 +155,7 @@ HPack::~HPack()
 
 }
 
-void HPack::encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
+void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
 {
     if (status == 200) {
         buf.append(char(0x88));

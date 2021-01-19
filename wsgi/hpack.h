@@ -42,7 +42,7 @@ public:
     HPack(int maxTableSize);
     ~HPack();
 
-    void encodeHeaders(int status, const QHash<QString, QString> &headers, QByteArray &buf, CWSGI::CWsgiEngine *engine);
+    void encodeHeaders(int status, const QMultiHash<QString, QString> &headers, QByteArray &buf, CWSGI::CWsgiEngine *engine);
 
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 
