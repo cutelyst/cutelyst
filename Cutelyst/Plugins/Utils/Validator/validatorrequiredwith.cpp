@@ -53,14 +53,14 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
 
         if (containsOther) {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR, "ValidatorRequiredWith: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             }
         } else {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     }

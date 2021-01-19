@@ -20,6 +20,7 @@
 #define CUTELYSTVALIDATORFILESIZE_H
 
 #include <Cutelyst/cutelyst_global.h>
+#include <QLocale>
 #include "validatorrule.h"
 
 namespace Cutelyst {

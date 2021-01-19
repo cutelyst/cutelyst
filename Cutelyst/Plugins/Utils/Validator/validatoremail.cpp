@@ -135,7 +135,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
     const int atPos = address.lastIndexOf(QLatin1Char('@'));
     if (allowIdn) {
         if (atPos > 0) {
-            const QStringRef local = address.leftRef(atPos);
+            const QString local = address.left(atPos);
             const QString domain = address.mid(atPos + 1);
             bool asciiDomain = true;
             for (const QChar &ch : domain) {
@@ -585,7 +585,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     if (ipv4Match.hasMatch()) {
                         index = addressLiteral.lastIndexOf(ipv4Match.captured());
                         if (index != 0) {
-                            addressLiteral = addressLiteral.midRef(0, index) + QLatin1String("0:0"); // Convert IPv4 part to IPv6 format for further testing
+                            addressLiteral = addressLiteral.mid(0, index) + QLatin1String("0:0"); // Convert IPv4 part to IPv6 format for further testing
                         }
                     }
 
@@ -623,7 +623,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
 
                         if ((ipv6[0] == QLatin1Char(':')) && (ipv6[1] != QLatin1Char(':'))) {
                             returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonStart); // Address starts with a single colon
-                        } else if ((ipv6.rightRef(2).at(1) == QLatin1Char(':')) && (ipv6.rightRef(2).at(0) != QLatin1Char(':'))) {
+                        } else if ((ipv6.right(2).at(1) == QLatin1Char(':')) && (ipv6.right(2).at(0) != QLatin1Char(':'))) {
                             returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single colon
                         } else {
                             int unmatchedChars = 0;

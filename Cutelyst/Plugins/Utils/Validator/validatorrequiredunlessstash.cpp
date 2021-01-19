@@ -43,13 +43,13 @@ ValidatorReturnType ValidatorRequiredUnlessStash::validate(Context *c, const Par
         const QVariant sv = c->stash(d->stashKey);
         if (!d->stashValues.contains(sv)) {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
             }
         } else {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     }

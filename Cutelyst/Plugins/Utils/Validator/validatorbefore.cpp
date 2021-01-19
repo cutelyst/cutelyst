@@ -45,11 +45,11 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
         const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
 
-        const QVariant _comp = (d->comparison.type() == QVariant::String)
+        const QVariant _comp = (d->comparison.userType() == QMetaType::QString)
                 ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
                 : d->comparison;
 
-        if (_comp.type() == QVariant::Date) {
+        if (_comp.userType() == QMetaType::QDate) {
 
             const QDate odate = _comp.toDate();
             if (Q_UNLIKELY(!odate.isValid())) {
@@ -65,12 +65,12 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
                         qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input date \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(date.toString()), qPrintable(odate.toString()));
                         result.errorMessage = validationError(c, odate);
                     } else {
-                        result.value.setValue<QDate>(date);
+                        result.value.setValue(date);
                     }
                 }
             }
 
-        } else if (_comp.type() == QVariant::DateTime) {
+        } else if (_comp.userType() == QMetaType::QDateTime) {
 
             const QDateTime odatetime = _comp.toDateTime();
             if (Q_UNLIKELY(!odatetime.isValid())) {
@@ -86,12 +86,12 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
                         qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input date and time \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(datetime.toString()), qPrintable(odatetime.toString()));
                         result.errorMessage = validationError(c, odatetime);
                     } else {
-                        result.value.setValue<QDateTime>(datetime);
+                        result.value.setValue(datetime);
                     }
                 }
             }
 
-        } else if (_comp.type() == QVariant::Time) {
+        } else if (_comp.userType() == QMetaType::QTime) {
 
             const QTime otime = _comp.toTime();
             if (Q_UNLIKELY(!otime.isValid())) {
@@ -107,7 +107,7 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
                         qCDebug(C_VALIDATOR, "ValidatorBefore: Validation failed at %s::%s for field %s: Input time \"%s\" is not before \"%s\".", qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(field()), qPrintable(time.toString()), qPrintable(otime.toString()));
                         result.errorMessage = validationError(c, otime);
                     } else {
-                        result.value.setValue<QTime>(time);
+                        result.value.setValue(time);
                     }
                 }
             }
@@ -130,14 +130,14 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVar
     const QString _label = label(c);
     if (_label.isEmpty()) {
 
-        switch (errorData.type()) {
-        case QVariant::Date:
+        switch (errorData.userType()) {
+        case QMetaType::QDate:
             error = QStringLiteral("Has to be before %1.").arg(errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
-        case QVariant::DateTime:
+        case QMetaType::QDateTime:
             error = QStringLiteral("Has to be before %1.").arg(errorData.toDateTime().toString(c->locale().dateTimeFormat(QLocale::ShortFormat)));
             break;
-        case QVariant::Time:
+        case QMetaType::QTime:
             error = QStringLiteral("Has to be before %1.").arg(errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
             break;
         default:
@@ -147,14 +147,14 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVar
 
     } else {
 
-        switch(errorData.type()) {
-        case QVariant::Date:
+        switch(errorData.userType()) {
+        case QMetaType::QDate:
             error = c->translate("Cutelyst::ValidatorBefore", "The date in the “%1” field must be before %2.").arg(_label, errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
-        case QVariant::DateTime:
+        case QMetaType::QDateTime:
             error = c->translate("Cutelyst::ValidatorBefore", "The date and time in the “%1” field must be before %2.").arg(_label, errorData.toDateTime().toString(c->locale().dateTimeFormat(QLocale::ShortFormat)));
             break;
-        case QVariant::Time:
+        case QMetaType::QTime:
             error = c->translate("Cutelyst::ValidatorBefore", "The time in the “%1” field must be before %2.").arg(_label, errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
             break;
         default:
@@ -195,14 +195,14 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
     } else {
 
         if (_label.isEmpty()) {
-            switch (errorData.type()) {
-            case QVariant::DateTime:
+            switch (errorData.userType()) {
+            case QMetaType::QDateTime:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date and time.");
                 break;
-            case QVariant::Time:
+            case QMetaType::QTime:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as time.");
                 break;
-            case QVariant::Date:
+            case QMetaType::QDate:
                 error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed as date.");
                 break;
             default:
@@ -210,16 +210,16 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
                 break;
             }
         } else {
-            switch (errorData.type()) {
-            case QVariant::DateTime:
+            switch (errorData.userType()) {
+            case QMetaType::QDateTime:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date and time.").arg(_label);
                 break;
-            case QVariant::Time:
+            case QMetaType::QTime:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as time.").arg(_label);
                 break;
-            case QVariant::Date:
+            case QMetaType::QDate:
                 //: %1 will be replaced by the field label
                 error = c->translate("Cutelyst::ValidatorBefore", "The value in the “%1” field could not be parsed as date.").arg(_label);
                 break;

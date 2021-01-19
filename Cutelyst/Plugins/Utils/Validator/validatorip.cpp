@@ -43,7 +43,7 @@ ValidatorReturnType ValidatorIp::validate(Cutelyst::Context *c, const ParamsMult
     if (!v.isEmpty()) {
 
         if (ValidatorIp::validate(v, d->constraints)) {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR, "ValidatorIp: Validation failed for field %s at %s::%s: not a valid IP address within the constraints.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));

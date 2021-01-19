@@ -94,7 +94,7 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR, "ValidatorUrl: Validation failed for field %s at %s::%s: not a valid URL", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
         } else {
-            result.value.setValue<QUrl>(url);
+            result.value.setValue(url);
         }
     } else {
         defaultValue(c, &result, "ValidatorUrl");

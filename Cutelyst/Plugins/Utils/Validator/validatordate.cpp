@@ -46,7 +46,7 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR, "ValidatorDate: Validation failed for value \"%s\" in field %s in %s::%s: not a valid date.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
         } else {
-            result.value.setValue<QDate>(date);
+            result.value.setValue(date);
         }
     } else {
         defaultValue(c, &result, "ValidatorDate");

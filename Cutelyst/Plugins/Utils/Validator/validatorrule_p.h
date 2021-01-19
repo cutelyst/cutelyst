@@ -261,7 +261,7 @@ public:
         Q_ASSERT(ok);
         Q_UNUSED(params)
 
-        if (value.type() == QVariant::String) {
+        if (value.userType() == QMetaType::QString) {
             const QString field = value.toString();
 /*            if (params.contains(field)) {
                 const QString v = params.value(field);
@@ -289,7 +289,7 @@ public:
         Q_ASSERT(ok);
         Q_UNUSED(params)
 
-        if (value.type() == QVariant::String) {
+        if (value.userType() == QMetaType::QString) {
             const QString field = value.toString();
 /*            if (params.contains(field)) {
                 const QString v = params.value(field);
@@ -317,7 +317,7 @@ public:
         Q_ASSERT(ok);
         Q_UNUSED(params)
 
-        if (value.type() == QVariant::String) {
+        if (value.userType() == QMetaType::QString) {
             const QString field = value.toString();
 /*            if (params.contains(field)) {
                 const QString _val = params.value(field);
@@ -361,7 +361,7 @@ public:
 //            const short v = c->locale().toShort(value, &ok);
             const short v = value.toShort(&ok);
             if (ok) {
-                var.setValue<short>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -370,7 +370,7 @@ public:
 //            const int v = c->locale().toInt(value, &ok);
             const int v = value.toInt(&ok);
             if (ok) {
-                var.setValue<int>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -378,7 +378,7 @@ public:
         {
             const long v = value.toLong(&ok);
             if (ok) {
-                var.setValue<long>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -396,7 +396,7 @@ public:
 //            }
             const qlonglong v = value.toLongLong(&ok);
             if (ok) {
-                var.setValue<qlonglong>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -415,7 +415,7 @@ public:
 //            const ushort v = c->locale().toUShort(value, &ok);
             const ushort v = value.toUShort(&ok);
             if (ok) {
-                var.setValue<ushort>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -424,7 +424,7 @@ public:
 //            const uint v = c->locale().toUInt(value, &ok);
             const uint v = value.toUInt(&ok);
             if (ok) {
-                var.setValue<uint>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -432,7 +432,7 @@ public:
         {
             const ulong v = value.toULong(&ok);
             if (ok) {
-                var.setValue<ulong>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -450,7 +450,7 @@ public:
 //            }
             const qulonglong v = value.toULongLong(&ok);
             if (ok) {
-                var.setValue<qulonglong>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -459,7 +459,7 @@ public:
 //            const float v = c->locale().toFloat(value, &ok);
             const float v = value.toFloat(&ok);
             if (ok) {
-                var.setValue<float>(v);
+                var.setValue(v);
             }
         }
             break;
@@ -468,7 +468,7 @@ public:
 //            const double v = c->locale().toDouble(value, &ok);
             const double v = value.toDouble(&ok);
             if (ok) {
-                var.setValue<double>(v);
+                var.setValue(v);
             }
         }
             break;

@@ -39,7 +39,7 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
         bool ok = false;
         const double _v = v.toDouble(&ok);
         if (Q_LIKELY(ok)) {
-            result.value.setValue<double>(_v);
+            result.value.setValue(_v);
         } else {
             qCDebug(C_VALIDATOR, "ValidatorNumeric: Validation failed for field %s at %s::%s: can not convert input value into a numeric value.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             result.errorMessage = validationError(c);

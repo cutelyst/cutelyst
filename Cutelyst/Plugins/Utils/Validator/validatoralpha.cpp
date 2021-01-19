@@ -41,7 +41,7 @@ ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c, const ParamsM
     const QString v = value(params);
     if (!v.isEmpty()) {
         if (Q_LIKELY(ValidatorAlpha::validate(v, d->asciiOnly))) {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         } else {
             qCDebug(C_VALIDATOR, "ValidatorAlhpa: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
             result.errorMessage = validationError(c);

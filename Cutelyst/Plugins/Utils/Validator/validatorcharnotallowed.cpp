@@ -59,7 +59,7 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c, const ParamsMu
         if (Q_LIKELY(!d->forbiddenChars.isEmpty())) {
             QChar foundChar;
             if (Q_LIKELY(ValidatorCharNotAllowed::validate(v, d->forbiddenChars, &foundChar))) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c, foundChar);
             }

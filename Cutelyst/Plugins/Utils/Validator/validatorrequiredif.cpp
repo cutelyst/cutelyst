@@ -46,11 +46,11 @@ ValidatorReturnType ValidatorRequiredIf::validate(Context *c, const ParamsMultiM
                 result.errorMessage = validationError(c);
                 qCDebug(C_VALIDATOR, "ValidatorRequiredIf: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             } else {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         } else {
             if (!v.isEmpty()) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         }
     }

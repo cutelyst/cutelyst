@@ -50,7 +50,7 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
                 result.errorMessage = validationError(c, _length);
                 qCDebug(C_VALIDATOR, "ValidatorDigits: Validation failed for value \"%s\" in field %s at %s::%s: does not contain exactly %i digit(s).", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), _length);
             } else {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             }
         } else {
             result.errorMessage = validationError(c, _length);

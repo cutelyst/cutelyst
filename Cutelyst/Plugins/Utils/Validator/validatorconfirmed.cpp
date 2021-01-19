@@ -47,7 +47,7 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
             result.errorMessage = validationError(c);
             qCDebug(C_VALIDATOR, "ValidatorConfirmed: Failed to confirm the value in the field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
         } else {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         }
     }
 
