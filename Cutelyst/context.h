@@ -515,33 +515,7 @@ public:
      */
     QString translate(const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
 
-    /*!
-     * This method is deprecated and no longer works, creating local event loops
-     * leads to crashes.
-     *
-     * This creates a local event loop that requires next() to be called \p count times.
-     *
-     * If wait() was already called and didn't return it will increase the counter of
-     * the unfinished wait().
-     *
-     * Returns true when the event loop finishes and false if the call only increased
-     * the event loop counter.
-     */
-    Q_DECL_DEPRECATED bool wait(uint count = 1);
-
 public Q_SLOTS:
-    /*!
-     * This method is deprecated and no longer works, creating local event loops
-     * leads to crashes.
-     *
-     * Decreases the local event loop counter created by wait() eventually
-     * quitting it's execution if 0 is reached.
-     *
-     * If you set force to true it will quit the loop immediately
-     * regardless of it's counter.
-     */
-    void next(bool force = false);
-
     /*!
      * \brief finalize the request right away this is automatically called
      * at the end of the actions chain
