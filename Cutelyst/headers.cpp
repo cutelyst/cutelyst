@@ -430,15 +430,10 @@ bool Headers::contains(const QString &field)
     return m_data.contains(normalizeHeaderKey(field));
 }
 
-//QString &Headers::operator[](const QString &key)
-//{
-//    return m_data.value(normalizeHeaderKey(field));
-//}
-
-//const QString Headers::operator[](const QString &key) const
-//{
-//    return m_data[key];
-//}
+const QString Headers::operator[](const QString &key) const
+{
+    return m_data.value(normalizeHeaderKey(key));
+}
 
 QString normalizeHeaderKey(const QString &field)
 {

@@ -387,14 +387,9 @@ public:
     bool contains(const QString &field);
 
     /**
-     * Returns the value reference associated with key.
+     * Returns the value associated with key.
      */
-//    QString &operator[](const QString &key);
-
-    /**
-     * Returns the const value associated with key.
-     */
-//    const QString operator[](const QString &key) const;
+    QString operator[](const QString &key) const;
 
     /**
      * Assigns \p other to this Header and returns a reference to this Header.
