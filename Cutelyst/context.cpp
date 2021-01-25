@@ -357,7 +357,6 @@ void Context::detachAsync()
 {
     Q_D(Context);
     ++d->asyncDetached;
-    d->engineRequest->status |= EngineRequest::Async;
 }
 
 void Context::attachAsync()
@@ -372,16 +371,16 @@ void Context::attachAsync()
         return;
     }
 
-    while (d->asyncAction < d->pendingAsync.size()) {
-        Action *action = d->pendingAsync[d->asyncAction++];
-        if (!execute(action)) {
-            break; // we are finished
-        } else if (d->asyncDetached) {
-            return;
-        }
-    }
-
     if (d->engineRequest->status & EngineRequest::Async) {
+        while (d->asyncAction < d->pendingAsync.size()) {
+            Action *action = d->pendingAsync[d->asyncAction++];
+            if (!execute(action)) {
+                break; // we are finished
+            } else if (d->asyncDetached) {
+                return;
+            }
+        }
+
         Q_EMIT d->app->afterDispatch(this);
 
         finalize();

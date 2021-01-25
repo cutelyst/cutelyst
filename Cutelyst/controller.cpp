@@ -200,6 +200,10 @@ bool Controller::_DISPATCH(Context *c)
         }
     }
 
+    if (asyncDetached) {
+        c->d_ptr->engineRequest->status |= EngineRequest::Async;
+    }
+
     return ret;
 }
 
