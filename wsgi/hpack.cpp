@@ -242,10 +242,8 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
     if (k == QLatin1String(":path")) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
-            if (v != QLatin1String("/")) {
-                while (v[leadingSlash] == QLatin1Char('/')) {
-                    ++leadingSlash;
-                }
+            while (leadingSlash < v.size() && v.at(leadingSlash) == QLatin1Char('/')) {
+                ++leadingSlash;
             }
 
             int pos = v.indexOf(QLatin1Char('?'));
