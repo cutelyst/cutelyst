@@ -509,8 +509,8 @@ int main(int argc, char *argv[])
         wsgi.setLazy(restart);
 
         QDir projectDir;
-        bool hasProjectDir = !Helper::findProjectDir(QDir::current(), &projectDir);
-        if (hasProjectDir) {
+        bool hasProjectDir = Helper::findProjectDir(QDir::current(), &projectDir);
+        if (!hasProjectDir) {
             std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: failed to find project")) << std::endl;
         }
         else {
