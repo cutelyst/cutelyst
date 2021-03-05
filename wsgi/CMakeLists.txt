@@ -99,26 +99,22 @@ set(cutelyst_wsgi_SRCS
     main.cpp
 )
 
-add_executable(cutelyst-wsgi
+add_executable(cutelystd
     ${cutelyst_wsgi_SRCS}
 )
 
-target_compile_features(cutelyst-wsgi
-  PUBLIC
-    cxx_generalized_initializers
-)
 if (JEMALLOC_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} " -Wl,--no-as-needed")
-    target_link_libraries(cutelyst-wsgi PRIVATE ${JEMALLOC_LIBRARIES})
+    target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
 endif()
 
-target_link_libraries(cutelyst-wsgi
+target_link_libraries(cutelystd
     PRIVATE Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::WSGI
 )
 if (LINUX)
-target_link_libraries(cutelyst-wsgi
+target_link_libraries(cutelystd
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll
 )
 endif ()
@@ -129,7 +125,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5WSGI.pc.in
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}WSGI.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-set_target_properties(cutelyst-wsgi PROPERTIES OUTPUT_NAME cutelyst${PROJECT_VERSION_MAJOR}-wsgi${QT_VERSION_MAJOR})
-install(TARGETS cutelyst-wsgi
+set_target_properties(cutelystd PROPERTIES OUTPUT_NAME cutelystd${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR})
+install(TARGETS cutelystd
     RUNTIME DESTINATION bin COMPONENT runtime
 )

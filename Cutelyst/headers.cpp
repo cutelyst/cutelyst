@@ -430,7 +430,7 @@ bool Headers::contains(const QString &field)
     return m_data.contains(normalizeHeaderKey(field));
 }
 
-const QString Headers::operator[](const QString &key) const
+QString Headers::operator[](const QString &key) const
 {
     return m_data.value(normalizeHeaderKey(key));
 }
