@@ -188,7 +188,7 @@ if (LINUX)
     endif()
 endif()
 
-add_subdirectory(wsgi)
+add_subdirectory(server)
 
 if (PLUGIN_UWSGI)
     find_program(UWSGI_EXEC_PATH NAMES uwsgi)
