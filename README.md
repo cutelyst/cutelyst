@@ -20,7 +20,7 @@ http://www.techempower.com/benchmarks/
  * Cross-platform
  * Stable API/ABI - v3 tagged from master, v2 tags, v1 on v1.x.x branch (unmaintained)
  * Pluggable Engines
-   * Cutelyst-WSGI - A cross-platform and fast WSGI engine
+   * Cutelyst::Server - A cross-platform and fast server engine
      * HTTP/1.1 - Pipelining and Keep-Alive
      * HTTP/2 - Upgrade to H2, ALPN negotiation on HTTPS and direct H2C
      * FastCGI - Pipelining and Keep-Alive
@@ -49,7 +49,7 @@ http://www.techempower.com/benchmarks/
    * Async SQL with [ASql](https://github.com/cutelyst/asql)
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
- * C++11
+ * C++17
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
  * Unit tested
