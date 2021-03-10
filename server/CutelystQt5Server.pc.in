@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/include/cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
+
+Name: Cutelyst Qt@QT_VERSION_MAJOR@ Server
+Description: Cutelyst Server module
+Version: @PROJECT_VERSION@
+Requires: Qt@QT_VERSION_MAJOR@Core Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Core
+Libs: -L${libdir} -lCutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Server
+Cflags: -I${includedir}/Cutelyst -I${includedir}
