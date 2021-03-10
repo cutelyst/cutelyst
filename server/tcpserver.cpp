@@ -103,6 +103,7 @@ void TcpServer::shutdown()
                         m_engine->serverShutdown();
                     }
                 });
+                socket->connectionClose();
             }
         }
     }

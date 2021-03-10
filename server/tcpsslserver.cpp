@@ -95,6 +95,7 @@ void TcpSslServer::shutdown()
                         m_engine->serverShutdown();
                     }
                 }, Qt::QueuedConnection);
+                socket->connectionClose();
             }
         }
     }

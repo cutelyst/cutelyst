@@ -155,6 +155,7 @@ void LocalServer::shutdown()
                         m_engine->serverShutdown();
                     }
                 });
+                socket->connectionClose();
             }
         }
     }
