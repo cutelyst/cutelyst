@@ -18,7 +18,7 @@ http://www.techempower.com/benchmarks/
 ## FEATURES:
 
  * Cross-platform
- * Stable API/ABI - v1 on v1.x.x branch and v2 on tagged from master
+ * Stable API/ABI - v3 tagged from master, v2 tags, v1 on v1.x.x branch (unmaintained)
  * Pluggable Engines
    * Cutelyst-WSGI - A cross-platform and fast WSGI engine
      * HTTP/1.1 - Pipelining and Keep-Alive
