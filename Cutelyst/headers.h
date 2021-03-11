@@ -284,18 +284,28 @@ public:
     QString authorization() const;
 
     /**
+     * This method is used to get an authorization token
+     */
+    QString authorizationBearer() const;
+
+    /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme".
      * It will return "username:password" as a single string value.
      */
     QString authorizationBasic() const;
 
+    struct Authorization {
+        QString user;
+        QString password;
+    };
+
     /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme".
      * It will return a pair of username and password respectively.
      */
-    std::pair<QString, QString> authorizationBasicPair() const;
+    Authorization authorizationBasicObject() const;
 
     /**
      * This method is used to set an authorization header that use the
@@ -321,7 +331,7 @@ public:
      * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
      * It will return a pair of username and password respectively.
      */
-    std::pair<QString, QString> proxyAuthorizationBasicPair() const;
+    Authorization proxyAuthorizationBasicObject() const;
 
     /**
      * Returns the value associated with \p field

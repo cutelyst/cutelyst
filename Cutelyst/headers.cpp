@@ -27,7 +27,7 @@ using namespace Cutelyst;
 
 inline QString normalizeHeaderKey(const QString &field);
 inline QByteArray decodeBasicAuth(const QString &auth);
-inline std::pair<QString, QString> decodeBasicAuthPair(const QString &auth);
+inline Headers::Authorization decodeBasicAuthPair(const QString &auth);
 
 Headers::Headers(const Headers &other) : m_data(other.m_data)
 {
@@ -187,8 +187,8 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const QString dt = QLocale::c().toString(date.toUTC(),
-                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    QString dt = QLocale::c().toString(date.toUTC(),
+                                       QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     m_data.replace(QStringLiteral("DATE"), dt);
     return dt;
 }
@@ -289,8 +289,8 @@ QString Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const auto dt = QLocale::c().toString(lastModified.toUTC(),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    auto dt = QLocale::c().toString(lastModified.toUTC(),
+                                    QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
     return dt;
 }
@@ -351,12 +351,22 @@ QString Headers::authorization() const
     return m_data.value(QStringLiteral("AUTHORIZATION"));
 }
 
+QString Headers::authorizationBearer() const
+{
+    QString ret;
+    auto it = m_data.constFind(QStringLiteral("AUTHORIZATION"));
+    if (it != m_data.constEnd() && it.value().startsWith(QLatin1String("Bearer "))) {
+        ret = it.value().mid(7);
+    }
+    return ret;
+}
+
 QString Headers::authorizationBasic() const
 {
     return QString::fromLatin1(decodeBasicAuth(authorization()));
 }
 
-std::pair<QString, QString> Headers::authorizationBasicPair() const
+Headers::Authorization Headers::authorizationBasicObject() const
 {
     return decodeBasicAuthPair(authorization());
 }
@@ -385,7 +395,7 @@ QString Headers::proxyAuthorizationBasic() const
     return QString::fromLatin1(decodeBasicAuth(proxyAuthorization()));
 }
 
-std::pair<QString, QString> Headers::proxyAuthorizationBasicPair() const
+Headers::Authorization Headers::proxyAuthorizationBasicObject() const
 {
     return decodeBasicAuthPair(proxyAuthorization());
 }
@@ -465,17 +475,17 @@ QByteArray decodeBasicAuth(const QString &auth)
     return ret;
 }
 
-std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
+Headers::Authorization decodeBasicAuthPair(const QString &auth)
 {
-    std::pair<QString, QString> ret;
+    Headers::Authorization ret;
     const QByteArray authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {
-            ret.first = QString::fromLatin1(authorization);
+            ret.user = QString::fromLatin1(authorization);
         } else {
-            ret = { QString::fromLatin1(authorization.left(pos)),
-                    QString::fromLatin1(authorization.mid(pos + 1)) };
+            ret.user = QString::fromLatin1(authorization.left(pos));
+            ret.password = QString::fromLatin1(authorization.mid(pos + 1));
         }
     }
     return ret;
@@ -485,12 +495,12 @@ QDebug operator<<(QDebug debug, const Headers &headers)
 {
     const QMultiHash<QString, QString> data = headers.data();
     const bool oldSetting = debug.autoInsertSpaces();
-    debug.nospace() << "Headers(";
+    debug.nospace() << "Headers[";
     for (auto it = data.constBegin();
          it != data.constEnd(); ++it) {
         debug << '(' << Engine::camelCaseHeader(it.key()) + QLatin1Char('=') + it.value() << ')';
     }
-    debug << ')';
+    debug << ']';
     debug.setAutoInsertSpaces(oldSetting);
     return debug.maybeSpace();
 }

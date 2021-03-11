@@ -170,16 +170,16 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
     AuthenticationUser user;
     qCDebug(C_CREDENTIALHTTP) << "Checking http basic authentication.";
 
-    const std::pair<QString, QString> userPass = c->req()->headers().authorizationBasicPair();
-    if (userPass.first.isEmpty()) {
+    const auto userPass = c->req()->headers().authorizationBasicObject();
+    if (userPass.user.isEmpty()) {
         return user;
     }
 
     ParamsMultiMap auth;
-    auth.insert(usernameField, userPass.first);
+    auth.insert(usernameField, userPass.user);
     AuthenticationUser _user = realm->findUser(c, auth);
     if (!_user.isNull()) {
-        auth.insert(passwordField, userPass.second);
+        auth.insert(passwordField, userPass.password);
         if (checkPassword(_user, auth)) {
             user = _user;
         } else {
@@ -193,6 +193,7 @@ AuthenticationUser CredentialHttpPrivate::authenticateBasic(Context *c, Authenti
 
 AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo)
 {
+    Q_UNUSED(authinfo);
     Response *res = c->response();
     res->setStatus(Response::Unauthorized); // 401
     res->setContentType(QStringLiteral("text/plain; charset=UTF-8"));
