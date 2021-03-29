@@ -6,7 +6,7 @@ if (POLICY CMP0043)
 endif()
 
 find_package(Qt5 COMPONENTS Core Network REQUIRED)
-find_package(Cutelyst2Qt5 REQUIRED)
+find_package(Cutelyst3Qt5 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)
