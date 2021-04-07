@@ -642,10 +642,10 @@ ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
                 QByteArray value = data.mid(equal);
                 ret.insert(Utils::decodePercentEncoding(&key), Utils::decodePercentEncoding(&value));
             } else {
-                ret.insert(Utils::decodePercentEncoding(&key), QString());
+                ret.insert(Utils::decodePercentEncoding(&key), QLatin1String(""));
             }
         } else {
-            ret.insert(Utils::decodePercentEncoding(&data), QString());
+            ret.insert(Utils::decodePercentEncoding(&data), {});
         }
 
         if (pos == -1) {
