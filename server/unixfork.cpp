@@ -277,7 +277,7 @@ void UnixFork::postFork(int workerId)
     Q_EMIT forked(workerId - 1);
 }
 
-void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgroups)
+bool UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgroups)
 {
     bool ok;
 
@@ -288,18 +288,21 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             if (ugroup) {
                 gidInt = ugroup->gr_gid;
             } else {
-                qFatal("setgid group %s not found.", qUtf8Printable(gid));
+                std::cerr << "setgid group %s not found." << qUtf8Printable(gid) << std::endl;
+                return false;
             }
         }
 
         if (setgid(gidInt)) {
-            qFatal("Failed to set gid '%s'", strerror(errno));
+            std::cerr << "Failed to set gid '%s'" <<  strerror(errno) << std::endl;
+            return false;
         }
         std::cout << "setgid() to " << gidInt << std::endl;
 
         if (noInitgroups || uid.isEmpty()) {
             if (setgroups(0, nullptr)) {
-                qFatal("Failed to setgroups()");
+                std::cerr << "Failed to setgroups()" << std::endl;
+                return false;
             }
         } else {
             char *uidname = nullptr;
@@ -314,7 +317,8 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             }
 
             if (initgroups(uidname, gidInt)) {
-                qFatal("Failed to setgroups()");
+                std::cerr << "Failed to setgroups()" << std::endl;
+                return false;
             }
         }
     }
@@ -326,15 +330,18 @@ void UnixFork::setGidUid(const QString &gid, const QString &uid, bool noInitgrou
             if (upasswd) {
                 uidInt = upasswd->pw_uid;
             } else {
-                qFatal("setuid user %s not found.", qUtf8Printable(uid));
+                std::cerr << "setuid user" << qUtf8Printable(uid) << "not found." << std::endl;
+                return false;
             }
         }
 
         if (setuid(uidInt)) {
-            qFatal("Failed to set uid: '%s'", strerror(errno));
+            std::cerr << "Failed to set uid:" << strerror(errno) << std::endl;
+            return false;
         }
         std::cout << "setuid() to " << uidInt << std::endl;
     }
+    return true;
 }
 
 void UnixFork::chownSocket(const QString &filename, const QString &uidGid)

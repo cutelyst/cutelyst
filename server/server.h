@@ -438,6 +438,11 @@ Q_SIGNALS:
 
     void changed();
 
+    /**
+     * It is emitted once error occurs.
+     */
+    void errorOccured(const QString& error);
+
 protected:
     ServerPrivate *d_ptr;
 };
