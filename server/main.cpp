@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     Cutelyst::Server server;
 
     QObject::connect(&server, &Cutelyst::Server::errorOccured, [](const QString &error){
-        qFatal("Server terminated due to error %s", error.toStdString().c_str());});
+        qFatal("Server terminated due to error %s", qPrintable(error));});
 
     QCoreApplication app(argc, argv);
 
