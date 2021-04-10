@@ -69,7 +69,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     if (closeBracketPos != -1) {
         if (!line.startsWith(QLatin1Char('['))) {
             std::cerr << "Failed to parse address: " << qPrintable(addressPortString) << std::endl;
-            exit(1);
+            return false;
         }
         addressString = addressPortString.mid(1, closeBracketPos - 1);
     } else {
@@ -94,7 +94,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     if (secure) {
         if (commaPos == -1) {
             std::cerr << "No SSL certificate specified" << std::endl;
-            exit(1);
+            return false;
         }
 
         const QString sslString = line.mid(commaPos + 1);
@@ -103,12 +103,12 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         if (!certFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL certificate" << qPrintable(certPath)
                       << qPrintable(certFile.errorString()) << std::endl;
-            exit(1);
+            return false;
         }
         QSslCertificate cert(&certFile);
         if (cert.isNull()) {
             std::cerr << "Failed to parse SSL certificate" << std::endl;
-            exit(1);
+            return false;
         }
 
         const QString keyPath = sslString.section(QLatin1Char(','), 1, 1);
@@ -116,12 +116,12 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         if (!keyFile.open(QFile::ReadOnly)) {
             std::cerr << "Failed to open SSL private key" << qPrintable(keyPath)
                       << qPrintable(keyFile.errorString()) << std::endl;
-            exit(1);
+            return false;
         }
         QSslKey key(&keyFile, QSsl::Rsa);
         if (key.isNull()) {
             std::cerr << "Failed to parse SSL private key" << std::endl;
-            exit(1);
+            return false;
         }
 
         m_sslConfiguration = new QSslConfiguration;
@@ -144,7 +144,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line)
                   << " : " << qPrintable(errorString()) << std::endl;
-        exit(1);
+        return false;
     }
 #else
     bool ret = QTcpServer::listen(address, port);
@@ -153,7 +153,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     } else {
         std::cerr << "Failed to listen on TCP: " << qPrintable(line)
                   << " : " << qPrintable(errorString()) << std::endl;
-        exit(1);
+        return false;
     }
 #endif
 

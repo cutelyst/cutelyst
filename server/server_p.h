@@ -40,15 +40,15 @@ public:
     inline ServerPrivate(Server *parent) : QObject(parent), q_ptr(parent) { }
     ~ServerPrivate();
 
-    void listenTcpSockets();
+    bool listenTcpSockets();
     bool listenTcp(const QString &line, Protocol *protocol, bool secure);
-    void listenLocalSockets();
+    bool listenLocalSockets();
     bool listenLocal(const QString &line, Protocol *protocol);
-    void setupApplication();
+    bool setupApplication();
     void engineShutdown(CWsgiEngine *engine);
     void workerStarted();
-    void postFork(int workerId);
-    void writePidFile(const QString &filename);
+    bool postFork(int workerId);
+    bool writePidFile(const QString &filename);
 
     CWsgiEngine *createEngine(Cutelyst::Application *app, int core);
 
