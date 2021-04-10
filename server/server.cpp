@@ -58,20 +58,11 @@ using namespace Cutelyst;
 Server::Server(QObject *parent) : QObject(parent),
     d_ptr(new ServerPrivate(this))
 {
-    std::cout << "Mikes Version of Cutelyst" << std::endl;
-
     QCoreApplication::addLibraryPath(QDir().absolutePath());
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(QLatin1String("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
-
-//#ifdef Q_OS_LINUX
-//    if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP")) {
-//        std::cout << "Installing EPoll event loop" << std::endl;
-//        QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
-//    }
-//#endif
 }
 
 Server::~Server()
@@ -516,7 +507,7 @@ int Server::exec(Cutelyst::Application *app)
     std::cout << "Cutelyst-WSGI starting" << std::endl;
 
 #ifdef Q_OS_LINUX
-    if (!d->userEventLoop) { //launchs Event loop only in case standalone app, not embedded
+    if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP") && !d->userEventLoop) {
         std::cout << "Installing EPoll event loop" << std::endl;
         QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
     }
