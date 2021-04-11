@@ -36,7 +36,7 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
     if (params.contains(field())) {
         const QString v = value(params);
         if (!v.isEmpty()) {
-            result.value.setValue<QString>(v);
+            result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
         }

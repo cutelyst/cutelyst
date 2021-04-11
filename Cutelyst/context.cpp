@@ -357,7 +357,6 @@ void Context::detachAsync()
 {
     Q_D(Context);
     ++d->asyncDetached;
-    d->engineRequest->status |= EngineRequest::Async;
 }
 
 void Context::attachAsync()
@@ -372,16 +371,16 @@ void Context::attachAsync()
         return;
     }
 
-    while (d->asyncAction < d->pendingAsync.size()) {
-        Action *action = d->pendingAsync[d->asyncAction++];
-        if (!execute(action)) {
-            break; // we are finished
-        } else if (d->asyncDetached) {
-            return;
-        }
-    }
-
     if (d->engineRequest->status & EngineRequest::Async) {
+        while (d->asyncAction < d->pendingAsync.size()) {
+            Action *action = d->pendingAsync[d->asyncAction++];
+            if (!execute(action)) {
+                break; // we are finished
+            } else if (d->asyncDetached) {
+                return;
+            }
+        }
+
         Q_EMIT d->app->afterDispatch(this);
 
         finalize();
@@ -484,24 +483,6 @@ QString Context::translate(const char *context, const char *sourceText, const ch
     return d->app->translate(d->locale, context, sourceText, disambiguation, n);
 }
 
-bool Context::wait(uint count)
-{
-    Q_UNUSED(count)
-//    Q_D(Context);
-//    if (d->loop) {
-//        d->loopWait += count;
-//        return false;
-//    }
-
-//    if (count) {
-//        d->loopWait = count;
-//        d->loop = new QEventLoop(this);
-//        d->loop->exec();
-//        return true;
-//    }
-    return false;
-}
-
 void Context::finalize()
 {
     Q_D(Context);
@@ -536,19 +517,6 @@ void Context::finalize()
     d->engineRequest->finalize();
 }
 
-void Context::next(bool force)
-{
-//    Q_D(Context);
-    Q_UNUSED(force)
-//    if (!d->loop || (--d->loopWait && !force)) {
-//        return;
-//    }
-
-//    d->loop->quit();
-//    d->loop->deleteLater();
-//    d->loop = nullptr;
-}
-
 QString ContextPrivate::statsStartExecute(Component *code)
 {
     QString actionName;
@@ -576,6 +544,16 @@ QString ContextPrivate::statsStartExecute(Component *code)
 void ContextPrivate::statsFinishExecute(const QString &statsInfo)
 {
     stats->profileEnd(statsInfo);
+}
+
+void Context::stash(const QVariantHash &unite)
+{
+    Q_D(Context);
+    auto it = unite.constBegin();
+    while (it != unite.constEnd()) {
+        d->stash.insert(it.key(), it.value());
+        ++it;
+    }
 }
 
 #include "moc_context.cpp"

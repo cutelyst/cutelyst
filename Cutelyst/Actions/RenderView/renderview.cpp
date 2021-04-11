@@ -72,6 +72,7 @@ bool RenderView::init(Cutelyst::Application *application, const QVariantHash &ar
     Q_D(RenderView);
 
     const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
+    qDebug() << "render view" << attributes;
     d->view = application->view(attributes.value(QLatin1String("View")));
 
     return Action::init(application, args);

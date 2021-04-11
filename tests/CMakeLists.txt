@@ -1,6 +1,7 @@
-project(cutelyst_tests)
+project(cutelyst_tests VERSION 3)
 
-find_package(Qt5Test 5.6.0 REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql Test REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql Test REQUIRED)
 
 add_library(coverage_test STATIC coverageobject.cpp
   coverageobject.cpp
@@ -13,7 +14,7 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt5::Test Cutelyst2Qt5::Core Qt5::Network)
+target_link_libraries(coverage_test Qt${QT_VERSION_MAJOR}::Test Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network)
 
 function(cute_test _testname _link1 _link2 _link3)
     add_executable(${_testname}_exec ${_testname}.cpp)
@@ -25,7 +26,7 @@ function(cute_test _testname _link1 _link2 _link3)
         cxx_nullptr
         cxx_override
     )
-    target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} Cutelyst2Qt5::Core coverage_test)
+    target_link_libraries(${_testname}_exec ${_link1} ${_link2} ${_link3} Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core coverage_test)
 endfunction()
 
 macro(CUTELYST_TEMPLATES_UNIT_TESTS)
@@ -46,20 +47,20 @@ cutelyst_templates_unit_tests(
     testactionrenderview
 )
 
-cute_test(testvalidator Cutelyst2Qt5::Utils::Validator "" "")
+cute_test(testvalidator Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::Validator "" "")
 
-cute_test(testauthentication Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
-cute_test(testactionroleacl Cutelyst2Qt5::Authentication Cutelyst2Qt5::Session "")
+cute_test(testauthentication Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session "")
+cute_test(testactionroleacl Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session "")
 
-cute_test(testpbkdf2 Cutelyst2Qt5::Authentication "" "")
-cute_test(testpagination Cutelyst2Qt5::Utils::Pagination "" "")
-cute_test(testviewjson Cutelyst2Qt5::View::JSON "" "")
-cute_test(teststatusmessage Cutelyst2Qt5::StatusMessage Cutelyst2Qt5::Session "")
+cute_test(testpbkdf2 Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication "" "")
+cute_test(testpagination Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::Pagination "" "")
+cute_test(testviewjson Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::View::JSON "" "")
+cute_test(teststatusmessage Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::StatusMessage Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session "")
 if (PLUGIN_MEMCACHED)
-    cute_test(testmemcached Cutelyst2Qt5::Memcached "" "")
+    cute_test(testmemcached Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Memcached "" "")
 endif (PLUGIN_MEMCACHED)
-cute_test(testlangselect Cutelyst2Qt5::Utils::LangSelect Cutelyst2Qt5::Session Cutelyst2Qt5::StaticSimple)
-cute_test(testlangselectmanual Cutelyst2Qt5::Utils::LangSelect Cutelyst2Qt5::Session "")
+cute_test(testlangselect Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::LangSelect Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::StaticSimple)
+cute_test(testlangselectmanual Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Utils::LangSelect Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session "")
 if (PLUGIN_CSRFPROTECTION)
-#    cute_test(testcsrfprotection Cutelyst2Qt5::CSRFProtection "" "")
+#    cute_test(testcsrfprotection Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::CSRFProtection "" "")
 endif(PLUGIN_CSRFPROTECTION)

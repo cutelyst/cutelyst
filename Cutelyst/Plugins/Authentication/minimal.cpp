@@ -42,7 +42,7 @@ AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &user
 {
     Q_UNUSED(c)
     AuthenticationUser ret;
-    const QString id = userInfo[m_idField];
+    const QString id = userInfo.value(m_idField);
 
     const auto users = m_users;
     for (const AuthenticationUser &user : users) {

@@ -6,11 +6,11 @@ add_executable(cutelyst-hello-world ${hello_SRCS})
 
 # Link to Cutelyst
 target_link_libraries(cutelyst-hello-world PRIVATE
-    Qt5::Core
-    Qt5::Network
-    Cutelyst2Qt5::Core
-    Cutelyst2Qt5::WSGI
-    Cutelyst2Qt5::Session
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Network
+    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
+    Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
 )
 
 # install the application executable

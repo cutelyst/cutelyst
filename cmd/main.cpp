@@ -11,7 +11,7 @@
 #include <QStringBuilder>
 #include <QDir>
 
-#include <wsgi/wsgi.h>
+#include <server/server.h>
 
 #include <iostream>
 
@@ -423,8 +423,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
 
     QTranslator qtTranslator;
-    qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    bool loadedTr = qtTranslator.load(QLatin1String("qt_") % QLocale::system().name(),
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+                                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#else
+                                      QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+#endif
+    if (!loadedTr) {
+        std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: could not load translations")) << std::endl;
+    }
+
     QCoreApplication::installTranslator(&qtTranslator);
 
     QTranslator appTranslator;
@@ -497,24 +505,23 @@ int main(int argc, char *argv[])
             port = parser.value(serverPort).toInt();
         }
 
-        CWSGI::WSGI wsgi;
+        Cutelyst::Server server;
 
-        wsgi.parseCommandLine(argsAfterDashDash);
+        server.parseCommandLine(argsAfterDashDash);
 
-        wsgi.setHttpSocket({ QLatin1Char(':') + QString::number(port) });
+        server.setHttpSocket({ QLatin1Char(':') + QString::number(port) });
 
         bool restart = parser.isSet(restartOpt);
-        wsgi.setMaster(restart);
-        wsgi.setAutoReload(restart);
-        wsgi.setLazy(restart);
+        server.setMaster(restart);
+        server.setAutoReload(restart);
+        server.setLazy(restart);
 
         QDir projectDir;
         bool hasProjectDir = Helper::findProjectDir(QDir::current(), &projectDir);
         if (!hasProjectDir) {
             std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: failed to find project")) << std::endl;
-        }
-        else {
-          wsgi.setChdir2(projectDir.absolutePath());
+        } else {
+            wsgi.setChdir2(projectDir.absolutePath());
         }
 
         QString localFilename = parser.value(appFile);
@@ -528,9 +535,9 @@ int main(int argc, char *argv[])
                 return 1;
             }
         }
-        wsgi.setApplication(localFilename);
+        server.setApplication(localFilename);
 
-        return wsgi.exec();
+        return server.exec();
     } else {
         parser.showHelp(1);
     }

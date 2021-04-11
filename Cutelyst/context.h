@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2020 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -204,6 +204,8 @@ public:
      * (for this you must use a session; see Cutelyst::Plugin::Session
      * for a complete system integrated with Cutelyst).
      *
+     * If a given key is present it will be replaced
+     *
      * \code{.cpp}
      * c->stash({
      *              {"foo", 10},
@@ -211,7 +213,7 @@ public:
      *            });
      * \endcode
      */
-    inline void stash(const QVariantHash &unite);
+    void stash(const QVariantHash &unite);
 
     /**
      * Returns a QVariantHash reference to the stash,
@@ -513,33 +515,7 @@ public:
      */
     QString translate(const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
 
-    /*!
-     * This method is deprecated and no longer works, creating local event loops
-     * leads to crashes.
-     *
-     * This creates a local event loop that requires next() to be called \p count times.
-     *
-     * If wait() was already called and didn't return it will increase the counter of
-     * the unfinished wait().
-     *
-     * Returns true when the event loop finishes and false if the call only increased
-     * the event loop counter.
-     */
-    Q_DECL_DEPRECATED bool wait(uint count = 1);
-
 public Q_SLOTS:
-    /*!
-     * This method is deprecated and no longer works, creating local event loops
-     * leads to crashes.
-     *
-     * Decreases the local event loop counter created by wait() eventually
-     * quitting it's execution if 0 is reached.
-     *
-     * If you set force to true it will quit the loop immediately
-     * regardless of it's counter.
-     */
-    void next(bool force = false);
-
     /*!
      * \brief finalize the request right away this is automatically called
      * at the end of the actions chain
@@ -564,9 +540,6 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Context)
 };
-
-inline void Context::stash(const QVariantHash &unite)
-{ stash().unite(unite); }
 
 inline QUrl Context::uriFor(const QString &path, const ParamsMultiMap &queryValues) const
 { return uriFor(path, QStringList(), queryValues); }

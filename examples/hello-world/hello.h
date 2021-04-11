@@ -30,9 +30,9 @@ public:
     Q_INVOKABLE explicit HelloWorld(QObject *parent = 0);
     ~HelloWorld();
 
-    bool init();
+    bool init() override;
 
-    bool postFork();
+    bool postFork() override;
 };
 
 #endif // HELLO_H

@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include <cutelee/qtlocalizer.h>
+#include <cutelee/metatype.h>
 
 #include <QString>
 #include <QDirIterator>
@@ -35,9 +36,15 @@ Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.cutelee", QtWarningMsg)
 
 using namespace Cutelyst;
 
+CUTELEE_BEGIN_LOOKUP(ParamsMultiMap)
+return object.value(property);
+CUTELEE_END_LOOKUP
+
 CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new CuteleeViewPrivate, parent, name)
 {
     Q_D(CuteleeView);
+
+    Cutelee::registerMetaType<ParamsMultiMap>();
 
     d->loader = QSharedPointer<Cutelee::FileSystemTemplateLoader>(new Cutelee::FileSystemTemplateLoader);
 
@@ -271,7 +278,7 @@ void CuteleeView::addTranslationCatalog(const QString &path, const QString &cata
     d->translationCatalogs.insert(catalog, path);
 }
 
-void CuteleeView::addTranslationCatalogs(const QHash<QString, QString> &catalogs)
+void CuteleeView::addTranslationCatalogs(const QMultiHash<QString, QString> &catalogs)
 {
     Q_D(CuteleeView);
     Q_ASSERT_X(!catalogs.empty(), "add translation catalogs to GranteleeView", "empty QHash");

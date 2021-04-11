@@ -40,7 +40,7 @@ public:
     QSharedPointer<Cutelee::FileSystemTemplateLoader> loader;
     QSharedPointer<Cutelee::CachingLoaderDecorator> cache;
     QHash<QLocale, QTranslator*> translators;
-    QHash<QString, QString> translationCatalogs;
+    QMultiHash<QString, QString> translationCatalogs;
 };
 
 }

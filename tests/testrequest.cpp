@@ -645,7 +645,7 @@ void TestRequest::testController_data()
                                         << QByteArrayLiteral("a=2&a=3&a=1&a=0&a=2&a=1&b=0");
     QTest::newRow("queryParams-test07") << get << QStringLiteral("/request/test/queryParams?foo=bar&baz=")
                                         << headers << QByteArray()
-                                        << QByteArrayLiteral("baz&foo=bar");
+                                        << QByteArrayLiteral("baz=&foo=bar");
 
     query.clear();
     query.addQueryItem(QStringLiteral("some text to ask"), QString());
@@ -747,7 +747,7 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyParams-test01") << get << QStringLiteral("/request/test/bodyParams")
                                       << headers << QByteArrayLiteral("foo=bar&baz=")
-                                      << QByteArrayLiteral("baz&foo=bar");
+                                      << QByteArrayLiteral("baz=&foo=bar");
 
     query.clear();
     headers.clear();
@@ -857,7 +857,7 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("multipart/form-data"));
     QTest::newRow("bodyData-test05") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
-                                     << QByteArrayLiteral("QMap<QString,Cutelyst::Upload*>");
+                                     << QByteArrayLiteral("");
 
     query.clear();
     QJsonObject obj;

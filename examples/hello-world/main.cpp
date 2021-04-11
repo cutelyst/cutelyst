@@ -1,24 +1,34 @@
 
 #include <QCoreApplication>
-#include <wsgi/wsgi.h>
+#include <server/server.h>
 #include "hello.h"
 
 int main(int argc, char *argv[])
 {
-
     QCoreApplication app(argc, argv);
-    auto myapp = new HelloWorld();
-    auto wsgi = new CWSGI::WSGI;
-    wsgi->setHttpSocket({
-                            { QStringLiteral(":3000") },
-                        });
-    wsgi->setUpgradeH2c(true);
-    wsgi->setBufferSize(16393);
-    wsgi->setHttp2Socket({
-                             { QStringLiteral(":3001") },
+
+    Cutelyst::Server server;
+
+    // Open HTTP/1.1 3000 port
+    server.setHttpSocket({
+                             { QStringLiteral(":3000") },
                          });
-    wsgi->setFastcgiSocket({
-                             { QStringLiteral(":3002") },
-                         });
-    wsgi->exec(myapp);
+
+    // Allow HTTP/1.1 upgrade to HTTP2 at 3000 port
+    server.setUpgradeH2c(true);
+
+    // HTTP2 requires a larger buffer size
+    server.setBufferSize(16393);
+
+    // Open HTTP/2 at 3001 port
+    server.setHttp2Socket({
+                              { QStringLiteral(":3001") },
+                          });
+
+    // Open FastCGI 3002 port
+    server.setFastcgiSocket({
+                                { QStringLiteral(":3002") },
+                            });
+
+    server.exec(new HelloWorld);
 }

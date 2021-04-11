@@ -72,7 +72,11 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                 if (!v.isEmpty()) {
                     // maximum length of the name in the DNS is 253 without the last dot
                     if (v.length() < 254) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+                        const QStringList parts = v.split(QLatin1Char('.'), Qt::KeepEmptyParts);
+#else
                         const QStringList parts = v.split(QLatin1Char('.'), QString::KeepEmptyParts);
+#endif
                         // there has to be more than only the TLD
                         if (parts.size() > 1) {
                             // the TLD can not have only 1 char
@@ -314,7 +318,7 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
         QString exVal;
         Diagnose diag;
         if (ValidatorDomain::validate(v, d->checkDNS, &diag, &exVal)) {
-            result.value.setValue<QString>(exVal);
+            result.value.setValue(exVal);
         } else {
             result.errorMessage = validationError(c, diag);
         }

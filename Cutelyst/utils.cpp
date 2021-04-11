@@ -25,7 +25,11 @@ using namespace Cutelyst;
 QByteArray buildTableDivision(const QVector<int> &columnsSize)
 {
     QByteArray buffer;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QTextStream out(&buffer, QTextStream::WriteOnly);
+#else
     QTextStream out(&buffer, QIODevice::WriteOnly);
+#endif
     for (int i = 0; i < columnsSize.size(); ++i) {
         if (i) {
             out << '+';
@@ -72,16 +76,21 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
     }
 
     // printing
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QTextStream out(&buffer, QTextStream::WriteOnly);
+#else
     QTextStream out(&buffer, QIODevice::WriteOnly);
+#endif
+
     out.setFieldAlignment(QTextStream::AlignLeft);
     QByteArray div = buildTableDivision(columnsSize);
 
     if (!title.isEmpty()) {
-        out << title << Qt::endl;
+        out << title << '\n';
     }
 
     // Top line
-    out << div << Qt::endl;
+    out << div << '\n';
 
     if (!headers.isEmpty()) {
         // header titles
@@ -94,10 +103,10 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
             out.setFieldWidth(0);
             out << ' ';
         }
-        out << '|' << Qt::endl;
+        out << '|' << '\n';
 
         // header bottom line
-        out << div << Qt::endl;
+        out << div << '\n';
     }
 
     for (const QStringList &row : table) {
@@ -111,7 +120,7 @@ QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringLis
             out.setFieldWidth(0);
             out << ' ';
         }
-        out << '|' << Qt::endl;
+        out << '|' << '\n';
     }
 
     // table bottom line

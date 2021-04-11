@@ -39,9 +39,9 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
     if (!v.isEmpty()) {
         QStringList vals;
 
-        if (d->values.type() == QVariant::StringList) {
+        if (d->values.userType() == QMetaType::QStringList) {
             vals = d->values.toStringList();
-        } else  if (d->values.type() == QVariant::String) {
+        } else  if (d->values.userType() == QMetaType::QString) {
             vals = c->stash(d->values.toString()).toStringList();
         }
 
@@ -50,7 +50,7 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
             result.errorMessage = validationDataError(c);
         } else {
             if (vals.contains(v, d->cs)) {
-                result.value.setValue<QString>(v);
+                result.value.setValue(v);
             } else {
                 qCDebug(C_VALIDATOR, "ValidatorIn: Validation failed for field %s at %s::%s: \"%s\" is not part of the list of comparison values.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
                 result.errorMessage = validationError(c, vals);

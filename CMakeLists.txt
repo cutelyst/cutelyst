@@ -1,24 +1,13 @@
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.9)
 
-if (POLICY CMP0043)
-  cmake_policy(SET CMP0043 NEW)
-endif()
-if (POLICY CMP0063)
-  cmake_policy(SET CMP0063 NEW)
-endif()
-if (POLICY CMP0069)
-  cmake_policy(SET CMP0069 NEW)
-endif()
-
-project(cutelyst VERSION 2.15.0 LANGUAGES CXX)
+project(cutelyst VERSION 3.0.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql REQUIRED)
 
-set(CUTELYST_API_LEVEL "2")
+set(CUTELYST_API_LEVEL "3")
 
 # CMakeLists for Cutelyst library
 set(CMAKE_AUTOMOC ON)
@@ -100,7 +89,7 @@ set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
 set (BUILDDIR "${CMAKE_BINARY_DIR}")
-set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
+set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
 message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
 set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
@@ -131,10 +120,10 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
     -DQT_NO_SIGNALS_SLOTS_KEYWORDS
     -DQT_USE_FAST_OPERATOR_PLUS
-    -DQT_DISABLE_DEPRECATED_BEFORE=0x050E00
+    -DQT_DISABLE_DEPRECATED_BEFORE=0x060001
 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -146,20 +135,20 @@ include_directories(
 
 # cmake config files
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     @ONLY
 )
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
 )
 install(EXPORT CutelystTargets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
-    FILE Cutelyst${PROJECT_VERSION_MAJOR}Qt5Targets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
+    FILE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Targets.cmake
     NAMESPACE Cutelyst::
     COMPONENT Devel
 )
@@ -199,7 +188,7 @@ if (LINUX)
     endif()
 endif()
 
-add_subdirectory(wsgi)
+add_subdirectory(server)
 
 if (PLUGIN_UWSGI)
     find_program(UWSGI_EXEC_PATH NAMES uwsgi)

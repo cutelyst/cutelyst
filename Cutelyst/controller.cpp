@@ -200,12 +200,16 @@ bool Controller::_DISPATCH(Context *c)
         }
     }
 
+    if (asyncDetached) {
+        c->d_ptr->engineRequest->status |= EngineRequest::Async;
+    }
+
     return ret;
 }
 
 Action *ControllerPrivate::actionClass(const QVariantHash &args)
 {
-    const auto attributes = args.value(QStringLiteral("attributes")).value<QMap<QString, QString> >();
+    const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
     const QString actionClass = attributes.value(QStringLiteral("ActionClass"));
 
     QObject *object = instantiateClass(actionClass, "Cutelyst::Action");
@@ -268,7 +272,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                     attributeArray.append(classInfo.value());
                 }
             }
-            QMap<QString, QString> attrs = parseAttributes(method, attributeArray, name);
+            ParamsMultiMap attrs = parseAttributes(method, attributeArray, name);
 
             QString reverse;
             if (controller->ns().isEmpty()) {
@@ -287,15 +291,15 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                           controller,
                                           app);
 
-            actions.insertMulti(action->reverse(), action);
+            actions.replace(action->reverse(), action);
             actionList.append(action);
         }
     }
 }
 
-QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
+ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
 {
-    QMap<QString, QString> ret;
+    ParamsMultiMap ret;
     std::vector<std::pair<QString, QString> > attributes;
     // This is probably not the best parser ever
     // but it handles cases like:
@@ -393,7 +397,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
             value = parseChainedAttr(value);
         }
 
-        ret.insertMulti(key, value);
+        ret.insert(key, value);
         ++i;
     }
 
@@ -421,7 +425,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
                         ++parameterCount;
                     }
                 }
-                ret.insert(parameterName, QString::number(parameterCount));
+                ret.replace(parameterName, QString::number(parameterCount));
             }
         }
 
@@ -429,7 +433,7 @@ QMap<QString, QString> ControllerPrivate::parseAttributes(const QMetaMethod &met
 
     // If the method is private add a Private attribute
     if (!ret.contains(QStringLiteral("Private")) && method.access() == QMetaMethod::Private) {
-        ret.insert(QStringLiteral("Private"), QString());
+        ret.replace(QStringLiteral("Private"), QString());
     }
 
     return ret;
@@ -490,6 +494,60 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
     if (!instanceName.isEmpty()) {
         instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());
+        if (!id.isValid()) {
+            if (!instanceName.endsWith(QLatin1Char('*'))) {
+                instanceName.append(QLatin1Char('*'));
+            }
+
+            id = QMetaType::fromName(instanceName.toLatin1().data());
+            if (!id.isValid() && !instanceName.startsWith(QStringLiteral("Cutelyst::"))) {
+                instanceName = QLatin1String("Cutelyst::") + instanceName;
+                id = QMetaType::fromName(instanceName.toLatin1().data());
+            }
+        }
+
+        if (id.isValid()) {
+            const QMetaObject *metaObj = id.metaObject();
+            if (metaObj) {
+                if (!superIsClassName(metaObj->superClass(), super)) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Class name"
+                            << instanceName
+                            << "is not a derived class of"
+                            << super;
+                }
+
+                QObject *object = metaObj->newInstance();
+                if (!object) {
+                    qCWarning(CUTELYST_CONTROLLER)
+                            << "Could create a new instance of"
+                            << instanceName
+                            << "make sure it's default constructor is "
+                               "marked with the Q_INVOKABLE macro";
+                }
+
+                return object;
+            }
+        } else {
+            Component *component = application->createComponentPlugin(name);
+            if (component) {
+                return component;
+            }
+
+            component = application->createComponentPlugin(instanceName);
+            if (component) {
+                return component;
+            }
+        }
+
+        if (!id.isValid()) {
+            qFatal("Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                   qPrintable(instanceName), qPrintable(instanceName));
+        }
+    }
+#else
         int id = QMetaType::type(instanceName.toLatin1().data());
         if (!id) {
             if (!instanceName.endsWith(QLatin1Char('*'))) {
@@ -542,6 +600,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
                    qPrintable(instanceName), qPrintable(instanceName));
         }
     }
+#endif
     return nullptr;
 }
 

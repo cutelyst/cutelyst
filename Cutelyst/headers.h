@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -284,18 +284,28 @@ public:
     QString authorization() const;
 
     /**
+     * This method is used to get an authorization token
+     */
+    QString authorizationBearer() const;
+
+    /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme".
      * It will return "username:password" as a single string value.
      */
     QString authorizationBasic() const;
 
+    struct Authorization {
+        QString user;
+        QString password;
+    };
+
     /**
      * This method is used to get an authorization header that use the
      * "Basic Authentication Scheme".
      * It will return a pair of username and password respectively.
      */
-    std::pair<QString, QString> authorizationBasicPair() const;
+    Authorization authorizationBasicObject() const;
 
     /**
      * This method is used to set an authorization header that use the
@@ -321,7 +331,7 @@ public:
      * "Basic Authentication Scheme" but using the "Proxy-Authorization" header instead.
      * It will return a pair of username and password respectively.
      */
-    std::pair<QString, QString> proxyAuthorizationBasicPair() const;
+    Authorization proxyAuthorizationBasicObject() const;
 
     /**
      * Returns the value associated with \p field
@@ -377,7 +387,7 @@ public:
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline QHash<QString, QString> data() const {
+    inline QMultiHash<QString, QString> data() const {
         return m_data;
     }
 
@@ -387,14 +397,9 @@ public:
     bool contains(const QString &field);
 
     /**
-     * Returns the value reference associated with key.
+     * Returns the value associated with key.
      */
-    QString &operator[](const QString &key);
-
-    /**
-     * Returns the const value associated with key.
-     */
-    const QString operator[](const QString &key) const;
+    QString operator[](const QString &key) const;
 
     /**
      * Assigns \p other to this Header and returns a reference to this Header.
@@ -419,19 +424,12 @@ public:
         return m_data != other.m_data;
     }
 
-    /**
-     * Returns this Header internal data as a QVariant for easiness with Q_PROPERTY.
-     */
-    inline operator QVariant() const {
-        return QVariant::fromValue(m_data);
-    }
-
 private:
-    QHash<QString, QString> m_data;
+    QMultiHash<QString, QString> m_data;
 };
 
 void Headers::pushRawHeader(const QString &field, const QString &value) {
-    m_data.insertMulti(field, value);
+    m_data.insert(field, value);
 }
 
 }

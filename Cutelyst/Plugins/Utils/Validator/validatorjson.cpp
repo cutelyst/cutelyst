@@ -44,7 +44,7 @@ ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c, const ParamsMu
             result.errorMessage = validationError(c, jpe.errorString());
             qCDebug(C_VALIDATOR, "ValidatorJson: Validation failed for field %s at %s::%s with the following error: %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(jpe.errorString()));
         } else {
-            result.value.setValue<QJsonDocument>(json);
+            result.value.setValue(json);
         }
     } else {
         defaultValue(c, &result, "ValidatorJson");

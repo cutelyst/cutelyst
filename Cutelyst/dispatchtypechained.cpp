@@ -147,7 +147,11 @@ QByteArray DispatchTypeChained::list() const
         paths.append(rows);
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QTextStream out(&buffer, QTextStream::WriteOnly);
+#else
     QTextStream out(&buffer, QIODevice::WriteOnly);
+#endif
 
     if (!paths.isEmpty()) {
         out << Utils::buildTable(paths, { QLatin1String("Path Spec"), QLatin1String("Private") },
@@ -268,7 +272,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     Q_D(const DispatchTypeChained);
 
     QString ret;
-    const QMap<QString, QString> attributes = action->attributes();
+    const ParamsMultiMap attributes = action->attributes();
     if (!(attributes.contains(QStringLiteral("Chained")) &&
             !attributes.contains(QStringLiteral("CaptureArgs")))) {
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: action is not an end point" << action;
@@ -280,7 +284,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     QStringList parts;
     Action *curr = action;
     while (curr) {
-        const QMap<QString, QString> curr_attributes = curr->attributes();
+        const ParamsMultiMap curr_attributes = curr->attributes();
         if (curr_attributes.contains(QStringLiteral("CaptureArgs"))) {
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
@@ -386,7 +390,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
 
         const Actions tryActions = children.value(tryPart);
         for (Action *action : tryActions) {
-            const QMap<QString, QString> attributes = action->attributes();
+            const ParamsMultiMap attributes = action->attributes();
             if (attributes.contains(QStringLiteral("CaptureArgs"))) {
                 const int captureCount = action->numberOfCaptures();
                 // Short-circuit if not enough remaining parts
@@ -461,7 +465,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
 
 bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &name) const
 {
-    const QMap<QString, QString> attributes = action->attributes();
+    const auto attributes = action->attributes();
     if (!attributes.contains(name)) {
         return true;
     }

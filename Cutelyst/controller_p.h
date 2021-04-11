@@ -35,7 +35,7 @@ public:
     Action* actionClass(const QVariantHash &args);
     Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
-    QMap<QString, QString> parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
+    ParamsMultiMap parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Component *> gatherActionRoles(const QVariantHash &args);
     QString parsePathAttr(const QString &value);
     QString parseChainedAttr(const QString &attr);
@@ -49,7 +49,7 @@ public:
     Application *application = nullptr;
     Controller *q_ptr;
     Dispatcher *dispatcher = nullptr;
-    QMap<QString, Action *> actions;
+    QMultiMap<QString, Action *> actions;
     ActionList actionList;
     bool parsedActions = false;
 };

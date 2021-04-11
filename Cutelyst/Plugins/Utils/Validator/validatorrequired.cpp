@@ -35,7 +35,7 @@ ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c, const Cute
 
     const QString v = value(params);
     if (Q_LIKELY(!v.isEmpty())) {
-        result.value.setValue<QString>(v);
+        result.value.setValue(v);
     } else {
         result.errorMessage = validationError(c);
     }

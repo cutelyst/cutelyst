@@ -92,11 +92,21 @@ bool StaticCompressed::setup(Application *app)
 
     const QString _mimeTypes = config.value(QStringLiteral("mime_types"), QStringLiteral("text/css,application/javascript")).toString();
     qCInfo(C_STATICCOMPRESSED, "MIME Types: %s", qPrintable(_mimeTypes));
-    d->mimeTypes = _mimeTypes.split(QLatin1Char(','), QString::SkipEmptyParts);
+    d->mimeTypes = _mimeTypes.split(QLatin1Char(','),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+                                    Qt::SkipEmptyParts);
+#else
+                                    QString::SkipEmptyParts);
+#endif
 
     const QString _suffixes = config.value(QStringLiteral("suffixes"), QStringLiteral("js.map,css.map,min.js.map,min.css.map")).toString();
     qCInfo(C_STATICCOMPRESSED, "Suffixes: %s", qPrintable(_suffixes));
-    d->suffixes = _suffixes.split(QLatin1Char(','), QString::SkipEmptyParts);
+    d->suffixes = _suffixes.split(QLatin1Char(','),
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+                                  Qt::SkipEmptyParts);
+#else
+                                  QString::SkipEmptyParts);
+#endif
 
     d->checkPreCompressed = config.value(QStringLiteral("check_pre_compressed"), true).toBool();
     qCInfo(C_STATICCOMPRESSED, "Check for pre-compressed files: %s", d->checkPreCompressed ? "true" : "false");

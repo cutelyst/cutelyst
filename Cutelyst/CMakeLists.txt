@@ -1,3 +1,5 @@
+configure_file(cutelyst_global.h.in cutelyst_global.h @ONLY)
+
 set(cutelystqt_SRC
     utils.cpp
     upload.cpp
@@ -43,7 +45,6 @@ set(cutelystqt_SRC
 )
 
 set(cutelystqt_HEADERS
-    cutelyst_global.h
     paramsmultimap.h
     ParamsMultiMap
     action.h
@@ -88,13 +89,13 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-add_library(Cutelyst2Qt5
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     ${cutelystqt_SRC}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
 )
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt5::Core ALIAS Cutelyst2Qt5)
-target_compile_features(Cutelyst2Qt5
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
+target_compile_features(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
   PRIVATE
     cxx_auto_type
   PUBLIC
@@ -102,42 +103,45 @@ target_compile_features(Cutelyst2Qt5
 )
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
-  set_property(TARGET Cutelyst2Qt5 PROPERTY DEBUG_POSTFIX "d")
+  set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROPERTY DEBUG_POSTFIX "d")
 endif()
 
-target_compile_definitions(Cutelyst2Qt5
+target_compile_definitions(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
   PRIVATE
     PLUGINS_PREFER_DEBUG_POSTFIX=$<CONFIG:Debug>
 )
 
-target_include_directories(Cutelyst2Qt5 PUBLIC
+target_include_directories(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:include/cutelyst2-qt5>
+  $<INSTALL_INTERFACE:include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}>
 )
 
-set_target_properties(Cutelyst2Qt5 PROPERTIES
+set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROPERTIES
     EXPORT_NAME Core
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
-target_link_libraries(Cutelyst2Qt5
+target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Network
 )
 
-set_property(TARGET Cutelyst2Qt5 PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
-install(TARGETS Cutelyst2Qt5
+set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROPERTY PUBLIC_HEADER ${cutelystqt_HEADERS})
+install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
-    PUBLIC_HEADER DESTINATION include/cutelyst2-qt5/Cutelyst COMPONENT devel
+    PUBLIC_HEADER DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst COMPONENT devel
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst_global.h
+        DESTINATION include/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/Cutelyst
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Core.pc.in
-  ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
+  ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Core.pc
   @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Core.pc
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Core.pc
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 

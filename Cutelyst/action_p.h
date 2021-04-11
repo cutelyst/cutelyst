@@ -30,7 +30,7 @@ public:
 
     QString ns;
     QMetaMethod method;
-    QMap<QString, QString> attributes;
+    QMultiMap<QString, QString> attributes;
     Controller *controller = nullptr;
     QStringList emptyArgs = {
         QString(), QString(), QString(),

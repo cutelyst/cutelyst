@@ -6,8 +6,8 @@ add_library(ActionRoleACL MODULE
 )
 
 target_link_libraries(ActionRoleACL
-    PRIVATE Cutelyst2Qt5::Core
-    PRIVATE Cutelyst2Qt5::Authentication
+    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
+    PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Authentication
 )
 
 install(TARGETS ActionRoleACL DESTINATION ${CUTELYST_PLUGINS_DIR})

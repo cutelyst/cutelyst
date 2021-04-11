@@ -27,7 +27,7 @@ using namespace Cutelyst;
 
 inline QString normalizeHeaderKey(const QString &field);
 inline QByteArray decodeBasicAuth(const QString &auth);
-inline std::pair<QString, QString> decodeBasicAuthPair(const QString &auth);
+inline Headers::Authorization decodeBasicAuthPair(const QString &auth);
 
 Headers::Headers(const Headers &other) : m_data(other.m_data)
 {
@@ -40,12 +40,12 @@ QString Headers::contentDisposition() const
 
 void Headers::setCacheControl(const QString &value)
 {
-    m_data.insert(QStringLiteral("CACHE_CONTROL"), value);
+    m_data.replace(QStringLiteral("CACHE_CONTROL"), value);
 }
 
 void Headers::setContentDisposition(const QString &contentDisposition)
 {
-    m_data.insert(QStringLiteral("CONTENT_DISPOSITION"), contentDisposition);
+    m_data.replace(QStringLiteral("CONTENT_DISPOSITION"), contentDisposition);
 }
 
 void Headers::setContentDispositionAttachment(const QString &filename)
@@ -64,7 +64,7 @@ QString Headers::contentEncoding() const
 
 void Headers::setContentEncoding(const QString &encoding)
 {
-    m_data.insert(QStringLiteral("CONTENT_ENCODING"), encoding);
+    m_data.replace(QStringLiteral("CONTENT_ENCODING"), encoding);
 }
 
 QString Headers::contentType() const
@@ -80,7 +80,7 @@ QString Headers::contentType() const
 
 void Headers::setContentType(const QString &contentType)
 {
-    m_data.insert(QStringLiteral("CONTENT_TYPE"), contentType);
+    m_data.replace(QStringLiteral("CONTENT_TYPE"), contentType);
 }
 
 QString Headers::contentTypeCharset() const
@@ -103,7 +103,7 @@ void Headers::setContentTypeCharset(const QString &charset)
 {
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it == m_data.constEnd() || (it.value().isEmpty() && !charset.isEmpty())) {
-        m_data.insert(QStringLiteral("CONTENT_TYPE"), QLatin1String("charset=") + charset);
+        m_data.replace(QStringLiteral("CONTENT_TYPE"), QLatin1String("charset=") + charset);
         return;
     }
 
@@ -129,7 +129,7 @@ void Headers::setContentTypeCharset(const QString &charset)
     } else if (!charset.isEmpty()) {
         contentType.append(QLatin1String("; charset=") + charset);
     }
-    m_data.insert(QStringLiteral("CONTENT_TYPE"), contentType);
+    m_data.replace(QStringLiteral("CONTENT_TYPE"), contentType);
 }
 
 bool Headers::contentIsText() const
@@ -180,16 +180,16 @@ qint64 Headers::contentLength() const
 
 void Headers::setContentLength(qint64 value)
 {
-    m_data.insert(QStringLiteral("CONTENT_LENGTH"), QString::number(value));
+    m_data.replace(QStringLiteral("CONTENT_LENGTH"), QString::number(value));
 }
 
 QString Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const QString dt = QLocale::c().toString(date.toUTC(),
-                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
-    m_data.insert(QStringLiteral("DATE"), dt);
+    QString dt = QLocale::c().toString(date.toUTC(),
+                                       QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    m_data.replace(QStringLiteral("DATE"), dt);
     return dt;
 }
 
@@ -253,8 +253,8 @@ bool Headers::ifMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
-                clientETag.midRef(3, clientETag.size() - 4) == etag; // Weak ETag
+        return clientETag.mid(1, clientETag.size() - 2) == etag ||
+                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return true;
 }
@@ -264,15 +264,15 @@ bool Headers::ifNoneMatch(const QString &etag) const
     auto it = m_data.constFind(QStringLiteral("IF_NONE_MATCH"));
     if (it != m_data.constEnd()) {
         const QString &clientETag = it.value();
-        return clientETag.midRef(1, clientETag.size() - 2) == etag ||
-                clientETag.midRef(3, clientETag.size() - 4) == etag; // Weak ETag
+        return clientETag.mid(1, clientETag.size() - 2) == etag ||
+                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return false;
 }
 
 void Headers::setETag(const QString &etag)
 {
-    m_data.insert(QStringLiteral("ETAG"), QLatin1Char('"') + etag + QLatin1Char('"'));
+    m_data.replace(QStringLiteral("ETAG"), QLatin1Char('"') + etag + QLatin1Char('"'));
 }
 
 QString Headers::lastModified() const
@@ -282,15 +282,15 @@ QString Headers::lastModified() const
 
 void Headers::setLastModified(const QString &value)
 {
-    m_data.insert(QStringLiteral("LAST_MODIFIED"), value);
+    m_data.replace(QStringLiteral("LAST_MODIFIED"), value);
 }
 
 QString Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    const auto dt = QLocale::c().toString(lastModified.toUTC(),
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    auto dt = QLocale::c().toString(lastModified.toUTC(),
+                                    QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     setLastModified(dt);
     return dt;
 }
@@ -302,7 +302,7 @@ QString Headers::server() const
 
 void Headers::setServer(const QString &value)
 {
-    m_data.insert(QStringLiteral("SERVER"), value);
+    m_data.replace(QStringLiteral("SERVER"), value);
 }
 
 QString Headers::connection() const
@@ -330,20 +330,20 @@ void Headers::setReferer(const QString &uri)
     int fragmentPos = uri.indexOf(QLatin1Char('#'));
     if (fragmentPos != -1) {
         // Strip fragment per RFC 2616, section 14.36.
-        m_data.insert(QStringLiteral("REFERER"), uri.mid(0, fragmentPos));
+        m_data.replace(QStringLiteral("REFERER"), uri.mid(0, fragmentPos));
     } else {
-        m_data.insert(QStringLiteral("REFERER"), uri);
+        m_data.replace(QStringLiteral("REFERER"), uri);
     }
 }
 
 void Headers::setWwwAuthenticate(const QString &value)
 {
-    m_data.insert(QStringLiteral("WWW_AUTHENTICATE"), value);
+    m_data.replace(QStringLiteral("WWW_AUTHENTICATE"), value);
 }
 
 void Headers::setProxyAuthenticate(const QString &value)
 {
-    m_data.insert(QStringLiteral("PROXY_AUTHENTICATE"), value);
+    m_data.replace(QStringLiteral("PROXY_AUTHENTICATE"), value);
 }
 
 QString Headers::authorization() const
@@ -351,12 +351,22 @@ QString Headers::authorization() const
     return m_data.value(QStringLiteral("AUTHORIZATION"));
 }
 
+QString Headers::authorizationBearer() const
+{
+    QString ret;
+    auto it = m_data.constFind(QStringLiteral("AUTHORIZATION"));
+    if (it != m_data.constEnd() && it.value().startsWith(QLatin1String("Bearer "))) {
+        ret = it.value().mid(7);
+    }
+    return ret;
+}
+
 QString Headers::authorizationBasic() const
 {
     return QString::fromLatin1(decodeBasicAuth(authorization()));
 }
 
-std::pair<QString, QString> Headers::authorizationBasicPair() const
+Headers::Authorization Headers::authorizationBasicObject() const
 {
     return decodeBasicAuthPair(authorization());
 }
@@ -371,7 +381,7 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
 
     const QString result = username + QLatin1Char(':') + password;
     ret = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
-    m_data.insert(QStringLiteral("AUTHORIZATION"), ret);
+    m_data.replace(QStringLiteral("AUTHORIZATION"), ret);
     return ret;
 }
 
@@ -385,7 +395,7 @@ QString Headers::proxyAuthorizationBasic() const
     return QString::fromLatin1(decodeBasicAuth(proxyAuthorization()));
 }
 
-std::pair<QString, QString> Headers::proxyAuthorizationBasicPair() const
+Headers::Authorization Headers::proxyAuthorizationBasicObject() const
 {
     return decodeBasicAuthPair(proxyAuthorization());
 }
@@ -402,7 +412,7 @@ QString Headers::header(const QString &field, const QString &defaultValue) const
 
 void Headers::setHeader(const QString &field, const QString &value)
 {
-    m_data.insert(normalizeHeaderKey(field), value);
+    m_data.replace(normalizeHeaderKey(field), value);
 }
 
 void Headers::setHeader(const QString &field, const QStringList &values)
@@ -412,12 +422,12 @@ void Headers::setHeader(const QString &field, const QStringList &values)
 
 void Headers::pushHeader(const QString &field, const QString &value)
 {
-    m_data.insertMulti(normalizeHeaderKey(field), value);
+    m_data.insert(normalizeHeaderKey(field), value);
 }
 
 void Headers::pushHeader(const QString &field, const QStringList &values)
 {
-    m_data.insertMulti(normalizeHeaderKey(field), values.join(QStringLiteral(", ")));
+    m_data.insert(normalizeHeaderKey(field), values.join(QStringLiteral(", ")));
 }
 
 void Headers::removeHeader(const QString &field)
@@ -430,14 +440,9 @@ bool Headers::contains(const QString &field)
     return m_data.contains(normalizeHeaderKey(field));
 }
 
-QString &Headers::operator[](const QString &key)
+QString Headers::operator[](const QString &key) const
 {
-    return m_data[key];
-}
-
-const QString Headers::operator[](const QString &key) const
-{
-    return m_data[key];
+    return m_data.value(normalizeHeaderKey(key));
 }
 
 QString normalizeHeaderKey(const QString &field)
@@ -445,13 +450,13 @@ QString normalizeHeaderKey(const QString &field)
     QString key = field;
     int i = 0;
     while (i < key.size()) {
-        QCharRef c = key[i];
+        QChar c = key[i];
         if (c.isLetter()) {
             if (c.isLower()) {
-                c = c.toUpper();
+                key[i] = c.toUpper();
             }
         } else if (c == QLatin1Char('-')) {
-            c = QLatin1Char('_');
+            key[i] = QLatin1Char('_');
         }
         ++i;
     }
@@ -470,17 +475,17 @@ QByteArray decodeBasicAuth(const QString &auth)
     return ret;
 }
 
-std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
+Headers::Authorization decodeBasicAuthPair(const QString &auth)
 {
-    std::pair<QString, QString> ret;
+    Headers::Authorization ret;
     const QByteArray authorization = decodeBasicAuth(auth);
     if (!authorization.isEmpty()) {
         int pos = authorization.indexOf(':');
         if (pos == -1) {
-            ret.first = QString::fromLatin1(authorization);
+            ret.user = QString::fromLatin1(authorization);
         } else {
-            ret = { QString::fromLatin1(authorization.left(pos)),
-                    QString::fromLatin1(authorization.mid(pos + 1)) };
+            ret.user = QString::fromLatin1(authorization.left(pos));
+            ret.password = QString::fromLatin1(authorization.mid(pos + 1));
         }
     }
     return ret;
@@ -488,14 +493,14 @@ std::pair<QString, QString> decodeBasicAuthPair(const QString &auth)
 
 QDebug operator<<(QDebug debug, const Headers &headers)
 {
-    const QHash<QString, QString> data = headers.data();
+    const QMultiHash<QString, QString> data = headers.data();
     const bool oldSetting = debug.autoInsertSpaces();
-    debug.nospace() << "Headers(";
+    debug.nospace() << "Headers[";
     for (auto it = data.constBegin();
          it != data.constEnd(); ++it) {
         debug << '(' << Engine::camelCaseHeader(it.key()) + QLatin1Char('=') + it.value() << ')';
     }
-    debug << ')';
+    debug << ']';
     debug.setAutoInsertSpaces(oldSetting);
     return debug.maybeSpace();
 }

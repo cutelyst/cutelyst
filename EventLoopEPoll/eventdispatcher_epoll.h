@@ -35,17 +35,9 @@ public:
     virtual ~EventDispatcherEPoll() override;
 
     virtual bool processEvents(QEventLoop::ProcessEventsFlags flags) override;
-    virtual bool hasPendingEvents() override;
 
     virtual void registerSocketNotifier(QSocketNotifier *notifier) override;
     virtual void unregisterSocketNotifier(QSocketNotifier *notifier) override;
-
-    virtual void registerTimer(
-            int timerId,
-            int interval,
-            Qt::TimerType timerType,
-            QObject *object
-            ) override;
 
     virtual bool unregisterTimer(int timerId) override;
     virtual bool unregisterTimers(QObject *object) override;
@@ -54,7 +46,20 @@ public:
 
     virtual void wakeUp() override;
     virtual void interrupt() override;
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    virtual bool hasPendingEvents() override;
+    virtual void registerTimer(
+            int timerId,
+            int interval,
+            Qt::TimerType timerType,
+            QObject *object
+            ) override;
     virtual void flush() override;
+#else
+    bool hasPendingEvents();
+    virtual void registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object) override;
+#endif
 
 private:
     Q_DISABLE_COPY(EventDispatcherEPoll)

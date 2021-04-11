@@ -61,7 +61,7 @@ public:
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    QMap<QString, QString> attributes() const;
+    ParamsMultiMap attributes() const;
 
     /**
      * Returns the value attribute by it's name, if not found
@@ -76,7 +76,7 @@ public:
      * Defines the Actions attibutes that were defined using the C_ATTR macro on Controller's
      * method declaration.
      */
-    void setAttributes(const QMap<QString, QString> &attributes);
+    void setAttributes(const ParamsMultiMap &attributes);
 
     /**
      * Returns the name of the component where this action is defined
