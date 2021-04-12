@@ -135,20 +135,20 @@ include_directories(
 
 # cmake config files
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     @ONLY
 )
 configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config-version.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5Config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt5ConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
 )
 install(EXPORT CutelystTargets
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt5/
-    FILE Cutelyst${PROJECT_VERSION_MAJOR}Qt5Targets.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
+    FILE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Targets.cmake
     NAMESPACE Cutelyst::
     COMPONENT Devel
 )

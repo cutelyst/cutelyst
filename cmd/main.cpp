@@ -517,14 +517,18 @@ int main(int argc, char *argv[])
         server.setLazy(restart);
 
         QDir projectDir;
-        if (!Helper::findProjectDir(QDir::current(), &projectDir)) {
+        bool hasProjectDir = Helper::findProjectDir(QDir::current(), &projectDir);
+        if (!hasProjectDir) {
             std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: failed to find project")) << std::endl;
-            return 1;
+        } else {
+            wsgi.setChdir2(projectDir.absolutePath());
         }
-        server.setChdir2(projectDir.absolutePath());
 
         QString localFilename = parser.value(appFile);
         if (localFilename.isEmpty()) {
+            if (!hasProjectDir) {
+                return 1;
+            }
             localFilename = Helper::findApplication(projectDir);
             if (!QFile::exists(localFilename)) {
                 std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: Application file not found")) << std::endl;
