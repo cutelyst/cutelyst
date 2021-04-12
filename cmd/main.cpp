@@ -521,7 +521,7 @@ int main(int argc, char *argv[])
         if (!hasProjectDir) {
             std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: failed to find project")) << std::endl;
         } else {
-            wsgi.setChdir2(projectDir.absolutePath());
+            server.setChdir2(projectDir.absolutePath());
         }
 
         QString localFilename = parser.value(appFile);
