@@ -92,6 +92,11 @@ public:
     static bool validatePassword(const QByteArray &password, const QByteArray &correctHash);
 
     /*!
+     * Validates the given password string against the correct hash string.
+     */
+    static bool validatePassword(const QString &password, const QString &correctHash);
+
+    /*!
      * Creates a password hash string.
      * \note That is you want pre and post salts you must manualy add them.
      * \param password
@@ -117,7 +122,7 @@ public:
      * \param password
      * \return the pbkdf2 representation of the password
      */
-    inline static QByteArray createPassword(const QString &password);
+    inline static QString createPassword(const QString &password);
 
     /*!
      * \brief Generates a pbkdf2 string for the given \p password
@@ -141,9 +146,14 @@ protected:
     CredentialPasswordPrivate *d_ptr;
 };
 
-QByteArray CredentialPassword::createPassword(const QString &password)
+inline bool CredentialPassword::validatePassword(const QString &password, const QString &correctHash)
 {
-    return createPassword(password.toUtf8());
+    return validatePassword(password.toUtf8(), correctHash.toUtf8());
+}
+
+QString CredentialPassword::createPassword(const QString &password)
+{
+    return QString::fromLatin1(createPassword(password.toUtf8()));
 }
 
 } // namespace Plugin
