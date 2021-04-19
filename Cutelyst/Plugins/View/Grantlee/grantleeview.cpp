@@ -34,9 +34,15 @@ Q_LOGGING_CATEGORY(CUTELYST_GRANTLEE, "cutelyst.grantlee", QtWarningMsg)
 
 using namespace Cutelyst;
 
+GRANTLEE_BEGIN_LOOKUP(ParamsMultiMap)
+return object.value(property);
+GRANTLEE_END_LOOKUP
+
 GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(new GrantleeViewPrivate, parent, name)
 {
     Q_D(GrantleeView);
+
+    Grantlee::registerMetaType<ParamsMultiMap>();
 
     d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
 

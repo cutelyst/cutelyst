@@ -111,15 +111,15 @@ void UriFor::render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const
             queryValues.unite(map);
         } else if (var.userType() == qMetaTypeId<Grantlee::SafeString>()) {
             auto query = splitQuery(var.value<Grantlee::SafeString>().get());
-            queryValues.insertMulti(query.first, query.second);
+            queryValues.insert(query.first, query.second);
         } else if (var.type() == QVariant::String) {
             auto query = splitQuery(var.toString());
-            queryValues.insertMulti(query.first, query.second);
+            queryValues.insert(query.first, query.second);
         } else if (var.type() == QVariant::StringList) {
             const auto queries = var.toStringList();
             for (const QString &str : queries) {
                 auto query = splitQuery(str);
-                queryValues.insertMulti(query.first, query.second);
+                queryValues.insert(query.first, query.second);
             }
         }
     }
