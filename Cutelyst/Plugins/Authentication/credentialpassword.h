@@ -148,7 +148,7 @@ protected:
 
 inline bool CredentialPassword::validatePassword(const QString &password, const QString &correctHash)
 {
-    return validatePassword(password.toUtf8(), correctHash.toUtf8());
+    return validatePassword(password.toUtf8(), correctHash.toLatin1());
 }
 
 QString CredentialPassword::createPassword(const QString &password)
