@@ -969,7 +969,11 @@ template< typename T>
 bool Memcached::set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::set(key, data, expiration, returnType);
 }
@@ -978,7 +982,11 @@ template< typename T>
 bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::setByKey(groupKey, key, data, expiration, returnType);
 }
@@ -987,7 +995,11 @@ template< typename T>
 bool Memcached::add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::add(key, data, expiration, returnType);
 }
@@ -996,7 +1008,11 @@ template< typename T>
 bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::addByKey(groupKey, key, data, expiration, returnType);
 }
@@ -1005,7 +1021,11 @@ template< typename T>
 bool Memcached::replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::replace(key, data, expiration, returnType);
 }
@@ -1014,7 +1034,11 @@ template< typename T>
 bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::replaceByKey(groupKey, key, data, expiration, returnType);
 }
@@ -1025,7 +1049,11 @@ T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnT
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
     if (!ba.isEmpty()) {
-        QDataStream in(&ba, QIODevice::ReadOnly);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QDataStream in(&ba, QIODevice::ReadOnly);
+#else
+    QDataStream in(&ba, QIODeviceBase::ReadOnly);
+#endif
         in >> retVal;
     }
     return retVal;
@@ -1037,7 +1065,11 @@ T Memcached::getByKey(const QString &groupKey, const QString &key, uint64_t *cas
     T retVal;
     QByteArray ba = Memcached::getByKey(groupKey, key, cas, returnType);
     if (!ba.isEmpty()) {
-        QDataStream in(&ba, QIODevice::ReadOnly);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    QDataStream in(&ba, QIODevice::ReadOnly);
+#else
+    QDataStream in(&ba, QIODeviceBase::ReadOnly);
+#endif
         in >> retVal;
     }
     return retVal;
@@ -1047,7 +1079,11 @@ template< typename T>
 bool Memcached::cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::cas(key, data, expiration, cas, returnType);
 }
@@ -1056,7 +1092,11 @@ template< typename T>
 bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QDataStream out(&data, QIODevice::WriteOnly);
+#else
+    QDataStream out(&data, QIODeviceBase::WriteOnly);
+#endif
     out << value;
     return Memcached::casByKey(groupKey, key, data, expiration, cas, returnType);
 }

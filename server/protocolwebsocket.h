@@ -20,7 +20,9 @@
 
 #include "protocol.h"
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 class QTextCodec;
+#endif
 
 namespace Cutelyst {
 class Context;
@@ -48,7 +50,9 @@ private:
     void websocket_parse_mask(Socket *sock, char *buf, QIODevice *io) const;
     bool websocket_parse_payload(Socket *sock, char *buf, int len, QIODevice *io) const;
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QTextCodec *m_codec;
+#endif
     int m_websockets_max_size;
 };
 

@@ -364,7 +364,7 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
             }
         } else {
             qCDebug(C_VALIDATOR, "ValidatorPwQuality: \"%s\" got a quality score of %i", qPrintable(v), rv);
-            result.value.setValue<QString>(v);
+            result.value = v;
         }
     }
 

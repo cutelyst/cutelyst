@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,22 +18,22 @@
 #ifndef PARAMSMULTIMAP_H
 #define PARAMSMULTIMAP_H
 
-#include <QMap>
+#include <QMultiMap>
 #include <QString>
 #include <QMetaType>
 
 namespace Cutelyst {
 
 /**
- * ParamsMultiMap is a QMap used to store
+ * ParamsMultiMap is a QMultiMap used to store
  * request parameters with keys containing
  * multiple values.
  *
- * Since QMap::values() return them in the
- * QMap::insertMulti() order they perfectly
+ * Since QMultiMap::values() return them in the
+ * QMultiMap::insert() order they perfectly
  * fit our body or query parameters need.
  */
-typedef QMultiMap<QString, QString> ParamsMultiMap;
+using ParamsMultiMap = QMultiMap<QString, QString>;
 
 }
 

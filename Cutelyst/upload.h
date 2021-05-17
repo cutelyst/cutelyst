@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2014-2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -109,7 +109,7 @@ protected:
     UploadPrivate *d_ptr;
 };
 
-typedef QVector<Upload *> Uploads;
+using Uploads = QVector<Upload *>;
 
 }
 

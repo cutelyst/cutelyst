@@ -334,7 +334,7 @@ public:
     C_ATTR(uploads, :Local :AutoArgs)
     void uploads(Context *c) {
         QUrlQuery ret;
-        QMap<QString, Upload *> uploads = c->request()->uploadsMap();
+        const auto uploads = c->request()->uploadsMap();
         auto it = uploads.constBegin();
         while (it != uploads.constEnd()) {
             Upload *upload = it.value();
@@ -833,19 +833,31 @@ void TestRequest::testController_data()
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test01") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << query.toString(QUrl::FullyEncoded).toLatin1()
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
+#else
+                                     << QByteArrayLiteral("QMultiMap<QString,QString>");
+#endif
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test02") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
+#else
+                                     << QByteArrayLiteral("QMultiMap<QString,QString>");
+#endif
 
     query.clear();
     headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
     QTest::newRow("bodyData-test03") << post << QStringLiteral("/request/test/bodyData")
                                      << headers << QByteArray()
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                                      << QByteArrayLiteral("Cutelyst::ParamsMultiMap");
+#else
+                                     << QByteArrayLiteral("QMultiMap<QString,QString>");
+#endif
 
     query.clear();
     headers.setContentType(QStringLiteral("application/json"));
