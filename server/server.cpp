@@ -1666,9 +1666,9 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
     }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    sessionConfig.insert(config);
+    loadedConfig.insert(config);
 #else
-    sessionConfig.unite(config);
+    loadedConfig.unite(config);
 #endif
 
     config = loadedConfig;
