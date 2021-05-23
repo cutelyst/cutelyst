@@ -68,7 +68,7 @@ Server::Server(QObject *parent) : QObject(parent),
 Server::~Server()
 {
     delete d_ptr;
-    std::cout << "Cutelyst-WSGI terminated" << std::endl;
+    std::cout << "Cutelyst-Server terminated" << std::endl;
 }
 
 void Server::parseCommandLine(const QStringList &arguments)
@@ -76,7 +76,7 @@ void Server::parseCommandLine(const QStringList &arguments)
     Q_D(Server);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly WSGI server"));
+    parser.setApplicationDescription(QCoreApplication::translate("main", "Fast, developer-friendly server"));
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -504,7 +504,7 @@ void Server::parseCommandLine(const QStringList &arguments)
 int Server::exec(Cutelyst::Application *app)
 {
     Q_D(Server);
-    std::cout << "Cutelyst-WSGI starting" << std::endl;
+    std::cout << "Cutelyst-Server starting" << std::endl;
 
 #ifdef Q_OS_LINUX
     if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP") && !d->userEventLoop) {
@@ -514,7 +514,7 @@ int Server::exec(Cutelyst::Application *app)
 #endif
 
     if (!qEnvironmentVariableIsSet("CUTELYST_SERVER_IGNORE_MASTER") && !d->master) {
-        std::cout << "*** WARNING: you are running Cutelyst-WSGI without its master process manager ***" << std::endl;
+        std::cout << "*** WARNING: you are running Cutelyst-Server without its master process manager ***" << std::endl;
     }
 
 #ifdef Q_OS_UNIX
@@ -714,7 +714,9 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
         ret = server->listen(line, protocol, secure);
 
         if (ret && server->socketDescriptor()) {
-            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+            auto qEnum = protocol->staticMetaObject.enumerator(0);
+            std::cout << qEnum.valueToKey(protocol->type())
+                      << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to TCP address " << qPrintable(server->serverName())
                       << " fd " << QByteArray::number(server->socketDescriptor()).constData()
                       << std::endl;
@@ -755,7 +757,9 @@ bool ServerPrivate::listenLocalSockets()
             server->setProtocol(protocol);
             server->pauseAccepting();
 
-            std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+            auto qEnum = protocol->staticMetaObject.enumerator(0);
+            std::cout << qEnum.valueToKey(protocol->type())
+                      << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to LOCAL address " << qPrintable(fullName)
                       << " fd " << QByteArray::number(server->socket()).constData()
                       << std::endl;
@@ -825,8 +829,9 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
             UnixFork::chownSocket(line, chownSocket);
         }
 #endif
-
-        std::cout << "WSGI socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
+        auto qEnum = protocol->staticMetaObject.enumerator(0);
+        std::cout << qEnum.valueToKey(protocol->type())
+                  << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                   << " bound to LOCAL address " << qPrintable(line)
                   << " fd " << QByteArray::number(server->socket()).constData()
                   << std::endl;
@@ -1621,7 +1626,7 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
     QString filename = file;
     configLoaded.append(file);
 
-    QString section = QStringLiteral("wsgi");
+    QString section = QStringLiteral("server");
     if (filename.contains(QLatin1Char(':'))) {
         section = filename.section(QLatin1Char(':'), -1, 1);
         filename = filename.section(QLatin1Char(':'), 0, -2);

@@ -80,6 +80,7 @@ public:
 
 class Protocol
 {
+    Q_GADGET
 public:
     enum Type {
         Unknown,
@@ -87,6 +88,7 @@ public:
         Http2,
         FastCGI1
     };
+    Q_ENUM(Type)
 
     Protocol(Server *wsgi);
     virtual ~Protocol();
