@@ -175,8 +175,9 @@ QString Utils::decodePercentEncoding(QString *s)
 
 QString Utils::decodePercentEncoding(QByteArray *ba)
 {
-    if (ba->isEmpty())
-        return QString();
+    if (ba->isEmpty()) {
+        return {};
+    }
 
     char *data = ba->data();
     const char *inputPtr = data;
