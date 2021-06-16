@@ -267,13 +267,15 @@ QString SessionPrivate::loadSessionId(Context *c, const QString &sessionName)
     c->setStash(SESSION_TRIED_LOADING_ID, true);
 
     const QString sid = getSessionId(c, sessionName);
-    if (!sid.isEmpty() && !validateSessionId(sid)) {
-        qCCritical(C_SESSION) << "Tried to set invalid session ID" << sid;
-        return ret;
+    if (!sid.isEmpty()) {
+        if (!validateSessionId(sid)) {
+            qCCritical(C_SESSION) << "Tried to set invalid session ID" << sid;
+            return ret;
+        }
+        ret = sid;
+        c->setStash(SESSION_ID, sid);
     }
 
-    ret = sid;
-    c->setStash(SESSION_ID, sid);
     return ret;
 }
 
