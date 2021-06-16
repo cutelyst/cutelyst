@@ -1,7 +1,8 @@
 FIND_PATH(ZOPFLI_INCLUDE_DIR
 		NAMES
-		zopfli/zopfli.h
 		zopfli.h
+		PATH_SUFFIXES
+		zopfli
 )
 
 FIND_LIBRARY(ZOPFLI_LIBRARY
