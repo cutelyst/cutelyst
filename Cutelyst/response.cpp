@@ -252,24 +252,22 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->status = status;
 
     if (url.isValid()) {
-        const QString location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
+        const auto location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
 
         d->headers.setHeader(QStringLiteral("LOCATION"), location);
         d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
 
-        const QString buf = QStringLiteral(
-                    "<!DOCTYPE html>\n"
-                    "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-                    "  <head>\n"
-                    "    <title>Moved</title>\n"
-                    "  </head>\n"
-                    "  <body>\n"
-                    "     <p>This item has moved <a href=\"") + location +
-                QStringLiteral("\">here</a>.</p>\n"
-                               "  </body>\n"
-                               "</html>\n");
-        setBody(buf);
+        const QString buf = QLatin1String(R"V0G0N(<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Moved</title>
+  </head>
+  <body>
+     <p>This item has moved <a href=")V0G0N") + location + QLatin1String(R"V0G0N(">here</a>.</p>
+  <body>
+</html>)V0G0N");
+        setBody(buf.toLatin1());
     } else {
         d->headers.removeHeader(QStringLiteral("LOCATION"));
         qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url << status;
