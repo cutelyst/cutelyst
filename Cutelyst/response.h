@@ -344,7 +344,7 @@ public:
      * it's best to always do the proper websocket handshake and then \sa webSocketClose() the
      * connection, with some meaning reason.
      */
-    bool webSocketHandshake(const QString &key = QString(), const QString &origin = QString(), const QString &protocol = QString());
+    bool webSocketHandshake(const QString &key = {}, const QString &origin = {}, const QString &protocol = {});
 
     /*!
      * Sends a WebSocket text message
@@ -364,7 +364,7 @@ public:
      * in order to avoid that, sending a ping is the best to way to keep the connection alive and to know that your
      * client is still there.
      */
-    bool webSocketPing(const QByteArray &payload = QByteArray());
+    bool webSocketPing(const QByteArray &payload = {});
 
     /*!
      * Sends a WebSocket close frame, with both optional close code and a string reason.
@@ -373,7 +373,7 @@ public:
      * you need to track when the connection was closed, the proper way is to rely on
      * Context::destroyed() signal.
      */
-    bool webSocketClose(quint16 code = Response::CloseCodeNormal, const QString &reason = QString());
+    bool webSocketClose(quint16 code = Response::CloseCodeNormal, const QString &reason = {});
 
 protected:
     /**

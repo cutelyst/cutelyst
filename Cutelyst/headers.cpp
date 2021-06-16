@@ -380,7 +380,7 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
     }
 
     const QString result = username + QLatin1Char(':') + password;
-    ret = QStringLiteral("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
+    ret = QLatin1String("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
     m_data.replace(QStringLiteral("AUTHORIZATION"), ret);
     return ret;
 }
@@ -417,7 +417,7 @@ void Headers::setHeader(const QString &field, const QString &value)
 
 void Headers::setHeader(const QString &field, const QStringList &values)
 {
-    setHeader(field, values.join(QStringLiteral(", ")));
+    setHeader(field, values.join(QLatin1String(", ")));
 }
 
 void Headers::pushHeader(const QString &field, const QString &value)
@@ -427,7 +427,7 @@ void Headers::pushHeader(const QString &field, const QString &value)
 
 void Headers::pushHeader(const QString &field, const QStringList &values)
 {
-    m_data.insert(normalizeHeaderKey(field), values.join(QStringLiteral(", ")));
+    m_data.insert(normalizeHeaderKey(field), values.join(QLatin1String(", ")));
 }
 
 void Headers::removeHeader(const QString &field)

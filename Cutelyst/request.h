@@ -235,7 +235,7 @@ public:
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParameter(const QString &key, const QString &defaultValue = QString()) const;
+    inline QString bodyParameter(const QString &key, const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all body values passing a key
@@ -252,7 +252,7 @@ public:
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParam(const QString &key, const QString &defaultValue = QString()) const;
+    inline QString bodyParam(const QString &key, const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all body values passing a key
@@ -285,7 +285,7 @@ public:
     /**
      * Convenience method for geting a single query value passing a key and an optional default value
      */
-    inline QString queryParameter(const QString &key, const QString &defaultValue = QString()) const;
+    inline QString queryParameter(const QString &key, const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all query values passing a key
@@ -302,7 +302,7 @@ public:
     /**
      * Convenience method for geting a single query value passing a key and an optional default value
      */
-    inline QString queryParam(const QString &key, const QString &defaultValue = QString()) const;
+    inline QString queryParam(const QString &key, const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all query values passing a key
