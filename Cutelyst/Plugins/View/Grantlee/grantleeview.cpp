@@ -24,6 +24,7 @@
 #include "config.h"
 
 #include <grantlee/qtlocalizer.h>
+#include <grantlee/metatype.h>
 
 #include <QString>
 #include <QDirIterator>
