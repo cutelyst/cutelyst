@@ -265,8 +265,9 @@ void Response::redirect(const QUrl &url, quint16 status)
   </head>
   <body>
      <p>This item has moved <a href=")V0G0N") + location + QLatin1String(R"V0G0N(">here</a>.</p>
-  <body>
-</html>)V0G0N");
+  </body>
+</html>
+)V0G0N");
         setBody(buf.toLatin1());
     } else {
         d->headers.removeHeader(QStringLiteral("LOCATION"));
