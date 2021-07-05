@@ -296,10 +296,7 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         QTextStream out(&data);
         out << "project(" <<  appName << ")" << "\n";
         out << "\n";
-        out << "cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)" << "\n";
-        out << "if (POLICY CMP0043)" << "\n";
-        out << "  cmake_policy(SET CMP0043 NEW)" << "\n";
-        out << "endif()" << "\n";
+        out << "cmake_minimum_required(VERSION 3.16 FATAL_ERROR)" << "\n";
         out << "\n";
         out << "if(WIN32)\n";
         out << "  if(MSVC)\n";
@@ -307,8 +304,8 @@ bool buildProjectCMakeLists(const QString &name, const QString &appName)
         out << "    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)\n";
         out << "  endif()\n";
         out << "endif()\n\n";
-        out << "find_package(Qt5 COMPONENTS Core Network REQUIRED)" << "\n";
-        out << "find_package(Cutelyst2Qt5 REQUIRED)" << "\n";
+        out << "find_package(Qt" << QT_VERSION_MAJOR << " COMPONENTS Core Network REQUIRED)" << "\n";
+        out << "find_package(Cutelyst" << CUTELYST_VERSION_MAJOR << "Qt" << QT_VERSION_MAJOR << " REQUIRED)" << "\n";
         out << "\n";
         out << "# Auto generate moc files" << "\n";
         out << "set(CMAKE_AUTOMOC ON)" << "\n";
