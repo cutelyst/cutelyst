@@ -66,7 +66,7 @@ ASync::ASync(Context *c)
 {
 //    qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
     c->detachAsync();
-    d = QSharedPointer<ASyncPrivate>(new ASyncPrivate(c));
+    d = std::shared_ptr<ASyncPrivate>(new ASyncPrivate(c));
 }
 
 /*!
@@ -84,7 +84,7 @@ ASync::ASync(Context *c)
 ASync::ASync(Context *c, std::function<void (Context *)> cb)
 {
     c->detachAsync();
-    d = QSharedPointer<ASyncPrivate>(new ASyncPrivate(c, cb));
+    d = std::shared_ptr<ASyncPrivate>(new ASyncPrivate(c, cb));
 }
 
 /*!

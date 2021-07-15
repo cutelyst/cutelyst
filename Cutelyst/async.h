@@ -40,7 +40,7 @@ public:
     ASync &operator =(const ASync &copy);
 
 private:
-    QSharedPointer<ASyncPrivate> d;
+    std::shared_ptr<ASyncPrivate> d;
 };
 
 }
