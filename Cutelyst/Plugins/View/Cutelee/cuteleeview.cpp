@@ -46,7 +46,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
 
     Cutelee::registerMetaType<ParamsMultiMap>();
 
-    d->loader = QSharedPointer<Cutelee::FileSystemTemplateLoader>(new Cutelee::FileSystemTemplateLoader);
+    d->loader = std::shared_ptr<Cutelee::FileSystemTemplateLoader>(new Cutelee::FileSystemTemplateLoader);
 
     d->engine = new Cutelee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
@@ -119,7 +119,7 @@ void CuteleeView::setCache(bool enable)
 {
     Q_D(CuteleeView);
 
-    if (enable != d->cache.isNull()) {
+    if (enable && d->cache) {
         return; // already enabled
     }
 
@@ -127,10 +127,10 @@ void CuteleeView::setCache(bool enable)
     d->engine = new Cutelee::Engine(this);
 
     if (enable) {
-        d->cache = QSharedPointer<Cutelee::CachingLoaderDecorator>(new Cutelee::CachingLoaderDecorator(d->loader));
+        d->cache = std::shared_ptr<Cutelee::CachingLoaderDecorator>(new Cutelee::CachingLoaderDecorator(d->loader));
         d->engine->addTemplateLoader(d->cache);
     } else {
-        d->cache.clear();
+        d->cache = {};
         d->engine->addTemplateLoader(d->loader);
     }
     Q_EMIT changed();
@@ -174,7 +174,7 @@ void CuteleeView::preloadTemplates()
 bool CuteleeView::isCaching() const
 {
     Q_D(const CuteleeView);
-    return !d->cache.isNull();
+    return !!d->cache;
 }
 
 QByteArray CuteleeView::render(Context *c) const
@@ -206,16 +206,16 @@ QByteArray CuteleeView::render(Context *c) const
 
     Cutelee::Context gc(stash);
 
-    auto localizer = QSharedPointer<Cutelee::QtLocalizer>::create(c->locale());
+    auto localizer = std::shared_ptr<Cutelee::QtLocalizer>(new Cutelee::QtLocalizer{c->locale()});
 
     auto transIt = d->translators.constFind(c->locale());
     if (transIt != d->translators.constEnd()) {
-        localizer.data()->installTranslator(transIt.value(), transIt.key().name());
+        localizer.get()->installTranslator(transIt.value(), transIt.key().name());
     }
 
     auto catalogIt = d->translationCatalogs.constBegin();
     while (catalogIt != d->translationCatalogs.constEnd()) {
-        localizer.data()->loadCatalog(catalogIt.value(), catalogIt.key());
+        localizer.get()->loadCatalog(catalogIt.value(), catalogIt.key());
         ++it;
     }
 

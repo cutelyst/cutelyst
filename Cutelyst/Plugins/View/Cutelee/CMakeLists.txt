@@ -34,7 +34,7 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewC
 )
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
-    PRIVATE Cutelee5::Templates
+    PRIVATE Cutelee::Templates
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
 )
 if (PLUGIN_CSRFPROTECTION)

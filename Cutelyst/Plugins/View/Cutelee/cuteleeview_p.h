@@ -37,8 +37,8 @@ public:
     QString wrapper;
     QString cutelystVar;
     Cutelee::Engine *engine;
-    QSharedPointer<Cutelee::FileSystemTemplateLoader> loader;
-    QSharedPointer<Cutelee::CachingLoaderDecorator> cache;
+    std::shared_ptr<Cutelee::FileSystemTemplateLoader> loader;
+    std::shared_ptr<Cutelee::CachingLoaderDecorator> cache;
     QHash<QLocale, QTranslator*> translators;
     QMultiHash<QString, QString> translationCatalogs;
 };

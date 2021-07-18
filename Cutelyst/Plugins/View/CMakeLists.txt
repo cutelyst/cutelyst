@@ -7,7 +7,7 @@ else ()
 endif (PLUGIN_VIEW_GRANTLEE)
 
 if (PLUGIN_VIEW_CUTELEE)
-    find_package(Cutelee5 REQUIRED)
+    find_package(Cutelee6Qt${QT_VERSION_MAJOR} REQUIRED)
     message(STATUS "PLUGIN: View::Cutelee, enabled.")
     add_subdirectory(Cutelee)
 else ()

@@ -153,7 +153,6 @@ install(EXPORT CutelystTargets
     COMPONENT Devel
 )
 
-
 add_subdirectory(Cutelyst)
 
 if(UNIX AND NOT (APPLE OR HAIKU))
