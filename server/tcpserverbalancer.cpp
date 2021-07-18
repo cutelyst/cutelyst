@@ -374,8 +374,15 @@ int listenReuse(const QHostAddress &address, int listenQueue, quint16 port, bool
         return -1;
     }
 
+    int optval = 1;
+    // SO_REUSEADDR is set by default on QTcpServer and allows to bind again
+    // without having to wait all previous connections to close
+    if (::setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval))) {
+        qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEADDR on socket" << socket;
+        return -1;
+    }
+
     if (reusePort) {
-        int optval = 1;
         if (::setsockopt(socket, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
             qCCritical(CWSGI_BALANCER) << "Failed to set SO_REUSEPORT on socket" << socket;
             return -1;
