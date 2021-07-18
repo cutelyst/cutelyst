@@ -118,7 +118,21 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
                       << qPrintable(keyFile.errorString()) << std::endl;
             return false;
         }
-        QSslKey key(&keyFile, QSsl::Rsa);
+
+        QSsl::KeyAlgorithm algorithm = QSsl::Rsa;
+        const QString keyAlgorithm = sslString.section(QLatin1Char(','), 2, 2);
+        if (!keyAlgorithm.isEmpty()) {
+            if (keyAlgorithm.compare(QLatin1String("rsa"), Qt::CaseInsensitive) == 0) {
+                algorithm = QSsl::Rsa;
+            } else if (keyAlgorithm.compare(QLatin1String("ec"), Qt::CaseInsensitive) == 0) {
+                algorithm = QSsl::Ec;
+            } else {
+                std::cerr << "Failed to select SSL Key Algorithm" << qPrintable(keyAlgorithm) << std::endl;
+                return false;
+            }
+        }
+
+        QSslKey key(&keyFile, algorithm);
         if (key.isNull()) {
             std::cerr << "Failed to parse SSL private key" << std::endl;
             return false;
