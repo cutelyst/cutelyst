@@ -19,8 +19,8 @@
 #define ASYNC_H
 
 #include <Cutelyst/cutelyst_global.h>
-#include <QSharedPointer>
 
+#include <memory>
 #include <functional>
 
 namespace Cutelyst {
