@@ -480,8 +480,8 @@ void RequestPrivate::parseBody() const
         return;
     }
 
-    const QString contentType = engineRequest->headers.contentType();
-    if (contentType == QLatin1String("application/x-www-form-urlencoded")) {
+    const QString contentType = engineRequest->headers.header(QStringLiteral("CONTENT_TYPE"));
+    if (contentType.startsWith(QLatin1String("application/x-www-form-urlencoded"), Qt::CaseInsensitive)) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
@@ -490,12 +490,12 @@ void RequestPrivate::parseBody() const
 
         bodyParam = parseUrlEncoded(body->readLine());
         bodyData = QVariant::fromValue(bodyParam);
-    } else if (contentType == QLatin1String("multipart/form-data")) {
+    } else if (contentType.startsWith(QLatin1String("multipart/form-data"), Qt::CaseInsensitive)) {
         if (posOrig) {
             body->seek(0);
         }
 
-        const Uploads ups = MultiPartFormDataParser::parse(body, engineRequest->headers.header(QStringLiteral("CONTENT_TYPE")));
+        const Uploads ups = MultiPartFormDataParser::parse(body, contentType);
         for (Upload *upload : ups) {
             if (upload->filename().isEmpty() && upload->contentType().isEmpty()) {
                 bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
@@ -505,7 +505,7 @@ void RequestPrivate::parseBody() const
         }
         uploads = ups;
 //        bodyData = QVariant::fromValue(uploadsMap);
-    } else if (contentType == QLatin1String("application/json")) {
+    } else if (contentType.startsWith(QLatin1String("application/json"), Qt::CaseInsensitive)) {
         if (posOrig) {
             body->seek(0);
         }
