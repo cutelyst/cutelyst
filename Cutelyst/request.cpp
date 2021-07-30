@@ -459,7 +459,13 @@ void RequestPrivate::parseUrlQuery() const
             QByteArray aux = engineRequest->query;
             queryKeywords = Utils::decodePercentEncoding(&aux);
         } else {
-            queryParam = parseUrlEncoded(engineRequest->query);
+            if (parserStatus & RequestPrivate::UrlParsed) {
+                queryParam = Utils::decodePercentEncoding(engineRequest->query.data(), engineRequest->query.size());
+            } else {
+                QByteArray aux = engineRequest->query;
+                // We can't manipulate query directly
+                queryParam = Utils::decodePercentEncoding(aux.data(), aux.size());
+            }
         }
     }
     parserStatus |= RequestPrivate::QueryParsed;
@@ -480,7 +486,8 @@ void RequestPrivate::parseBody() const
         return;
     }
 
-    const QString contentType = engineRequest->headers.header(QStringLiteral("CONTENT_TYPE"));
+    const QString contentTypeKey = QStringLiteral("CONTENT_TYPE");
+    const QString contentType = engineRequest->headers.header(contentTypeKey);
     if (contentType.startsWith(QLatin1String("application/x-www-form-urlencoded"), Qt::CaseInsensitive)) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
@@ -488,7 +495,8 @@ void RequestPrivate::parseBody() const
             body->seek(0);
         }
 
-        bodyParam = parseUrlEncoded(body->readLine());
+        QByteArray line = body->readAll();
+        bodyParam = Utils::decodePercentEncoding(line.data(), line.size());
         bodyData = QVariant::fromValue(bodyParam);
     } else if (contentType.startsWith(QLatin1String("multipart/form-data"), Qt::CaseInsensitive)) {
         if (posOrig) {
@@ -497,7 +505,7 @@ void RequestPrivate::parseBody() const
 
         const Uploads ups = MultiPartFormDataParser::parse(body, contentType);
         for (Upload *upload : ups) {
-            if (upload->filename().isEmpty() && upload->contentType().isEmpty()) {
+            if (upload->filename().isEmpty() && upload->headers().header(contentTypeKey).isEmpty()) {
                 bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
                 upload->seek(0);
             }
@@ -609,51 +617,6 @@ void RequestPrivate::parseCookies() const
     }
 
     parserStatus |= RequestPrivate::CookiesParsed;
-}
-
-ParamsMultiMap RequestPrivate::parseUrlEncoded(const QByteArray &line)
-{
-    ParamsMultiMap ret;
-
-    int from = 0;
-    while (from < line.length()) {
-        const int pos = line.indexOf('&', from);
-
-        int len;
-        if (pos == -1) {
-            len = line.length() - from;
-        } else {
-            len = pos - from;
-        }
-
-        if (len == 0 || (len == 1 && line[from] == '=')) {
-            // Skip empty strings
-            ++from;
-            continue;
-        }
-
-        QByteArray data = line.mid(from, len);
-
-        int equal = data.indexOf('=');
-        if (equal != -1) {
-            QByteArray key = data.mid(0, equal);
-            if (++equal < data.size()) {
-                QByteArray value = data.mid(equal);
-                ret.insert(Utils::decodePercentEncoding(&key), Utils::decodePercentEncoding(&value));
-            } else {
-                ret.insert(Utils::decodePercentEncoding(&key), {});
-            }
-        } else {
-            ret.insert(Utils::decodePercentEncoding(&data), {});
-        }
-
-        if (pos == -1) {
-            break;
-        }
-        from = pos + 1;
-    }
-
-    return ret;
 }
 
 QVariantMap RequestPrivate::paramsMultiMapToVariantMap(const ParamsMultiMap &params)

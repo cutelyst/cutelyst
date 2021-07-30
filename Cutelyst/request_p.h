@@ -47,7 +47,6 @@ public:
     inline void parseBody() const;
     inline void parseCookies() const;
 
-    static inline ParamsMultiMap parseUrlEncoded(const QByteArray &line);
     static inline QVariantMap paramsMultiMapToVariantMap(const ParamsMultiMap &params);
 
     // Pointer to Engine data
