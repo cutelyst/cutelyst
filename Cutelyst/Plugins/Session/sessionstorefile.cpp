@@ -74,7 +74,7 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
     return true;
 }
 
-QString rootPath()
+static QString rootPath()
 {
     return QDir::tempPath()
             + QLatin1Char('/')
@@ -85,8 +85,7 @@ QString rootPath()
 bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
 {
     Q_UNUSED(c)
-    if(!expires)
-    {
+    if (!expires) {
         QDir dir(rootPath());
         dir.removeRecursively();
     }
@@ -102,7 +101,7 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
         return data;
     }
 
-    QString root = rootPath();
+    const QString root = rootPath();
 
     auto file = new QFile(root + QLatin1Char('/') + sid, c);
     if (!file->open(QIODevice::ReadWrite)) {
