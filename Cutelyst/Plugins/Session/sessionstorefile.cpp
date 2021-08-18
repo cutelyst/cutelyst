@@ -76,10 +76,11 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
 
 static QString rootPath()
 {
-    return QDir::tempPath()
+    static QString rootPath = QDir::tempPath()
             + QLatin1Char('/')
             + QCoreApplication::applicationName()
             + QLatin1String("/session/data");
+    return rootPath;
 }
 
 bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
