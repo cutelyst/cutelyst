@@ -1,7 +1,7 @@
-.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection @PROJECT_VERSION@"
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection 5 "2021-09-01" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection @PROJECT_VERSION@"
 
 .SH NAME
-Cutelyst@PROJECT_VERSION_MAJOR@Qt5CSRFProtection - Configuration of the CSRFProtection Plugin for the Cutelyst Web Framework
+Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@CSRFProtection - Configuration of the CSRFProtection Plugin for the Cutelyst Web Framework
 .SH DESCRIPTION
 The CSRFProtection plugin implements a synchronizer token pattern (STP) to protect input forms against
 .UR https://en.wikipedia.org/wiki/Cross-site_request_forgery
