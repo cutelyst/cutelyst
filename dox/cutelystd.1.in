@@ -1,15 +1,15 @@
-.TH cutelyst-wsgi@PROJECT_VERSION_MAJOR@ 1 "2018-03-20" "cutelyst-wsgi@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION@"
+.TH cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2021-09-01" "cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
-cutelyst-wsgi@PROJECT_VERSION_MAJOR@ - Fast, developer-friendly WSGI server for Cutelyst applications.
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Fast, developer friendly WSGI server for Cutelyst applications.
 
 .SH SYNOPSIS
-.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
+.B cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 .RI [ OPTIONS ]
 
 .SH DESCRIPTION
-.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
-is a Web Service Gateway Interface (WSGI) server for Cutelyst applications that can either be used as standalone HTTP server or as a gateway between your Cutelyst application and another webserver like Apache or nginx.
+.B cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
+is a developer friendly WSGI server for Cutelyst applications that can either be used as standalone HTTP server or as a gateway between your Cutelyst application and another webserver like Apache or nginx. It supports HTTP, HTTPS, HTTP/2 and FastCGI sockets.
 
 .SH OPTIONS
 .SS "Generic Program Information"
@@ -19,7 +19,7 @@ Output a usage message and exit
 .TP
 .BR \-v ", " \-\^\-version
 Output the version number of
-.B cutelyst-wsgi@PROJECT_VERSION_MAJOR@
+.B cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 and exit.
 .SS "Load Application"
 .TP
@@ -194,12 +194,12 @@ issue system of the GitHub project
 
 .SH EXAMPLE
 .SS "Start application with HTTP socket and load ini config file"
-cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-h1 localhost:3000 \-\^\-ini /path/to/appconfig.ini
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-h1 localhost:3000 \-\^\-ini /path/to/appconfig.ini
 .SS "Start application on local FastCGI socket and protect socket file"
-cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-chown-socket myuser:www \-\^\-socket-access ug \-\^\-uid myuser
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-chown-socket myuser:www \-\^\-socket-access ug \-\^\-uid myuser
 .SS "Start application on local FastCGI socket and store PID in file"
-cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-pidfile /run/cutelystapp.pid
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-M \-a /path/to/cutelystapp.so \-\^\-fastcgi-socket /run/cutelystapp.sock \-\^\-pidfile /run/cutelystapp.pid
 .SS "Stop application using pid file"
-cutelyst-wsgi@PROJECT_VERSION_MAJOR@ \-\^\-stop /run/cutelystapp.pid
+cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-\^\-stop /run/cutelystapp.pid
 .SH "SEE ALSO"
-.BR cutelyst@PROJECT_VERSION_MAJOR@ (1)
+.BR cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ (1)
