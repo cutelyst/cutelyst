@@ -1,7 +1,7 @@
-.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached @PROJECT_VERSION@"
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Memcached 5 "2021-09-01" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Memcached @PROJECT_VERSION@"
 
 .SH NAME
-Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached - Configuration of the Memcached Plugin for the Cutelyst Web Framework
+Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Memcached - Configuration of the Memcached Plugin for the Cutelyst Web Framework
 .SH DESCRIPTION
 The Memcached plugin for Cutelyst can be used to store, retrieve, delete and modify data on a Memcached general-purpose distributed memory caching system. It uses libmemcached to connect to a pool of memcached servers and to perform the caching operations.
 .SH CONFIGURATION
@@ -85,5 +85,5 @@ online documentation of libmemcached
 .SH LOGGING CATEGORY
 cutelyst.plugin.memcached
 .SH "SEE ALSO"
-.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore (5)
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore (5)
 .BR libmemcached_configuration (3)

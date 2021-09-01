@@ -1,13 +1,13 @@
-.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore 5 "2018-01-11" "Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore @PROJECT_VERSION@"
+.TH Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore 5 "2021-09-01" "Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore @PROJECT_VERSION@"
 
 .SH NAME
-Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore - Configuration of the Memcached Session Store Plugin for the Cutelyst Web Framework
+Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore - Configuration of the Memcached Session Store Plugin for the Cutelyst Web Framework
 .SH DESCRIPTION
 This session store saves session data to Memcached servers using the
-.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Memcached (5)
 plugin.
 .SH CONFIGURATION
-The Cutelyst@PROJECT_VERSION_MAJOR@Qt5MemcachedSessionStore plugin can be configured in the Cutelyst application configuration file in the
+The Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@MemcachedSessionStore plugin can be configured in the Cutelyst application configuration file in the
 .I Cutelyst_MemcachedSessionStore_Plugin
 section.
 .PP
@@ -30,4 +30,4 @@ The memcached server does not guarantee the existence of the session data. It mi
 .SH LOGGING CATEGORY
 cutelyst.plugin.memcachedsessionstore
 .SH "SEE ALSO"
-.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt5Memcached (5)
+.BR Cutelyst@PROJECT_VERSION_MAJOR@Qt@QT_VERSION_MAJOR@Memcached (5)
