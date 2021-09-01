@@ -1,13 +1,13 @@
 if(UNIX)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst-wsgi.1.in
-        ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-wsgi2.1
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelystd.1.in
+        ${CMAKE_CURRENT_BINARY_DIR}/cutelystd${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}.1
         @ONLY
     )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst-wsgi2.1 DESTINATION ${MANDIR}/man1)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelystd${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}.1 DESTINATION ${MANDIR}/man1)
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutelyst.1.in
-        ${CMAKE_CURRENT_BINARY_DIR}/cutelyst2.1
+        ${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}.1
         @ONLY
     )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst2.1 DESTINATION ${MANDIR}/man1)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}.1 DESTINATION ${MANDIR}/man1)
 endif()
