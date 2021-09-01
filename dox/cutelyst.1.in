@@ -1,14 +1,14 @@
-.TH cutelyst@PROJECT_VERSION_MAJOR@ 1 "2018-01-12" "cutelyst@PROJECT_VERSION_MAJOR@ @PROJECT_VERSION@"
+.TH cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ 1 "2021-09-01" "cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ @PROJECT_VERSION@"
 
 .SH NAME
-cutelyst@PROJECT_VERSION_MAJOR@ - Developer Helper Application for the Cutelyst Web Framework
+cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ - Developer Helper Application for the Cutelyst Web Framework
 
 .SH SYNOPSIS
-.B cutelyst@PROJECT_VERSION_MAJOR@
+.B cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 .RI [ OPTIONS ]
 
 .SH DESCRIPTION
-.B cutelyst@PROJECT_VERSION_MAJOR@
+.B cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 is a command line utility to help developers creating new applications for the Cutelyst Web Framework. It can create a skeleton for a new application, controllers and start your application.
 
 .SH OPTIONS
@@ -19,7 +19,7 @@ Output a usage message and exit
 .TP
 .BR \-v ", " \-\^\-version
 Output the version number of
-.B cutelyst@PROJECT_VERSION_MAJOR@
+.B cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@
 and exit.
 .SS "Creating skeletons"
 .TP
@@ -56,11 +56,11 @@ issue system of the GitHub project
 
 .SH EXAMPLE
 .SS "Create application"
-cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-create-app MyCutelystApp
+cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-\^\-create-app MyCutelystApp
 .SS "Create controller"
-cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-contoller MyNewController
+cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-\^\-contoller MyNewController
 .SS "Start server"
-cutelyst@PROJECT_VERSION_MAJOR@ \-\^\-server \-\^\-app-file build/src/libMyCutelystApp.so \-p 8080 \-r
+cutelyst@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ \-\^\-server \-\^\-app-file build/src/libMyCutelystApp.so \-p 8080 \-r
 
 .SH "SEE ALSO"
-.BR cutelyst-wsgi@PROJECT_VERSION_MAJOR@ (1)
+.BR cutelystd@PROJECT_VERSION_MAJOR@-qt@QT_VERSION_MAJOR@ (1)
