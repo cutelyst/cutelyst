@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setOrganizationName(QStringLiteral("Cutelyst"));
     QCoreApplication::setOrganizationDomain(QStringLiteral("cutelyst.org"));
-    QCoreApplication::setApplicationName(QStringLiteral("cutelyst-wsgi"));
+    QCoreApplication::setApplicationName(QStringLiteral("cutelystd"));
     QCoreApplication::setApplicationVersion(QStringLiteral(VERSION));
 
     Cutelyst::Server server;
