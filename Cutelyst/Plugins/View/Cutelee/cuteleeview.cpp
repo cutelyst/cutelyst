@@ -46,7 +46,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
 
     Cutelee::registerMetaType<ParamsMultiMap>();
 
-    d->loader = std::shared_ptr<Cutelee::FileSystemTemplateLoader>(new Cutelee::FileSystemTemplateLoader);
+    d->loader = std::make_shared<Cutelee::FileSystemTemplateLoader>();
 
     d->engine = new Cutelee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
@@ -127,7 +127,7 @@ void CuteleeView::setCache(bool enable)
     d->engine = new Cutelee::Engine(this);
 
     if (enable) {
-        d->cache = std::shared_ptr<Cutelee::CachingLoaderDecorator>(new Cutelee::CachingLoaderDecorator(d->loader));
+        d->cache = std::make_shared<Cutelee::CachingLoaderDecorator>(d->loader);
         d->engine->addTemplateLoader(d->cache);
     } else {
         d->cache = {};
@@ -206,7 +206,7 @@ QByteArray CuteleeView::render(Context *c) const
 
     Cutelee::Context gc(stash);
 
-    auto localizer = std::shared_ptr<Cutelee::QtLocalizer>(new Cutelee::QtLocalizer{c->locale()});
+    auto localizer = std::make_shared<Cutelee::QtLocalizer>(c->locale());
 
     auto transIt = d->translators.constFind(c->locale());
     if (transIt != d->translators.constEnd()) {

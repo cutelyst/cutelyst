@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2021 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,8 +29,14 @@ namespace Cutelyst {
 
 class ASyncPrivate {
 public:
-    ASyncPrivate(Context *_c) : c(_c) {}
-    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb) : c(_c), cb(_cb) {}
+    ASyncPrivate(Context *_c) : c(_c) {
+//        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
+        c->detachAsync();
+    }
+    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb) : c(_c), cb(_cb) {
+//        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
+        c->detachAsync();
+    }
     ~ASyncPrivate() {
         if (!c.isNull()) {
             if (cb) {
@@ -47,10 +53,7 @@ public:
 
 }
 
-ASync::ASync()
-{
-
-}
+ASync::ASync() = default;
 
 /*!
  * \brief ASync class should be used in a scoped manner
@@ -62,11 +65,8 @@ ASync::ASync()
  *
  * \param c
  */
-ASync::ASync(Context *c)
+ASync::ASync(Context *c) : d(std::make_shared<ASyncPrivate>(c))
 {
-//    qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
-    c->detachAsync();
-    d = std::shared_ptr<ASyncPrivate>(new ASyncPrivate(c));
 }
 
 /*!
@@ -81,24 +81,18 @@ ASync::ASync(Context *c)
  * \param c
  * \param cb callback to be called when async tasks are finished
  */
-ASync::ASync(Context *c, std::function<void (Context *)> cb)
+ASync::ASync(Context *c, std::function<void (Context *)> cb) : d(std::make_shared<ASyncPrivate>(c, cb))
 {
-    c->detachAsync();
-    d = std::shared_ptr<ASyncPrivate>(new ASyncPrivate(c, cb));
 }
 
 /*!
  * Copy constructor
  */
-ASync::ASync(const ASync &other)
+ASync::ASync(const ASync &other) : d(other.d)
 {
-    d = other.d;
 }
 
-ASync::~ASync()
-{
-
-}
+ASync::~ASync() = default;
 
 ASync &ASync::operator =(const ASync &copy)
 {
