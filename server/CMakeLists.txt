@@ -10,6 +10,9 @@ if (USE_MIMALLOC)
     GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
     GIT_TAG        b3b0fb58326a96beea1f4872bc1489d1d9fda7e0 # v2.0.2
   )
+  set(MI_BUILD_SHARED OFF)
+  set(MI_BUILD_TESTS OFF)
+  set(MI_BUILD_OBJECT OFF)
   FetchContent_MakeAvailable(mimalloc)
 endif ()
 
@@ -108,13 +111,12 @@ if (JEMALLOC_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
     target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
 endif()
-message(STATUS "MIMALLOC FOUND")
 
 target_link_libraries(cutelystd
     PRIVATE Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
-    mimalloc
+    mimalloc-static
 )
 if (LINUX)
 target_link_libraries(cutelystd
