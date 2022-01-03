@@ -18,7 +18,7 @@
 #include "actionchain_p.h"
 #include "request_p.h"
 
-#include "context.h"
+#include "context_p.h"
 
 using namespace Cutelyst;
 
@@ -66,25 +66,32 @@ bool ActionChain::doExecute(Context *c)
     const QStringList captures = request->captures();
     const QStringList currentArgs = request->args();
     const ActionList chain = d->chain;
-    Action *final = d->chain.last();
 
-    int captured = 0;
-    for (Action *action : chain) {
-        if (action != final) {
-            QStringList args;
-            while (args.size() < action->numberOfCaptures() && captured < captures.size()) {
-                args.append(captures.at(captured++));
-            }
+    int &asyncDetached = c->d_ptr->asyncDetached;
+    int &captured = c->d_ptr->chainedCaptured;
+    int &chainedIx = c->d_ptr->chainedIx;
 
-            request->setArguments(args);
-            if (!action->dispatch(c)) {
-                return false;
-            }
+    for (; chainedIx < chain.size(); ++chainedIx) {
+        if (asyncDetached) {
+            c->d_ptr->pendingAsync.prepend(this);
+            break;
+        }
+
+        Action *action = chain.at(chainedIx);
+
+        QStringList args;
+        while (args.size() < action->numberOfCaptures() && captured < captures.size()) {
+            args.append(captures.at(captured++));
+        }
+
+        // Final action gets args instead of captures
+        request->setArguments(action != chain.last() ? args : currentArgs);
+        if (!action->dispatch(c)) {
+            return false;
         }
     }
-    request->setArguments(currentArgs);
 
-    return final->dispatch(c);
+    return true;
 }
 
 #include "moc_actionchain.cpp"

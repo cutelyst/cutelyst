@@ -186,8 +186,8 @@ bool Controller::_DISPATCH(Context *c)
     if (ret) {
         if (asyncDetached) {
             c->d_ptr->pendingAsync.append(c->action());
-        } else if (!c->action()->dispatch(c)) {
-            ret = false;
+        } else {
+            ret = c->action()->dispatch(c);
         }
     }
 

@@ -373,11 +373,15 @@ void Context::attachAsync()
 
     if (d->engineRequest->status & EngineRequest::Async) {
         while (d->asyncAction < d->pendingAsync.size()) {
-            Action *action = d->pendingAsync[d->asyncAction++];
-            if (!execute(action)) {
-                break; // we are finished
-            } else if (d->asyncDetached) {
+            Component *action = d->pendingAsync[d->asyncAction++];
+            const bool ret = execute(action);
+
+            if (d->asyncDetached) {
                 return;
+            }
+
+            if (!ret) {
+                break; // we are finished
             }
         }
 
