@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(cutelyst VERSION 3.2.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
+include(FetchContent)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql REQUIRED)

@@ -3,6 +3,16 @@ if (USE_JEMALLOC)
     find_package(JeMalloc REQUIRED)
 endif ()
 
+option(USE_MIMALLOC "Use mimalloc memory allocator" ${BUILD_ALL})
+if (USE_MIMALLOC)
+  FetchContent_Declare(
+    mimalloc
+    GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
+    GIT_TAG        b3b0fb58326a96beea1f4872bc1489d1d9fda7e0 # v2.0.2
+  )
+  FetchContent_MakeAvailable(mimalloc)
+endif ()
+
 set(cutelyst_server_SRC
     server.cpp
     server.h
@@ -98,11 +108,13 @@ if (JEMALLOC_FOUND)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
     target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
 endif()
+message(STATUS "MIMALLOC FOUND")
 
 target_link_libraries(cutelystd
     PRIVATE Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
+    mimalloc
 )
 if (LINUX)
 target_link_libraries(cutelystd
