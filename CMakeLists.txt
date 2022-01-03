@@ -6,7 +6,7 @@ include(GNUInstallDirs)
 include(FetchContent)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 5.12.0 COMPONENTS Core Network Sql REQUIRED)
 
 set(CUTELYST_API_LEVEL "3")
 

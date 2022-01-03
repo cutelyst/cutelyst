@@ -177,12 +177,13 @@ void systemdNotify::ready()
 int systemdNotify::sd_watchdog_enabled(bool unset)
 {
     int ret;
-    QScopeGuard guard([unset, &ret] {
+    auto cleanup = qScopeGuard([unset, &ret] {
         if (unset && ret > 0) {
             qunsetenv("WATCHDOG_USEC");
             qunsetenv("WATCHDOG_PID");
         }
     });
+
     QByteArray wusec = qgetenv("WATCHDOG_USEC");
     bool ok;
     ret = wusec.toInt(&ok);
