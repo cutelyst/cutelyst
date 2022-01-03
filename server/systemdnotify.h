@@ -23,20 +23,27 @@
 
 namespace Cutelyst {
 
-class Server;
 class systemdNotifyPrivate;
 class systemdNotify : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(systemdNotify)
 public:
-    explicit systemdNotify(const char *systemd_socket, QObject *parent = nullptr);
+    explicit systemdNotify(QObject *parent = nullptr);
     ~systemdNotify();
+
+    int watchdogUSec() const;
+
+    bool setWatchdog(bool enable, int usec = 0);
 
     void notify(const QByteArray &data);
     void ready();
 
-    static void install_systemd_notifier(Server *wsgi);
+    // Returns the usec if > 0 else it is disabled
+    // Set unset to true before forking
+    static int sd_watchdog_enabled(bool unset);
+
+    static bool is_systemd_notify_available();
 
     static std::vector<int> listenFds(bool unsetEnvironment = true);
 

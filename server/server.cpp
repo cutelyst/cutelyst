@@ -557,7 +557,15 @@ int Server::exec(Cutelyst::Application *app)
     }
 
 #ifdef Q_OS_LINUX
-    systemdNotify::install_systemd_notifier(this);
+    if (systemdNotify::is_systemd_notify_available()) {
+        auto sd = new systemdNotify(this);
+        sd->setWatchdog(true, systemdNotify::sd_watchdog_enabled(true));
+        connect(this, &Server::ready, sd, &systemdNotify::ready);
+        connect(d, &ServerPrivate::postForked, sd, [sd] {
+            sd->setWatchdog(false);
+        });
+        qInfo(CUTELYST_SERVER) << "systemd notify detected";
+    }
 #endif
 
     // TCP needs root privileges, but SO_REUSEPORT must have an effective user ID that

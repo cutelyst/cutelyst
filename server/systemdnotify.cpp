@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2017-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,17 +23,18 @@
 #include <sys/un.h>
 #include <string.h>
 
-
 #include <unistd.h>
 #include <fcntl.h>
 
+#include <QTimer>
+#include <QScopeGuard>
 #include <QCoreApplication>
 #include <QLoggingCategory>
 
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
 
-Q_LOGGING_CATEGORY(WSGI_SYSTEMD, "wsgi.systemd", QtWarningMsg)
+Q_LOGGING_CATEGORY(C_SYSTEMD, "cutelyst.systemd", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -43,12 +44,14 @@ class systemdNotifyPrivate
 {
 public:
     struct msghdr *notification_object = nullptr;
+    QTimer *watchdog = nullptr;
     int notification_fd = 0;
+    int watchdog_usec = 0;
 };
 
 }
 
-systemdNotify::systemdNotify(const char *systemd_socket, QObject *parent) : QObject(parent)
+systemdNotify::systemdNotify(QObject *parent) : QObject(parent)
   , d_ptr(new systemdNotifyPrivate)
 {
     Q_D(systemdNotify);
@@ -58,10 +61,11 @@ systemdNotify::systemdNotify(const char *systemd_socket, QObject *parent) : QObj
 
     d->notification_fd = socket(AF_UNIX, SOCK_DGRAM, 0);
     if (d->notification_fd < 0) {
-        qCWarning(WSGI_SYSTEMD, "socket()");
+        qCWarning(C_SYSTEMD, "socket()");
         return;
     }
 
+    auto systemd_socket = getenv("NOTIFY_SOCKET");
     size_t len = strlen(systemd_socket);
     sd_sun = new struct sockaddr_un;
     memset(sd_sun, 0, sizeof(struct sockaddr_un));
@@ -93,6 +97,41 @@ systemdNotify::~systemdNotify()
     delete d_ptr;
 }
 
+int systemdNotify::watchdogUSec() const
+{
+    Q_D(const systemdNotify);
+    return d->watchdog_usec;
+}
+
+bool systemdNotify::setWatchdog(bool enable, int usec)
+{
+    Q_D(systemdNotify);
+    if (enable) {
+        d->watchdog_usec = usec;
+        if (d->watchdog_usec > 0) {
+            if (!d->watchdog) {
+                // Issue first ping immediately
+                d->watchdog = new QTimer(this);
+                // SD recommends half the defined interval
+                d->watchdog->setInterval(d->watchdog_usec / 2);
+                notify(QByteArrayLiteral("WATCHDOG=1"));
+                connect(d->watchdog, &QTimer::timeout, this, [this] {
+                    notify(QByteArrayLiteral("WATCHDOG=1"));
+                });
+                d->watchdog->start();
+                qCInfo(C_SYSTEMD) << "watchdog enabled" << d->watchdog_usec << d->watchdog->interval();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        delete d->watchdog;
+        d->watchdog = nullptr;
+    }
+    return true;
+}
+
 void systemdNotify::notify(const QByteArray &data)
 {
     Q_D(systemdNotify);
@@ -113,7 +152,7 @@ void systemdNotify::notify(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(WSGI_SYSTEMD, "sendmsg()");
+        qCWarning(C_SYSTEMD, "sendmsg()");
     }
 }
 
@@ -131,20 +170,40 @@ void systemdNotify::ready()
     msghdr->msg_iovlen = 1;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(WSGI_SYSTEMD, "sendmsg()");
+        qCWarning(C_SYSTEMD, "sendmsg()");
     }
 }
 
-void systemdNotify::install_systemd_notifier(Server *wsgi)
+int systemdNotify::sd_watchdog_enabled(bool unset)
 {
-    if (!qEnvironmentVariableIsSet("NOTIFY_SOCKET")) {
-        return;
+    int ret;
+    QScopeGuard guard([unset, &ret] {
+        if (unset && ret > 0) {
+            qunsetenv("WATCHDOG_USEC");
+            qunsetenv("WATCHDOG_PID");
+        }
+    });
+    QByteArray wusec = qgetenv("WATCHDOG_USEC");
+    bool ok;
+    ret = wusec.toInt(&ok);
+    if (!ok) {
+        return -1;
     }
 
-    const QByteArray notifySocket = qgetenv("NOTIFY_SOCKET");
-    qInfo(WSGI_SYSTEMD) << "systemd notify detected" << notifySocket;
-    auto notify = new systemdNotify(notifySocket.constData(), wsgi);
-    connect(wsgi, &Server::ready, notify, &systemdNotify::ready);
+    if (qEnvironmentVariableIsSet("WATCHDOG_PID")) {
+        QByteArray wpid = qgetenv("WATCHDOG_PID");
+        qint64 pid = wpid.toLongLong(&ok);
+        if (pid != qApp->applicationPid()) {
+            return -2;
+        }
+    }
+
+    return ret;
+}
+
+bool systemdNotify::is_systemd_notify_available()
+{
+    return qEnvironmentVariableIsSet("NOTIFY_SOCKET");
 }
 
 int fd_cloexec(int fd, bool cloexec) {
@@ -195,7 +254,7 @@ int sd_listen_fds()
         return  -EINVAL;
     }
 
-    qCInfo(WSGI_SYSTEMD, "systemd socket activation detected");
+    qCInfo(C_SYSTEMD, "systemd socket activation detected");
 
     int r = 0;
     for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd ++) {
