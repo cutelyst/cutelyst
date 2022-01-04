@@ -29,7 +29,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
         return ret;
     }
 
-    int start = contentType.indexOf(QLatin1String("boundary="));
+    int start = contentType.indexOf(u"boundary=");
     if (start == -1) {
         qCWarning(CUTELYST_MULTIPART) << "No boundary match" << contentType;
         return ret;

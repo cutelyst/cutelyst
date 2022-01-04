@@ -32,7 +32,7 @@ UriFor::UriFor(const QString &path, const QStringList &args, Cutelee::Parser *pa
     bool foundQuery = false;
     for (const QString &expression : args) {
         // WE require the QUERY keyword to know when we are dealing with query values
-        if (expression == QLatin1String("QUERY")) {
+        if (expression.compare(u"QUERY") == 0) {
             foundQuery = true;
             continue;
         }

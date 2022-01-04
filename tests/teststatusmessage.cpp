@@ -178,7 +178,7 @@ void TestStatusMessage::doTest()
 
     QString body = result.value(QStringLiteral("body")).toString();
     QUrlQuery query;
-    if (body.startsWith(QLatin1String("http://"))) {
+    if (body.startsWith(u"http://")) {
         QUrl urlToken(body);
         QUrlQuery tokenQuery(urlToken);
         QCOMPARE(tokenQuery.queryItemValue(QStringLiteral("SM")), QStringLiteral("testing"));

@@ -89,7 +89,7 @@ QString Headers::contentTypeCharset() const
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
         const QString &contentType = it.value();
-        int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+        int pos = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
         if (pos != -1) {
             int endPos = contentType.indexOf(QLatin1Char(';'), pos);
             ret = contentType.mid(pos + 8, endPos).trimmed().toUpper();
@@ -108,7 +108,7 @@ void Headers::setContentTypeCharset(const QString &charset)
     }
 
     QString contentType = it.value();
-    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+    int pos = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
     if (pos != -1) {
         int endPos = contentType.indexOf(QLatin1Char(';'), pos);
         if (endPos == -1) {
@@ -134,37 +134,37 @@ void Headers::setContentTypeCharset(const QString &charset)
 
 bool Headers::contentIsText() const
 {
-    return m_data.value(QStringLiteral("CONTENT_TYPE")).startsWith(QLatin1String("text/"));
+    return m_data.value(QStringLiteral("CONTENT_TYPE")).startsWith(u"text/");
 }
 
 bool Headers::contentIsHtml() const
 {
     const QString ct = contentType();
-    return ct == QLatin1String("text/html") ||
-            ct == QLatin1String("application/xhtml+xml") ||
-            ct == QLatin1String("application/vnd.wap.xhtml+xml");
+    return ct.compare(u"text/html") == 0 ||
+            ct.compare(u"application/xhtml+xml") == 0 ||
+            ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
 }
 
 bool Headers::contentIsXHtml() const
 {
     const QString ct = contentType();
-    return ct == QLatin1String("application/xhtml+xml") ||
-            ct == QLatin1String("application/vnd.wap.xhtml+xml");
+    return ct.compare(u"application/xhtml+xml") == 0||
+            ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
 }
 
 bool Headers::contentIsXml() const
 {
     const QString ct = contentType();
-    return ct == QLatin1String("text/xml") ||
-            ct == QLatin1String("application/xml") ||
-            ct.endsWith(QLatin1String("xml"));
+    return ct.compare(u"text/xml") == 0 ||
+            ct.compare(u"application/xml") == 0||
+            ct.endsWith(u"xml");
 }
 
 bool Headers::contentIsJson() const
 {
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
-        return it.value() == QLatin1String("application/json");
+        return it.value().compare(u"application/json") == 0;
     }
     return false;
 }
@@ -200,7 +200,7 @@ QDateTime Headers::date() const
     if (it != m_data.constEnd()) {
         const QString &date = it.value();
 
-        if (date.endsWith(QLatin1String(" GMT"))) {
+        if (date.endsWith(u" GMT")) {
             ret = QLocale::c().toDateTime(date.left(date.size() - 4),
                                           QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
@@ -225,7 +225,7 @@ QDateTime Headers::ifModifiedSinceDateTime() const
     if (it != m_data.constEnd()) {
         const QString &ifModifiedStr = it.value();
 
-        if (ifModifiedStr.endsWith(QLatin1String(" GMT"))) {
+        if (ifModifiedStr.endsWith(u" GMT")) {
             ret = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
                                           QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
@@ -355,7 +355,7 @@ QString Headers::authorizationBearer() const
 {
     QString ret;
     auto it = m_data.constFind(QStringLiteral("AUTHORIZATION"));
-    if (it != m_data.constEnd() && it.value().startsWith(QLatin1String("Bearer "))) {
+    if (it != m_data.constEnd() && it.value().startsWith(u"Bearer ")) {
         ret = it.value().mid(7);
     }
     return ret;
@@ -466,7 +466,7 @@ QString normalizeHeaderKey(const QString &field)
 QByteArray decodeBasicAuth(const QString &auth)
 {
     QByteArray ret;
-    if (!auth.isEmpty() && auth.startsWith(QLatin1String("Basic "))) {
+    if (!auth.isEmpty() && auth.startsWith(u"Basic ")) {
         int pos = auth.lastIndexOf(QLatin1Char(' '));
         if (pos != -1) {
             ret = QByteArray::fromBase64(auth.mid(pos).toLatin1());

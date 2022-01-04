@@ -59,7 +59,7 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
         for (Action *action : actions) {
             bool registered = false;
             if (!d->actions.contains(action->reverse())) {
-                if (!action->attributes().contains(QLatin1String("Private"))) {
+                if (!action->attributes().contains(QStringLiteral("Private"))) {
                     // Register the action with each dispatcher
                     for (DispatchType *dispatch : dispatchers) {
                         if (dispatch->registerAction(action)) {
@@ -384,7 +384,7 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 {
     ActionList ret;
 
-    if (ns != QLatin1String("/")) {
+    if (ns.compare(u"/") != 0) {
         int pos = ns.size();
 //        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {

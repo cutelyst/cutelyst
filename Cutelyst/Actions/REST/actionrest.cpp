@@ -101,12 +101,12 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     }
 
     bool ret = false;
-    if (httpMethod == QLatin1String("OPTIONS")) {
+    if (httpMethod.compare(u"OPTIONS") == 0) {
         ret = returnOptions(c, q->name());
-    } else if (httpMethod == QLatin1String("HEAD")) {
+    } else if (httpMethod.compare(u"HEAD") == 0) {
         // redispatch to GET
         ret = dispatchRestMethod(c, QStringLiteral("GET"));
-    } else if (httpMethod != QLatin1String("not_implemented")) {
+    } else if (httpMethod.compare(u"not_implemented") != 0) {
         // try dispatching to foo_not_implemented
         ret = dispatchRestMethod(c, QStringLiteral("not_implemented"));
     } else {
@@ -152,7 +152,7 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, c
         }
     }
 
-    if (methods.contains(QStringLiteral("GET"))) {
+    if (methods.contains(u"GET")) {
         methods.append(QStringLiteral("HEAD"));
     }
 

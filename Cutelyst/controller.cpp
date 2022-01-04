@@ -377,23 +377,23 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
     while (i != end) {
         QString key = i->first;
         QString value = i->second;
-        if (key == QLatin1String("Global")) {
+        if (key.compare(u"Global") == 0) {
             key = QStringLiteral("Path");
             value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
-        } else if (key == QLatin1String("Local")) {
+        } else if (key.compare(u"Local") == 0) {
             key = QStringLiteral("Path");
             value = parsePathAttr(QString::fromLatin1(name));
-        } else if (key == QLatin1String("Path")) {
+        } else if (key.compare(u"Path") == 0) {
             value = parsePathAttr(value);
-        } else if (key == QLatin1String("Args")) {
+        } else if (key.compare(u"Args") == 0) {
             QString args = value;
             if (!args.isEmpty()) {
                 value = args.remove(QRegularExpression(QStringLiteral("\\D")));
             }
-        } else if (key == QLatin1String("CaptureArgs")) {
+        } else if (key.compare(u"CaptureArgs") == 0) {
             QString captureArgs = value;
             value = captureArgs.remove(QRegularExpression(QStringLiteral("\\D")));
-        } else if (key == QLatin1String("Chained")) {
+        } else if (key.compare(u"Chained") == 0) {
             value = parseChainedAttr(value);
         }
 
@@ -444,7 +444,7 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
     QStack<Component *> roles;
     const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
     auto doesIt = attributes.constFind(QStringLiteral("Does"));
-    while (doesIt != attributes.constEnd() && doesIt.key() == QLatin1String("Does")) {
+    while (doesIt != attributes.constEnd() && doesIt.key().compare(u"Does") == 0) {
         QObject *object = instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
@@ -472,7 +472,7 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
         return ret;
     }
 
-    if (attr == QStringLiteral(".")) {
+    if (attr.compare(u".") == 0) {
         ret.append(pathPrefix);
     } else if (!attr.startsWith(QLatin1Char('/'))) {
         if (!pathPrefix.isEmpty()) {
@@ -502,7 +502,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
             }
 
             id = QMetaType::fromName(instanceName.toLatin1().data());
-            if (!id.isValid() && !instanceName.startsWith(QStringLiteral("Cutelyst::"))) {
+            if (!id.isValid() && !instanceName.startsWith(u"Cutelyst::")) {
                 instanceName = QLatin1String("Cutelyst::") + instanceName;
                 id = QMetaType::fromName(instanceName.toLatin1().data());
             }
@@ -555,7 +555,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
             }
 
             id = QMetaType::type(instanceName.toLatin1().data());
-            if (!id && !instanceName.startsWith(QStringLiteral("Cutelyst::"))) {
+            if (!id && !instanceName.startsWith(u"Cutelyst::")) {
                 instanceName = QLatin1String("Cutelyst::") + instanceName;
                 id = QMetaType::type(instanceName.toLatin1().data());
             }

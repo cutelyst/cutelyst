@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,7 +61,7 @@ public:
      * like Local, Path, Private and so on. This determines
      * how the action is dispatched to.
      */
-    ParamsMultiMap attributes() const;
+    ParamsMultiMap attributes() const noexcept;
 
     /**
      * Returns the value attribute by it's name, if not found
@@ -70,7 +70,7 @@ public:
      * Attributes can be defined using the C_ATTR macro on Controller's
      * method declaration.
      */
-    QString attribute(const QString &name, const QString &defaultValue = QString()) const;
+    QString attribute(const QString &name, const QString &defaultValue = {}) const;
 
     /**
      * Defines the Actions attibutes that were defined using the C_ATTR macro on Controller's
@@ -97,7 +97,7 @@ public:
      * Check Args attribute, and makes sure number of
      * args matches the setting. Always returns true if Args is omitted.
      */
-    virtual bool match(int numberOfArgs) const;
+    virtual bool match(int numberOfArgs) const noexcept;
 
     /**
      * Can be implemented by action class
@@ -109,25 +109,25 @@ public:
      * match to continue, returning false makes the chain not match
      * (and alternate, less preferred chains will be attempted).
      */
-    virtual bool matchCaptures(int numberOfCaptures) const;
+    virtual bool matchCaptures(int numberOfCaptures) const noexcept;
 
     /**
      * Returns the private namespace this action lives in.
      */
-    QString ns() const;
+    QString ns() const noexcept;
 
     /**
      * Returns the number of args this action expects.
      * This is 0 if the action doesn't take any arguments and
      * undef if it will take any number of arguments.
      */
-    virtual qint8 numberOfArgs() const;
+    virtual qint8 numberOfArgs() const noexcept;
 
     /**
      * Returns the number of captures this action
      * expects for Chained actions.
      */
-    virtual qint8 numberOfCaptures() const;
+    virtual qint8 numberOfCaptures() const noexcept;
 
 protected:
     friend class Dispatcher;

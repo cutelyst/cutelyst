@@ -94,7 +94,7 @@ ASync::ASync(const ASync &other) : d(other.d)
 
 ASync::~ASync() = default;
 
-ASync &ASync::operator =(const ASync &copy)
+ASync &ASync::operator =(const ASync &copy) noexcept
 {
     d = copy.d;
     return *this;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,7 +52,7 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->engineRequest->status & EngineRequest::FinalizedHeaders)) {
-        if (d->headers.header(QStringLiteral("TRANSFER_ENCODING")) == QLatin1String("chunked")) {
+        if (d->headers.header(QStringLiteral("TRANSFER_ENCODING")).compare(u"chunked") == 0) {
             d->engineRequest->status |= EngineRequest::IOWrite | EngineRequest::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
@@ -76,19 +76,19 @@ Response::~Response()
     delete d_ptr;
 }
 
-quint16 Response::status() const
+quint16 Response::status() const noexcept
 {
     Q_D(const Response);
     return d->status;
 }
 
-void Response::setStatus(quint16 status)
+void Response::setStatus(quint16 status) noexcept
 {
     Q_D(Response);
     d->status = status;
 }
 
-bool Response::hasBody() const
+bool Response::hasBody() const noexcept
 {
     Q_D(const Response);
     return !d->bodyData.isEmpty() || d->bodyIODevice || d->engineRequest->status & EngineRequest::IOWrite;
@@ -290,7 +290,7 @@ void Response::redirectSafe(const QUrl &url, const QUrl &fallback)
     }
 }
 
-QUrl Response::location() const
+QUrl Response::location() const noexcept
 {
     Q_D(const Response);
     return d->location;
@@ -312,24 +312,24 @@ void Response::setHeader(const QString &field, const QString &value)
     d->headers.setHeader(field, value);
 }
 
-Headers &Response::headers()
+Headers &Response::headers() noexcept
 {
     Q_D(Response);
     return d->headers;
 }
 
-bool Response::isFinalizedHeaders() const
+bool Response::isFinalizedHeaders() const noexcept
 {
     Q_D(const Response);
     return d->engineRequest->status & EngineRequest::FinalizedHeaders;
 }
 
-bool Response::isSequential() const
+bool Response::isSequential() const noexcept
 {
     return true;
 }
 
-qint64 Response::size() const
+qint64 Response::size() const noexcept
 {
     Q_D(const Response);
     if (d->engineRequest->status & EngineRequest::IOWrite) {

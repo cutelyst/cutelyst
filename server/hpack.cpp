@@ -185,7 +185,7 @@ void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &header
     while (it != headers.constEnd()) {
         const QString &key = it.key();
         const QString &value = it.value();
-        if (!hasDate && key == QLatin1String("DATE")) {
+        if (!hasDate && key.compare(u"DATE") == 0) {
             hasDate = true;
         }
 
@@ -240,7 +240,7 @@ enum ErrorCodes {
 inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
 {
 //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->scheme;
-    if (k == QLatin1String(":path")) {
+    if (k.compare(u":path") == 0) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
             while (leadingSlash < v.size() && v.at(leadingSlash) == QLatin1Char('/')) {
@@ -257,18 +257,18 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
             stream->gotPath = true;
             return true;
         }
-    } else if (k == QLatin1String(":method")) {
+    } else if (k.compare(u":method") == 0) {
         if (stream->method.isEmpty()) {
             stream->method = v;
             return true;
         }
-    } else if (k == QLatin1String(":authority")) {
+    } else if (k.compare(u":authority") == 0) {
         stream->serverAddress = v;
         return true;
-    } else if (k == QLatin1String(":scheme")) {
+    } else if (k.compare(u":scheme") == 0) {
         if (stream->scheme.isEmpty()) {
             stream->scheme = v;
-            stream->isSecure = v == QLatin1String("https");
+            stream->isSecure = v.compare(u"https") == 0;
             return true;
         }
     }
@@ -277,13 +277,13 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
 
 inline bool validHeader(const QString &k, const QString &v)
 {
-    return k != QLatin1String("connection") &&
-            (k != QLatin1String("te") || v == QLatin1String("trailers"));
+    return k.compare(u"connection") != 0 &&
+            (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
 }
 
 inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
 {
-    if (k == QLatin1String("content-length")) {
+    if (k.compare(u"content-length") == 0) {
         stream->contentLength = v.toLongLong();
     }
 }

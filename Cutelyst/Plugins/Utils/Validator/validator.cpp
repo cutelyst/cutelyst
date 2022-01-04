@@ -121,7 +121,7 @@ ValidatorResult Validator::validate(Context *c, const ParamsMultiMap &params, Va
         if (!params.isEmpty()) {
             auto i = params.constBegin();
             while (i != params.constEnd()) {
-                if (!i.key().contains(QStringLiteral("password"), Qt::CaseInsensitive)) {
+                if (!i.key().contains(u"password", Qt::CaseInsensitive)) {
                     c->setStash(i.key(), i.value());
                 }
                 ++i;

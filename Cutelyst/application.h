@@ -79,7 +79,7 @@ public:
      *
      * The list might only be complete after application has been setup.
      */
-    QVector<Controller *> controllers() const;
+    QVector<Controller *> controllers() const noexcept;
 
     /**
      * Returns the view specified by \p name, if no view is found nullptr is returned.
@@ -89,24 +89,24 @@ public:
     /**
      * Returns application config specified by \p key, with a possible default value.
      */
-    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
     /**
      * Returns the dispatcher class.
      */
-    Dispatcher *dispatcher() const;
+    Dispatcher *dispatcher() const noexcept;
 
     /**
      * Returns a list with all registered dispachers.
      *
      * The list might only be complete after application has been setup.
      */
-    QVector<DispatchType *> dispatchers() const;
+    QVector<DispatchType *> dispatchers() const noexcept;
 
     /**
      * Returns all registered plugins
      */
-    QVector<Plugin *> plugins() const;
+    QVector<Plugin *> plugins() const noexcept;
 
     /*!
      * Returns the registered plugin that casts to the template type \p T
@@ -128,7 +128,7 @@ public:
      * User configuration for the application
      * @return A variant hash with configuration settings
      */
-    QVariantMap config() const;
+    QVariantMap config() const noexcept;
 
     /**
      * Merges path with config("HOME") and returns an absolute path.
@@ -143,12 +143,12 @@ public:
     /**
      * Returns true if the application has been inited.
      */
-    bool inited() const;
+    bool inited() const noexcept;
 
     /**
      * Returns current engine that is generating requests.
      */
-    Engine *engine() const;
+    Engine *engine() const noexcept;
 
     /**
      * Tries to load a plugin in Cutelyst default plugin directory with \p parent as it's parent.
@@ -159,7 +159,7 @@ public:
     /**
      * Returns cutelyst version.
      */
-    static const char *cutelystVersion();
+    static const char *cutelystVersion() noexcept;
 
     /**
      * Adds a @a translator for the specified @a locale.
@@ -341,7 +341,7 @@ protected:
      *
      * Do not change it after the application has started.
      */
-    Headers &defaultHeaders();
+    Headers &defaultHeaders() noexcept;
 
     /**
      * Adds a X-Cutelyst header with our version on each request

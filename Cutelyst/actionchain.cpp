@@ -46,13 +46,13 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     }
 }
 
-ActionList ActionChain::chain() const
+ActionList ActionChain::chain() const noexcept
 {
     Q_D(const ActionChain);
     return d->chain;
 }
 
-qint8 ActionChain::numberOfCaptures() const
+qint8 ActionChain::numberOfCaptures() const noexcept
 {
     Q_D(const ActionChain);
     return d->captures;

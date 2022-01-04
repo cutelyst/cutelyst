@@ -48,12 +48,12 @@ public:
      * The action chain
      * @return a list of Cutelyst::Action objects encapsulated by this chain.
      */
-    ActionList chain() const;
+    ActionList chain() const noexcept;
 
     /**
      * Reimplemented from Action::numberOfCaptures()
      */
-    virtual qint8 numberOfCaptures() const override;
+    virtual qint8 numberOfCaptures() const noexcept override;
 
 protected:
     virtual bool doExecute(Context *c) override;

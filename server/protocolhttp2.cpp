@@ -756,8 +756,8 @@ void ProtocolHttp2::queueStream(Socket *socket, H2Stream *stream) const
 bool ProtocolHttp2::upgradeH2C(Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request)
 {
     const Cutelyst::Headers &headers = request.headers;
-    if (headers.header(QStringLiteral("UPGRADE")) == QLatin1String("h2c") &&
-                headers.connection() == QLatin1String("Upgrade, HTTP2-Settings")) {
+    if (headers.header(QStringLiteral("UPGRADE")).compare(u"h2c") == 0 &&
+                headers.connection().compare(u"Upgrade, HTTP2-Settings") == 0) {
         const QString settings = headers.header(QStringLiteral("HTTP2_SETTINGS"));
         if (!settings.isEmpty()) {
             io->write("HTTP/1.1 101 Switching Protocols\r\n"

@@ -92,7 +92,7 @@ bool Application::postFork()
     return true;
 }
 
-Headers &Application::defaultHeaders()
+Headers &Application::defaultHeaders() noexcept
 {
     Q_D(Application);
     return d->headers;
@@ -173,12 +173,12 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
     return nullptr;
 }
 
-const char *Application::cutelystVersion()
+const char *Application::cutelystVersion() noexcept
 {
     return VERSION;
 }
 
-QVector<Cutelyst::Controller *> Application::controllers() const
+QVector<Cutelyst::Controller *> Application::controllers() const noexcept
 {
     Q_D(const Application);
     return d->controllers;
@@ -200,25 +200,25 @@ QVariant Application::config(const QString &key, const QVariant &defaultValue) c
     return defaultValue;
 }
 
-Dispatcher *Application::dispatcher() const
+Dispatcher *Application::dispatcher() const noexcept
 {
     Q_D(const Application);
     return d->dispatcher;
 }
 
-QVector<Cutelyst::DispatchType *> Application::dispatchers() const
+QVector<Cutelyst::DispatchType *> Application::dispatchers() const noexcept
 {
     Q_D(const Application);
     return d->dispatcher->dispatchers();
 }
 
-QVector<Plugin *> Application::plugins() const
+QVector<Plugin *> Application::plugins() const noexcept
 {
     Q_D(const Application);
     return d->plugins;
 }
 
-QVariantMap Application::config() const
+QVariantMap Application::config() const noexcept
 {
     Q_D(const Application);
     return d->config;
@@ -236,13 +236,13 @@ QString Cutelyst::Application::pathTo(const QStringList &path) const
     return home.absoluteFilePath(path.join(QLatin1Char('/')));
 }
 
-bool Cutelyst::Application::inited() const
+bool Cutelyst::Application::inited() const noexcept
 {
     Q_D(const Application);
     return d->init;
 }
 
-Cutelyst::Engine *Cutelyst::Application::engine() const
+Cutelyst::Engine *Cutelyst::Application::engine() const noexcept
 {
     Q_D(const Application);
     return d->engine;

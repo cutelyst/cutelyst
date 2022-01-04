@@ -76,7 +76,7 @@ void Action::setupAction(const QVariantHash &args, Application *app)
     }
 }
 
-ParamsMultiMap Action::attributes() const
+ParamsMultiMap Action::attributes() const noexcept
 {
     Q_D(const Action);
     return d->attributes;
@@ -106,7 +106,7 @@ Controller *Action::controller() const
     return d->controller;
 }
 
-bool Action::match(int numberOfArgs) const
+bool Action::match(int numberOfArgs) const noexcept
 {
     Q_D(const Action);
     // If the number of args is -1 (not defined)
@@ -116,7 +116,7 @@ bool Action::match(int numberOfArgs) const
     return d->numberOfArgs == -1 || d->numberOfArgs == numberOfArgs;
 }
 
-bool Action::matchCaptures(int numberOfCaptures) const
+bool Action::matchCaptures(int numberOfCaptures) const noexcept
 {
     Q_D(const Action);
     // If the number of capture args is -1 (not defined)
@@ -126,19 +126,19 @@ bool Action::matchCaptures(int numberOfCaptures) const
     return d->numberOfCaptures == -1 || d->numberOfCaptures == numberOfCaptures;
 }
 
-QString Action::ns() const
+QString Action::ns() const noexcept
 {
     Q_D(const Action);
     return d->ns;
 }
 
-qint8 Action::numberOfArgs() const
+qint8 Action::numberOfArgs() const noexcept
 {
     Q_D(const Action);
     return d->numberOfArgs;
 }
 
-qint8 Action::numberOfCaptures() const
+qint8 Action::numberOfCaptures() const noexcept
 {
     Q_D(const Action);
     return d->numberOfCaptures;

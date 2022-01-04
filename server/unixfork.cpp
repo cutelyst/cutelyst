@@ -575,7 +575,7 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
         int coreCount = idealThreadCount();
 
         int workerThreads = 1;
-        if (wsgi->threads() == QLatin1String("auto")) {
+        if (wsgi->threads().compare(u"auto") == 0) {
             workerThreads = coreCount;
         } else if (wsgi->threads().toInt() > 1) {
             workerThreads = wsgi->threads().toInt();

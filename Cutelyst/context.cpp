@@ -60,7 +60,7 @@ Context::~Context()
     delete d_ptr;
 }
 
-bool Context::error() const
+bool Context::error() const noexcept
 {
     Q_D(const Context);
     return !d->error.isEmpty();
@@ -77,79 +77,79 @@ void Context::error(const QString &error)
     }
 }
 
-QStringList Context::errors() const
+QStringList Context::errors() const noexcept
 {
     Q_D(const Context);
     return d->error;
 }
 
-bool Context::state() const
+bool Context::state() const noexcept
 {
     Q_D(const Context);
     return d->state;
 }
 
-void Context::setState(bool state)
+void Context::setState(bool state) noexcept
 {
     Q_D(Context);
     d->state = state;
 }
 
-Engine *Context::engine() const
+Engine *Context::engine() const noexcept
 {
     Q_D(const Context);
     return d->engine;
 }
 
-Application *Context::app() const
+Application *Context::app() const noexcept
 {
     Q_D(const Context);
     return d->app;
 }
 
-Response *Context::response() const
+Response *Context::response() const noexcept
 {
     Q_D(const Context);
     return d->response;
 }
 
-Response *Context::res() const
+Response *Context::res() const noexcept
 {
     Q_D(const Context);
     return d->response;
 }
 
-Action *Context::action() const
+Action *Context::action() const noexcept
 {
     Q_D(const Context);
     return d->action;
 }
 
-QString Context::actionName() const
+QString Context::actionName() const noexcept
 {
     Q_D(const Context);
     return d->action->name();
 }
 
-QString Context::ns() const
+QString Context::ns() const noexcept
 {
     Q_D(const Context);
     return d->action->ns();
 }
 
-Request *Context::request() const
+Request *Context::request() const noexcept
 {
     Q_D(const Context);
     return d->request;
 }
 
-Request *Context::req() const
+Request *Context::req() const noexcept
 {
     Q_D(const Context);
     return d->request;
 }
 
-Dispatcher *Context::dispatcher() const
+Dispatcher *Context::dispatcher() const noexcept
 {
     Q_D(const Context);
     return d->dispatcher;
@@ -161,7 +161,7 @@ QString Cutelyst::Context::controllerName() const
     return QString::fromLatin1(d->action->controller()->metaObject()->className());
 }
 
-Controller *Context::controller() const
+Controller *Context::controller() const noexcept
 {
     Q_D(const Context);
     return d->action->controller();
@@ -173,7 +173,7 @@ Controller *Context::controller(const QString &name) const
     return d->dispatcher->controllers().value(name);
 }
 
-View *Context::customView() const
+View *Context::customView() const noexcept
 {
     Q_D(const Context);
     return d->view;
@@ -234,7 +234,7 @@ void Context::setStash(const QString &key, const ParamsMultiMap &map)
     d->stash.insert(key, QVariant::fromValue(map));
 }
 
-QStack<Component *> Context::stack() const
+QStack<Component *> Context::stack() const noexcept
 {
     Q_D(const Context);
     return d->stack;
@@ -258,7 +258,7 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     }
 
     if (!args.isEmpty()) {
-        if (_path == QLatin1String("/")) {
+        if (_path.compare(u"/") == 0) {
             _path += args.join(QLatin1Char('/'));
         } else {
             _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
@@ -337,7 +337,7 @@ QUrl Context::uriForAction(const QString &path, const QStringList &captures, con
     return uri;
 }
 
-bool Context::detached() const
+bool Context::detached() const noexcept
 {
     Q_D(const Context);
     return d->detached;
@@ -353,7 +353,7 @@ void Context::detach(Action *action)
     }
 }
 
-void Context::detachAsync()
+void Context::detachAsync() noexcept
 {
     Q_D(Context);
     ++d->asyncDetached;
@@ -457,7 +457,7 @@ bool Context::execute(Component *code)
     return ret;
 }
 
-QLocale Context::locale() const
+QLocale Context::locale() const noexcept
 {
     Q_D(const Context);
     return d->locale;
@@ -475,7 +475,7 @@ QVariant Context::config(const QString &key, const QVariant &defaultValue) const
     return d->app->config(key, defaultValue);
 }
 
-QVariantMap Context::config() const
+QVariantMap Context::config() const noexcept
 {
     Q_D(const Context);
     return d->app->config();

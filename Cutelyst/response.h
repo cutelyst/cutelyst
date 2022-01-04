@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -107,19 +107,19 @@ public:
     /**
      * The current response code status
      */
-    quint16 status() const;
+    quint16 status() const noexcept;
 
     /**
      * Sets the response code status
      */
-    void setStatus(quint16 status);
+    void setStatus(quint16 status) noexcept;
 
     /**
      * Returns true if a body device has been defined
      * as QByteArray or QIODevice or write() was called
      * and it's on chunked mode
      */
-    bool hasBody() const;
+    bool hasBody() const noexcept;
 
     /**
      * This function returns a reference to a
@@ -302,7 +302,7 @@ public:
     /**
      * Returns the HTTP location set by the redirect
      */
-    QUrl location() const;
+    QUrl location() const noexcept;
 
     /**
      * Shortcut headers().header()
@@ -317,22 +317,22 @@ public:
     /**
      * Returns a reference to the response headers class
      */
-    Headers &headers();
+    Headers &headers() noexcept;
 
     /**
      * Returns if Headers are finalized (sent to the client)
      */
-    bool isFinalizedHeaders() const;
+    bool isFinalizedHeaders() const noexcept;
 
     /**
      * Writting to user-agent is always sequential
      */
-    virtual bool isSequential() const override;
+    virtual bool isSequential() const noexcept override;
 
     /**
      * Reimplemented from QIODevice::readData().
      */
-    virtual qint64 size() const override;
+    virtual qint64 size() const noexcept override;
 
     /*!
      * Sends the websocket handshake, if no parameters are defined it will use header data.

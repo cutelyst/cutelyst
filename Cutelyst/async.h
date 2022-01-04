@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2020-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ public:
 
     ~ASync();
 
-    ASync &operator =(const ASync &copy);
+    ASync &operator =(const ASync &copy) noexcept;
 
 private:
     std::shared_ptr<ASyncPrivate> d;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2021 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -73,7 +73,7 @@ public:
     /*!
      * Returns true if an error was set.
      */
-    bool error() const;
+    bool error() const noexcept;
 
     /*!
      * Sets an error string and try to stop
@@ -83,48 +83,48 @@ public:
     /*!
      * Returns a list of errors that were defined
      */
-    QStringList errors() const;
+    QStringList errors() const noexcept;
 
     /**
      * Contains the return value of the last executed action.
      */
-    bool state() const;
+    bool state() const noexcept;
 
     /*!
      * Sets the state of the current executed action, setting to false
      * will make the dispatcher skip non processed actions.
      */
-    void setState(bool state);
+    void setState(bool state) noexcept;
 
     /**
      * Returns the engine instance. See Cutelyst::Engine
      */
-    Engine *engine() const;
+    Engine *engine() const noexcept;
 
     /**
      * Returns the application instance. See Cutelyst::Application
      */
-    Application *app() const;
+    Application *app() const noexcept;
 
     /**
      * Returns the current Cutelyst::Response object, see there for details.
      */
-    Response *response() const;
+    Response *response() const noexcept;
 
     /**
      * Returns the current Cutelyst::Response object, see there for details.
      */
-    Response *res() const;
+    Response *res() const noexcept;
 
     /**
      * Returns a pointer to the current action
      */
-    Action *action() const;
+    Action *action() const noexcept;
 
     /**
      * Returns the private name of the current action
      */
-    QString actionName() const;
+    QString actionName() const noexcept;
 
     /**
      * Returns the namespace of the current action.
@@ -133,23 +133,23 @@ public:
      * // a class named FooBar which inherits Controller
      * c->ns(); // returns 'foo/bar'
      */
-    QString ns() const;
+    QString ns() const noexcept;
 
     /**
      * Returns the current Request object containing
      * information about the client request Request
      */
-    Request *request() const;
+    Request *request() const noexcept;
 
     /**
      * Short for request()
      */
-    Request *req() const;
+    Request *req() const noexcept;
 
     /**
      * Returns the dispatcher instance. See Cutelyst::Dispatcher
      */
-    Dispatcher *dispatcher() const;
+    Dispatcher *dispatcher() const noexcept;
 
     /**
      * The current controller name
@@ -159,7 +159,7 @@ public:
     /**
      * Returns the current controller
      */
-    Controller *controller() const;
+    Controller *controller() const noexcept;
 
     /**
      * Returns the controller by name, or nullptr
@@ -177,7 +177,7 @@ public:
      * for rendering this request, if one
      * is set by setView() or nullptr if none was set
      */
-    View *customView() const;
+    View *customView() const noexcept;
 
     /**
      * Defines the view to be used to render
@@ -264,7 +264,7 @@ public:
     /**
      * Returns the internal execution stack (actions that are currently executing).
      */
-    QStack<Component *> stack() const;
+    QStack<Component *> stack() const noexcept;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -354,7 +354,7 @@ public:
      * Returns true if the last executed Action requested
      * that the processing be escaped.
      */
-    bool detached() const;
+    bool detached() const noexcept;
 
     /**
      * The same as forward(action)
@@ -378,7 +378,7 @@ public:
      *
      * Once done call attachAsync() in order to process the remaining of the action chain.
      */
-    void detachAsync();
+    void detachAsync() noexcept;
 
     /*!
      * \brief attachAsync
@@ -472,7 +472,7 @@ public:
      * If not explicity set by setLocale it will use the QLocale::setDefault(),
      * or QLocale::system() if not set.
      */
-    QLocale locale() const;
+    QLocale locale() const noexcept;
 
     /**
      * Defines the current locale to be used when processing Views
@@ -493,12 +493,12 @@ public:
     /**
      * Returns a configuration value for key with an optional default value
      */
-    QVariant config(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
     /**
      * Returns a configuration mapping for all configuration read
      */
-    QVariantMap config() const;
+    QVariantMap config() const noexcept;
 
     /**
      * Translates the \a sourceText for the given \a context into the language defined by locale().

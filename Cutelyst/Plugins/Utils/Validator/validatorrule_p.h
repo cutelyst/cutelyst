@@ -175,7 +175,7 @@ public:
             const QString value = params.value(fieldName);
             if (!value.isEmpty()) {
                 const QString type = field.mid(sepPos + 1);
-                if (type.startsWith(QLatin1String("dt"))) {
+                if (type.startsWith(u"dt")) {
                     QDateTime dt = extractDateTime(c, value, format);
                     if (dt.isValid()) {
                         if (tz.isValid()) {

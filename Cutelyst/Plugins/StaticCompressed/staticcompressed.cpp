@@ -202,7 +202,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 // QMimeDatabase might not find the correct mime type for some specific types
                 // especially for map files for CSS and JS
                 if (mimeType.isDefault()) {
-                    if (path.endsWith(QLatin1String("css.map"), Qt::CaseInsensitive) || path.endsWith(QLatin1String("js.map"), Qt::CaseInsensitive)) {
+                    if (path.endsWith(u"css.map", Qt::CaseInsensitive) || path.endsWith(u"js.map", Qt::CaseInsensitive)) {
                         _mimeTypeName = QStringLiteral("application/json");
                     }
                 }
@@ -213,7 +213,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                     qCDebug(C_STATICCOMPRESSED) << "Accept-Encoding:" << acceptEncoding;
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-                    if (acceptEncoding.contains(QLatin1String("br"), Qt::CaseInsensitive)) {
+                    if (acceptEncoding.contains(u"br", Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, Brotli)                        ;
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving brotli compressed data from \"%s\".", qPrintable(compressedPath));
@@ -221,13 +221,13 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                         }
                     } else
 #endif
-                    if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
+                    if (acceptEncoding.contains(u"gzip", Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving %s compressed data from \"%s\".", useZopfli ? "zopfli" : "gzip", qPrintable(compressedPath));
                             contentEncoding = QStringLiteral("gzip");
                         }
-                    } else if (acceptEncoding.contains(QLatin1String("deflate"), Qt::CaseInsensitive)) {
+                    } else if (acceptEncoding.contains(u"deflate", Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, Deflate);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving deflate compressed data from \"%s\".", qPrintable(compressedPath));

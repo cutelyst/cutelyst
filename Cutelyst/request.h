@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2021 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ public:
     /**
      * Returns the address of the client
      */
-    QHostAddress address() const;
+    QHostAddress address() const noexcept;
 
     /**
      * Returns the address as string of the client.
@@ -116,14 +116,14 @@ public:
      * for  http://localhost/path/foo
      * path will contain 'path/foo'
      */
-    QString path() const;
+    QString path() const noexcept;
 
     /**
      * This contains the matching part of a Regex action.
      * Otherwise it returns the same as 'action' (not a pointer but it's private name),
      * except for default actions, which return an empty string.
      */
-    QString match() const;
+    QString match() const noexcept;
 
     /**
      * Defines the matching part of the request
@@ -147,7 +147,7 @@ public:
      *
      * Arguments get automatically URI-unescaped for you.
      */
-    QStringList arguments() const;
+    QStringList arguments() const noexcept;
 
     /**
      * Defines the arguments of the request
@@ -163,7 +163,7 @@ public:
     /**
      * Captures
      */
-    QStringList captures() const;
+    QStringList captures() const noexcept;
 
     /**
      * Defines the arguments of the request
@@ -178,7 +178,7 @@ public:
      * uri().scheme(). The Engine itself might not be aware of a front HTTP
      * server with https enabled.
      */
-    bool secure() const;
+    bool secure() const noexcept;
 
     /**
      * Returns the message body of the request as
@@ -346,53 +346,53 @@ public:
     /**
      * Returns the HTTP request headers
      */
-    Headers headers() const;
+    Headers headers() const noexcept;
 
     /**
      * Returns the request method (GET, POST, HEAD, etc).
      */
-    QString method() const;
+    QString method() const noexcept;
 
     /**
      * Returns true if the request method is POST.
      */
-    bool isPost() const;
+    bool isPost() const noexcept;
 
     /**
      * Returns true if the request method is GET.
      */
-    bool isGet() const;
+    bool isGet() const noexcept;
 
     /**
      * Returns true if the request method is HEAD.
      */
-    bool isHead() const;
+    bool isHead() const noexcept;
 
     /**
      * Returns true if the request method is PUT.
      */
-    bool isPut() const;
+    bool isPut() const noexcept;
 
     /**
      * Returns true if the request method is PATCH.
      */
-    bool isPatch() const;
+    bool isPatch() const noexcept;
 
     /**
      * Returns true if the request method is DELETE.
      */
-    bool isDelete() const;
+    bool isDelete() const noexcept;
 
     /**
      * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
-    QString protocol() const;
+    QString protocol() const noexcept;
 
     /**
      * Returns true if the request's X-Requested-With header field is "XMLHttpRequest",
      * indicating that the request was issued by a client library such as jQuery.
      */
-    bool xhr() const;
+    bool xhr() const noexcept;
 
     /**
      * Returns the user agent (browser) version string.
@@ -407,7 +407,7 @@ public:
     /**
      * Returns the value of the REMOTE_USER environment variable.
      */
-    QString remoteUser() const;
+    QString remoteUser() const noexcept;
 
     /**
      * Returns a vector containing uploads as provided by a multipart/form-data content type
@@ -475,7 +475,7 @@ public:
     /**
      * Returns the current Engine processing the requests.
      */
-    Engine *engine() const;
+    Engine *engine() const noexcept;
 
     /**
      * Constructs a new Request object.

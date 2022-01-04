@@ -88,7 +88,7 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                                             // labels/parts can have a maximum length of 63 chars
                                             if (part.length() < 64) {
                                                 bool isTld = (i == (parts.size() -1));
-                                                bool isPunyCode = part.startsWith(QLatin1String("xn--"));
+                                                bool isPunyCode = part.startsWith(u"xn--");
                                                 for (int j = 0; j < part.size(); ++j) {
                                                     const ushort &uc = part.at(j).unicode();
                                                     const bool isDigit = ((uc > 47) && (uc < 58));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ Request::~Request()
     delete d_ptr;
 }
 
-QHostAddress Request::address() const
+QHostAddress Request::address() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->remoteAddress;
@@ -141,13 +141,13 @@ QString Request::base() const
     return base;
 }
 
-QString Request::path() const
+QString Request::path() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->path;
 }
 
-QString Request::match() const
+QString Request::match() const noexcept
 {
     Q_D(const Request);
     return d->match;
@@ -159,7 +159,7 @@ void Request::setMatch(const QString &match)
     d->match = match;
 }
 
-QStringList Request::arguments() const
+QStringList Request::arguments() const noexcept
 {
     Q_D(const Request);
     return d->args;
@@ -171,7 +171,7 @@ void Request::setArguments(const QStringList &arguments)
     d->args = arguments;
 }
 
-QStringList Request::captures() const
+QStringList Request::captures() const noexcept
 {
     Q_D(const Request);
     return d->captures;
@@ -183,7 +183,7 @@ void Request::setCaptures(const QStringList &captures)
     d->captures = captures;
 }
 
-bool Request::secure() const
+bool Request::secure() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->isSecure;
@@ -318,67 +318,67 @@ Cutelyst::ParamsMultiMap Request::cookies() const
     return d->cookies;
 }
 
-Headers Request::headers() const
+Headers Request::headers() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->headers;
 }
 
-QString Request::method() const
+QString Request::method() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->method;
 }
 
-bool Request::isPost() const
+bool Request::isPost() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("POST");
+    return d->engineRequest->method.compare(u"POST") == 0;
 }
 
-bool Request::isGet() const
+bool Request::isGet() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("GET");
+    return d->engineRequest->method.compare(u"GET") == 0;
 }
 
-bool Request::isHead() const
+bool Request::isHead() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("HEAD");
+    return d->engineRequest->method.compare(u"HEAD") == 0;
 }
 
-bool Request::isPut() const
+bool Request::isPut() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("PUT");
+    return d->engineRequest->method.compare(u"PUT") == 0;
 }
 
-bool Request::isPatch() const
+bool Request::isPatch() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("PATCH");
+    return d->engineRequest->method.compare(u"PATCH") == 0;
 }
 
-bool Request::isDelete() const
+bool Request::isDelete() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method == QStringLiteral("DELETE");
+    return d->engineRequest->method.compare(u"DELETE") == 0;
 }
 
-QString Request::protocol() const
+QString Request::protocol() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->protocol;
 }
 
-bool Request::xhr() const
+bool Request::xhr() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH")) == QStringLiteral("XMLHttpRequest");
+    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH")).compare(u"XMLHttpRequest") == 0;
 }
 
-QString Request::remoteUser() const
+QString Request::remoteUser() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->remoteUser;
@@ -444,7 +444,7 @@ QUrl Request::uriWith(const ParamsMultiMap &args, bool append) const
     return ret;
 }
 
-Engine *Request::engine() const
+Engine *Request::engine() const noexcept
 {
     Q_D(const Request);
     return d->engine;
@@ -488,7 +488,7 @@ void RequestPrivate::parseBody() const
 
     const QString contentTypeKey = QStringLiteral("CONTENT_TYPE");
     const QString contentType = engineRequest->headers.header(contentTypeKey);
-    if (contentType.startsWith(QLatin1String("application/x-www-form-urlencoded"), Qt::CaseInsensitive)) {
+    if (contentType.startsWith(u"application/x-www-form-urlencoded", Qt::CaseInsensitive)) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
@@ -498,7 +498,7 @@ void RequestPrivate::parseBody() const
         QByteArray line = body->readAll();
         bodyParam = Utils::decodePercentEncoding(line.data(), line.size());
         bodyData = QVariant::fromValue(bodyParam);
-    } else if (contentType.startsWith(QLatin1String("multipart/form-data"), Qt::CaseInsensitive)) {
+    } else if (contentType.startsWith(u"multipart/form-data", Qt::CaseInsensitive)) {
         if (posOrig) {
             body->seek(0);
         }
@@ -513,7 +513,7 @@ void RequestPrivate::parseBody() const
         }
         uploads = ups;
 //        bodyData = QVariant::fromValue(uploadsMap);
-    } else if (contentType.startsWith(QLatin1String("application/json"), Qt::CaseInsensitive)) {
+    } else if (contentType.startsWith(u"application/json", Qt::CaseInsensitive)) {
         if (posOrig) {
             body->seek(0);
         }

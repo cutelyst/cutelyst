@@ -305,32 +305,32 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     }
     const QString value = QString::fromLatin1(word_boundary, int(end - word_boundary));
 
-    if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
-        if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+    if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key.compare(u"CONNECTION") == 0) {
+        if (value.compare(u"close", Qt::CaseInsensitive) == 0) {
             protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionClose;
         } else {
             protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
         }
-    } else if (protoRequest->contentLength < 0 && key == QLatin1String("CONTENT_LENGTH")) {
+    } else if (protoRequest->contentLength < 0 && key.compare(u"CONTENT_LENGTH") == 0) {
         bool ok;
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
             protoRequest->contentLength = cl;
         }
-    } else if (!protoRequest->headerHost && key == QLatin1String("HOST")) {
+    } else if (!protoRequest->headerHost && key.compare(u"HOST") == 0) {
         protoRequest->serverAddress = value;
         protoRequest->headerHost = true;
     } else if (usingFrontendProxy) {
-        if (!protoRequest->X_Forwarded_For && (key == QLatin1String("X_FORWARDED_FOR") || key == QLatin1String("X_REAL_IP"))) {
+        if (!protoRequest->X_Forwarded_For && (key.compare(u"X_FORWARDED_FOR") == 0 || key.compare(u"X_REAL_IP") == 0)) {
             protoRequest->remoteAddress = QHostAddress(value); // configure your reverse-proxy to list only one IP address
             protoRequest->remotePort = 0; // unknown
             protoRequest->X_Forwarded_For = true;
-        } else if (!protoRequest->X_Forwarded_Host && key == QLatin1String("X_FORWARDED_HOST")) {
+        } else if (!protoRequest->X_Forwarded_Host && key.compare(u"X_FORWARDED_HOST") == 0) {
             protoRequest->serverAddress = value;
             protoRequest->X_Forwarded_Host = true;
             protoRequest->headerHost = true; // ignore a following Host: header (if any)
-        } else if (!protoRequest->X_Forwarded_Proto && key == QLatin1String("X_FORWARDED_PROTO")) {
-            protoRequest->isSecure = (value == QLatin1String("https"));
+        } else if (!protoRequest->X_Forwarded_Proto && key.compare(u"X_FORWARDED_PROTO") == 0) {
+            protoRequest->isSecure = (value.compare(u"https") == 0);
             protoRequest->X_Forwarded_Proto = true;
         }
     }
@@ -374,15 +374,15 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     while (it != headersData.constEnd()) {
         const QString &key = it.key();
         const QString &value = it.value();
-        if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key == QLatin1String("CONNECTION")) {
-            if (value.compare(QLatin1String("close"), Qt::CaseInsensitive) == 0) {
+        if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key.compare(u"CONNECTION") == 0) {
+            if (value.compare(u"close", Qt::CaseInsensitive) == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            } else if (value.compare(QLatin1String("upgrade"), Qt::CaseInsensitive) == 0) {
+            } else if (value.compare(u"upgrade", Qt::CaseInsensitive) == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
             } else {
                 headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             }
-        } else if (!hasDate && key == QLatin1String("DATE")) {
+        } else if (!hasDate && key.compare(u"DATE") == 0) {
             hasDate = true;
         }
 
@@ -394,7 +394,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
 
     if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
         if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep
-                || (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose && protocol == QLatin1String("HTTP/1.1"))) {
+                || (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose && protocol.compare(u"HTTP/1.1") == 0)) {
             headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             data.append("\r\nConnection: keep-alive", 24);
         } else {

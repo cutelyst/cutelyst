@@ -454,7 +454,7 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     while (it != headersData.constEnd()) {
         const QString &key = it.key();
         const QString &value = it.value();
-        if (!hasDate && key == QLatin1String("DATE")) {
+        if (!hasDate && key.compare(u"DATE") == 0) {
             hasDate = true;
         }
 

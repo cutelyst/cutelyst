@@ -585,7 +585,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         goodHosts.append(goodReferer);
 
                         QString refererHost = refererUrl.host();
-                        const int refererPort = refererUrl.port(refererUrl.scheme() == QLatin1String("https") ? 443 : 80);
+                        const int refererPort = refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? 443 : 80);
                         if ((refererPort != 80) && (refererPort != 443)) {
                             refererHost += QLatin1Char(':') + QString::number(refererPort);
                         }
@@ -616,8 +616,8 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
 
                 QByteArray requestCsrfToken;
                 // delete does not have body data
-                if (c->req()->method() != QLatin1String("DELETE")) {
-                    if (c->req()->contentType() == QLatin1String("multipart/form-data")) {
+                if (!c->req()->isDelete()) {
+                    if (c->req()->contentType().compare(u"multipart/form-data") == 0) {
                         // everything is an upload, even our token
                         Upload *upload = c->req()->upload(csrf->d_ptr->formInputName);
                         if (upload && upload->size() < 1024 /*FIXME*/) {

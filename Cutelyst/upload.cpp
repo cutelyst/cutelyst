@@ -173,7 +173,7 @@ Upload::Upload(UploadPrivate *prv) :
     Q_D(Upload);
     open(prv->device->openMode());
     const QString disposition = prv->headers.contentDisposition();
-    int start = disposition.indexOf(QLatin1String("name=\""));
+    int start = disposition.indexOf(u"name=\"");
     if (start != -1) {
         start += 6;
         int end = disposition.indexOf(QLatin1Char('"'), start);
@@ -182,7 +182,7 @@ Upload::Upload(UploadPrivate *prv) :
         }
     }
 
-    start = disposition.indexOf(QLatin1String("filename=\""));
+    start = disposition.indexOf(u"filename=\"");
     if (start != -1) {
         start += 10;
         int end = disposition.indexOf(QLatin1Char('"'), start);

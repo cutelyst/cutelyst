@@ -130,7 +130,7 @@ public:
     void authenticate_user_cookie(Context *c, const QString &realm) {
         Authentication::authenticate(c, c->request()->queryParameters(), realm);
         const auto cookie = c->response()->cookie(QByteArrayLiteral("testauthentication_exec_session")).value<QNetworkCookie>();
-        if (cookie.isHttpOnly() && cookie.path() == QLatin1String("/")) {
+        if (cookie.isHttpOnly() && cookie.path().compare(u"/") == 0) {
             c->response()->setBody(QStringLiteral("ok"));
             return;
         } else {

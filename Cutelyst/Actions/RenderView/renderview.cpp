@@ -91,7 +91,7 @@ bool RenderView::doExecute(Cutelyst::Context *c)
         res->setContentType(QStringLiteral("text/html; charset=utf-8"));
     }
 
-    if (c->req()->method() == QLatin1String("HEAD")) {
+    if (c->req()->isHead()) {
         return true;
     }
 

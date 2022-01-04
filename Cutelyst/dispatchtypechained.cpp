@@ -83,7 +83,7 @@ QByteArray DispatchTypeChained::list() const
             }
         }
 
-        if (parent != QLatin1String("/")) {
+        if (parent.compare(u"/") != 0) {
             QStringList row;
             if (parents.isEmpty()) {
                 row.append(QLatin1Char('/') + endPoint->reverse());
@@ -305,7 +305,7 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
         curr = d->actions.value(parent);
     }
 
-    if (parent != QLatin1String("/")) {
+    if (parent.compare(u"/") != 0) {
         // fail for dangling action
         qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: dangling action" << parent;
         return ret;
