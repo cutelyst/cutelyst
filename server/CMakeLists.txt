@@ -112,12 +112,16 @@ if (JEMALLOC_FOUND)
     target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
 endif()
 
+if (USE_MIMALLOC)
+    target_link_libraries(cutelystd PRIVATE mimalloc-static)
+endif()
+
 target_link_libraries(cutelystd
     PRIVATE Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
-    mimalloc-static
 )
+
 if (LINUX)
 target_link_libraries(cutelystd
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll

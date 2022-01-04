@@ -598,7 +598,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                         QString ipv6 = addressLiteral.mid(5);
                         const QStringList matchesIP = ipv6.split(QLatin1Char(':'));
                         int groupCount = matchesIP.size();
-                        index = ipv6.indexOf(u"::");
+                        index = ipv6.indexOf(QLatin1String("::"));
 
                         if (index < 0) {
                             // We need exactly the right number of groups
@@ -606,7 +606,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                                 returnStatus.push_back(ValidatorEmail::RFC5322IPv6GroupCount);
                             }
                         } else {
-                            if (index != ipv6.lastIndexOf(u"::")) {
+                            if (index != ipv6.lastIndexOf(QLatin1String("::"))) {
                                 returnStatus.push_back(ValidatorEmail::RFC5322IPv62x2xColon);
                             } else {
                                 if ((index == 0) || (index == (ipv6.length() - 2))) {

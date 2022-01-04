@@ -89,7 +89,7 @@ QString Headers::contentTypeCharset() const
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
         const QString &contentType = it.value();
-        int pos = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
+        int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
         if (pos != -1) {
             int endPos = contentType.indexOf(QLatin1Char(';'), pos);
             ret = contentType.mid(pos + 8, endPos).trimmed().toUpper();
@@ -108,7 +108,7 @@ void Headers::setContentTypeCharset(const QString &charset)
     }
 
     QString contentType = it.value();
-    int pos = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
+    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
     if (pos != -1) {
         int endPos = contentType.indexOf(QLatin1Char(';'), pos);
         if (endPos == -1) {
