@@ -36,6 +36,7 @@ public:
 
     bool setWatchdog(bool enable, int usec = 0);
 
+    void status(const QByteArray &data);
     void notify(const QByteArray &data);
     void ready();
 

@@ -560,7 +560,10 @@ int Server::exec(Cutelyst::Application *app)
     if (systemdNotify::is_systemd_notify_available()) {
         auto sd = new systemdNotify(this);
         sd->setWatchdog(true, systemdNotify::sd_watchdog_enabled(true));
-        connect(this, &Server::ready, sd, &systemdNotify::ready);
+        connect(this, &Server::ready, sd, [sd] {
+            sd->status(qApp->applicationName().toLatin1() + " is ready");
+            sd->ready();
+        });
         connect(d, &ServerPrivate::postForked, sd, [sd] {
             sd->setWatchdog(false);
         });

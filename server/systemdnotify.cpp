@@ -113,7 +113,7 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
                 // Issue first ping immediately
                 d->watchdog = new QTimer(this);
                 // SD recommends half the defined interval
-                d->watchdog->setInterval(d->watchdog_usec / 2);
+                d->watchdog->setInterval(d->watchdog_usec / 1000 / 2);
                 notify(QByteArrayLiteral("WATCHDOG=1"));
                 connect(d->watchdog, &QTimer::timeout, this, [this] {
                     notify(QByteArrayLiteral("WATCHDOG=1"));
@@ -130,6 +130,30 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
         d->watchdog = nullptr;
     }
     return true;
+}
+
+void systemdNotify::status(const QByteArray &data)
+{
+    Q_D(systemdNotify);
+    Q_ASSERT(d->notification_fd);
+
+    struct msghdr *msghdr = d->notification_object;
+    struct iovec *iovec = msghdr->msg_iov;
+
+    iovec[0].iov_base = const_cast<char *>("STATUS=");
+    iovec[0].iov_len = 7;
+
+    iovec[1].iov_base = const_cast<char *>(data.constData());
+    iovec[1].iov_len = data.size();
+
+    iovec[2].iov_base = const_cast<char *>("\n");
+    iovec[2].iov_len = 1;
+
+    msghdr->msg_iovlen = 3;
+
+    if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
+        qCWarning(C_SYSTEMD, "sendmsg()");
+    }
 }
 
 void systemdNotify::notify(const QByteArray &data)
@@ -164,8 +188,8 @@ void systemdNotify::ready()
     struct msghdr *msghdr = d->notification_object;
     struct iovec *iovec = msghdr->msg_iov;
 
-    iovec[0].iov_base = const_cast<char *>("STATUS=cutelyst-wsgi is ready\nREADY=1\n");
-    iovec[0].iov_len = 38;
+    iovec[0].iov_base = const_cast<char *>("READY=1\n");
+    iovec[0].iov_len = 8;
 
     msghdr->msg_iovlen = 1;
 
