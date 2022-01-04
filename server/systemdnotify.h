@@ -36,9 +36,9 @@ public:
 
     bool setWatchdog(bool enable, int usec = 0);
 
-    void status(const QByteArray &data);
-    void notify(const QByteArray &data);
-    void ready();
+    void sendStatus(const QByteArray &data);
+    void sendWatchdog(const QByteArray &data);
+    void sendReady(const QByteArray &data);
 
     // Returns the usec if > 0 else it is disabled
     // Set unset to true before forking

@@ -114,9 +114,9 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
                 d->watchdog = new QTimer(this);
                 // SD recommends half the defined interval
                 d->watchdog->setInterval(d->watchdog_usec / 1000 / 2);
-                notify(QByteArrayLiteral("WATCHDOG=1"));
+                sendWatchdog(QByteArrayLiteral("1"));
                 connect(d->watchdog, &QTimer::timeout, this, [this] {
-                    notify(QByteArrayLiteral("WATCHDOG=1"));
+                    sendWatchdog(QByteArrayLiteral("1"));
                 });
                 d->watchdog->start();
                 qCInfo(C_SYSTEMD) << "watchdog enabled" << d->watchdog_usec << d->watchdog->interval();
@@ -132,7 +132,7 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
     return true;
 }
 
-void systemdNotify::status(const QByteArray &data)
+void systemdNotify::sendStatus(const QByteArray &data)
 {
     Q_D(systemdNotify);
     Q_ASSERT(d->notification_fd);
@@ -152,11 +152,11 @@ void systemdNotify::status(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendmsg()");
+        qCWarning(C_SYSTEMD, "sendStatus()");
     }
 }
 
-void systemdNotify::notify(const QByteArray &data)
+void systemdNotify::sendWatchdog(const QByteArray &data)
 {
     Q_D(systemdNotify);
     Q_ASSERT(d->notification_fd);
@@ -164,8 +164,8 @@ void systemdNotify::notify(const QByteArray &data)
     struct msghdr *msghdr = d->notification_object;
     struct iovec *iovec = msghdr->msg_iov;
 
-    iovec[0].iov_base = const_cast<char *>("STATUS=");
-    iovec[0].iov_len = 7;
+    iovec[0].iov_base = const_cast<char *>("WATCHDOG=");
+    iovec[0].iov_len = 9;
 
     iovec[1].iov_base = const_cast<char *>(data.constData());
     iovec[1].iov_len = data.size();
@@ -176,11 +176,11 @@ void systemdNotify::notify(const QByteArray &data)
     msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendmsg()");
+        qCWarning(C_SYSTEMD, "sendWatchdog()");
     }
 }
 
-void systemdNotify::ready()
+void systemdNotify::sendReady(const QByteArray &data)
 {
     Q_D(systemdNotify);
     Q_ASSERT(d->notification_fd);
@@ -188,13 +188,19 @@ void systemdNotify::ready()
     struct msghdr *msghdr = d->notification_object;
     struct iovec *iovec = msghdr->msg_iov;
 
-    iovec[0].iov_base = const_cast<char *>("READY=1\n");
-    iovec[0].iov_len = 8;
+    iovec[0].iov_base = const_cast<char *>("READY=");
+    iovec[0].iov_len = 6;
 
-    msghdr->msg_iovlen = 1;
+    iovec[1].iov_base = const_cast<char *>(data.constData());
+    iovec[1].iov_len = data.size();
+
+    iovec[2].iov_base = const_cast<char *>("\n");
+    iovec[2].iov_len = 1;
+
+    msghdr->msg_iovlen = 3;
 
     if (sendmsg(d->notification_fd, msghdr, 0) < 0) {
-        qCWarning(C_SYSTEMD, "sendmsg()");
+        qCWarning(C_SYSTEMD, "sendReady()");
     }
 }
 
