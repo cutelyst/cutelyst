@@ -74,6 +74,7 @@ bool ActionChain::doExecute(Context *c)
     for (; chainedIx < chain.size(); ++chainedIx) {
         if (asyncDetached) {
             c->d_ptr->pendingAsync.prepend(this);
+            request->setArguments(currentArgs);
             break;
         }
 
