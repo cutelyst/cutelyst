@@ -95,7 +95,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = @CMAKE_SOURCE_DIR@/dox/Mainpage.dox @CMAKE_SOURCE_DIR@/Cutelyst @CMAKE_SOURCE_DIR@/server/server.h
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/dox/Mainpage.dox @CMAKE_SOURCE_DIR@/Cutelyst @CMAKE_CURRENT_SOURCE_DIR@/server/server.h
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h *.dox *.cpp
 RECURSIVE              = YES

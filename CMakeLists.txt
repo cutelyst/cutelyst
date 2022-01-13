@@ -24,11 +24,11 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Forbid in-tree building
-if(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
       message(STATUS "Please do an out-of-tree build:")
       message(STATUS "rm -f CMakeCache.txt && mkdir build && cd build; cmake .. && make")
       message(FATAL_ERROR "In-tree-build detected!")
-endif(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+endif()
 
 if (WIN32)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -129,7 +129,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Cutelyst
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -257,14 +257,14 @@ if (BUILD_DOCS)
         endif (BUILD_DOCS_TIMESTAMP)
 
         set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
-        set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_SOURCE_DIR})
-        set(DOXYGEN_IMAGE_PATH ${CMAKE_SOURCE_DIR}/dox)
+        set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+        set(DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dox)
         set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)
-        set(DOXYGEN_DOTFILE_DIRS ${CMAKE_SOURCE_DIR}/dox)
+        set(DOXYGEN_DOTFILE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dox)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
-        set (DOCS_STLTAGFILE "${CMAKE_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
-        set (DOCS_STLLOCALHTMLDIR "${CMAKE_SOURCE_DIR}/scripts/libstdc++" CACHE PATH "Path to the directory containing the libstdc++ HTML doxygen documentation")
+        set (DOCS_STLTAGFILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
+        set (DOCS_STLLOCALHTMLDIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++" CACHE PATH "Path to the directory containing the libstdc++ HTML doxygen documentation")
         if (EXISTS DOCS_STLTAGFILE)
             list(APPEND ONLINETAGS "${DOCS_STLTAGFILE}=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/")
             if (IS_DIRECTORY "${DOCS_STLLOCALHTMLDIR}")
@@ -292,7 +292,7 @@ if (BUILD_DOCS)
         # big tag file for complete Qt, use DOCS_QTTAGFILE to set the path to it. If you have the
         # modularized tag files from Qt, use DOCS_QTDOCSDIR to set the path to the directory that contains
         # the tag files. The files will be searched there and in subdirectories named by the Qt component.
-        set (DOCS_QTTAGFILE "${CMAKE_SOURCE_DIR}/scripts/qttags.tag" CACHE FILEPATH "Path to a single complete doxygen tag file for Qt")
+        set (DOCS_QTTAGFILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/qttags.tag" CACHE FILEPATH "Path to a single complete doxygen tag file for Qt")
         set (DOCS_QTDOCSDIR ${QT_INSTALL_DOCS} CACHE PATH "Path to a directory containingthe Qt Documentation")
         if (EXISTS DOCS_QTTAGFILE)
             list(APPEND ONLINETAGS "${DOCS_QTTAGFILE}=${QT_ONLINE_DOCS_URL}")
