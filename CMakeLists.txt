@@ -23,16 +23,9 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Forbid in-tree building
-if(${CMAKE_CURRENT_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
-      message(STATUS "Please do an out-of-tree build:")
-      message(STATUS "rm -f CMakeCache.txt && mkdir build && cd build; cmake .. && make")
-      message(FATAL_ERROR "In-tree-build detected!")
-endif()
-
 if (WIN32)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
   if(MSVC)
     add_definitions(-D_SCL_SECURE_NO_WARNINGS)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
@@ -89,7 +82,7 @@ set (PKGLIBDIR "${LIBDIR}/cutelyst")
 set (GETTEXT_PACKAGE "cutelyst")
 set (LOCALE_DIR "${DATADIR}/locale")
 set (VERSION "${CUTELYST_VERSION}")
-set (BUILDDIR "${CMAKE_BINARY_DIR}")
+set (BUILDDIR "${CMAKE_CURRENT_BINARY_DIR}")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
 message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
@@ -99,7 +92,7 @@ set (I18NDIR "${CMAKE_INSTALL_FULL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}/tra
 
 add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
 
-configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
+configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 #
 # Custom C flags
@@ -259,7 +252,7 @@ if (BUILD_DOCS)
         set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
         set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_CURRENT_SOURCE_DIR})
         set(DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dox)
-        set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)
+        set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)
         set(DOXYGEN_DOTFILE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dox)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
@@ -321,7 +314,7 @@ if (BUILD_DOCS)
         endif(EXISTS DOCS_QTTAGFILE)
 
         string(REPLACE ";" " " DOXYGEN_TAGFILES "${ONLINETAGS}")
-        set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
         set(DOXYGEN_HTML_OUTPUT "webdox")
 
         configure_file(
@@ -344,12 +337,12 @@ if (BUILD_DOCS)
         find_program(DOXYGEN_QHG_LOCATION NAMES qhelpgenerator-qt5 qhelpgenerator5 qhelpgenerator)
         if(DOXYGEN_QHG_LOCATION)
             message(STATUS "qhelpgenerator found. QCH documentation will be created")
-            set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qtdocs")
+            set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qtdocs")
             string(REPLACE ";" " " DOXYGEN_TAGFILES "${QCHTAGS}")
             set(DOXYGEN_GENERATE_QHP "YES")
             set(DOXYGEN_QHP_NAMESPACE "org.cutelyst.${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
             set(DOXYGEN_QHP_VIRTUAL_FOLDER "cutelyst${PROJECT_VERSION_MAJOR}")
-            set(DOXYGEN_QCH_FILE "${CMAKE_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
+            set(DOXYGEN_QCH_FILE "${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
 
             configure_file(
                 "${CMAKE_MODULE_PATH}/Doxyfile.in"
