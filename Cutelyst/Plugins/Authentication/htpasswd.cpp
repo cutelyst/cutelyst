@@ -79,6 +79,7 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
 
 AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &userInfo)
 {
+    Q_UNUSED(c);
     AuthenticationUser ret;
     const QString username = userInfo.value(QStringLiteral("username"));
 
@@ -101,6 +102,7 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
 
 QVariant StoreHtpasswd::forSession(Context *c, const AuthenticationUser &user)
 {
+    Q_UNUSED(c);
     return user.id();
 }
 

@@ -231,6 +231,8 @@ qint64 Upload::readLineData(char *data, qint64 maxlen)
 
 qint64 Upload::writeData(const char *data, qint64 maxSize)
 {
+    Q_UNUSED(data);
+    Q_UNUSED(maxSize);
     return -1;
 }
 

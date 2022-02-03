@@ -57,6 +57,7 @@ AuthenticationUser StoreMinimal::findUser(Context *c, const ParamsMultiMap &user
 
 QVariant StoreMinimal::forSession(Context *c, const AuthenticationUser &user)
 {
+    Q_UNUSED(c);
     return user.id();
 }
 

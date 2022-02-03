@@ -411,6 +411,7 @@ Action *DispatcherPrivate::command2Action(Context *c, const QString &command, co
 
 Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const
 {
+    Q_UNUSED(args);
     Q_Q(const Dispatcher);
 
     Action *ret;
