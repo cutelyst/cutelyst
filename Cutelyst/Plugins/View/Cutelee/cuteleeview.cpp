@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2020-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +45,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
     Q_D(CuteleeView);
 
     Cutelee::registerMetaType<ParamsMultiMap>();
+    Cutelee::registerMetaType<Cutelyst::Request*>(); // To be able to access it's properties
 
     d->loader = std::make_shared<Cutelee::FileSystemTemplateLoader>();
 

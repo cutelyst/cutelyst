@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,6 +44,7 @@ GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(new Gran
     Q_D(GrantleeView);
 
     Grantlee::registerMetaType<ParamsMultiMap>();
+    Grantlee::registerMetaType<Cutelyst::Request*>(); // To be able to access it's properties
 
     d->loader = QSharedPointer<Grantlee::FileSystemTemplateLoader>(new Grantlee::FileSystemTemplateLoader);
 
