@@ -134,8 +134,8 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer, int bufferSize, QI
             case FinishHeader:
                 if (buffer[i] == '\n') {
                     int dotdot = headerLine.indexOf(':');
-                    headers.setHeader(QString::fromLatin1(headerLine.left(dotdot)),
-                                      QString::fromLatin1(headerLine.mid(dotdot + 1).trimmed()));
+                    headers.setHeader(QString::fromUtf8(headerLine.left(dotdot)),
+                                      QString::fromUtf8(headerLine.mid(dotdot + 1).trimmed()));
                     headerLine = QByteArray();
                     state = StartHeaders;
                 } else {
