@@ -240,7 +240,7 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    attributes.insert(QStringLiteral("PathPart"), part);
+    attributes.replace(QStringLiteral("PathPart"), part);
     action->setAttributes(attributes);
 
     auto &childrenOf = d->childrenOf[chainedTo][part];
