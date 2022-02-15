@@ -364,7 +364,7 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
             }
 
             // store the key/value pair found
-            attributes.push_back({ key, value });
+            attributes.emplace_back(std::make_pair(key, value));
             continue;
         }
         ++pos;
@@ -372,11 +372,9 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
 
     // Add the attributes to the map in the reverse order so
     // that values() return them in the right order
-    auto i = attributes.crbegin();
-    const auto end = attributes.crend();
-    while (i != end) {
-        QString key = i->first;
-        QString value = i->second;
+    for (const auto &pair : attributes) {
+        QString key = pair.first;
+        QString value = pair.second;
         if (key.compare(u"Global") == 0) {
             key = QStringLiteral("Path");
             value = parsePathAttr(QLatin1Char('/') + QString::fromLatin1(name));
@@ -398,7 +396,6 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
         }
 
         ret.insert(key, value);
-        ++i;
     }
 
     // Handle special AutoArgs and AutoCaptureArgs case
