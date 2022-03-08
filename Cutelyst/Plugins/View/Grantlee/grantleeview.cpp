@@ -39,6 +39,10 @@ GRANTLEE_BEGIN_LOOKUP(ParamsMultiMap)
 return object.value(property);
 GRANTLEE_END_LOOKUP
 
+GRANTLEE_BEGIN_LOOKUP_PTR(Cutelyst::Request)
+return object->property(property.toLatin1().constData());
+GRANTLEE_END_LOOKUP
+
 GrantleeView::GrantleeView(QObject *parent, const QString &name) : View(new GrantleeViewPrivate, parent, name)
 {
     Q_D(GrantleeView);

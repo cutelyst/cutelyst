@@ -40,6 +40,10 @@ CUTELEE_BEGIN_LOOKUP(ParamsMultiMap)
 return object.value(property);
 CUTELEE_END_LOOKUP
 
+CUTELEE_BEGIN_LOOKUP_PTR(Cutelyst::Request)
+return object->property(property.toLatin1().constData());
+CUTELEE_END_LOOKUP
+
 CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new CuteleeViewPrivate, parent, name)
 {
     Q_D(CuteleeView);
