@@ -55,7 +55,7 @@ ProtocolHttp::~ProtocolHttp()
 
 Protocol::Type ProtocolHttp::type() const
 {
-    return Http11;
+    return Protocol::Type::Http11;
 }
 
 inline int CrLfIndexIn(const char *str, int len, int from)
@@ -454,6 +454,8 @@ void ProtoRequestHttp::processingFinished()
 bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
 {
     if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+        qCWarning(CWSGI_HTTP) << "Not sending websocket text message due connection header not upgraded"
+                              << headerConnection << message.size();
         return false;
     }
 
@@ -465,6 +467,8 @@ bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
 bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
 {
     if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+        qCWarning(CWSGI_HTTP) << "Not sending websocket binary messagedue connection header not upgraded"
+                              << headerConnection << message.size();
         return false;
     }
 
@@ -475,6 +479,8 @@ bool ProtoRequestHttp::webSocketSendBinaryMessage(const QByteArray &message)
 bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
 {
     if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+        qCWarning(CWSGI_HTTP) << "Not sending websocket ping due connection header not upgraded"
+                              << headerConnection << payload.size();
         return false;
     }
 
@@ -486,6 +492,8 @@ bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
 bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
 {
     if (headerConnection != ProtoRequestHttp::HeaderConnectionUpgrade) {
+        qCWarning(CWSGI_HTTP) << "Not sending websocket close due connection header not upgraded"
+                              << headerConnection << code << reason;
         return false;
     }
 
@@ -512,7 +520,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
         return true;
     }
 
-    if (sock->proto->type() != Protocol::Http11) {
+    if (sock->proto->type() != Protocol::Type::Http11) {
         qCWarning(CWSGI_SOCK) << "Upgrading a connection to websocket is only supported with the HTTP/1.1 protocol" << typeid(sock->proto).name();
         return false;
     }

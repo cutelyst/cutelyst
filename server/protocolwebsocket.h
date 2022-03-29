@@ -33,6 +33,8 @@ public:
     ProtocolWebSocket(Server *wsgi);
     virtual ~ProtocolWebSocket() override;
 
+    Type type() const override;
+
     static QByteArray createWebsocketHeader(quint8 opcode, quint64 len);
     static QByteArray createWebsocketCloseReply(const QString &msg, quint16 closeCode);
 

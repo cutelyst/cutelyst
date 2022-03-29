@@ -141,7 +141,7 @@ ProtocolFastCGI::~ProtocolFastCGI()
 
 Protocol::Type ProtocolFastCGI::type() const
 {
-    return FastCGI1;
+    return Protocol::Type::FastCGI1;
 }
 
 quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const

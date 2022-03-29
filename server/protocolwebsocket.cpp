@@ -49,6 +49,11 @@ ProtocolWebSocket::~ProtocolWebSocket()
 {
 }
 
+Protocol::Type ProtocolWebSocket::type() const
+{
+    return Protocol::Type::Http11Websocket;
+}
+
 QByteArray ProtocolWebSocket::createWebsocketHeader(quint8 opcode, quint64 len)
 {
     QByteArray ret;

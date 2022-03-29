@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2018 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -108,11 +108,11 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                     connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
                 }
 
-                if (server->protocol()->type() == Protocol::Http11) {
+                if (server->protocol()->type() == Protocol::Type::Http11) {
                     server->setProtocol(getProtoHttp());
-                } else if (server->protocol()->type() == Protocol::Http2) {
+                } else if (server->protocol()->type() == Protocol::Type::Http2) {
                     server->setProtocol(getProtoHttp2());
-                } else if (server->protocol()->type() == Protocol::FastCGI1) {
+                } else if (server->protocol()->type() == Protocol::Type::FastCGI1) {
                     server->setProtocol(getProtoFastCgi());
                 }
 
@@ -136,11 +136,11 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
                     connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
                 }
 
-                if (server->protocol()->type() == Protocol::Http11) {
+                if (server->protocol()->type() == Protocol::Type::Http11) {
                     server->setProtocol(getProtoHttp());
-                } else if (server->protocol()->type() == Protocol::Http2) {
+                } else if (server->protocol()->type() == Protocol::Type::Http2) {
                     server->setProtocol(getProtoHttp2());
-                } else if (server->protocol()->type() == Protocol::FastCGI1) {
+                } else if (server->protocol()->type() == Protocol::Type::FastCGI1) {
                     server->setProtocol(getProtoFastCgi());
                 }
             }
@@ -207,6 +207,18 @@ bool CWsgiEngine::init()
     }
 
     return false;
+}
+
+void CWsgiEngine::handleSocketShutdown(Socket *socket)
+{
+    if (socket->processing == 0) {
+        socket->connectionClose();
+    } else if (socket->proto->type() == Protocol::Type::Http11Websocket) {
+        auto req = static_cast<ProtoRequestHttp*>(socket->protoData);
+        req->webSocketClose(Response::CloseCode::CloseCodeGoingAway, {});
+    } else {
+        socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
+    }
 }
 
 #include "moc_cwsgiengine.cpp"

@@ -89,12 +89,12 @@ void TcpSslServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
-                socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
                 connect(socket, &TcpSocket::finished, this, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }
-                }, Qt::QueuedConnection);
+                });
+                m_engine->handleSocketShutdown(socket);
             }
         }
     }

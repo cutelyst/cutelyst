@@ -82,9 +82,10 @@ class Protocol
 {
     Q_GADGET
 public:
-    enum Type {
+    enum class Type {
         Unknown,
         Http11,
+        Http11Websocket,
         Http2,
         FastCGI1
     };

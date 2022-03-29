@@ -34,6 +34,7 @@ class ProtocolFastCGI;
 class ProtocolHttp;
 class ProtocolHttp2;
 class Server;
+class Socket;
 class CWsgiEngine final : public Cutelyst::Engine
 {
     Q_OBJECT
@@ -58,6 +59,8 @@ public:
         }
         return m_lastDate;
     }
+
+    void handleSocketShutdown(Socket *sock);
 
 Q_SIGNALS:
     void started();

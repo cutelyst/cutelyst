@@ -149,12 +149,12 @@ void LocalServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<LocalSocket*>(child);
             if (socket) {
-                socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
                 connect(socket, &LocalSocket::finished, this, [this] () {
                     if (!m_processing) {
                         m_engine->serverShutdown();
                     }
                 });
+                m_engine->handleSocketShutdown(socket);
             }
         }
     }

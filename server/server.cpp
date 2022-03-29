@@ -726,7 +726,7 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
 
         if (ret && server->socketDescriptor()) {
             auto qEnum = protocol->staticMetaObject.enumerator(0);
-            std::cout << qEnum.valueToKey(protocol->type())
+            std::cout << qEnum.valueToKey(static_cast<int>(protocol->type()))
                       << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to TCP address " << qPrintable(server->serverName())
                       << " fd " << QByteArray::number(server->socketDescriptor()).constData()
@@ -769,7 +769,7 @@ bool ServerPrivate::listenLocalSockets()
             server->pauseAccepting();
 
             auto qEnum = protocol->staticMetaObject.enumerator(0);
-            std::cout << qEnum.valueToKey(protocol->type())
+            std::cout << qEnum.valueToKey(static_cast<int>(protocol->type()))
                       << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                       << " bound to LOCAL address " << qPrintable(fullName)
                       << " fd " << QByteArray::number(server->socket()).constData()
@@ -841,7 +841,7 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
         }
 #endif
         auto qEnum = protocol->staticMetaObject.enumerator(0);
-        std::cout << qEnum.valueToKey(protocol->type())
+        std::cout << qEnum.valueToKey(static_cast<int>(protocol->type()))
                   << " socket " << QByteArray::number(static_cast<int>(servers.size())).constData()
                   << " bound to LOCAL address " << qPrintable(line)
                   << " fd " << QByteArray::number(server->socket()).constData()

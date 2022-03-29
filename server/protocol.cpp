@@ -55,7 +55,7 @@ Cutelyst::Protocol::~Protocol()
 
 Cutelyst::Protocol::Type Cutelyst::Protocol::type() const
 {
-    return Unknown;
+    return Protocol::Type::Unknown;
 }
 
 QIODevice *Cutelyst::Protocol::createBody(qint64 contentLength) const

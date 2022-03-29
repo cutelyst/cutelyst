@@ -51,7 +51,7 @@
 #include <QFile>
 #include <QLoggingCategory>
 
-Q_LOGGING_CATEGORY(WSGI_UNIX, "wsgi.unix", QtWarningMsg)
+Q_LOGGING_CATEGORY(WSGI_UNIX, "cutelyst.server.unix", QtWarningMsg)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
@@ -470,6 +470,7 @@ void UnixFork::handleSigInt()
 //    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
     m_terminating = true;
     if (m_child || (m_childs.isEmpty())) {
+        qDebug(WSGI_UNIX) << "SIGINT/SIGQUIT received, worker shutting down...";
         Q_EMIT shutdown();
     } else {
         std::cout << "SIGINT/SIGQUIT received, terminating workers..." << std::endl;
@@ -483,7 +484,7 @@ void UnixFork::handleSigInt()
         } else if (count > 1) {
             terminateChild();
         } else {
-            QTimer::singleShot(30 * 1000, [this]() {
+            QTimer::singleShot(30 * 1000, this, [this]() {
                 std::cout << "workers terminating timeout, KILL ..." << std::endl;
                 killChild();
                 QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);

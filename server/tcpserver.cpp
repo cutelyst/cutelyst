@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2017 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 #include "tcpserver.h"
+#include "protocolhttp.h"
 #include "socket.h"
 #include "protocol.h"
 #include "server.h"
@@ -97,12 +98,12 @@ void TcpServer::shutdown()
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket*>(child);
             if (socket) {
-                socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;
                 connect(socket, &TcpSocket::finished, this, [this] () {
-                    if (!m_processing) {
+                    if (m_processing == 0) {
                         m_engine->serverShutdown();
                     }
                 });
+                m_engine->handleSocketShutdown(socket);
             }
         }
     }

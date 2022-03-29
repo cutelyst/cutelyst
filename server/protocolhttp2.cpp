@@ -129,7 +129,7 @@ ProtocolHttp2::~ProtocolHttp2()
 
 Protocol::Type ProtocolHttp2::type() const
 {
-    return Http2;
+    return Protocol::Type::Http2;
 }
 
 void ProtocolHttp2::parse(Socket *sock, QIODevice *io) const
