@@ -76,7 +76,8 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
             // registered by Dispatchers but we need them
             // as private actions anyway
             if (registered) {
-                d->actions.insert(action->ns() + QLatin1Char('/') + action->name(), action);
+                const QString name = action->ns() + QLatin1Char('/') + action->name();
+                d->actions.insert(name, { name, action });
                 d->actionContainer[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
@@ -221,7 +222,8 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     if (nameSpace.isEmpty()) {
-        return d->actions.value(QLatin1Char('/') + name);
+        const QString normName = QLatin1Char('/') + name;
+        return d->actions.value(normName).action;
     }
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
@@ -239,7 +241,7 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     } else if (_path.startsWith(QLatin1Char('/')) && slashes != 1) {
         _path.remove(0, 1);
     }
-    return d->actions.value(_path);
+    return d->actions.value(_path).action;
 }
 
 ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace) const
@@ -356,11 +358,11 @@ void DispatcherPrivate::printActions() const
 {
     QVector<QStringList> table;
 
-    QStringList keys = actions.keys();
-    keys.sort(Qt::CaseInsensitive);
-    for (const QString &key : keys) {
-        Action *action = actions.value(key);
-        QString path = key;
+    auto keys = actions.keys();
+    std::sort(keys.begin(), keys.end());
+    for (const auto &key : keys) {
+        Action *action = actions.value(key).action;
+        QString path = key.toString();
         if (!path.startsWith(QLatin1Char('/'))) {
             path.prepend(QLatin1Char('/'));
         }
@@ -403,7 +405,7 @@ Action *DispatcherPrivate::command2Action(Context *c, const QString &command, co
 {
     auto it = actions.constFind(command);
     if (it != actions.constEnd()) {
-        return it.value();
+        return it.value().action;
     }
 
     return invokeAsPath(c, command, args);

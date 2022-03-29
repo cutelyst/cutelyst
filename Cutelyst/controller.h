@@ -129,6 +129,14 @@ public:
     Action *actionFor(const QString &name) const;
 
     /**
+     * Returns the Cutelyst::Action object (if any) for a given method name in
+     * this class namespace.
+     *
+     * You can also use the macro CActionFor to keep the resolved action around.
+     */
+    Action *actionFor(QStringView name) const;
+
+    /**
      * Returns the Cutelyst::ActionList containing all actions which belongs to
      * this controller.
      */

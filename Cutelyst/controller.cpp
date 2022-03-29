@@ -50,11 +50,21 @@ QString Controller::ns() const
 Action *Controller::actionFor(const QString &name) const
 {
     Q_D(const Controller);
-    Action *ret = d->actions.value(name);
-    if (ret) {
-        return ret;
+    auto it = d->actions.constFind(name);
+    if (it != d->actions.constEnd()) {
+        return it->action;
     }
     return d->dispatcher->getAction(name, d->pathPrefix);
+}
+
+Action *Controller::actionFor(QStringView name) const
+{
+    Q_D(const Controller);
+    auto it = d->actions.constFind(name);
+    if (it != d->actions.constEnd()) {
+        return it->action;
+    }
+    return d->dispatcher->getAction(name.toString(), d->pathPrefix);
 }
 
 ActionList Controller::actions() const
@@ -291,7 +301,7 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                                           controller,
                                           app);
 
-            actions.replace(action->reverse(), action);
+            actions.insert(action->reverse(), { action->reverse(), action });
             actionList.append(action);
         }
     }

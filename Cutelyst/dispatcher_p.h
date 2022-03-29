@@ -39,7 +39,11 @@ public:
     static inline QString cleanNamespace(const QString &ns);
     static inline QString normalizePath(const QString &path);
 
-    QMap<QString, Action*> actions;
+    struct Replacement {
+        QString name;
+        Action *action = nullptr;
+    };
+    QMap<QStringView, Replacement> actions;
     QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
     QMap<QString, Controller *> controllers;

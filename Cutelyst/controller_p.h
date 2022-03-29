@@ -49,7 +49,11 @@ public:
     Application *application = nullptr;
     Controller *q_ptr;
     Dispatcher *dispatcher = nullptr;
-    QMultiMap<QString, Action *> actions;
+    struct Replacement {
+        QString name;
+        Action *action = nullptr;
+    };
+    QMap<QStringView, Replacement> actions;
     ActionList actionList;
     bool parsedActions = false;
 };
