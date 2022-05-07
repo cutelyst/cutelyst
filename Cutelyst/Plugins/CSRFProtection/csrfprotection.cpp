@@ -553,16 +553,16 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
             const QString referer = c->req()->headers().referer();
 
             if (Q_UNLIKELY(referer.isEmpty())) {
-                CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - no Referer."), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - no Referer."));
+                CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - no Referer"), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - no Referer."));
                 ok = false;
             } else {
                 const QUrl refererUrl(referer);
                 if (Q_UNLIKELY(!refererUrl.isValid())) {
-                    CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - Referer is malformed."), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - Referer is malformed."));
+                    CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - Referer is malformed"), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - Referer is malformed."));
                     ok = false;
                 } else {
                     if (Q_UNLIKELY(refererUrl.scheme() != QLatin1String("https"))) {
-                        CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - Referer is insecure while host is secure."), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - Referer is insecure while host is secure."));
+                        CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - Referer is insecure while host is secure"), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - Referer is insecure while host is secure."));
                         ok = false;
                     } else {
                         // If there isn't a CSRF_COOKIE_DOMAIN, require an exact match on host:port.
@@ -601,7 +601,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
 
                         if (Q_UNLIKELY(!refererCheck)) {
                             ok = false;
-                            CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - %1 does not match any trusted origins.").arg(referer), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - %1 does not match any trusted origins.").arg(referer));
+                            CSRFProtectionPrivate::reject(c, QStringLiteral("Referer checking failed - %1 does not match any trusted origins").arg(referer), c->translate("Cutelyst::CSRFProtection", "Referer checking failed - %1 does not match any trusted origins.").arg(referer));
                         }
                     }
                 }
@@ -610,7 +610,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
 
         if (Q_LIKELY(ok)) {
             if (Q_UNLIKELY(csrfToken.isEmpty())) {
-                CSRFProtectionPrivate::reject(c, QStringLiteral("CSRF cookie not set."), c->translate("Cutelyst::CSRFProtection", "CSRF cookie not set."));
+                CSRFProtectionPrivate::reject(c, QStringLiteral("CSRF cookie not set"), c->translate("Cutelyst::CSRFProtection", "CSRF cookie not set."));
                 ok = false;
             } else {
 
@@ -641,7 +641,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                 requestCsrfToken = CSRFProtectionPrivate::sanitizeToken(requestCsrfToken);
 
                 if (Q_UNLIKELY(!CSRFProtectionPrivate::compareSaltedTokens(requestCsrfToken, csrfToken))) {
-                    CSRFProtectionPrivate::reject(c, QStringLiteral("CSRF token missing or incorrect."), c->translate("Cutelyst::CSRFProtection", "CSRF token missing or incorrect."));
+                    CSRFProtectionPrivate::reject(c, QStringLiteral("CSRF token missing or incorrect"), c->translate("Cutelyst::CSRFProtection", "CSRF token missing or incorrect."));
                     ok = false;
                 }
             }
