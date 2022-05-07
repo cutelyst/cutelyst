@@ -85,8 +85,8 @@ class CSRFProtectionPrivate;
  * }
  * @endcode
  *
- * In your Grantlee template you should then use the <CODE>{% c_csrf_token %}</CODE> tag in your forms
- * to add a hidden input field that contains the CSRF protection token.
+ * In your Grantlee or Cutelee template you should then use the <CODE>{% c_csrf_token %}</CODE> tag in your
+ * forms to add a hidden input field that contains the CSRF protection token.
  *
  * @code{.html}
  * <form method="post">
@@ -107,9 +107,10 @@ class CSRFProtectionPrivate;
  * If the CSRF protection check fails, the return code will be set to 403 - Forbidden and an error message
  * will be set to the stash key defined by setErrorMsgStashKey(). You can set a default action the application
  * should detach to if the check failed via setDefaultDetachTo(), optionally there is the attribute <CODE>:CSRFDetachTo</CODE>
- * that can be used to define a detach to action per method. If the detach to action is not set or could not be found
- * it will either set the response body to the content set by setGenericErrorMessage() of if that is absent it will generate
- * a generic HTML content containing error information.
+ * that can be used to define a detach to action per method. When using an action to detach to if the check fails, do not
+ * forget to call Context::detach() with no arguments to escape the processing chain after that action. If the detach to
+ * action is not set or could not be found it will either set the response body to the content set by setGenericErrorMessage()
+ * of if that is absent it will generate a generic HTML content containing error information.
  *
  * @code{.cpp}
  * bool MyCutelystApp::init()
@@ -124,8 +125,15 @@ class CSRFProtectionPrivate;
  *     void foo(Context *c);
  *
  *     C_ATTR(csrfDenied, :Local :Private :AutoArgs :ActionClass(RenderView))
- *     vod csrfDenied(Context *c);
+ *     void csrfDenied(Context *c);
  * };
+ *
+ * void Foo::csrfDenied(Context *c)
+ * {
+ *     // handle the CSRF violation
+ *     c->res()->setStatus(403);
+ *     c->detach();
+ * }
  * @endcode
  *
  * <H4>AJAX and CSRF protection</H4>
