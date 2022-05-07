@@ -55,14 +55,8 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
 
     d->engine = new Cutelee::Engine(this);
     d->engine->addTemplateLoader(d->loader);
-    
-    // Set also the paths from CUTELYST_PLUGINS_DIR env variable as plugin paths of cutelee engine
-    const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
-    for (const QByteArray &dir : dirs) {
-        d->engine->addPluginPath(QString::fromLocal8Bit(dir));
-    }
 
-    d->engine->insertDefaultLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(d->engine));
+    d->initEngine();
 
     auto app = qobject_cast<Application *>(parent);
     if (app) {
@@ -134,9 +128,11 @@ void CuteleeView::setCache(bool enable)
     if (enable) {
         d->cache = std::make_shared<Cutelee::CachingLoaderDecorator>(d->loader);
         d->engine->addTemplateLoader(d->cache);
+        d->initEngine();
     } else {
         d->cache = {};
         d->engine->addTemplateLoader(d->loader);
+        d->initEngine();
     }
     Q_EMIT changed();
 }
@@ -334,6 +330,17 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename, c
     }
 
     return locales;
+}
+
+void CuteleeViewPrivate::initEngine()
+{
+    // Set also the paths from CUTELYST_PLUGINS_DIR env variable as plugin paths of cutelee engine
+    const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+    for (const QByteArray &dir : dirs) {
+        engine->addPluginPath(QString::fromLocal8Bit(dir));
+    }
+
+    engine->insertDefaultLibrary(QStringLiteral("cutelee_cutelyst"), new CutelystCutelee(engine));
 }
 
 #include "moc_cuteleeview.cpp"
