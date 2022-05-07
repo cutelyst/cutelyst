@@ -451,6 +451,7 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
     if (detachToAction) {
         c->detach(detachToAction);
     } else {
+        c->res()->setStatus(403);
         if (!csrf->d_ptr->genericErrorMessage.isEmpty()) {
             c->res()->setBody(csrf->d_ptr->genericErrorMessage);
             c->res()->setContentType(csrf->d_ptr->genericContentType);
