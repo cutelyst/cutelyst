@@ -128,12 +128,11 @@ void CuteleeView::setCache(bool enable)
     if (enable) {
         d->cache = std::make_shared<Cutelee::CachingLoaderDecorator>(d->loader);
         d->engine->addTemplateLoader(d->cache);
-        d->initEngine();
     } else {
         d->cache = {};
         d->engine->addTemplateLoader(d->loader);
-        d->initEngine();
     }
+    d->initEngine();
     Q_EMIT changed();
 }
 
