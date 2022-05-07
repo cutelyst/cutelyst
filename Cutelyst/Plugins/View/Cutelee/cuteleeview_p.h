@@ -28,6 +28,7 @@ public:
     std::shared_ptr<Cutelee::CachingLoaderDecorator> cache;
     QHash<QLocale, QTranslator*> translators;
     QMultiHash<QString, QString> translationCatalogs;
+    void initEngine();
 };
 
 }
