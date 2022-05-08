@@ -87,6 +87,7 @@ public:
     {
         c->res()->setContentType(QStringLiteral("text/plain"));
         c->res()->setBody(QByteArrayLiteral("detachdenied"));
+        c->detach();
     }
 };
 
