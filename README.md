@@ -76,5 +76,4 @@ Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutely
 
 ## LICENSE
 
-The library is under the LGPLv2+ and public header files, documentation and
-examples are under MIT license.
+The source code is available is under the 3-Clause BSD.
