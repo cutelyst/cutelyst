@@ -1,4 +1,7 @@
-
+/*
+ * SPDX-FileCopyrightText: (C) 2014 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 #include <QCoreApplication>
 #include <server/server.h>
 #include "hello.h"

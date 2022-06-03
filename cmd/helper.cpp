@@ -1,3 +1,7 @@
+/*
+ * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 #include "helper.h"
 
 #include <QMimeDatabase>
