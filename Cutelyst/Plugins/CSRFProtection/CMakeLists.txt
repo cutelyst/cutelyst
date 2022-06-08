@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+# SPDX-License-Identifier: BSD-3-Clause
+
 set(plugin_csrfprotection_SRC
     csrfprotection.cpp
     csrfprotection_p.h
