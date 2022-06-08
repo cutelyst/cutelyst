@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
+# SPDX-License-Identifier: BSD-3-Clause
+
 set(plugin_memcachedsessionstore_SRC
     memcachedsessionstore.cpp
     memcachedsessionstore_p.h
