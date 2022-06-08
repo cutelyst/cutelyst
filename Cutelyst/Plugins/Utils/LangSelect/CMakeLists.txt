@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2018-2022 Matthias Fehring <mf@huessenbergnetz.de>
+# SPDX-License-Identifier: BSD-3-Clause
+
 set(plugin_langselect_SRC
     langselect.cpp
     langselect_p.h
