@@ -13,7 +13,7 @@ namespace Cutelyst
 
   %Cutelyst is a Free Software, Open Source web framework build on top of Qt libraries.
 
-  %Cutelyst is covered by the GNU Lesser General Public Licence version 2.1 or, at your option, any later version.
+  %Cutelyst is covered by the BSD-3-Clause licence.
 
   <table class="main_api" >
     <tr>
