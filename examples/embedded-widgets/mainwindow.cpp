@@ -25,7 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serverReceivedHeaders->setModel(m_serverReceivedHeaders);
     ui->clientReceivedHeaders->setModel(m_clientReceivedHeaders);
 
-    connect(ui->serverPortSB, &QSpinBox::valueChanged, this, &MainWindow::updateUrl);
+    connect(ui->serverPortSB, &QSpinBox::valueChanged, this, [=] {
+        updateUrl();
+    });
     connect(ui->clientSendPB, &QPushButton::clicked, this, &MainWindow::clientSend);
     connect(ui->serverListenPB, &QPushButton::clicked, this, &MainWindow::listenClicked);
     connect(ui->serverStopListenPB, &QPushButton::clicked, this, [=] {
