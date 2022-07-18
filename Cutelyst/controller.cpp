@@ -537,8 +537,9 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
         }
 
         if (!id.isValid()) {
-            qFatal("Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
-                   qPrintable(instanceName), qPrintable(instanceName));
+            qCCritical(CUTELYST_CONTROLLER,
+                       "Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                       qPrintable(instanceName), qPrintable(instanceName));
         }
     }
 #else
@@ -590,8 +591,9 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
         }
 
         if (!id) {
-            qFatal("Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
-                   qPrintable(instanceName), qPrintable(instanceName));
+            qCCritical(CUTELYST_CONTROLLER,
+                       "Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                       qPrintable(instanceName), qPrintable(instanceName));
         }
     }
 #endif

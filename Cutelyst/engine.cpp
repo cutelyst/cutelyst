@@ -59,13 +59,13 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
                    "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.");
         }
         d->app = newApp;
+
+        // To make easier for engines to clean up
+        // the NEW app must be a child of it
+        d->app->setParent(this);
     } else {
         d->app = app;
     }
-
-    // To make easier for engines to clean up
-    // the app must be a child of it
-    d->app->setParent(this);
 }
 
 Engine::~Engine()

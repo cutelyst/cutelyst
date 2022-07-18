@@ -40,7 +40,7 @@ public:
     void async(Context *c, const QString &timeout);
 
 private Q_SLOTS:
-    bool Auto(Context *c);
+    bool Auto(Cutelyst::Context *c);
 
 private:
     C_ATTR(End,)

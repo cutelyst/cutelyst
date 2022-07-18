@@ -71,9 +71,7 @@ bool Session::setup(Application *app)
 void Session::setStorage(SessionStore *store)
 {
     Q_D(Session);
-    if (d->store) {
-        qFatal("Session Storage is alread defined");
-    }
+    Q_ASSERT_X(d->store, "Cutelyst::Session::setStorage", "Session Storage is alread defined");
     store->setParent(this);
     d->store = store;
 }

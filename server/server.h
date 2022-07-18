@@ -36,7 +36,7 @@ public:
      * setApplication and/or the Application configuration in case
      * Ini is set, meaning it won't dynamically load an Application
      * but use this to create new instances (if the app constructor is
-     * marked as Q_INVOKABLE).
+     * marked as Q_INVOKABLE and threads settings are greater than 1).
      *
      * It will return 0 in case of sucess.
      *
@@ -44,11 +44,13 @@ public:
      * this is needed because when creating or recreating child process
      * the event loop must not be running otherwise we get undefined
      * behavior. So exit main after this function.
+     *
+     * @note This method does not take ownership of application \pa appp
      */
     int exec(Cutelyst::Application *app = nullptr);
 
     /*!
-     * This function will start the WSGI server in user application mode.
+     * This function will start the Cutelyst::Server in user application mode.
      *
      * Use this when you would like to embed the server in an
      * application that is able to start/stop the server at will, for
@@ -57,7 +59,10 @@ public:
      * This method does not support forking which includes master, lazy or processes
      * properties.
      *
-     * Currentl
+     * New applicationg instances will be created if the app constructor is
+     * marked as Q_INVOKABLE and threads settings are greater than 1.
+     *
+     * @note This method does not take ownership of application \pa appp
      */
     bool start(Cutelyst::Application *app = nullptr);
 

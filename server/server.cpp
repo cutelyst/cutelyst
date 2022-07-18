@@ -50,6 +50,27 @@ Server::Server(QObject *parent) : QObject(parent),
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
         qSetMessagePattern(QLatin1String("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
+
+    auto cleanUp = [this]() {
+        Q_D(Server);
+        delete d->protoHTTP;
+        d->protoHTTP = nullptr;
+
+        delete d->protoHTTP2;
+        d->protoHTTP2 = nullptr;
+
+        delete d->protoFCGI;
+        d->protoFCGI = nullptr;
+
+        delete d->engine;
+        d->engine = nullptr;
+
+        qDeleteAll(d->servers);
+        d->servers.clear();
+    };
+
+    connect(this, &Server::errorOccured, this, cleanUp);
+    connect(this, &Server::stopped, this, cleanUp);
 }
 
 Server::~Server()
@@ -563,7 +584,7 @@ int Server::exec(Cutelyst::Application *app)
 
     if (!d->reusePort) {
         if(!d->listenTcpSockets()) {
-            Q_EMIT errorOccured(QStringLiteral("No specified sockets are able to be opened"));
+            Q_EMIT errorOccured(tr("No specified sockets were able to be opened"));
             return 1; //No sockets has been opened
         }
     }
@@ -601,7 +622,7 @@ int Server::exec(Cutelyst::Application *app)
 
     if (d->reusePort) {
         if(!d->listenTcpSockets()) {
-            Q_EMIT errorOccured(QStringLiteral("No specified sockets are able to be opened"));
+            Q_EMIT errorOccured(tr("No specified sockets were able to be opened"));
             return 1; //No sockets has been opened
         }
     }
@@ -645,6 +666,11 @@ bool Server::start(Application *app)
 {
     Q_D(Server);
 
+    if (d->engine) {
+        Q_EMIT errorOccured(tr("Server not fully stopped"));
+        return false;
+    }
+
     d->processes = 0;
     d->master = false;
     d->lazy = false;
@@ -678,27 +704,40 @@ ServerPrivate::~ServerPrivate() {
 
 bool ServerPrivate::listenTcpSockets()
 {
-    bool ret = false;
-    const auto socketsH1 = httpSockets;
-    for (const auto &socket : socketsH1) {
-        ret |= listenTcp(socket, getHttpProto(), false);
+    if (httpSockets.isEmpty() && httpsSockets.isEmpty() && http2Sockets.isEmpty() && fastcgiSockets.isEmpty()) {
+        // no sockets to listen to
+        return false;
     }
 
-    const auto socketsH1S = httpsSockets;
-    for (const auto &socket : socketsH1S) {
-        ret |= listenTcp(socket, getHttpProto(), true);
+    // HTTP
+    for (const auto &socket : qAsConst(httpSockets)) {
+        if (!listenTcp(socket, getHttpProto(), false)) {
+            return false;
+        }
     }
 
-    const auto socketsH2 = http2Sockets;
-    for (const auto &socket : socketsH2) {
-        ret |= listenTcp(socket, getHttp2Proto(), false);
+    // HTTPS
+    for (const auto &socket : qAsConst(httpsSockets)) {
+        if (!listenTcp(socket, getHttpProto(), true)) {
+            return false;
+        }
     }
 
-    const auto socketsFCGI = fastcgiSockets;
-    for (const auto &socket : socketsFCGI) {
-        ret |= listenTcp(socket, getFastCgiProto(), false);
+    // HTTP/2
+    for (const auto &socket : qAsConst(http2Sockets)) {
+        if (!listenTcp(socket, getHttp2Proto(), false)) {
+            return false;
+        }
     }
-    return ret;
+
+    // FastCGI
+    for (const auto &socket : qAsConst(fastcgiSockets)) {
+        if (!listenTcp(socket, getFastCgiProto(), false)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secure)
@@ -863,7 +902,7 @@ QString Server::application() const
 void Server::setThreads(const QString &threads)
 {
     Q_D(Server);
-    if (threads.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+    if (threads.compare(u"auto", Qt::CaseInsensitive) == 0) {
         d->threads = -1;
     } else {
         d->threads = qMax(1, threads.toInt());
@@ -1483,6 +1522,7 @@ bool ServerPrivate::setupApplication()
         }
     } else {
         engine = createEngine(localApp, 0);
+        workersNotRunning = 1;
     }
 
     if (!engine) {
@@ -1495,14 +1535,22 @@ bool ServerPrivate::setupApplication()
 
 void ServerPrivate::engineShutdown(CWsgiEngine *engine)
 {
-    engines.erase(std::remove(engines.begin(), engines.end(), engine), engines.end());
-
     const auto engineThread = engine->thread();
     if (QThread::currentThread() != engineThread) {
+        connect(engineThread, &QThread::finished, this, [this, engine] {
+            engines.erase(std::remove(engines.begin(), engines.end(), engine), engines.end());
+            checkEngineShutdown();
+        });
         engineThread->quit();
-        engineThread->wait(30 * 1000);
+    } else {
+        engines.erase(std::remove(engines.begin(), engines.end(), engine), engines.end());
     }
 
+    checkEngineShutdown();
+}
+
+void ServerPrivate::checkEngineShutdown()
+{
     if (engines.empty()) {
         if (userEventLoop) {
             Q_Q(Server);

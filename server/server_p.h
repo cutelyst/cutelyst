@@ -33,6 +33,7 @@ public:
     bool listenLocal(const QString &line, Protocol *protocol);
     bool setupApplication();
     void engineShutdown(CWsgiEngine *engine);
+    void checkEngineShutdown();
     void workerStarted();
     bool postFork(int workerId);
     bool writePidFile(const QString &filename);

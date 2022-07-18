@@ -127,7 +127,7 @@ qintptr LocalServer::socket() const
 
 void LocalServer::shutdown()
 {
-    pauseAccepting();
+    close();
 
     if (m_processing == 0) {
         m_engine->serverShutdown();

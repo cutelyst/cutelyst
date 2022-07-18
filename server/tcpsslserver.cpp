@@ -67,7 +67,7 @@ void TcpSslServer::incomingConnection(qintptr handle)
 
 void TcpSslServer::shutdown()
 {
-    pauseAccepting();
+    close();
 
     if (m_processing == 0) {
         m_engine->serverShutdown();
