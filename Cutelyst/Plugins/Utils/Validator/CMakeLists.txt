@@ -169,6 +169,10 @@ set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Utils
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
+if(ENABLE_LTO)
+    set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
     PUBLIC
         Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core

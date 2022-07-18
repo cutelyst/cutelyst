@@ -9,6 +9,9 @@ set(cutelyst_cmd_SRCS
 )
 
 add_executable(cutelyst-skell ${cutelyst_cmd_SRCS})
+if(ENABLE_LTO)
+    set_property(TARGET cutelyst-skell PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 target_compile_features(cutelyst-skell
   PUBLIC
     cxx_generalized_initializers

@@ -97,6 +97,10 @@ target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Serve
 )
 endif ()
 
+if(ENABLE_LTO)
+    set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server PROPERTY PUBLIC_HEADER ${cutelyst_server_HEADERS})
 install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -114,6 +118,10 @@ endif()
 
 if (USE_MIMALLOC)
     target_link_libraries(cutelystd PRIVATE mimalloc-static)
+endif()
+
+if(ENABLE_LTO)
+    set_property(TARGET cutelystd PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 target_link_libraries(cutelystd

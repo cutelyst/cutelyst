@@ -5,6 +5,7 @@ project(cutelyst VERSION 3.4.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(FetchContent)
 
+
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.12.0 COMPONENTS Core Network Sql REQUIRED)
 
@@ -36,6 +37,7 @@ endif ()
 # Options
 #
 include(CMakeDependentOption)
+option(ENABLE_LTO "Build with Link Time Optimization" OFF)
 option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
 option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
 option(BUILD_TESTS "Build the Cutelyst tests" ${BUILD_ALL})
@@ -68,6 +70,11 @@ option(PLUGIN_VALIDATOR_PWQUALITY "Enables ValidatorPwQuality that requires libp
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX
     "/usr" CACHE PATH "cutelyst default install prefix" FORCE)
+endif()
+
+if (ENABLE_LTO)
+    include(CheckIPOSupported)
+    check_ipo_supported() # fatal error if IPO is not supported
 endif()
 
 #
