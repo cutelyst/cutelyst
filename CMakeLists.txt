@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(cutelyst VERSION 3.5.0 LANGUAGES CXX)
+project(cutelyst VERSION 3.6.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 include(FetchContent)
