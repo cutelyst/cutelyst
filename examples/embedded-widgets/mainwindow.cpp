@@ -33,8 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
         m_server->stop();
     });
 
-    m_nam->setAutoDeleteReplies(true);
-
     connect(m_server, &Cutelyst::Server::ready, this, [=] {
         ui->serverStopListenPB->setEnabled(true);
     });
@@ -67,6 +65,8 @@ void MainWindow::clientSend()
 
     QNetworkReply *reply = m_nam->sendCustomRequest(request, ui->clientMethodLE->currentText().toLatin1(), ui->clientBodyPTE->toPlainText().toUtf8());
     connect(reply, &QNetworkReply::finished, this, [=] {
+        reply->deleteLater();
+
         ui->clientSendPB->setEnabled(true);
 
         const QByteArray body = reply->readAll();

@@ -6,7 +6,7 @@ find_package(Qt${QT_VERSION_MAJOR} 5.12.0 COMPONENTS Core Network Widgets REQUIR
 # Our sources
 file(GLOB_RECURSE hello_SRCS *)
 
-qt_wrap_ui(${target_name} mainwindow.ui)
+set(CMAKE_AUTOUIC ON)
 
 # Create the application
 add_executable(${target_name} ${hello_SRCS})
