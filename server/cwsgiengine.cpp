@@ -41,11 +41,22 @@ using namespace Cutelyst;
 
 QByteArray dateHeader();
 
-CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMap &opts, Server *wsgi) : Engine(localApp, workerCore, opts)
-  , m_wsgi(wsgi)
+CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMap &opts, Server *wsgi)
+    : Engine(localApp, workerCore, opts)
+    , m_wsgi(wsgi)
 {
     m_lastDate = dateHeader();
     m_lastDateTimer.start();
+
+    if (m_wsgi->socketTimeout()) {
+        m_socketTimeout = new QTimer(this);
+        m_socketTimeout->setObjectName(QStringLiteral("Cutelyst::socketTimeout"));
+        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
+    }
+
+    connect(this, &CWsgiEngine::shutdown, app(), [this] {
+        Q_EMIT app()->shuttingDown(app());
+    });
 
     const QStringList staticMap = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
@@ -60,15 +71,6 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
             staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
         }
     }
-
-    if (m_wsgi->socketTimeout()) {
-        m_socketTimeout = new QTimer(this);
-        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
-    }
-
-    connect(this, &CWsgiEngine::shutdown, this, [localApp] {
-        Q_EMIT localApp->shuttingDown(localApp);
-    });
 }
 
 CWsgiEngine::~CWsgiEngine()
