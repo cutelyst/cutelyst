@@ -82,26 +82,19 @@ void LocalServer::resumeAccepting()
 
 void LocalServer::incomingConnection(quintptr handle)
 {
-    LocalSocket *sock;
-    if (!m_socks.empty()) {
-        sock = m_socks.back();
-        m_socks.pop_back();
-    } else {
-        sock = new LocalSocket(m_engine, this);
-        sock->protoData = m_protocol->createData(sock);
+    auto sock = new LocalSocket(m_engine, this);
+    sock->protoData = m_protocol->createData(sock);
 
-        connect(sock, &QIODevice::readyRead, [sock] () {
-            sock->timeout = false;
-            sock->proto->parse(sock, sock);
-        });
-        connect(sock, &LocalSocket::finished, this, [this, sock] () {
-            sock->resetSocket();
-            m_socks.push_back(sock);
-            if (--m_processing == 0) {
-                m_engine->stopSocketTimeout();
-            }
-        }, Qt::QueuedConnection);
-    }
+    connect(sock, &QIODevice::readyRead, [sock] () {
+        sock->timeout = false;
+        sock->proto->parse(sock, sock);
+    });
+    connect(sock, &LocalSocket::finished, this, [this, sock] () {
+        sock->resetSocket();
+        if (--m_processing == 0) {
+            m_engine->stopSocketTimeout();
+        }
+    }, Qt::QueuedConnection);
 
     if (Q_LIKELY(sock->setSocketDescriptor(qintptr(handle)))) {
         sock->proto = m_protocol;
@@ -111,7 +104,7 @@ void LocalServer::incomingConnection(quintptr handle)
             m_engine->startSocketTimeout();
         }
     } else {
-        m_socks.push_back(sock);
+        delete sock;
     }
 }
 

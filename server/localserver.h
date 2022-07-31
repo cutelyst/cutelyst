@@ -46,7 +46,6 @@ private:
     CWsgiEngine *m_engine = nullptr;
     Server *m_wsgi;
 
-    std::vector<LocalSocket *> m_socks;
     Protocol *m_protocol = nullptr;
     qintptr m_socket = -1;
     int m_processing = 0;
