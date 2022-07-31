@@ -67,7 +67,7 @@ public:
      * This method does not support forking which includes master, lazy or processes
      * properties.
      *
-     * New applicationg instances will be created if the app constructor is
+     * New application instances will be created if the app constructor is
      * marked as Q_INVOKABLE and threads settings are greater than 1.
      *
      * @note This method does not take ownership of application \pa appp
@@ -92,6 +92,14 @@ public:
     /**
      * Defines the number of threads to use, if set to "auto" the ideal thread count is used
      * @accessors threads(), setThreads()
+     *
+     * A new thread is only created when > "2" or if "auto" reports more than 1 core, when
+     * the number of threads is 2 or more a new thread is not created for the worker 0,
+     * it's this way to save allocating a new Application as we already have our current
+     * thread.
+     *
+     * If it's desired to not have the Server running on the GUI (or current) thread for
+     * example, the Server must be moved to a new thread manually.
      */
     Q_PROPERTY(QString threads READ threads WRITE setThreads NOTIFY changed)
     void setThreads(const QString &threads);
