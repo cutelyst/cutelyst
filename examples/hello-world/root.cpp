@@ -127,31 +127,31 @@ void Root::ws(Context *c)
 
     if (response->webSocketHandshake()) {
         Request *req = c->req();
-        connect(req, &Request::webSocketTextFrame, [=] (const QString &msg, bool isLastFrame) {
+        connect(req, &Request::webSocketTextFrame, c, [=] (const QString &msg, bool isLastFrame) {
 //            qDebug() << "Got text frame" << isLastFrame << msg.size() << msg.left(25) << c->actionName();
 //            response->webSocketTextMessage(msg);
         });
 
-        connect(req, &Request::webSocketTextMessage, [=] (const QString &msg) {
+        connect(req, &Request::webSocketTextMessage, c, [=] (const QString &msg) {
 //            qDebug() << "Got text msg" << msg.size() << msg.left(25) << c->actionName();
             response->webSocketTextMessage(msg);
         });
 
-        connect(req, &Request::webSocketBinaryFrame, [=] (const QByteArray &msg, bool isLastFrame) {
+        connect(req, &Request::webSocketBinaryFrame, c, [=] (const QByteArray &msg, bool isLastFrame) {
 //            qDebug() << "Got binary frame" << isLastFrame << msg.size() << msg.left(25) << c->actionName();
 //            response->webSocketBinaryMessage(msg);
         });
 
-        connect(req, &Request::webSocketBinaryMessage, [=] (const QByteArray &msg) {
+        connect(req, &Request::webSocketBinaryMessage, c, [=] (const QByteArray &msg) {
 //            qDebug() << "Got binary msg" << msg.size() << msg.left(25) << c->actionName();
             response->webSocketBinaryMessage(msg);
         });
 
-        connect(req, &Request::webSocketPong, [=] (const QByteArray &payload) {
+        connect(req, &Request::webSocketPong, c, [=] (const QByteArray &payload) {
             qDebug() << "Got pong" << payload;
         });
 
-        connect(req, &Request::webSocketClosed, [=] (quint16 code, const QString &reason) {
+        connect(req, &Request::webSocketClosed, c, [=] (quint16 code, const QString &reason) {
             qDebug() << "Got close" << code << reason;
         });
     }
