@@ -644,7 +644,7 @@ bool LangSelectPrivate::getFromHeader(Context *c, const QString &name) const
                 bool ok = true;
                 if (idx > -1) {
                     langPart = al.left(idx);
-                    const QString ref = al.mid(idx + 1);
+                    const auto ref = QStringView(al).mid(idx + 1);
                     priority = ref.mid(ref.indexOf(QLatin1Char('=')) +1).toFloat(&ok);
                 } else {
                     langPart = al;
