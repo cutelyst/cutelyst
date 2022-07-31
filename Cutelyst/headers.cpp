@@ -175,7 +175,7 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     QString dt = QLocale::c().toString(date.toUTC(),
-                                       QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+                                       u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     m_data.replace(QStringLiteral("DATE"), dt);
     return dt;
 }
@@ -230,7 +230,7 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
     auto it = m_data.constFind(QStringLiteral("IF_MODIFIED_SINCE"));
     if (it != m_data.constEnd()) {
         return it.value() != QLocale::c().toString(lastModified.toUTC(),
-                                                   QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+                                                   u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     }
     return true;
 }
@@ -239,7 +239,7 @@ bool Headers::ifMatch(const QString &etag) const
 {
     auto it = m_data.constFind(QStringLiteral("IF_MATCH"));
     if (it != m_data.constEnd()) {
-        const QString &clientETag = it.value();
+        const auto clientETag = QStringView(it.value());
         return clientETag.mid(1, clientETag.size() - 2) == etag ||
                 clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
@@ -250,7 +250,7 @@ bool Headers::ifNoneMatch(const QString &etag) const
 {
     auto it = m_data.constFind(QStringLiteral("IF_NONE_MATCH"));
     if (it != m_data.constEnd()) {
-        const QString &clientETag = it.value();
+        const auto clientETag = QStringView(it.value());
         return clientETag.mid(1, clientETag.size() - 2) == etag ||
                 clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
@@ -277,7 +277,7 @@ QString Headers::setLastModified(const QDateTime &lastModified)
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
     auto dt = QLocale::c().toString(lastModified.toUTC(),
-                                    QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+                                    u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     setLastModified(dt);
     return dt;
 }
