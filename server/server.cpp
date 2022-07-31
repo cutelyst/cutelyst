@@ -48,8 +48,15 @@ Server::Server(QObject *parent) : QObject(parent),
     QCoreApplication::addLibraryPath(QDir().absolutePath());
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qSetMessagePattern(QLatin1String("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
+        qSetMessagePattern(QStringLiteral("%{pid}:%{threadid} %{category}[%{type}] %{message}"));
     }
+
+#ifdef Q_OS_LINUX
+    if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP")) {
+        qCInfo(CUTELYST_SERVER) << "Trying to install EPoll event loop";
+        QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
+    }
+#endif
 
     auto cleanUp = [this]() {
         Q_D(Server);
@@ -513,13 +520,6 @@ int Server::exec(Cutelyst::Application *app)
 {
     Q_D(Server);
     std::cout << "Cutelyst-Server starting" << std::endl;
-
-#ifdef Q_OS_LINUX
-    if (!qEnvironmentVariableIsSet("CUTELYST_QT_EVENT_LOOP") && !d->userEventLoop) {
-        std::cout << "Installing EPoll event loop" << std::endl;
-        QCoreApplication::setEventDispatcher(new EventDispatcherEPoll);
-    }
-#endif
 
     if (!qEnvironmentVariableIsSet("CUTELYST_SERVER_IGNORE_MASTER") && !d->master) {
         std::cout << "*** WARNING: you are running Cutelyst-Server without its master process manager ***" << std::endl;

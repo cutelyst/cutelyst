@@ -707,9 +707,10 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
                 sleep(2);
             }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-            QAbstractEventDispatcher::instance()->flush();
-#endif
+            auto epoll = qobject_cast<EventDispatcherEPoll*>(QAbstractEventDispatcher::instance());
+            if (epoll) {
+                epoll->reinstall();
+            }
 
             setupSocketPair(true, true);
 

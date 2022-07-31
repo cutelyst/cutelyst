@@ -24,6 +24,14 @@ class CUTELYST_SERVER_EXPORT Server : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Server)
 public:
+    /**
+     * @brief Server
+     *
+     * \note When on Linux the constructor will try install our EPoll
+     * event loop, so creating this class must be done before creating
+     * a QCoreApplition or any of it's subclasses.
+     * @param parent
+     */
     explicit Server(QObject *parent = nullptr);
     virtual ~Server();
 
