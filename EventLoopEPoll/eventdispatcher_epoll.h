@@ -21,6 +21,8 @@ public:
     explicit EventDispatcherEPoll(QObject *parent = nullptr);
     virtual ~EventDispatcherEPoll() override;
 
+    void reinstall();
+
     virtual bool processEvents(QEventLoop::ProcessEventsFlags flags) override;
 
     virtual void registerSocketNotifier(QSocketNotifier *notifier) override;

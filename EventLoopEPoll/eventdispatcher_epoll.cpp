@@ -20,6 +20,13 @@ EventDispatcherEPoll::~EventDispatcherEPoll()
     delete d_ptr;
 }
 
+void EventDispatcherEPoll::reinstall()
+{
+    delete d_ptr;
+    d_ptr = new EventDispatcherEPollPrivate(this);
+    d_ptr->createEpoll();
+}
+
 bool EventDispatcherEPoll::processEvents(QEventLoop::ProcessEventsFlags flags)
 {
     Q_D(EventDispatcherEPoll);
@@ -177,8 +184,6 @@ void EventDispatcherEPoll::registerTimer(
 
 void EventDispatcherEPoll::flush()
 {
-    Q_D(EventDispatcherEPoll);
-    d->createEpoll();
 }
 #else
 void EventDispatcherEPoll::registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object)
