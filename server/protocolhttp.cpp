@@ -17,7 +17,6 @@
 #include <QEventLoop>
 #include <QCoreApplication>
 #include <QBuffer>
-#include <QTimer>
 #include <QCryptographicHash>
 #include <QLoggingCategory>
 
