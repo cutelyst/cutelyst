@@ -15,7 +15,7 @@ class EpollAbastractEvent
 {
 public:
     explicit EpollAbastractEvent(int _fd = 0) : fd(_fd) {}
-    virtual ~EpollAbastractEvent() {}
+    virtual ~EpollAbastractEvent() = default;
 
     virtual void process(quint32 events) = 0;
 
@@ -56,7 +56,7 @@ class ZeroTimer final : public EpollAbastractEvent
 public:
     ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
 
-    virtual void process(quint32 events) override;
+    void process(quint32 events) override;
 
     QObject *object;
     int timerId;
@@ -69,7 +69,7 @@ public:
     TimerInfo(int fd, int _timerId, int _interval, QObject *obj)
         : EpollAbastractEvent(fd), object(obj), timerId(_timerId), interval(_interval) {}
 
-    virtual void process(quint32 events) override;
+    void process(quint32 events) override;
 
     QObject *object;
     struct timeval when;
