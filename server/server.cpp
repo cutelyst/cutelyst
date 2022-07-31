@@ -1633,11 +1633,20 @@ bool ServerPrivate::writePidFile(const QString &filename)
     return true;
 }
 
-CWsgiEngine *ServerPrivate::createEngine(Application *app, int core)
+CWsgiEngine *ServerPrivate::createEngine(Application *app, int workerCore)
 {
     Q_Q(Server);
 
-    auto engine = new CWsgiEngine(app, core, opt, q);
+    // If threads is greater than 1 we need a new application instance
+    if (workerCore > 0) {
+        app = qobject_cast<Application *>(app->metaObject()->newInstance());
+        if (!app) {
+            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
+                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.");
+        }
+    }
+
+    auto engine = new CWsgiEngine(app, workerCore, opt, q);
     connect(this, &ServerPrivate::shutdown, engine, &CWsgiEngine::shutdown, Qt::QueuedConnection);
     connect(this, &ServerPrivate::postForked, engine, &CWsgiEngine::postFork, Qt::QueuedConnection);
     connect(engine, &CWsgiEngine::shutdownCompleted, this, &ServerPrivate::engineShutdown, Qt::QueuedConnection);
@@ -1646,14 +1655,19 @@ CWsgiEngine *ServerPrivate::createEngine(Application *app, int core)
     engine->setConfig(config);
     engine->setServers(servers);
     if (!engine->init()) {
-        std::cerr << "Application failed to init(), cheaping core: " << core << std::endl;
+        std::cerr << "Application failed to init(), cheaping core: " << workerCore << std::endl;
         delete engine;
         return nullptr;
     }
 
     engines.push_back(engine);
 
-    if (threads > 1) {
+    // If threads is greater than 1 we need a new thread
+    if (workerCore > 0) {
+        // To make easier for engines to clean up
+        // the NEW app must be a child of it
+        app->setParent(engine);
+
         auto thread = new QThread(this);
         engine->moveToThread(thread);
     } else {

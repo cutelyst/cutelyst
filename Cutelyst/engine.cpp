@@ -50,22 +50,7 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
 
     d->opts = opts;
     d->workerCore = workerCore;
-
-    // If workerCore is greater than 0 we need a new application instance
-    if (workerCore) {
-        auto newApp = qobject_cast<Application *>(app->metaObject()->newInstance());
-        if (!newApp) {
-            qFatal("*** FATAL *** Could not create a NEW instance of your Cutelyst::Application, "
-                   "make sure your constructor has Q_INVOKABLE macro or disable threaded mode.");
-        }
-        d->app = newApp;
-
-        // To make easier for engines to clean up
-        // the NEW app must be a child of it
-        d->app->setParent(this);
-    } else {
-        d->app = app;
-    }
+    d->app = app;
 }
 
 Engine::~Engine()
