@@ -50,7 +50,9 @@ void TcpServer::incomingConnection(qintptr handle)
     connect(sock, &TcpSocket::finished, this, [this, sock] {
         sock->resetSocket();
         sock->deleteLater();
-        --m_processing;
+        if (--m_processing == 0) {
+            m_engine->stopSocketTimeout();
+        }
     }, Qt::QueuedConnection);
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {

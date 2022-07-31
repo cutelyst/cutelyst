@@ -32,7 +32,9 @@ void TcpSslServer::incomingConnection(qintptr handle)
     });
     connect(sock, &SslSocket::finished, this, [this, sock] () {
         sock->deleteLater();
-        --m_processing;
+        if (--m_processing == 0) {
+            m_engine->stopSocketTimeout();
+        }
     });
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
