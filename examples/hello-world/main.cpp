@@ -8,9 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
-
     Cutelyst::Server server;
+
+    QCoreApplication app(argc, argv);
 
     // Open HTTP/1.1 3000 port
     server.setHttpSocket({
