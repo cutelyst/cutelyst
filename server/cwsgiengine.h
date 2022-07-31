@@ -52,7 +52,7 @@ public:
 Q_SIGNALS:
     void started();
     void shutdown();
-    void shutdownCompleted(CWsgiEngine *engine);
+    void shutdownCompleted(Cutelyst::CWsgiEngine *engine);
 
 protected:
     inline void startSocketTimeout() {
