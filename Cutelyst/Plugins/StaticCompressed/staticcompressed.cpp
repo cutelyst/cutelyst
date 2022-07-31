@@ -79,21 +79,11 @@ bool StaticCompressed::setup(Application *app)
 
     const QString _mimeTypes = config.value(QStringLiteral("mime_types"), QStringLiteral("text/css,application/javascript")).toString();
     qCInfo(C_STATICCOMPRESSED, "MIME Types: %s", qPrintable(_mimeTypes));
-    d->mimeTypes = _mimeTypes.split(QLatin1Char(','),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-                                    Qt::SkipEmptyParts);
-#else
-                                    QString::SkipEmptyParts);
-#endif
+    d->mimeTypes = _mimeTypes.split(u',', Qt::SkipEmptyParts);
 
     const QString _suffixes = config.value(QStringLiteral("suffixes"), QStringLiteral("js.map,css.map,min.js.map,min.css.map")).toString();
     qCInfo(C_STATICCOMPRESSED, "Suffixes: %s", qPrintable(_suffixes));
-    d->suffixes = _suffixes.split(QLatin1Char(','),
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-                                  Qt::SkipEmptyParts);
-#else
-                                  QString::SkipEmptyParts);
-#endif
+    d->suffixes = _suffixes.split(u',', Qt::SkipEmptyParts);
 
     d->checkPreCompressed = config.value(QStringLiteral("check_pre_compressed"), true).toBool();
     qCInfo(C_STATICCOMPRESSED, "Check for pre-compressed files: %s", d->checkPreCompressed ? "true" : "false");
@@ -126,7 +116,7 @@ bool StaticCompressed::setup(Application *app)
     supportedCompressions << QStringLiteral("brotli");
 #endif
 
-    qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(QLatin1Char(','))));
+    qCInfo(C_STATICCOMPRESSED, "Supported compressions: %s", qPrintable(supportedCompressions.join(u',')));
 
     connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
         d->beforePrepareAction(c, skipMethod);
@@ -450,11 +440,7 @@ bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QStri
     // prepend a generic 10-byte gzip header (see RFC 1952)
     headerStream << quint16(0x1f8b)
                  << quint16(0x0800)
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
                  << quint32(origLastModified.toSecsSinceEpoch())
-#else
-                 << quint32(origLastModified.toTime_t())
-#endif
 #if defined Q_OS_UNIX
                  << quint16(0x0003);
 #elif defined Q_OS_WIN

@@ -191,7 +191,7 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
             break;
         }
 
-        int pos = path.lastIndexOf(QLatin1Char('/'));
+        int pos = path.lastIndexOf(u'/');
 
         const QString arg = path.mid(pos + 1);
         args.prepend(arg);
@@ -209,12 +209,12 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     if (nameSpace.isEmpty()) {
-        const QString normName = QLatin1Char('/') + name;
+        const QString normName = u'/' + name;
         return d->actions.value(normName).action;
     }
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return getActionByPath(ns + QLatin1Char('/') + name);
+    return getActionByPath(ns + u'/' + name);
 }
 
 Action *Dispatcher::getActionByPath(const QString &path) const
@@ -222,10 +222,10 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     Q_D(const Dispatcher);
 
     QString _path = path;
-    int slashes = _path.count(QLatin1Char('/'));
+    int slashes = _path.count(u'/');
     if (slashes == 0) {
-        _path.prepend(QLatin1Char('/'));
-    } else if (_path.startsWith(QLatin1Char('/')) && slashes != 1) {
+        _path.prepend(u'/');
+    } else if (_path.startsWith(u'/') && slashes != 1) {
         _path.remove(0, 1);
     }
     return d->actions.value(_path).action;
@@ -350,8 +350,8 @@ void DispatcherPrivate::printActions() const
     for (const auto &key : keys) {
         Action *action = actions.value(key).action;
         QString path = key.toString();
-        if (!path.startsWith(QLatin1Char('/'))) {
-            path.prepend(QLatin1Char('/'));
+        if (!path.startsWith(u'/')) {
+            path.prepend(u'/');
         }
 
         QStringList row;

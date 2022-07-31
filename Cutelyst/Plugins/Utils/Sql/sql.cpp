@@ -222,18 +222,18 @@ void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &pa
     if (htmlEscaped) {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query.bindValue(QLatin1Char(':') + it.key(), QVariant());
+                query.bindValue(u':' + it.key(), QVariant());
             } else {
-                query.bindValue(QLatin1Char(':') + it.key(), it.value().toHtmlEscaped());
+                query.bindValue(u':' + it.key(), it.value().toHtmlEscaped());
             }
             ++it;
         }
     } else {
         while (it != params.constEnd()) {
             if (it.value().isNull()) {
-                query.bindValue(QLatin1Char(':') + it.key(), QVariant());
+                query.bindValue(u':' + it.key(), QVariant());
             } else {
-                query.bindValue(QLatin1Char(':') + it.key(), it.value());
+                query.bindValue(u':' + it.key(), it.value());
             }
             ++it;
         }
@@ -262,7 +262,7 @@ QSqlQuery Sql::preparedQueryThread(const QString &query, const QString &dbName, 
 
 QString Sql::databaseNameThread(const QString &dbName)
 {
-    return dbName + QLatin1Char('-') + QThread::currentThread()->objectName();
+    return dbName + u'-' + QThread::currentThread()->objectName();
 }
 
 QSqlDatabase Sql::databaseThread(const QString &dbName)

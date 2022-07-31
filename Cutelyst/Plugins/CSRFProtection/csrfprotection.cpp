@@ -83,11 +83,7 @@ bool CSRFProtection::setup(Application *app)
         d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
-#else
-    d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(QLatin1Char(','), QString::SkipEmptyParts);
-#endif
+    d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(u',', Qt::SkipEmptyParts);
     if (d->formInputName.isEmpty()) {
         d->formInputName = QStringLiteral(DEFAULT_FORM_INPUT_NAME);
     }
@@ -566,7 +562,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         }
                         const int serverPort = uri.port(c->req()->secure() ? 443 : 80);
                         if ((serverPort != 80) && (serverPort != 443)) {
-                            goodReferer += QLatin1Char(':') + QString::number(serverPort);
+                            goodReferer += u':' + QString::number(serverPort);
                         }
 
                         QStringList goodHosts = csrf->d_ptr->trustedOrigins;
@@ -575,13 +571,13 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         QString refererHost = refererUrl.host();
                         const int refererPort = refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? 443 : 80);
                         if ((refererPort != 80) && (refererPort != 443)) {
-                            refererHost += QLatin1Char(':') + QString::number(refererPort);
+                            refererHost += u':' + QString::number(refererPort);
                         }
 
                         bool refererCheck = false;
                         for (int i = 0; i < goodHosts.size(); ++i) {
                             const QString host = goodHosts.at(i);
-                            if ((host.startsWith(QLatin1Char('.')) && (refererHost.endsWith(host) || (refererHost == host.mid(1)))) || host == refererHost) {
+                            if ((host.startsWith(u'.') && (refererHost.endsWith(host) || (refererHost == host.mid(1)))) || host == refererHost) {
                                 refererCheck = true;
                                 break;
                             }

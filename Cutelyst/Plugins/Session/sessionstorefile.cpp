@@ -64,9 +64,9 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
 static QString rootPath()
 {
     static QString rootPath = QDir::tempPath()
-            + QLatin1Char('/')
+            + u'/'
             + QCoreApplication::applicationName()
-            + QLatin1String("/session/data");
+            + u"/session/data";
     return rootPath;
 }
 
@@ -91,7 +91,7 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
 
     const QString root = rootPath();
 
-    auto file = new QFile(root + QLatin1Char('/') + sid, c);
+    auto file = new QFile(root + u'/' + sid, c);
     if (!file->open(QIODevice::ReadWrite)) {
         if (!QDir().mkpath(root)) {
             qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;

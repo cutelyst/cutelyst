@@ -220,7 +220,7 @@ QString Application::pathTo(const QString &path) const
 QString Cutelyst::Application::pathTo(const QStringList &path) const
 {
     QDir home = config(QStringLiteral("home")).toString();
-    return home.absoluteFilePath(path.join(QLatin1Char('/')));
+    return home.absoluteFilePath(path.join(u'/'));
 }
 
 bool Cutelyst::Application::inited() const noexcept
@@ -454,16 +454,16 @@ static void replacePercentN(QString *result, int n)
     if (n >= 0) {
         auto percentPos = 0;
         auto len = 0;
-        while ((percentPos = result->indexOf(QLatin1Char('%'), percentPos + len)) != -1) {
+        while ((percentPos = result->indexOf(u'%', percentPos + len)) != -1) {
             len = 1;
             QString fmt;
-            if (result->at(percentPos + len) == QLatin1Char('L')) {
+            if (result->at(percentPos + len) == u'L') {
                 ++len;
                 fmt = QStringLiteral("%L1");
             } else {
                 fmt = QStringLiteral("%1");
             }
-            if (result->at(percentPos + len) == QLatin1Char('n')) {
+            if (result->at(percentPos + len) == u'n') {
                 fmt = fmt.arg(n);
                 ++len;
                 result->replace(percentPos, len, fmt);
@@ -520,7 +520,7 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, c
         if (Q_LIKELY(i18nDir.exists())) {
             const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
             const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
-            const QStringList namesFilter = QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
+            const QStringList namesFilter = QStringList({filename + _prefix + u'*' + _suffix});
 
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
@@ -569,7 +569,7 @@ QVector<QLocale> Application::loadTranslationsFromDirs(const QString &directory,
             if (Q_LIKELY(!dirs.empty())) {
                 locales.reserve(dirs.size());
                 for (const QString &subDir : dirs) {
-                    const QString relFn = subDir + QLatin1Char('/') + filename;
+                    const QString relFn = subDir + u'/' + filename;
                     if (dir.exists(relFn)) {
                         const QLocale l(subDir);
                         if (Q_LIKELY(l.language() != QLocale::C)) {

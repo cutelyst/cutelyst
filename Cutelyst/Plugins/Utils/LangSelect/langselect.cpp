@@ -150,7 +150,7 @@ void LangSelect::setLocalesFromDir(const QString &path, const QString &name, con
         if (Q_LIKELY(dir.exists())) {
             const auto _pref = prefix.isEmpty() ? QStringLiteral(".") : prefix;
             const auto _suff = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
-            const QString filter = name + _pref + QLatin1Char('*') + _suff;
+            const QString filter = name + _pref + u'*' + _suff;
             const auto files = dir.entryInfoList({name}, QDir::Files);
             if (Q_LIKELY(!files.empty())) {
                 d->locales.reserve(files.size());
@@ -194,7 +194,7 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                 d->locales.reserve(dirs.size());
                 bool shrinkToFit = false;
                 for (const QString &subDir : dirs) {
-                    const QString relFn = subDir + QLatin1Char('/') + name;
+                    const QString relFn = subDir + u'/' + name;
                     if (dir.exists(relFn)) {
                         QLocale l(subDir);
                         if (Q_LIKELY(l.language() != QLocale::C)) {
@@ -457,10 +457,10 @@ bool LangSelect::fromPath(Context *c, const QString &locale)
             d->setFallback(c);
         }
         auto uri = c->req()->uri();
-        auto pathParts = uri.path().split(QLatin1Char('/'));
+        auto pathParts = uri.path().split(u'/');
         const auto localeIdx = pathParts.indexOf(locale);
         pathParts[localeIdx] = c->locale().bcp47Name().toLower();
-        uri.setPath(pathParts.join(QLatin1Char('/')));
+        uri.setPath(pathParts.join(u'/'));
         qCDebug(C_LANGSELECT) << "Storing selected locale by redirecting to" << uri;
         c->res()->redirect(uri, 307);
         c->detach();
@@ -580,11 +580,7 @@ bool LangSelectPrivate::getFromSubdomain(Context *c, const QMap<QString, QLocale
         ++i;
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    const auto domainParts = domain.split(QLatin1Char('.'), Qt::SkipEmptyParts);
-#else
-    const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
-#endif
+    const auto domainParts = domain.split(u'.', Qt::SkipEmptyParts);
     if (domainParts.size() > 2) {
         const QLocale l(domainParts.at(0));
         if (l.language() != QLocale::C && locales.contains(l)) {
@@ -610,11 +606,7 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
         ++i;
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-    const auto domainParts = domain.split(QLatin1Char('.'), Qt::SkipEmptyParts);
-#else
-    const auto domainParts = domain.split(QLatin1Char('.'), QString::SkipEmptyParts);
-#endif
+    const auto domainParts = domain.split(u'.', Qt::SkipEmptyParts);
     if (domainParts.size() > 1) {
         const QLocale l(domainParts.at(domainParts.size() - 1));
         if (l.language() != QLocale::C && locales.contains(l)) {
@@ -630,22 +622,18 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
 bool LangSelectPrivate::getFromHeader(Context *c, const QString &name) const
 {
     if (detectFromHeader) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-        const auto accpetedLangs = c->req()->header(name).split(QLatin1Char(','), Qt::SkipEmptyParts);
-#else
-        const auto accpetedLangs = c->req()->header(name).split(QLatin1Char(','), QString::SkipEmptyParts);
-#endif
+        const auto accpetedLangs = c->req()->header(name).split(u',', Qt::SkipEmptyParts);
         if (Q_LIKELY(!accpetedLangs.empty())) {
             std::map<float,QLocale> langMap;
             for (const QString &al : accpetedLangs) {
-                const auto idx = al.indexOf(QLatin1Char(';'));
+                const auto idx = al.indexOf(u';');
                 float priority = 1.0f;
                 QString langPart;
                 bool ok = true;
                 if (idx > -1) {
                     langPart = al.left(idx);
                     const auto ref = QStringView(al).mid(idx + 1);
-                    priority = ref.mid(ref.indexOf(QLatin1Char('=')) +1).toFloat(&ok);
+                    priority = ref.mid(ref.indexOf(u'=') + 1).toFloat(&ok);
                 } else {
                     langPart = al;
                 }

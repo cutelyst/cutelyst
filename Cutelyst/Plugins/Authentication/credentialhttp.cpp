@@ -217,7 +217,7 @@ QStringList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *re
     // return realm="realmname"
     // return domain="realmname"
     if (!realm->name().isEmpty()) {
-        ret.append(QLatin1String("realm=\"") + realm->name() + QLatin1Char('"'));
+        ret.append(u"realm=\"" + realm->name() + u'"');
     }
     return ret;
 }
@@ -226,7 +226,7 @@ QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type, const QS
 {
     QString ret = type;
     if (!parts.isEmpty()) {
-        ret.append(QLatin1Char(' ') + parts.join(QStringLiteral(", ")));
+        ret.append(u' ' + parts.join(u", "));
     }
     return ret;
 }

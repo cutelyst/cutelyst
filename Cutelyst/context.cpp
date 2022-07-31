@@ -246,14 +246,14 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
 
     if (!args.isEmpty()) {
         if (_path.compare(u"/") == 0) {
-            _path += args.join(QLatin1Char('/'));
+            _path += args.join(u'/');
         } else {
-            _path = _path + QLatin1Char('/') + args.join(QLatin1Char('/'));
+            _path = _path + u'/' + args.join(u'/');
         }
     }
 
-    if (!_path.startsWith(QLatin1Char('/'))) {
-        _path.prepend(QLatin1Char('/'));
+    if (!_path.startsWith(u'/')) {
+        _path.prepend(u'/');
     }
     uri.setPath(_path, QUrl::DecodedMode);
 
@@ -512,18 +512,18 @@ QString ContextPrivate::statsStartExecute(Component *code)
 {
     QString actionName;
     // Skip internal actions
-    if (code->name().startsWith(QLatin1Char('_'))) {
+    if (code->name().startsWith(u'_')) {
         return actionName;
     }
 
     actionName = code->reverse();
 
     if (qobject_cast<Action *>(code)) {
-        actionName.prepend(QLatin1Char('/'));
+        actionName.prepend(u'/');
     }
 
     if (stack.size() > 2) {
-        actionName = QLatin1String("-> ") + actionName;
+        actionName = u"-> " + actionName;
         actionName = actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
     }
 

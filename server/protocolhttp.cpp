@@ -269,8 +269,8 @@ inline QString normalizeHeaderKey(const char *str, int size)
             if (c.isLower()) {
                 key[i] = c.toUpper();
             }
-        } else if (c == QLatin1Char('-')) {
-            key[i] = QLatin1Char('_');
+        } else if (c == u'-') {
+            key[i] = u'_';
         }
         ++i;
     }

@@ -147,7 +147,7 @@ void CuteleeView::preloadTemplates()
         while (it.hasNext()) {
             QString path = it.next();
             path.remove(includePath);
-            if (path.startsWith(QLatin1Char('/'))) {
+            if (path.startsWith(u'/')) {
                 path.remove(0, 1);
             }
 
@@ -178,7 +178,7 @@ QByteArray CuteleeView::render(Context *c) const
     } else {
         if (c->action() && !c->action()->reverse().isEmpty()) {
             templateFile = c->action()->reverse() + d->extension;
-            if (templateFile.startsWith(QLatin1Char('/'))) {
+            if (templateFile.startsWith(u'/')) {
                 templateFile.remove(0, 1);
             }
         }

@@ -100,7 +100,7 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
     for (int i = meta->classInfoCount() - 1; i >= 0; --i) {
         if (qstrcmp(meta->classInfo(i).name(), "Namespace") == 0) {
             pathPrefix = QString::fromLatin1(meta->classInfo(i).value());
-            while (pathPrefix.startsWith(QLatin1Char('/'))) {
+            while (pathPrefix.startsWith(u'/')) {
                 pathPrefix.remove(0, 1);
             }
             namespaceFound = true;
@@ -353,8 +353,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
 
             // remove quotes
             if (!value.isEmpty()) {
-                if ((value.startsWith(QLatin1Char('\'')) && value.endsWith(QLatin1Char('\''))) ||
-                        (value.startsWith(QLatin1Char('"')) && value.endsWith(QLatin1Char('"')))) {
+                if ((value.startsWith(u'\'') && value.endsWith(u'\'')) ||
+                        (value.startsWith(u'"') && value.endsWith(u'"'))) {
                     value.remove(0, 1);
                     value.remove(value.size() - 1, 1);
                 }
@@ -451,10 +451,10 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
 QString ControllerPrivate::parsePathAttr(const QString &value)
 {
     QString ret = pathPrefix;
-    if (value.startsWith(QLatin1Char('/'))) {
+    if (value.startsWith(u'/')) {
         ret = value;
     } else if (!value.isEmpty()) {
-        ret = pathPrefix + QLatin1Char('/') + value;
+        ret = pathPrefix + u'/' + value;
     }
     return ret;
 }
@@ -468,9 +468,9 @@ QString ControllerPrivate::parseChainedAttr(const QString &attr)
 
     if (attr.compare(u".") == 0) {
         ret.append(pathPrefix);
-    } else if (!attr.startsWith(QLatin1Char('/'))) {
+    } else if (!attr.startsWith(u'/')) {
         if (!pathPrefix.isEmpty()) {
-            ret.append(pathPrefix + QLatin1Char('/') + attr);
+            ret.append(pathPrefix + u'/' + attr);
         } else {
             // special case namespace '' (root)
             ret.append(attr);

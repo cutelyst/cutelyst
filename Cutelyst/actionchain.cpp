@@ -20,7 +20,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
     args.insert(QStringLiteral("namespace"), final->ns());
     setupAction(args, nullptr);
 
-    setName(QLatin1Char('_') + final->name());
+    setName(u'_' + final->name());
     setReverse(final->reverse());
     setAttributes(final->attributes());
     setController(final->controller());

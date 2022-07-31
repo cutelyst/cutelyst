@@ -213,7 +213,7 @@ QByteArray CredentialPassword::pbkdf2(QCryptographicHash::Algorithm method, cons
         remainingBytes -= obuf.size();
     }
 
-    key = key.mid(0, keyLength);
+    key.truncate(keyLength);
     return key;
 }
 

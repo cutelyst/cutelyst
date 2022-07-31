@@ -68,7 +68,7 @@ ActionRESTPrivate::ActionRESTPrivate(ActionREST* q) : q_ptr(q)
 bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
 {
     Q_Q(const ActionREST);
-    const QString restMethod = q->name() + QLatin1Char('_') + httpMethod;
+    const QString restMethod = q->name() + u'_' + httpMethod;
 
     Controller *controller = q->controller();
     Action *action = controller->actionFor(restMethod);
@@ -130,7 +130,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, const QString &methodName) const
 {
     QStringList methods;
-    const QString name = methodName + QLatin1Char('_');
+    const QString name = methodName + u'_';
     const ActionList actions = controller->actions();
     for (Action *action : actions) {
         const QString method = action->name();
@@ -147,7 +147,7 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, c
     methods.sort();
     methods.removeDuplicates();
 
-    return methods.join(QStringLiteral(", "));
+    return methods.join(u", ");
 }
 
 #include "moc_actionrest.cpp"

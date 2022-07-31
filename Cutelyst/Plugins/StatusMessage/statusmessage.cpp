@@ -10,9 +10,7 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QLoggingCategory>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
-#endif
 
 using namespace Cutelyst;
 
@@ -42,9 +40,6 @@ void StatusMessagePrivate::_q_postFork(Application *app)
 
 StatusMessage::StatusMessage(Application *parent) : Plugin(parent), d_ptr(new StatusMessagePrivate)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
-    qsrand(QDateTime::currentMSecsSinceEpoch());
-#endif
     m_instance = this;
 }
 
@@ -136,11 +131,7 @@ void StatusMessage::load(Context *c)
 
 inline QString createToken()
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-    return QString::number(QRandomGenerator::global()->generate() % 99999999).rightJustified(8, QLatin1Char('0'), true);
-#else
-    return QString::number(qrand() % 99999999).rightJustified(8, QLatin1Char('0'), true);
-#endif
+    return QString::number(QRandomGenerator::global()->generate() % 99999999).rightJustified(8, u'0', true);
 }
 
 QString StatusMessage::error(Context *c, const QString &msg)

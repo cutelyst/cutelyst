@@ -44,7 +44,7 @@ bool Memcached::setup(Application *app)
     const QVariantMap map = app->engine()->config(QStringLiteral("Cutelyst_Memcached_Plugin"));
     QStringList config;
 
-    const QStringList serverList = map.value(QStringLiteral("servers"), d->defaultConfig.value(QStringLiteral("servers"))).toString().split(QLatin1Char(';'));
+    const QStringList serverList = map.value(QStringLiteral("servers"), d->defaultConfig.value(QStringLiteral("servers"))).toString().split(u';');
 
     if (serverList.empty()) {
         config.push_back(QStringLiteral("--SERVER=localhost"));
@@ -65,7 +65,7 @@ bool Memcached::setup(Application *app)
          QStringLiteral("tcp_keepalive")
     }) {
         if (map.value(flag, d->defaultConfig.value(flag, false)).toBool()) {
-            const QString flagStr = QLatin1String("--") + flag.toUpper().replace(QLatin1Char('_'), QLatin1Char('-'));
+            const QString flagStr = u"--" + flag.toUpper().replace(u'_', u'-');
             config.push_back(flagStr);
         }
     }
@@ -91,12 +91,12 @@ bool Memcached::setup(Application *app)
     }) {
         const QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
         if (!_val.isEmpty()) {
-            const QString optStr = QLatin1String("--") + opt.toUpper().replace(QLatin1Char('_'), QLatin1Char('-')) + QLatin1Char('=') + _val;
+            const QString optStr = u"--" + opt.toUpper().replace(u'_', u'-') + u'=' + _val;
             config.push_back(optStr); // clazy:exclude=reserve-candidates
         }
     }
 
-    const QByteArray configString = config.join(QChar(QChar::Space)).toUtf8();
+    const QByteArray configString = config.join(u' ').toUtf8();
 
     bool ok = false;
 
@@ -108,19 +108,19 @@ bool Memcached::setup(Application *app)
 
         if (!serverList.empty()) {
             for (const QString &server : serverList) {
-                const QStringList serverParts = server.split(QLatin1Char(','));
+                const auto serverParts = QStringView(server).split(u',');
                 QString name;
                 uint port = 11211;
                 uint32_t weight = 1;
                 bool isSocket = false;
                 if (!serverParts.empty()) {
-                    const QString part0 = serverParts.at(0);
+                    const auto part0 = serverParts.at(0);
                     if (!part0.isEmpty()) {
-                        name = part0;
-                        isSocket = name.startsWith(QLatin1Char('/'));
+                        name = part0.toString();
+                        isSocket = name.startsWith(u'/');
                     }
                     if (serverParts.size() > 1) {
-                        const QString part1 = serverParts.at(1);
+                        const auto part1 = serverParts.at(1);
                         if (!part1.isEmpty()) {
                             if (isSocket) {
                                 weight = part1.toUInt();
@@ -129,7 +129,7 @@ bool Memcached::setup(Application *app)
                             }
                         }
                         if (!isSocket && (serverParts.size() > 2)) {
-                            const QString part2 = serverParts.at(2);
+                            const auto part2 = serverParts.at(2);
                             if (!part2.isEmpty()) {
                                 weight = part2.toUInt();
                             }

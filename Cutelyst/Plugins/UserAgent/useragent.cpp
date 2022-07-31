@@ -71,15 +71,7 @@ QNetworkReply *UA::sendCustomRequest(const QNetworkRequest &request, const QByte
 
 QNetworkReply *UA::sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, const QByteArray &data)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
     return m_instance.sendCustomRequest(request, verb, data);
-#else
-    auto buffer = new QBuffer;
-    buffer->setData(data);
-    QNetworkReply *reply = m_instance.sendCustomRequest(request, verb, buffer);
-    buffer->setParent(reply);
-    return reply;
-#endif
 }
 
 QNetworkReply *UA::post(const QNetworkRequest &request, QHttpMultiPart *multiPart)
@@ -94,11 +86,7 @@ QNetworkReply *UA::put(const QNetworkRequest &request, QHttpMultiPart *multiPart
 
 QNetworkReply *UA::sendCustomRequest(const QNetworkRequest &request, const QByteArray &verb, QHttpMultiPart *multiPart)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 8, 0))
     return m_instance.sendCustomRequest(request, verb, multiPart);
-#else
-    return nullptr;
-#endif
 }
 
 QNetworkReply *UA::postJson(const QNetworkRequest &request, const QJsonDocument &doc)

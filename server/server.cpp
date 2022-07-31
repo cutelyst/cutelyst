@@ -745,7 +745,7 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
     Q_Q(Server);
 
     bool ret = true;
-    if (!line.startsWith(QLatin1Char('/'))) {
+    if (!line.startsWith(u'/')) {
         auto server = new TcpServerBalancer(q);
         server->setBalancer(threadBalancer);
         ret = server->listen(line, protocol, secure);
@@ -838,15 +838,15 @@ bool ServerPrivate::listenLocal(const QString &line, Protocol *protocol)
         server->setProtocol(protocol);
         if (!socketAccess.isEmpty()) {
             QLocalServer::SocketOptions options;
-            if (socketAccess.contains(QLatin1Char('u'))) {
+            if (socketAccess.contains(u'u')) {
                 options |= QLocalServer::UserAccessOption;
             }
 
-            if (socketAccess.contains(QLatin1Char('g'))) {
+            if (socketAccess.contains(u'g')) {
                 options |= QLocalServer::GroupAccessOption;
             }
 
-            if (socketAccess.contains(QLatin1Char('o'))) {
+            if (socketAccess.contains(u'o')) {
                 options |= QLocalServer::OtherAccessOption;
             }
             server->setSocketOptions(options);
@@ -1707,11 +1707,7 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
 
     applyConfig(sessionConfig);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     sessionConfig.insert(opt);
-#else
-    sessionConfig.unite(opt);
-#endif
     opt = sessionConfig;
 
     auto it = config.begin();
@@ -1719,22 +1715,15 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
         auto itLoaded = loadedConfig.find(it.key());
         while (itLoaded != loadedConfig.end()) {
             QVariantMap loadedMap = itLoaded.value().toMap();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
             loadedMap.insert(it.value().toMap());
-#else
-            loadedMap.unite(it.value().toMap());
-#endif
+
             it.value() = loadedMap;
             itLoaded = loadedConfig.erase(itLoaded);
         }
         ++it;
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     loadedConfig.insert(config);
-#else
-    loadedConfig.unite(config);
-#endif
 
     config = loadedConfig;
 }

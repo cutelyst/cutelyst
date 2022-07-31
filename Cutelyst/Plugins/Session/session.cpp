@@ -427,7 +427,7 @@ bool SessionPrivate::validateSessionId(const QString &id)
     auto end = id.constEnd();
     while (it != end) {
         QChar c = *it;
-        if ((c >= QLatin1Char('a') && c <= QLatin1Char('f')) || (c >= QLatin1Char('0') && c <= QLatin1Char('9'))) {
+        if ((c >= u'a' && c <= u'f') || (c >= u'0' && c <= u'9')) {
             ++it;
             continue;
         }
