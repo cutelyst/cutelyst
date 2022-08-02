@@ -172,6 +172,12 @@ View *Context::view(const QString &name) const
     return d->app->view(name);
 }
 
+View *Context::view(QStringView name) const
+{
+    Q_D(const Context);
+    return d->app->view(name);
+}
+
 bool Context::setCustomView(const QString &name)
 {
     Q_D(Context);

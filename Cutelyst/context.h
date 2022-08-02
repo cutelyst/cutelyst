@@ -157,7 +157,12 @@ public:
     /**
      * Returns the view with name name or nullptr if not found
      */
-    View *view(const QString &name = QString()) const;
+    View *view(const QString &name) const;
+
+    /**
+     * Returns the view with name name or nullptr if not found
+     */
+    View *view(QStringView name = {}) const;
 
     /**
      * Returns the view set to be used
@@ -419,12 +424,12 @@ public:
     /**
      * Gets an action in a given namespace.
      */
-    Action *getAction(const QString &action, const QString &ns = QString()) const;
+    Action *getAction(const QString &action, const QString &ns = {}) const;
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QVector<Action *> getActions(const QString &action, const QString &ns = QString()) const;
+    QVector<Action *> getActions(const QString &action, const QString &ns = {}) const;
 
     /**
      * Returns all registered plugins
