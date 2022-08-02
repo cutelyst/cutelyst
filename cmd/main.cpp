@@ -348,7 +348,7 @@ bool createDir(const QDir &parentDir, const QString &name)
 bool createApplication(const QString &name)
 {
     QString nameWithUnderscore = name;
-    nameWithUnderscore.replace(QLatin1Char('-'), QLatin1Char('_'));
+    nameWithUnderscore.replace(u'-', u'_');
     if (nameWithUnderscore.contains(QRegularExpression(QStringLiteral("\\W"))) || nameWithUnderscore.contains(QRegularExpression(QStringLiteral("^\\d")))) {
         std::cerr << qUtf8Printable(QCoreApplication::translate("cutelystcmd", "Error: Invalid Application name.")) << std::endl;
         return false;

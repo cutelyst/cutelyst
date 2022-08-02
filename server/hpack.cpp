@@ -65,7 +65,7 @@ static inline void encodeH2caseHeader(QByteArray &buf, const QString &key) {
     for (auto keyIt : key) {
         if (keyIt.isLetter()) {
             buf.append(keyIt.toLower().toLatin1());
-        } else if (keyIt == QLatin1Char('_')) {
+        } else if (keyIt == u'_') {
             buf.append('-');
         } else {
             buf.append(keyIt.toLatin1());
@@ -230,7 +230,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
     if (k.compare(u":path") == 0) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
-            while (leadingSlash < v.size() && v.at(leadingSlash) == QLatin1Char('/')) {
+            while (leadingSlash < v.size() && v.at(leadingSlash) == u'/') {
                 ++leadingSlash;
             }
 

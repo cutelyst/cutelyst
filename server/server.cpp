@@ -1735,7 +1735,7 @@ void ServerPrivate::applyConfig(const QVariantMap &config)
     auto it = config.constBegin();
     while (it != config.constEnd()) {
         QString normKey = it.key();
-        normKey.replace(QLatin1Char('-'), QLatin1Char('_'));
+        normKey.replace(u'-', u'_');
 
         int ix = q->metaObject()->indexOfProperty(normKey.toLatin1().constData());
         if (ix == -1) {
