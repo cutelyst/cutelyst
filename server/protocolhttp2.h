@@ -82,10 +82,10 @@ public:
 
         auto it = streams.constBegin();
         while (it != streams.constEnd()) {
-            if (it.value()->status & Cutelyst::EngineRequest::Async) {
-                it.value()->context->deleteLater();
-                it.value()->context = nullptr;
-            }
+            // If we deleteLater the context, there might
+            // be an event that tries to finalize the request
+            // and it will encounter a null context pointer
+            delete it.value()->context;
             delete it.value();
             ++it;
         }

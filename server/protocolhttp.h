@@ -75,11 +75,11 @@ public:
         ProtocolData::resetData();
 
         // EngineRequest
-        if (status & EngineRequest::Async) {
-            context->deleteLater();
-        } else {
-            delete context;
-        }
+
+        // If we deleteLater the context, there might
+        // be an event that tries to finalize the request
+        // and it will encounter a null context pointer
+        delete context;
         context = nullptr;
         body = nullptr;
 
