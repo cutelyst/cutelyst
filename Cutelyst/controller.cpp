@@ -117,14 +117,14 @@ void ControllerPrivate::init(Application *app, Dispatcher *_dispatcher)
             if (c.isLower() || c.isDigit()) {
                 controlerNS.append(c);
                 lastWasUpper = false;
-            } else if (c == QLatin1Char('_')) {
+            } else if (c == u'_') {
                 controlerNS.append(c);
                 lastWasUpper = true;
             } else {
                 if (!lastWasUpper) {
-                    controlerNS.append(QLatin1Char('/'));
+                    controlerNS.append(u'/');
                 }
-                if (c != QLatin1Char(':')) {
+                if (c != u':') {
                     controlerNS.append(c.toLower());
                 }
                 lastWasUpper = true;
