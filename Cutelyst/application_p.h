@@ -31,7 +31,7 @@ public:
     QVector<Plugin *> plugins;
     QHash<QString, Controller *> controllersHash;
     QVector<Controller *> controllers;
-    QHash<QString, View *> views;
+    QHash<QStringView, View *> views;
     QVector<DispatchType *> dispatchers;
     QMap<QString, ComponentFactory *> factories;
     Headers headers;

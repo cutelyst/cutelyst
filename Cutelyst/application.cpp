@@ -177,6 +177,12 @@ View *Application::view(const QString &name) const
     return d->views.value(name);
 }
 
+View *Application::view(QStringView name) const
+{
+    Q_D(const Application);
+    return d->views.value(name);
+}
+
 QVariant Application::config(const QString &key, const QVariant &defaultValue) const
 {
     Q_D(const Application);

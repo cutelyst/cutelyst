@@ -71,7 +71,12 @@ public:
     /**
      * Returns the view specified by \p name, if no view is found nullptr is returned.
      */
-    View *view(const QString &name = QString()) const;
+    View *view(const QString &name) const;
+
+    /**
+     * Returns the view specified by \p name, if no view is found nullptr is returned.
+     */
+    View *view(QStringView name = {}) const;
 
     /**
      * Returns application config specified by \p key, with a possible default value.
