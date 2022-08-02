@@ -48,12 +48,11 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->proto->parse(sock, sock);
     });
     connect(sock, &TcpSocket::finished, this, [this, sock] {
-        sock->resetSocket();
         sock->deleteLater();
         if (--m_processing == 0) {
             m_engine->stopSocketTimeout();
         }
-    }, Qt::QueuedConnection);
+    });
 
     if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
