@@ -8,7 +8,7 @@
 
 using namespace Cutelyst;
 
-Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentType, int bufferSize)
+Uploads MultiPartFormDataParser::parse(QIODevice *body, QStringView contentType, int bufferSize)
 {
     Uploads ret;
     if (body->isSequential()) {
@@ -29,11 +29,11 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, const QString &contentTy
 
     for (int i = start, quotes = 0; i < len; ++i) {
         const QChar ch = contentType.at(i);
-        if (ch == QLatin1Char('\"')) {
+        if (ch == u'\"') {
             if ((quotes == 0 && i > start) || ++quotes == 2) {
                 break;
             }
-        } else if (ch == QLatin1Char(';')) {
+        } else if (ch == u';') {
             break;
         } else {
             boundary.append(ch.toLatin1());

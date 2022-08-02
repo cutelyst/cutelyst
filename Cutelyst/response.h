@@ -142,6 +142,12 @@ public:
     inline void setBody(const QString &body);
 
     /**
+     * Sets a QString as the response body, the output will be UTF-8 and
+     * content length will be automatically set to it's size.
+     */
+    inline void setBody(QStringView body);
+
+    /**
      * Sets a QJsonDocument as the response body,
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
@@ -153,6 +159,12 @@ public:
      * this method is provided for convenience as it sets the content-type to application/json.
      */
     void setJsonBody(const QString &json);
+
+    /**
+     * Sets a JSON string as the response body,
+     * this method is provided for convenience as it sets the content-type to application/json.
+     */
+    inline void setJsonBody(QStringView json);
 
     /**
      * Sets a JSON string as the response body,
@@ -392,6 +404,14 @@ protected:
 
 inline void Response::setBody(const QString &_body) {
     setBody(_body.toUtf8());
+}
+
+inline void Response::setBody(QStringView _body) {
+    setBody(_body.toUtf8());
+}
+
+inline void Response::setJsonBody(QStringView _body) {
+    setJsonBody(_body.toUtf8());
 }
 
 }
