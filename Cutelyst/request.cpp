@@ -517,7 +517,7 @@ void RequestPrivate::parseBody() const
 
 static inline bool isSlit(QChar c)
 {
-    return c == QLatin1Char(';') || c == QLatin1Char(',');
+    return c == u';' || c == u',';
 }
 
 int findNextSplit(const QString &text, int from, int length)
@@ -533,7 +533,7 @@ int findNextSplit(const QString &text, int from, int length)
 
 static inline bool isLWS(QChar c)
 {
-    return c == QLatin1Char(' ') || c == QLatin1Char('\t') || c == QLatin1Char('\r') || c == QLatin1Char('\n');
+    return c == u' ' || c == u'\t' || c == u'\r' || c == u'\n';
 }
 
 static int nextNonWhitespace(const QString &text, int from, int length)

@@ -442,8 +442,8 @@ QString normalizeHeaderKey(const QString &field)
             if (c.isLower()) {
                 key[i] = c.toUpper();
             }
-        } else if (c == QLatin1Char('-')) {
-            key[i] = QLatin1Char('_');
+        } else if (c == u'-') {
+            key[i] = u'_';
         }
         ++i;
     }
@@ -454,7 +454,7 @@ QByteArray decodeBasicAuth(const QString &auth)
 {
     QByteArray ret;
     if (!auth.isEmpty() && auth.startsWith(u"Basic ")) {
-        int pos = auth.lastIndexOf(QLatin1Char(' '));
+        int pos = auth.lastIndexOf(u' ');
         if (pos != -1) {
             ret = QByteArray::fromBase64(auth.mid(pos).toLatin1());
         }

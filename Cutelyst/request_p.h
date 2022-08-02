@@ -54,7 +54,7 @@ public:
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable QString remoteHostname;
-    mutable QMultiMap<QString, Upload *> uploadsMap;
+    mutable QMultiMap<QString, Upload *> uploadsMap; // Cutelyst4 QStringView
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;
 };
