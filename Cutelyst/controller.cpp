@@ -166,12 +166,12 @@ bool Controller::_DISPATCH(Context *c)
 
     bool ret = true;
 
-    int &asyncDetached = c->d_ptr->asyncDetached;
+    int &actionRefCount = c->d_ptr->actionRefCount;
 
     // Dispatch to Begin and Auto
     const auto beginAutoList = d->beginAutoList;
     for (Action *action : beginAutoList) {
-        if (asyncDetached) {
+        if (actionRefCount) {
             c->d_ptr->pendingAsync.append(action);
         } else if (!action->dispatch(c)) {
             ret = false;
@@ -181,7 +181,7 @@ bool Controller::_DISPATCH(Context *c)
 
     // Dispatch to Action
     if (ret) {
-        if (asyncDetached) {
+        if (actionRefCount) {
             c->d_ptr->pendingAsync.append(c->action());
         } else {
             ret = c->action()->dispatch(c);
@@ -190,14 +190,14 @@ bool Controller::_DISPATCH(Context *c)
 
     // Dispatch to End
     if (d->end) {
-        if (asyncDetached) {
+        if (actionRefCount) {
             c->d_ptr->pendingAsync.append(d->end);
         } else if (!d->end->dispatch(c)) {
             ret = false;
         }
     }
 
-    if (asyncDetached) {
+    if (actionRefCount) {
         c->d_ptr->engineRequest->status |= EngineRequest::Async;
     }
 

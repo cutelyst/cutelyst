@@ -51,7 +51,7 @@ public:
     View *view = nullptr;
     Stats *stats = nullptr;
     int asyncAction = 0;
-    int asyncDetached = 0;
+    int actionRefCount = 0;
     int chainedCaptured = 0;
     int chainedIx = 0;
     bool detached = false;

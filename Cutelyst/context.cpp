@@ -349,13 +349,13 @@ void Context::detach(Action *action)
 void Context::detachAsync() noexcept
 {
     Q_D(Context);
-    ++d->asyncDetached;
+    ++d->actionRefCount;
 }
 
 void Context::attachAsync()
 {
     Q_D(Context);
-    if (--d->asyncDetached) {
+    if (--d->actionRefCount) {
         return;
     }
 
@@ -369,7 +369,7 @@ void Context::attachAsync()
             Component *action = d->pendingAsync[d->asyncAction++];
             const bool ret = execute(action);
 
-            if (d->asyncDetached) {
+            if (d->actionRefCount) {
                 return;
             }
 

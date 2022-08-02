@@ -54,12 +54,12 @@ bool ActionChain::doExecute(Context *c)
     const QStringList currentArgs = request->args();
     const ActionList chain = d->chain;
 
-    int &asyncDetached = c->d_ptr->asyncDetached;
+    int &actionRefCount = c->d_ptr->actionRefCount;
     int &captured = c->d_ptr->chainedCaptured;
     int &chainedIx = c->d_ptr->chainedIx;
 
     for (; chainedIx < chain.size(); ++chainedIx) {
-        if (asyncDetached) {
+        if (actionRefCount) {
             c->d_ptr->pendingAsync.prepend(this);
             request->setArguments(currentArgs);
             break;
@@ -74,7 +74,10 @@ bool ActionChain::doExecute(Context *c)
 
         // Final action gets args instead of captures
         request->setArguments(action != chain.last() ? args : currentArgs);
-        if (!action->dispatch(c)) {
+        ++actionRefCount;
+        const bool ret = action->dispatch(c);
+        --actionRefCount;
+        if (!ret) {
             return false;
         }
     }
