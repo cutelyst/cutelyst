@@ -108,8 +108,8 @@ public:
         bool lastWasLetter = false;
         for (int i = 0 ; i < key.size() ; ++i) {
             QChar c = key[i];
-            if (c == QLatin1Char('_')) {
-                key[i] = QLatin1Char('-');
+            if (c == u'_') {
+                key[i] = u'-';
                 lastWasLetter = false;
             } else if (lastWasLetter) {
                 key[i] = c.toLower();

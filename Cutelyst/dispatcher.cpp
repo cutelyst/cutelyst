@@ -303,7 +303,7 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
         // so that two or more consecutive slashes
         // could be converted to just one
         // "a///b" -> "a/b"
-        if (ret.at(i) == QLatin1Char('/')) {
+        if (ret.at(i) == u'/') {
             if (lastWasSlash) {
                 ret.remove(i, 1);
                 --nsSize;
@@ -323,7 +323,7 @@ QString DispatcherPrivate::normalizePath(const QString &path)
     bool lastSlash = true;
     int i = 0;
     while (i < ret.size()) {
-        if (ret.at(i) == QLatin1Char('/')) {
+        if (ret.at(i) == u'/') {
             if (lastSlash) {
                 ret.remove(i, 1);
                 continue;
@@ -335,7 +335,7 @@ QString DispatcherPrivate::normalizePath(const QString &path)
         ++i;
     }
 
-    if (ret.endsWith(QLatin1Char('/'))) {
+    if (ret.endsWith(u'/')) {
         ret.resize(ret.size() - 1);
     }
     return ret;
