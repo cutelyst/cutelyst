@@ -12,6 +12,3 @@ target_link_libraries(cutelyst-hello-world PRIVATE
     Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
     Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Session
 )
-
-# install the application executable
-install(TARGETS cutelyst-hello-world DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

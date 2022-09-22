@@ -18,6 +18,3 @@ target_link_libraries(${target_name} PRIVATE
     Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
 )
-
-# install the application executable
-install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
