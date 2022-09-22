@@ -79,9 +79,17 @@ ASync::ASync(const ASync &other) : d(other.d)
 {
 }
 
+/*!
+ * Move constructor
+ */
+ASync::ASync(ASync &&other) noexcept
+    : d(std::move(other.d))
+{
+}
+
 ASync::~ASync() = default;
 
-ASync &ASync::operator =(const ASync &copy) noexcept
+ASync &ASync::operator =(const ASync &copy)
 {
     d = copy.d;
     return *this;
