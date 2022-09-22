@@ -1105,7 +1105,7 @@ QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString
     for (const QString &key : keys) {
         const QByteArray _key = key.toUtf8();
         char *data = new char[_key.size() + 1];
-        strcpy(data, _key.data());
+        qstrcpy(data, _key.data());
         _keys.push_back(data);
         _keysSizes.push_back(_key.size());
     }
