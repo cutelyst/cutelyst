@@ -111,8 +111,13 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
     Q_ASSERT(notifier != 0);
     Q_ASSUME(notifier != 0);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    auto it = m_notifiers.constFind(notifier);
+    if (Q_LIKELY(it != m_notifiers.constEnd())) {
+#else
     auto it = m_notifiers.find(notifier);
     if (Q_LIKELY(it != m_notifiers.end())) {
+#endif
         SocketNotifierInfo *info = it.value();
 
         struct epoll_event e;
@@ -146,8 +151,13 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
                 res = 0;
             }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            auto hi = m_handles.constFind(info->fd);
+            Q_ASSERT(hi != m_handles.constEnd());
+#else
             auto hi = m_handles.find(info->fd);
             Q_ASSERT(hi != m_handles.end());
+#endif
             m_handles.erase(hi);
         }
 
