@@ -177,7 +177,7 @@ void Root::async(Context *c, const QString &timeout)
     ASync async(c);
     auto t = new QTimer(c);
     t->setInterval(timeout.toInt() * 1000);
-    connect(t, &QTimer::timeout, c, [async, c] {
+    connect(t, &QTimer::timeout, c, [async, c, timeout] {
         qDebug() << "Finished async" << timeout;
         c->response()->setBody(QStringLiteral("Hello async in %1 seconds.\n").arg(timeout));
     });
