@@ -174,15 +174,14 @@ void Root::read_session(Context *c)
 
 void Root::async(Context *c, const QString &timeout)
 {
+    ASync async(c);
     auto t = new QTimer(c);
     t->setInterval(timeout.toInt() * 1000);
-    connect(t, &QTimer::timeout, c, [=] {
+    connect(t, &QTimer::timeout, c, [async, c] {
         qDebug() << "Finished async" << timeout;
         c->response()->setBody(QStringLiteral("Hello async in %1 seconds.\n").arg(timeout));
-        c->attachAsync();
     });
     t->start();
-    c->detachAsync();
 }
 
 bool Root::Auto(Context *c)
