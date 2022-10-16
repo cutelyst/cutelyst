@@ -14,7 +14,7 @@ add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewEmail
     ${plugin_view_email_SRC}
     ${plugin_view_email_HEADERS}
 )
-add_library(CutelystQt5::View::Email ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewEmail)
+add_library(Cutelyst::View::Email ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewEmail)
 
 set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewEmail PROPERTIES
     EXPORT_NAME View::Email
