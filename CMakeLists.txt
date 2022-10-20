@@ -15,7 +15,7 @@ set(CUTELYST_API_LEVEL "3")
 set(CMAKE_AUTOMOC ON)
 
 # Include our cmake modules
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
@@ -135,11 +135,11 @@ include_directories(
 )
 
 # cmake config files
-configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     @ONLY
 )
-configure_file(${CMAKE_MODULE_PATH}/cutelystqt5-config-version.cmake.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config-version.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     @ONLY
 )
@@ -325,7 +325,7 @@ if (BUILD_DOCS)
         set(DOXYGEN_HTML_OUTPUT "webdox")
 
         configure_file(
-            "${CMAKE_MODULE_PATH}/Doxyfile.in"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
             "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.web"
             @ONLY)
 
@@ -335,7 +335,7 @@ if (BUILD_DOCS)
         set(DOXYGEN_HTML_OUTPUT "htmldox")
 
         configure_file(
-            "${CMAKE_MODULE_PATH}/Doxyfile.in"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
             "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.html"
             @ONLY)
 
@@ -352,7 +352,7 @@ if (BUILD_DOCS)
             set(DOXYGEN_QCH_FILE "${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
 
             configure_file(
-                "${CMAKE_MODULE_PATH}/Doxyfile.in"
+                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
                 @ONLY)
 
