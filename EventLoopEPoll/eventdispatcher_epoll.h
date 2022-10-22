@@ -46,7 +46,6 @@ public:
             ) override;
     virtual void flush() override;
 #else
-    bool hasPendingEvents();
     virtual void registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object) override;
 #endif
 

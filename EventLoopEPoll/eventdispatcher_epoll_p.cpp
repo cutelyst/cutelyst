@@ -71,7 +71,10 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
     m_interrupt = false;
     Q_EMIT q->awake();
 
-    bool result = q->hasPendingEvents();
+    bool result = false;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    result = q->hasPendingEvents();
+#endif
 
     QCoreApplication::sendPostedEvents();
 
