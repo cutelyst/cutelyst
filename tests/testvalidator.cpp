@@ -867,13 +867,13 @@ void TestValidator::doTest()
     QFETCH(QByteArray, body);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(QLatin1String("validator/test") + url);
+    const QUrl urlAux(QLatin1String("validator/test") + url);
 
-    QVariantMap result = m_engine->createRequest(QStringLiteral("POST"),
-                                                 urlAux.path(),
-                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                 headers,
-                                                 &body);
+    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"),
+                                                       urlAux.path(),
+                                                       urlAux.query(QUrl::FullyEncoded).toLatin1(),
+                                                       headers,
+                                                       &body);
 
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
@@ -964,16 +964,13 @@ void TestValidator::testController_data()
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        query.clear();
-        query.addQueryItem(QStringLiteral("after_field"), QDateTime::currentDateTime().addDays(2).toString(df));
+        QString queryPath = QStringLiteral("/afterDateTime?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime::currentDateTime().addDays(2).toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("after-datetime-valid0%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/afterDateTime?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray() << valid;
+                << queryPath << headers << QByteArray() << valid;
 
-
-        query.clear();
-        query.addQueryItem(QStringLiteral("after_field"), QDateTime(QDate(1999, 9, 9), QTime(19, 19)).toString(df));
+        queryPath = QStringLiteral("/afterDateTime?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(1999, 9, 9), QTime(19, 19)).toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("after-datetime-invalid0%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/afterDateTime?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray() << invalid;
+                << queryPath << headers << QByteArray() << invalid;
 
         count++;
     }
@@ -1100,16 +1097,13 @@ void TestValidator::testController_data()
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
-        query.clear();
-        query.addQueryItem(QStringLiteral("before_field"), QDateTime(QDate(1999, 9, 9), QTime(19, 19)).toString(df));
+        QString pathQuery = QStringLiteral("/beforeDateTime?before_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(1999, 9, 9), QTime(19, 19)).toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("before-datetime-valid0%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/beforeDateTime?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray() << valid;
+                << pathQuery << headers << QByteArray() << valid;
 
-
-        query.clear();
-        query.addQueryItem(QStringLiteral("before_field"), QDateTime::currentDateTime().addDays(2).toString(df));
+        pathQuery = QStringLiteral("/beforeDateTime?before_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime::currentDateTime().addDays(2).toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("before-datetime-invalid0%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/beforeDateTime?") + query.toString(QUrl::FullyEncoded) << headers << QByteArray() << invalid;
+                << pathQuery << headers << QByteArray() << invalid;
 
         count++;
     }
@@ -1247,8 +1241,9 @@ void TestValidator::testController_data()
 
     count = 0;
     for (Qt::DateFormat df : dateFormats) {
+        const QString pathQuery = QStringLiteral("/dateTime?field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime::currentDateTime().toString(df), QByteArray(), QByteArrayLiteral("+")));
         QTest::newRow(QString(QStringLiteral("datetime-valid0%1").arg(count)).toUtf8().constData())
-                << QStringLiteral("/dateTime?field=") + QDateTime::currentDateTime().toString(df) << headers << QByteArray() << valid;
+                << pathQuery << headers << QByteArray() << valid;
         count++;
     }
 
