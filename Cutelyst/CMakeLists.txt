@@ -149,5 +149,34 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
+set(cutelystcore_TS_FILES
+    i18n/cutelystcore.de.ts
+    i18n/cutelystcore.en.ts
+)
+
+if (${QT_VERSION} VERSION_GREATER "6.2.0")
+
+    qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
+        TS_FILES ${cutelystcore_TS_FILES}
+        OPTIONS -no-obsolete -no-recursive -locations none
+    )
+
+    qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
+        TS_FILES ${cutelystcore_TS_FILES}
+        QM_FILES_OUTPUT_VARIABLE cutelystcore_QM_FILES
+    )
+
+else ()
+
+    qt_add_translation(cutelystcore_QM_FILES ${cutelystcore_TS_FILES})
+    add_custom_target(cutelystcore_TRANSLATIONS ALL
+        DEPENDS ${cutelystcore_QM_FILES}
+        SOURCES ${cutelystcore_TS_FILES}
+    )
+
+endif ()
+
+install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
+
 add_subdirectory(Plugins)
 add_subdirectory(Actions)
