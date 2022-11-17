@@ -194,7 +194,11 @@ void TestCsrfProtection::doTest_data()
     for (const QString &method : {QStringLiteral("POST"), QStringLiteral("PUT"), QStringLiteral("PATCH"), QStringLiteral("DELETE")}) {
         const QString cookieValid = QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
         QString cookieInvalid = cookieValid;
-        QChar& cookieLast = cookieInvalid[cookieInvalid.size() - 1];
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        auto& cookieLast = cookieInvalid[cookieInvalid.size() - 1];
+#else
+        QCharRef cookieLast = cookieInvalid[cookieInvalid.size() - 1];
+#endif
         if (cookieLast.isDigit()) {
             if (cookieLast.unicode() < 57) {
                 cookieLast.unicode()++;
@@ -210,7 +214,11 @@ void TestCsrfProtection::doTest_data()
         }
 
         QString fieldValueInvalid = m_fieldValue;
-        QChar& fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        auto& fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+#else
+        QCharRef fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+#endif
         if (fieldLast.isDigit()) {
             if (fieldLast.unicode() < 57) {
                 fieldLast.unicode()++;
