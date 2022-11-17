@@ -4,11 +4,17 @@ if [ ! -d i18n ]; then
     mkdir i18n
 fi
 
-if [ ! $QT5LUPDATE ]; then
-    QT5LUPDATE=/usr/bin/lupdate; fi
+if [ ! -x "$QT5LUPDATE" ]; then
+    QT5LUPDATE=`which lupdate-qt5 2> /dev/null`; fi
 
 if [ ! -x "$QT5LUPDATE" ]; then
-    echo "${QT5LUPDATE} can not be found or is not executable."; echo "Use export QT5LUPDATE=/path/to/lupdate"; exit 1; fi
+    QT5LUPDATE=`which lupdate5 2> /dev/null`; fi
+
+if [ ! -x "$QT5LUPDATE" ]; then
+    QT5LUPDATE=`which lupdate 2> /dev/null`; fi
+
+if [ ! -x "$QT5LUPDATE" ]; then
+    echo "lupdate can not be found or is not executable."; echo "Use export QT5LUPDATE=/path/to/lupdate"; exit 1; fi
 
 for LANG in en de
 do
