@@ -11,7 +11,6 @@ if (LRELEASE_CMD)
     set (PATHSEP "/")
 
     set (PARTS
-        cutelystcmd
         cutelystwsgi
         cutelystcore
         plugin_memcached

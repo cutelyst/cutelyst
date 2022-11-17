@@ -63,5 +63,9 @@
         <source>Error: Application file not found</source>
         <translation>Fehler: Anwendungsdate nicht gefunden</translation>
     </message>
+    <message>
+        <source>Error: could not load translations</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

@@ -16,9 +16,16 @@ if [ ! -x "$QT5LUPDATE" ]; then
 if [ ! -x "$QT5LUPDATE" ]; then
     echo "lupdate can not be found or is not executable."; echo "Use export QT5LUPDATE=/path/to/lupdate"; exit 1; fi
 
+for DIR in cmd
+do
+    if [ ! -d ${DIR}/i18n ]; then
+        mkdir ${DIR}/i18n
+    fi
+done
+
 for LANG in en de
 do
-$QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG cmd -ts i18n/cutelystcmd.$LANG.ts
+$QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG cmd -ts cmd/i18n/cutelystcmd.$LANG.ts
 
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG wsgi -ts i18n/cutelystwsgi.$LANG.ts
 
