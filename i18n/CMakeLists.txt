@@ -11,7 +11,6 @@ if (LRELEASE_CMD)
     set (PATHSEP "/")
 
     set (PARTS
-        cutelystcore
         plugin_memcached
         plugin_csrfprotection
         plugin_view_cutelee
