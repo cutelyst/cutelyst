@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
     QTranslator appTranslator;
-    if (appTranslator.load(QLocale(), QStringLiteral("cutelystwsgi"), QStringLiteral("."), QStringLiteral(I18NDIR))) {
+    if (appTranslator.load(QLocale(), QStringLiteral("cutelystserver"), QStringLiteral("."), QStringLiteral(I18NDIR))) {
         QCoreApplication::installTranslator(&appTranslator);
     }
 
