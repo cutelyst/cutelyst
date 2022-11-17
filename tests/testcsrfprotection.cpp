@@ -174,11 +174,13 @@ void TestCsrfProtection::doTest()
     QFETCH(QString, method);
     QFETCH(Headers, headers);
     QFETCH(QByteArray, body);
+    QFETCH(int, status);
+    QFETCH(QByteArray, output);
 
     const QVariantMap result = m_engine->createRequest(method, QStringLiteral("csrfprotection/test/testCsrf"), QByteArray(), headers, &body);
 
-    QTEST(result.value(QStringLiteral("statusCode")).value<int>(), "status");
-    QTEST(result.value(QStringLiteral("body")).toByteArray(), "output");
+    QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), status);
+    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }
 
 void TestCsrfProtection::doTest_data()
@@ -192,7 +194,7 @@ void TestCsrfProtection::doTest_data()
     for (const QString &method : {QStringLiteral("POST"), QStringLiteral("PUT"), QStringLiteral("PATCH"), QStringLiteral("DELETE")}) {
         const QString cookieValid = QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
         QString cookieInvalid = cookieValid;
-        auto cookieLast = cookieInvalid[cookieInvalid.size() - 1];
+        QChar& cookieLast = cookieInvalid[cookieInvalid.size() - 1];
         if (cookieLast.isDigit()) {
             if (cookieLast.unicode() < 57) {
                 cookieLast.unicode()++;
@@ -208,7 +210,7 @@ void TestCsrfProtection::doTest_data()
         }
 
         QString fieldValueInvalid = m_fieldValue;
-        auto fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+        QChar& fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
         if (fieldLast.isDigit()) {
             if (fieldLast.unicode() < 57) {
                 fieldLast.unicode()++;
