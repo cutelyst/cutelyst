@@ -38,7 +38,10 @@ set(cutelyst-skell_TS_FILES
 
 if (${QT_VERSION} VERSION_GREATER "6.2.0")
 
-    qt_add_lupdate(cutelyst-skell TS_FILES ${cutelyst-skell_TS_FILES})
+    qt_add_lupdate(cutelyst-skell
+        TS_FILES ${cutelyst-skell_TS_FILES}
+        OPTIONS -no-obsolete -locations none
+    )
 
     qt_add_lrelease(cutelyst-skell
         TS_FILES ${cutelyst-skell_TS_FILES}
