@@ -11,7 +11,7 @@ if (LRELEASE_CMD)
     set (PATHSEP "/")
 
     set (PARTS
-        plugin_utils_validator)
+        )
 
     foreach(PART ${PARTS})
         string(CONCAT GLOBEXPRESSION ${PART} ${LCPREFIX} "*.ts")
