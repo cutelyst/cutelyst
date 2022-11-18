@@ -203,8 +203,6 @@ endif ()
 
 add_subdirectory(cmd)
 
-add_subdirectory(i18n)
-
 add_subdirectory(dox)
 
 if (BUILD_EXAMPLES)
