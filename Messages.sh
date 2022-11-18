@@ -16,7 +16,7 @@ if [ ! -x "$QT5LUPDATE" ]; then
 if [ ! -x "$QT5LUPDATE" ]; then
     echo "lupdate can not be found or is not executable."; echo "Use export QT5LUPDATE=/path/to/lupdate"; exit 1; fi
 
-for DIR in cmd server Cutelyst Cutelyst/Plugins/Memcached
+for DIR in cmd server Cutelyst Cutelyst/Plugins/Memcached Cutelyst/Plugins/CSRFProtection
 do
     if [ ! -d ${DIR}/i18n ]; then
         mkdir ${DIR}/i18n
@@ -33,7 +33,7 @@ $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $L
 
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/Memcached -ts Cutelyst/Plugins/Memcached/i18n/plugin_memcached.$LANG.ts
 
-$QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/CSRFProtection -ts i18n/plugin_csrfprotection.$LANG.ts
+$QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/CSRFProtection -ts Cutelyst/Plugins/CSRFProtection/i18n/plugin_csrfprotection.$LANG.ts
 
 $QT5LUPDATE -no-obsolete -locations none -source-language en -target-language $LANG Cutelyst/Plugins/View/Cutelee -ts i18n/plugin_view_cutelee.$LANG.ts
 

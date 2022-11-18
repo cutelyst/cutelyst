@@ -49,3 +49,32 @@ if(UNIX)
     )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}CSRFProtection.5 DESTINATION ${MANDIR}/man5)
 endif()
+
+set(plugin_csrfprotection_TS_FILES
+    i18n/plugin_csrfprotection.de.ts
+    i18n/plugin_csrfprotection.en.ts
+)
+
+if (${QT_VERSION} VERSION_GREATER "6.2.0")
+
+    qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}CSRFProtection
+        TS_FILES ${plugin_csrfprotection_TS_FILES}
+        OPTIONS -no-obsolete -locations none
+    )
+
+    qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}CSRFProtection
+        TS_FILES ${plugin_csrfprotection_TS_FILES}
+        QM_FILES_OUTPUT_VARIABLE plugin_csrfprotection_QM_FILES
+    )
+
+else ()
+
+    qt_add_translation(plugin_csrfprotection_QM_FILES ${plugin_csrfprotection_TS_FILES})
+    add_custom_target(plugin_csrfprotection_TRANSLATIONS ALL
+        DEPENDS ${plugin_csrfprotection_QM_FILES}
+        SOURCES ${plugin_csrfprotection_TS_FILES}
+    )
+
+endif ()
+
+install(FILES ${plugin_csrfprotection_QM_FILES} DESTINATION ${I18NDIR})
