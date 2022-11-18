@@ -97,7 +97,6 @@ set (BUILDDIR "${CMAKE_CURRENT_BINARY_DIR}")
 set (CUTELYST_PLUGINS_DIR "${CMAKE_INSTALL_FULL_LIBDIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}-plugins" CACHE PATH "Output directory for cutelyst plugins")
 message(STATUS "CUTELYST_PLUGINS_DIR: ${CUTELYST_PLUGINS_DIR}")
 set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timestamp in API documentation. Allowed values: YES or NO")
-set (QHG_LOCATION "qhelpgenerator" CACHE FILEPATH "Path to the qhelpgenerator executable")
 set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 set (I18NDIR "${CMAKE_INSTALL_FULL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
