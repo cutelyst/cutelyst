@@ -1,9 +1,5 @@
 #!/bin/sh
 
-if [ ! -d i18n ]; then
-    mkdir i18n
-fi
-
 if [ ! -x "$QT5LUPDATE" ]; then
     QT5LUPDATE=`which lupdate-qt5 2> /dev/null`; fi
 
@@ -15,13 +11,6 @@ if [ ! -x "$QT5LUPDATE" ]; then
 
 if [ ! -x "$QT5LUPDATE" ]; then
     echo "lupdate can not be found or is not executable."; echo "Use export QT5LUPDATE=/path/to/lupdate"; exit 1; fi
-
-for DIR in cmd server Cutelyst Cutelyst/Plugins/Memcached Cutelyst/Plugins/CSRFProtection Cutelyst/Plugins/View/Cutelee
-do
-    if [ ! -d ${DIR}/i18n ]; then
-        mkdir ${DIR}/i18n
-    fi
-done
 
 for LANG in en de
 do
