@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(cutelyst VERSION 3.7.0 LANGUAGES CXX)
+project(cutelyst
+    VERSION 3.7.0
+    DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
+    HOMEPAGE_URL "https://cutelyst.org/"
+    LANGUAGES CXX)
 
 include(GNUInstallDirs)
 include(FetchContent)
