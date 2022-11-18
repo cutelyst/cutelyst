@@ -209,12 +209,13 @@ if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-# Adds the make docs target. make docs will create three types of documentation.
+# Adds targets to create docs, namely webdocs, htmldocs, qtdocs and docs - where docs
+# is an umbrella target that has dependencies to htmldocs and qtdocs.
 # It will create html documentation linked to the online documentation of Qt
-# and libstdc++, this will be created into the directory "webdox" in the CMAKE_BINARY_DIR.
+# and libstdc++, this will be created into the directory "webdocs" in the CMAKE_BINARY_DIR.
 # A second html documentation will be created that is linked to local available html
-# documentation, this will be created into the directory "htmldox" in the CMAKE_BINARY_DIR.
-# The third documentation is a QCH file, that will be created as cutelyst2.qch in the
+# documentation, this will be created into the directory "htmldocs" in the CMAKE_BINARY_DIR.
+# The third documentation is a QCH file, that will be created as cutelyst3.qch in the
 # CMAKE_BINARY_DIR. The QCH documentation will only be created if qhelpgenerator can be found.
 # Linkage to third party documentation will only be available if the appropriate tag files
 # can be found.
@@ -230,8 +231,29 @@ if (BUILD_DOCS)
     endif (CMAKE_VERSION VERSION_GREATER 3.8.2)
 
     if (DOXYGEN_FOUND AND DOXYGEN_DOT_FOUND)
-        message (STATUS "Doxygen and dot found. make docs target is available")
 
+        add_custom_target(docs)
+
+        # Project related configuration options
+        set(DOXYGEN_REPEAT_BRIEF "NO")
+        set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+        set(DOXYGEN_QT_AUTOBRIEF "YES")
+        set(DOXYGEN_TAB_SIZE "8")
+        set(DOXYGEN_ALIASES
+            [[gr_tag{1}="<tt>{%&nbsp;\1&nbsp;%}</tt>"]]
+            [[gr_var{1}="<tt>{{&nbsp;\1&nbsp;}}</tt>"]]
+            "accessors=\\par Accessors:\\n"
+        )
+        set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
+        # Build related configuration options
+        set(DOXYGEN_EXTRACT_STATIC "YES")
+        set(DOXYGEN_INTERNAL_DOCS "YES")
+        set(DOXYGEN_CASE_SENSE_NAMES "YES")
+        set(DOXYGEN_SORT_BRIEF_DOCS "YES")
+        set(DOXYGEN_SORT_MEMBERS_CTORS_1ST "YES")
+        set(DOXYGEN_MAX_INITIALIZER_LINES "0")
+        set(DOXYGEN_SHOW_USED_FILES "NO")
+        # Configuration options related to warning and progress messages
         if (BUILD_DOCS_QUIET)
             set(DOXYGEN_QUIET "YES")
             set(DOXYGEN_WARNINGS "NO")
@@ -243,23 +265,39 @@ if (BUILD_DOCS)
             set(DOXYGEN_WARN_IF_UNDOCUMENTED "YES")
             set(DOXYGEN_WARN_IF_DOC_ERROR "YES")
         endif(BUILD_DOCS_QUIET)
-
-        if (BUILD_DOCS_TIMESTAMP)
-            set(DOXYGEN_HTML_TIMESTAMP "YES")
-        else (BUILD_DOCS_TIMESTAMP)
-            set(DOXYGEN_HTML_TIMESTAMP "NO")
-        endif (BUILD_DOCS_TIMESTAMP)
-
-        set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
-        set(DOXYGEN_STRIP_FROM_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+        # Configuration options related to the input files
+        set(DOXYGEN_FILE_PATTERNS "*.h" "*.dox" "*.cpp")
+        set(DOXYGEN_EXCLUDE_PATTERNS ".*" "*_p*")
+        set(DOXYGEN_EXCLUDE_SYMBOLS "d_ptr")
         set(DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/dox)
+        # Configuration options related to source browsing
+        set(DOXYGEN_SOURCE_BROWSER "YES")
+        set(DOXYGEN_REFERENCED_BY_RELATION "YES")
+        set(DOXYGEN_REFERENCES_RELATION "YES")
+        # Configuration options related to the alphabetical class index
+        set(DOXYGEN_ALPHABETICAL_INDEX "NO")
+        # Configuration options related to the HTML output
+        set(DOXYGEN_SEARCHENGINE "NO")
+        # Configuration options related to the preprocessor
+        set(DOXYGEN_MACRO_EXPANSION "YES")
+        set(DOXYGEN_EXPAND_ONLY_PREDEF "YES")
+        set(DOXYGEN_PREDEFINED "Q_QDOC" "Q_COMPILER_INITIALIZER_LISTS" "Q_OS_UNIX" "DOXYGEN_SHOULD_SKIP_THIS")
+        set(DOXYGEN_EXPAND_AS_DEFINED "TemplateImpl")
+        # Configuration options related to external references
         set(DOXYGEN_GENERATE_TAGFILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}${PROJECT_VERSION_MAJOR}.tags)
+        # Configuration options related to the dot tool
         set(DOXYGEN_DOTFILE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dox)
+        set(DOXYGEN_COLLABORATION_GRAPH "NO")
+        set(DOXYGEN_MAX_DOT_GRAPH_DEPTH "1000")
+
+
+        set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
         set (DOCS_STLTAGFILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
         set (DOCS_STLLOCALHTMLDIR "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++" CACHE PATH "Path to the directory containing the libstdc++ HTML doxygen documentation")
         if (EXISTS DOCS_STLTAGFILE)
+            set(DOXYGEN_BUILTIN_STL_SUPPORT "NO")
             list(APPEND ONLINETAGS "${DOCS_STLTAGFILE}=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/")
             if (IS_DIRECTORY "${DOCS_STLLOCALHTMLDIR}")
                 list(APPEND LOCALHTMLTAGS "${DOCS_STLTAGFILE}=${DOCS_STLLOCALHTMLDIR}/")
@@ -314,51 +352,43 @@ if (BUILD_DOCS)
             endforeach(_QTDOCCOMP ${QT_DOCS_COMPONENTS})
         endif(EXISTS DOCS_QTTAGFILE)
 
-        string(REPLACE ";" " " DOXYGEN_TAGFILES "${ONLINETAGS}")
-        set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
-        set(DOXYGEN_HTML_OUTPUT "webdox")
+        set(DOXYGEN_HTML_TIMESTAMP "YES")
+        set(DOXYGEN_TAGFILES ${ONLINETAGS})
+        set(DOXYGEN_HTML_OUTPUT "webdocs")
+        doxygen_add_docs(webdocs
+            ${CMAKE_CURRENT_SOURCE_DIR}/dox/Mainpage.dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+            COMMENT "Generate HTML documentation for online usage"
+        )
+        message(STATUS "Adding build target webdocs")
 
-        configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.web"
-            @ONLY)
-
-        set(DOCS_ARGS ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.web")
-
-        string(REPLACE ";" " " DOXYGEN_TAGFILES "${LOCALHTMLTAGS}")
-        set(DOXYGEN_HTML_OUTPUT "htmldox")
-
-        configure_file(
-            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.html"
-            @ONLY)
-
-        set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.html")
+        set(DOXYGEN_HTML_TIMESTAMP "NO")
+        set(DOXYGEN_TAGFILES ${LOCALHTMLTAGS})
+        set(DOXYGEN_HTML_OUTPUT "htmldocs")
+        doxygen_add_docs(htmldocs
+            ${CMAKE_CURRENT_SOURCE_DIR}/dox/Mainpage.dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+            COMMENT "Generate HTML documentation for local usage"
+        )
+        add_dependencies(docs htmldocs)
+        message(STATUS "Adding build target htmldocs")
 
         execute_process(COMMAND ${QMAKE_EXE_PATH} -query QT_INSTALL_LIBEXECS OUTPUT_VARIABLE QT_INSTALL_LIBEXECS OUTPUT_STRIP_TRAILING_WHITESPACE)
         execute_process(COMMAND ${QMAKE_EXE_PATH} -query QT_INSTALL_BINS OUTPUT_VARIABLE QT_INSTALL_BINS OUTPUT_STRIP_TRAILING_WHITESPACE)
         find_program(DOXYGEN_QHG_LOCATION NAMES qhelpgenerator-qt${QT_VERSION_MAJOR} qhelpgenerator${QT_VERSION_MAJOR} qhelpgenerator HINTS ${QT_INSTALL_LIBEXECS} ${QT_INSTALL_BINS})
         if(DOXYGEN_QHG_LOCATION)
-            message(STATUS "qhelpgenerator found at ${DOXYGEN_QHG_LOCATION}")
-            message(STATUS "QCH documentation will be created")
-            set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qtdocs")
-            string(REPLACE ";" " " DOXYGEN_TAGFILES "${QCHTAGS}")
+            set(DOXYGEN_TAGFILES ${QCHTAGS})
+            set(DOXYGEN_HTML_OUTPUT "qtdocs")
             set(DOXYGEN_GENERATE_QHP "YES")
             set(DOXYGEN_QHP_NAMESPACE "org.cutelyst.${PROJECT_VERSION_MAJOR}${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
             set(DOXYGEN_QHP_VIRTUAL_FOLDER "cutelyst${PROJECT_VERSION_MAJOR}")
             set(DOXYGEN_QCH_FILE "${CMAKE_CURRENT_BINARY_DIR}/cutelyst${PROJECT_VERSION_MAJOR}.qch")
 
-            configure_file(
-                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Doxyfile.in"
-                "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt"
-                @ONLY)
-
-            set(DOCS_ARGS ${DOCS_ARGS} COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.qt")
+            doxygen_add_docs(qtdocs
+                ${CMAKE_CURRENT_SOURCE_DIR}/dox/Mainpage.dox ${CMAKE_SOURCE_DIR}/Cutelyst ${CMAKE_CURRENT_SOURCE_DIR}/server/server.h
+                COMMENT "Generate Qt QCH documentation for local usage"
+            )
+            add_dependencies(docs qtdocs)
+            message(STATUS "Adding build target qtdocs")
         endif(DOXYGEN_QHG_LOCATION)
-
-        add_custom_target(docs
-            ${DOCS_ARGS}
-        )
     endif()
 endif()
 
