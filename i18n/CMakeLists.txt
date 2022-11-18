@@ -11,7 +11,6 @@ if (LRELEASE_CMD)
     set (PATHSEP "/")
 
     set (PARTS
-        plugin_view_cutelee
         plugin_view_grantlee
         plugin_utils_validator)
 
