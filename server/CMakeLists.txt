@@ -77,32 +77,35 @@ if (LINUX)
         )
 endif ()
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server ${cutelyst_server_SRC})
+set(target_name_server Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server)
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server)
+add_library(${target_name_server} ${cutelyst_server_SRC})
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server PROPERTIES
+add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server ALIAS ${target_name_server})
+
+set_target_properties(${target_name_server} PROPERTIES
     EXPORT_NAME Server
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
 
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server
+target_link_libraries(${target_name_server}
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
 )
 
 if (LINUX)
-target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server
+target_link_libraries(${target_name_server}
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll
 )
+target_compile_definitions(${target_name_server} PRIVATE HAS_EventLoopEPoll)
 endif ()
 
 if(ENABLE_LTO)
-    set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET ${target_name_server} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server PROPERTY PUBLIC_HEADER ${cutelyst_server_HEADERS})
-install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server
+set_property(TARGET ${target_name_server} PROPERTY PUBLIC_HEADER ${cutelyst_server_HEADERS})
+install(TARGETS ${target_name_server}
     EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
@@ -137,10 +140,10 @@ target_link_libraries(cutelystd
 endif ()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CutelystQt5Server.pc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server.pc
+    ${CMAKE_CURRENT_BINARY_DIR}/${target_name_server}.pc
     @ONLY
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Server.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_name_server}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 set_target_properties(cutelystd PROPERTIES OUTPUT_NAME cutelystd${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR})
 install(TARGETS cutelystd
