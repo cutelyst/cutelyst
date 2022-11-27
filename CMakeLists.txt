@@ -156,30 +156,23 @@ install(EXPORT CutelystTargets
 
 add_subdirectory(Cutelyst)
 
+# CMake 3.25 introduces LINUX and FREEBSD as automatically-set variables,
+# but before then need to set them by hand.
+if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+    set(FREEBSD TRUE)
+endif()
 if(UNIX AND NOT (APPLE OR HAIKU))
     set(LINUX TRUE)
 endif()
 
-if (LINUX)
-    if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-        # FreeBSD isn't Linux, but it gets claimed as Linux, because it is
-        # UNIX and not APPLE (see just above).
-        #
-        # Try to find the EPOLL implementation from libepoll-shim; while
-        # epoll.h is found, and timerfd.h is found, the FreeBSD implementation
-        # in timerfd is insufficient (missing timerfd_gettime), and besides
-        # that there is also no eventfd.h in the FreeBSD shims.
-        #
-        # So, do the work of finding EPOLL, but don't use that subdirectory.
-        # Also, decide that we're not Linux after all.
-        find_file(EPOLL_H sys/epoll.h
-            HINTS libepoll-shim /usr/local/include/libepoll-shim
-        )
-        if (EPOLL_H)
-            get_filename_component(EPOLL_SYS_DIR ${EPOLL_H} DIRECTORY)
-            get_filename_component(EPOLL_DIR ${EPOLL_SYS_DIR} DIRECTORY)
-            include_directories(${EPOLL_DIR})
-            # add_subdirectory(EventLoopEPoll)
+if (LINUX OR FREEBSD)
+    if(FREEBSD)
+        find_package(epoll-shim REQUIRED)
+        if (epoll-shim_FOUND)
+            add_subdirectory(EventLoopEPoll)
+            if(NOT TARGET epoll-shim::epoll-shim)
+                message(STATUS "No suitable target for epoll-shim")
+            endif()
         endif()
         set(LINUX FALSE)
     else()
