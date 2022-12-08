@@ -289,6 +289,13 @@ if (BUILD_DOCS)
         set(DOXYGEN_DOTFILE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/dox)
         set(DOXYGEN_COLLABORATION_GRAPH "NO")
         set(DOXYGEN_MAX_DOT_GRAPH_DEPTH "1000")
+        if (DOXYGEN_VERSION VERSION_GREATER_EQUAL 1.9.5)
+            set(DOXYGEN_DOT_COMMON_ATTR "fontname=FreeSans,fontsize=10")
+            set(DOXYGEN_DOT_EDGE_ATTR "labelfontname=FreeSans,labelfontsize=10")
+        else (DOXYGEN_VERSION VERSION_GREATER_EQUAL 1.9.5)
+            set(DOXYGEN_DOT_FONTNAME "FreeSans")
+            set(DOXYGEN_DOT_FONTSIZE 10)
+        endif (DOXYGEN_VERSION VERSION_GREATER_EQUAL 1.9.5)
 
 
         set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
