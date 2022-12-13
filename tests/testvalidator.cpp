@@ -999,13 +999,15 @@ void TestValidator::testController_data()
             << QStringLiteral("/afterFormat?after_field=23590uj09")
             << headers << QByteArray() << parsingError;
 
-    QTest::newRow("after-timezone-valid")
-            << QStringLiteral("/afterValidWithTimeZone?after_field=") + QDateTime(QDate(2018, 1, 15), QTime(13,0)).toString(Qt::ISODate)
-            << headers << QByteArray() << valid;
+    {
+        const QString queryPath = QStringLiteral("/afterValidWithTimeZone?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(2018, 1, 15), QTime(13,0)).toString(Qt::ISODate), QByteArray(), QByteArrayLiteral("+")));
+        QTest::newRow("after-timezone-valid") << queryPath << headers << QByteArray() << valid;
+    }
 
-    QTest::newRow("after-timezone-fromfield-valid")
-            << QStringLiteral("/afterValidWithTimeZoneField?after_field=") + QDateTime(QDate(2018, 1, 15), QTime(13,0)).toString(Qt::ISODate) + QLatin1String("&tz_field=Europe/Berlin")
-            << headers << QByteArray() << valid;
+    {
+        const QString queryPath = QStringLiteral("/afterValidWithTimeZoneField?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(2018, 1, 15), QTime(13,0)).toString(Qt::ISODate), QByteArray(), QByteArrayLiteral("+"))) + QLatin1String("&tz_field=Europe/Berlin");
+    QTest::newRow("after-timezone-fromfield-valid") << queryPath << headers << QByteArray() << valid;
+    }
 
     // **** Start testing ValidatorAlpha *****
 
@@ -1133,13 +1135,15 @@ void TestValidator::testController_data()
             << QStringLiteral("/beforeFormat?before_field=23590uj09")
             << headers << QByteArray() << parsingError;
 
-    QTest::newRow("before-timezone-valid")
-            << QStringLiteral("/beforeValidWithTimeZone?after_field=") + QDateTime(QDate(2018, 1, 15), QTime(11,0)).toString(Qt::ISODate)
-            << headers << QByteArray() << valid;
+    {
+        const QString pathQuery = QStringLiteral("/beforeValidWithTimeZone?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(2018, 1, 15), QTime(11,0)).toString(Qt::ISODate), QByteArray(), QByteArrayLiteral("+")));
+        QTest::newRow("before-timezone-valid") << pathQuery << headers << QByteArray() << valid;
+    }
 
-    QTest::newRow("before-timezone-fromfield-valid")
-            << QStringLiteral("/beforeValidWithTimeZoneField?after_field=") + QDateTime(QDate(2018, 1, 15), QTime(11,0)).toString(Qt::ISODate) + QLatin1String("&tz_field=Europe/Berlin")
-            << headers << QByteArray() << valid;
+    {
+        const QString pathQuery = QStringLiteral("/beforeValidWithTimeZoneField?after_field=") + QString::fromLatin1(QUrl::toPercentEncoding(QDateTime(QDate(2018, 1, 15), QTime(11,0)).toString(Qt::ISODate), QByteArray(), QByteArrayLiteral("+"))) + QLatin1String("&tz_field=Europe/Berlin");
+        QTest::newRow("before-timezone-fromfield-valid") << pathQuery << headers << QByteArray() << valid;
+    }
 
 
 
