@@ -113,12 +113,11 @@ class MemcachedPrivate;
  *
  * <H4>Unit test</H4>
  *
- * Enabling the build of the %Memcached plugin will also enable the unit tests for this plugin. To perform the unit tests,
- * there has to be at least one memcached server running. By default, the test uses a memcached server on localhost and
- * default port 11211. To improve testing and/or to use other and/or multiple servers, you can set the @c CUTELYST_MEMCACHED_TEST_SERVERS
- * environment variable in your build environment to define different servers. The syntax is the same as for adding servers
- * in the configuration file. If you have for examble two servers, one on default location and another one on a unix socket,
- * use the following for in bash:
+ * Enabling the build of the %Memcached plugin will also enable the unit tests for this plugin. By default, the unit test
+ * will start its own memcached instance. Alternatively you can set the @c CUTELYST_MEMCACHED_TEST_SERVERS environment
+ * variable in your build environment to define different servers that you have to start by yourself. The syntax is the
+ * same as for adding servers in the configuration file. If you have for examble two servers, one on default location and
+ * another one on a unix socket, export the following environment variable befor running the tests:
  *
  * @code{.sh}
  * export CUTELYST_MEMCACHED_TEST_SERVERS=localhost;/tmp/memcached.sock
