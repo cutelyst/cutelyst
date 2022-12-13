@@ -174,10 +174,10 @@ QString ValidatorBefore::genericParsingError(Context *c, const QVariant &errorDa
     if (d->inputFormat) {
         if (_label.isEmpty()) {
             //: %1 will be replaced by the datetime format
-            error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed according to the follwing date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorBefore", "Could not be parsed according to the following date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
         } else {
             //: %1 will be replaced by the field label, %2 will be replaced by the datetime format
-            error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorBefore", "The value of the “%1” field could not be parsed according to the following date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         }
     } else {
 

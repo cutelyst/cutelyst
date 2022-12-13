@@ -32,11 +32,11 @@
         <translation>Der Vergleichswert ist entweder keine gültiges Datum und/oder kann nicht gefunden werden.</translation>
     </message>
     <message>
-        <source>Could not be parsed according to the follwing date and/or time format: %1</source>
+        <source>Could not be parsed according to the following date and/or time format: %1</source>
         <translation>Konnte nicht entsprechend dem folgenden Datums- und/oder Zeitformat verarbeitet werden: %1</translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2</source>
+        <source>The value of the “%1” field could not be parsed according to the following date and/or time format: %2</source>
         <translation>Der Wert im Fehld „%1“ konnte nicht entsprechend dem folgenden Datums- und/oder Zeitformat verarbeitet werden: %2</translation>
     </message>
     <message>
@@ -149,12 +149,12 @@
         <translation>Der Vergleichswert ist entweder keine gültiges Datum und/oder kann nicht gefunden werden.</translation>
     </message>
     <message>
-        <source>Could not be parsed according to the follwing date and/or time format: %1</source>
+        <source>Could not be parsed according to the following date and/or time format: %1</source>
         <extracomment>%1 will be replaced by the datetime format</extracomment>
         <translation>Konnte nicht entsprechend dem folgenden Datums- und/oder Zeitformat verarbeitet werden: %1</translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2</source>
+        <source>The value of the “%1” field could not be parsed according to the following date and/or time format: %2</source>
         <extracomment>%1 will be replaced by the field label, %2 will be replaced by the datetime format</extracomment>
         <translation>Der Wert im Fehld „%1“ konnte nicht entsprechend dem folgenden Datums- und/oder Zeitformat verarbeitet werden: %2</translation>
     </message>
@@ -679,7 +679,7 @@
         <translation>Nicht geschlossener Kommentar. (Fehlende doppelte Anführungszeichen)</translation>
     </message>
     <message>
-        <source>Unclosed comment. (Missing closing parantheses)</source>
+        <source>Unclosed comment. (Missing closing parentheses)</source>
         <translation>Nicht geschlossener Kommentar. (Fehlende schließende Klammer)</translation>
     </message>
     <message>
@@ -699,7 +699,7 @@
         <translation>Addresse enthält einen Carriage Return (CR), dem kein Line Feed (LF) folgt.</translation>
     </message>
     <message>
-        <source>A fatal error occured while parsing the address.</source>
+        <source>A fatal error occurred while parsing the address.</source>
         <translation>Beim analysieren der Adresse ist ein schwerer Fehler aufgetreten.</translation>
     </message>
     <message>
@@ -771,7 +771,7 @@
         <translation>Die Adresse im Feld „%1“ enthält einen Kommentar oder umgebrochene Leerzeichen um das @-Zeichen.</translation>
     </message>
     <message>
-        <source>The address in the “%1” field is RFC 5322 compliant but contains domain charachters that are not allowed by DNS.</source>
+        <source>The address in the “%1” field is RFC 5322 compliant but contains domain characters that are not allowed by DNS.</source>
         <translation>Die Adresse im Feld „%1“ ist RFC-5322-konform, enthält aber Zeichen in der Domäne, die im DNS nicht erlaubt sind.</translation>
     </message>
     <message>
@@ -891,7 +891,7 @@
         <translation>Nicht geschlossener Kommentar in der Adresse im Feld „%1“. (Fehlende doppelte Anführungszeichen)</translation>
     </message>
     <message>
-        <source>Unclosed comment in the address in the “%1” field. (Missing closing parantheses)</source>
+        <source>Unclosed comment in the address in the “%1” field. (Missing closing parentheses)</source>
         <translation>Nicht geschlossener Kommentar der Adresse im Feld „%1“. (Fehlende schließende Klammer)</translation>
     </message>
     <message>
@@ -911,7 +911,7 @@
         <translation>Die Address im Feld „%1“ enthält einen Carriage Return (CR), dem kein Line Feed (LF) folgt.</translation>
     </message>
     <message>
-        <source>A fatal error occured while parsing the address in the “%1” field.</source>
+        <source>A fatal error occurred while parsing the address in the “%1” field.</source>
         <translation>Beim analysieren der Adresse im Feld „%1“ ist ein schwerer Fehler aufgetreten.</translation>
     </message>
     <message>

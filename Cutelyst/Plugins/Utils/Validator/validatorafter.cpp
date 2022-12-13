@@ -173,9 +173,9 @@ QString ValidatorAfter::genericParsingError(Context *c, const QVariant &errorDat
     const QString _label = label(c);
     if (d->inputFormat) {
         if (_label.isEmpty()) {
-            error = c->translate("Cutelyst::ValidatorAfter", "Could not be parsed according to the follwing date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorAfter", "Could not be parsed according to the following date and/or time format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
         } else {
-            error = c->translate("Cutelyst::ValidatorAfter", "The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorAfter", "The value of the “%1” field could not be parsed according to the following date and/or time format: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         }
     } else {
 

@@ -32,11 +32,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not be parsed according to the follwing date and/or time format: %1</source>
+        <source>Could not be parsed according to the following date and/or time format: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2</source>
+        <source>The value of the “%1” field could not be parsed according to the following date and/or time format: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -149,12 +149,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Could not be parsed according to the follwing date and/or time format: %1</source>
+        <source>Could not be parsed according to the following date and/or time format: %1</source>
         <extracomment>%1 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The value of the “%1” field could not be parsed according to the follwing date and/or time format: %2</source>
+        <source>The value of the “%1” field could not be parsed according to the following date and/or time format: %2</source>
         <extracomment>%1 will be replaced by the field label, %2 will be replaced by the datetime format</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -659,7 +659,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unclosed comment. (Missing closing parantheses)</source>
+        <source>Unclosed comment. (Missing closing parentheses)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -679,7 +679,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A fatal error occured while parsing the address.</source>
+        <source>A fatal error occurred while parsing the address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -743,7 +743,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The address in the “%1” field is RFC 5322 compliant but contains domain charachters that are not allowed by DNS.</source>
+        <source>The address in the “%1” field is RFC 5322 compliant but contains domain characters that are not allowed by DNS.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -859,7 +859,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unclosed comment in the address in the “%1” field. (Missing closing parantheses)</source>
+        <source>Unclosed comment in the address in the “%1” field. (Missing closing parentheses)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -879,7 +879,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A fatal error occured while parsing the address in the “%1” field.</source>
+        <source>A fatal error occurred while parsing the address in the “%1” field.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

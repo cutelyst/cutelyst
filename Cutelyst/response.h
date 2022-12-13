@@ -324,7 +324,7 @@ public:
     bool isFinalizedHeaders() const noexcept;
 
     /**
-     * Writting to user-agent is always sequential
+     * Writing to user-agent is always sequential
      */
     virtual bool isSequential() const noexcept override;
 

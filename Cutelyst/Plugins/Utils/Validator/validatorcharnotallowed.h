@@ -51,7 +51,7 @@ public:
 
     /*!
      * \ingroup plugins-utils-validator-rules
-     * \brief Returns \c true if \a value does not contain any of the charachters in \a forbiddenChars
+     * \brief Returns \c true if \a value does not contain any of the characters in \a forbiddenChars
      * \param value             The value to validate.
      * \param forbiddenChars    The list of forbidden characters.
      * \param foundChar         If set, it will contain the first found chararacter that is forbidden.

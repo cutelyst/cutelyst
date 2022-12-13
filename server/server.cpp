@@ -1627,7 +1627,7 @@ bool ServerPrivate::writePidFile(const QString &filename)
         return false;
     }
 
-    std::cout << "Writting pidfile to " << qPrintable(filename) << std::endl;
+    std::cout << "Writing pidfile to " << qPrintable(filename) << std::endl;
     file.write(QByteArray::number(QCoreApplication::applicationPid()) + '\n');
 
     return true;
