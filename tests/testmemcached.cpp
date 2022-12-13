@@ -4,6 +4,10 @@
 #include <QTest>
 #include <QObject>
 #include <QUrlQuery>
+#include <QTcpServer>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QTcpSocket>
 #include <utility>
 
 #include "headers.h"
@@ -36,6 +40,9 @@ private Q_SLOTS:
 
 private:
     TestEngine *m_engine = nullptr;
+    QProcess *m_memcached = nullptr;
+    quint16 m_memcPort = 11211;
+    QString m_memcServers;
 
     TestEngine* getEngine();
 
@@ -904,6 +911,47 @@ private:
 
 void TestMemcached::initTestCase()
 {
+    m_memcServers = QString::fromLocal8Bit(qgetenv("CUTELYST_MEMCACHED_TEST_SERVERS"));
+
+    // if no memcached server is defined by environment variable,
+    // we will start our own server
+    if (m_memcServers.isEmpty()) {
+        // QTcpServer can automatically select a free port, so we abuse it to find a free one
+        // that we will use for memcached
+        auto portTestServer = new QTcpServer(this);
+        QVERIFY(portTestServer->listen());
+        m_memcPort = portTestServer->serverPort();
+        delete portTestServer;
+
+        QString memcBinFilePath = QStandardPaths::findExecutable(QStringLiteral("memcached"));
+        if (memcBinFilePath.isEmpty()) {
+            memcBinFilePath = QStandardPaths::findExecutable(QStringLiteral("memcached"), {QStringLiteral("/usr/sbin"), QStringLiteral("/sbin")});
+        }
+
+        QVERIFY2(!memcBinFilePath.isEmpty(), "Can not find memcached executable. Please check if memcached is available. If memcached is not available in the default paths, please use the environment variable CUTELYST_MEMCACHED_TEST_SERVERS to set a memcached server that you have started by your own before running this tests.");
+
+        QStringList memcArgs;
+        memcArgs << QStringLiteral("-p") << QString::number(m_memcPort) << QStringLiteral("-U") << QString::number(m_memcPort);
+
+        m_memcached = new QProcess(this);
+        m_memcached->setProgram(memcBinFilePath);
+        m_memcached->setArguments(memcArgs);
+
+        qDebug("Starting %s %s", qUtf8Printable(memcBinFilePath), qUtf8Printable(memcArgs.join(u" ")));
+        m_memcached->start();
+
+        // wait one second for the memcached server to start
+        QTest::qSleep(1000);
+
+        // check if memcached is up and running
+        QTcpSocket testSocket;
+        testSocket.connectToHost(QStringLiteral("127.0.0.1"), m_memcPort);
+        QVERIFY(testSocket.waitForConnected(5000));
+        QCOMPARE(testSocket.state(), QAbstractSocket::ConnectedState);
+
+        m_memcServers = QStringLiteral("localhost,") + QString::number(m_memcPort);
+    }
+
     m_engine = getEngine();
     QVERIFY(m_engine);
 }
@@ -914,15 +962,11 @@ TestEngine* TestMemcached::getEngine()
     auto app = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     auto plugin = new Memcached(app);
-    QString servers = QString::fromLocal8Bit(qgetenv("CUTELYST_MEMCACHED_TEST_SERVERS"));
-    if (servers.isEmpty()) {
-        servers = QStringLiteral("localhost");
-    }
     QVariantMap pluginConfig{
         {QStringLiteral("binary_protocol"), true},
         {QStringLiteral("compression"), true},
         {QStringLiteral("compression_threshold"), 10},
-        {QStringLiteral("servers"), servers}
+        {QStringLiteral("servers"), m_memcServers}
     };
     plugin->setDefaultConfig(pluginConfig);
     new MemcachedTest(app);
@@ -935,6 +979,11 @@ TestEngine* TestMemcached::getEngine()
 void TestMemcached::cleanupTestCase()
 {
     delete m_engine;
+    if (m_memcached) {
+        m_memcached->terminate();
+        m_memcached->waitForFinished();
+    }
+    delete m_memcached;
 }
 
 void TestMemcached::doTest()
