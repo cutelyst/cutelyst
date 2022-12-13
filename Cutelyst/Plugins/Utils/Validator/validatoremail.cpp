@@ -1299,7 +1299,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed quoted string. (Missing double quotation mark)");
             break;
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment. (Missing closing parantheses)");
+            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment. (Missing closing parentheses)");
             break;
         case ErrorUnclosedDomLiteral:
             ret = c->translate("Cutelyst::ValidatorEmail", "Domain literal is missing its closing bracket.");
@@ -1314,7 +1314,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a carriage return (CR) that is not followed by a line feed (LF).");
             break;
         case ErrorFatal:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occured while parsing the address.");
+            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occurred while parsing the address.");
             break;
         default:
             break;
@@ -1377,7 +1377,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a comment or folding white space around the @ sign.").arg(label);
             break;
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is RFC 5322 compliant but contains domain charachters that are not allowed by DNS.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is RFC 5322 compliant but contains domain characters that are not allowed by DNS.").arg(label);
             break;
         case RFC5322TooLong:
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is too long.").arg(label);
@@ -1467,7 +1467,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed quoted string in the address in the “%1” field. (Missing double quotation mark)").arg(label);
             break;
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment in the address in the “%1” field. (Missing closing parantheses)").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment in the address in the “%1” field. (Missing closing parentheses)").arg(label);
             break;
         case ErrorUnclosedDomLiteral:
             ret = c->translate("Cutelyst::ValidatorEmail", "Domain literal of the address in the “%1” field is missing its closing bracket.").arg(label);
@@ -1482,7 +1482,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a carriage return (CR) that is not followed by a line feed (LF).").arg(label);
             break;
         case ErrorFatal:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occured while parsing the address in the “%1” field.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occurred while parsing the address in the “%1” field.").arg(label);
             break;
         default:
             break;

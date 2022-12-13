@@ -100,7 +100,7 @@ void LangSelect::setSupportedLocales(const QVector<QLocale> &locales)
         if (Q_LIKELY(l.language() != QLocale::C)) {
             d->locales.push_back(l);
         } else {
-            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << l << "to the list of suppored locales.";
+            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << l << "to the list of supported locales.";
         }
     }
 }
@@ -178,7 +178,7 @@ void LangSelect::setLocalesFromDir(const QString &path, const QString &name, con
             qCWarning(C_LANGSELECT, "Can not set locales from not existing directory \"%s\".", qUtf8Printable(path));
         }
     } else {
-        qCWarning(C_LANGSELECT, "Can not set locales from dir with emtpy path or name.");
+        qCWarning(C_LANGSELECT, "Can not set locales from dir with empty path or name.");
     }
 }
 

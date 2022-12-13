@@ -70,7 +70,7 @@ class MemcachedPrivate;
  * <H3>Logging and return types</H3>
  * Messages from this plugin are logged to the logging category @a cutelyst.plugin.memcached. All methods provide
  * the possibility to specify a pointer to a MemcachedReturnType variable that can provide further information
- * about occured errors if methods return @c false or empty results.
+ * about occurred errors if methods return @c false or empty results.
  *
  * <H3>Usage example</H3>
  *
@@ -147,14 +147,14 @@ public:
         Success,                                /**< The request was successfully executed. */
         Failure,                                /**< A unknown failure has occurred in the server. */
         HostLookupFailure,                      /**< A DNS failure has occurred. */
-        ConnectionFailure,                      /**< A unknown error has occured while trying to connect to a server. */
-        WriteFailure,                           /**< An error has occured while trying to write to a server. */
+        ConnectionFailure,                      /**< A unknown error has occurred while trying to connect to a server. */
+        WriteFailure,                           /**< An error has occurred while trying to write to a server. */
         ReadFailure,                            /**< A read failure has occurred. */
         UnknownReadFailure,                     /**< An unknown read failure only occurs when either there is a bug in the server, or in rare cases where an ethernet nic is reporting dubious information. */
         ProtocolError,                          /**< An unknown error has occurred in the protocol. */
-        ClientError,                            /**< An unknown client error has occured internally. */
+        ClientError,                            /**< An unknown client error has occurred internally. */
         ServerError,                            /**< An unknown error has occurred in the server. */
-        Error,                                  /**< A general error occured. */
+        Error,                                  /**< A general error occurred. */
         DataExists,                             /**< The data requested with the key given was found. */
         DataDoesNotExist,                       /**< The data requested with the key given was not found. */
         NotStored,                              /**< The request to store an object failed. */
@@ -179,7 +179,7 @@ public:
         E2Big,                                  /**< Item is too large for the server to store. */
         InvalidArguments,                       /**< The arguments supplied to the given function were not valid. */
         KeyTooBig,                              /**< The key that has been provided is too large for the given server. */
-        AuthProblem,                            /**< An unknown issue has occured during authentication. */
+        AuthProblem,                            /**< An unknown issue has occurred during authentication. */
         AuthFailure,                            /**< The credentials provided are not valid for this server. */
         AuthContinue,                           /**< Authentication has been paused. */
         ParseError,                             /**< An error has occurred while trying to parse the configuration string. You should use memparse to determine what the error was. */
@@ -422,28 +422,28 @@ public:
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned QByteArray will
-     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * contain the data fetched from the server. If an error occurred or if the @a key could not
      * be found, the returned QByteArray will be @c null. Use QByteArray::isNull() to check for this.
      *
-     * As this method returns a @c null byte array if an error occured as well if the @a key could
+     * As this method returns a @c null byte array if an error occurred as well if the @a key could
      * not be found, you can use the value of the @a returnType to determine the reason. Other than with
      * other errors, failing because of not found @a key will not be logged.
      *
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return QByteArray containing the data fetched from the server; if an error occured or the @a key has not been found, this will be @c null.
+     * @return QByteArray containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be @c null.
      */
     static QByteArray get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value of type @a T from the server identified by @a key. The returned type @a T
-     * will contain the data fetched from the server. If an error occured or if the @a key could not
+     * will contain the data fetched from the server. If an error occurred or if the @a key could not
      * be found, the returned type @a T will be default constructed.
      *
      * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
-     * As this method returns a default constructed type @a T if an error occured as well if the @a key
+     * As this method returns a default constructed type @a T if an error occurred as well if the @a key
      * could not be found, you can use the value of the @a returnType to determine the reason.
      * Other than with other errors, failing because of not found @a key will not be logged.
      *
@@ -462,20 +462,20 @@ public:
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a quint32 variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return type T containing the data fetched from the server; if an error occured or the @a key has not been found, this will be a default constructed value
+     * @return type T containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be a default constructed value
      */
     template< typename T>
     static T get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned QByteArray will
-     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * contain the data fetched from the server. If an error occurred or if the @a key could not
      * be found, the returned QByteArray will be @c null. Use QByteArray::isNull() to check for this.
      * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
      * a @a groupKey that is used for determining which server an object was stored if key partitioning
      * was used for storage.
      *
-     * As this method returns a @c null byte array if an error occured as well if the @a key could
+     * As this method returns a @c null byte array if an error occurred as well if the @a key could
      * not be found, you can use the value of the @a returnType to determine the reason. Other than with
      * other errors, failing because of not found @a key will not be logged.
      *
@@ -483,13 +483,13 @@ public:
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return QByteArray containing the data fetched from the server; if an error occured or the @a key has not been found, this will be @c null.
+     * @return QByteArray containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be @c null.
      */
     static QByteArray getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned type @a T will
-     * contain the data fetched from the server. If an error occured or if the @a key could not
+     * contain the data fetched from the server. If an error occurred or if the @a key could not
      * be found, the returned type @a T will be default constructed.
      * This method behaves in a similar nature as Memcached::get(). The difference is that it takes
      * a @a groupKey that is used for determining which server an object was stored if key partitioning
@@ -497,7 +497,7 @@ public:
      *
      * Type @a T has to be deserializable from a QByteArray using QDataStream.
      *
-     * As this method returns a default constructed type @a T if an error occured as well if the @a key
+     * As this method returns a default constructed type @a T if an error occurred as well if the @a key
      * could not be found, you can use the value of the @a returnType to determine the reason.
      * Other than with other errors, failing because of not found @a key will not be logged.
      *
@@ -517,7 +517,7 @@ public:
      * @param[in] key key of object whose value to fecth
      * @param[out] cas optional pointer to a variable that takes the CAS value
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
-     * @return type T containing the data fetched from the server; if an error occured or the @a key has not been found, this will be a default constructed value
+     * @return type T containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be a default constructed value
      */
     template< typename T>
     static T getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
@@ -839,7 +839,7 @@ public:
      * Fetch multiple values from the server identified by a list of @a keys. If a pointer for the @a casValues
      * is provided, keys and their cas values will be written to it.
      *
-     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * As this might return an empty QHash if nothing has been found or if an error occurred, you can
      * use the @a returnType pointer to determine the reason.
      *
      * @param[in] keys list of keys to fetch from the server
@@ -853,7 +853,7 @@ public:
      * Fetch multiple values of type @a T from the server identified by a list of @a keys. If a pointer
      * for the @a casValues is provided, keys and their cas values are written to it.
      *
-     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * As this might return an empty QHash if nothing has been found or if an error occurred, you can
      * use the @a returnType pointer to determine the reason.
      *
      * Type @a T has to be deserializable from a QByteArray using QDataStream.
@@ -870,7 +870,7 @@ public:
      * Fetch multiple values from the server specified by @a groupKey identified by a list of @a keys.
      * If a pointer for the @a casValues is provided, keys and their cas values will be written to it.
      *
-     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * As this might return an empty QHash if nothing has been found or if an error occurred, you can
      * use the @a returnType pointer to determine the reason.
      *
      * This method behaves in a similar nature as Memcached::mget(). The difference is that
@@ -889,7 +889,7 @@ public:
      * Fetch multiple values of type @a T from the server specified by @a groupKey identified by a list of @a keys.
      * If a pointer for the @a casValues is provided, keys and their cas values will be written to it.
      *
-     * As this might return an empty QHash if nothing has been found or if an error occured, you can
+     * As this might return an empty QHash if nothing has been found or if an error occurred, you can
      * use the @a returnType pointer to determine the reason.
      *
      * Type @a T has to be deserializable from a QByteArray using QDataStream.

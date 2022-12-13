@@ -416,7 +416,7 @@ protected:
     virtual QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const;
 
     /*!
-     * \brief Returns an error message if an error occured while parsing input.
+     * \brief Returns an error message if an error occurred while parsing input.
      *
      * This will either return the \a customParsingError message provided via the ValidatorMessages
      * in the \a messages argument of the constructor or the message returned by genericValidationError()

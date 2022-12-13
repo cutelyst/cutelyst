@@ -12,7 +12,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A general error occured.</source>
+        <source>A general error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -76,7 +76,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown issue has occured during SASL authentication.</source>
+        <source>An unknown issue has occurred during SASL authentication.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -100,7 +100,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error has occured.</source>
+        <source>An unknown error has occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -108,31 +108,31 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error has occured while trying to connect to a Memcached server.</source>
+        <source>An unknown error has occurred while trying to connect to a Memcached server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error has occured while trying to write to a Memcached server.</source>
+        <source>An error has occurred while trying to write to a Memcached server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An error has occured while trying to read from a Memcached server.</source>
+        <source>An error has occurred while trying to read from a Memcached server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error has occured while trying to read from a Memcached server. This only occures when either there is a bug in the server, or in rare cases where an ethernet NIC is reporting dubious information.</source>
+        <source>An unknown error has occurred while trying to read from a Memcached server. This only occures when either there is a bug in the server, or in rare cases where an ethernet NIC is reporting dubious information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error has occured in the Memcached protocol.</source>
+        <source>An unknown error has occurred in the Memcached protocol.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown Memcached client error has occured internally.</source>
+        <source>An unknown Memcached client error has occurred internally.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error has occured in the Memcached server.</source>
+        <source>An unknown error has occurred in the Memcached server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

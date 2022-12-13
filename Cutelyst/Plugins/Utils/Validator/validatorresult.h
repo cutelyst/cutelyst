@@ -22,7 +22,7 @@ class ValidatorResultPrivate;
  * \brief Provides information about performed validations.
  *
  * %ValidatorResult will be returned by Validator when calling \link Validator::validate() validate()\endlink on it.
- * It contains information about occured validation errors, like the error strings of each failed validator and a
+ * It contains information about occurred validation errors, like the error strings of each failed validator and a
  * list of fields where validation failed.
  *
  * Additionally to the error messages that occure if validation fails for one or more fields, %ValidatorResult will
@@ -217,7 +217,7 @@ public:
 
     /*!
      * \brief Adds new \a extra data that came up when validating the input \a field.
-     * \param field Name of the input \link Request::parameters() parameter\endlink the extra data occured for.
+     * \param field Name of the input \link Request::parameters() parameter\endlink the extra data occurred for.
      * \param extra The additional validation data.
      * \sa extras() extra()
      * \since Cutelyst 2.0.0
