@@ -38,7 +38,7 @@ jobs:
           curl -fsSL https://build.opensuse.org/projects/home:buschmann23/public_key | gpg --dearmor | sudo tee /etc/apt/keyrings/obs-home-buschmann23.gpg > /dev/null
           echo "deb [signed-by=/etc/apt/keyrings/obs-home-buschmann23.gpg] https://download.opensuse.org/repositories/home:/buschmann23:/Cutelyst/xUbuntu_22.04 ./" | sudo tee /etc/apt/sources.list.d/obs-home-buschmann23-cutelyst.list > /dev/null
           sudo apt-get update -qq
-          sudo apt-get install -y ninja-build pkg-config cutelee6-qt6-dev libsimplemail2qt6-dev qt6-base-dev qt6-l10n-tools qt6-tools-dev-tools libzopfli-dev libbrotli-dev libpwquality-dev libmemcached-dev clearsilver-dev libgl1-mesa-dev libjemalloc-dev
+          sudo apt-get install -y ninja-build pkg-config cutelee6-qt6-dev libsimplemail2qt6-dev qt6-base-dev qt6-l10n-tools qt6-tools-dev-tools qt6-tools-dev libzopfli-dev libbrotli-dev libpwquality-dev libmemcached-dev clearsilver-dev libgl1-mesa-dev libjemalloc-dev
 
       - name: Build
         if: matrix.language == 'cpp'
