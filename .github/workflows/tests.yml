@@ -1,0 +1,73 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+    paths-ignore:
+      - '**/codeqlqt6.yml'
+      - '**/*.ts'
+      - '**/*.dox'
+      - '**/*.md'
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+jobs:
+  build_and_test:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        qt: [qt5, qt6]
+        compiler: [gcc, clang]
+        include:
+          - compiler: gcc
+            cpp_compiler: g++
+          - compiler: clang
+            cpp_compiler: clang++
+          - qt: qt5
+            grantlee: ON
+          - qt: qt6
+            grantlee: OFF
+            
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Add repositories for Ubuntu
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        curl -fsSL https://build.opensuse.org/projects/home:buschmann23/public_key | gpg --dearmor | sudo tee /etc/apt/keyrings/obs-home-buschmann23.gpg > /dev/null
+        echo "deb [signed-by=/etc/apt/keyrings/obs-home-buschmann23.gpg] https://download.opensuse.org/repositories/home:/buschmann23:/Cutelyst/xUbuntu_22.04 ./" | sudo tee /etc/apt/sources.list.d/obs-home-buschmann23-cutelyst.list > /dev/null
+    
+    - name: Install dependencies for Qt5 on Ubuntu
+      if: matrix.os == 'ubuntu-22.04' && matrix.qt == 'qt5'
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y cutelee6-qt5-dev libgrantlee5-dev libsimplemail2qt5-dev qtbase5-dev qttools5-dev qttools5-dev-tools libzopfli-dev libbrotli-dev libpwquality-dev libmemcached-dev clearsilver-dev memcached cracklib-runtime tzdata libjemalloc-dev
+
+    - name: Install dependencies for Qt6 on Ubuntu
+      if: matrix.os == 'ubuntu-22.04' && matrix.qt == 'qt6'
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y cutelee6-qt6-dev libsimplemail2qt6-dev qt6-base-dev qt6-l10n-tools qt6-tools-dev-tools qt6-tools-dev libzopfli-dev libbrotli-dev libpwquality-dev libmemcached-dev clearsilver-dev memcached cracklib-runtime tzdata libjemalloc-dev libgl1-mesa-dev
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER:STRING=${{matrix.compiler}} -DCMAKE_CXX_COMPILER:STRING=${{matrix.cpp_compiler}} -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_TESTS:BOOL=ON -DPLUGIN_VIEW_EMAIL:BOOL=ON -DPLUGIN_VIEW_CUTELEE:BOOL=ON -DPLUGIN_VIEW_GRANTLEE:BOOL=${{matrix.grantlee}} -DPLUGIN_VIEW_CLEARSILVER:BOOL=ON -DPLUGIN_MEMCACHED:BOOL=ON -DPLUGIN_STATICCOMPRESSED:BOOL=ON -DPLUGIN_STATICCOMPRESSED_ZOPFLI:BOOL=ON -DPLUGIN_STATICCOMPRESSED_BROTLI:BOOL=ON -DPLUGIN_CSRFPROTECTION:BOOL=ON -DUSE_JEMALLOC:BOOL=ON
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+
