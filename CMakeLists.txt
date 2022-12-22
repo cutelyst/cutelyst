@@ -240,9 +240,9 @@ if (BUILD_DOCS)
         set(DOXYGEN_QT_AUTOBRIEF "YES")
         set(DOXYGEN_TAB_SIZE "8")
         set(DOXYGEN_ALIASES
-            [[gr_tag{1}="<tt>{%&nbsp;\1&nbsp;%}</tt>"]]
-            [[gr_var{1}="<tt>{{&nbsp;\1&nbsp;}}</tt>"]]
-            "accessors=\\par Accessors:\\n"
+            "gr_tag{1}=<tt>{%&nbsp\;\\1&nbsp\;%}</tt>"
+            "gr_var{1}=<tt>{{&nbsp\;\\1&nbsp\;}}</tt>"
+            "accessors=\\par Accessors:^^"
         )
         set(DOXYGEN_BUILTIN_STL_SUPPORT "YES")
         # Build related configuration options
@@ -296,9 +296,6 @@ if (BUILD_DOCS)
             set(DOXYGEN_DOT_FONTNAME "FreeSans")
             set(DOXYGEN_DOT_FONTSIZE 10)
         endif (DOXYGEN_VERSION VERSION_GREATER_EQUAL 1.9.5)
-
-
-        set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
 
         # Available from http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/libstdc++.tag
         set (DOCS_STLTAGFILE "${CMAKE_CURRENT_SOURCE_DIR}/scripts/libstdc++.tag" CACHE FILEPATH "Path to the doxygen tag file of the libstdc++")
