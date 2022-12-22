@@ -3,6 +3,17 @@ name: Tests
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - '**/codeqlqt6.yml'
+      - '**/*.ts'
+      - '**/*.dox'
+      - '**/*.md'
+      - 'AUTHORS'
+      - 'COPYING'
+      - 'MAINTAINERS'
+      - 'NEWS'
+      - 'RELEASE'
+      - 'TODO'
   pull_request:
     branches: [ "master" ]
     paths-ignore:
@@ -10,6 +21,12 @@ on:
       - '**/*.ts'
       - '**/*.dox'
       - '**/*.md'
+      - 'AUTHORS'
+      - 'COPYING'
+      - 'MAINTAINERS'
+      - 'NEWS'
+      - 'RELEASE'
+      - 'TODO'
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -34,18 +51,18 @@ jobs:
             grantlee: ON
           - qt: qt6
             grantlee: OFF
-            
+
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Add repositories for Ubuntu
       if: matrix.os == 'ubuntu-22.04'
       run: |
         curl -fsSL https://build.opensuse.org/projects/home:buschmann23/public_key | gpg --dearmor | sudo tee /etc/apt/keyrings/obs-home-buschmann23.gpg > /dev/null
         echo "deb [signed-by=/etc/apt/keyrings/obs-home-buschmann23.gpg] https://download.opensuse.org/repositories/home:/buschmann23:/Cutelyst/xUbuntu_22.04 ./" | sudo tee /etc/apt/sources.list.d/obs-home-buschmann23-cutelyst.list > /dev/null
-    
+
     - name: Install dependencies for Qt5 on Ubuntu
       if: matrix.os == 'ubuntu-22.04' && matrix.qt == 'qt5'
       run: |
