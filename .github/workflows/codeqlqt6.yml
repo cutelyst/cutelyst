@@ -3,13 +3,30 @@ name: "CodeQL"
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
     paths-ignore:
-      - '**/tests.yml'
+      - '.github/workflows/tests.yml'
       - '**/*.md'
       - '**/*.dox'
       - '**/*.ts'
+      - 'AUTHORS'
+      - 'COPYING'
+      - 'MAINTAINERS'
+      - 'NEWS'
+      - 'RELEASE'
+      - 'TODO'
+  pull_request:
+    branches: [ "master" ]
+    paths-ignore:
+      - '.github/workflows/tests.yml'
+      - '**/*.md'
+      - '**/*.dox'
+      - '**/*.ts'
+      - 'AUTHORS'
+      - 'COPYING'
+      - 'MAINTAINERS'
+      - 'NEWS'
+      - 'RELEASE'
+      - 'TODO'
   schedule:
     - cron: "3 21 * * 6"
 
