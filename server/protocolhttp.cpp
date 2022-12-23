@@ -90,7 +90,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
             bytesAvailable -= len;
 //            qCDebug(CWSGI_HTTP) << "WRITE body" << protoRequest->contentLength << remaining << len << (remaining == len) << io->bytesAvailable();
             body->write(m_postBuffer, len);
-        } while (bytesAvailable);
+        } while (bytesAvailable && remaining);
 
         if (remaining == len) {
             processRequest(sock, io);
