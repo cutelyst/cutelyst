@@ -18,7 +18,6 @@
 #include <Cutelyst/Upload>
 
 #include <QLoggingCategory>
-#include <QNetworkCookie>
 #include <QUuid>
 #include <QUrl>
 #include <vector>
@@ -28,6 +27,7 @@
 #define DEFAULT_COOKIE_AGE Q_INT64_C(31449600) // approx. 1 year
 #define DEFAULT_COOKIE_NAME "csrftoken"
 #define DEFAULT_COOKIE_PATH "/"
+#define DEFAULT_COOKIE_SAMESITE "strict"
 #define DEFAULT_HEADER_NAME "X_CSRFTOKEN"
 #define DEFAULT_FORM_INPUT_NAME "csrfprotectiontoken"
 #define CSRF_SECRET_LENGTH 32
@@ -82,6 +82,18 @@ bool CSRFProtection::setup(Application *app)
     if (d->headerName.isEmpty()) {
         d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
     }
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    const QString _sameSite = config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
+    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Default;
+    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::None;
+    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Lax;
+    } else {
+        d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    }
+#endif
 
     d->trustedOrigins = config.value(QStringLiteral("trusted_origins")).toString().split(u',', Qt::SkipEmptyParts);
     if (d->formInputName.isEmpty()) {
@@ -388,6 +400,9 @@ void CSRFProtectionPrivate::setToken(Context *c)
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);
         cookie.setSecure(csrf->d_ptr->cookieSecure);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+        cookie.setSameSitePolicy(csrf->d_ptr->cookieSameSite);
+#endif
         c->res()->setCookie(cookie);
         c->res()->headers().pushHeader(QStringLiteral("Vary"), QStringLiteral("Cookie"));
     }

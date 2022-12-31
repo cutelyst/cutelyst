@@ -191,6 +191,15 @@ class CSRFProtectionPrivate;
  * which means browsers may ensure that the cookie is only sent with an HTTPS connection.
  * @endparblock
  *
+ * @par cookie_same_site
+ * @parblock
+ * String value, default: strict; acceptable values: default, none, lax, strict
+ *
+ * Defines the SameSite attribute of the CSRF cookie. See <A HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A>
+ * to learn more about SameSite cookies. This configuration key is available since
+ * Cutelyst 3.8.0 and is only available if Cutelyst is compiled against Qt 6.1.0 or newer.
+ * @endparblock
+ *
  * @par trusted_origins
  * @parblock
  * String list, default: empty
