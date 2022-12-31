@@ -88,6 +88,15 @@ class SessionPrivate;
  * If true, the session cookie will have the secure flag set so that the cookie is only
  * sent to the server with an encrypted request over the HTTPS protocol.
  * @endparblock
+ *
+ * @par cookie_same_site
+ * @parblock
+ * String value, default: strict; acceptable values: default, none, lax, strict
+ *
+ * Defines the SameSite attribute of the session cookie. See <A HREF="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN</A>
+ * to learn more about SameSite cookies. This configuration key is available since
+ * Cutelyst 3.8.0 and is only available if Cutelyst is compiled against Qt 6.1.0 or newer.
+ * @endparblock
  */
 class CUTELYST_PLUGIN_SESSION_EXPORT Session : public Plugin
 {
