@@ -55,6 +55,18 @@ bool Session::setup(Application *app)
     d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
     d->cookieHttpOnly = config.value(QLatin1String("cookie_http_only"), true).toBool();
     d->cookieSecure = config.value(QLatin1String("cookie_secure"), false).toBool();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    const QString _sameSite = config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
+    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Default;
+    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::None;
+    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = QNetworkCookie::SameSite::Lax;
+    } else {
+        d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    }
+#endif
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
     connect(app, &Application::postForked, this, [=] {
@@ -569,6 +581,9 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, c
     cookie.setExpirationDate(expires);
     cookie.setHttpOnly(session->d_ptr->cookieHttpOnly);
     cookie.setSecure(session->d_ptr->cookieSecure);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    cookie.setSameSitePolicy(session->d_ptr->cookieSameSite);
+#endif
 
     return cookie;
 }

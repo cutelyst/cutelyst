@@ -48,6 +48,9 @@ public:
     qint64 expiryThreshold = 0;
     SessionStore *store = nullptr;
     QString sessionName;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
+#endif
     bool cookieHttpOnly = true;
     bool cookieSecure = false;
     bool verifyAddress = false;
