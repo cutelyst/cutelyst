@@ -9,6 +9,7 @@
 #include "csrfprotection.h"
 
 #include <QRegularExpression>
+#include <QNetworkCookie>
 
 namespace Cutelyst {
 
@@ -42,6 +43,9 @@ public:
     QString genericErrorMessage;
     QString genericContentType {QStringLiteral("text/plain; charset=utf8")};
     static const QRegularExpression sanitizeRe;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
+#endif
     bool cookieHttpOnly {false};
     bool cookieSecure {false};
     bool useSessions {false};
