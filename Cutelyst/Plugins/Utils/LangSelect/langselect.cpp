@@ -692,7 +692,11 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
 void LangSelectPrivate::setToCookie(Context *c, const QString &name) const
 {
     qCDebug(C_LANGSELECT) << "Storing selected locale in cookie with name" << name;
-    c->res()->setCookie(QNetworkCookie(name.toLatin1(), c->locale().bcp47Name().toLatin1()));
+    QNetworkCookie cookie(name.toLatin1(), c->locale().bcp47Name().toLatin1());
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+    cookie.setSameSitePolicy(QNetworkCookie::SameSite::Lax);
+#endif
+    c->res()->setCookie(cookie);
 }
 
 void LangSelectPrivate::setToSession(Context *c, const QString &key) const
