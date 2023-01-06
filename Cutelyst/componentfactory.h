@@ -5,7 +5,7 @@
 #ifndef COMPONENTFACTORY_H
 #define COMPONENTFACTORY_H
 
-#include <Context>
+#include <Cutelyst/Context>
 #include <QString>
 
 namespace Cutelyst {

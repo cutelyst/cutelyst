@@ -58,6 +58,7 @@ set(cutelystqt_HEADERS
     Context
     controller.h
     Controller
+    ComponentFactory
     componentfactory.h
     component.h
     Component
