@@ -44,6 +44,13 @@ set(cutelystqt_SRC
     plugin.cpp
 )
 
+if (${QT_VERSION} VERSION_LESS "6.1.0")
+    list(APPEND cutelystqt_SRC
+        cookie.cpp
+        cookie_p.h
+    )
+endif (${QT_VERSION} VERSION_LESS "6.1.0")
+
 set(cutelystqt_HEADERS
     paramsmultimap.h
     ParamsMultiMap
@@ -83,6 +90,8 @@ set(cutelystqt_HEADERS
     plugin.h
     Plugin
     utils.h
+    Cookie
+    cookie.h
 )
 
 set(cutelystqt_HEADERS_PRIVATE
