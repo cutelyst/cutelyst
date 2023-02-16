@@ -6,6 +6,9 @@
 #define SESSION_P_H
 
 #include "session.h"
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+#include "cookie.h"
+#endif
 
 #include <QtNetwork/QNetworkCookie>
 
@@ -39,6 +42,10 @@ public:
 
     static inline void updateSessionCookie(Context *c, const QNetworkCookie &updated);
     static inline QNetworkCookie makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+    static inline void updateSessionCuteCookie(Context *c, const Cookie &updated);
+    static inline Cookie makeSessionCuteCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
+#endif
     static inline void extendSessionId(Session *session, Context *c, const QString &sid, qint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
 
@@ -50,6 +57,8 @@ public:
     QString sessionName;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
+#else
+    Cookie::SameSite cookieSameSite = Cookie::SameSite::Strict;
 #endif
     bool cookieHttpOnly = true;
     bool cookieSecure = false;
