@@ -55,8 +55,8 @@ bool Session::setup(Application *app)
     d->verifyUserAgent = config.value(QLatin1String("verify_user_agent"), false).toBool();
     d->cookieHttpOnly = config.value(QLatin1String("cookie_http_only"), true).toBool();
     d->cookieSecure = config.value(QLatin1String("cookie_secure"), false).toBool();
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     const QString _sameSite = config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -65,6 +65,16 @@ bool Session::setup(Application *app)
         d->cookieSameSite = QNetworkCookie::SameSite::Lax;
     } else {
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    }
+#else
+    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::Default;
+    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::None;
+    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::Lax;
+    } else {
+        d->cookieSameSite = Cookie::SameSite::Strict;
     }
 #endif
 
@@ -378,7 +388,11 @@ void SessionPrivate::deleteSessionId(Session *session, Context *c, const QString
 {
     c->setStash(SESSION_DELETED_ID, true); // to prevent get_session_id from returning it
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::currentDateTimeUtc()));
+#else
+    updateSessionCuteCookie(c, makeSessionCuteCookie(session, c, sid, QDateTime::currentDateTimeUtc()));
+#endif
 }
 
 QVariant SessionPrivate::loadSession(Context *c)
@@ -573,6 +587,13 @@ void SessionPrivate::updateSessionCookie(Context *c, const QNetworkCookie &updat
     c->response()->setCookie(updated);
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+void SessionPrivate::updateSessionCuteCookie(Context *c, const Cookie &updated)
+{
+    c->response()->setCuteCookie(updated);
+}
+#endif
+
 QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires)
 {
     Q_UNUSED(c)
@@ -588,15 +609,39 @@ QNetworkCookie SessionPrivate::makeSessionCookie(Session *session, Context *c, c
     return cookie;
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+Cookie SessionPrivate::makeSessionCuteCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires)
+{
+    Q_UNUSED(c)
+    Cookie cookie(session->d_ptr->sessionName.toLatin1(), sid.toLatin1());
+    cookie.setPath(QStringLiteral("/"));
+    cookie.setExpirationDate(expires);
+    cookie.setHttpOnly(session->d_ptr->cookieHttpOnly);
+    cookie.setSecure(session->d_ptr->cookieSecure);
+    cookie.setSameSitePolicy(session->d_ptr->cookieSameSite);
+
+    return cookie;
+}
+#endif
+
 void SessionPrivate::extendSessionId(Session *session, Context *c, const QString &sid, qint64 expires)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     updateSessionCookie(c, makeSessionCookie(session, c, sid, QDateTime::fromMSecsSinceEpoch(expires * 1000)));
+#else
+    updateSessionCuteCookie(c, makeSessionCuteCookie(session, c, sid, QDateTime::fromMSecsSinceEpoch(expires * 1000)));
+#endif
 }
 
 void SessionPrivate::setSessionId(Session *session, Context *c, const QString &sid)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     updateSessionCookie(c, makeSessionCookie(session, c, sid,
                                              QDateTime::fromMSecsSinceEpoch(initialSessionExpires(session, c) * 1000)));
+#else
+    updateSessionCuteCookie(c, makeSessionCuteCookie(session, c, sid,
+                                                     QDateTime::fromMSecsSinceEpoch(initialSessionExpires(session, c) * 1000)));
+#endif
 }
 
 SessionStore::SessionStore(QObject *parent) : QObject(parent)
