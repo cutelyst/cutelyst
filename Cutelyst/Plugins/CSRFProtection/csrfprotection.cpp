@@ -82,8 +82,8 @@ bool CSRFProtection::setup(Application *app)
     if (d->headerName.isEmpty()) {
         d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
     }
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     const QString _sameSite = config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -92,6 +92,16 @@ bool CSRFProtection::setup(Application *app)
         d->cookieSameSite = QNetworkCookie::SameSite::Lax;
     } else {
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
+    }
+#else
+    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::Default;
+    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::None;
+    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
+        d->cookieSameSite = Cookie::SameSite::Lax;
+    } else {
+        d->cookieSameSite = Cookie::SameSite::Strict;
     }
 #endif
 
@@ -392,7 +402,11 @@ void CSRFProtectionPrivate::setToken(Context *c)
     if (csrf->d_ptr->useSessions) {
         Session::setValue(c, QStringLiteral(CSRF_SESSION_KEY), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
     } else {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
         QNetworkCookie cookie(csrf->d_ptr->cookieName.toLatin1(), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
+#else
+        Cookie cookie(csrf->d_ptr->cookieName.toLatin1(), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
+#endif
         if (!csrf->d_ptr->cookieDomain.isEmpty()) {
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
@@ -400,10 +414,12 @@ void CSRFProtectionPrivate::setToken(Context *c)
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);
         cookie.setSecure(csrf->d_ptr->cookieSecure);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
         cookie.setSameSitePolicy(csrf->d_ptr->cookieSameSite);
-#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
         c->res()->setCookie(cookie);
+#else
+        c->res()->setCuteCookie(cookie);
+#endif
         c->res()->headers().pushHeader(QStringLiteral("Vary"), QStringLiteral("Cookie"));
     }
 
