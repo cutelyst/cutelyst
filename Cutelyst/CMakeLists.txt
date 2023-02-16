@@ -90,9 +90,14 @@ set(cutelystqt_HEADERS
     plugin.h
     Plugin
     utils.h
-    Cookie
-    cookie.h
 )
+
+if (${QT_VERSION} VERSION_LESS "6.1.0")
+    list(APPEND cutelystqt_HEADERS
+        Cookie
+        cookie.h
+    )
+endif (${QT_VERSION} VERSION_LESS "6.1.0")
 
 set(cutelystqt_HEADERS_PRIVATE
     common.h

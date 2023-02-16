@@ -13,17 +13,15 @@
 
 namespace Cutelyst {
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
-
-CUTELYST_LIBRARY using Cookie = QNetworkCookie;
-
-#else
 class CookiePrivate;
 /*!
  * \class Cookie cookie.h Cutelyst/Cookie
  * \brief The %Cutelyst %Cookie
  *
- * This is a reimplementation of QNetworkCookie that adds support for the \a SameSite property.
+ * This is an extension of QNetworkCookie that adds support for the \a SameSite property.
+ * QNetworkCookie added support for the SameSite property in Qt 6.1. So, if you are only
+ * using Qt 6.1 or newer, please use QNetworkCookie and the methods that take it as argument
+ * instead.
  *
  * \since Cutelyst 3.8.0
  */
@@ -110,8 +108,6 @@ Q_DECLARE_TYPEINFO(Cutelyst::Cookie, Q_MOVABLE_TYPE);
 #ifndef QT_NO_DEBUG_STREAM
 class QDebug;
 CUTELYST_LIBRARY QDebug operator<<(QDebug, const Cutelyst::Cookie &);
-#endif
-
 #endif
 
 #endif // CUTELYST_COOKIE_H
