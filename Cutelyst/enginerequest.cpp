@@ -99,6 +99,12 @@ void EngineRequest::finalizeCookies()
     for (const QNetworkCookie &cookie : cookies) {
         headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
     }
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+    const auto cuteCookies = res->cuteCookies();
+    for (const Cookie &cookie : cuteCookies) {
+        headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
+    }
+#endif
 }
 
 bool EngineRequest::finalizeHeaders()
