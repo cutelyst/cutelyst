@@ -7,6 +7,9 @@
 #define CSRFPROTECTION_P_H
 
 #include "csrfprotection.h"
+#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
+#include "cookie.h"
+#endif
 
 #include <QRegularExpression>
 #include <QNetworkCookie>
@@ -45,6 +48,8 @@ public:
     static const QRegularExpression sanitizeRe;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
+#else
+    Cookie::SameSite cookieSameSite = Cookie::SameSite::Strict;
 #endif
     bool cookieHttpOnly {false};
     bool cookieSecure {false};
