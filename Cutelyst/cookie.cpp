@@ -24,10 +24,7 @@ Cookie::Cookie(const Cookie &other)
 
 }
 
-Cookie::~Cookie()
-{
-    d = nullptr;
-}
+Cookie::~Cookie() = default;
 
 Cookie &Cookie::operator=(const Cookie &other)
 {
