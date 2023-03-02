@@ -56,7 +56,7 @@ bool Session::setup(Application *app)
     d->cookieHttpOnly = config.value(QLatin1String("cookie_http_only"), true).toBool();
     d->cookieSecure = config.value(QLatin1String("cookie_secure"), false).toBool();
     const QString _sameSite = config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
