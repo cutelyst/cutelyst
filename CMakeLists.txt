@@ -9,10 +9,6 @@ project(cutelyst
 include(GNUInstallDirs)
 include(FetchContent)
 
-
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.15.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
-
 set(CUTELYST_API_LEVEL "3")
 
 # CMakeLists for Cutelyst library
@@ -41,6 +37,7 @@ endif ()
 # Options
 #
 include(CMakeDependentOption)
+option(BUILD_WITH_QT6 "Build against Qt 6" OFF)
 option(ENABLE_LTO "Build with Link Time Optimization" OFF)
 option(BUILD_SHARED_LIBS "Build in shared lib mode" ON)
 option(ENABLE_MAINTAINER_CFLAGS "Enable maintainer CFlags" OFF)
@@ -49,6 +46,14 @@ option(BUILD_EXAMPLES "Build the Cutelyst examples" ${BUILD_ALL})
 option(BUILD_DOCS "Add the make docs target to build the documentationn. Requires doxygen and dot" ${BUILD_ALL})
 cmake_dependent_option(BUILD_DOCS_QUIET "Tell doxygen to be quiet while building the documentation." OFF "BUILD_DOCS" OFF)
 cmake_dependent_option(BUILD_DOCS_TIMESTAMP "Tell doxygen to insert a build timestamp on every HTML page." ON "BUILD_DOCS" OFF)
+
+if(BUILD_WITH_QT6)
+    find_package(QT NAMES Qt6 COMPONENTS Core Network Sql REQUIRED)
+    find_package(Qt6 COMPONENTS Core Network Sql REQUIRED)
+else()
+    find_package(QT NAMES Qt5 COMPONENTS Core Network Sql REQUIRED)
+    find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
+endif()
 
 if (BUILD_TESTS)
   enable_testing()
