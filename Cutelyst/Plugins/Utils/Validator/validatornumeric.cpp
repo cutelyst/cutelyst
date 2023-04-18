@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorNumeric::ValidatorNumeric(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorNumericPrivate(field, messages, defValKey))
+ValidatorNumeric::ValidatorNumeric(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorNumericPrivate(field, messages, defValKey))
 {
 }
 
@@ -23,7 +23,7 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        bool ok = false;
+        bool ok         = false;
         const double _v = v.toDouble(&ok);
         if (Q_LIKELY(ok)) {
             result.value.setValue(_v);

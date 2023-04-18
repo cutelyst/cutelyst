@@ -4,19 +4,18 @@
  */
 
 #include "validatoralpha_p.h"
+
 #include <QRegularExpression>
 
 using namespace Cutelyst;
 
-ValidatorAlpha::ValidatorAlpha(const QString &field, bool asciiOnly, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorAlphaPrivate(field, asciiOnly, messages, defValKey))
+ValidatorAlpha::ValidatorAlpha(const QString &field, bool asciiOnly, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorAlphaPrivate(field, asciiOnly, messages, defValKey))
 {
-
 }
 
 ValidatorAlpha::~ValidatorAlpha()
 {
-
 }
 
 ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const

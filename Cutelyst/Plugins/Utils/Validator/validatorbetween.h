@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORBETWEEN_H
 #define CUTELYSTVALIDATORBETWEEN_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorBetweenPrivate;
 /*!
  * \ingroup plugins-utils-validator-rules
@@ -53,7 +54,7 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorBetween(const QString &field, QMetaType::Type type, const QVariant &min, const QVariant &max, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the between validator.
      */
@@ -82,13 +83,12 @@ protected:
      * \brief Returns a generic error message for input value parsing errors.
      */
     QString genericParsingError(Context *c, const QVariant &errorData) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorBetween)
     Q_DISABLE_COPY(ValidatorBetween)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORBETWEEN_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORBETWEEN_H

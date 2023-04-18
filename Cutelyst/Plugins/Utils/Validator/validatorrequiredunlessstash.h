@@ -7,6 +7,7 @@
 #define CUTELYSTVALIDATORREQUIREDUNLESSSTASH_H
 
 #include "validatorrule.h"
+
 #include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
@@ -67,6 +68,6 @@ private:
     Q_DISABLE_COPY(ValidatorRequiredUnlessStash)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORREQUIREDUNLESSSTASH_H

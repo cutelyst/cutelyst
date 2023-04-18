@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorMinPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorMinPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk) :
-        ValidatorRulePrivate(f, msgs, dvk),
-        type(t),
-        min(m)
-    {}
+    ValidatorMinPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk)
+        : ValidatorRulePrivate(f, msgs, dvk)
+        , type(t)
+        , min(m)
+    {
+    }
 
     QMetaType::Type type;
     QVariant min;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORMIN_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORMIN_P_H

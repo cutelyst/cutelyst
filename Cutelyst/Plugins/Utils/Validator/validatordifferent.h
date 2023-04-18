@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORDIFFERENT_H
 #define CUTELYSTVALIDATORDIFFERENT_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorDifferentPrivate;
 
 /*!
@@ -40,12 +41,12 @@ public:
      * \param messages      Custom error messages if validation fails.
      */
     ValidatorDifferent(const QString &field, const QString &other, const char *otherLabel = nullptr, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the different validator.
      */
     ~ValidatorDifferent() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -58,13 +59,12 @@ protected:
      * \brief Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorDifferent)
     Q_DISABLE_COPY(ValidatorDifferent)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDIFFERENT_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDIFFERENT_H

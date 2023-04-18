@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORDATETIME_H
 #define CUTELYSTVALIDATORDATETIME_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorDateTimePrivate;
 
 /*!
@@ -51,7 +52,7 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorDateTime(const QString &field, const QString &timeZone, const char *inputFormat = nullptr, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the datetime validator.
      */
@@ -69,13 +70,12 @@ protected:
      * \brief Returns a generic error if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorDateTime)
     Q_DISABLE_COPY(ValidatorDateTime)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDATETIME_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDATETIME_H

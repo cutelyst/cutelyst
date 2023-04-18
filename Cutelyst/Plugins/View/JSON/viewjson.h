@@ -24,7 +24,7 @@ public:
     /**  This value defines the format of the JSON byte array produced when rendering the view */
     enum JsonFormat {
         Indented, /**< The output will be indented */
-        Compact /**< The output will be compact saving space */
+        Compact   /**< The output will be compact saving space */
     };
     Q_ENUM(JsonFormat)
 
@@ -86,6 +86,6 @@ public:
     QByteArray render(Context *c) const final;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // VIEWJSON_H

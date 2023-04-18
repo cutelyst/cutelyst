@@ -4,19 +4,18 @@
  */
 
 #include "validatoralphadash_p.h"
+
 #include <QRegularExpression>
 
 using namespace Cutelyst;
 
-ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorAlphaDashPrivate(field, asciiOnly, messages, defValKey))
+ValidatorAlphaDash::ValidatorAlphaDash(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorAlphaDashPrivate(field, asciiOnly, messages, defValKey))
 {
-
 }
 
 ValidatorAlphaDash::~ValidatorAlphaDash()
 {
-
 }
 
 ValidatorReturnType ValidatorAlphaDash::validate(Context *c, const ParamsMultiMap &params) const

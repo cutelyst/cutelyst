@@ -5,23 +5,23 @@
 #ifndef CUTELYSTVALIDATORTIME_P_H
 #define CUTELYSTVALIDATORTIME_P_H
 
-#include "validatortime.h"
 #include "validatorrule_p.h"
+#include "validatortime.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorTimePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorTimePrivate(const QString &f, const char *fo, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        format(fo)
-    {}
+    ValidatorTimePrivate(const QString &f, const char *fo, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , format(fo)
+    {
+    }
 
     const char *format = nullptr;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORTIME_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORTIME_P_H

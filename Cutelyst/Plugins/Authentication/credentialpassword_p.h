@@ -16,12 +16,12 @@ public:
     static QByteArray cryptoEnumToStr(QCryptographicHash::Algorithm method);
     static int cryptoStrToEnum(const QByteArray &hashMethod);
 
-    QString passwordField = QStringLiteral("password");
+    QString passwordField                         = QStringLiteral("password");
     CredentialPassword::PasswordType passwordType = CredentialPassword::None;
     QString passwordPreSalt;
     QString passwordPostSalt;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CREDENTIALPASSWORD_P_H

@@ -5,12 +5,14 @@
 #ifndef CUTELYSTVALIDATORREQUIREDIF_H
 #define CUTELYSTVALIDATORREQUIREDIF_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QStringList>
 
 namespace Cutelyst {
-    
+
 class ValidatorRequiredIfPrivate;
 
 /*!
@@ -40,12 +42,12 @@ public:
      * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredIf(const QString &field, const QString &otherField, const QStringList &otherValues, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the required if validator.
      */
     ~ValidatorRequiredIf() override;
-       
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -59,13 +61,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredIf)
     Q_DISABLE_COPY(ValidatorRequiredIf)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREQUIREDIF_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREQUIREDIF_H

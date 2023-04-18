@@ -4,16 +4,15 @@
  */
 #include "csrf.h"
 
-#include <grantlee/exception.h>
-#include <grantlee/parser.h>
-
 #include <Cutelyst/Context>
 #include <Cutelyst/ParamsMultiMap>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
+#include <grantlee/exception.h>
+#include <grantlee/parser.h>
 
 #ifdef PLUGIN_CSRFPROTECTION_ENABLED
-#include <Cutelyst/Plugins/CSRFProtection/CSRFProtection>
+#    include <Cutelyst/Plugins/CSRFProtection/CSRFProtection>
 #endif
 
 Grantlee::Node *CSRFTag::getNode(const QString &tagContent, Grantlee::Parser *p) const
@@ -22,7 +21,8 @@ Grantlee::Node *CSRFTag::getNode(const QString &tagContent, Grantlee::Parser *p)
     return new CSRF(p);
 }
 
-CSRF::CSRF(Grantlee::Parser *parser) : Grantlee::Node(parser)
+CSRF::CSRF(Grantlee::Parser *parser)
+    : Grantlee::Node(parser)
 {
 }
 
@@ -33,7 +33,7 @@ void CSRF::render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const
     auto c = gc->lookup(m_cutelystContext).value<Cutelyst::Context *>();
     if (!c) {
         const QVariantHash hash = gc->stackHash(0);
-        auto it = hash.constBegin();
+        auto it                 = hash.constBegin();
         while (it != hash.constEnd()) {
             if (it.value().userType() == qMetaTypeId<Cutelyst::Context *>()) {
                 c = it.value().value<Cutelyst::Context *>();

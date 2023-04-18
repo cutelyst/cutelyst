@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorMaxPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorMaxPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk) :
-        ValidatorRulePrivate(f, msgs, dvk),
-        type(t),
-        max(m)
-    {}
+    ValidatorMaxPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk)
+        : ValidatorRulePrivate(f, msgs, dvk)
+        , type(t)
+        , max(m)
+    {
+    }
 
     QMetaType::Type type;
     QVariant max;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORMAX_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORMAX_P_H

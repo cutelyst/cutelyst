@@ -13,12 +13,12 @@ namespace Cutelyst {
 class ValidatorAcceptedPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorAcceptedPrivate(const QString &f, const ValidatorMessages &m) :
-        ValidatorRulePrivate(f, m, QString())
-    {}
+    ValidatorAcceptedPrivate(const QString &f, const ValidatorMessages &m)
+        : ValidatorRulePrivate(f, m, QString())
+    {
+    }
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORACCEPTED_P_H
-
+#endif // CUTELYSTVALIDATORACCEPTED_P_H

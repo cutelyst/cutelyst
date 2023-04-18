@@ -4,19 +4,17 @@
  */
 #include "useragent.h"
 
-#include <Cutelyst/Engine>
 #include <Cutelyst/Context>
+#include <Cutelyst/Engine>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
 
+#include <QBuffer>
 #include <QHostAddress>
+#include <QHttpMultiPart>
+#include <QJsonDocument>
 #include <QLoggingCategory>
 #include <QNetworkAccessManager>
-
-#include <QBuffer>
-#include <QHttpMultiPart>
-
-#include <QJsonDocument>
 
 using namespace Cutelyst;
 
@@ -162,8 +160,8 @@ QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
     QNetworkRequest proxyReq(dest);
 
     const Headers reqHeaders = request->headers();
-    const auto headersData = reqHeaders.data();
-    auto it = headersData.constBegin();
+    const auto headersData   = reqHeaders.data();
+    auto it                  = headersData.constBegin();
     while (it != headersData.constEnd()) {
         proxyReq.setRawHeader(Cutelyst::Engine::camelCaseHeader(it.key()).toLatin1(), it.value().toLatin1());
         ++it;
@@ -176,7 +174,7 @@ QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)
 {
     QNetworkReply *reply = forwardRequest(c->request(), destination);
     QObject::connect(reply, &QNetworkReply::finished, c, [=] {
-        Headers &responseHeaders = c->response()->headers();
+        Headers &responseHeaders                           = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
             responseHeaders.setHeader(QString::fromLatin1(pair.first), QString::fromLatin1(pair.second));
@@ -191,7 +189,7 @@ void UA::forwardAsync(Context *c, const QUrl &destination)
 {
     QNetworkReply *reply = forwardRequest(c->request(), destination);
     QObject::connect(reply, &QNetworkReply::finished, c, [=] {
-        Headers &responseHeaders = c->response()->headers();
+        Headers &responseHeaders                           = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
             responseHeaders.setHeader(QString::fromLatin1(pair.first), QString::fromLatin1(pair.second));

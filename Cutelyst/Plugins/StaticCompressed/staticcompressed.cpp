@@ -6,35 +6,36 @@
 #include "staticcompressed_p.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Request>
-#include <Cutelyst/Response>
 #include <Cutelyst/Context>
 #include <Cutelyst/Engine>
+#include <Cutelyst/Request>
+#include <Cutelyst/Response>
 
-#include <QMimeDatabase>
-#include <QFile>
-#include <QDateTime>
-#include <QStandardPaths>
 #include <QCoreApplication>
 #include <QCryptographicHash>
-#include <QLoggingCategory>
 #include <QDataStream>
+#include <QDateTime>
+#include <QFile>
 #include <QLockFile>
+#include <QLoggingCategory>
+#include <QMimeDatabase>
+#include <QStandardPaths>
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-#include <zopfli.h>
+#    include <zopfli.h>
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
-#include <brotli/encode.h>
+#    include <brotli/encode.h>
 #endif
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICCOMPRESSED, "cutelyst.plugin.staticcompressed", QtWarningMsg)
 
-StaticCompressed::StaticCompressed(Application *parent) :
-    Plugin(parent), d_ptr(new StaticCompressedPrivate)
+StaticCompressed::StaticCompressed(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new StaticCompressedPrivate)
 {
     Q_D(StaticCompressed);
     d->includePaths.append(parent->config(QStringLiteral("root")).toString());
@@ -42,7 +43,6 @@ StaticCompressed::StaticCompressed(Application *parent) :
 
 StaticCompressed::~StaticCompressed()
 {
-
 }
 
 void StaticCompressed::setIncludePaths(const QStringList &paths)
@@ -64,7 +64,7 @@ bool StaticCompressed::setup(Application *app)
 {
     Q_D(StaticCompressed);
 
-    const QVariantMap config = app->engine()->config(QStringLiteral("Cutelyst_StaticCompressed_Plugin"));
+    const QVariantMap config       = app->engine()->config(QStringLiteral("Cutelyst_StaticCompressed_Plugin"));
     const QString _defaultCacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/compressed-static");
     d->cacheDir.setPath(config.value(QStringLiteral("cache_directory"), _defaultCacheDir).toString());
 
@@ -93,7 +93,7 @@ bool StaticCompressed::setup(Application *app)
 
     QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
 
-    bool ok = false;
+    bool ok                 = false;
     d->zlibCompressionLevel = config.value(QStringLiteral("zlib_compression_level"), 9).toInt(&ok);
     if (!ok || (d->zlibCompressionLevel < -1) || (d->zlibCompressionLevel > 9)) {
         d->zlibCompressionLevel = -1;
@@ -131,7 +131,7 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path = c->req()->path();
+    const QString path           = c->req()->path();
     const QRegularExpression _re = re; // Thread-safe
 
     for (const QString &dir : dirs) {
@@ -160,7 +160,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
         const QString path = includePath.absoluteFilePath(relPath);
         const QFileInfo fileInfo(path);
         if (fileInfo.exists()) {
-            Response *res = c->res();
+            Response *res                   = c->res();
             const QDateTime currentDateTime = fileInfo.lastModified();
             if (!c->req()->headers().ifModifiedSince(currentDateTime)) {
                 res->setStatus(Response::NotModified);
@@ -191,14 +191,14 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                     if (acceptEncoding.contains(QLatin1String("br"), Qt::CaseInsensitive)) {
-                        compressedPath = locateCacheFile(path, currentDateTime, Brotli)                        ;
+                        compressedPath = locateCacheFile(path, currentDateTime, Brotli);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving brotli compressed data from \"%s\".", qPrintable(compressedPath));
                             contentEncoding = QStringLiteral("br");
                         }
                     } else
 #endif
-                    if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
+                        if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
                         compressedPath = locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED, "Serving %s compressed data from \"%s\".", useZopfli ? "zopfli" : "gzip", qPrintable(compressedPath));
@@ -211,7 +211,6 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                             contentEncoding = QStringLiteral("deflate");
                         }
                     }
-
                 }
             }
 
@@ -334,6 +333,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath, const 
     return compressedPath;
 }
 
+// clang-format off
 static const quint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -379,19 +379,20 @@ static const quint32 crc_32_tab[] = { /* CRC polynomial 0xedb88320 */
     0x54de5729, 0x23d967bf, 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
+// clang-format on
 
 quint32 updateCRC32(unsigned char ch, quint32 crc)
 {
     return (crc_32_tab[((crc) ^ (quint8(ch))) & 0xff] ^ ((crc) >> 8));
 }
 
-quint32 crc32buf(const QByteArray& data)
+quint32 crc32buf(const QByteArray &data)
 {
     return ~std::accumulate(
         data.begin(),
         data.end(),
         quint32(0xFFFFFFFF),
-        [](quint32 oldcrc32, char buf){ return updateCRC32(buf, oldcrc32); });
+        [](quint32 oldcrc32, char buf) { return updateCRC32(buf, oldcrc32); });
 }
 
 bool StaticCompressedPrivate::compressGzip(const QString &inputPath, const QString &outputPath, const QDateTime &origLastModified) const
@@ -537,8 +538,8 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath, const QSt
     ZopfliInitOptions(&options);
     options.numiterations = zopfliIterations;
 
-    unsigned char* out = 0;
-    size_t outSize = 0;
+    unsigned char *out = 0;
+    size_t outSize     = 0;
 
     ZopfliCompress(&options, ZopfliFormat::ZOPFLI_FORMAT_GZIP, reinterpret_cast<const unsigned char *>(data.constData()), data.size(), &out, &outSize);
 
@@ -594,7 +595,7 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath, const QSt
     if (Q_LIKELY(outSize > 0)) {
         const uint8_t *in = (const uint8_t *) data.constData();
         uint8_t *out;
-        out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize+1));
+        out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize + 1));
         if (Q_LIKELY(out != nullptr)) {
             BROTLI_BOOL status = BrotliEncoderCompress(brotliQualityLevel, BROTLI_DEFAULT_WINDOW, BROTLI_DEFAULT_MODE, data.size(), in, &outSize, out);
             if (Q_LIKELY(status == BROTLI_TRUE)) {
@@ -618,7 +619,7 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath, const QSt
             }
             free(out);
         } else {
-            qCWarning(C_STATICCOMPRESSED, "Can not allocate needed output buffer of size %lu for brotli compression.", sizeof(uint8_t) * (outSize+1));
+            qCWarning(C_STATICCOMPRESSED, "Can not allocate needed output buffer of size %lu for brotli compression.", sizeof(uint8_t) * (outSize + 1));
         }
     } else {
         qCWarning(C_STATICCOMPRESSED, "Needed output buffer too large to compress input of size %lu with brotli.", static_cast<size_t>(data.size()));

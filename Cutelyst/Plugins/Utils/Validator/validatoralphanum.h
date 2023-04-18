@@ -5,8 +5,9 @@
 #ifndef CUTELYSTVALIDATORALPHANUM_H
 #define CUTELYSTVALIDATORALPHANUM_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -82,6 +83,6 @@ private:
     Q_DISABLE_COPY(ValidatorAlphaNum)
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORALPHANUM_H
+#endif // CUTELYSTVALIDATORALPHANUM_H

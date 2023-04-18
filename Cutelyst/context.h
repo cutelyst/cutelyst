@@ -5,15 +5,15 @@
 #ifndef CUTELYST_CONTEXT_H
 #define CUTELYST_CONTEXT_H
 
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-#include <QtCore/QUrl>
-#include <QtCore/QStringList>
-#include <QtCore/QStack>
-
 #include <Cutelyst/async.h>
-#include <Cutelyst/request.h>
 #include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/request.h>
+
+#include <QtCore/QObject>
+#include <QtCore/QStack>
+#include <QtCore/QStringList>
+#include <QtCore/QUrl>
+#include <QtCore/QVariant>
 
 namespace Cutelyst {
 
@@ -38,7 +38,7 @@ class ContextPrivate;
 class CUTELYST_LIBRARY Context : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Action* action READ action CONSTANT)
+    Q_PROPERTY(Action *action READ action CONSTANT)
     Q_PROPERTY(QString actionName READ actionName CONSTANT)
     Q_PROPERTY(QString ns READ ns CONSTANT)
     Q_PROPERTY(QString namespace READ ns CONSTANT)
@@ -269,8 +269,8 @@ public:
      * c->request()->base() any \p args are appended as additional path
      * components; and any queryValues> are appended as "?foo=bar" parameters.
      */
-    QUrl uriFor(const QString &path = QString(),
-                const QStringList &args = QStringList(),
+    QUrl uriFor(const QString &path               = QString(),
+                const QStringList &args           = QStringList(),
                 const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
@@ -296,8 +296,8 @@ public:
      * c->uriFor(c->action(), args).
      */
     QUrl uriFor(Action *action,
-                const QStringList &captures = QStringList(),
-                const QStringList &args = QStringList(),
+                const QStringList &captures       = QStringList(),
+                const QStringList &args           = QStringList(),
                 const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
@@ -332,8 +332,8 @@ public:
      * and it will create the URI /users/the-list.
      */
     QUrl uriForAction(const QString &path,
-                      const QStringList &captures = QStringList(),
-                      const QStringList &args = QStringList(),
+                      const QStringList &captures       = QStringList(),
+                      const QStringList &args           = QStringList(),
                       const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
 
     /**
@@ -535,15 +535,21 @@ private:
 };
 
 inline QUrl Context::uriFor(const QString &path, const ParamsMultiMap &queryValues) const
-{ return uriFor(path, QStringList(), queryValues); }
+{
+    return uriFor(path, QStringList(), queryValues);
+}
 
 inline QUrl Context::uriFor(Action *action, const ParamsMultiMap &queryValues) const
-{ return uriFor(action, QStringList(), QStringList(), queryValues); }
+{
+    return uriFor(action, QStringList(), QStringList(), queryValues);
+}
 
 inline QUrl Context::uriForAction(const QString &path, const ParamsMultiMap &queryValues) const
-{ return uriForAction(path, QStringList(), QStringList(), queryValues); }
-
+{
+    return uriForAction(path, QStringList(), QStringList(), queryValues);
 }
+
+} // namespace Cutelyst
 
 Q_DECLARE_METATYPE(Cutelyst::Context *)
 

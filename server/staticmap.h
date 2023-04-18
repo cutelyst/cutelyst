@@ -5,12 +5,12 @@
 #ifndef STATICMAP_H
 #define STATICMAP_H
 
-#include <QString>
-#include <QMimeDatabase>
+#include <Cutelyst/Context>
+#include <Cutelyst/Plugin>
 #include <vector>
 
-#include <Cutelyst/Plugin>
-#include <Cutelyst/Context>
+#include <QMimeDatabase>
+#include <QString>
 
 struct MountPoint {
     QString mountPoint;

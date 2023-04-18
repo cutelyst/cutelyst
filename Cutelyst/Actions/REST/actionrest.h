@@ -5,9 +5,9 @@
 #ifndef ACTIONREST_H
 #define ACTIONREST_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -26,7 +26,8 @@ protected:
     bool doExecute(Context *c) override;
 };
 
-class ActionRESTFactory final : public QObject, public ComponentFactory
+class ActionRESTFactory final : public QObject
+    , public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
@@ -35,6 +36,6 @@ public:
     virtual Component *createComponent(QObject *parent) override { return new ActionREST(parent); }
 };
 
-}
+} // namespace Cutelyst
 
 #endif // ACTIONREST_H

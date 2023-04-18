@@ -5,10 +5,11 @@
 #ifndef HPACK_P_H
 #define HPACK_P_H
 
-#include <QString>
 #include <QHash>
+#include <QString>
 
-class HPackPrivate {
+class HPackPrivate
+{
 public:
     /**
      * huffman decoding state, which is actually the node ID of internal huffman tree.
@@ -17,20 +18,20 @@ public:
      */
 
     struct HuffDecode {
-       quint8 state,
-              flags, // bitwise OR of zero or more of the HuffDecodeFlag
-              sym;   // symbol if HUFF_SYM flag set
+        quint8 state,
+            flags, // bitwise OR of zero or more of the HuffDecodeFlag
+            sym;   // symbol if HUFF_SYM flag set
     };
 
     struct HuffSym {
-       quint32 nbits, // The number of bits in this code
-               code;  // Huffman code aligned to LSB
+        quint32 nbits, // The number of bits in this code
+            code;      // Huffman code aligned to LSB
     };
 
     enum HuffDecodeFlag {
-       HUFF_ACCEPTED =  1,       // FSA accepts this state as the end of huffman encoding sequence
-       HUFF_SYM      = (1 << 1), // This state emits symbol
-       HUFF_FAIL     = (1 << 2)  // If state machine reaches this state, decoding fails
+        HUFF_ACCEPTED = 1,        // FSA accepts this state as the end of huffman encoding sequence
+        HUFF_SYM      = (1 << 1), // This state emits symbol
+        HUFF_FAIL     = (1 << 2)  // If state machine reaches this state, decoding fails
     };
 
     typedef struct {

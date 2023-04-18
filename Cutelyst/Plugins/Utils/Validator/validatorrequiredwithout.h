@@ -5,12 +5,14 @@
 #ifndef CUTELYSTVALIDATORREQUIREDWITHOUT_H
 #define CUTELYSTVALIDATORREQUIREDWITHOUT_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QStringList>
 
 namespace Cutelyst {
-    
+
 class ValidatorRequiredWithoutPrivate;
 
 /*!
@@ -39,12 +41,12 @@ public:
      * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredWithout(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the required with validator.
      */
     ~ValidatorRequiredWithout() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -58,13 +60,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredWithout)
     Q_DISABLE_COPY(ValidatorRequiredWithout)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREQUIREDWITHOUT_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREQUIREDWITHOUT_H

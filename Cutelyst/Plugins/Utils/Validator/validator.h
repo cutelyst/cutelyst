@@ -5,10 +5,12 @@
 #ifndef CUTELYSTVALIDATOR_H
 #define CUTELYSTVALIDATOR_H
 
-#include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/ParamsMultiMap>
-#include <QScopedPointer>
 #include "validatorresult.h"
+
+#include <Cutelyst/ParamsMultiMap>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QScopedPointer>
 
 namespace Cutelyst {
 
@@ -230,12 +232,12 @@ public:
      * \brief Flags that change the behavior of the Validator.
      */
     enum ValidatorFlag {
-        NoSpecialBehavior   =  0,    /**< No special behavior, the default. */
-        StopOnFirstError    =  1,    /**< Will stop the validation process on the first failed validation. */
-        FillStashOnError    =  2,    /**< Will fill the context's stash with error information. */
-        NoTrimming          =  4,    /**< Will set \link ValidatorRule::trimBefore() trimBefore()\endlink to \c false on every validator. (default behavior is \c true) */
-        BodyParamsOnly      =  8,    /**< Will only check for parameters that are send in the \link Request::bodyParameters() request body\endlink. (since Cutelyst 2.0.0) */
-        QueryParamsOnly     = 16     /**< Will only check for parameters that are part of the \link Request::queryParameters() request URL query\endlink. (since Cutelyst 2.0.0) */
+        NoSpecialBehavior = 0, /**< No special behavior, the default. */
+        StopOnFirstError  = 1, /**< Will stop the validation process on the first failed validation. */
+        FillStashOnError  = 2, /**< Will fill the context's stash with error information. */
+        NoTrimming        = 4, /**< Will set \link ValidatorRule::trimBefore() trimBefore()\endlink to \c false on every validator. (default behavior is \c true) */
+        BodyParamsOnly    = 8, /**< Will only check for parameters that are send in the \link Request::bodyParameters() request body\endlink. (since Cutelyst 2.0.0) */
+        QueryParamsOnly   = 16 /**< Will only check for parameters that are part of the \link Request::queryParameters() request URL query\endlink. (since Cutelyst 2.0.0) */
     };
     Q_DECLARE_FLAGS(ValidatorFlags, ValidatorFlag)
 
@@ -252,7 +254,7 @@ public:
      *
      * This constructor is only available if the compiler supports C++11 std::initializer_list.
      */
-    explicit Validator(std::initializer_list<ValidatorRule*> validators, QLatin1String translationContext = QLatin1String());
+    explicit Validator(std::initializer_list<ValidatorRule *> validators, QLatin1String translationContext = QLatin1String());
 #endif
 
     /*!
@@ -314,8 +316,8 @@ private:
     Q_DISABLE_COPY(Validator)
 };
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::Validator::ValidatorFlags)
 
-#endif //CUTELYSTVALIDATOR_H
+#endif // CUTELYSTVALIDATOR_H

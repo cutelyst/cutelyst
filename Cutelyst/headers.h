@@ -5,11 +5,11 @@
 #ifndef HEADERS_H
 #define HEADERS_H
 
-#include <QtCore/QVariant>
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QtCore/QDateTime>
 #include <QtCore/QMetaType>
-
-#include <Cutelyst/cutelyst_global.h>
+#include <QtCore/QVariant>
 
 namespace Cutelyst {
 
@@ -30,9 +30,9 @@ public:
     /**
      * Construct a header from a std::initializer_list given by list.
      */
-    inline Headers(std::initializer_list<std::pair<QString,QString> > list)
+    inline Headers(std::initializer_list<std::pair<QString, QString>> list)
     {
-        for (std::initializer_list<std::pair<QString,QString> >::const_iterator it = list.begin(); it != list.end(); ++it)
+        for (std::initializer_list<std::pair<QString, QString>>::const_iterator it = list.begin(); it != list.end(); ++it)
             pushHeader(it->first, it->second);
     }
 #endif
@@ -367,14 +367,16 @@ public:
     /**
      * Clears all headers.
      */
-    inline void clear() {
+    inline void clear()
+    {
         m_data.clear();
     }
 
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline QMultiHash<QString, QString> data() const {
+    inline QMultiHash<QString, QString> data() const
+    {
         return m_data;
     }
 
@@ -400,14 +402,16 @@ public:
     /**
      * Compares if another Header object has the same data as this.
      */
-    inline bool operator==(const Headers &other) const {
+    inline bool operator==(const Headers &other) const
+    {
         return m_data == other.m_data;
     }
 
     /**
      * Compares if another Header object does not have the same data as this.
      */
-    inline bool operator!=(const Headers &other) const {
+    inline bool operator!=(const Headers &other) const
+    {
         return m_data != other.m_data;
     }
 
@@ -415,11 +419,12 @@ private:
     QMultiHash<QString, QString> m_data;
 };
 
-void Headers::pushRawHeader(const QString &field, const QString &value) {
+void Headers::pushRawHeader(const QString &field, const QString &value)
+{
     m_data.insert(field, value);
 }
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_METATYPE(Cutelyst::Headers)
 

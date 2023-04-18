@@ -6,7 +6,8 @@
 
 #include <Cutelyst/Context>
 
-Root::Root(QObject *app) : Controller(app)
+Root::Root(QObject *app)
+    : Controller(app)
 {
 }
 

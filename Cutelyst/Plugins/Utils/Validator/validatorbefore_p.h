@@ -7,6 +7,7 @@
 
 #include "validatorbefore.h"
 #include "validatorrule_p.h"
+
 #include <QVariant>
 
 namespace Cutelyst {
@@ -14,18 +15,19 @@ namespace Cutelyst {
 class ValidatorBeforePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorBeforePrivate(const QString &f, const QVariant &comp, const QString &tz, const char *i, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        comparison(comp),
-        timeZone(tz),
-        inputFormat(i)
-    {}
+    ValidatorBeforePrivate(const QString &f, const QVariant &comp, const QString &tz, const char *i, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , comparison(comp)
+        , timeZone(tz)
+        , inputFormat(i)
+    {
+    }
 
     QVariant comparison;
     QString timeZone;
     const char *inputFormat = nullptr;
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORBEFORE_P_H
+#endif // CUTELYSTVALIDATORBEFORE_P_H

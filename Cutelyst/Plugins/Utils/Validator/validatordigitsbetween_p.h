@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorDigitsBetweenPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDigitsBetweenPrivate(const QString &f, const QVariant &mi, const QVariant &ma, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        min(mi),
-        max(ma)
-    {}
+    ValidatorDigitsBetweenPrivate(const QString &f, const QVariant &mi, const QVariant &ma, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , min(mi)
+        , max(ma)
+    {
+    }
 
     QVariant min;
     QVariant max;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDIGITSBETWEEN_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDIGITSBETWEEN_P_H

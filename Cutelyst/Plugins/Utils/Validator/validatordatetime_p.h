@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorDateTimePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDateTimePrivate(const QString &f, const QString &tz, const char *inf, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        timeZone(tz),
-        inputFormat(inf)
-    {}
+    ValidatorDateTimePrivate(const QString &f, const QString &tz, const char *inf, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , timeZone(tz)
+        , inputFormat(inf)
+    {
+    }
 
     QString timeZone;
     const char *inputFormat = nullptr;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDATETIME_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDATETIME_P_H

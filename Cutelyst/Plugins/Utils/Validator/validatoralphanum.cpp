@@ -4,19 +4,18 @@
  */
 
 #include "validatoralphanum_p.h"
+
 #include <QRegularExpression>
 
 using namespace Cutelyst;
 
-ValidatorAlphaNum::ValidatorAlphaNum(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorAlphaNumPrivate(field, asciiOnly, messages, defValKey))
+ValidatorAlphaNum::ValidatorAlphaNum(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorAlphaNumPrivate(field, asciiOnly, messages, defValKey))
 {
-
 }
 
 ValidatorAlphaNum::~ValidatorAlphaNum()
 {
-
 }
 
 ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap &params) const

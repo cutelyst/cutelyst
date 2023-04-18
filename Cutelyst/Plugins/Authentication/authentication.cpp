@@ -2,13 +2,11 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "authentication_p.h"
-
-#include "authenticationstore.h"
-#include "authenticationrealm.h"
-
-#include "context.h"
 #include "application.h"
+#include "authentication_p.h"
+#include "authenticationrealm.h"
+#include "authenticationstore.h"
+#include "context.h"
 
 #include <Cutelyst/Plugins/Session/session.h>
 
@@ -19,7 +17,7 @@ Q_LOGGING_CATEGORY(C_AUTHENTICATION, "cutelyst.plugin.authentication", QtWarning
 
 using namespace Cutelyst;
 
-char *Authentication::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
+char *Authentication::defaultRealm      = const_cast<char *>("cutelyst_authentication_default_realm");
 char *AuthenticationRealm::defaultRealm = const_cast<char *>("cutelyst_authentication_default_realm");
 
 static thread_local Authentication *auth = nullptr;
@@ -27,8 +25,9 @@ static thread_local Authentication *auth = nullptr;
 #define AUTHENTICATION_USER QStringLiteral("_c_authentication_user")
 #define AUTHENTICATION_USER_REALM QStringLiteral("_c_authentication_user_realm")
 
-Authentication::Authentication(Application *parent) : Plugin(parent)
-  , d_ptr(new AuthenticationPrivate)
+Authentication::Authentication(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new AuthenticationPrivate)
 {
     qRegisterMetaType<AuthenticationUser>();
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
@@ -103,7 +102,7 @@ Cutelyst::AuthenticationUser Authentication::user(Cutelyst::Context *c)
 {
     AuthenticationUser ret;
     const QVariant user = c->stash(AUTHENTICATION_USER);
-    if (user.isNull()) {        
+    if (user.isNull()) {
         ret = AuthenticationPrivate::restoreUser(c, QVariant(), QString());
     } else {
         ret = user.value<AuthenticationUser>();
@@ -251,14 +250,13 @@ void AuthenticationPrivate::persistUser(Context *c, const AuthenticationUser &us
     }
 }
 
-Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent) : QObject(parent)
+Cutelyst::AuthenticationCredential::AuthenticationCredential(QObject *parent)
+    : QObject(parent)
 {
-
 }
 
 Cutelyst::AuthenticationCredential::~AuthenticationCredential()
 {
-
 }
 
 #include "moc_authentication.cpp"

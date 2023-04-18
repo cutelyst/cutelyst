@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORSAME_H
 #define CUTELYSTVALIDATORSAME_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorSamePrivate;
 
 /*!
@@ -51,12 +52,12 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorSame(const QString &field, const QString &otherField, const char *otherLabel = nullptr, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the same validator.
      */
     ~ValidatorSame() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -70,13 +71,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorSame)
     Q_DISABLE_COPY(ValidatorSame)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORSAME_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORSAME_H

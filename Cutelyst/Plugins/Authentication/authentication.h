@@ -5,10 +5,10 @@
 #ifndef AUTHENTICATION_H
 #define AUTHENTICATION_H
 
-#include <Cutelyst/cutelyst_global.h>
-#include <Cutelyst/plugin.h>
-#include <Cutelyst/paramsmultimap.h>
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/paramsmultimap.h>
+#include <Cutelyst/plugin.h>
 
 namespace Cutelyst {
 
@@ -113,10 +113,11 @@ protected:
     AuthenticationPrivate *d_ptr;
 };
 
-inline bool Authentication::authenticate(Context *c, const QString &realm) {
+inline bool Authentication::authenticate(Context *c, const QString &realm)
+{
     return Authentication::authenticate(c, ParamsMultiMap(), realm);
 }
 
-}
+} // namespace Cutelyst
 
 #endif // AUTHENTICATION_H

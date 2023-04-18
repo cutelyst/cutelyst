@@ -4,19 +4,19 @@
  */
 #include "protocol.h"
 
-#include "socket.h"
 #include "server.h"
+#include "socket.h"
 
-#include <QTemporaryFile>
 #include <QBuffer>
-
 #include <QLoggingCategory>
+#include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(CWSGI_PROTO, "cutelyst.server.proto", QtWarningMsg)
 
 using namespace Cutelyst;
 
-ProtocolData::ProtocolData(Cutelyst::Socket *_sock, int bufferSize) : sock(_sock)
+ProtocolData::ProtocolData(Cutelyst::Socket *_sock, int bufferSize)
+    : sock(_sock)
     , io(dynamic_cast<QIODevice *>(_sock))
     , buffer(new char[bufferSize])
 {
@@ -24,20 +24,20 @@ ProtocolData::ProtocolData(Cutelyst::Socket *_sock, int bufferSize) : sock(_sock
 
 ProtocolData::~ProtocolData()
 {
-    delete [] buffer;
+    delete[] buffer;
 }
 
 Cutelyst::Protocol::Protocol(Cutelyst::Server *wsgi)
 {
-    m_bufferSize = wsgi->bufferSize();
-    m_postBuffering = wsgi->postBuffering();
+    m_bufferSize     = wsgi->bufferSize();
+    m_postBuffering  = wsgi->postBuffering();
     m_postBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
-    m_postBuffer = new char[wsgi->postBufferingBufsize()];
+    m_postBuffer     = new char[wsgi->postBufferingBufsize()];
 }
 
 Cutelyst::Protocol::~Protocol()
 {
-    delete [] m_postBuffer;
+    delete[] m_postBuffer;
 }
 
 Cutelyst::Protocol::Type Cutelyst::Protocol::type() const

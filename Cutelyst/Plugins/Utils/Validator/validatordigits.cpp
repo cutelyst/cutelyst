@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorDigits::ValidatorDigits(const QString &field, const QVariant &length, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorDigitsPrivate(field, length, messages, defValKey))
+ValidatorDigits::ValidatorDigits(const QString &field, const QVariant &length, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorDigitsPrivate(field, length, messages, defValKey))
 {
 }
 
@@ -23,8 +23,8 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
     Q_D(const ValidatorDigits);
 
     const QString v = value(params);
-    bool ok = false;
-    int _length = d->extractInt(c, params, d->length, &ok);
+    bool ok         = false;
+    int _length     = d->extractInt(c, params, d->length, &ok);
     if (!ok) {
         result.errorMessage = validationDataError(c);
         return result;
@@ -75,7 +75,7 @@ QString ValidatorDigits::genericValidationError(Context *c, const QVariant &erro
     QString error;
 
     const QString _label = label(c);
-    const int _length = errorData.toInt();
+    const int _length    = errorData.toInt();
 
     if (_label.isEmpty()) {
         if (_length > 0) {

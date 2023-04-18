@@ -6,13 +6,13 @@
 #define CUTELYST_P_H
 
 #include "context.h"
-#include "plugin.h"
-#include "response.h"
-#include "request_p.h"
 #include "enginerequest.h"
+#include "plugin.h"
+#include "request_p.h"
+#include "response.h"
 
-#include <QVariantHash>
 #include <QStack>
+#include <QVariantHash>
 
 class QEventLoop;
 namespace Cutelyst {
@@ -26,7 +26,8 @@ public:
         , app(_app)
         , engine(_ngine)
         , dispatcher(_dispatcher)
-    { }
+    {
+    }
 
     QString statsStartExecute(Component *code);
     void statsFinishExecute(const QString &statsInfo);
@@ -36,7 +37,7 @@ public:
     QLocale locale;
     QStack<Component *> stack;
     QVector<Plugin *> plugins;
-    QVector<Component*> pendingAsync;
+    QVector<Component *> pendingAsync;
 
     Application *app;
     Engine *engine;
@@ -45,33 +46,37 @@ public:
     // Pointer to Engine data
     EngineRequest *engineRequest = nullptr;
 
-    Request *request = nullptr;
-    Response *response = nullptr;
-    Action *action = nullptr;
-    View *view = nullptr;
-    Stats *stats = nullptr;
-    int asyncAction = 0;
-    int actionRefCount = 0;
+    Request *request    = nullptr;
+    Response *response  = nullptr;
+    Action *action      = nullptr;
+    View *view          = nullptr;
+    Stats *stats        = nullptr;
+    int asyncAction     = 0;
+    int actionRefCount  = 0;
     int chainedCaptured = 0;
-    int chainedIx = 0;
-    bool detached = false;
-    bool state = false;
+    int chainedIx       = 0;
+    bool detached       = false;
+    bool state          = false;
 };
 
-class DummyRequest : public QObject, public EngineRequest
+class DummyRequest : public QObject
+    , public EngineRequest
 {
     Q_OBJECT
 public:
-    DummyRequest(QObject *parent) : QObject(parent) {}
+    DummyRequest(QObject *parent)
+        : QObject(parent)
+    {
+    }
 
     virtual qint64 doWrite(const char *, qint64) override { return -1; }
 
     /*!
      * Reimplement this to write the headers back to the client
      */
-    virtual bool writeHeaders(quint16 , const Headers &) override { return false; }
+    virtual bool writeHeaders(quint16, const Headers &) override { return false; }
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_P_H

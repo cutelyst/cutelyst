@@ -5,11 +5,11 @@
 #ifndef UNIXFORK_H
 #define UNIXFORK_H
 
-#include <QObject>
-#include <QHash>
-#include <QVector>
-
 #include "abstractfork.h"
+
+#include <QHash>
+#include <QObject>
+#include <QVector>
 
 struct Worker {
     bool null = true;
@@ -75,10 +75,10 @@ private:
     QHash<qint64, Worker> m_childs;
     QVector<Worker> m_recreateWorker;
     QSocketNotifier *m_signalNotifier = nullptr;
-    QTimer *m_checkChildRestart = nullptr;
+    QTimer *m_checkChildRestart       = nullptr;
     int m_threads;
     int m_processes;
-    bool m_child = false;
+    bool m_child       = false;
     bool m_terminating = false;
 };
 

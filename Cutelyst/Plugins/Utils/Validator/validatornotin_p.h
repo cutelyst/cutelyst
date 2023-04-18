@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorNotInPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorNotInPrivate(const QString &f, const QStringList &v, Qt::CaseSensitivity s, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        cs(s),
-        values(v)
-    {}
+    ValidatorNotInPrivate(const QString &f, const QStringList &v, Qt::CaseSensitivity s, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , cs(s)
+        , values(v)
+    {
+    }
 
     Qt::CaseSensitivity cs;
     QStringList values;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORNOTIN_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORNOTIN_P_H

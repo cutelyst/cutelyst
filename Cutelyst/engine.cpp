@@ -2,22 +2,19 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "engine_p.h"
-
-#include "context_p.h"
-
-#include "common.h"
-#include "request_p.h"
 #include "application.h"
-#include "response_p.h"
+#include "common.h"
 #include "context_p.h"
+#include "engine_p.h"
+#include "request_p.h"
+#include "response_p.h"
 
-#include <QUrl>
-#include <QSettings>
-#include <QDir>
-#include <QThread>
 #include <QByteArray>
+#include <QDir>
 #include <QJsonDocument>
+#include <QSettings>
+#include <QThread>
+#include <QUrl>
 
 using namespace Cutelyst;
 
@@ -48,9 +45,9 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
 
     connect(this, &Engine::processRequestAsync, this, &Engine::processRequest, Qt::QueuedConnection);
 
-    d->opts = opts;
+    d->opts       = opts;
     d->workerCore = workerCore;
-    d->app = app;
+    d->app        = app;
 }
 
 Engine::~Engine()

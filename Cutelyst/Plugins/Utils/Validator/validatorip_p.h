@@ -9,19 +9,19 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorIpPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorIpPrivate(const QString &f, ValidatorIp::Constraints c, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        constraints(c)
-    {}
+    ValidatorIpPrivate(const QString &f, ValidatorIp::Constraints c, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , constraints(c)
+    {
+    }
 
     ValidatorIp::Constraints constraints;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORIP_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORIP_P_H

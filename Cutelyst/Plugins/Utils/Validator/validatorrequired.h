@@ -5,8 +5,9 @@
 #ifndef CUTELYSTVALIDATORREQUIRED_H
 #define CUTELYSTVALIDATORREQUIRED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -61,6 +62,6 @@ private:
     Q_DISABLE_COPY(ValidatorRequired)
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORREQUIRED_H
+#endif // CUTELYSTVALIDATORREQUIRED_H

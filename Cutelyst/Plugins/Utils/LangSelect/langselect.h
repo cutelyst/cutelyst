@@ -8,8 +8,9 @@
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
-#include <QVector>
+
 #include <QLocale>
+#include <QVector>
 
 namespace Cutelyst {
 
@@ -305,13 +306,13 @@ public:
      * Sources that can be used for automatically detecting the locale.
      */
     enum Source : quint8 {
-        URLQuery        = 0,    /**< Tries to get and store the locale from an URL query parameter. Requires setQueryKey(). */
-        Session         = 1,    /**< Tries to get and store the locale from a session key. Requires setSessionKey(). */
-        Cookie          = 2,    /**< Tries to get and store the locale from a cookie. Requires setCookieName(). */
-        SubDomain       = 3,    /**< Tries to get and store the locale from a subdomain part. Requires setSubDomainMap(). */
-        Domain          = 4,    /**< Tries to get and store the locale from the domain. Requires setDomainMap(). */
-        AcceptHeader    = 254,  /**< Will the locale only detect from the Accept-Header and will not store it. */
-        Fallback        = 255   /**< Only used internal. */
+        URLQuery     = 0,   /**< Tries to get and store the locale from an URL query parameter. Requires setQueryKey(). */
+        Session      = 1,   /**< Tries to get and store the locale from a session key. Requires setSessionKey(). */
+        Cookie       = 2,   /**< Tries to get and store the locale from a cookie. Requires setCookieName(). */
+        SubDomain    = 3,   /**< Tries to get and store the locale from a subdomain part. Requires setSubDomainMap(). */
+        Domain       = 4,   /**< Tries to get and store the locale from the domain. Requires setDomainMap(). */
+        AcceptHeader = 254, /**< Will the locale only detect from the Accept-Header and will not store it. */
+        Fallback     = 255  /**< Only used internal. */
     };
     Q_ENUM(Source)
 
@@ -443,14 +444,14 @@ public:
      * the locale subdomain part as key and the associated locale as value. See the <a href="#source-subdomain">
      * subdomain example</a> to learn more about this approach.
      */
-    void setSubDomainMap(const QMap<QString,QLocale> &map);
+    void setSubDomainMap(const QMap<QString, QLocale> &map);
 
     /**
      * Sets the @a map for full domains as source for locale selection. The @a map should contain
      * the locale domain part as key and the associated locale as value. See the <a href="#source-domain">
      * domain example</a> to learn more about this approach.
      */
-    void setDomainMap(const QMap<QString,QLocale> &map);
+    void setDomainMap(const QMap<QString, QLocale> &map);
 
     /**
      * Sets the @a fallback locale to be used if no appropriate locale can be found.
@@ -593,6 +594,6 @@ private:
     LangSelectPrivate *const d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // C_UTILS_LANGSELECT_H

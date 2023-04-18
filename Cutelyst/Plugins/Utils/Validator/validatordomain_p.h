@@ -13,14 +13,15 @@ namespace Cutelyst {
 class ValidatorDomainPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDomainPrivate(const QString &f, bool cd, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        checkDNS(cd)
-    {}
+    ValidatorDomainPrivate(const QString &f, bool cd, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , checkDNS(cd)
+    {
+    }
 
     bool checkDNS = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORDOMAIN_P_H

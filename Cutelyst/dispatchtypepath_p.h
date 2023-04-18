@@ -6,6 +6,7 @@
 #define DISPATCHTYPEPATH_P_H
 
 #include "dispatchtypepath.h"
+
 #include <vector>
 
 namespace Cutelyst {
@@ -21,6 +22,6 @@ public:
     StringActionsMap paths;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // DISPATCHTYPEPATH_P_H

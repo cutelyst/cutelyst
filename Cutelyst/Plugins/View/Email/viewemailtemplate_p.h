@@ -5,8 +5,8 @@
 #ifndef VIEWEMAILTEMPLATE_P_H
 #define VIEWEMAILTEMPLATE_P_H
 
-#include "viewemailtemplate.h"
 #include "viewemail_p.h"
+#include "viewemailtemplate.h"
 
 using namespace SimpleMail;
 namespace Cutelyst {
@@ -20,7 +20,6 @@ public:
     QString defaultView;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // VIEWEMAILTEMPLATE_P_H
-

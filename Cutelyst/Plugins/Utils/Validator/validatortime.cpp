@@ -4,12 +4,13 @@
  */
 
 #include "validatortime_p.h"
+
 #include <QTime>
 
 using namespace Cutelyst;
 
-ValidatorTime::ValidatorTime(const QString &field, const char *format, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorTimePrivate(field, format, messages, defValKey))
+ValidatorTime::ValidatorTime(const QString &field, const char *format, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorTimePrivate(field, format, messages, defValKey))
 {
 }
 
@@ -72,5 +73,5 @@ QString ValidatorTime::genericValidationError(Context *c, const QVariant &errorD
         }
     }
 
-   return error;
+    return error;
 }

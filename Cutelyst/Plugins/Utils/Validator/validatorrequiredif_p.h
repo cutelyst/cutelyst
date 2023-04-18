@@ -9,21 +9,21 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorRequiredIfPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredIfPrivate(const QString &f, const QString &of, const QStringList &ov, const Cutelyst::ValidatorMessages &m) :
-        ValidatorRulePrivate(f, m, QString()),
-        otherField(of),
-        otherValues(ov)
-    {}
+    ValidatorRequiredIfPrivate(const QString &f, const QString &of, const QStringList &ov, const Cutelyst::ValidatorMessages &m)
+        : ValidatorRulePrivate(f, m, QString())
+        , otherField(of)
+        , otherValues(ov)
+    {
+    }
 
     QString otherField;
     QStringList otherValues;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREQUIREDIF_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREQUIREDIF_P_H

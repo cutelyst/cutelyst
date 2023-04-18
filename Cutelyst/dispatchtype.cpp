@@ -8,8 +8,8 @@
 
 using namespace Cutelyst;
 
-DispatchType::DispatchType(QObject *parent) :
-    QObject(parent)
+DispatchType::DispatchType(QObject *parent)
+    : QObject(parent)
 {
 }
 

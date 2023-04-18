@@ -5,15 +5,16 @@
 #ifndef CSESSION_H
 #define CSESSION_H
 
-#include <QVariant>
-
-#include <Cutelyst/plugin.h>
 #include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/plugin.h>
+
+#include <QVariant>
 
 namespace Cutelyst {
 
 class Context;
-class CUTELYST_PLUGIN_SESSION_EXPORT SessionStore : public QObject {
+class CUTELYST_PLUGIN_SESSION_EXPORT SessionStore : public QObject
+{
     Q_OBJECT
 public:
     /**
@@ -188,9 +189,9 @@ protected:
     SessionPrivate *d_ptr;
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_saveSession(Context*))
+    Q_PRIVATE_SLOT(d_func(), void _q_saveSession(Context *))
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CSESSION_H

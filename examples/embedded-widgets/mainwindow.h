@@ -10,7 +10,7 @@ class MainWindow;
 namespace Cutelyst {
 class Server;
 class Context;
-}
+} // namespace Cutelyst
 class EmbeddedApp;
 class QNetworkAccessManager;
 

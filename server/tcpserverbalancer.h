@@ -38,12 +38,12 @@ private:
     QString m_serverName;
     std::vector<TcpServer *> m_servers;
     Server *m_wsgi;
-    Protocol *m_protocol = nullptr;
+    Protocol *m_protocol                  = nullptr;
     QSslConfiguration *m_sslConfiguration = nullptr;
-    int m_currentServer = 0;
-    bool m_balancer = false;
+    int m_currentServer                   = 0;
+    bool m_balancer                       = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // TCPSERVERBALANCER_H

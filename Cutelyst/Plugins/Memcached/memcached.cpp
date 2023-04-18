@@ -6,29 +6,28 @@
 #include "memcached_p.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Engine>
 #include <Cutelyst/Context>
-
+#include <Cutelyst/Engine>
 #include <utility>
-#include <QStringList>
+
 #include <QLoggingCategory>
+#include <QStringList>
 
 Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached", QtWarningMsg)
 
 using namespace Cutelyst;
 
-static thread_local Memcached *mcd = nullptr;
+static thread_local Memcached *mcd       = nullptr;
 const time_t Memcached::expirationNotAdd = MEMCACHED_EXPIRATION_NOT_ADD;
 
-Memcached::Memcached(Application *parent) :
-    Plugin(parent), d_ptr(new MemcachedPrivate)
+Memcached::Memcached(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new MemcachedPrivate)
 {
-
 }
 
 Memcached::~Memcached()
 {
-
 }
 
 void Memcached::setDefaultConfig(const QVariantMap &defaultConfig)
@@ -51,19 +50,19 @@ bool Memcached::setup(Application *app)
     }
 
     for (const QString &flag : {
-         QStringLiteral("verify_key"),
-         QStringLiteral("remove_failed_servers"),
-         QStringLiteral("binary_protocol"),
-         QStringLiteral("buffer_requests"),
-         QStringLiteral("hash_with_namespace"),
-         QStringLiteral("noreply"),
-         QStringLiteral("randomize_replica_read"),
-         QStringLiteral("sort_hosts"),
-         QStringLiteral("support_cas"),
-         QStringLiteral("use_udp"),
-         QStringLiteral("tcp_nodelay"),
-         QStringLiteral("tcp_keepalive")
-    }) {
+             QStringLiteral("verify_key"),
+             QStringLiteral("remove_failed_servers"),
+             QStringLiteral("binary_protocol"),
+             QStringLiteral("buffer_requests"),
+             QStringLiteral("hash_with_namespace"),
+             QStringLiteral("noreply"),
+             QStringLiteral("randomize_replica_read"),
+             QStringLiteral("sort_hosts"),
+             QStringLiteral("support_cas"),
+             QStringLiteral("use_udp"),
+             QStringLiteral("tcp_nodelay"),
+             QStringLiteral("tcp_keepalive"),
+         }) {
         if (map.value(flag, d->defaultConfig.value(flag, false)).toBool()) {
             const QString flagStr = u"--" + flag.toUpper().replace(u'_', u'-');
             config.push_back(flagStr);
@@ -73,22 +72,22 @@ bool Memcached::setup(Application *app)
     const bool useUDP = map.value(QStringLiteral("use_udp"), d->defaultConfig.value(QStringLiteral("use_udp"), false)).toBool();
 
     for (const QString &opt : {
-         QStringLiteral("connect_timeout"),
-         QStringLiteral("distribution"),
-         QStringLiteral("hash"),
-         QStringLiteral("number_of_replicas"),
-         QStringLiteral("namespace"),
-         QStringLiteral("retry_timeout"),
-         QStringLiteral("server_failure_limit"),
-         QStringLiteral("snd_timeout"),
-         QStringLiteral("socket_recv_size"),
-         QStringLiteral("socket_send_size"),
-         QStringLiteral("poll_timeout"),
-         QStringLiteral("io_bytes_watermark"),
-         QStringLiteral("io_key_prefetch"),
-         QStringLiteral("io_msg_watermark"),
-         QStringLiteral("rcv_timeout")
-    }) {
+             QStringLiteral("connect_timeout"),
+             QStringLiteral("distribution"),
+             QStringLiteral("hash"),
+             QStringLiteral("number_of_replicas"),
+             QStringLiteral("namespace"),
+             QStringLiteral("retry_timeout"),
+             QStringLiteral("server_failure_limit"),
+             QStringLiteral("snd_timeout"),
+             QStringLiteral("socket_recv_size"),
+             QStringLiteral("socket_send_size"),
+             QStringLiteral("poll_timeout"),
+             QStringLiteral("io_bytes_watermark"),
+             QStringLiteral("io_key_prefetch"),
+             QStringLiteral("io_msg_watermark"),
+             QStringLiteral("rcv_timeout"),
+         }) {
         const QString _val = map.value(opt, d->defaultConfig.value(opt)).toString();
         if (!_val.isEmpty()) {
             const QString optStr = u"--" + opt.toUpper().replace(u'_', u'-') + u'=' + _val;
@@ -110,13 +109,13 @@ bool Memcached::setup(Application *app)
             for (const QString &server : serverList) {
                 const auto serverParts = QStringView(server).split(u',');
                 QString name;
-                uint port = 11211;
+                uint port       = 11211;
                 uint32_t weight = 1;
-                bool isSocket = false;
+                bool isSocket   = false;
                 if (!serverParts.empty()) {
                     const auto part0 = serverParts.at(0);
                     if (!part0.isEmpty()) {
-                        name = part0.toString();
+                        name     = part0.toString();
                         isSocket = name.startsWith(u'/');
                     }
                     if (serverParts.size() > 1) {
@@ -171,8 +170,8 @@ bool Memcached::setup(Application *app)
             }
         }
 
-        d->compression = map.value(QStringLiteral("compression"), d->defaultConfig.value(QStringLiteral("compression"), false)).toBool();
-        d->compressionLevel = map.value(QStringLiteral("compression_level"), d->defaultConfig.value(QStringLiteral("compression_level"),  -1)).toInt();
+        d->compression          = map.value(QStringLiteral("compression"), d->defaultConfig.value(QStringLiteral("compression"), false)).toBool();
+        d->compressionLevel     = map.value(QStringLiteral("compression_level"), d->defaultConfig.value(QStringLiteral("compression_level"), -1)).toInt();
         d->compressionThreshold = map.value(QStringLiteral("compression_threshold"), d->defaultConfig.value(QStringLiteral("compression_threshold"), 100)).toInt();
         if (d->compression) {
             qCInfo(C_MEMCACHED, "Compression: enabled (Compression level: %i, Compression threshold: %i bytes)", d->compressionLevel, d->compressionThreshold);
@@ -182,7 +181,7 @@ bool Memcached::setup(Application *app)
 
         const QString encKey = map.value(QStringLiteral("encryption_key")).toString();
         if (!encKey.isEmpty()) {
-            const QByteArray encKeyBa = encKey.toUtf8();
+            const QByteArray encKeyBa   = encKey.toUtf8();
             const memcached_return_t rt = memcached_set_encoding_key(new_memc, encKeyBa.constData(), encKeyBa.size());
             if (Q_LIKELY(memcached_success(rt))) {
                 qCInfo(C_MEMCACHED, "Encryption: enabled");
@@ -194,7 +193,7 @@ bool Memcached::setup(Application *app)
         }
 
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-#if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
+#    if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
         const QString saslUser = map.value(QStringLiteral("sasl_user")).toString();
         const QString saslPass = map.value(QStringLiteral("sasl_password")).toString();
         if (!saslUser.isEmpty() && !saslPass.isEmpty()) {
@@ -208,14 +207,14 @@ bool Memcached::setup(Application *app)
         } else {
             qCInfo(C_MEMCACHED, "SASL authentication: disabled");
         }
-#endif
+#    endif
 #endif
 
         if (d->memc) {
             memcached_free(d->memc);
         }
         d->memc = new_memc;
-        ok = true;
+        ok      = true;
     }
 
     if (ok) {
@@ -279,7 +278,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const QByt
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key      = key.toUtf8();
     const QByteArray _groupKey = groupKey.toUtf8();
 
     MemcachedPrivate::Flags flags;
@@ -360,7 +359,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key      = key.toUtf8();
     const QByteArray _groupKey = groupKey.toUtf8();
 
     MemcachedPrivate::Flags flags;
@@ -372,14 +371,14 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const QByt
     }
 
     const memcached_return_t rt = memcached_add_by_key(mcd->d_ptr->memc,
-                                                      _groupKey.constData(),
-                                                      _groupKey.size(),
-                                                      _key.constData(),
-                                                      _key.size(),
-                                                      _value.constData(),
-                                                      _value.size(),
-                                                      expiration,
-                                                      flags);
+                                                       _groupKey.constData(),
+                                                       _groupKey.size(),
+                                                       _key.constData(),
+                                                       _key.size(),
+                                                       _value.constData(),
+                                                       _value.size(),
+                                                       expiration,
+                                                       flags);
 
     const bool ok = memcached_success(rt);
 
@@ -442,7 +441,7 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
     }
 
     const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key      = key.toUtf8();
 
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
@@ -487,7 +486,7 @@ QByteArray Memcached::get(const QString &key, uint64_t *cas, Cutelyst::Memcached
 
     memcached_return_t rt;
     const QByteArray _key = key.toUtf8();
-    bool ok = false;
+    bool ok               = false;
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
@@ -540,8 +539,8 @@ QByteArray Memcached::getByKey(const QString &groupKey, const QString &key, uint
 
     memcached_return_t rt;
     const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
-    bool ok = false;
+    const QByteArray _key      = key.toUtf8();
+    bool ok                    = false;
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
@@ -621,7 +620,7 @@ bool Memcached::removeByKey(const QString &groupKey, const QString &key, Memcach
     }
 
     const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key      = key.toUtf8();
 
     const memcached_return_t rt = memcached_delete_by_key(mcd->d_ptr->memc,
                                                           _groupKey.constData(),
@@ -679,7 +678,7 @@ bool Memcached::existByKey(const QString &groupKey, const QString &key, Memcache
     }
 
     const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key      = key.toUtf8();
 
     const memcached_return_t rt = memcached_exist_by_key(mcd->d_ptr->memc,
                                                          _groupKey.constData(),
@@ -738,7 +737,7 @@ bool Memcached::incrementByKey(const QString &groupKey, const QString &key, uint
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     const memcached_return_t rt = memcached_increment_by_key(mcd->d_ptr->memc,
                                                              _group.constData(),
@@ -801,7 +800,7 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey, const QString
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     const memcached_return_t rt = memcached_increment_with_initial_by_key(mcd->d_ptr->memc,
                                                                           _group.constData(),
@@ -863,7 +862,7 @@ bool Memcached::decrementByKey(const QString &groupKey, const QString &key, uint
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     const memcached_return_t rt = memcached_decrement_by_key(mcd->d_ptr->memc,
                                                              _group.constData(),
@@ -926,7 +925,7 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey, const QString
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     const memcached_return_t rt = memcached_decrement_with_initial_by_key(mcd->d_ptr->memc,
                                                                           _group.constData(),
@@ -999,7 +998,7 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const QByt
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
@@ -1077,9 +1076,9 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
     return ok;
 }
 
-QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
+QHash<QString, QByteArray> Memcached::mget(const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
-    QHash<QString,QByteArray> ret;
+    QHash<QString, QByteArray> ret;
 
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -1104,7 +1103,7 @@ QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString
 
     for (const QString &key : keys) {
         const QByteArray _key = key.toUtf8();
-        char *data = new char[_key.size() + 1];
+        char *data            = new char[_key.size() + 1];
         qstrcpy(data, _key.data());
         _keys.push_back(data);
         _keysSizes.push_back(_key.size());
@@ -1140,7 +1139,7 @@ QHash<QString,QByteArray> Memcached::mget(const QStringList &keys, QHash<QString
     }
 
     for (char *c : _keys) {
-        delete [] c;
+        delete[] c;
     }
 
     if (!ok) {
@@ -1189,7 +1188,7 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
 
     for (const QString &key : keys) {
         const QByteArray _key = key.toUtf8();
-        char *data = new char[_key.size() + 1];
+        char *data            = new char[_key.size() + 1];
         strcpy(data, _key.data());
         _keys.push_back(data);
         _keysSizes.push_back(_key.size());
@@ -1204,8 +1203,6 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
                                &_keys[0],
                                &_keysSizes[0],
                                _keys.size());
-
-
 
     if (memcached_success(rt)) {
         ok = true;
@@ -1229,7 +1226,7 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey, const Q
     }
 
     for (char *c : _keys) {
-        delete [] c;
+        delete[] c;
     }
 
     if (!ok) {
@@ -1280,7 +1277,7 @@ bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t e
     }
 
     const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key = key.toUtf8();
+    const QByteArray _key   = key.toUtf8();
 
     const memcached_return_t rt = memcached_touch_by_key(mcd->d_ptr->memc,
                                                          _group.constData(),
@@ -1302,7 +1299,7 @@ bool Memcached::touchByKey(const QString &groupKey, const QString &key, time_t e
 
 QString Memcached::errorString(Context *c, MemcachedReturnType rt)
 {
-    switch(rt) {
+    switch (rt) {
     case Memcached::Success:
         return c->translate("Cutelyst::Memcached", "The request was successfully executed.");
     case Memcached::Failure:
@@ -1397,6 +1394,7 @@ QVersionNumber Memcached::libMemcachedVersion()
     return QVersionNumber::fromString(QLatin1String(memcached_lib_version()));
 }
 
+// clang-format off
 Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_return_t rt)
 {
     switch (rt) {
@@ -1449,6 +1447,7 @@ Memcached::MemcachedReturnType MemcachedPrivate::returnTypeConvert(memcached_ret
     default:                                            return Memcached::Success;
     }
 }
+// clang-format on
 
 void MemcachedPrivate::setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2)
 {

@@ -7,6 +7,7 @@
 
 #include "validator.h"
 #include "validatorrule.h"
+
 #include <QHash>
 
 namespace Cutelyst {
@@ -14,24 +15,26 @@ namespace Cutelyst {
 class ValidatorPrivate
 {
 public:
-    ValidatorPrivate(QLatin1String trContext) :
-        translationContext(trContext)
-    {}
+    ValidatorPrivate(QLatin1String trContext)
+        : translationContext(trContext)
+    {
+    }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-    ValidatorPrivate(std::initializer_list<ValidatorRule*> vals, QLatin1String trContext) :
-        translationContext(trContext),
-        validators(vals)
+    ValidatorPrivate(std::initializer_list<ValidatorRule *> vals, QLatin1String trContext)
+        : translationContext(trContext)
+        , validators(vals)
     {
         if (!validators.empty()) {
-            for (ValidatorRule* r : validators) {
+            for (ValidatorRule *r : validators) {
                 r->setTranslationContext(trContext);
             }
         }
     }
 #endif
 
-    ~ValidatorPrivate() {
+    ~ValidatorPrivate()
+    {
         if (!validators.empty()) {
             qDeleteAll(validators.begin(), validators.end());
             validators.clear();
@@ -40,10 +43,9 @@ public:
 
     QLatin1String translationContext;
     ParamsMultiMap params;
-    std::vector<ValidatorRule*> validators;
+    std::vector<ValidatorRule *> validators;
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATOR_P_H
-
+#endif // CUTELYSTVALIDATOR_P_H

@@ -4,23 +4,22 @@
  */
 #include "htpasswd.h"
 
-#include <QFile>
-#include <QTemporaryFile>
-#include <QLoggingCategory>
-
 #include "common.h"
+
+#include <QFile>
+#include <QLoggingCategory>
+#include <QTemporaryFile>
 
 using namespace Cutelyst;
 
-StoreHtpasswd::StoreHtpasswd(const QString &name, QObject *parent) : AuthenticationStore(parent)
-  , m_filename(name)
+StoreHtpasswd::StoreHtpasswd(const QString &name, QObject *parent)
+    : AuthenticationStore(parent)
+    , m_filename(name)
 {
-
 }
 
 StoreHtpasswd::~StoreHtpasswd()
 {
-
 }
 
 void StoreHtpasswd::addUser(const ParamsMultiMap &user)
@@ -38,10 +37,10 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     QFile file(m_filename);
     if (file.exists() && file.open(QFile::ReadWrite | QFile::Text)) {
         while (!file.atEnd()) {
-            QByteArray line = file.readLine();
+            QByteArray line      = file.readLine();
             QByteArrayList parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
-                line = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
+                line  = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
@@ -73,7 +72,7 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
     QFile file(m_filename);
     if (file.open(QFile::ReadOnly | QFile::Text)) {
         while (!file.atEnd()) {
-            QByteArray line = file.readLine();
+            QByteArray line      = file.readLine();
             QByteArrayList parts = line.trimmed().split(':');
             if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username.toLatin1()) {
                 ret.insert(QStringLiteral("username"), username);
@@ -95,9 +94,7 @@ QVariant StoreHtpasswd::forSession(Context *c, const AuthenticationUser &user)
 
 AuthenticationUser StoreHtpasswd::fromSession(Context *c, const QVariant &frozenUser)
 {
-    return findUser(c, {
-                        {QStringLiteral("username"), frozenUser.toString()}
-                    });
+    return findUser(c, {{QStringLiteral("username"), frozenUser.toString()}});
 }
 
 #include "moc_htpasswd.cpp"

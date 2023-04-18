@@ -3,33 +3,34 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "protocolhttp.h"
-#include "socket.h"
+
+#include "protocolhttp2.h"
 #include "protocolwebsocket.h"
 #include "server.h"
-#include "protocolhttp2.h"
+#include "socket.h"
 
-#include <Cutelyst/Headers>
 #include <Cutelyst/Context>
+#include <Cutelyst/Headers>
 #include <Cutelyst/Response>
-
-#include <QVariant>
-#include <QIODevice>
-#include <QEventLoop>
-#include <QCoreApplication>
-#include <QBuffer>
-#include <QCryptographicHash>
-#include <QLoggingCategory>
-
 #include <typeinfo>
+
+#include <QBuffer>
+#include <QCoreApplication>
+#include <QCryptographicHash>
+#include <QEventLoop>
+#include <QIODevice>
+#include <QLoggingCategory>
+#include <QVariant>
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(CWSGI_HTTP, "cwsgi.http", QtWarningMsg)
 Q_DECLARE_LOGGING_CATEGORY(CWSGI_SOCK)
 
-ProtocolHttp::ProtocolHttp(Server *wsgi, ProtocolHttp2 *upgradeH2c) : Protocol(wsgi)
-  , m_websocketProto(new ProtocolWebSocket(wsgi))
-  , m_upgradeH2c(upgradeH2c)
+ProtocolHttp::ProtocolHttp(Server *wsgi, ProtocolHttp2 *upgradeH2c)
+    : Protocol(wsgi)
+    , m_websocketProto(new ProtocolWebSocket(wsgi))
+    , m_upgradeH2c(upgradeH2c)
 {
     usingFrontendProxy = wsgi->usingFrontendProxy();
 }
@@ -81,14 +82,14 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
         QIODevice *body = protoRequest->body;
         do {
             remaining = protoRequest->contentLength - body->size();
-            len = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
+            len       = io->read(m_postBuffer, qMin(m_postBufferSize, remaining));
             if (len == -1) {
                 qCWarning(CWSGI_HTTP) << "error while reading body" << len << protoRequest->headers;
                 sock->connectionClose();
                 return;
             }
             bytesAvailable -= len;
-//            qCDebug(CWSGI_HTTP) << "WRITE body" << protoRequest->contentLength << remaining << len << (remaining == len) << io->bytesAvailable();
+            //            qCDebug(CWSGI_HTTP) << "WRITE body" << protoRequest->contentLength << remaining << len << (remaining == len) << io->bytesAvailable();
             body->write(m_postBuffer, len);
         } while (bytesAvailable && remaining);
 
@@ -107,23 +108,23 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
     protoRequest->buf_size += len;
 
     while (protoRequest->last < protoRequest->buf_size) {
-//        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(protoRequest->buffer, protoRequest->buf_size);
+        //        qCDebug(CWSGI_HTTP) << Q_FUNC_INFO << QByteArray(protoRequest->buffer, protoRequest->buf_size);
         int ix = CrLfIndexIn(protoRequest->buffer, protoRequest->buf_size, protoRequest->last);
         if (ix != -1) {
-            qint64 len = ix - protoRequest->beginLine;
-            char *ptr = protoRequest->buffer + protoRequest->beginLine;
+            qint64 len              = ix - protoRequest->beginLine;
+            char *ptr               = protoRequest->buffer + protoRequest->beginLine;
             protoRequest->beginLine = ix + 2;
-            protoRequest->last = protoRequest->beginLine;
+            protoRequest->last      = protoRequest->beginLine;
 
             if (protoRequest->connState == ProtoRequestHttp::MethodLine) {
                 if (!protoRequest->elapsed.isValid()) {
                     protoRequest->elapsed.start();
                 }
                 parseMethod(ptr, ptr + len, sock);
-                protoRequest->connState = ProtoRequestHttp::HeaderLine;
+                protoRequest->connState     = ProtoRequestHttp::HeaderLine;
                 protoRequest->contentLength = -1;
-                protoRequest->headers = Cutelyst::Headers();
-//                qCDebug(CWSGI_HTTP) << "--------" << protoRequest->method << protoRequest->path << protoRequest->query << protoRequest->protocol;
+                protoRequest->headers       = Cutelyst::Headers();
+                //                qCDebug(CWSGI_HTTP) << "--------" << protoRequest->method << protoRequest->path << protoRequest->query << protoRequest->protocol;
 
             } else if (protoRequest->connState == ProtoRequestHttp::HeaderLine) {
                 if (len) {
@@ -131,7 +132,7 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
                 } else {
                     if (protoRequest->contentLength > 0) {
                         protoRequest->connState = ProtoRequestHttp::ContentBody;
-                        protoRequest->body = createBody(protoRequest->contentLength);
+                        protoRequest->body      = createBody(protoRequest->contentLength);
                         if (!protoRequest->body) {
                             qCWarning(CWSGI_HTTP) << "error while creating body, closing socket";
                             sock->connectionClose();
@@ -140,14 +141,14 @@ void ProtocolHttp::parse(Socket *sock, QIODevice *io) const
 
                         ptr += 2;
                         len = qMin(protoRequest->contentLength, static_cast<qint64>(protoRequest->buf_size - protoRequest->last));
-//                        qCDebug(CWSGI_HTTP) << "WRITE" << protoRequest->contentLength << len;
+                        //                        qCDebug(CWSGI_HTTP) << "WRITE" << protoRequest->contentLength << len;
                         if (len) {
                             protoRequest->body->write(ptr, len);
                         }
                         protoRequest->last += len;
 
                         if (protoRequest->contentLength > len) {
-//                            qCDebug(CWSGI_HTTP) << "WRITE more..." << protoRequest->contentLength << len;
+                            //                            qCDebug(CWSGI_HTTP) << "WRITE more..." << protoRequest->contentLength << len;
                             // body is not completed yet
                             if (io->bytesAvailable()) {
                                 // since we still have bytes available call this function
@@ -184,7 +185,7 @@ ProtocolData *ProtocolHttp::createData(Socket *sock) const
 bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
 {
     auto request = static_cast<ProtoRequestHttp *>(sock->protoData);
-//    qCDebug(CWSGI_HTTP) << "processRequest" << sock->protoData->contentLength;
+    //    qCDebug(CWSGI_HTTP) << "processRequest" << sock->protoData->contentLength;
     if (request->body) {
         request->body->seek(0);
     }
@@ -210,7 +211,7 @@ bool ProtocolHttp::processRequest(Socket *sock, QIODevice *io) const
 
 void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) const
 {
-    auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
+    auto protoRequest         = static_cast<ProtoRequestHttp *>(sock->protoData);
     const char *word_boundary = ptr;
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
@@ -258,10 +259,9 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     protoRequest->protocol = QString::fromLatin1(ptr, int(word_boundary - ptr));
 }
 
-
 inline QString normalizeHeaderKey(const char *str, int size)
 {
-    int i = 0;
+    int i       = 0;
     QString key = QString::fromLatin1(str, size);
     while (i < key.size()) {
         QChar c = key[i];
@@ -279,7 +279,7 @@ inline QString normalizeHeaderKey(const char *str, int size)
 
 void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) const
 {
-    auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
+    auto protoRequest         = static_cast<ProtoRequestHttp *>(sock->protoData);
     const char *word_boundary = ptr;
     while (*word_boundary != ':' && word_boundary < end) {
         ++word_boundary;
@@ -305,39 +305,39 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
         }
     } else if (!protoRequest->headerHost && key.compare(u"HOST") == 0) {
         protoRequest->serverAddress = value;
-        protoRequest->headerHost = true;
+        protoRequest->headerHost    = true;
     } else if (usingFrontendProxy) {
         if (!protoRequest->X_Forwarded_For && (key.compare(u"X_FORWARDED_FOR") == 0 || key.compare(u"X_REAL_IP") == 0)) {
-            protoRequest->remoteAddress = QHostAddress(value); // configure your reverse-proxy to list only one IP address
-            protoRequest->remotePort = 0; // unknown
+            protoRequest->remoteAddress   = QHostAddress(value); // configure your reverse-proxy to list only one IP address
+            protoRequest->remotePort      = 0;                   // unknown
             protoRequest->X_Forwarded_For = true;
         } else if (!protoRequest->X_Forwarded_Host && key.compare(u"X_FORWARDED_HOST") == 0) {
-            protoRequest->serverAddress = value;
+            protoRequest->serverAddress    = value;
             protoRequest->X_Forwarded_Host = true;
-            protoRequest->headerHost = true; // ignore a following Host: header (if any)
+            protoRequest->headerHost       = true; // ignore a following Host: header (if any)
         } else if (!protoRequest->X_Forwarded_Proto && key.compare(u"X_FORWARDED_PROTO") == 0) {
-            protoRequest->isSecure = (value.compare(u"https") == 0);
+            protoRequest->isSecure          = (value.compare(u"https") == 0);
             protoRequest->X_Forwarded_Proto = true;
         }
     }
     protoRequest->headers.pushRawHeader(key, value);
 }
 
-ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
+ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize)
+    : ProtocolData(sock, bufferSize)
 {
     isSecure = sock->isSecure;
 }
 
 ProtoRequestHttp::~ProtoRequestHttp()
 {
-
 }
 
 void ProtoRequestHttp::setupNewConnection(Socket *sock)
 {
     serverAddress = sock->serverAddress;
     remoteAddress = sock->remoteAddress;
-    remotePort = sock->remotePort;
+    remotePort    = sock->remotePort;
 }
 
 bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
@@ -351,14 +351,14 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     const char *msg = CWsgiEngine::httpStatusMessage(status, &msgLen);
     QByteArray data(msg, msgLen);
 
-    const auto headersData = headers.data();
+    const auto headersData                                = headers.data();
     ProtoRequestHttp::HeaderConnection fallbackConnection = headerConnection;
-    headerConnection = ProtoRequestHttp::HeaderConnectionNotSet;
+    headerConnection                                      = ProtoRequestHttp::HeaderConnectionNotSet;
 
     bool hasDate = false;
-    auto it = headersData.constBegin();
+    auto it      = headersData.constBegin();
     while (it != headersData.constEnd()) {
-        const QString &key = it.key();
+        const QString &key   = it.key();
         const QString &value = it.value();
         if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet && key.compare(u"CONNECTION") == 0) {
             if (value.compare(u"close", Qt::CaseInsensitive) == 0) {
@@ -379,8 +379,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     }
 
     if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
-        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep
-                || (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose && protocol.compare(u"HTTP/1.1") == 0)) {
+        if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep || (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose && protocol.compare(u"HTTP/1.1") == 0)) {
             headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             data.append("\r\nConnection: keep-alive", 24);
         } else {
@@ -406,9 +405,9 @@ void ProtoRequestHttp::processingFinished()
 {
     if (websocketUpgraded) {
         // need 2 byte header
-        websocket_need = 2;
+        websocket_need  = 2;
         websocket_phase = ProtoRequestHttp::WebSocketPhaseHeaders;
-        buf_size = 0;
+        buf_size        = 0;
         return;
     }
 
@@ -446,7 +445,7 @@ bool ProtoRequestHttp::webSocketSendTextMessage(const QString &message)
     }
 
     const QByteArray rawMessage = message.toUtf8();
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeText, quint64(rawMessage.size()));
+    const QByteArray headers    = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeText, quint64(rawMessage.size()));
     return doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size();
 }
 
@@ -471,7 +470,7 @@ bool ProtoRequestHttp::webSocketSendPing(const QByteArray &payload)
     }
 
     const QByteArray rawMessage = payload.left(125);
-    const QByteArray headers = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePing, quint64(rawMessage.size()));
+    const QByteArray headers    = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePing, quint64(rawMessage.size()));
     return doWrite(headers) == headers.size() && doWrite(rawMessage) == rawMessage.size();
 }
 
@@ -484,7 +483,7 @@ bool ProtoRequestHttp::webSocketClose(quint16 code, const QString &reason)
     }
 
     const QByteArray reply = ProtocolWebSocket::createWebsocketCloseReply(reason, code);
-    bool ret = doWrite(reply) == reply.size();
+    bool ret               = doWrite(reply) == reply.size();
     sock->requestFinished();
     sock->connectionClose();
     return ret;
@@ -512,8 +511,8 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
     }
 
     const Cutelyst::Headers requestHeaders = context->request()->headers();
-    Cutelyst::Response *response = context->response();
-    Cutelyst::Headers &headers = response->headers();
+    Cutelyst::Response *response           = context->response();
+    Cutelyst::Headers &headers             = response->headers();
 
     response->setStatus(Cutelyst::Response::SwitchingProtocols);
     headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
@@ -527,7 +526,7 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
     }
 
     const QString localKey = key.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_KEY")) : key;
-    const QString wsKey = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+    const QString wsKey    = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
     if (wsKey.length() == 36) {
         qCWarning(CWSGI_SOCK) << "Missing websocket key";
         return false;
@@ -536,10 +535,10 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key, const QString &o
     const QByteArray wsAccept = QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
     headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
 
-    headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
+    headerConnection  = ProtoRequestHttp::HeaderConnectionUpgrade;
     websocketUpgraded = true;
-    auto httpProto = static_cast<ProtocolHttp *>(sock->proto);
-    sock->proto = httpProto->m_websocketProto;
+    auto httpProto    = static_cast<ProtocolHttp *>(sock->proto);
+    sock->proto       = httpProto->m_websocketProto;
 
     return writeHeaders(Cutelyst::Response::SwitchingProtocols, headers);
 }

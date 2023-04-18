@@ -2,23 +2,23 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "authenticationrealm.h"
 #include "credentialhttp_p.h"
 #include "credentialpassword.h"
-
-#include "authenticationrealm.h"
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
 
-#include <QUrl>
 #include <QLoggingCategory>
+#include <QUrl>
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_CREDENTIALHTTP, "cutelyst.plugin.credentialhttp", QtWarningMsg)
 
-CredentialHttp::CredentialHttp(QObject *parent) : AuthenticationCredential(parent)
-  , d_ptr(new CredentialHttpPrivate)
+CredentialHttp::CredentialHttp(QObject *parent)
+    : AuthenticationCredential(parent)
+    , d_ptr(new CredentialHttpPrivate)
 {
 }
 
@@ -128,7 +128,7 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c, Authentica
 
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user, const ParamsMultiMap &authinfo)
 {
-    QString password = authinfo.value(passwordField);
+    QString password             = authinfo.value(passwordField);
     const QString storedPassword = user.value(passwordField).toString();
 
     if (Q_LIKELY(passwordType == CredentialHttp::Hashed)) {

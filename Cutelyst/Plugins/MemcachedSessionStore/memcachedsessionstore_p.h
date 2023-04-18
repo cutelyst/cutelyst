@@ -15,6 +15,6 @@ public:
     QString groupKey;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTMEMCACHEDSESSIONSTORE_P_H

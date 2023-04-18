@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorPresent::ValidatorPresent(const QString &field, const Cutelyst::ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorPresentPrivate(field, messages))
+ValidatorPresent::ValidatorPresent(const QString &field, const Cutelyst::ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorPresentPrivate(field, messages))
 {
 }
 
@@ -39,7 +39,7 @@ QString ValidatorPresent::genericValidationError(Context *c, const QVariant &err
         error = c->translate("Cutelyst::ValidatorPresent", "Has to be present in input data.");
     } else {
         //: %1 will be replaced by the field label
-        error =  c->translate("Cutelyst::ValidatorPresent", "The “%1” field was not found in the input data.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorPresent", "The “%1” field was not found in the input data.").arg(_label);
     }
     return error;
 }

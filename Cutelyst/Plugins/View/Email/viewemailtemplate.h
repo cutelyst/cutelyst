@@ -5,8 +5,9 @@
 #ifndef VIEWEMAILTEMPLATE_H
 #define VIEWEMAILTEMPLATE_H
 
-#include <QObject>
 #include <Cutelyst/Plugins/View/Email/viewemail.h>
+
+#include <QObject>
 
 namespace Cutelyst {
 
@@ -59,6 +60,6 @@ Q_SIGNALS:
     void changedProp();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // VIEWEMAILTEMPLATE_H

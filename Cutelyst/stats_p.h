@@ -14,7 +14,7 @@ namespace Cutelyst {
 struct StatsAction {
     QString action;
     qint64 begin = 0;
-    qint64 end = 0;
+    qint64 end   = 0;
 };
 
 class EngineRequest;
@@ -25,7 +25,6 @@ public:
     EngineRequest *engineRequest;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // STATS_P_H
-

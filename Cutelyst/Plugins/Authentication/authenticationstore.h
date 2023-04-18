@@ -69,6 +69,6 @@ public:
     virtual AuthenticationUser fromSession(Context *c, const QVariant &frozenUser);
 };
 
-}
+} // namespace Cutelyst
 
 #endif // AUTHENTICATIONSTORE_H

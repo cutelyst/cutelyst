@@ -4,19 +4,18 @@
  */
 
 #include "validatoraccepted_p.h"
+
 #include <QStringList>
 
 using namespace Cutelyst;
 
-ValidatorAccepted::ValidatorAccepted(const QString &field, const Cutelyst::ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorAcceptedPrivate(field, messages))
+ValidatorAccepted::ValidatorAccepted(const QString &field, const Cutelyst::ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorAcceptedPrivate(field, messages))
 {
-
 }
 
 ValidatorAccepted::~ValidatorAccepted()
 {
-
 }
 
 ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &params) const

@@ -7,10 +7,10 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <grantlee/filter.h>
-#include <grantlee/safestring.h>
-#include <grantlee/util.h>
-#include <grantlee/node.h>
+#    include <grantlee/filter.h>
+#    include <grantlee/node.h>
+#    include <grantlee/safestring.h>
+#    include <grantlee/util.h>
 
 class UriForTag final : public Grantlee::AbstractNodeFactory
 {

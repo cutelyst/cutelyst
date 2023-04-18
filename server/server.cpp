@@ -2,48 +2,48 @@
  * SPDX-FileCopyrightText: (C) 2016-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "server_p.h"
-
+#include "cwsgiengine.h"
+#include "localserver.h"
 #include "protocol.h"
+#include "protocolfastcgi.h"
 #include "protocolhttp.h"
 #include "protocolhttp2.h"
-#include "protocolfastcgi.h"
-#include "cwsgiengine.h"
+#include "server_p.h"
 #include "socket.h"
 #include "tcpserverbalancer.h"
-#include "localserver.h"
 
 #ifdef Q_OS_UNIX
-#include "unixfork.h"
+#    include "unixfork.h"
 #else
-#include "windowsfork.h"
+#    include "windowsfork.h"
 #endif
 
 #ifdef Q_OS_LINUX
-#include "../EventLoopEPoll/eventdispatcher_epoll.h"
-#include "systemdnotify.h"
+#    include "../EventLoopEPoll/eventdispatcher_epoll.h"
+#    include "systemdnotify.h"
 #endif
 
-#include <QCoreApplication>
+#include <iostream>
+
 #include <QCommandLineParser>
-#include <QUrl>
-#include <QPluginLoader>
-#include <QThread>
+#include <QCoreApplication>
+#include <QDir>
 #include <QLoggingCategory>
+#include <QMetaProperty>
+#include <QPluginLoader>
 #include <QSettings>
 #include <QSocketNotifier>
-#include <QMetaProperty>
+#include <QThread>
 #include <QTimer>
-#include <QDir>
-
-#include <iostream>
+#include <QUrl>
 
 Q_LOGGING_CATEGORY(CUTELYST_SERVER, "cutelyst.server", QtWarningMsg)
 
 using namespace Cutelyst;
 
-Server::Server(QObject *parent) : QObject(parent),
-    d_ptr(new ServerPrivate(this))
+Server::Server(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new ServerPrivate(this))
 {
     QCoreApplication::addLibraryPath(QDir().absolutePath());
 
@@ -100,9 +100,9 @@ void Server::parseCommandLine(const QStringList &arguments)
                               QCoreApplication::translate("main", "file"));
     parser.addOption(iniOpt);
 
-    QCommandLineOption jsonOpt({ QStringLiteral("j"), QStringLiteral("json") },
-                           QCoreApplication::translate("main", "load config from JSON file"),
-                           QCoreApplication::translate("main", "file"));
+    QCommandLineOption jsonOpt({QStringLiteral("j"), QStringLiteral("json")},
+                               QCoreApplication::translate("main", "load config from JSON file"),
+                               QCoreApplication::translate("main", "file"));
     parser.addOption(jsonOpt);
 
     QCommandLineOption chdir(QStringLiteral("chdir"),
@@ -119,33 +119,33 @@ void Server::parseCommandLine(const QStringList &arguments)
                                   QCoreApplication::translate("main", "set lazy mode (load app in workers instead of master)"));
     parser.addOption(lazyOption);
 
-    QCommandLineOption application({ QStringLiteral("application"), QStringLiteral("a") },
+    QCommandLineOption application({QStringLiteral("application"), QStringLiteral("a")},
                                    QCoreApplication::translate("main", "Application to load"),
                                    QCoreApplication::translate("main", "file"));
     parser.addOption(application);
 
-    QCommandLineOption threads({ QStringLiteral("threads"), QStringLiteral("t") },
+    QCommandLineOption threads({QStringLiteral("threads"), QStringLiteral("t")},
                                QCoreApplication::translate("main", "Number of thread to use"),
                                QCoreApplication::translate("main", "threads"));
     parser.addOption(threads);
 
 #ifdef Q_OS_UNIX
-    QCommandLineOption processes({ QStringLiteral("processes"), QStringLiteral("p") },
+    QCommandLineOption processes({QStringLiteral("processes"), QStringLiteral("p")},
                                  QCoreApplication::translate("main", "spawn the specified number of processes"),
                                  QCoreApplication::translate("main", "processes"));
     parser.addOption(processes);
 #endif
 
-    QCommandLineOption master({ QStringLiteral("master"), QStringLiteral("M") },
+    QCommandLineOption master({QStringLiteral("master"), QStringLiteral("M")},
                               QCoreApplication::translate("main", "Enable master process"));
     parser.addOption(master);
 
-    QCommandLineOption listenQueue({ QStringLiteral("listen"), QStringLiteral("l") },
-                                  QCoreApplication::translate("main", "set the socket listen queue size"),
-                                  QCoreApplication::translate("main", "size"));
+    QCommandLineOption listenQueue({QStringLiteral("listen"), QStringLiteral("l")},
+                                   QCoreApplication::translate("main", "set the socket listen queue size"),
+                                   QCoreApplication::translate("main", "size"));
     parser.addOption(listenQueue);
 
-    QCommandLineOption bufferSize({ QStringLiteral("buffer-size"), QStringLiteral("b") },
+    QCommandLineOption bufferSize({QStringLiteral("buffer-size"), QStringLiteral("b")},
                                   QCoreApplication::translate("main", "set internal buffer size"),
                                   QCoreApplication::translate("main", "bytes"));
     parser.addOption(bufferSize);
@@ -160,14 +160,14 @@ void Server::parseCommandLine(const QStringList &arguments)
                                             QCoreApplication::translate("main", "bytes"));
     parser.addOption(postBufferingBufsize);
 
-    QCommandLineOption httpSocketOpt({ QStringLiteral("http-socket"), QStringLiteral("h1") },
+    QCommandLineOption httpSocketOpt({QStringLiteral("http-socket"), QStringLiteral("h1")},
                                      QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP protocol"),
                                      QCoreApplication::translate("main", "address"));
     parser.addOption(httpSocketOpt);
 
-    QCommandLineOption http2SocketOpt({ QStringLiteral("http2-socket"), QStringLiteral("h2") },
-                                     QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP/2 protocol"),
-                                     QCoreApplication::translate("main", "address"));
+    QCommandLineOption http2SocketOpt({QStringLiteral("http2-socket"), QStringLiteral("h2")},
+                                      QCoreApplication::translate("main", "bind to the specified TCP socket using HTTP/2 protocol"),
+                                      QCoreApplication::translate("main", "address"));
     parser.addOption(http2SocketOpt);
 
     QCommandLineOption http2HeaderTableSizeOpt(QStringLiteral("http2-header-table-size"),
@@ -176,14 +176,14 @@ void Server::parseCommandLine(const QStringList &arguments)
     parser.addOption(http2HeaderTableSizeOpt);
 
     QCommandLineOption upgradeH2cOpt(QStringLiteral("upgrade-h2c"),
-                                               QCoreApplication::translate("main", "Upgrades HTTP/1 to H2c (HTTP/2 Clear Text)"));
+                                     QCoreApplication::translate("main", "Upgrades HTTP/1 to H2c (HTTP/2 Clear Text)"));
     parser.addOption(upgradeH2cOpt);
 
     QCommandLineOption httpsH2Opt(QStringLiteral("https-h2"),
                                   QCoreApplication::translate("main", "Negotiate HTTP/2 on HTTPS socket"));
     parser.addOption(httpsH2Opt);
 
-    QCommandLineOption httpsSocketOpt({ QStringLiteral("https-socket"), QStringLiteral("hs1") },
+    QCommandLineOption httpsSocketOpt({QStringLiteral("https-socket"), QStringLiteral("hs1")},
                                       QCoreApplication::translate("main", "bind to the specified TCP socket using HTTPS protocol"),
                                       QCoreApplication::translate("main", "address"));
     parser.addOption(httpsSocketOpt);
@@ -198,7 +198,7 @@ void Server::parseCommandLine(const QStringList &arguments)
                                     QCoreApplication::translate("main", "options"));
     parser.addOption(socketAccess);
 
-    QCommandLineOption socketTimeout({ QStringLiteral("socket-timeout"), QStringLiteral("z") },
+    QCommandLineOption socketTimeout({QStringLiteral("socket-timeout"), QStringLiteral("z")},
                                      QCoreApplication::translate("main", "set internal sockets timeout"),
                                      QCoreApplication::translate("main", "seconds"));
     parser.addOption(socketTimeout);
@@ -213,7 +213,7 @@ void Server::parseCommandLine(const QStringList &arguments)
                                      QCoreApplication::translate("main", "mountpoint=path"));
     parser.addOption(staticMap2Opt);
 
-    QCommandLineOption autoReload({ QStringLiteral("auto-restart"), QStringLiteral("r") },
+    QCommandLineOption autoReload({QStringLiteral("auto-restart"), QStringLiteral("r")},
                                   QCoreApplication::translate("main", "auto restarts when the application file changes"));
     parser.addOption(autoReload);
 
@@ -304,7 +304,6 @@ void Server::parseCommandLine(const QStringList &arguments)
     QCommandLineOption frontendProxy(QStringLiteral("using-frontend-proxy"),
                                      QCoreApplication::translate("main", "Enable frontend (reverse-)proxy support"));
     parser.addOption(frontendProxy);
-
 
     // Process the actual command line arguments given by the user
     parser.process(arguments);
@@ -528,7 +527,7 @@ int Server::exec(Cutelyst::Application *app)
 #ifdef Q_OS_UNIX
     if (d->processes == -1 && d->threads == -1) {
         d->processes = UnixFork::idealProcessCount();
-        d->threads = UnixFork::idealThreadCount() / d->processes;
+        d->threads   = UnixFork::idealThreadCount() / d->processes;
     } else if (d->processes == -1) {
         d->processes = UnixFork::idealThreadCount();
     } else if (d->threads == -1) {
@@ -583,20 +582,20 @@ int Server::exec(Cutelyst::Application *app)
     // matches the effective user ID used to perform the first bind on the socket.
 
     if (!d->reusePort) {
-        if(!d->listenTcpSockets()) {
+        if (!d->listenTcpSockets()) {
             Q_EMIT errorOccured(tr("No specified sockets were able to be opened"));
-            return 1; //No sockets has been opened
+            return 1; // No sockets has been opened
         }
     }
 
-    if(!d->writePidFile(d->pidfile)) {
+    if (!d->writePidFile(d->pidfile)) {
         Q_EMIT errorOccured(QString::fromLatin1("Failed write pid file %1").arg(d->pidfile));
     }
 
 #ifdef Q_OS_UNIX
     bool isListeningLocalSockets = false;
     if (!d->chownSocket.isEmpty()) {
-        if(!d->listenLocalSockets()) {
+        if (!d->listenLocalSockets()) {
             Q_EMIT errorOccured(QStringLiteral("Error on opening local sockets"));
             return 1;
         }
@@ -604,11 +603,11 @@ int Server::exec(Cutelyst::Application *app)
     }
 
     if (!d->umask.isEmpty() &&
-            !UnixFork::setUmask(d->umask.toLatin1())) {
+        !UnixFork::setUmask(d->umask.toLatin1())) {
         return 1;
     }
 
-    if(!UnixFork::setGidUid(d->gid, d->uid, d->noInitgroups)) {
+    if (!UnixFork::setGidUid(d->gid, d->uid, d->noInitgroups)) {
         Q_EMIT errorOccured(QStringLiteral("Error on setting GID or UID"));
         return 1;
     }
@@ -621,9 +620,9 @@ int Server::exec(Cutelyst::Application *app)
 #endif
 
     if (d->reusePort) {
-        if(!d->listenTcpSockets()) {
+        if (!d->listenTcpSockets()) {
             Q_EMIT errorOccured(tr("No specified sockets were able to be opened"));
-            return 1; //No sockets has been opened
+            return 1; // No sockets has been opened
         }
     }
 
@@ -646,7 +645,7 @@ int Server::exec(Cutelyst::Application *app)
     d->app = app;
 
     if (!d->lazy) {
-        if(!d->setupApplication()) {
+        if (!d->setupApplication()) {
             Q_EMIT errorOccured(QStringLiteral("Failed to setup Application"));
             return 1;
         }
@@ -671,9 +670,9 @@ bool Server::start(Application *app)
         return false;
     }
 
-    d->processes = 0;
-    d->master = false;
-    d->lazy = false;
+    d->processes     = 0;
+    d->master        = false;
+    d->lazy          = false;
     d->userEventLoop = true;
 #ifdef Q_OS_UNIX
     d->uid = QString();
@@ -696,7 +695,8 @@ void Server::stop()
     }
 }
 
-ServerPrivate::~ServerPrivate() {
+ServerPrivate::~ServerPrivate()
+{
     delete protoHTTP;
     delete protoHTTP2;
     delete protoFCGI;
@@ -766,8 +766,8 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
 
 bool ServerPrivate::listenLocalSockets()
 {
-    QStringList http = httpSockets;
-    QStringList http2 = http2Sockets;
+    QStringList http    = httpSockets;
+    QStringList http2   = http2Sockets;
     QStringList fastcgi = fastcgiSockets;
 
 #ifdef Q_OS_LINUX
@@ -777,15 +777,15 @@ bool ServerPrivate::listenLocalSockets()
     for (int fd : fds) {
         auto server = new LocalServer(q, this);
         if (server->listen(fd)) {
-            const QString name = server->serverName();
+            const QString name     = server->serverName();
             const QString fullName = server->fullServerName();
 
             Protocol *protocol;
             if (http.removeOne(fullName) || http.removeOne(name)) {
                 protocol = getHttpProto();
-            } else if (http2.removeOne(fullName)  || http2.removeOne(name)) {
+            } else if (http2.removeOne(fullName) || http2.removeOne(name)) {
                 protocol = getHttp2Proto();
-            } else if (fastcgi.removeOne(fullName)  || fastcgi.removeOne(name)) {
+            } else if (fastcgi.removeOne(fullName) || fastcgi.removeOne(name)) {
                 protocol = getFastCgiProto();
             } else {
                 std::cerr << "systemd activated socket does not match any configured socket" << std::endl;
@@ -809,7 +809,7 @@ bool ServerPrivate::listenLocalSockets()
     }
 #endif
 
-    bool ret = false;
+    bool ret             = false;
     const auto httpConst = http;
     for (const auto &socket : httpConst) {
         ret |= listenLocal(socket, getHttpProto());
@@ -939,7 +939,6 @@ QString Server::processes() const
         return QStringLiteral("auto");
     }
     return QString::number(d->processes);
-
 }
 
 void Server::setChdir(const QString &chdir)
@@ -1488,13 +1487,15 @@ bool ServerPrivate::setupApplication()
 
         QObject *instance = loader.instance();
         if (!instance) {
-            qCCritical(CUTELYST_SERVER) << "Could not get a QObject instance: %s\n" << loader.errorString();
+            qCCritical(CUTELYST_SERVER) << "Could not get a QObject instance: %s\n"
+                                        << loader.errorString();
             return false;
         }
 
         localApp = qobject_cast<Cutelyst::Application *>(instance);
         if (!localApp) {
-            qCCritical(CUTELYST_SERVER) << "Could not cast Cutelyst::Application from instance: %s\n" << loader.errorString();
+            qCCritical(CUTELYST_SERVER) << "Could not cast Cutelyst::Application from instance: %s\n"
+                                        << loader.errorString();
             return false;
         }
 
@@ -1506,7 +1507,7 @@ bool ServerPrivate::setupApplication()
     }
 
     if (!chdir2.isEmpty()) {
-        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData()  << std::endl;
+        std::cout << "Changing directory2 to: " << chdir2.toLatin1().constData() << std::endl;
         if (!QDir::setCurrent(chdir2)) {
             Q_EMIT q->errorOccured(QString::fromLatin1("Failed to chdir2 to: '%s'").arg(QString::fromLatin1(chdir2.toLatin1().constData())));
             return false;
@@ -1521,7 +1522,7 @@ bool ServerPrivate::setupApplication()
             }
         }
     } else {
-        engine = createEngine(localApp, 0);
+        engine            = createEngine(localApp, 0);
         workersNotRunning = 1;
     }
 
@@ -1578,7 +1579,7 @@ bool ServerPrivate::postFork(int workerId)
     Q_Q(Server);
 
     if (lazy) {
-        if(!setupApplication()) {
+        if (!setupApplication()) {
             Q_EMIT q->errorOccured(QStringLiteral("Failed to setup Application"));
             return false;
         }
@@ -1688,7 +1689,7 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
 
     QString section = QStringLiteral("server");
     if (filename.contains(QLatin1Char(':'))) {
-        section = filename.section(QLatin1Char(':'), -1, 1);
+        section  = filename.section(QLatin1Char(':'), -1, 1);
         filename = filename.section(QLatin1Char(':'), 0, -2);
     }
 
@@ -1718,7 +1719,7 @@ void ServerPrivate::loadConfig(const QString &file, bool json)
             loadedMap.insert(it.value().toMap());
 
             it.value() = loadedMap;
-            itLoaded = loadedConfig.erase(itLoaded);
+            itLoaded   = loadedConfig.erase(itLoaded);
         }
         ++it;
     }
@@ -1743,7 +1744,7 @@ void ServerPrivate::applyConfig(const QVariantMap &config)
             continue;
         }
 
-        const QVariant value = it.value();
+        const QVariant value     = it.value();
         const QMetaProperty prop = q->metaObject()->property(ix);
         if (prop.userType() == value.userType()) {
             if (prop.userType() == QMetaType::QStringList) {
@@ -1754,7 +1755,7 @@ void ServerPrivate::applyConfig(const QVariantMap &config)
             }
         } else if (prop.userType() == QMetaType::QStringList) {
             const QStringList currentValues = prop.read(q).toStringList();
-            prop.write(q, currentValues + QStringList{ value.toString() });
+            prop.write(q, currentValues + QStringList{value.toString()});
         } else {
             prop.write(q, value);
         }

@@ -6,12 +6,12 @@
 #include "memcachedsessionstore_p.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Engine>
 #include <Cutelyst/Context>
+#include <Cutelyst/Engine>
 #include <Cutelyst/Plugins/Memcached/Memcached>
 
-#include <QLoggingCategory>
 #include <QCoreApplication>
+#include <QLoggingCategory>
 
 using namespace Cutelyst;
 
@@ -22,18 +22,18 @@ Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionsto
 
 static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey);
 
-MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject *parent) :
-    SessionStore(parent), d_ptr(new MemcachedSessionStorePrivate)
+MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject *parent)
+    : SessionStore(parent)
+    , d_ptr(new MemcachedSessionStorePrivate)
 {
     Q_D(MemcachedSessionStore);
     Q_ASSERT_X(app, "construct MemachedSessionStore", "you have to specifiy a pointer to the Application object");
     const QVariantMap map = app->engine()->config(QStringLiteral("Cutelyst_MemcachedSessionStore_Plugin"));
-    d->groupKey = map.value(QStringLiteral("group_key")).toString();
+    d->groupKey           = map.value(QStringLiteral("group_key")).toString();
 }
 
 MemcachedSessionStore::~MemcachedSessionStore()
 {
-
 }
 
 QVariant MemcachedSessionStore::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
@@ -41,7 +41,7 @@ QVariant MemcachedSessionStore::getSessionData(Context *c, const QString &sid, c
     QVariant data;
     Q_D(MemcachedSessionStore);
     const QVariantHash hash = loadMemcSessionData(c, sid, d->groupKey);
-    data = hash.value(key, defaultValue);
+    data                    = hash.value(key, defaultValue);
     return data;
 }
 
@@ -91,9 +91,9 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
     }
 
     const static QString sessionPrefix = QCoreApplication::applicationName() + QLatin1String("_sess_");
-    const QString sessionKey = sessionPrefix + sid;
+    const QString sessionKey           = sessionPrefix + sid;
 
-    QObject::connect(c->app(), &Application::afterDispatch, c, [=] () {
+    QObject::connect(c->app(), &Application::afterDispatch, c, [=]() {
         if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {
             return;
         }
@@ -111,16 +111,16 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
                 qCWarning(C_MEMCACHEDSESSIONSTORE, "Failed to remove session from Memcached.");
             }
         } else {
-           bool ok = false;
-           const time_t expires = data.value(QStringLiteral("expires")).value<time_t>();
-           if (groupKey.isEmpty()) {
-               ok = Memcached::set(sessionKey, data, expires);
-           } else {
-               ok = Memcached::setByKey(groupKey, sessionKey, data, expires);
-           }
-           if (!ok) {
-               qCWarning(C_MEMCACHEDSESSIONSTORE, "Failed to store session to Memcached.");
-           }
+            bool ok              = false;
+            const time_t expires = data.value(QStringLiteral("expires")).value<time_t>();
+            if (groupKey.isEmpty()) {
+                ok = Memcached::set(sessionKey, data, expires);
+            } else {
+                ok = Memcached::setByKey(groupKey, sessionKey, data, expires);
+            }
+            if (!ok) {
+                qCWarning(C_MEMCACHEDSESSIONSTORE, "Failed to store session to Memcached.");
+            }
         }
     });
 

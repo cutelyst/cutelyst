@@ -5,8 +5,8 @@
 #ifndef ROLEACL_P_H
 #define ROLEACL_P_H
 
-#include "roleacl.h"
 #include "component_p.h"
+#include "roleacl.h"
 
 namespace Cutelyst {
 
@@ -20,6 +20,6 @@ public:
     Action *detachTo;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // ROLEACL_P_H

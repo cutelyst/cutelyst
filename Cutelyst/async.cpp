@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "async.h"
+
 #include "context.h"
 
-#include <QPointer>
 #include <QLoggingCategory>
+#include <QPointer>
 
 Q_LOGGING_CATEGORY(CUTELYST_ASYNC, "cutelyst.async", QtInfoMsg)
 
@@ -14,22 +15,29 @@ using namespace Cutelyst;
 
 namespace Cutelyst {
 
-class ASyncPrivate {
+class ASyncPrivate
+{
 public:
-    ASyncPrivate(Context *_c) : c(_c) {
-//        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
+    ASyncPrivate(Context *_c)
+        : c(_c)
+    {
+        //        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
         c->detachAsync();
     }
-    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb) : c(_c), cb(_cb) {
-//        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
+    ASyncPrivate(Context *_c, std::function<void(Context *c)> _cb)
+        : c(_c)
+        , cb(_cb)
+    {
+        //        qDebug(CUTELYST_ASYNC, "Detaching async %s", qPrintable(c->objectName()));
         c->detachAsync();
     }
-    ~ASyncPrivate() {
+    ~ASyncPrivate()
+    {
         if (!c.isNull()) {
             if (cb) {
                 cb(c);
             }
-//            qDebug(CUTELYST_ASYNC, "Attaching async %s", qPrintable(c->objectName()));
+            //            qDebug(CUTELYST_ASYNC, "Attaching async %s", qPrintable(c->objectName()));
             c->attachAsync();
         }
     }
@@ -38,7 +46,7 @@ public:
     std::function<void(Context *c)> cb;
 };
 
-}
+} // namespace Cutelyst
 
 ASync::ASync() = default;
 
@@ -52,7 +60,8 @@ ASync::ASync() = default;
  *
  * \param c
  */
-ASync::ASync(Context *c) : d(std::make_shared<ASyncPrivate>(c))
+ASync::ASync(Context *c)
+    : d(std::make_shared<ASyncPrivate>(c))
 {
 }
 
@@ -68,14 +77,16 @@ ASync::ASync(Context *c) : d(std::make_shared<ASyncPrivate>(c))
  * \param c
  * \param cb callback to be called when async tasks are finished
  */
-ASync::ASync(Context *c, std::function<void (Context *)> cb) : d(std::make_shared<ASyncPrivate>(c, cb))
+ASync::ASync(Context *c, std::function<void(Context *)> cb)
+    : d(std::make_shared<ASyncPrivate>(c, cb))
 {
 }
 
 /*!
  * Copy constructor
  */
-ASync::ASync(const ASync &other) : d(other.d)
+ASync::ASync(const ASync &other)
+    : d(other.d)
 {
 }
 
@@ -89,7 +100,7 @@ ASync::ASync(ASync &&other) noexcept
 
 ASync::~ASync() = default;
 
-ASync &ASync::operator =(const ASync &copy)
+ASync &ASync::operator=(const ASync &copy)
 {
     d = copy.d;
     return *this;

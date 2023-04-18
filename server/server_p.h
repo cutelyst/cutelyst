@@ -5,9 +5,8 @@
 #ifndef CUTELYSTSERVER_P_H
 #define CUTELYSTSERVER_P_H
 
-#include "server.h"
-
 #include "cwsgiengine.h"
+#include "server.h"
 
 #include <Cutelyst/Application>
 
@@ -24,7 +23,11 @@ class ServerPrivate : public QObject
     Q_OBJECT
     Q_DECLARE_PUBLIC(Server)
 public:
-    inline ServerPrivate(Server *parent) : QObject(parent), q_ptr(parent) { }
+    inline ServerPrivate(Server *parent)
+        : QObject(parent)
+        , q_ptr(parent)
+    {
+    }
     ~ServerPrivate();
 
     bool listenTcpSockets();
@@ -52,7 +55,7 @@ public:
     std::vector<QObject *> servers;
     std::vector<CWsgiEngine *> engines;
     Cutelyst::Application *app = nullptr;
-    CWsgiEngine *engine = nullptr;
+    CWsgiEngine *engine        = nullptr;
 
     QVariantMap opt;
     QVariantMap config;
@@ -77,34 +80,34 @@ public:
     QString gid;
     QString chownSocket;
     QString umask;
-    bool noInitgroups = false;
-    int cpuAffinity = 0;
-    bool reusePort = false;
-    qint64 postBuffering = -1;
+    bool noInitgroups           = false;
+    int cpuAffinity             = 0;
+    bool reusePort              = false;
+    qint64 postBuffering        = -1;
     qint64 postBufferingBufsize = 4096;
-    Protocol *protoHTTP = nullptr;
-    ProtocolHttp2 *protoHTTP2 = nullptr;
-    Protocol *protoFCGI = nullptr;
-    AbstractFork *genericFork = nullptr;
-    int bufferSize = 4096;
-    int workersNotRunning = 1;
-    int threads = 1;
-    int processes = 0;
-    int socketSendBuf = -1;
-    int socketReceiveBuf = -1;
-    int socketTimeout = 4;
-    int websocketMaxSize = 1024 * 1024;
-    int listenQueue = 100;
-    bool lazy = false;
-    bool master = false;
-    bool autoReload = false;
-    bool tcpNodelay = false;
-    bool soKeepalive = false;
-    bool threadBalancer = false;
-    bool userEventLoop = false;
-    bool upgradeH2c = false;
-    bool httpsH2 = false;
-    bool usingFrontendProxy = false;
+    Protocol *protoHTTP         = nullptr;
+    ProtocolHttp2 *protoHTTP2   = nullptr;
+    Protocol *protoFCGI         = nullptr;
+    AbstractFork *genericFork   = nullptr;
+    int bufferSize              = 4096;
+    int workersNotRunning       = 1;
+    int threads                 = 1;
+    int processes               = 0;
+    int socketSendBuf           = -1;
+    int socketReceiveBuf        = -1;
+    int socketTimeout           = 4;
+    int websocketMaxSize        = 1024 * 1024;
+    int listenQueue             = 100;
+    bool lazy                   = false;
+    bool master                 = false;
+    bool autoReload             = false;
+    bool tcpNodelay             = false;
+    bool soKeepalive            = false;
+    bool threadBalancer         = false;
+    bool userEventLoop          = false;
+    bool upgradeH2c             = false;
+    bool httpsH2                = false;
+    bool usingFrontendProxy     = false;
 
 Q_SIGNALS:
     void postForked(int workerId);
@@ -113,6 +116,6 @@ Q_SIGNALS:
     void shutdown();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTSERVER_P_H

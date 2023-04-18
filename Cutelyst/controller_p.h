@@ -5,8 +5,8 @@
 #ifndef CONTROLLER_P_H
 #define CONTROLLER_P_H
 
-#include "controller.h"
 #include "component.h"
+#include "controller.h"
 
 namespace Cutelyst {
 
@@ -19,8 +19,8 @@ public:
     // Called when the Dispatcher has finished
     // setting up all controllers
     void setupFinished();
-    Action* actionClass(const QVariantHash &args);
-    Action* createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
+    Action *actionClass(const QVariantHash &args);
+    Action *createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
     ParamsMultiMap parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Component *> gatherActionRoles(const QVariantHash &args);
@@ -32,7 +32,7 @@ public:
 
     QString pathPrefix;
     ActionList beginAutoList;
-    Action *end = nullptr;
+    Action *end              = nullptr;
     Application *application = nullptr;
     Controller *q_ptr;
     Dispatcher *dispatcher = nullptr;
@@ -45,6 +45,6 @@ public:
     bool parsedActions = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CONTROLLER_P_H

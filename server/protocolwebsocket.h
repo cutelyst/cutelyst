@@ -45,6 +45,6 @@ private:
     int m_websockets_max_size;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // PROTOCOLWEBSOCKET_H

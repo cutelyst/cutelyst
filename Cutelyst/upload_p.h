@@ -14,21 +14,23 @@ namespace Cutelyst {
 class UploadPrivate
 {
 public:
-    inline UploadPrivate(QIODevice *dev, const Headers &hdrs, qint64 startOffst, qint64 endOffst) : headers(hdrs)
-      , device(dev)
-      , startOffset(startOffst)
-      , endOffset(endOffst)
-    { }
+    inline UploadPrivate(QIODevice *dev, const Headers &hdrs, qint64 startOffst, qint64 endOffst)
+        : headers(hdrs)
+        , device(dev)
+        , startOffset(startOffst)
+        , endOffset(endOffst)
+    {
+    }
 
     Headers headers;
     QString name;
     QString filename;
     QIODevice *device;
     qint64 startOffset = 0;
-    qint64 endOffset = 0;
-    qint64 pos = 0;
+    qint64 endOffset   = 0;
+    qint64 pos         = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // UPLOAD_P_H

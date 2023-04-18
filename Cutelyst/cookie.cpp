@@ -4,24 +4,26 @@
  */
 
 #include "cookie_p.h"
+
+#include <QDateTime>
+#include <QHostAddress>
 #include <QLocale>
 #include <QUrl>
-#include <QHostAddress>
-#include <QDateTime>
 
 using namespace Cutelyst;
 
 Cookie::Cookie(const QByteArray &name, const QByteArray &value)
-    : QNetworkCookie(name, value), d(new CookiePrivate)
+    : QNetworkCookie(name, value)
+    , d(new CookiePrivate)
 {
     qRegisterMetaType<Cookie>();
     qRegisterMetaType<QList<Cookie>>();
 }
 
 Cookie::Cookie(const Cookie &other)
-    : QNetworkCookie(other), d(other.d)
+    : QNetworkCookie(other)
+    , d(other.d)
 {
-
 }
 
 Cookie::~Cookie() = default;
@@ -73,7 +75,7 @@ QByteArray Cookie::toRawForm(RawForm form) const
 {
     QByteArray result;
     if (name().isEmpty())
-        return result;          // not a valid cookie
+        return result; // not a valid cookie
 
     result = name();
     result += '=';
@@ -92,7 +94,8 @@ QByteArray Cookie::toRawForm(RawForm form) const
         if (!isSessionCookie()) {
             result += "; expires=";
             result += QLocale::c().toString(expirationDate().toUTC(),
-                                            QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT")).toLatin1();
+                                            QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT"))
+                          .toLatin1();
         }
         if (!domain().isEmpty()) {
             result += "; domain=";

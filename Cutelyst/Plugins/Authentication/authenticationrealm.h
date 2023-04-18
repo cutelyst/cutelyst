@@ -5,9 +5,9 @@
 #ifndef AUTHENTICATIONREALM_H
 #define AUTHENTICATIONREALM_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 #include <Cutelyst/component.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -76,6 +76,6 @@ private:
     AuthenticationCredential *m_credential;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // AUTHENTICATIONREALM_H

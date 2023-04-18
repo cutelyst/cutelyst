@@ -9,19 +9,19 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorRegularExpressionPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRegularExpressionPrivate(const QString &f, const QRegularExpression &r, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        regex(r)
-    {}
+    ValidatorRegularExpressionPrivate(const QString &f, const QRegularExpression &r, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , regex(r)
+    {
+    }
 
     QRegularExpression regex;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREGEX_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREGEX_P_H

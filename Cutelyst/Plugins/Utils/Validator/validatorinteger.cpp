@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorInteger::ValidatorInteger(const QString &field, QMetaType::Type type, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorIntegerPrivate(field, type, messages, defValKey))
+ValidatorInteger::ValidatorInteger(const QString &field, QMetaType::Type type, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorIntegerPrivate(field, type, messages, defValKey))
 {
 }
 
@@ -26,7 +26,7 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c, const Param
         Q_D(const ValidatorInteger);
         QVariant converted;
 
-        switch(d->type) {
+        switch (d->type) {
         case QMetaType::Char:
         case QMetaType::Short:
         case QMetaType::Int:

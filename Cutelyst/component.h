@@ -5,9 +5,9 @@
 #ifndef CUTELYST_COMPONENT_H
 #define CUTELYST_COMPONENT_H
 
-#include <QtCore/qobject.h>
-
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/qobject.h>
 
 namespace Cutelyst {
 
@@ -130,6 +130,6 @@ protected:
     ComponentPrivate *d_ptr; //!< we cannot inherit from QObjectPrivate and therefore need our own d_ptr
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_COMPONENT_H

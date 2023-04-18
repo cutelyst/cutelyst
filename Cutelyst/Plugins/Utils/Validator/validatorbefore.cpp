@@ -11,8 +11,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATORBEFORE, "cutelyst.utils.validator.before", QtWarningMsg)
 
-ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorBeforePrivate(field, comparison, timeZone, inputFormat, messages, defValKey))
+ValidatorBefore::ValidatorBefore(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorBeforePrivate(field, comparison, timeZone, inputFormat, messages, defValKey))
 {
 }
 
@@ -33,8 +33,8 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
         const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
 
         const QVariant _comp = (d->comparison.userType() == QMetaType::QString)
-                ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
-                : d->comparison;
+                                   ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
+                                   : d->comparison;
 
         if (_comp.userType() == QMetaType::QDate) {
 
@@ -134,7 +134,7 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVar
 
     } else {
 
-        switch(errorData.userType()) {
+        switch (errorData.userType()) {
         case QMetaType::QDate:
             error = c->translate("Cutelyst::ValidatorBefore", "The date in the “%1” field must be before %2.").arg(_label, errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
@@ -148,7 +148,6 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c, const QVar
             error = validationDataError(c);
             break;
         }
-
     }
 
     return error;

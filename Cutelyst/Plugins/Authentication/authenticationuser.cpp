@@ -11,7 +11,6 @@ using namespace Cutelyst;
 
 AuthenticationUser::AuthenticationUser()
 {
-
 }
 
 AuthenticationUser::AuthenticationUser(const QVariant &id)
@@ -68,7 +67,8 @@ QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
     const bool oldSetting = dbg.autoInsertSpaces();
     dbg.nospace() << "AuthenticationUser(";
     for (auto it = map.constBegin();
-         it != map.constEnd(); ++it) {
+         it != map.constEnd();
+         ++it) {
         dbg << '(' << it.key() << ", " << it.value() << ')';
     }
     dbg << ')';

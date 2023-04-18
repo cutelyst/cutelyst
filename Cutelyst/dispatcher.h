@@ -5,12 +5,12 @@
 #ifndef CUTELYST_DISPATCHER_H
 #define CUTELYST_DISPATCHER_H
 
-#include <QtCore/qobject.h>
-#include <QtCore/qhash.h>
-#include <QtCore/qstringlist.h>
-
 #include <Cutelyst/action.h>
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/qhash.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstringlist.h>
 
 namespace Cutelyst {
 
@@ -42,7 +42,7 @@ public:
     /**
      * Returns the named action by its full private path.
      */
-    Action* getActionByPath(const QString &path) const;
+    Action *getActionByPath(const QString &path) const;
 
     /**
      * Returns a list of actions that match \p name on
@@ -114,6 +114,6 @@ private:
     Q_DECLARE_PRIVATE(Dispatcher)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_DISPATCHER_H

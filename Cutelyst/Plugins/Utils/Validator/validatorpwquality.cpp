@@ -4,20 +4,20 @@
  */
 
 #include "validatorpwquality_p.h"
+
 #include <pwquality.h>
+
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
 
-ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const QString &userName, const QString &oldPassword, const ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, userName, oldPassword, messages))
+ValidatorPwQuality::ValidatorPwQuality(const QString &field, int threshold, const QVariant &options, const QString &userName, const QString &oldPassword, const ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorPwQualityPrivate(field, threshold, options, userName, oldPassword, messages))
 {
-
 }
 
 ValidatorPwQuality::~ValidatorPwQuality()
 {
-
 }
 
 int ValidatorPwQuality::validate(const QString &value, const QVariant &options, const QString &oldPassword, const QString &user)
@@ -37,7 +37,7 @@ int ValidatorPwQuality::validate(const QString &value, const QVariant &options, 
                         auto i = map.constBegin();
                         while (i != map.constEnd()) {
                             const QString opt = i.key() + QLatin1Char('=') + i.value().toString();
-                            const int orv = pwquality_set_option(pwq, opt.toUtf8().constData());
+                            const int orv     = pwquality_set_option(pwq, opt.toUtf8().constData());
                             if (orv != 0) {
                                 char buf[1024];
                                 qCWarning(C_VALIDATOR, "ValidatorPwQuality: Failed to set pwquality option %s: %s", qUtf8Printable(opt), pwquality_strerror(buf, sizeof(buf), orv, nullptr));
@@ -77,12 +77,12 @@ int ValidatorPwQuality::validate(const QString &value, const QVariant &options, 
                 }
             }
 
-            const QByteArray pwba = value.toUtf8();
-            const char *pw = pwba.constData();
+            const QByteArray pwba  = value.toUtf8();
+            const char *pw         = pwba.constData();
             const QByteArray opwba = oldPassword.toUtf8();
-            const char *opw = opwba.isEmpty() ? nullptr : opwba.constData();
-            const QByteArray uba = user.toUtf8();
-            const char *u = uba.isEmpty() ? nullptr : uba.constData();
+            const char *opw        = opwba.isEmpty() ? nullptr : opwba.constData();
+            const QByteArray uba   = user.toUtf8();
+            const char *u          = uba.isEmpty() ? nullptr : uba.constData();
 
             rv = pwquality_check(pwq, pw, opw, u, nullptr);
 
@@ -197,8 +197,7 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
                     error = c->translate("Cutelyst::ValidatorPwQuality", "The password quality score of %1 is below the threshold of %2.").arg(QString::number(returnValue), QString::number(threshold));
                 }
             }
-        }
-            break;
+        } break;
         }
     } else {
         switch (returnValue) {
@@ -295,8 +294,7 @@ QString ValidatorPwQuality::errorString(Context *c, int returnValue, const QStri
                     error = c->translate("Cutelyst::ValidatorPwQuality", "The quality score of %1 for the password in the “%2” field is below the threshold of %3.").arg(QString::number(returnValue), label, QString::number(threshold));
                 }
             }
-        }
-            break;
+        } break;
         }
     }
 
@@ -364,8 +362,8 @@ QString ValidatorPwQuality::genericValidationError(Context *c, const QVariant &e
 
     Q_D(const ValidatorPwQuality);
     const int returnValue = errorData.toInt();
-    const QString _label = label(c);
-    error = ValidatorPwQuality::errorString(c, returnValue, _label, d->threshold);
+    const QString _label  = label(c);
+    error                 = ValidatorPwQuality::errorString(c, returnValue, _label, d->threshold);
 
     return error;
 }

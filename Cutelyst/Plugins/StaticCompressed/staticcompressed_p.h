@@ -7,9 +7,9 @@
 
 #include "staticcompressed.h"
 
+#include <QDir>
 #include <QRegularExpression>
 #include <QVector>
-#include <QDir>
 
 namespace Cutelyst {
 
@@ -44,13 +44,13 @@ public:
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
     QDir cacheDir;
     int zlibCompressionLevel = 9;
-    int zopfliIterations = 15;
-    int brotliQualityLevel = 11;
-    bool useZopfli = false;
-    bool checkPreCompressed = true;
+    int zopfliIterations     = 15;
+    int brotliQualityLevel   = 11;
+    bool useZopfli           = false;
+    bool checkPreCompressed  = true;
     bool onTheFlyCompression = true;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // STATICCOMPRESSED_P_H

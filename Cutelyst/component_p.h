@@ -25,6 +25,6 @@ public:
     bool proccessRoles = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_COMPONENT_P_H

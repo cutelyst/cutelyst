@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORCONFIRMED_H
 #define CUTELYSTVALIDATORCONFIRMED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorConfirmedPrivate;
 
 /*!
@@ -39,12 +40,12 @@ public:
      * \param messages      Custom error message if validation fails.
      */
     ValidatorConfirmed(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the confirmed validator.
      */
     ~ValidatorConfirmed() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -57,13 +58,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorConfirmed)
     Q_DISABLE_COPY(ValidatorConfirmed)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORCONFIRMED_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORCONFIRMED_H

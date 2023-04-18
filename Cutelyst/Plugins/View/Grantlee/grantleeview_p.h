@@ -8,9 +8,9 @@
 #include "grantleeview.h"
 #include "view_p.h"
 
+#include <grantlee/cachingloaderdecorator.h>
 #include <grantlee/engine.h>
 #include <grantlee/templateloader.h>
-#include <grantlee/cachingloaderdecorator.h>
 
 namespace Cutelyst {
 
@@ -26,10 +26,10 @@ public:
     Grantlee::Engine *engine;
     QSharedPointer<Grantlee::FileSystemTemplateLoader> loader;
     QSharedPointer<Grantlee::CachingLoaderDecorator> cache;
-    QHash<QLocale, QTranslator*> translators;
+    QHash<QLocale, QTranslator *> translators;
     QHash<QString, QString> translationCatalogs;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // GRANTLEE_VIEW_P_H

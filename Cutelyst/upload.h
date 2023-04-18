@@ -5,10 +5,10 @@
 #ifndef UPLOAD_H
 #define UPLOAD_H
 
-#include <QtCore/qiodevice.h>
-
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
+
+#include <QtCore/qiodevice.h>
 
 class QTemporaryFile;
 
@@ -91,13 +91,13 @@ protected:
     /**
      * Reimplemented from QIODevice::writeData().
      */
-    virtual qint64 writeData(const char * data, qint64 maxSize) override;
+    virtual qint64 writeData(const char *data, qint64 maxSize) override;
 
     UploadPrivate *d_ptr;
 };
 
 using Uploads = QVector<Upload *>;
 
-}
+} // namespace Cutelyst
 
 #endif // UPLOAD_H

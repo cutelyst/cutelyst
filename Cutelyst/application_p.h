@@ -6,11 +6,11 @@
 #define CUTELYST_APPLICATION_P_H
 
 #include "application.h"
+#include "componentfactory.h"
+#include "context.h"
 #include "dispatcher.h"
 #include "engine.h"
 #include "plugin.h"
-#include "context.h"
-#include "componentfactory.h"
 
 namespace Cutelyst {
 
@@ -39,9 +39,9 @@ public:
     Engine *engine;
     bool useStats;
     bool init = false;
-    QHash<QLocale, QVector<QTranslator*>> translators;
+    QHash<QLocale, QVector<QTranslator *>> translators;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_APPLICATION_P_H

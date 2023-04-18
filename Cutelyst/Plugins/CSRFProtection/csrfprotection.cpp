@@ -5,24 +5,25 @@
 
 #include "csrfprotection_p.h"
 
+#include <Cutelyst/Action>
 #include <Cutelyst/Application>
-#include <Cutelyst/Engine>
 #include <Cutelyst/Context>
+#include <Cutelyst/Controller>
+#include <Cutelyst/Dispatcher>
+#include <Cutelyst/Engine>
+#include <Cutelyst/Headers>
+#include <Cutelyst/Plugins/Session/Session>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
-#include <Cutelyst/Plugins/Session/Session>
-#include <Cutelyst/Headers>
-#include <Cutelyst/Action>
-#include <Cutelyst/Dispatcher>
-#include <Cutelyst/Controller>
 #include <Cutelyst/Upload>
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 #include <QLoggingCategory>
-#include <QUuid>
+#include <QNetworkCookie>
 #include <QUrl>
-#include <vector>
-#include <utility>
-#include <algorithm>
+#include <QUuid>
 
 #define DEFAULT_COOKIE_AGE Q_INT64_C(31449600) // approx. 1 year
 #define DEFAULT_COOKIE_NAME "csrftoken"
@@ -45,15 +46,15 @@ Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection", QtWarning
 
 using namespace Cutelyst;
 
-static thread_local CSRFProtection *csrf = nullptr;
+static thread_local CSRFProtection *csrf                   = nullptr;
 const QRegularExpression CSRFProtectionPrivate::sanitizeRe = QRegularExpression(QStringLiteral("[^a-zA-Z0-9\\-_]"));
 // Assume that anything not defined as 'safe' by RFC7231 needs protection
 const QStringList CSRFProtectionPrivate::secureMethods = QStringList({QStringLiteral("GET"), QStringLiteral("HEAD"), QStringLiteral("OPTIONS"), QStringLiteral("TRACE")});
 
-CSRFProtection::CSRFProtection(Application *parent) : Plugin(parent)
-  , d_ptr(new CSRFProtectionPrivate)
+CSRFProtection::CSRFProtection(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new CSRFProtectionPrivate)
 {
-
 }
 
 CSRFProtection::~CSRFProtection()
@@ -77,7 +78,7 @@ bool CSRFProtection::setup(Application *app)
     if (d->cookieName.isEmpty()) {
         d->cookieName = QStringLiteral(DEFAULT_COOKIE_NAME);
     }
-    d->cookiePath = QStringLiteral(DEFAULT_COOKIE_PATH);
+    d->cookiePath   = QStringLiteral(DEFAULT_COOKIE_PATH);
     d->cookieSecure = config.value(QStringLiteral("cookie_secure"), false).toBool();
     if (d->headerName.isEmpty()) {
         d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
@@ -114,7 +115,7 @@ bool CSRFProtection::setup(Application *app)
         d->errorMsgStashKey = QStringLiteral("error_msg");
     }
 
-    connect(app, &Application::postForked, this, [](Application *app){
+    connect(app, &Application::postForked, this, [](Application *app) {
         csrf = app->plugin<CSRFProtection *>();
     });
 
@@ -201,11 +202,11 @@ QByteArray CSRFProtection::getToken(Context *c)
     QByteArray secret;
     if (contextCookie.isEmpty()) {
         secret = CSRFProtectionPrivate::getNewCsrfString();
-        token = CSRFProtectionPrivate::saltCipherSecret(secret);
+        token  = CSRFProtectionPrivate::saltCipherSecret(secret);
         c->setStash(CONTEXT_CSRF_COOKIE, token);
     } else {
         secret = CSRFProtectionPrivate::unsaltCipherToken(contextCookie);
-        token = CSRFProtectionPrivate::saltCipherSecret(secret);
+        token  = CSRFProtectionPrivate::saltCipherSecret(secret);
     }
 
     c->setStash(CONTEXT_CSRF_COOKIE_USED, true);
@@ -236,12 +237,12 @@ bool CSRFProtection::checkPassed(Context *c)
     }
 }
 
-//void CSRFProtection::rotateToken(Context *c)
+// void CSRFProtection::rotateToken(Context *c)
 //{
-//    c->setStash(CONTEXT_CSRF_COOKIE_USED, true);
-//    c->setStash(CONTEXT_CSRF_COOKIE, CSRFProtectionPrivate::getNewCsrfToken());
-//    c->setStash(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
-//}
+//     c->setStash(CONTEXT_CSRF_COOKIE_USED, true);
+//     c->setStash(CONTEXT_CSRF_COOKIE, CSRFProtectionPrivate::getNewCsrfToken());
+//     c->setStash(CONTEXT_CSRF_COOKIE_NEEDS_RESET, true);
+// }
 
 /**
  * @internal
@@ -270,9 +271,9 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
     QByteArray salted;
     salted.reserve(CSRF_TOKEN_LENGTH);
 
-    const QByteArray salt = CSRFProtectionPrivate::getNewCsrfString();
+    const QByteArray salt  = CSRFProtectionPrivate::getNewCsrfString();
     const QByteArray chars = QByteArrayLiteral(CSRF_ALLOWED_CHARS);
-    std::vector<std::pair<int,int>> pairs;
+    std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(secret.size(), salt.size()));
     for (int i = 0; i < std::min(secret.size(), salt.size()); ++i) {
         pairs.push_back(std::make_pair(chars.indexOf(secret.at(i)), chars.indexOf(salt.at(i))));
@@ -281,7 +282,7 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
     QByteArray cipher;
     cipher.reserve(CSRF_SECRET_LENGTH);
     for (std::size_t i = 0; i < pairs.size(); ++i) {
-        const std::pair<int,int> p = pairs.at(i);
+        const std::pair<int, int> p = pairs.at(i);
         cipher.append(chars[(p.first + p.second) % chars.size()]);
     }
 
@@ -301,20 +302,19 @@ QByteArray CSRFProtectionPrivate::unsaltCipherToken(const QByteArray &token)
     QByteArray secret;
     secret.reserve(CSRF_SECRET_LENGTH);
 
-    const QByteArray salt = token.left(CSRF_SECRET_LENGTH);
+    const QByteArray salt   = token.left(CSRF_SECRET_LENGTH);
     const QByteArray _token = token.mid(CSRF_SECRET_LENGTH);
 
     const QByteArray chars = QByteArrayLiteral(CSRF_ALLOWED_CHARS);
-    std::vector<std::pair<int,int>> pairs;
+    std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(salt.size(), _token.size()));
     for (int i = 0; i < std::min(salt.size(), _token.size()); ++i) {
         pairs.push_back(std::make_pair(chars.indexOf(_token.at(i)), chars.indexOf(salt.at(i))));
     }
 
-
     for (std::size_t i = 0; i < pairs.size(); ++i) {
-        const std::pair<int,int> p = pairs.at(i);
-        int idx = p.first - p.second;
+        const std::pair<int, int> p = pairs.at(i);
+        int idx                     = p.first - p.second;
         if (idx < 0) {
             idx = chars.size() + idx;
         }
@@ -474,13 +474,16 @@ void CSRFProtectionPrivate::reject(Context *c, const QString &logReason, const Q
             c->res()->setBody(QStringLiteral("<!DOCTYPE html>\n"
                                              "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
                                              "  <head>\n"
-                                             "    <title>") + title +
+                                             "    <title>") +
+                              title +
                               QStringLiteral("</title>\n"
                                              "  </head>\n"
                                              "  <body>\n"
-                                             "    <h1>") + title +
+                                             "    <h1>") +
+                              title +
                               QStringLiteral("</h1>\n"
-                                             "    <p>") + displayReason +
+                                             "    <p>") +
+                              displayReason +
                               QStringLiteral("</p>\n"
                                              "  </body>\n"
                                              "</html>\n"));
@@ -508,7 +511,7 @@ bool CSRFProtectionPrivate::compareSaltedTokens(const QByteArray &t1, const QByt
     // to avoid timing attack
     int diff = _t1.size() ^ _t2.size();
     for (int i = 0; i < _t1.size() && i < _t2.size(); i++) {
-        diff |= _t1[i]  ^ _t2[i];
+        diff |= _t1[i] ^ _t2[i];
     }
     return diff == 0;
 }
@@ -599,7 +602,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         QStringList goodHosts = csrf->d_ptr->trustedOrigins;
                         goodHosts.append(goodReferer);
 
-                        QString refererHost = refererUrl.host();
+                        QString refererHost   = refererUrl.host();
                         const int refererPort = refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? 443 : 80);
                         if ((refererPort != 80) && (refererPort != 443)) {
                             refererHost += u':' + QString::number(refererPort);

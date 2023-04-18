@@ -144,52 +144,52 @@ public:
      * Return types for memcached operations.
      */
     enum MemcachedReturnType {
-        Success,                                /**< The request was successfully executed. */
-        Failure,                                /**< A unknown failure has occurred in the server. */
-        HostLookupFailure,                      /**< A DNS failure has occurred. */
-        ConnectionFailure,                      /**< A unknown error has occurred while trying to connect to a server. */
-        WriteFailure,                           /**< An error has occurred while trying to write to a server. */
-        ReadFailure,                            /**< A read failure has occurred. */
-        UnknownReadFailure,                     /**< An unknown read failure only occurs when either there is a bug in the server, or in rare cases where an ethernet nic is reporting dubious information. */
-        ProtocolError,                          /**< An unknown error has occurred in the protocol. */
-        ClientError,                            /**< An unknown client error has occurred internally. */
-        ServerError,                            /**< An unknown error has occurred in the server. */
-        Error,                                  /**< A general error occurred. */
-        DataExists,                             /**< The data requested with the key given was found. */
-        DataDoesNotExist,                       /**< The data requested with the key given was not found. */
-        NotStored,                              /**< The request to store an object failed. */
-        Stored,                                 /**< The requested object has been successfully stored on the server. */
-        NotFound,                               /**< The object requested was not found. */
-        MemoryAllocationFailure,                /**< An error has occurred while trying to allocate memory. */
-        PartialRead,                            /**< The read was only partially successful. */
-        SomeErrors,                             /**< A multi request has been made, and some underterminate number of errors have occurred. */
-        NoServers,                              /**< No servers have been added to the memcached_st object. */
-        End,                                    /**< The server has completed returning all of the objects requested. */
-        Deleted,                                /**< The object requested by the key has been deleted. */
-        Stat,                                   /**< A “stat” command has been returned in the protocol. */
-        Errno,                                  /**< An error has occurred in the driver which has set errno. */
-        NotSupported,                           /**< The given method is not supported in the server. */
-        FetchNotFinished,                       /**< A request has been made, but the server has not finished the fetch of the last request. */
-        Timeout,                                /**< Operation has timed out. */
-        Buffered,                               /**< The request has been buffered. */
-        BadKeyProvided,                         /**< The key provided is not a valid key. */
-        InvalidHostProtocol,                    /**< The server you are connecting too has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol. */
-        ServerMarkedDead,                       /**< The requested server has been marked dead. */
-        UnknownStatKey,                         /**< The server you are communicating with has a stat key which has not be defined in the protocol. */
-        E2Big,                                  /**< Item is too large for the server to store. */
-        InvalidArguments,                       /**< The arguments supplied to the given function were not valid. */
-        KeyTooBig,                              /**< The key that has been provided is too large for the given server. */
-        AuthProblem,                            /**< An unknown issue has occurred during authentication. */
-        AuthFailure,                            /**< The credentials provided are not valid for this server. */
-        AuthContinue,                           /**< Authentication has been paused. */
-        ParseError,                             /**< An error has occurred while trying to parse the configuration string. You should use memparse to determine what the error was. */
-        ParseUserError,                         /**< An error has occurred in parsing the configuration string. */
-        Deprecated,                             /**< The method that was requested has been deprecated. */
+        Success,                 /**< The request was successfully executed. */
+        Failure,                 /**< A unknown failure has occurred in the server. */
+        HostLookupFailure,       /**< A DNS failure has occurred. */
+        ConnectionFailure,       /**< A unknown error has occurred while trying to connect to a server. */
+        WriteFailure,            /**< An error has occurred while trying to write to a server. */
+        ReadFailure,             /**< A read failure has occurred. */
+        UnknownReadFailure,      /**< An unknown read failure only occurs when either there is a bug in the server, or in rare cases where an ethernet nic is reporting dubious information. */
+        ProtocolError,           /**< An unknown error has occurred in the protocol. */
+        ClientError,             /**< An unknown client error has occurred internally. */
+        ServerError,             /**< An unknown error has occurred in the server. */
+        Error,                   /**< A general error occurred. */
+        DataExists,              /**< The data requested with the key given was found. */
+        DataDoesNotExist,        /**< The data requested with the key given was not found. */
+        NotStored,               /**< The request to store an object failed. */
+        Stored,                  /**< The requested object has been successfully stored on the server. */
+        NotFound,                /**< The object requested was not found. */
+        MemoryAllocationFailure, /**< An error has occurred while trying to allocate memory. */
+        PartialRead,             /**< The read was only partially successful. */
+        SomeErrors,              /**< A multi request has been made, and some underterminate number of errors have occurred. */
+        NoServers,               /**< No servers have been added to the memcached_st object. */
+        End,                     /**< The server has completed returning all of the objects requested. */
+        Deleted,                 /**< The object requested by the key has been deleted. */
+        Stat,                    /**< A “stat” command has been returned in the protocol. */
+        Errno,                   /**< An error has occurred in the driver which has set errno. */
+        NotSupported,            /**< The given method is not supported in the server. */
+        FetchNotFinished,        /**< A request has been made, but the server has not finished the fetch of the last request. */
+        Timeout,                 /**< Operation has timed out. */
+        Buffered,                /**< The request has been buffered. */
+        BadKeyProvided,          /**< The key provided is not a valid key. */
+        InvalidHostProtocol,     /**< The server you are connecting too has an invalid protocol. Most likely you are connecting to an older server that does not speak the binary protocol. */
+        ServerMarkedDead,        /**< The requested server has been marked dead. */
+        UnknownStatKey,          /**< The server you are communicating with has a stat key which has not be defined in the protocol. */
+        E2Big,                   /**< Item is too large for the server to store. */
+        InvalidArguments,        /**< The arguments supplied to the given function were not valid. */
+        KeyTooBig,               /**< The key that has been provided is too large for the given server. */
+        AuthProblem,             /**< An unknown issue has occurred during authentication. */
+        AuthFailure,             /**< The credentials provided are not valid for this server. */
+        AuthContinue,            /**< Authentication has been paused. */
+        ParseError,              /**< An error has occurred while trying to parse the configuration string. You should use memparse to determine what the error was. */
+        ParseUserError,          /**< An error has occurred in parsing the configuration string. */
+        Deprecated,              /**< The method that was requested has been deprecated. */
         InProgress,
         ServerTemporaryDisabled,
         ServerMemoryAllocationFailure,
         MaximumReturn,
-        PluginNotRegisterd                      /**< The Cutelyst Memcached plugin has not been registered to the application. */
+        PluginNotRegisterd /**< The Cutelyst Memcached plugin has not been registered to the application. */
     };
     Q_ENUM(MemcachedReturnType)
 
@@ -225,7 +225,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -261,7 +261,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -296,7 +296,7 @@ public:
      * @param[out] returnType optional pointer to MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -339,7 +339,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -374,7 +374,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -417,7 +417,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -464,7 +464,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return type T containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be a default constructed value
      */
-    template< typename T>
+    template <typename T>
     static T get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -519,7 +519,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return type T containing the data fetched from the server; if an error occurred or the @a key has not been found, this will be a default constructed value
      */
-    template< typename T>
+    template <typename T>
     static T getByKey(const QString &groupKey, const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -772,7 +772,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -811,7 +811,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    template< typename T>
+    template <typename T>
     static bool casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -863,8 +863,8 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QHash containing the keys and values
      */
-    template< typename T>
-    static QHash<QString, T> mget(const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    template <typename T>
+    static QHash<QString, T> mget(const QStringList &keys, QHash<QString, uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values from the server specified by @a groupKey identified by a list of @a keys.
@@ -883,7 +883,7 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QHash containing the keys and values
      */
-    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values of type @a T from the server specified by @a groupKey identified by a list of @a keys.
@@ -904,8 +904,8 @@ public:
      * @param[out] returnType optional pointer to a MemcachedReturnType variable that takes the return type of the operation
      * @return QHash containing the keys and values
      */
-    template< typename T>
-    static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
+    template <typename T>
+    static QHash<QString, T> mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, uint64_t> *casValues = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Updates the @a expiration time on an existing @a key.
@@ -951,7 +951,7 @@ protected:
     virtual bool setup(Application *app) override;
 };
 
-template< typename T>
+template <typename T>
 bool Memcached::set(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -964,7 +964,7 @@ bool Memcached::set(const QString &key, const T &value, time_t expiration, Memca
     return Memcached::set(key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -977,7 +977,7 @@ bool Memcached::setByKey(const QString &groupKey, const QString &key, const T &v
     return Memcached::setByKey(groupKey, key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::add(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -990,7 +990,7 @@ bool Memcached::add(const QString &key, const T &value, time_t expiration, Memca
     return Memcached::add(key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -1003,7 +1003,7 @@ bool Memcached::addByKey(const QString &groupKey, const QString &key, const T &v
     return Memcached::addByKey(groupKey, key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::replace(const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -1016,7 +1016,7 @@ bool Memcached::replace(const QString &key, const T &value, time_t expiration, M
     return Memcached::replace(key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -1029,39 +1029,39 @@ bool Memcached::replaceByKey(const QString &groupKey, const QString &key, const 
     return Memcached::replaceByKey(groupKey, key, data, expiration, returnType);
 }
 
-template< typename T>
+template <typename T>
 T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
     if (!ba.isEmpty()) {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream in(&ba, QIODevice::ReadOnly);
+        QDataStream in(&ba, QIODevice::ReadOnly);
 #else
-    QDataStream in(&ba, QIODeviceBase::ReadOnly);
+        QDataStream in(&ba, QIODeviceBase::ReadOnly);
 #endif
         in >> retVal;
     }
     return retVal;
 }
 
-template< typename T>
+template <typename T>
 T Memcached::getByKey(const QString &groupKey, const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::getByKey(groupKey, key, cas, returnType);
     if (!ba.isEmpty()) {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream in(&ba, QIODevice::ReadOnly);
+        QDataStream in(&ba, QIODevice::ReadOnly);
 #else
-    QDataStream in(&ba, QIODeviceBase::ReadOnly);
+        QDataStream in(&ba, QIODeviceBase::ReadOnly);
 #endif
         in >> retVal;
     }
     return retVal;
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::cas(const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -1074,7 +1074,7 @@ bool Memcached::cas(const QString &key, const T &value, time_t expiration, uint6
     return Memcached::cas(key, data, expiration, cas, returnType);
 }
 
-template< typename T>
+template <typename T>
 bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &value, time_t expiration, uint64_t cas, MemcachedReturnType *returnType)
 {
     QByteArray data;
@@ -1087,11 +1087,11 @@ bool Memcached::casByKey(const QString &groupKey, const QString &key, const T &v
     return Memcached::casByKey(groupKey, key, data, expiration, cas, returnType);
 }
 
-template< typename T>
+template <typename T>
 QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString, T> hash;
-    QHash<QString,QByteArray> _data = Memcached::mget(keys, casValues, returnType);
+    QHash<QString, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
     if (!_data.empty()) {
         auto i = _data.constBegin();
         while (i != _data.constEnd()) {
@@ -1105,11 +1105,11 @@ QHash<QString, T> Memcached::mget(const QStringList &keys, QHash<QString, uint64
     return hash;
 }
 
-template< typename T>
-QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString,uint64_t> *casValues, MemcachedReturnType *returnType)
+template <typename T>
+QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringList &keys, QHash<QString, uint64_t> *casValues, MemcachedReturnType *returnType)
 {
     QHash<QString, T> hash;
-    QHash<QString,QByteArray> _data = Memcached::mgetByKey(groupKey, keys, casValues, returnType);
+    QHash<QString, QByteArray> _data = Memcached::mgetByKey(groupKey, keys, casValues, returnType);
     if (!_data.empty()) {
         auto i = _data.constBegin();
         while (i != _data.constEnd()) {
@@ -1123,6 +1123,6 @@ QHash<QString, T> Memcached::mgetByKey(const QString &groupKey, const QStringLis
     return hash;
 }
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTMEMCACHED_H

@@ -5,8 +5,8 @@
 #ifndef RENDERVIEW_P_H
 #define RENDERVIEW_P_H
 
-#include "renderview.h"
 #include "action_p.h"
+#include "renderview.h"
 
 #include <Cutelyst/view.h>
 
@@ -18,6 +18,6 @@ public:
     View *view;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // RENDERVIEW_P_H

@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const char *otherLabel, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorSamePrivate(field, otherField, otherLabel, messages, defValKey))
+ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const char *otherLabel, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorSamePrivate(field, otherField, otherLabel, messages, defValKey))
 {
 }
 

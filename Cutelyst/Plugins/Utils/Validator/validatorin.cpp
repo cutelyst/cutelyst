@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorIn::ValidatorIn(const QString &field, const QVariant &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorInPrivate(field, values, cs, messages, defValKey))
+ValidatorIn::ValidatorIn(const QString &field, const QVariant &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorInPrivate(field, values, cs, messages, defValKey))
 {
 }
 
@@ -28,7 +28,7 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
 
         if (d->values.userType() == QMetaType::QStringList) {
             vals = d->values.toStringList();
-        } else  if (d->values.userType() == QMetaType::QString) {
+        } else if (d->values.userType() == QMetaType::QString) {
             vals = c->stash(d->values.toString()).toStringList();
         }
 
@@ -54,7 +54,7 @@ QString ValidatorIn::genericValidationError(Context *c, const QVariant &errorDat
 {
     QString error;
     const QStringList vals = errorData.toStringList();
-    const QString _label = label(c);
+    const QString _label   = label(c);
     if (_label.isEmpty()) {
         //: %1 will be replaced by a comma separated list of allowed values
         error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following values: %1").arg(c->locale().createSeparatedList(vals));

@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorConfirmed::ValidatorConfirmed(const QString &field, const ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorConfirmedPrivate(field, messages))
+ValidatorConfirmed::ValidatorConfirmed(const QString &field, const ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorConfirmedPrivate(field, messages))
 {
 }
 
@@ -24,7 +24,7 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 
     if (!v.isEmpty()) {
         const QString ofn = field() + QLatin1String("_confirmation");
-        QString ofv = params.value(ofn);
+        QString ofv       = params.value(ofn);
 
         if (trimBefore()) {
             ofv = ofv.trimmed();

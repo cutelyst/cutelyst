@@ -23,17 +23,16 @@ public:
     QStringList buildAuthHeaderCommon(AuthenticationRealm *realm) const;
     QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
 
-    CredentialHttp::AuthType type = CredentialHttp::Any;
+    CredentialHttp::AuthType type             = CredentialHttp::Any;
     CredentialHttp::PasswordType passwordType = CredentialHttp::None;
-    QString usernameField = QStringLiteral("username");
-    QString passwordField = QStringLiteral("password");
+    QString usernameField                     = QStringLiteral("username");
+    QString passwordField                     = QStringLiteral("password");
     QString passwordPreSalt;
     QString passwordPostSalt;
     QString authorizationRequiredMessage;
     bool requireSsl = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CREDENTIALHTTP_P_H
-

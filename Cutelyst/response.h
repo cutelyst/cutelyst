@@ -5,10 +5,10 @@
 #ifndef CUTELYST_RESPONSE_H
 #define CUTELYST_RESPONSE_H
 
-#include <QtCore/QIODevice>
-
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
+
+#include <QtCore/QIODevice>
 
 class QNetworkCookie;
 
@@ -76,19 +76,19 @@ public:
 
     /** This enum type specifies the status response to be sent to the client */
     enum CloseCode {
-        CloseCodeNormal                 = 1000,
-        CloseCodeGoingAway              = 1001,
-        CloseCodeProtocolError          = 1002,
-        CloseCodeDatatypeNotSupported   = 1003,
-        CloseCodeReserved1004           = 1004,
-        CloseCodeMissingStatusCode      = 1005,
-        CloseCodeAbnormalDisconnection  = 1006,
-        CloseCodeWrongDatatype          = 1007,
-        CloseCodePolicyViolated         = 1008,
-        CloseCodeTooMuchData            = 1009,
-        CloseCodeMissingExtension       = 1010,
-        CloseCodeBadOperation           = 1011,
-        CloseCodeTlsHandshakeFailed     = 1015
+        CloseCodeNormal                = 1000,
+        CloseCodeGoingAway             = 1001,
+        CloseCodeProtocolError         = 1002,
+        CloseCodeDatatypeNotSupported  = 1003,
+        CloseCodeReserved1004          = 1004,
+        CloseCodeMissingStatusCode     = 1005,
+        CloseCodeAbnormalDisconnection = 1006,
+        CloseCodeWrongDatatype         = 1007,
+        CloseCodePolicyViolated        = 1008,
+        CloseCodeTooMuchData           = 1009,
+        CloseCodeMissingExtension      = 1010,
+        CloseCodeBadOperation          = 1011,
+        CloseCodeTlsHandshakeFailed    = 1015
     };
     Q_ENUM(CloseCode)
 
@@ -218,7 +218,9 @@ public:
      * Short for headers().setContentType(type);
      */
     void setContentType(const QString &type)
-    { headers().setContentType(type); }
+    {
+        headers().setContentType(type);
+    }
 
     /**
      * Short for headers().contentTypeCharset();
@@ -454,18 +456,21 @@ protected:
     friend class ContextPrivate;
 };
 
-inline void Response::setBody(const QString &_body) {
+inline void Response::setBody(const QString &_body)
+{
     setBody(_body.toUtf8());
 }
 
-inline void Response::setBody(QStringView _body) {
+inline void Response::setBody(QStringView _body)
+{
     setBody(_body.toUtf8());
 }
 
-inline void Response::setJsonBody(QStringView _body) {
+inline void Response::setJsonBody(QStringView _body)
+{
     setJsonBody(_body.toUtf8());
 }
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_RESPONSE_H

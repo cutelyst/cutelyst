@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, messages, defValKey))
+ValidatorRegularExpression::ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorRegularExpressionPrivate(field, regex, messages, defValKey))
 {
 }
 

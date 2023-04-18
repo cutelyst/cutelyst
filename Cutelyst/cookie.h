@@ -30,10 +30,10 @@ class CUTELYST_LIBRARY Cookie : public QNetworkCookie
     Q_GADGET
 public:
     enum class SameSite {
-        Default,    /**< SameSite is not set. Can be interpreted as None or Lax by the browser. */
-        None,       /**< Cookies can be sent in all contexts. This used to be default, but recent browsers made Lax default, and will now require the cookie to be both secure and to set SameSite=None. */
-        Lax,        /**< Cookies are sent on first party requests and GET requests initiated by third party website. This is the default in modern browsers (since mid 2020). */
-        Strict      /**< Cookies will only be sent in a first-party context. */
+        Default, /**< SameSite is not set. Can be interpreted as None or Lax by the browser. */
+        None,    /**< Cookies can be sent in all contexts. This used to be default, but recent browsers made Lax default, and will now require the cookie to be both secure and to set SameSite=None. */
+        Lax,     /**< Cookies are sent on first party requests and GET requests initiated by third party website. This is the default in modern browsers (since mid 2020). */
+        Strict   /**< Cookies will only be sent in a first-party context. */
     };
     Q_ENUM(SameSite)
 
@@ -54,7 +54,11 @@ public:
     /*!
      * Move assigns the contents of the %Cookie object \a other to this object.
      */
-    Cookie &operator=(Cookie &&other) noexcept { swap(other); return *this; }
+    Cookie &operator=(Cookie &&other) noexcept
+    {
+        swap(other);
+        return *this;
+    }
     /*!
      * Copies the contents of the %Cookie object \a other to this object.
      */
@@ -79,7 +83,9 @@ public:
      * Returns true if this cookie is not equal to \a other.
      */
     inline bool operator!=(const Cookie &other) const
-    { return !(*this == other); }
+    {
+        return !(*this == other);
+    }
 
     /*!
      * Returns the "SameSite" option if specified in the cookie string, SameSite::Default if not present.
@@ -101,7 +107,7 @@ private:
     QSharedDataPointer<CookiePrivate> d;
 };
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_TYPEINFO(Cutelyst::Cookie, Q_MOVABLE_TYPE);
 

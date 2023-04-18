@@ -6,6 +6,7 @@
 #define CUTELYSTVALIDATORRESULT_P_H
 
 #include "validatorresult.h"
+
 #include <QSharedData>
 
 namespace Cutelyst {
@@ -15,20 +16,21 @@ class ValidatorResultPrivate : public QSharedData
 public:
     ValidatorResultPrivate() {}
 
-    ValidatorResultPrivate(const ValidatorResultPrivate &other) :
-        QSharedData(other),
-        errors(other.errors),
-        values(other.values),
-        extras(other.extras)
-    {}
+    ValidatorResultPrivate(const ValidatorResultPrivate &other)
+        : QSharedData(other)
+        , errors(other.errors)
+        , values(other.values)
+        , extras(other.extras)
+    {
+    }
 
     ~ValidatorResultPrivate() {}
 
-    QHash<QString,QStringList> errors;
+    QHash<QString, QStringList> errors;
     QVariantHash values;
     QVariantHash extras;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORRESULT_P_H

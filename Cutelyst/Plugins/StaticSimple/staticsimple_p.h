@@ -7,8 +7,8 @@
 
 #include "staticsimple.h"
 
-#include <QRegularExpression>
 #include <QDir>
+#include <QRegularExpression>
 
 namespace Cutelyst {
 
@@ -20,6 +20,6 @@ public:
     QRegularExpression re = QRegularExpression(QStringLiteral("\\.[^/]+$"));
 };
 
-}
+} // namespace Cutelyst
 
 #endif // STATICSIMPLE_P_

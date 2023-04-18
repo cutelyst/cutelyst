@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORDIGITSBETWEEN_H
 #define CUTELYSTVALIDATORDIGITSBETWEEN_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorDigitsBetweenPrivate;
 
 /*!
@@ -43,7 +44,7 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorDigitsBetween(const QString &field, const QVariant &min, const QVariant &max, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the digits between validator.
      */
@@ -59,8 +60,8 @@ public:
      * Nothe that this might return \c true for an empty value if 0 is between \a min and \a max.
      */
     static bool validate(const QString &value, int min, int max);
-    
-protected:    
+
+protected:
     /*!
      * \brief Performs the validation and returns the result.
      *
@@ -74,13 +75,12 @@ protected:
      * \a errorData will contain a QVariantList with the \a min value as first and the \a max value as second entry.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorDigitsBetween)
     Q_DISABLE_COPY(ValidatorDigitsBetween)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDIGITSBETWEEN_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDIGITSBETWEEN_H

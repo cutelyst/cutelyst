@@ -3,30 +3,29 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "application_p.h"
-
-#include "config.h"
 #include "common.h"
+#include "config.h"
 #include "context_p.h"
+#include "controller.h"
+#include "controller_p.h"
+#include "dispatchtype.h"
 #include "enginerequest.h"
 #include "request.h"
 #include "request_p.h"
-#include "controller.h"
-#include "controller_p.h"
 #include "response.h"
 #include "response_p.h"
-#include "dispatchtype.h"
-#include "view.h"
 #include "stats.h"
 #include "utils.h"
+#include "view.h"
 
-#include <QtCore/QDir>
-#include <QtCore/QStringList>
-#include <QtCore/QDataStream>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QPluginLoader>
-#include <QtCore/QTranslator>
+#include <QtCore/QDataStream>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QLocale>
+#include <QtCore/QPluginLoader>
+#include <QtCore/QStringList>
+#include <QtCore/QTranslator>
 
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER, "cutelyst.dispatcher", QtWarningMsg)
 Q_LOGGING_CATEGORY(CUTELYST_DISPATCHER_PATH, "cutelyst.dispatcher.path", QtWarningMsg)
@@ -44,9 +43,9 @@ Q_LOGGING_CATEGORY(CUTELYST_COMPONENT, "cutelyst.component", QtWarningMsg)
 
 using namespace Cutelyst;
 
-Application::Application(QObject *parent) :
-    QObject(parent),
-    d_ptr(new ApplicationPrivate)
+Application::Application(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new ApplicationPrivate)
 {
     Q_D(Application);
 
@@ -148,7 +147,7 @@ Component *Application::createComponentPlugin(const QString &name, QObject *pare
         }
     }
 
-    const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+    const QByteArrayList dirs = QByteArrayList{QByteArrayLiteral(CUTELYST_PLUGINS_DIR)} + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
     for (const QByteArray &dir : dirs) {
         Component *component = d->createComponentPlugin(name, parent, QString::fromLocal8Bit(dir));
         if (component) {
@@ -257,8 +256,8 @@ bool Application::setup(Engine *engine)
     d->init = true;
 
     d->useStats = CUTELYST_STATS().isDebugEnabled();
-    d->engine = engine;
-    d->config = engine->config(QLatin1String("Cutelyst"));
+    d->engine   = engine;
+    d->config   = engine->config(QLatin1String("Cutelyst"));
 
     d->setupHome();
 
@@ -275,23 +274,21 @@ bool Application::setup(Engine *engine)
             if (plugin->objectName().isEmpty()) {
                 plugin->setObjectName(QString::fromLatin1(plugin->metaObject()->className()));
             }
-            tablePlugins.append({ plugin->objectName() });
+            tablePlugins.append({plugin->objectName()});
             // Configure plugins
             plugin->setup(this);
         }
 
         if (zeroCore && !tablePlugins.isEmpty()) {
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(),
-                                                        QLatin1String("Loaded plugins:")).constData();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tablePlugins, QStringList(), QLatin1String("Loaded plugins:")).constData();
         }
 
         if (zeroCore) {
             QVector<QStringList> tableDataHandlers;
-            tableDataHandlers.append({ QLatin1String("application/x-www-form-urlencoded") });
-            tableDataHandlers.append({ QLatin1String("application/json") });
-            tableDataHandlers.append({ QLatin1String("multipart/form-data") });
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(),
-                                                        QLatin1String("Loaded Request Data Handlers:")).constData();
+            tableDataHandlers.append({QLatin1String("application/x-www-form-urlencoded")});
+            tableDataHandlers.append({QLatin1String("application/json")});
+            tableDataHandlers.append({QLatin1String("multipart/form-data")});
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(tableDataHandlers, QStringList(), QLatin1String("Loaded Request Data Handlers:")).constData();
 
             qCDebug(CUTELYST_CORE) << "Loaded dispatcher" << QString::fromLatin1(d->dispatcher->metaObject()->className());
             qCDebug(CUTELYST_CORE) << "Using engine" << QString::fromLatin1(d->engine->metaObject()->className());
@@ -319,7 +316,7 @@ bool Application::setup(Engine *engine)
         QStringList controllerNames = d->controllersHash.keys();
         controllerNames.sort();
         for (const QString &controller : controllerNames) {
-            table.append({ controller, QLatin1String("Controller")});
+            table.append({controller, QLatin1String("Controller")});
         }
 
         const auto views = d->views;
@@ -328,14 +325,11 @@ bool Application::setup(Engine *engine)
                 const QString className = QString::fromLatin1(view->metaObject()->className()) + QLatin1String("->execute");
                 view->setReverse(className);
             }
-            table.append({ view->reverse(), QLatin1String("View")});
+            table.append({view->reverse(), QLatin1String("View")});
         }
 
         if (zeroCore && !table.isEmpty()) {
-            qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {
-                                                            QLatin1String("Class"), QLatin1String("Type")
-                                                        },
-                                                        QLatin1String("Loaded components:")).constData();
+            qCDebug(CUTELYST_CORE) << Utils::buildTable(table, {QLatin1String("Class"), QLatin1String("Type")}, QLatin1String("Loaded components:")).constData();
         }
 
         const auto controllers = d->controllers;
@@ -347,9 +341,9 @@ bool Application::setup(Engine *engine)
 
         if (zeroCore) {
             qCInfo(CUTELYST_CORE) << qPrintable(QString::fromLatin1("%1 powered by Cutelyst %2, Qt %3.")
-                                                .arg(QCoreApplication::applicationName(),
-                                                     QLatin1String(Application::cutelystVersion()),
-                                                     QLatin1String(qVersion())));
+                                                    .arg(QCoreApplication::applicationName(),
+                                                         QLatin1String(Application::cutelystVersion()),
+                                                         QLatin1String(qVersion())));
         }
 
         Q_EMIT preForked(this);
@@ -367,12 +361,12 @@ void Application::handleRequest(EngineRequest *request)
     Engine *engine = d->engine;
 
     auto priv = new ContextPrivate(this, engine, d->dispatcher, d->plugins);
-    auto c = new Context(priv);
+    auto c    = new Context(priv);
 
-    request->context = c;
+    request->context    = c;
     priv->engineRequest = request;
-    priv->response = new Response(d->headers, request);
-    priv->request = new Request(request);
+    priv->response      = new Response(d->headers, request);
+    priv->request       = new Request(request);
 
     if (d->useStats) {
         priv->stats = new Stats(request);
@@ -432,7 +426,7 @@ void Application::addTranslator(const QLocale &locale, QTranslator *translator)
     if (it != d->translators.end()) {
         it.value().prepend(translator);
     } else {
-        d->translators.insert(locale, QVector<QTranslator*>(1, translator));
+        d->translators.insert(locale, QVector<QTranslator *>(1, translator));
     }
 }
 
@@ -459,7 +453,7 @@ static void replacePercentN(QString *result, int n)
 {
     if (n >= 0) {
         auto percentPos = 0;
-        auto len = 0;
+        auto len        = 0;
         while ((percentPos = result->indexOf(u'%', percentPos + len)) != -1) {
             len = 1;
             QString fmt;
@@ -489,7 +483,7 @@ QString Application::translate(const QLocale &locale, const char *context, const
 
     Q_D(const Application);
 
-    const QVector<QTranslator*> translators = d->translators.value(locale);
+    const QVector<QTranslator *> translators = d->translators.value(locale);
     if (translators.empty()) {
         result = QString::fromUtf8(sourceText);
         replacePercentN(&result, n);
@@ -524,16 +518,16 @@ QVector<QLocale> Application::loadTranslationsFromDir(const QString &filename, c
         const QString _dir = directory.isEmpty() ? QStringLiteral(I18NDIR) : directory;
         const QDir i18nDir(_dir);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QString _prefix         = prefix.isEmpty() ? QStringLiteral(".") : prefix;
+            const QString _suffix         = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
             const QStringList namesFilter = QStringList({filename + _prefix + u'*' + _suffix});
 
             const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
                 locales.reserve(tsFiles.size());
                 for (const QFileInfo &ts : tsFiles) {
-                    const QString fn = ts.fileName();
-                    const int prefIdx = fn.indexOf(_prefix);
+                    const QString fn        = ts.fileName();
+                    const int prefIdx       = fn.indexOf(_prefix);
                     const QString locString = fn.mid(prefIdx + _prefix.length(), fn.length() - prefIdx - _suffix.length() - _prefix.length());
                     QLocale loc(locString);
                     if (Q_LIKELY(loc.language() != QLocale::C)) {
@@ -680,33 +674,34 @@ void Cutelyst::ApplicationPrivate::logRequestParameters(const ParamsMultiMap &pa
     QVector<QStringList> table;
     auto it = params.constBegin();
     while (it != params.constEnd()) {
-        table.append({ it.key(), it.value() });
+        table.append({it.key(), it.value()});
         ++it;
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Value"),
-                                                   },
-                                                   title).constData();
+                                                              QLatin1String("Parameter"),
+                                                              QLatin1String("Value"),
+                                                          },
+                                                   title)
+                                     .constData();
 }
 
 void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upload *> &uploads)
 {
     QVector<QStringList> table;
     for (Upload *upload : uploads) {
-        table.append({ upload->name(),
-                       upload->filename(),
-                       upload->contentType(),
-                       QString::number(upload->size())
-                     });
+        table.append({upload->name(),
+                      upload->filename(),
+                      upload->contentType(),
+                      QString::number(upload->size())});
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table, {
-                                                       QLatin1String("Parameter"),
-                                                       QLatin1String("Filename"),
-                                                       QLatin1String("Type"),
-                                                       QLatin1String("Size"),
-                                                   },
-                                                   QLatin1String("File Uploads are:")).constData();
+                                                              QLatin1String("Parameter"),
+                                                              QLatin1String("Filename"),
+                                                              QLatin1String("Type"),
+                                                              QLatin1String("Size"),
+                                                          },
+                                                   QLatin1String("File Uploads are:"))
+                                     .constData();
 }
 
 Component *ApplicationPrivate::createComponentPlugin(const QString &name, QObject *parent, const QString &directory)
@@ -716,7 +711,7 @@ Component *ApplicationPrivate::createComponentPlugin(const QString &name, QObjec
     QDir pluginsDir(directory);
     QPluginLoader loader;
     ComponentFactory *factory = nullptr;
-    const auto plugins = pluginsDir.entryList(QDir::Files);
+    const auto plugins        = pluginsDir.entryList(QDir::Files);
     for (const QString &fileName : plugins) {
         loader.setFileName(pluginsDir.absoluteFilePath(fileName));
         const QJsonObject json = loader.metaData()[QLatin1String("MetaData")].toObject();

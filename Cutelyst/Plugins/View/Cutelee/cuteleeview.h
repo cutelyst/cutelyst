@@ -5,12 +5,12 @@
 #ifndef CUTELEE_VIEW_H
 #define CUTELEE_VIEW_H
 
+#include <Cutelyst/View>
+
+#include <QLocale>
 #include <QObject>
 #include <QStringList>
-#include <QLocale>
 #include <QVector>
-
-#include <Cutelyst/View>
 
 class QTranslator;
 
@@ -216,6 +216,6 @@ Q_SIGNALS:
     void changed();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELEE_VIEW_H

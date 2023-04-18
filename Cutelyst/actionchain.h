@@ -5,10 +5,10 @@
 #ifndef ACTIONCHAIN_H
 #define ACTIONCHAIN_H
 
-#include <QtCore/qobject.h>
-
 #include <Cutelyst/action.h>
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/qobject.h>
 
 namespace Cutelyst {
 
@@ -46,6 +46,6 @@ protected:
     virtual bool doExecute(Context *c) override;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // ACTIONCHAIN_H

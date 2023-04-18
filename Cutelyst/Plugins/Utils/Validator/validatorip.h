@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORIP_H
 #define CUTELYSTVALIDATORIP_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorIpPrivate;
 
 /*!
@@ -35,13 +36,13 @@ public:
      * \brief Acceptable address ranges.
      */
     enum Constraint {
-        NoConstraint    = 0,    /**< No address range limit. */
-        IPv4Only        = 1,    /**< Only IPv4 addresses are valid. */
-        IPv6Only        = 2,    /**< Only IPv6 addresses are valid. */
-        NoPrivateRange  = 4,    /**< Addresses from private networks like 192.168.0.0/12 and fe80::/10 are invalid. */
-        NoReservedRange = 8,    /**< Addresses from reserved networks like 192.88.99.0/24 and 2001:db8::/32 are invalid. */
-        NoMultiCast     = 16,   /**< Multicast addresses are invalid. */
-        PublicOnly      = 32    /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
+        NoConstraint    = 0,  /**< No address range limit. */
+        IPv4Only        = 1,  /**< Only IPv4 addresses are valid. */
+        IPv6Only        = 2,  /**< Only IPv6 addresses are valid. */
+        NoPrivateRange  = 4,  /**< Addresses from private networks like 192.168.0.0/12 and fe80::/10 are invalid. */
+        NoReservedRange = 8,  /**< Addresses from reserved networks like 192.88.99.0/24 and 2001:db8::/32 are invalid. */
+        NoMultiCast     = 16, /**< Multicast addresses are invalid. */
+        PublicOnly      = 32  /**< Combines NoPrivateRange, NoReservedRange and NoMultiCast. */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
@@ -53,7 +54,7 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorIp(const QString &field, Constraints constraints = NoConstraint, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the ip validator.
      */
@@ -67,7 +68,7 @@ public:
      * \return \c true if \a value is a valid IP address within the \a constraints.
      */
     static bool validate(const QString &value, Constraints constraints = NoConstraint);
-        
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -81,15 +82,14 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorIp)
     Q_DISABLE_COPY(ValidatorIp)
 };
-    
-}
+
+} // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::ValidatorIp::Constraints)
 
-#endif //CUTELYSTVALIDATORIP_H
-
+#endif // CUTELYSTVALIDATORIP_H

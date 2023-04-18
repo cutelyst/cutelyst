@@ -7,8 +7,8 @@
 #include "controller.h"
 #include "dispatcher.h"
 
-#include <QUrl>
 #include <QDebug>
+#include <QUrl>
 
 using namespace Cutelyst;
 
@@ -46,7 +46,8 @@ using namespace Cutelyst;
  * with the list of implemented request methods. If you do not provide an _HEAD either, we will auto dispatch to the _GET one
  * in case it exists.
  */
-ActionREST::ActionREST(QObject *parent) : Action(new ActionRESTPrivate(this), parent)
+ActionREST::ActionREST(QObject *parent)
+    : Action(new ActionRESTPrivate(this), parent)
 {
 }
 
@@ -61,7 +62,8 @@ bool ActionREST::doExecute(Context *c)
     return d->dispatchRestMethod(c, c->request()->method());
 }
 
-ActionRESTPrivate::ActionRESTPrivate(ActionREST* q) : q_ptr(q)
+ActionRESTPrivate::ActionRESTPrivate(ActionREST *q)
+    : q_ptr(q)
 {
 }
 
@@ -71,7 +73,7 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     const QString restMethod = q->name() + u'_' + httpMethod;
 
     Controller *controller = q->controller();
-    Action *action = controller->actionFor(restMethod);
+    Action *action         = controller->actionFor(restMethod);
     if (!action) {
         // Look for non registered actions in this controller
         const ActionList actions = controller->actions();
@@ -121,8 +123,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
     response->setStatus(Response::MethodNotAllowed); // 405
     response->setHeader(QStringLiteral("ALLOW"),
                         getAllowedMethods(c->controller(), methodName));
-    const QString body = QLatin1String("Method ") + c->req()->method()
-            + QLatin1String(" not implemented for ") + c->uriFor(methodName).toString();
+    const QString body = QLatin1String("Method ") + c->req()->method() + QLatin1String(" not implemented for ") + c->uriFor(methodName).toString();
     response->setBody(body);
     return true;
 }
@@ -130,7 +131,7 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller, const QString &methodName) const
 {
     QStringList methods;
-    const QString name = methodName + u'_';
+    const QString name       = methodName + u'_';
     const ActionList actions = controller->actions();
     for (Action *action : actions) {
         const QString method = action->name();

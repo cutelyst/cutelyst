@@ -6,9 +6,11 @@
 #ifndef CUTELYSTVALIDATORFILESIZE_H
 #define CUTELYSTVALIDATORFILESIZE_H
 
-#include <Cutelyst/cutelyst_global.h>
-#include <QLocale>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QLocale>
 
 namespace Cutelyst {
 
@@ -55,11 +57,11 @@ public:
      * \brief Options for %ValidatorFileSize
      */
     enum Option : quint8 {
-        NoOption        = 0,    /**< No option to use. */
-        OnlyBinary      = 1,    /**< Accepts only binary prefix symbols like KiB, MiB, etc. */
-        OnlyDecimal     = 2,    /**< Accepts only decimal prefix symbols like kB, MB, etc. */
-        ForceBinary     = 3,    /**< Forces the usage of the binary system when generating the return value but will not fail if the prefix symbol is decimal. */
-        ForceDecimal    = 4     /**< Forces the usage of the decimal system when generating the return value but will not fail if the prefix symbol is binray. */
+        NoOption     = 0, /**< No option to use. */
+        OnlyBinary   = 1, /**< Accepts only binary prefix symbols like KiB, MiB, etc. */
+        OnlyDecimal  = 2, /**< Accepts only decimal prefix symbols like kB, MB, etc. */
+        ForceBinary  = 3, /**< Forces the usage of the binary system when generating the return value but will not fail if the prefix symbol is decimal. */
+        ForceDecimal = 4  /**< Forces the usage of the decimal system when generating the return value but will not fail if the prefix symbol is binray. */
     };
 
     /*!
@@ -74,11 +76,11 @@ public:
      * \param defValKey \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorFileSize(const QString &field,
-                      Option option = NoOption,
-                      const QVariant &min = QVariant(),
-                      const QVariant &max = QVariant(),
+                      Option option                     = NoOption,
+                      const QVariant &min               = QVariant(),
+                      const QVariant &max               = QVariant(),
                       const ValidatorMessages &messages = ValidatorMessages(),
-                      const QString &defValKey = QString());
+                      const QString &defValKey          = QString());
 
     /*!
      * \brief Deconstructs the file size validator.
@@ -98,11 +100,11 @@ public:
      * \since Cutelyst 2.0.0
      */
     static bool validate(const QString &value,
-                         double min = -1,
-                         double max = -1,
-                         Option option = NoOption,
+                         double min            = -1,
+                         double max            = -1,
+                         Option option         = NoOption,
                          const QLocale &locale = QLocale(),
-                         double *fileSize = nullptr);
+                         double *fileSize      = nullptr);
 
     /*!
      * \brief Puts an HTML input pattern for file sizes into the stash.
@@ -143,6 +145,6 @@ private:
     Q_DISABLE_COPY(ValidatorFileSize)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORFILESIZE_H

@@ -6,8 +6,8 @@
 #ifndef CSRFPROTECTION_H
 #define CSRFPROTECTION_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugin>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -350,6 +350,6 @@ protected:
     virtual bool setup(Application *app) override;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CSRFPROTECTION_H

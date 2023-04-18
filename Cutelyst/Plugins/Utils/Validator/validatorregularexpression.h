@@ -5,12 +5,14 @@
 #ifndef CUTELYSTVALIDATORREGEX_H
 #define CUTELYSTVALIDATORREGEX_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QRegularExpression>
 
 namespace Cutelyst {
-    
+
 class ValidatorRegularExpressionPrivate;
 
 /*!
@@ -41,12 +43,12 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorRegularExpression(const QString &field, const QRegularExpression &regex, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the regex validator.
      */
     ~ValidatorRegularExpression() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -60,13 +62,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorRegularExpression)
     Q_DISABLE_COPY(ValidatorRegularExpression)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREGEX_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREGEX_H

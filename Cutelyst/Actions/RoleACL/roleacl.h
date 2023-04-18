@@ -5,12 +5,12 @@
 #ifndef ROLEACL_H
 #define ROLEACL_H
 
-#include <QtCore/QVariantHash>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/component.h>
-#include <Cutelyst/context.h>
 #include <Cutelyst/componentfactory.h>
+#include <Cutelyst/context.h>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/QVariantHash>
 
 namespace Cutelyst {
 
@@ -52,7 +52,8 @@ protected:
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 };
 
-class RoleACLFactory final : public QObject, public ComponentFactory
+class RoleACLFactory final : public QObject
+    , public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
@@ -61,7 +62,6 @@ public:
     virtual Component *createComponent(QObject *parent) override { return new RoleACL(parent); }
 };
 
-
-}
+} // namespace Cutelyst
 
 #endif // ROLEACL_H

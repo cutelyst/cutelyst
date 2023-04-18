@@ -4,17 +4,17 @@
  */
 #include "abstractfork.h"
 
+#include <iostream>
+
 #include <QFileSystemWatcher>
 #include <QLoggingCategory>
 #include <QTimer>
 
-#include <iostream>
-
 Q_LOGGING_CATEGORY(WSGI_FORK, "wsgi.fork", QtWarningMsg)
 
-AbstractFork::AbstractFork(QObject *parent) : QObject(parent)
+AbstractFork::AbstractFork(QObject *parent)
+    : QObject(parent)
 {
-
 }
 
 void AbstractFork::setTouchReload(const QStringList &paths)

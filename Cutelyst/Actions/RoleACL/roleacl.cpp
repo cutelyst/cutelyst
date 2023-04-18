@@ -2,13 +2,12 @@
  * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "common.h"
 #include "roleacl_p.h"
 
-#include "common.h"
-
-#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Controller>
 #include <Cutelyst/Dispatcher>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 
 using namespace Cutelyst;
 
@@ -110,7 +109,8 @@ using namespace Cutelyst;
  *
  * Any user with either the 'admin' or 'user' role may execute this action.
  */
-RoleACL::RoleACL(QObject *parent) : Component(new RoleACLPrivate, parent)
+RoleACL::RoleACL(QObject *parent)
+    : Component(new RoleACLPrivate, parent)
 {
 }
 
@@ -125,7 +125,7 @@ bool RoleACL::init(Cutelyst::Application *application, const QVariantHash &args)
     Q_UNUSED(application)
 
     const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
-    d->actionReverse = args.value(QLatin1String("reverse")).toString();
+    d->actionReverse      = args.value(QLatin1String("reverse")).toString();
 
     if (!attributes.contains(QLatin1String("RequiresRole")) && !attributes.contains(QLatin1String("AllowedRole"))) {
         qFatal("RoleACL: Action %s requires at least one RequiresRole or AllowedRole attribute", qPrintable(d->actionReverse));
@@ -170,7 +170,7 @@ bool RoleACL::canVisit(Context *c) const
     const QStringList user_has = Authentication::user(c).value(QStringLiteral("roles")).toStringList();
 
     const QStringList required = d->requiresRole;
-    const QStringList allowed = d->allowedRole;
+    const QStringList allowed  = d->allowedRole;
 
     if (!required.isEmpty() && !allowed.isEmpty()) {
         for (const QString &role : required) {
@@ -184,7 +184,7 @@ bool RoleACL::canVisit(Context *c) const
                 return true;
             }
         }
-    }  else if (!required.isEmpty()) {
+    } else if (!required.isEmpty()) {
         for (const QString &role : required) {
             if (!user_has.contains(role)) {
                 return false;
@@ -212,7 +212,8 @@ bool RoleACL::dispatcherReady(const Dispatcher *dispatcher, Cutelyst::Controller
         d->detachTo = dispatcher->getActionByPath(d->aclDetachTo);
         if (!d->detachTo) {
             qFatal("RoleACL: Action '%s' requires a valid action set on the ACLDetachTo(%s) attribute",
-                   qPrintable(d->actionReverse), qPrintable(d->aclDetachTo));
+                   qPrintable(d->actionReverse),
+                   qPrintable(d->aclDetachTo));
         }
     }
 

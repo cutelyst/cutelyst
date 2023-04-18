@@ -9,16 +9,16 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorJsonPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorJsonPrivate(const QString &f, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk)
-    {}
+    ValidatorJsonPrivate(const QString &f, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+    {
+    }
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORJSON_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORJSON_P_H

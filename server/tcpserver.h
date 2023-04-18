@@ -17,7 +17,7 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, Protocol *protocol,  Server *wsgi, QObject *parent = nullptr);
+    explicit TcpServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent = nullptr);
 
     Q_INVOKABLE
     virtual void incomingConnection(qintptr handle) override;
@@ -38,11 +38,11 @@ protected:
     CWsgiEngine *m_engine;
     Server *m_wsgi;
 
-    std::vector<std::pair<QAbstractSocket::SocketOption, QVariant> > m_socketOptions;
+    std::vector<std::pair<QAbstractSocket::SocketOption, QVariant>> m_socketOptions;
     Protocol *m_protocol;
     int m_processing = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // TCPSERVER_H

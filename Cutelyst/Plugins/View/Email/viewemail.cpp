@@ -7,20 +7,20 @@
 #include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/response.h>
-
-#include <QtCore/QLoggingCategory>
-
-#include <SimpleMail/mimemessage.h>
 #include <SimpleMail/emailaddress.h>
+#include <SimpleMail/mimemessage.h>
 #include <SimpleMail/mimetext.h>
 #include <SimpleMail/serverreply.h>
+
+#include <QtCore/QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_VIEW_EMAIL, "cutelyst.view.email", QtWarningMsg)
 
 using namespace Cutelyst;
 using namespace SimpleMail;
 
-ViewEmail::ViewEmail(QObject *parent, const QString &name) : View(new ViewEmailPrivate, parent, name)
+ViewEmail::ViewEmail(QObject *parent, const QString &name)
+    : View(new ViewEmailPrivate, parent, name)
 {
     initSender();
 }
@@ -238,7 +238,7 @@ QByteArray ViewEmail::render(Context *c) const
     message.setSender(email.value(QStringLiteral("from")).toString());
     message.setSubject(email.value(QStringLiteral("subject")).toString());
 
-    QVariant body = email.value(QStringLiteral("body"));
+    QVariant body  = email.value(QStringLiteral("body"));
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
         c->error(QStringLiteral("Can't send email without parts or body, check stash"));
@@ -248,7 +248,7 @@ QByteArray ViewEmail::render(Context *c) const
     if (!parts.isNull()) {
         const QVariantList partsVariant = parts.toList();
         for (const QVariant &part : partsVariant) {
-            auto mime = part.value<MimePart*>();
+            auto mime = part.value<MimePart *>();
             if (mime) {
                 message.addPart(mime);
             } else {
@@ -257,9 +257,7 @@ QByteArray ViewEmail::render(Context *c) const
         }
 
         auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
-        if (contentTypeIt != email.constEnd()
-                && !contentTypeIt.value().isNull()
-                && !contentTypeIt.value().toString().isEmpty()) {
+        if (contentTypeIt != email.constEnd() && !contentTypeIt.value().isNull() && !contentTypeIt.value().toString().isEmpty()) {
             const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
             qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
             message.getContent().setContentType(contentType);
@@ -284,7 +282,8 @@ QByteArray ViewEmail::render(Context *c) const
     return ret;
 }
 
-ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name) : View(d, parent, name)
+ViewEmail::ViewEmail(ViewEmailPrivate *d, QObject *parent, const QString &name)
+    : View(d, parent, name)
 {
     initSender();
 }
@@ -316,13 +315,10 @@ void ViewEmail::initSender()
     }
 }
 
-
 void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs) const
 {
     auto contentTypeIt = attrs.constFind(QStringLiteral("content_type"));
-    if (contentTypeIt != attrs.constEnd()
-            && !contentTypeIt.value().isNull()
-            && !contentTypeIt.value().toString().isEmpty()) {
+    if (contentTypeIt != attrs.constEnd() && !contentTypeIt.value().isNull() && !contentTypeIt.value().toString().isEmpty()) {
         const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
         part->setContentType(contentType);
@@ -332,9 +328,7 @@ void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs
     }
 
     auto charsetIt = attrs.constFind(QStringLiteral("charset"));
-    if (charsetIt != attrs.constEnd()
-            && !charsetIt.value().isNull()
-            && !charsetIt.value().toString().isEmpty()) {
+    if (charsetIt != attrs.constEnd() && !charsetIt.value().isNull() && !charsetIt.value().toString().isEmpty()) {
         const QByteArray charset = charsetIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified charset" << charset;
         part->setCharset(charset);
@@ -344,9 +338,7 @@ void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs
     }
 
     auto encodingIt = attrs.constFind(QStringLiteral("encoding"));
-    if (encodingIt != attrs.constEnd()
-            && !encodingIt.value().isNull()
-            && !encodingIt.value().toString().isEmpty()) {
+    if (encodingIt != attrs.constEnd() && !encodingIt.value().isNull() && !encodingIt.value().toString().isEmpty()) {
         const QByteArray encoding = encodingIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified encoding" << encoding;
         setupEncoding(part, encoding);

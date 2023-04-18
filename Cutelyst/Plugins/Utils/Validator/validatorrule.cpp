@@ -4,18 +4,19 @@
  */
 
 #include "validatorrule_p.h"
+
 #include <Cutelyst/Context>
 #include <Cutelyst/ParamsMultiMap>
 
 using namespace Cutelyst;
 
-ValidatorRule::ValidatorRule(const QString &field, const ValidatorMessages &messages, const QString &defValKey) :
-    d_ptr(new ValidatorRulePrivate(field, messages, defValKey))
+ValidatorRule::ValidatorRule(const QString &field, const ValidatorMessages &messages, const QString &defValKey)
+    : d_ptr(new ValidatorRulePrivate(field, messages, defValKey))
 {
 }
 
-ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd) :
-    d_ptr(&dd)
+ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd)
+    : d_ptr(&dd)
 {
 }
 
@@ -23,7 +24,11 @@ ValidatorRule::~ValidatorRule()
 {
 }
 
-QString ValidatorRule::field() const { Q_D(const ValidatorRule); return d->field; }
+QString ValidatorRule::field() const
+{
+    Q_D(const ValidatorRule);
+    return d->field;
+}
 
 QString ValidatorRule::value(const Cutelyst::ParamsMultiMap &params) const
 {
@@ -154,16 +159,15 @@ void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result, const 
     Q_D(const ValidatorRule);
     if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
         result->value.setValue(c->stash(d->defValKey));
-        qCDebug(C_VALIDATOR, "%s: Using default value \"%s\" for field %s in %s::%s.",
-                validatorName,
-                qPrintable(result->value.toString()),
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR, "%s: Using default value \"%s\" for field %s in %s::%s.", validatorName, qPrintable(result->value.toString()), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     }
 }
 
-bool ValidatorRule::trimBefore() const { Q_D(const ValidatorRule); return d->trimBefore; }
+bool ValidatorRule::trimBefore() const
+{
+    Q_D(const ValidatorRule);
+    return d->trimBefore;
+}
 
 void ValidatorRule::setTrimBefore(bool trimBefore)
 {

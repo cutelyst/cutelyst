@@ -9,8 +9,8 @@
 
 using namespace Cutelyst;
 
-ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorDateTimePrivate(field, timeZone, inputFormat, messages, defValKey))
+ValidatorDateTime::ValidatorDateTime(const QString &field, const QString &timeZone, const char *inputFormat, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorDateTimePrivate(field, timeZone, inputFormat, messages, defValKey))
 {
 }
 

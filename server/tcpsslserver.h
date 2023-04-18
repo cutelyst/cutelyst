@@ -9,9 +9,9 @@
 
 #ifndef QT_NO_SSL
 
-#include "tcpserver.h"
+#    include "tcpserver.h"
 
-#include <QSslConfiguration>
+#    include <QSslConfiguration>
 
 namespace Cutelyst {
 
@@ -23,7 +23,7 @@ class TcpSslServer final : public TcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpSslServer(const QString &serverAddress, Protocol *protocol,  Server *wsgi, QObject *parent = nullptr);
+    explicit TcpSslServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent = nullptr);
 
     virtual void incomingConnection(qintptr handle) override;
 
@@ -39,7 +39,7 @@ private:
     QSslConfiguration m_sslConfiguration;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // QT_NO_SSL
 

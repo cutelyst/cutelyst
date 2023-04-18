@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorNotInPrivate(field, values, cs, messages, defValKey))
+ValidatorNotIn::ValidatorNotIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorNotInPrivate(field, values, cs, messages, defValKey))
 {
 }
 

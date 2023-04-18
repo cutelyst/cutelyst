@@ -5,9 +5,9 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include <QObject>
-
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QObject>
 
 namespace Cutelyst {
 
@@ -42,6 +42,6 @@ protected:
     StatsPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // STATS_H

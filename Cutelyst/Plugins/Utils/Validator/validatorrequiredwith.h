@@ -5,14 +5,15 @@
 #ifndef CUTELYSTVALIDATORREQUIREDWITH_H
 #define CUTELYSTVALIDATORREQUIREDWITH_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QStringList>
 
 namespace Cutelyst {
-    
-class ValidatorRequiredWithPrivate;
 
+class ValidatorRequiredWithPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
@@ -40,12 +41,12 @@ public:
      * \param messages      Custom error messages if validation fails.
      */
     ValidatorRequiredWith(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the required with validator.
      */
     ~ValidatorRequiredWith() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -59,13 +60,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredWith)
     Q_DISABLE_COPY(ValidatorRequiredWith)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREQUIREDWITH_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREQUIREDWITH_H

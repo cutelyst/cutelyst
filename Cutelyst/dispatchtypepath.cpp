@@ -2,21 +2,20 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "dispatchtypepath_p.h"
-
 #include "common.h"
 #include "controller.h"
+#include "dispatchtypepath_p.h"
 #include "utils.h"
 
 #include <QBuffer>
-#include <QRegularExpression>
 #include <QDebug>
+#include <QRegularExpression>
 
 using namespace Cutelyst;
 
-DispatchTypePath::DispatchTypePath(QObject *parent) :
-    DispatchType(parent),
-    d_ptr(new DispatchTypePathPrivate)
+DispatchTypePath::DispatchTypePath(QObject *parent)
+    : DispatchType(parent)
+    , d_ptr(new DispatchTypePathPrivate)
 {
 }
 
@@ -53,12 +52,11 @@ QByteArray DispatchTypePath::list() const
                 privateName.prepend(QLatin1Char('/'));
             }
 
-            table.append({ _path, privateName });
+            table.append({_path, privateName});
         }
     }
 
-    return Utils::buildTable(table, { QLatin1String("Path"), QLatin1String("Private") },
-                             QLatin1String("Loaded Path actions:"));
+    return Utils::buildTable(table, {QLatin1String("Path"), QLatin1String("Private")}, QLatin1String("Loaded Path actions:"));
 }
 
 Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
@@ -75,7 +73,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
         return NoMatch;
     }
 
-    MatchType ret = NoMatch;
+    MatchType ret    = NoMatch;
     int numberOfArgs = args.size();
     for (Action *action : it.value()) {
         // If the number of args is -1 (not defined)
@@ -105,9 +103,9 @@ bool DispatchTypePath::registerAction(Action *action)
 {
     Q_D(DispatchTypePath);
 
-    bool ret = false;
+    bool ret              = false;
     const auto attributes = action->attributes();
-    const auto range = attributes.equal_range(QLatin1String("Path"));
+    const auto range      = attributes.equal_range(QLatin1String("Path"));
     for (auto i = range.first; i != range.second; ++i) {
         if (d->registerPath(*i, action)) {
             ret = true;
@@ -129,7 +127,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     QString ret;
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
-        auto it = attributes.constFind(QStringLiteral("Path"));
+        auto it               = attributes.constFind(QStringLiteral("Path"));
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
@@ -176,7 +174,7 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
             return a->numberOfArgs() < b->numberOfArgs();
         });
     } else {
-        paths.insert(_path, { action });
+        paths.insert(_path, {action});
     }
     return true;
 }

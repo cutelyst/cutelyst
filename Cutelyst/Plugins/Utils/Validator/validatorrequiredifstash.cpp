@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredIfStash::ValidatorRequiredIfStash(const QString &field, const QString &stashKey, const QVariantList &stashValues, const ValidatorMessages &messages) :
-    ValidatorRule(* new ValidatorRequiredIfStashPrivate(field, stashKey, stashValues, messages))
+ValidatorRequiredIfStash::ValidatorRequiredIfStash(const QString &field, const QString &stashKey, const QVariantList &stashValues, const ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorRequiredIfStashPrivate(field, stashKey, stashValues, messages))
 {
 }
 
@@ -26,7 +26,7 @@ ValidatorReturnType ValidatorRequiredIfStash::validate(Context *c, const ParamsM
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR, "ValidatorRequiredIfStash: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     } else {
-        const QString v = value(params);
+        const QString v   = value(params);
         const QVariant sv = c->stash(d->stashKey);
         if (d->stashValues.contains(sv)) {
             if (v.isEmpty()) {

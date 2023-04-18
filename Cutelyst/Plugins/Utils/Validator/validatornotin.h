@@ -5,12 +5,14 @@
 #ifndef CUTELYSTVALIDATORNOTIN_H
 #define CUTELYSTVALIDATORNOTIN_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QStringList>
 
 namespace Cutelyst {
-    
+
 class ValidatorNotInPrivate;
 
 /*!
@@ -42,12 +44,12 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorNotIn(const QString &field, const QStringList &values, Qt::CaseSensitivity cs = Qt::CaseSensitive, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the validator.
      */
     ~ValidatorNotIn() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -66,13 +68,12 @@ protected:
      * \brief Returns a generic error messages if the list of comparison values is empty.
      */
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorNotIn)
     Q_DISABLE_COPY(ValidatorNotIn)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORNOTIN_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORNOTIN_H

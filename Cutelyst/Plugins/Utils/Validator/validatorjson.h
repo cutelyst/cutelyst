@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORJSON_H
 #define CUTELYSTVALIDATORJSON_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorJsonPrivate;
 
 /*!
@@ -37,12 +38,12 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorJson(const QString &field, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the json validator.
      */
     ~ValidatorJson() override;
-       
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -58,13 +59,12 @@ protected:
      * \param errorData Will contain the error string from QJsonParseError.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorJson)
     Q_DISABLE_COPY(ValidatorJson)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORJSON_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORJSON_H

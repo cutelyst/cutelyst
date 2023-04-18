@@ -5,8 +5,8 @@
 #include "authenticationrealm.h"
 
 #include "authenticationstore.h"
-#include "context.h"
 #include "common.h"
+#include "context.h"
 
 #include <Cutelyst/Plugins/Session/session.h>
 
@@ -30,7 +30,6 @@ AuthenticationRealm::AuthenticationRealm(AuthenticationStore *store, Authenticat
 
 AuthenticationRealm::~AuthenticationRealm()
 {
-
 }
 
 AuthenticationStore *AuthenticationRealm::store() const

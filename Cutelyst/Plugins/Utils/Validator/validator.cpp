@@ -4,23 +4,25 @@
  */
 
 #include "validator_p.h"
+
+#include <Cutelyst/application.h>
 #include <Cutelyst/context.h>
 #include <Cutelyst/request.h>
-#include <Cutelyst/application.h>
+
 #include <QLoggingCategory>
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_VALIDATOR, "cutelyst.utils.validator", QtWarningMsg)
 
-Validator::Validator(QLatin1String translationContext) :
-    d_ptr(new ValidatorPrivate(translationContext))
+Validator::Validator(QLatin1String translationContext)
+    : d_ptr(new ValidatorPrivate(translationContext))
 {
 }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-Validator::Validator(std::initializer_list<ValidatorRule *> validators, QLatin1String translationContext) :
-    d_ptr(new ValidatorPrivate(validators, translationContext))
+Validator::Validator(std::initializer_list<ValidatorRule *> validators, QLatin1String translationContext)
+    : d_ptr(new ValidatorPrivate(validators, translationContext))
 {
 }
 #endif
@@ -77,7 +79,7 @@ ValidatorResult Validator::validate(Context *c, const ParamsMultiMap &params, Va
     }
 
     const bool stopOnFirstError = flags.testFlag(StopOnFirstError);
-    const bool noTrimming = flags.testFlag(NoTrimming);
+    const bool noTrimming       = flags.testFlag(NoTrimming);
 
     for (ValidatorRule *v : d->validators) {
 

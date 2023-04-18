@@ -2,20 +2,19 @@
  * SPDX-FileCopyrightText: (C) 2015-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "stats_p.h"
-
-#include "dispatchtype.h"
 #include "application.h"
-#include "enginerequest.h"
-#include "utils.h"
-
 #include "common.h"
+#include "dispatchtype.h"
+#include "enginerequest.h"
+#include "stats_p.h"
+#include "utils.h"
 
 #include <QtCore/QStringList>
 
 using namespace Cutelyst;
 
-Stats::Stats(EngineRequest *request) : d_ptr(new StatsPrivate)
+Stats::Stats(EngineRequest *request)
+    : d_ptr(new StatsPrivate)
 {
     Q_D(Stats);
     d->engineRequest = request;
@@ -31,7 +30,7 @@ void Stats::profileStart(const QString &action)
     Q_D(Stats);
     StatsAction stat;
     stat.action = action;
-    stat.begin = d->engineRequest->elapsed.nsecsElapsed();
+    stat.begin  = d->engineRequest->elapsed.nsecsElapsed();
     d->actions.push_back(stat);
 }
 
@@ -57,12 +56,10 @@ QByteArray Stats::report()
 
     QVector<QStringList> table;
     for (const auto &stat : d->actions) {
-        table.append({ stat.action,
-                       QString::number((stat.end - stat.begin)/1000000000.0, 'f') + QLatin1Char('s') });
+        table.append({stat.action,
+                      QString::number((stat.end - stat.begin) / 1000000000.0, 'f') + QLatin1Char('s')});
     }
 
-    ret = Utils::buildTable(table, {
-                                QStringLiteral("Action"), QStringLiteral("Time")
-                            });
+    ret = Utils::buildTable(table, {QStringLiteral("Action"), QStringLiteral("Time")});
     return ret;
 }

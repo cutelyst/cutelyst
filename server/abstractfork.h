@@ -60,7 +60,7 @@ protected:
 private:
     QStringList m_touchReloadPaths;
     QFileSystemWatcher *m_touchReloadWatcher = nullptr;
-    QTimer *m_restartTimer = nullptr;
+    QTimer *m_restartTimer                   = nullptr;
 };
 
 #endif // ABSTRACTFORK_H

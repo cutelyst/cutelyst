@@ -7,7 +7,7 @@
 
 #include "session.h"
 #if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#include "cookie.h"
+#    include "cookie.h"
 #endif
 
 #include <QtNetwork/QNetworkCookie>
@@ -18,7 +18,10 @@ class SessionPrivate
 {
     Q_DECLARE_PUBLIC(Session)
 public:
-    inline SessionPrivate(Session *q) : q_ptr(q) { }
+    inline SessionPrivate(Session *q)
+        : q_ptr(q)
+    {
+    }
 
     static inline QString generateSessionId();
     static QString loadSessionId(Context *c, const QString &sessionName);
@@ -51,21 +54,21 @@ public:
 
     Session *q_ptr;
 
-    qint64 sessionExpires = 7200;
+    qint64 sessionExpires  = 7200;
     qint64 expiryThreshold = 0;
-    SessionStore *store = nullptr;
+    SessionStore *store    = nullptr;
     QString sessionName;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
 #else
     Cookie::SameSite cookieSameSite = Cookie::SameSite::Strict;
 #endif
-    bool cookieHttpOnly = true;
-    bool cookieSecure = false;
-    bool verifyAddress = false;
+    bool cookieHttpOnly  = true;
+    bool cookieSecure    = false;
+    bool verifyAddress   = false;
     bool verifyUserAgent = false;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // SESSION_P_H

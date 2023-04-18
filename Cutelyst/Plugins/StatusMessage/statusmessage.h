@@ -5,9 +5,9 @@
 #ifndef CUTELYST_PLUGIN_STATUSMESSAGE
 #define CUTELYST_PLUGIN_STATUSMESSAGE
 
-#include <Cutelyst/plugin.h>
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/context.h>
+#include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/plugin.h>
 
 namespace Cutelyst {
 
@@ -97,9 +97,9 @@ protected:
     StatusMessagePrivate *d_ptr;
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application*))
+    Q_PRIVATE_SLOT(d_func(), void _q_postFork(Application *))
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_PLUGIN_STATUSMESSAGE

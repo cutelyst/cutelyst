@@ -6,11 +6,12 @@
 #define CUTELYSTVALIDATORRESULT_H
 
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QJsonObject>
+#include <QSharedDataPointer>
 #include <QString>
 #include <QStringList>
-#include <QSharedDataPointer>
 #include <QVariantHash>
-#include <QJsonObject>
 
 namespace Cutelyst {
 
@@ -65,7 +66,8 @@ class ValidatorResultPrivate;
  *
  * Validity is simply determined by the fact, that it does not contain any error information.
  */
-class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorResult {
+class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorResult
+{
 public:
     /*!
      * \brief Constructs a new %ValidatorResult.
@@ -83,7 +85,7 @@ public:
     /*!
      * \brief Assigns \a other to this %ValidatorResult.
      */
-    ValidatorResult& operator =(const ValidatorResult &other);
+    ValidatorResult &operator=(const ValidatorResult &other);
 
     /*!
      * \brief Deconstructs the %ValidatorResult.
@@ -116,7 +118,7 @@ public:
      * \return A QHash containing the name of the input \link Request::parameters() parameter\endlink as key and
      * a list of validation errors for this parameter in a QStringList as value.
      */
-    QHash<QString,QStringList> errors() const;
+    QHash<QString, QStringList> errors() const;
 
     /*!
      * \brief Returns a list of all error messages for an input \a field.
@@ -160,7 +162,8 @@ public:
      *
      * \note A newly constructed ValidatorResult will be valid by default.
      */
-    explicit operator bool() const {
+    explicit operator bool() const
+    {
         return isValid();
     }
 
@@ -228,6 +231,6 @@ private:
     QSharedDataPointer<ValidatorResultPrivate> d;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORRESULT_H

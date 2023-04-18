@@ -5,9 +5,9 @@
 #ifndef CUTELYSTSERVER_H
 #define CUTELYSTSERVER_H
 
-#include <QObject>
-
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QObject>
 
 class QCoreApplication;
 
@@ -449,12 +449,12 @@ Q_SIGNALS:
     /**
      * It is emitted once error occurs.
      */
-    void errorOccured(const QString& error);
+    void errorOccured(const QString &error);
 
 protected:
     ServerPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTSERVER_H

@@ -5,13 +5,13 @@
 #ifndef CUTELYST_REQUEST_P_H
 #define CUTELYST_REQUEST_P_H
 
-#include "request.h"
 #include "engine.h"
+#include "request.h"
 #include "upload.h"
 
 #include <QtCore/QStringList>
-#include <QtCore/QUrlQuery>
 #include <QtCore/QUrl>
+#include <QtCore/QUrlQuery>
 #include <QtNetwork/QHostAddress>
 
 namespace Cutelyst {
@@ -21,12 +21,12 @@ class RequestPrivate
 {
 public:
     enum ParserStatusFlag {
-        NotParsed = 0x00,
-        UrlParsed = 0x01,
-        BaseParsed = 0x02,
+        NotParsed     = 0x00,
+        UrlParsed     = 0x01,
+        BaseParsed    = 0x02,
         CookiesParsed = 0x04,
-        QueryParsed = 0x08,
-        BodyParsed = 0x10
+        QueryParsed   = 0x08,
+        BodyParsed    = 0x10
     };
     Q_DECLARE_FLAGS(ParserStatus, ParserStatusFlag)
 
@@ -59,6 +59,6 @@ public:
     mutable ParserStatus parserStatus = NotParsed;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_REQUEST_P_H

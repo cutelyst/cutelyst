@@ -5,8 +5,8 @@
 #ifndef DISPATCHTYPECHAINED_H
 #define DISPATCHTYPECHAINED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
@@ -39,6 +39,6 @@ private:
     DispatchTypeChainedPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // DISPATCHTYPECHAINED_H

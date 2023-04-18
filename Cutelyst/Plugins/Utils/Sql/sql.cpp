@@ -4,15 +4,13 @@
  */
 #include "sql.h"
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QLoggingCategory>
 #include <QThread>
-
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QJsonValue>
-
-#include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
+#include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
 
 Q_LOGGING_CATEGORY(C_SQL, "cutelyst.utils.sql", QtWarningMsg)
@@ -24,7 +22,7 @@ QVariantHash Sql::queryToHashObject(QSqlQuery &query)
     QVariantHash ret;
     if (query.next()) {
         const QSqlRecord record = query.record();
-        const int columns = record.count();
+        const int columns       = record.count();
         for (int i = 0; i < columns; ++i) {
             ret.insert(record.fieldName(i), query.value(i));
         }
@@ -36,7 +34,7 @@ QVariantList Sql::queryToHashList(QSqlQuery &query)
 {
     QVariantList ret;
     const QSqlRecord record = query.record();
-    const int columns = record.count();
+    const int columns       = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(record.fieldName(i));
@@ -57,7 +55,7 @@ QVariantMap Sql::queryToMapObject(QSqlQuery &query)
     QVariantMap ret;
     if (query.next()) {
         const QSqlRecord record = query.record();
-        const int columns = record.count();
+        const int columns       = record.count();
         for (int i = 0; i < columns; ++i) {
             ret.insert(record.fieldName(i), query.value(i));
         }
@@ -70,7 +68,7 @@ QJsonObject Sql::queryToJsonObject(QSqlQuery &query)
     QJsonObject ret;
     if (query.next()) {
         const QSqlRecord record = query.record();
-        const int columns = record.count();
+        const int columns       = record.count();
         for (int i = 0; i < columns; ++i) {
             ret.insert(record.fieldName(i), QJsonValue::fromVariant(query.value(i)));
         }
@@ -82,7 +80,7 @@ QVariantList Sql::queryToMapList(QSqlQuery &query)
 {
     QVariantList ret;
     const QSqlRecord record = query.record();
-    const int columns = record.count();
+    const int columns       = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(record.fieldName(i));
@@ -102,7 +100,7 @@ QJsonArray Sql::queryToJsonObjectArray(QSqlQuery &query)
 {
     QJsonArray ret;
     const QSqlRecord record = query.record();
-    const int columns = record.count();
+    const int columns       = record.count();
     QStringList cols;
     for (int i = 0; i < columns; ++i) {
         cols.append(record.fieldName(i));
@@ -155,10 +153,9 @@ QVariantHash Sql::queryToIndexedHash(QSqlQuery &query, const QString &key)
     QVariantHash ret;
 
     const QSqlRecord record = query.record();
-    int index = record.indexOf(key);
+    int index               = record.indexOf(key);
     if (index == -1) {
-        qCCritical(C_SQL) << "Field Name " << key <<
-                             " not found in result set";
+        qCCritical(C_SQL) << "Field Name " << key << " not found in result set";
         return ret;
     }
 
@@ -188,10 +185,9 @@ QJsonObject Sql::queryToIndexedJsonObject(QSqlQuery &query, const QString &key)
     QJsonObject ret;
 
     const QSqlRecord record = query.record();
-    int index = record.indexOf(key);
+    int index               = record.indexOf(key);
     if (index == -1) {
-        qCCritical(C_SQL) << "Field Name " << key <<
-                             " not found in result set";
+        qCCritical(C_SQL) << "Field Name " << key << " not found in result set";
         return ret;
     }
 
@@ -270,12 +266,14 @@ QSqlDatabase Sql::databaseThread(const QString &dbName)
     return QSqlDatabase::database(databaseNameThread(dbName));
 }
 
-Sql::Transaction::Transaction(const QString &databaseName) : m_db(databaseThread(databaseName))
+Sql::Transaction::Transaction(const QString &databaseName)
+    : m_db(databaseThread(databaseName))
 {
     m_transactionRunning = m_db.transaction();
 }
 
-Sql::Transaction::Transaction(const QSqlDatabase &database) : m_db(database)
+Sql::Transaction::Transaction(const QSqlDatabase &database)
+    : m_db(database)
 {
     m_transactionRunning = m_db.transaction();
 }

@@ -5,10 +5,10 @@
 #ifndef DISPATCHTYPE_H
 #define DISPATCHTYPE_H
 
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QtCore/qobject.h>
 #include <QtCore/qstringlist.h>
-
-#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -90,6 +90,6 @@ protected:
     void setupMatchedAction(Context *c, Action *action) const;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // DISPATCHTYPE_H

@@ -6,6 +6,7 @@
 #define DISPATCHTYPECHAINED_P_H
 
 #include "dispatchtypechained.h"
+
 #include <vector>
 
 namespace Cutelyst {
@@ -20,7 +21,7 @@ struct BestActionMatch {
     QStringList captures;
     QStringList parts;
     int n_pathParts = 0;
-    bool isNull = true;
+    bool isNull     = true;
 };
 
 class DispatchTypeChainedPrivate
@@ -36,6 +37,6 @@ public:
     StringStringActionsMap childrenOf;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // DISPATCHTYPECHAINED_P_H

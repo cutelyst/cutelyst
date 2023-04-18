@@ -5,8 +5,8 @@
 #ifndef ACTIONCHAIN_P_H
 #define ACTIONCHAIN_P_H
 
-#include "actionchain.h"
 #include "action_p.h"
+#include "actionchain.h"
 
 namespace Cutelyst {
 
@@ -19,6 +19,6 @@ public:
     qint8 captures = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // ACTIONCHAIN_P_H

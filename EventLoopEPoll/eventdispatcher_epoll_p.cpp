@@ -2,21 +2,23 @@
  * SPDX-FileCopyrightText: (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include <QtCore/QCoreApplication>
-#include <QPointer>
-#include <QSocketNotifier>
-#include <QVector>
+#include "eventdispatcher_epoll_p.h"
 
-#include <unistd.h>
+#include "eventdispatcher_epoll.h"
+
+#include <errno.h>
+#include <stdlib.h>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 #include <sys/timerfd.h>
-#include <stdlib.h>
-#include <errno.h>
-#include "eventdispatcher_epoll.h"
-#include "eventdispatcher_epoll_p.h"
+#include <unistd.h>
 
-EventDispatcherEPollPrivate::EventDispatcherEPollPrivate(EventDispatcherEPoll* const q)
+#include <QPointer>
+#include <QSocketNotifier>
+#include <QVector>
+#include <QtCore/QCoreApplication>
+
+EventDispatcherEPollPrivate::EventDispatcherEPollPrivate(EventDispatcherEPoll *const q)
     : q_ptr(q)
 {
     createEpoll();
@@ -50,9 +52,9 @@ void EventDispatcherEPollPrivate::createEpoll()
     }
 
     struct epoll_event e;
-    e.events = EPOLLIN;
+    e.events        = EPOLLIN;
     m_event_fd_info = new EventFdInfo(m_event_fd, this);
-    e.data.ptr = m_event_fd_info;
+    e.data.ptr      = m_event_fd_info;
     if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, m_event_fd, &e))) {
         qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
     }
@@ -65,8 +67,8 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
     const bool exclude_notifiers = (flags & QEventLoop::ExcludeSocketNotifiers);
     const bool exclude_timers    = (flags & QEventLoop::X11ExcludeTimers);
 
-    exclude_notifiers && disableSocketNotifiers(true);
-    exclude_timers    && disableTimers(true);
+    exclude_notifiers &&disableSocketNotifiers(true);
+    exclude_timers &&disableTimers(true);
 
     m_interrupt = false;
     Q_EMIT q->awake();
@@ -79,10 +81,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
     QCoreApplication::sendPostedEvents();
 
     bool can_wait =
-            !m_interrupt
-            && (flags & QEventLoop::WaitForMoreEvents)
-            && !result
-            ;
+        !m_interrupt && (flags & QEventLoop::WaitForMoreEvents) && !result;
 
     int n_events = 0;
 
@@ -90,7 +89,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         int timeout = 0;
 
         if (!exclude_timers && !m_zero_timers.isEmpty()) {
-            QVector<ZeroTimer*> timers;
+            QVector<ZeroTimer *> timers;
             auto it = m_zero_timers.constBegin();
             while (it != m_zero_timers.constEnd()) {
                 ZeroTimer *data = it.value();
@@ -128,13 +127,13 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
 
         for (int i = 0; i < n_events; ++i) {
             struct epoll_event &e = events[i];
-            auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
+            auto data             = static_cast<EpollAbastractEvent *>(e.data.ptr);
             data->ref();
         }
 
         for (int i = 0; i < n_events; ++i) {
             struct epoll_event &e = events[i];
-            auto data = static_cast<EpollAbastractEvent*>(e.data.ptr);
+            auto data             = static_cast<EpollAbastractEvent *>(e.data.ptr);
             if (data->canProcess()) {
                 data->process(e.events);
             }
@@ -143,8 +142,8 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
         }
     }
 
-    exclude_notifiers && disableSocketNotifiers(false);
-    exclude_timers    && disableTimers(false);
+    exclude_notifiers &&disableSocketNotifiers(false);
+    exclude_timers &&disableTimers(false);
 
     return result || n_events > 0;
 }

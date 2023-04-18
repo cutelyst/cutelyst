@@ -5,9 +5,9 @@
 #ifndef PARAMSMULTIMAP_H
 #define PARAMSMULTIMAP_H
 
+#include <QMetaType>
 #include <QMultiMap>
 #include <QString>
-#include <QMetaType>
 
 namespace Cutelyst {
 
@@ -22,7 +22,7 @@ namespace Cutelyst {
  */
 using ParamsMultiMap = QMultiMap<QString, QString>;
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_METATYPE(Cutelyst::ParamsMultiMap)
 

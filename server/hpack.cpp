@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "hpack.h"
-#include "hpack_p.h"
 
-#include "protocolhttp2.h"
 #include "cwsgiengine.h"
+#include "hpack_p.h"
+#include "protocolhttp2.h"
 
 #include <vector>
 
@@ -16,7 +16,7 @@
 
 using namespace Cutelyst;
 
-unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
+unsigned char *hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
 
 // This decodes an UInt
 // it returns nullptr if it tries to read past end
@@ -24,7 +24,7 @@ unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
 // give parsing errors on other parts
 unsigned char *decodeUInt16(unsigned char *src, unsigned char *src_end, quint16 &dst, quint8 mask)
 {
-//    qDebug() << Q_FUNC_INFO << "value 0" << QByteArray((char*)src, 10).toHex();
+    //    qDebug() << Q_FUNC_INFO << "value 0" << QByteArray((char*)src, 10).toHex();
 
     dst = *src & mask;
     if (dst == mask) {
@@ -59,7 +59,8 @@ void encodeUInt16(QByteArray &buf, int I, quint8 mask)
     buf.append(char(I));
 }
 
-static inline void encodeH2caseHeader(QByteArray &buf, const QString &key) {
+static inline void encodeH2caseHeader(QByteArray &buf, const QString &key)
+{
 
     encodeUInt16(buf, key.length(), INT_MASK(7));
     for (auto keyIt : key) {
@@ -102,7 +103,7 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
 
 unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
 {
-    quint16 str_len = 0;
+    quint16 str_len    = 0;
     bool huffmanDecode = *buf & 0x80;
 
     buf = decodeUInt16(buf, itEnd, str_len, INT_MASK(7));
@@ -133,14 +134,14 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
     return buf;
 }
 
-HPack::HPack(int maxTableSize) : m_currentMaxDynamicTableSize(maxTableSize), m_maxTableSize(maxTableSize)
+HPack::HPack(int maxTableSize)
+    : m_currentMaxDynamicTableSize(maxTableSize)
+    , m_maxTableSize(maxTableSize)
 {
-
 }
 
 HPack::~HPack()
 {
-
 }
 
 void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
@@ -168,9 +169,9 @@ void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &header
     }
 
     bool hasDate = false;
-    auto it = headers.constBegin();
+    auto it      = headers.constBegin();
     while (it != headers.constEnd()) {
-        const QString &key = it.key();
+        const QString &key   = it.key();
         const QString &value = it.value();
         if (!hasDate && key.compare(u"DATE") == 0) {
             hasDate = true;
@@ -208,25 +209,25 @@ void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &header
 }
 
 enum ErrorCodes {
-    ErrorNoError = 0x0,
-    ErrorProtocolError = 0x1,
-    ErrorInternalError = 0x2,
-    ErrorFlowControlError = 0x3,
-    ErrorSettingsTimeout = 0x4,
-    ErrorStreamClosed = 0x5,
-    ErrorFrameSizeError = 0x6,
-    ErrorRefusedStream = 0x7,
-    ErrorCancel = 0x8,
-    ErrorCompressionError = 0x9,
-    ErrorConnectError = 0xA,
-    ErrorEnhanceYourCalm  = 0xB,
+    ErrorNoError            = 0x0,
+    ErrorProtocolError      = 0x1,
+    ErrorInternalError      = 0x2,
+    ErrorFlowControlError   = 0x3,
+    ErrorSettingsTimeout    = 0x4,
+    ErrorStreamClosed       = 0x5,
+    ErrorFrameSizeError     = 0x6,
+    ErrorRefusedStream      = 0x7,
+    ErrorCancel             = 0x8,
+    ErrorCompressionError   = 0x9,
+    ErrorConnectError       = 0xA,
+    ErrorEnhanceYourCalm    = 0xB,
     ErrorInadequateSecurity = 0xC,
-    ErrorHttp11Required = 0xD
+    ErrorHttp11Required     = 0xD
 };
 
 inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
 {
-//    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->scheme;
+    //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->scheme;
     if (k.compare(u":path") == 0) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
@@ -254,7 +255,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
         return true;
     } else if (k.compare(u":scheme") == 0) {
         if (stream->scheme.isEmpty()) {
-            stream->scheme = v;
+            stream->scheme   = v;
             stream->isSecure = v.compare(u"https") == 0;
             return true;
         }
@@ -265,7 +266,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
 inline bool validHeader(const QString &k, const QString &v)
 {
     return k.compare(u"connection") != 0 &&
-            (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
+           (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
 }
 
 inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
@@ -278,12 +279,12 @@ inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
 int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
 {
     bool pseudoHeadersAllowed = true;
-    bool allowedToUpdate = true;
+    bool allowedToUpdate      = true;
     while (it < itEnd) {
         quint16 intValue(0);
-        if (*it & 0x80){
+        if (*it & 0x80) {
             it = decodeUInt16(it, itEnd, intValue, INT_MASK(7));
-//            qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << it;
+            //            qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << it;
             if (!it || intValue == 0) {
                 return ErrorCompressionError;
             }
@@ -291,22 +292,22 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             QString key;
             QString value;
             if (intValue > 61) {
-//                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << m_dynamicTable.size();
+                //                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << m_dynamicTable.size();
                 intValue -= 62;
                 if (intValue < qint64(m_dynamicTable.size())) {
                     const auto h = m_dynamicTable[intValue];
-                    key = h.key;
-                    value = h.value;
+                    key          = h.key;
+                    value        = h.value;
                 } else {
                     return ErrorCompressionError;
                 }
-            } else  {
+            } else {
                 const auto h = HPackPrivate::hpackStaticHeaders[intValue];
-                key = h.key;
-                value = h.value;
+                key          = h.key;
+                value        = h.value;
             }
 
-//            qDebug() << "header" << key << value;
+            //            qDebug() << "header" << key << value;
             if (key.startsWith(QLatin1Char(':'))) {
                 if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
                     return ErrorProtocolError;
@@ -328,10 +329,10 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                     return ErrorCompressionError;
                 }
                 addToDynamicTable = true;
-//                qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate;
+                //                qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate;
             } else if (*it & 0x20) {
                 it = decodeUInt16(it, itEnd, intValue, INT_MASK(5));
-//                qDebug() << "6.3 Dynamic Table update" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate << m_maxTableSize;
+                //                qDebug() << "6.3 Dynamic Table update" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate << m_maxTableSize;
                 if (!it || intValue > m_maxTableSize || !allowedToUpdate) {
                     return ErrorCompressionError;
                 }
@@ -359,7 +360,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                     // Indexed Name
                     if (intValue - 62 < qint64(m_dynamicTable.size())) {
                         const auto h = m_dynamicTable[intValue - 62];
-                        key = h.key;
+                        key          = h.key;
                     } else {
                         return ErrorCompressionError;
                     }
@@ -368,7 +369,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
             } else if (intValue != 0) {
                 const auto h = HPackPrivate::hpackStaticHeaders[intValue];
-                key = h.key;
+                key          = h.key;
             } else {
                 it = parse_string_key(key, it, itEnd);
                 if (!it) {
@@ -403,12 +404,12 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
 
                 if (size + m_dynamicTableSize <= m_currentMaxDynamicTableSize) {
-                    m_dynamicTable.prepend({ key, value });
+                    m_dynamicTable.prepend({key, value});
                     m_dynamicTableSize += size;
                 }
             }
 
-//            qDebug() << "header key/value" << key << value;
+            //            qDebug() << "header key/value" << key << value;
         }
 
         allowedToUpdate = false;
@@ -421,47 +422,47 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
     return 0;
 }
 
-unsigned char* hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
+unsigned char *hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
 {
-      quint8 state = 0;
-      const HPackPrivate::HuffDecode *entry = nullptr;
-      value.reserve(len * 2); // max compression ratio is >= 0.5
+    quint8 state                          = 0;
+    const HPackPrivate::HuffDecode *entry = nullptr;
+    value.reserve(len * 2); // max compression ratio is >= 0.5
 
-      do {
-          if (entry) {
-              state = entry->state;
-          }
-          entry = HPackPrivate::huff_decode_table[state] + (*src >> 4);
+    do {
+        if (entry) {
+            state = entry->state;
+        }
+        entry = HPackPrivate::huff_decode_table[state] + (*src >> 4);
 
-          if (entry->flags & HPackPrivate::HUFF_FAIL) {
-              // A decoder decoded an invalid Huffman sequence
-              return nullptr;
-          }
+        if (entry->flags & HPackPrivate::HUFF_FAIL) {
+            // A decoder decoded an invalid Huffman sequence
+            return nullptr;
+        }
 
-          if (entry->flags & HPackPrivate::HUFF_SYM) {
-              value.append(QLatin1Char(char(entry->sym)));
-          }
+        if (entry->flags & HPackPrivate::HUFF_SYM) {
+            value.append(QLatin1Char(char(entry->sym)));
+        }
 
-          entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
+        entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
 
-          if (entry->flags & HPackPrivate::HUFF_FAIL) {
-              // A decoder decoded an invalid Huffman sequence
-              return nullptr;
-          }
+        if (entry->flags & HPackPrivate::HUFF_FAIL) {
+            // A decoder decoded an invalid Huffman sequence
+            return nullptr;
+        }
 
-          if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-              value.append(QLatin1Char(char(entry->sym)));
-          }
+        if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
+            value.append(QLatin1Char(char(entry->sym)));
+        }
 
-      } while (++src < src_end);
+    } while (++src < src_end);
 
-//      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) << "entry->state =" << entry->state;
+    //      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) << "entry->state =" << entry->state;
 
-      if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
-          // entry->state == 28 // A invalid header name or value character was coded
-          // entry->state != 28 // A decoder decoded an invalid Huffman sequence
-          return nullptr;
-      }
+    if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
+        // entry->state == 28 // A invalid header name or value character was coded
+        // entry->state != 28 // A decoder decoded an invalid Huffman sequence
+        return nullptr;
+    }
 
-      return src_end;
+    return src_end;
 }

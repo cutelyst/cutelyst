@@ -7,6 +7,7 @@
 #define CUTELYST_COOKIE_P_H
 
 #include "cookie.h"
+
 #include <QSharedData>
 
 namespace Cutelyst {
@@ -19,6 +20,6 @@ public:
     Cookie::SameSite sameSite = Cookie::SameSite::Default;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_COOKIE_P_H

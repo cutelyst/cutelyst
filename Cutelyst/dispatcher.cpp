@@ -2,27 +2,27 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "dispatcher_p.h"
-
-#include "common.h"
+#include "action.h"
 #include "application.h"
-#include "engine.h"
+#include "common.h"
 #include "context.h"
 #include "controller.h"
 #include "controller_p.h"
-#include "action.h"
-#include "request_p.h"
-#include "dispatchtypepath.h"
+#include "dispatcher_p.h"
 #include "dispatchtypechained.h"
+#include "dispatchtypepath.h"
+#include "engine.h"
+#include "request_p.h"
 #include "utils.h"
 
-#include <QUrl>
 #include <QMetaMethod>
+#include <QUrl>
 
 using namespace Cutelyst;
 
-Dispatcher::Dispatcher(QObject *parent) : QObject(parent)
-  , d_ptr(new DispatcherPrivate(this))
+Dispatcher::Dispatcher(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new DispatcherPrivate(this))
 {
     new DispatchTypePath(parent);
     new DispatchTypeChained(parent);
@@ -33,7 +33,7 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVector<Cutelyst::DispatchType *> &dispatchers, bool printActions)
+void Dispatcher::setupActions(const QVector<Controller *> &controllers, const QVector<Cutelyst::DispatchType *> &dispatchers, bool printActions)
 {
     Q_D(Dispatcher);
 
@@ -41,7 +41,7 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
 
     ActionList registeredActions;
     for (Controller *controller : controllers) {
-        bool instanceUsed = false;
+        bool instanceUsed  = false;
         const auto actions = controller->actions();
         for (Action *action : actions) {
             bool registered = false;
@@ -64,7 +64,7 @@ void Dispatcher::setupActions(const QVector<Controller*> &controllers, const QVe
             // as private actions anyway
             if (registered) {
                 const QString name = action->ns() + QLatin1Char('/') + action->name();
-                d->actions.insert(name, { name, action });
+                d->actions.insert(name, {name, action});
                 d->actionContainer[action->ns()] << action;
                 registeredActions.append(action);
                 instanceUsed = true;
@@ -177,7 +177,8 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
     //  "foo/" skip
     //  "foo"
     //  ""
-    Q_FOREVER {
+    Q_FOREVER
+    {
         // Check out the dispatch types to see if any
         // will handle the path at this level
         for (DispatchType *type : dispatchers) {
@@ -222,7 +223,7 @@ Action *Dispatcher::getActionByPath(const QString &path) const
     Q_D(const Dispatcher);
 
     QString _path = path;
-    int slashes = _path.count(u'/');
+    int slashes   = _path.count(u'/');
     if (slashes == 0) {
         _path.prepend(u'/');
     } else if (_path.startsWith(u'/') && slashes != 1) {
@@ -241,9 +242,9 @@ ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace)
         return ret;
     }
 
-    const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
+    const QString ns            = DispatcherPrivate::cleanNamespace(nameSpace);
     const ActionList containers = d->getContainers(ns);
-    auto rIt = containers.rbegin();
+    auto rIt                    = containers.rbegin();
     while (rIt != containers.rend()) {
         if ((*rIt)->name() == name) {
             ret.append(*rIt);
@@ -295,9 +296,9 @@ QVector<DispatchType *> Dispatcher::dispatchers() const
 
 QString DispatcherPrivate::cleanNamespace(const QString &ns)
 {
-    QString ret = ns;
+    QString ret       = ns;
     bool lastWasSlash = true; // remove initial slash
-    int nsSize = ns.size();
+    int nsSize        = ns.size();
     for (int i = 0; i < nsSize; ++i) {
         // Mark if the last char was a slash
         // so that two or more consecutive slashes
@@ -319,9 +320,9 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
 
 QString DispatcherPrivate::normalizePath(const QString &path)
 {
-    QString ret = path;
+    QString ret    = path;
     bool lastSlash = true;
-    int i = 0;
+    int i          = 0;
     while (i < ret.size()) {
         if (ret.at(i) == u'/') {
             if (lastSlash) {
@@ -349,7 +350,7 @@ void DispatcherPrivate::printActions() const
     std::sort(keys.begin(), keys.end());
     for (const auto &key : keys) {
         Action *action = actions.value(key).action;
-        QString path = key.toString();
+        QString path   = key.toString();
         if (!path.startsWith(u'/')) {
             path.prepend(u'/');
         }
@@ -361,12 +362,7 @@ void DispatcherPrivate::printActions() const
         table.append(row);
     }
 
-    qCDebug(CUTELYST_DISPATCHER) <<  Utils::buildTable(table, {
-                                                           QLatin1String("Private"),
-                                                           QLatin1String("Class"),
-                                                           QLatin1String("Method")
-                                                       },
-                                                       QLatin1String("Loaded Private actions:")).constData();
+    qCDebug(CUTELYST_DISPATCHER) << Utils::buildTable(table, {QLatin1String("Private"), QLatin1String("Class"), QLatin1String("Method")}, QLatin1String("Loaded Private actions:")).constData();
 }
 
 ActionList DispatcherPrivate::getContainers(const QString &ns) const
@@ -375,14 +371,14 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 
     if (ns.compare(u"/") != 0) {
         int pos = ns.size();
-//        qDebug() << pos << ns.mid(0, pos);
+        //        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {
-//            qDebug() << pos << ns.mid(0, pos);
+            //            qDebug() << pos << ns.mid(0, pos);
             ret.append(actionContainer.value(ns.mid(0, pos)));
             pos = ns.lastIndexOf(QLatin1Char('/'), pos - 1);
         }
     }
-//    qDebug() << actionContainer.size() << rootActions;
+    //    qDebug() << actionContainer.size() << rootActions;
     ret.append(rootActions);
 
     return ret;
@@ -406,7 +402,7 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
     Action *ret;
     QString path = DispatcherPrivate::actionRel2Abs(c, relativePath);
 
-    int pos = path.lastIndexOf(QLatin1Char('/'));
+    int pos     = path.lastIndexOf(QLatin1Char('/'));
     int lastPos = path.size();
     do {
         if (pos == -1) {
@@ -416,15 +412,15 @@ Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath,
             }
         } else {
             const QString name = path.mid(pos + 1, lastPos);
-            path = path.mid(0, pos);
-            ret = q->getAction(name, path);
+            path               = path.mid(0, pos);
+            ret                = q->getAction(name, path);
             if (ret) {
                 return ret;
             }
         }
 
         lastPos = pos;
-        pos = path.indexOf(QLatin1Char('/'), pos - 1);
+        pos     = path.indexOf(QLatin1Char('/'), pos - 1);
     } while (pos != -1);
 
     return nullptr;

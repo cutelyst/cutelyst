@@ -7,15 +7,13 @@
 
 using namespace Cutelyst;
 
-ValidatorCharNotAllowed::ValidatorCharNotAllowed(const QString &field, const QString &forbiddenChars, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorCharNotAllowedPrivate(field, forbiddenChars, messages, defValKey))
+ValidatorCharNotAllowed::ValidatorCharNotAllowed(const QString &field, const QString &forbiddenChars, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorCharNotAllowedPrivate(field, forbiddenChars, messages, defValKey))
 {
-
 }
 
 ValidatorCharNotAllowed::~ValidatorCharNotAllowed()
 {
-
 }
 
 bool ValidatorCharNotAllowed::validate(const QString &value, const QString &forbiddenChars, QChar *foundChar)

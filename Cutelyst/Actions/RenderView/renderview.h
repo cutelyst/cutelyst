@@ -5,9 +5,9 @@
 #ifndef RENDERVIEW_H
 #define RENDERVIEW_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/componentfactory.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -31,7 +31,8 @@ protected:
     virtual bool doExecute(Cutelyst::Context *c) override;
 };
 
-class RenderViewFactory final : public QObject, public ComponentFactory
+class RenderViewFactory final : public QObject
+    , public ComponentFactory
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.cutelyst.ComponentFactory" FILE "metadata.json")
@@ -40,7 +41,6 @@ public:
     virtual Component *createComponent(QObject *parent) override { return new RenderView(parent); }
 };
 
-}
-
+} // namespace Cutelyst
 
 #endif // RENDERVIEW_H

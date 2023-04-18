@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorMax::ValidatorMax(const QString &field, QMetaType::Type type, const QVariant &max, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorMaxPrivate(field, type, max, messages, defValKey))
+ValidatorMax::ValidatorMax(const QString &field, QMetaType::Type type, const QVariant &max, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorMaxPrivate(field, type, max, messages, defValKey))
 {
 }
 
@@ -24,7 +24,7 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
 
     if (!v.isEmpty()) {
         Q_D(const ValidatorMax);
-        bool ok = false;
+        bool ok    = false;
         bool valid = false;
 
         switch (d->type) {
@@ -45,18 +45,14 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     qCWarning(C_VALIDATOR, "ValidatorMax: Invalid maximum comparison value for field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
                 } else {
                     if (val > max) {
-                        result.errorMessage = validationError(c, QVariantMap{
-                                                                  {QStringLiteral("val"), val},
-                                                                  {QStringLiteral("max"), max}
-                                                              });
+                        result.errorMessage = validationError(c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR, "ValidatorMax: Validation failed for field %s in %s::%s: %lli is not smaller than %lli.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, max);
                     } else {
                         valid = true;
                     }
                 }
             }
-        }
-            break;
+        } break;
         case QMetaType::UChar:
         case QMetaType::UShort:
         case QMetaType::UInt:
@@ -74,18 +70,14 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     qCWarning(C_VALIDATOR, "ValidatorMax: Invalid maximum comparison value for field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
                 } else {
                     if (val > max) {
-                        result.errorMessage = validationError(c, QVariantMap{
-                                                                  {QStringLiteral("val"), val},
-                                                                  {QStringLiteral("max"), max}
-                                                              });
+                        result.errorMessage = validationError(c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR, "ValidatorMax: Validation failed for field %s in %s::%s: %llu is not smaller than %llu.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, max);
                     } else {
                         valid = true;
                     }
                 }
             }
-        }
-            break;
+        } break;
         case QMetaType::Float:
         case QMetaType::Double:
         {
@@ -100,18 +92,14 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                     qCWarning(C_VALIDATOR, "ValidatorMax: Invalid maximum comparison value for field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
                 } else {
                     if (val > max) {
-                        result.errorMessage = validationError(c, QVariantMap{
-                                                                  {QStringLiteral("val"), val},
-                                                                  {QStringLiteral("max"), max}
-                                                              });
+                        result.errorMessage = validationError(c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
                         qCDebug(C_VALIDATOR, "ValidatorMax: Validation failed for field %s in %s::%s: %f is not smaller than %f.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, max);
                     } else {
                         valid = true;
                     }
                 }
             }
-        }
-            break;
+        } break;
         case QMetaType::QString:
         {
             const qlonglong val = static_cast<qlonglong>(v.length());
@@ -121,17 +109,13 @@ ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &par
                 qCWarning(C_VALIDATOR, "ValidatorMax: Invalid maximum comparison value for field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             } else {
                 if (val > max) {
-                    result.errorMessage = validationError(c, QVariantMap{
-                                                              {QStringLiteral("val"), val},
-                                                              {QStringLiteral("max"), max}
-                                                          });
+                    result.errorMessage = validationError(c, QVariantMap{{QStringLiteral("val"), val}, {QStringLiteral("max"), max}});
                     qCDebug(C_VALIDATOR, "ValidatorMax: Validation failed for field %s in %s::%s: string length %lli is not smaller than %lli.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), val, max);
                 } else {
                     valid = true;
                 }
             }
-        }
-            break;
+        } break;
         default:
             qCWarning(C_VALIDATOR, "ValidatorMax: The comparison type with ID %i for field %s at %s::%s is not supported.", static_cast<int>(d->type), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
             result.errorMessage = validationDataError(c, 0);
@@ -213,7 +197,7 @@ QString ValidatorMax::genericValidationDataError(Context *c, const QVariant &err
 {
     QString error;
 
-    int field = errorData.toInt();
+    int field            = errorData.toInt();
     const QString _label = label(c);
 
     if (field == 0) {

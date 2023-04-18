@@ -5,10 +5,10 @@
 #ifndef WINDOWSFORK_H
 #define WINDOWSFORK_H
 
+#include "abstractfork.h"
+
 #include <QObject>
 #include <QProcess>
-
-#include "abstractfork.h"
 
 class QTimer;
 class WindowsFork : public AbstractFork
@@ -31,9 +31,9 @@ private:
     void childFinished(int exitCode, QProcess::ExitStatus exitStatus);
     void restartTerminate();
 
-    QProcess *m_masterChildProcess = nullptr;
+    QProcess *m_masterChildProcess   = nullptr;
     QTimer *m_materChildRestartTimer = nullptr;
-    int m_autoReloadCount = 0;
+    int m_autoReloadCount            = 0;
 };
 
 #endif // WINDOWSFORK_H

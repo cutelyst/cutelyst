@@ -6,13 +6,13 @@
 
 #include "root.h"
 
-#include <QDebug>
-#include <QCoreApplication>
-
 #include <Cutelyst/Plugins/Session/Session>
 
-HelloWorld::HelloWorld(QObject *parent) :
-    Cutelyst::Application(parent)
+#include <QCoreApplication>
+#include <QDebug>
+
+HelloWorld::HelloWorld(QObject *parent)
+    : Cutelyst::Application(parent)
 {
     QCoreApplication::setApplicationName(QStringLiteral("HelloWorld"));
     qDebug() << "HelloWorld::HelloWorld" << QCoreApplication::applicationPid();

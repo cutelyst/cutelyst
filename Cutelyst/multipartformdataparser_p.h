@@ -31,6 +31,6 @@ public:
     static inline int findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, ParserState &state);
 };
 
-}
+} // namespace Cutelyst
 
 #endif // MULTIPARTFORMDATA_P_H

@@ -5,8 +5,9 @@
 #ifndef CUTELYSTVALIDATORACCEPTED_H
 #define CUTELYSTVALIDATORACCEPTED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -67,7 +68,6 @@ private:
     Q_DISABLE_COPY(ValidatorAccepted)
 };
 
-}
+} // namespace Cutelyst
 
-
-#endif //CUTELYSTVALIDATORACCEPTED_H
+#endif // CUTELYSTVALIDATORACCEPTED_H

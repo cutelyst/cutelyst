@@ -5,28 +5,27 @@
 #ifndef CUTELYST_CONTROLLER_H
 #define CUTELYST_CONTROLLER_H
 
-#include <QObject>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
 #include <Cutelyst/context.h>
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/request.h>
 #include <Cutelyst/response.h>
 
+#include <QObject>
+
 #define STR(X) #X
-#define C_PATH(X, Y) Q_CLASSINFO(STR(X ## _Path), STR(Y))
+#define C_PATH(X, Y) Q_CLASSINFO(STR(X##_Path), STR(Y))
 #define C_NAMESPACE(value) Q_CLASSINFO("Namespace", value)
 #define C_ATTR(X, Y) Q_CLASSINFO(STR(X), STR(Y)) Q_INVOKABLE
 
-#  define CActionFor(str) \
+#define CActionFor(str) \
     ([this]() -> Cutelyst::Action * { \
         static thread_local Cutelyst::Action *action = \
             Cutelyst::Controller::actionFor(str); \
         return action; \
-    }()) \
-    /**/
+    }()) /**/
 
-namespace  Cutelyst {
+namespace Cutelyst {
 
 class ControllerPrivate;
 /*! \class Controller controller.h Cutelyst/Controller
@@ -170,6 +169,6 @@ private:
     friend class Dispatcher;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_CONTROLLER_H

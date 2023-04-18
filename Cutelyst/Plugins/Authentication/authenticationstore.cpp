@@ -8,14 +8,13 @@
 
 using namespace Cutelyst;
 
-AuthenticationStore::AuthenticationStore(QObject *parent) : QObject(parent)
+AuthenticationStore::AuthenticationStore(QObject *parent)
+    : QObject(parent)
 {
-
 }
 
 AuthenticationStore::~AuthenticationStore()
 {
-
 }
 
 bool AuthenticationStore::canAutoCreateUser() const

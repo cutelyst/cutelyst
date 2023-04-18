@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredWith::ValidatorRequiredWith(const QString &field, const QStringList &otherFields, const Cutelyst::ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorRequiredWithPrivate(field, otherFields, messages))
+ValidatorRequiredWith::ValidatorRequiredWith(const QString &field, const QStringList &otherFields, const Cutelyst::ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorRequiredWithPrivate(field, otherFields, messages))
 {
 }
 
@@ -27,11 +27,11 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
         qCWarning(C_VALIDATOR, "ValidatorRequiredWith: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     } else {
         bool containsOther = false;
-        const QString v = value(params);
+        const QString v    = value(params);
 
         const QStringList ofc = d->otherFields;
 
-        for (const QString &other : ofc)  {
+        for (const QString &other : ofc) {
             if (params.contains(other)) {
                 containsOther = true;
                 break;

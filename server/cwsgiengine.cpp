@@ -4,35 +4,32 @@
  */
 #include "cwsgiengine.h"
 
-#include "protocol.h"
-#include "tcpserverbalancer.h"
-#include "tcpserver.h"
-#include "tcpsslserver.h"
-#include "localserver.h"
 #include "config.h"
-#include "server.h"
-#include "staticmap.h"
-#include "socket.h"
-
-#include "protocolwebsocket.h"
+#include "localserver.h"
+#include "protocol.h"
+#include "protocolfastcgi.h"
 #include "protocolhttp.h"
 #include "protocolhttp2.h"
-#include "protocolfastcgi.h"
+#include "protocolwebsocket.h"
+#include "server.h"
+#include "socket.h"
+#include "staticmap.h"
+#include "tcpserver.h"
+#include "tcpserverbalancer.h"
+#include "tcpsslserver.h"
 
 #ifdef Q_OS_UNIX
-#include "unixfork.h"
+#    include "unixfork.h"
 #endif
 
-#include <typeinfo>
-#include <iostream>
-
-#include <Cutelyst/Context>
-#include <Cutelyst/Response>
-#include <Cutelyst/Request>
 #include <Cutelyst/Application>
+#include <Cutelyst/Context>
+#include <Cutelyst/Request>
+#include <Cutelyst/Response>
+#include <iostream>
+#include <typeinfo>
 
 #include <QCoreApplication>
-
 #include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CWSGI_ENGINE, "cutelyst.server.engine", QtWarningMsg)
@@ -58,7 +55,7 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
         Q_EMIT app()->shuttingDown(app());
     });
 
-    const QStringList staticMap = m_wsgi->staticMap();
+    const QStringList staticMap  = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
     if (!staticMap.isEmpty() || !staticMap2.isEmpty()) {
         auto staticMapPlugin = new StaticMap(app());
@@ -203,7 +200,7 @@ void CWsgiEngine::handleSocketShutdown(Socket *socket)
     if (socket->processing == 0) {
         socket->connectionClose();
     } else if (socket->proto->type() == Protocol::Type::Http11Websocket) {
-        auto req = static_cast<ProtoRequestHttp*>(socket->protoData);
+        auto req = static_cast<ProtoRequestHttp *>(socket->protoData);
         req->webSocketClose(Response::CloseCode::CloseCodeGoingAway, {});
     } else {
         socket->protoData->headerConnection = ProtocolData::HeaderConnectionClose;

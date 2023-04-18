@@ -4,16 +4,15 @@
  */
 #include "csrf.h"
 
-#include <cutelee/exception.h>
-#include <cutelee/parser.h>
-
 #include <Cutelyst/Context>
 #include <Cutelyst/ParamsMultiMap>
 #include <Cutelyst/Request>
 #include <Cutelyst/Response>
+#include <cutelee/exception.h>
+#include <cutelee/parser.h>
 
 #ifdef PLUGIN_CSRFPROTECTION_ENABLED
-#include <Cutelyst/Plugins/CSRFProtection/CSRFProtection>
+#    include <Cutelyst/Plugins/CSRFProtection/CSRFProtection>
 #endif
 
 Cutelee::Node *CSRFTag::getNode(const QString &tagContent, Cutelee::Parser *p) const
@@ -22,7 +21,8 @@ Cutelee::Node *CSRFTag::getNode(const QString &tagContent, Cutelee::Parser *p) c
     return new CSRF(p);
 }
 
-CSRF::CSRF(Cutelee::Parser *parser) : Cutelee::Node(parser)
+CSRF::CSRF(Cutelee::Parser *parser)
+    : Cutelee::Node(parser)
 {
 }
 
@@ -33,7 +33,7 @@ void CSRF::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const
     auto c = gc->lookup(m_cutelystContext).value<Cutelyst::Context *>();
     if (!c) {
         const QVariantHash hash = gc->stackHash(0);
-        auto it = hash.constBegin();
+        auto it                 = hash.constBegin();
         while (it != hash.constEnd()) {
             if (it.value().userType() == qMetaTypeId<Cutelyst::Context *>()) {
                 c = it.value().value<Cutelyst::Context *>();

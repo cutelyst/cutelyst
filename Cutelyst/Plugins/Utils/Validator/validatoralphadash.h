@@ -5,8 +5,9 @@
 #ifndef CUTELYSTVALIDATORALPHADASH_H
 #define CUTELYSTVALIDATORALPHADASH_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -83,6 +84,6 @@ private:
     Q_DISABLE_COPY(ValidatorAlphaDash)
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORALPHADASH_H
+#endif // CUTELYSTVALIDATORALPHADASH_H

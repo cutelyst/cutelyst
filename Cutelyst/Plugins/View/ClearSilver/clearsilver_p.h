@@ -29,6 +29,6 @@ public:
     QString wrapper;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CLEARSILVER_P_H

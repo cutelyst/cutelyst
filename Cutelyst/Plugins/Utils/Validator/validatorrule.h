@@ -8,9 +8,9 @@
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/paramsmultimap.h>
 
+#include <QLoggingCategory>
 #include <QScopedPointer>
 #include <QVariant>
-#include <QLoggingCategory>
 
 Q_DECLARE_LOGGING_CATEGORY(C_VALIDATOR)
 
@@ -47,16 +47,17 @@ class Context;
  * \link plugins-utils-validator-rules validator rule\endlink.
  */
 struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
-    QString errorMessage;   /**< Contains a human readable error message if validation failed that should provide information about the reason the validation failed. If QString::isNull() returns \c true for this, the validation has succeeded and isValid() will alsor return \c true. */
-    QVariant value;         /**< Might contain the extracted and possibly converted value of the \link ValidatorRule::value() input parameter\endlink if validation succeeded. For information about the possible values see the documentation of the respective \link plugins-utils-validator-rules validator\endlink. */
-    QVariant extra;         /**< Might contain extra data provided by the validator. For information about the possible values see the documentation of the respective \link plugins-utils-validator-rules validator\endlink. */
+    QString errorMessage; /**< Contains a human readable error message if validation failed that should provide information about the reason the validation failed. If QString::isNull() returns \c true for this, the validation has succeeded and isValid() will alsor return \c true. */
+    QVariant value;       /**< Might contain the extracted and possibly converted value of the \link ValidatorRule::value() input parameter\endlink if validation succeeded. For information about the possible values see the documentation of the respective \link plugins-utils-validator-rules validator\endlink. */
+    QVariant extra;       /**< Might contain extra data provided by the validator. For information about the possible values see the documentation of the respective \link plugins-utils-validator-rules validator\endlink. */
 
     /*!
      * \brief Returns \c true if validation succeeded.
      * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link QString::isNull() null string\endlink,
      * indicating that the validation has succeeded.
      */
-    explicit operator bool() const {
+    explicit operator bool() const
+    {
         return errorMessage.isNull();
     }
 
@@ -65,7 +66,8 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorReturnType {
      * \return \c true if \link ValidatorReturnType::errorMessage errorMessage\endlink is a \link QString::isNull() null string\endlink,
      * indicating that the validation has succeeded.
      */
-    bool isValid() const {
+    bool isValid() const
+    {
         return errorMessage.isNull();
     }
 };
@@ -141,16 +143,17 @@ struct CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorMessages {
      * \param customParsingError        Custom error message if the input value could not be parsed.
      * \param customValidationDataError Custom error message if validation data is missing or invalid.
      */
-    ValidatorMessages(const char *customLabel, const char *customValidationError = nullptr, const char *customParsingError = nullptr, const char *customValidationDataError = nullptr) :
-        label(customLabel),
-        validationError(customValidationError),
-        parsingError(customParsingError),
-        validationDataError(customValidationDataError)
-    {}
-    const char *label = nullptr; /**< Field label used for generating generic error messages. */
-    const char *validationError = nullptr;  /**< Custom validation error messages. */
-    const char *parsingError = nullptr; /**< Custom parsing error message. */
-    const char *validationDataError = nullptr;  /**< Custom validation data error message. */
+    ValidatorMessages(const char *customLabel, const char *customValidationError = nullptr, const char *customParsingError = nullptr, const char *customValidationDataError = nullptr)
+        : label(customLabel)
+        , validationError(customValidationError)
+        , parsingError(customParsingError)
+        , validationDataError(customValidationDataError)
+    {
+    }
+    const char *label               = nullptr; /**< Field label used for generating generic error messages. */
+    const char *validationError     = nullptr; /**< Custom validation error messages. */
+    const char *parsingError        = nullptr; /**< Custom parsing error message. */
+    const char *validationDataError = nullptr; /**< Custom validation data error message. */
 };
 
 class ValidatorRulePrivate;
@@ -539,6 +542,6 @@ private:
     friend class ValidatorPrivate;
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORRULE_H
+#endif // CUTELYSTVALIDATORRULE_H

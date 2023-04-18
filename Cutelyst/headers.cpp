@@ -5,7 +5,6 @@
 #include "headers.h"
 
 #include "common.h"
-
 #include "engine.h"
 
 #include <QStringList>
@@ -16,7 +15,8 @@ inline QString normalizeHeaderKey(const QString &field);
 inline QByteArray decodeBasicAuth(const QString &auth);
 inline Headers::Authorization decodeBasicAuthPair(const QString &auth);
 
-Headers::Headers(const Headers &other) : m_data(other.m_data)
+Headers::Headers(const Headers &other)
+    : m_data(other.m_data)
 {
 }
 
@@ -60,7 +60,7 @@ QString Headers::contentType() const
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
         const QString &ct = it.value();
-        ret = ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
+        ret               = ct.mid(0, ct.indexOf(QLatin1Char(';'))).toLower();
     }
     return ret;
 }
@@ -76,10 +76,10 @@ QString Headers::contentTypeCharset() const
     const auto it = m_data.constFind(QStringLiteral("CONTENT_TYPE"));
     if (it != m_data.constEnd()) {
         const QString &contentType = it.value();
-        int pos = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
+        int pos                    = contentType.indexOf(u"charset=", 0, Qt::CaseInsensitive);
         if (pos != -1) {
             int endPos = contentType.indexOf(u';', pos);
-            ret = contentType.mid(pos + 8, endPos).trimmed().toUpper();
+            ret        = contentType.mid(pos + 8, endPos).trimmed().toUpper();
         }
     }
 
@@ -95,7 +95,7 @@ void Headers::setContentTypeCharset(const QString &charset)
     }
 
     QString contentType = it.value();
-    int pos = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
+    int pos             = contentType.indexOf(QLatin1String("charset="), 0, Qt::CaseInsensitive);
     if (pos != -1) {
         int endPos = contentType.indexOf(QLatin1Char(';'), pos);
         if (endPos == -1) {
@@ -128,23 +128,23 @@ bool Headers::contentIsHtml() const
 {
     const QString ct = contentType();
     return ct.compare(u"text/html") == 0 ||
-            ct.compare(u"application/xhtml+xml") == 0 ||
-            ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
+           ct.compare(u"application/xhtml+xml") == 0 ||
+           ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
 }
 
 bool Headers::contentIsXHtml() const
 {
     const QString ct = contentType();
-    return ct.compare(u"application/xhtml+xml") == 0||
-            ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
+    return ct.compare(u"application/xhtml+xml") == 0 ||
+           ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
 }
 
 bool Headers::contentIsXml() const
 {
     const QString ct = contentType();
     return ct.compare(u"text/xml") == 0 ||
-            ct.compare(u"application/xml") == 0||
-            ct.endsWith(u"xml");
+           ct.compare(u"application/xml") == 0 ||
+           ct.endsWith(u"xml");
 }
 
 bool Headers::contentIsJson() const
@@ -241,7 +241,7 @@ bool Headers::ifMatch(const QString &etag) const
     if (it != m_data.constEnd()) {
         const auto clientETag = QStringView(it.value());
         return clientETag.mid(1, clientETag.size() - 2) == etag ||
-                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
+               clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return true;
 }
@@ -252,7 +252,7 @@ bool Headers::ifNoneMatch(const QString &etag) const
     if (it != m_data.constEnd()) {
         const auto clientETag = QStringView(it.value());
         return clientETag.mid(1, clientETag.size() - 2) == etag ||
-                clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
+               clientETag.mid(3, clientETag.size() - 4) == etag; // Weak ETag
     }
     return false;
 }
@@ -367,7 +367,7 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
     }
 
     const QString result = username + QLatin1Char(':') + password;
-    ret = QLatin1String("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
+    ret                  = QLatin1String("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
     m_data.replace(QStringLiteral("AUTHORIZATION"), ret);
     return ret;
 }
@@ -435,7 +435,7 @@ QString Headers::operator[](const QString &key) const
 QString normalizeHeaderKey(const QString &field)
 {
     QString key = field;
-    int i = 0;
+    int i       = 0;
     while (i < key.size()) {
         QChar c = key[i];
         if (c.isLetter()) {
@@ -471,7 +471,7 @@ Headers::Authorization decodeBasicAuthPair(const QString &auth)
         if (pos == -1) {
             ret.user = QString::fromLatin1(authorization);
         } else {
-            ret.user = QString::fromLatin1(authorization.left(pos));
+            ret.user     = QString::fromLatin1(authorization.left(pos));
             ret.password = QString::fromLatin1(authorization.mid(pos + 1));
         }
     }
@@ -481,10 +481,11 @@ Headers::Authorization decodeBasicAuthPair(const QString &auth)
 QDebug operator<<(QDebug debug, const Headers &headers)
 {
     const QMultiHash<QString, QString> data = headers.data();
-    const bool oldSetting = debug.autoInsertSpaces();
+    const bool oldSetting                   = debug.autoInsertSpaces();
     debug.nospace() << "Headers[";
     for (auto it = data.constBegin();
-         it != data.constEnd(); ++it) {
+         it != data.constEnd();
+         ++it) {
         debug << '(' << Engine::camelCaseHeader(it.key()) + QLatin1Char('=') + it.value() << ')';
     }
     debug << ']';

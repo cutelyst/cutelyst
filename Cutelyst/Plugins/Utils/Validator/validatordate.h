@@ -5,9 +5,9 @@
 #ifndef CUTELYSTVALIDATORDATE_H
 #define CUTELYSTVALIDATORDATE_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -69,7 +69,6 @@ private:
     Q_DISABLE_COPY(ValidatorDate)
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORDATE_H
-
+#endif // CUTELYSTVALIDATORDATE_H

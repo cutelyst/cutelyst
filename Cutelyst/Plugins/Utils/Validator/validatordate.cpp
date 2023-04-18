@@ -4,19 +4,19 @@
  */
 
 #include "validatordate_p.h"
+
 #include <QDate>
 
 using namespace Cutelyst;
 
-ValidatorDate::ValidatorDate(const QString &field, const char *inputFormat, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorDatePrivate(field, inputFormat, messages, defValKey))
+ValidatorDate::ValidatorDate(const QString &field, const char *inputFormat, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorDatePrivate(field, inputFormat, messages, defValKey))
 {
 }
 
 ValidatorDate::~ValidatorDate()
 {
 }
-
 
 ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &params) const
 {

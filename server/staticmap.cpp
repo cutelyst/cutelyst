@@ -6,27 +6,26 @@
 
 #include "socket.h"
 
+#include <Cutelyst/Application>
+#include <Cutelyst/Request>
+#include <Cutelyst/Response>
+
 #include <QDir>
 #include <QFile>
 #include <QLoggingCategory>
-
-#include <Cutelyst/Application>
-#include <Cutelyst/Response>
-#include <Cutelyst/Request>
 
 Q_LOGGING_CATEGORY(CUTELYST_SM, "cutelyst.server.staticmap", QtWarningMsg)
 
 using namespace Cutelyst;
 
-StaticMap::StaticMap(Cutelyst::Application *parent) : Plugin(parent)
+StaticMap::StaticMap(Cutelyst::Application *parent)
+    : Plugin(parent)
 {
-
 }
 
 bool StaticMap::setup(Cutelyst::Application *app)
 {
-    connect(app, &Cutelyst::Application::beforePrepareAction,
-            this, &StaticMap::beforePrepareAction);
+    connect(app, &Cutelyst::Application::beforePrepareAction, this, &StaticMap::beforePrepareAction);
     return true;
 }
 
@@ -39,9 +38,9 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
 
     qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
 
-    m_staticMaps.push_back({ mp, path, append });
+    m_staticMaps.push_back({mp, path, append});
     std::sort(m_staticMaps.begin(), m_staticMaps.end(), [](const MountPoint &a, const MountPoint &b) -> bool {
-              return a.mountPoint.size() < b.mountPoint.size();
+        return a.mountPoint.size() < b.mountPoint.size();
     });
 }
 
@@ -83,7 +82,7 @@ bool StaticMap::tryToServeFile(Cutelyst::Context *c, const MountPoint &mp, const
 
 bool StaticMap::serveFile(Cutelyst::Context *c, const QString &filename)
 {
-    auto res = c->response();
+    auto res                        = c->response();
     const QDateTime currentDateTime = QFileInfo(filename).lastModified();
     if (!c->request()->headers().ifModifiedSince(currentDateTime)) {
         res->setStatus(Response::NotModified);

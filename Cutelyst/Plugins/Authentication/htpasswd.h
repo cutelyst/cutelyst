@@ -5,8 +5,8 @@
 #ifndef AUTHENTICATION_STORE_HTPASSWD_H
 #define AUTHENTICATION_STORE_HTPASSWD_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -44,6 +44,6 @@ private:
     QString m_filename;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // AUTHENTICATION_STORE_HTPASSWD_H

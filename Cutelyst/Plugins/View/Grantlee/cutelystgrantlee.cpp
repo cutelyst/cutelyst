@@ -4,10 +4,11 @@
  */
 #include "cutelystgrantlee.h"
 
-#include "urifor.h"
 #include "csrf.h"
+#include "urifor.h"
 
-CutelystGrantlee::CutelystGrantlee(QObject *parent) : QObject(parent)
+CutelystGrantlee::CutelystGrantlee(QObject *parent)
+    : QObject(parent)
 {
 }
 
@@ -15,7 +16,7 @@ QHash<QString, Grantlee::AbstractNodeFactory *> CutelystGrantlee::nodeFactories(
 {
     Q_UNUSED(name)
 
-    QHash<QString, Grantlee::AbstractNodeFactory *> ret {
+    QHash<QString, Grantlee::AbstractNodeFactory *> ret{
         {QStringLiteral("c_uri_for"), new UriForTag()},
         {QStringLiteral("c_csrf_token"), new CSRFTag()},
     };

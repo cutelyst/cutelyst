@@ -5,9 +5,9 @@
 #ifndef CPSTATICSIMPLE_H
 #define CPSTATICSIMPLE_H
 
+#include <Cutelyst/context.h>
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
-#include <Cutelyst/context.h>
 
 namespace Cutelyst {
 
@@ -50,6 +50,6 @@ private:
     bool locateStaticFile(Context *c, const QString &relPath);
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CPSTATICSIMPLE_H

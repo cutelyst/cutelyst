@@ -2,8 +2,8 @@
  * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "upload_p.h"
 #include "common.h"
+#include "upload_p.h"
 
 #include <QDir>
 #include <QFile>
@@ -34,7 +34,7 @@ bool Upload::save(const QString &newName)
 {
     Q_D(Upload);
 
-    bool error = false;
+    bool error           = false;
     QString fileTemplate = QStringLiteral("%1/qt_temp.XXXXXX");
     QFile out(fileTemplate.arg(QFileInfo(newName).path()));
     if (!out.open(QIODevice::ReadWrite)) {
@@ -94,7 +94,7 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
     }
 
     if (ret->open()) {
-        bool error = false;
+        bool error     = false;
         qint64 posOrig = d->pos;
         seek(0);
 
@@ -154,13 +154,13 @@ bool Upload::seek(qint64 pos)
     return false;
 }
 
-Upload::Upload(UploadPrivate *prv) :
-    d_ptr(prv)
+Upload::Upload(UploadPrivate *prv)
+    : d_ptr(prv)
 {
     Q_D(Upload);
     open(prv->device->openMode());
     const QString disposition = prv->headers.contentDisposition();
-    int start = disposition.indexOf(u"name=\"");
+    int start                 = disposition.indexOf(u"name=\"");
     if (start != -1) {
         start += 6;
         int end = disposition.indexOf(u'"', start);

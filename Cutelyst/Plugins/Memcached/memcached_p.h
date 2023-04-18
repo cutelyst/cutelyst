@@ -9,9 +9,10 @@
 #include "memcached.h"
 
 #include <libmemcached/memcached.h>
-#include <QString>
-#include <QMap>
+
 #include <QFlags>
+#include <QMap>
+#include <QString>
 
 namespace Cutelyst {
 
@@ -24,18 +25,18 @@ public:
     {
         if (memc) {
 #ifdef LIBMEMCACHED_WITH_SASL_SUPPORT
-#if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
+#    if LIBMEMCACHED_WITH_SASL_SUPPORT == 1
             if (saslEnabled) {
                 memcached_destroy_sasl_auth_data(memc);
             }
-#endif
+#    endif
 #endif
             memcached_free(memc);
         }
     }
 
     enum Flag : quint32 {
-        NoFlags = 0x0,
+        NoFlags    = 0x0,
         Compressed = 0x1
     };
     Q_DECLARE_FLAGS(Flags, Flag)
@@ -43,18 +44,18 @@ public:
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);
     static void setReturnType(Memcached::MemcachedReturnType *rt1, memcached_return_t rt2);
 
-    QMap<int,std::pair<QString,quint16>> servers;
+    QMap<int, std::pair<QString, quint16>> servers;
     memcached_st *memc = nullptr;
 
-    bool compression = false;
+    bool compression         = false;
     int compressionThreshold = 100;
-    int compressionLevel = -1;
-    bool saslEnabled = false;
+    int compressionLevel     = -1;
+    bool saslEnabled         = false;
 
     QVariantMap defaultConfig;
 };
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::MemcachedPrivate::Flags)
 

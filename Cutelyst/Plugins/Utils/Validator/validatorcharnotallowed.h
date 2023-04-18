@@ -6,8 +6,9 @@
 #ifndef CUTELYSTVALIDATORCHARNOTALLOWED_H
 #define CUTELYSTVALIDATORCHARNOTALLOWED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -83,6 +84,6 @@ private:
     Q_DISABLE_COPY(ValidatorCharNotAllowed)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORCHARNOTALLOWED_H

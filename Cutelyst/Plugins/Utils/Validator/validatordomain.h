@@ -6,8 +6,9 @@
 #ifndef CUTELYSTVALIDATORDOMAIN_H
 #define CUTELYSTVALIDATORDOMAIN_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -38,18 +39,18 @@ public:
      * \brief Possible diagnose information for the checked domain.
      */
     enum Diagnose : quint8 {
-        Valid               = 0,    /**< The domain name is valid. If \a checkDNS has been set to \c false, this says nothing about the existence of the domain in the DNS. */
-        MissingDNS          = 1,    /**< The domain name is valid according to RFC 1035, but there could be no DNS entry found for it. */
-        InvalidChars        = 2,    /**< The domain name contains chars that are not allowed. */
-        LabelTooLong        = 3,    /**< At least one of the domain name labels exceeds the maximum size of 63 chars. */
-        TooLong             = 4,    /**< The whole domain name exceeds the maximum size of 253 chars. */
-        InvalidLabelCount   = 5,    /**< Not a valid domain name because it has either no labels or only the TLD. */
-        EmptyLabel          = 6,    /**< At least one of the domain name labels is empty. */
-        InvalidTLD          = 7,    /**< The TLD label contains characters that are not allowed. */
-        DashStart           = 8,    /**< At least one label starts with a dash. */
-        DashEnd             = 9,    /**< At least one label ends with a dash. */
-        DigitStart          = 10,   /**< At least one label starts with a digit. */
-        DNSTimeout          = 11    /**< The DNS lookup took too long. */
+        Valid             = 0,  /**< The domain name is valid. If \a checkDNS has been set to \c false, this says nothing about the existence of the domain in the DNS. */
+        MissingDNS        = 1,  /**< The domain name is valid according to RFC 1035, but there could be no DNS entry found for it. */
+        InvalidChars      = 2,  /**< The domain name contains chars that are not allowed. */
+        LabelTooLong      = 3,  /**< At least one of the domain name labels exceeds the maximum size of 63 chars. */
+        TooLong           = 4,  /**< The whole domain name exceeds the maximum size of 253 chars. */
+        InvalidLabelCount = 5,  /**< Not a valid domain name because it has either no labels or only the TLD. */
+        EmptyLabel        = 6,  /**< At least one of the domain name labels is empty. */
+        InvalidTLD        = 7,  /**< The TLD label contains characters that are not allowed. */
+        DashStart         = 8,  /**< At least one label starts with a dash. */
+        DashEnd           = 9,  /**< At least one label ends with a dash. */
+        DigitStart        = 10, /**< At least one label starts with a digit. */
+        DNSTimeout        = 11  /**< The DNS lookup took too long. */
     };
     Q_ENUM(Diagnose)
 
@@ -108,6 +109,6 @@ private:
     Q_DISABLE_COPY(ValidatorDomain)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORDOMAIN_H

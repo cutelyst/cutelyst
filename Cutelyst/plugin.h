@@ -5,11 +5,11 @@
 #ifndef CUTELYSTPLUGIN_H
 #define CUTELYSTPLUGIN_H
 
-#include <QtCore/qobject.h>
-#include <QtCore/qhash.h>
-#include <QtCore/qstring.h>
-
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/qhash.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstring.h>
 
 namespace Cutelyst {
 
@@ -30,6 +30,6 @@ public:
     virtual bool setup(Application *app);
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTPLUGIN_H

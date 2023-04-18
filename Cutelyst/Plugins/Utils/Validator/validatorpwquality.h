@@ -5,8 +5,9 @@
 #ifndef CUTELYSTVALIDATORPWQUALITY_H
 #define CUTELYSTVALIDATORPWQUALITY_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
+
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -63,10 +64,10 @@ public:
      * \param messages  Custom error messages if validation fails.
      */
     explicit ValidatorPwQuality(const QString &field,
-                                int threshold = 30,
-                                const QVariant &options = QVariant(),
-                                const QString &userName = QString(),
-                                const QString &oldPassword = QString(),
+                                int threshold                     = 30,
+                                const QVariant &options           = QVariant(),
+                                const QString &userName           = QString(),
+                                const QString &oldPassword        = QString(),
                                 const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
@@ -119,6 +120,6 @@ private:
     Q_DISABLE_COPY(ValidatorPwQuality)
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTVALIDATORPWQUALITY_H

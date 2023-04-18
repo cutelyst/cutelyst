@@ -5,10 +5,10 @@
 #ifndef CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 #define CUTELYSTPLUGIN_CREDENTIALPASSWORD_H
 
-#include <QtCore/QCryptographicHash>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/QCryptographicHash>
 
 namespace Cutelyst {
 
@@ -121,8 +121,10 @@ public:
      * \return
      */
     static QByteArray pbkdf2(QCryptographicHash::Algorithm method,
-                             const QByteArray &password, const QByteArray &salt,
-                             int rounds, int keyLength);
+                             const QByteArray &password,
+                             const QByteArray &salt,
+                             int rounds,
+                             int keyLength);
 
     /*!
      * Generates the Hash-based message authentication code.
@@ -143,6 +145,6 @@ QString CredentialPassword::createPassword(const QString &password)
     return QString::fromLatin1(createPassword(password.toUtf8()));
 }
 
-} // namespace Plugin
+} // namespace Cutelyst
 
 #endif // CUTELYSTPLUGIN_CREDENTIALPASSWORD_H

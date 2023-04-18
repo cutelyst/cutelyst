@@ -2,13 +2,15 @@
  * SPDX-FileCopyrightText: (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "eventdispatcher_epoll_p.h"
+
+#include <errno.h>
+#include <sys/epoll.h>
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QEvent>
 #include <QtCore/QPointer>
 #include <QtCore/QSocketNotifier>
-#include <sys/epoll.h>
-#include <errno.h>
-#include "eventdispatcher_epoll_p.h"
 
 void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifier)
 {
@@ -16,27 +18,27 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
     Q_ASSUME(notifier != 0);
 
     int events = 0;
-    int fd = static_cast<int>(notifier->socket());
+    int fd     = static_cast<int>(notifier->socket());
 
     epoll_event e;
 
     SocketNotifierInfo *data;
     auto it = m_handles.find(fd);
     if (it == m_handles.end()) {
-        data = new SocketNotifierInfo(fd);
+        data       = new SocketNotifierInfo(fd);
         e.data.ptr = data;
 
         switch (notifier->type()) {
         case QSocketNotifier::Read:
-            events = EPOLLIN;
+            events  = EPOLLIN;
             data->r = notifier;
             break;
         case QSocketNotifier::Write:
-            events = EPOLLOUT;
+            events  = EPOLLOUT;
             data->w = notifier;
             break;
         case QSocketNotifier::Exception:
-            events = EPOLLPRI;
+            events  = EPOLLPRI;
             data->x = notifier;
             break;
         default:
@@ -44,7 +46,7 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
         }
 
         data->events = events;
-        e.events = events;
+        e.events     = events;
 
         int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd, &e);
         if (Q_UNLIKELY(res != 0)) {
@@ -64,15 +66,15 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
             switch (notifier->type()) {
             case QSocketNotifier::Read:
                 events = EPOLLIN;
-                n = &data->r;
+                n      = &data->r;
                 break;
             case QSocketNotifier::Write:
                 events = EPOLLOUT;
-                n = &data->w;
+                n      = &data->w;
                 break;
             case QSocketNotifier::Exception:
                 events = EPOLLPRI;
-                n = &data->x;
+                n      = &data->x;
                 break;
             default:
                 Q_UNREACHABLE();
@@ -87,17 +89,16 @@ void EventDispatcherEPollPrivate::registerSocketNotifier(QSocketNotifier *notifi
             Q_ASSERT((data->events & events) == 0);
 
             data->events |= events;
-            e.events      = data->events;
-            *n            = notifier;
+            e.events = data->events;
+            *n       = notifier;
 
             int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, fd, &e);
             if (Q_UNLIKELY(res != 0)) {
                 qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
                 return;
             }
-            data->ref(); //we are reusing data
-        }
-        else {
+            data->ref(); // we are reusing data
+        } else {
             Q_UNREACHABLE();
         }
     }
@@ -125,17 +126,14 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
 
         if (info->r == notifier) {
             info->events &= ~EPOLLIN;
-            info->r       = nullptr;
-        }
-        else if (info->w == notifier) {
+            info->r = nullptr;
+        } else if (info->w == notifier) {
             info->events &= ~EPOLLOUT;
-            info->w       = nullptr;
-        }
-        else if (info->x == notifier) {
+            info->w = nullptr;
+        } else if (info->x == notifier) {
             info->events &= ~EPOLLPRI;
-            info->x       = nullptr;
-        }
-        else {
+            info->x = nullptr;
+        } else {
             qFatal("%s: internal error: cannot find socket notifier", Q_FUNC_INFO);
         }
 
@@ -176,11 +174,11 @@ bool EventDispatcherEPollPrivate::disableSocketNotifiers(bool disable)
 
     auto it = m_notifiers.constBegin();
     while (it != m_notifiers.constEnd()) {
-        SocketNotifierInfo *info  = it.value();
+        SocketNotifierInfo *info = it.value();
 
-        e.events = disable ? 0 : info->events;
+        e.events   = disable ? 0 : info->events;
         e.data.ptr = info;
-        int res = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, info->fd, &e);
+        int res    = epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, info->fd, &e);
         if (Q_UNLIKELY(res != 0)) {
             qErrnoWarning("%s: epoll_ctl() failed", Q_FUNC_INFO);
         }

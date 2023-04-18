@@ -9,16 +9,16 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorConfirmedPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorConfirmedPrivate(const QString &f, const ValidatorMessages &m) :
-        ValidatorRulePrivate(f, m, QString())
-    {}
+    ValidatorConfirmedPrivate(const QString &f, const ValidatorMessages &m)
+        : ValidatorRulePrivate(f, m, QString())
+    {
+    }
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORCONFIRMED_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORCONFIRMED_P_H

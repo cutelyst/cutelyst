@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORDIGITS_H
 #define CUTELYSTVALIDATORDIGITS_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorDigitsPrivate;
 
 /*!
@@ -43,7 +44,7 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorDigits(const QString &field, const QVariant &length = -1, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the digits validator.
      */
@@ -75,13 +76,12 @@ protected:
      * \a errorData will contain \c 0, if \a length is greater than \c 0 and does not match the field value length, \a errorData will contain \c 1.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorDigits)
     Q_DISABLE_COPY(ValidatorDigits)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORDIGITS_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORDIGITS_H

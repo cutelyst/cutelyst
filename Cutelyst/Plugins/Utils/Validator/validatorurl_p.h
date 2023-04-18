@@ -5,25 +5,25 @@
 #ifndef CUTELYSTVALIDATORURL_P_H
 #define CUTELYSTVALIDATORURL_P_H
 
-#include "validatorurl.h"
 #include "validatorrule_p.h"
+#include "validatorurl.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorUrlPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorUrlPrivate(const QString &f, ValidatorUrl::Constraints c, const QStringList &s, const Cutelyst::ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        constraints(c),
-        schemes(s)
-    {}
+    ValidatorUrlPrivate(const QString &f, ValidatorUrl::Constraints c, const QStringList &s, const Cutelyst::ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , constraints(c)
+        , schemes(s)
+    {
+    }
 
     ValidatorUrl::Constraints constraints;
     QStringList schemes;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORURL_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORURL_P_H

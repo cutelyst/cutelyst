@@ -43,14 +43,14 @@ private:
 #endif
 
     QSocketNotifier *m_socketNotifier = nullptr;
-    CWsgiEngine *m_engine = nullptr;
+    CWsgiEngine *m_engine             = nullptr;
     Server *m_wsgi;
 
     Protocol *m_protocol = nullptr;
-    qintptr m_socket = -1;
-    int m_processing = 0;
+    qintptr m_socket     = -1;
+    int m_processing     = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // LOCALSERVER_H

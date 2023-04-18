@@ -5,8 +5,8 @@
 #ifndef CUTELYST_DISPATCHTYPEPATH_H
 #define CUTELYST_DISPATCHTYPEPATH_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/action.h>
+#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/dispatchtype.h>
 
 namespace Cutelyst {
@@ -41,6 +41,6 @@ protected:
     DispatchTypePathPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // DispatchTypePath_H

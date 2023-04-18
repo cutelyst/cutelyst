@@ -124,27 +124,33 @@ QString Utils::decodePercentEncoding(QString *s)
 
     QByteArray ba = s->toLatin1();
 
-    char *data = ba.data();
+    char *data           = ba.data();
     const char *inputPtr = data;
 
     const int len = ba.count();
     bool skipUtf8 = true;
-    int outlen = 0;
-    for (int i = 0 ; i < len; ++i, ++outlen) {
+    int outlen    = 0;
+    for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
             int a = inputPtr[++i];
             int b = inputPtr[++i];
 
-            if (a >= '0' && a <= '9') a -= '0';
-            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+            if (a >= '0' && a <= '9')
+                a -= '0';
+            else if (a >= 'a' && a <= 'f')
+                a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F')
+                a = a - 'A' + 10;
 
-            if (b >= '0' && b <= '9') b -= '0';
-            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+            if (b >= '0' && b <= '9')
+                b -= '0';
+            else if (b >= 'a' && b <= 'f')
+                b = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F')
+                b = b - 'A' + 10;
 
-            *data++ = (char)((a << 4) | b);
+            *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';
@@ -171,10 +177,10 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
 
     const char *inputPtr = data;
 
-    bool hasKey = false;
+    bool hasKey   = false;
     bool skipUtf8 = true;
-    char *from = data;
-    int outlen = 0;
+    char *from    = data;
+    int outlen    = 0;
 
     auto processKeyPair = [&] {
         if (hasKey) {
@@ -196,28 +202,34 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
             int a = inputPtr[++i];
             int b = inputPtr[++i];
 
-            if (a >= '0' && a <= '9') a -= '0';
-            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+            if (a >= '0' && a <= '9')
+                a -= '0';
+            else if (a >= 'a' && a <= 'f')
+                a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F')
+                a = a - 'A' + 10;
 
-            if (b >= '0' && b <= '9') b -= '0';
-            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+            if (b >= '0' && b <= '9')
+                b -= '0';
+            else if (b >= 'a' && b <= 'f')
+                b = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F')
+                b = b - 'A' + 10;
 
-            *data++ = (char)((a << 4) | b);
+            *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';
         } else if (c == '=') {
-            key = skipUtf8 ? QString::fromLatin1(from, data - from) : QString::fromUtf8(from, data - from);
-            from = data;
-            hasKey = true;
+            key      = skipUtf8 ? QString::fromLatin1(from, data - from) : QString::fromUtf8(from, data - from);
+            from     = data;
+            hasKey   = true;
             skipUtf8 = true; // reset
         } else if (c == '&') {
             processKeyPair();
             key.clear();
-            hasKey = false;
-            from = data;
+            hasKey   = false;
+            from     = data;
             skipUtf8 = true; // reset
         } else {
             *data++ = c;
@@ -235,27 +247,33 @@ QString Utils::decodePercentEncoding(QByteArray *ba)
         return {};
     }
 
-    char *data = ba->data();
+    char *data           = ba->data();
     const char *inputPtr = data;
 
-    int len = ba->count();
+    int len       = ba->count();
     bool skipUtf8 = true;
-    int outlen = 0;
+    int outlen    = 0;
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
             int a = inputPtr[++i];
             int b = inputPtr[++i];
 
-            if (a >= '0' && a <= '9') a -= '0';
-            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+            if (a >= '0' && a <= '9')
+                a -= '0';
+            else if (a >= 'a' && a <= 'f')
+                a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F')
+                a = a - 'A' + 10;
 
-            if (b >= '0' && b <= '9') b -= '0';
-            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+            if (b >= '0' && b <= '9')
+                b -= '0';
+            else if (b >= 'a' && b <= 'f')
+                b = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F')
+                b = b - 'A' + 10;
 
-            *data++ = (char)((a << 4) | b);
+            *data++  = (char) ((a << 4) | b);
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';

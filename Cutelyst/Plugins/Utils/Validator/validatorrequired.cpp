@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequired::ValidatorRequired(const QString &field, const Cutelyst::ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorRequiredPrivate(field, messages))
+ValidatorRequired::ValidatorRequired(const QString &field, const Cutelyst::ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorRequiredPrivate(field, messages))
 {
 }
 

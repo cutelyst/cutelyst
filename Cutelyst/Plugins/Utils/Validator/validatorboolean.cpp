@@ -4,12 +4,13 @@
  */
 
 #include "validatorboolean_p.h"
+
 #include <QStringList>
 
 using namespace Cutelyst;
 
-ValidatorBoolean::ValidatorBoolean(const QString &field, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorBooleanPrivate(field, messages, defValKey))
+ValidatorBoolean::ValidatorBoolean(const QString &field, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorBooleanPrivate(field, messages, defValKey))
 {
 }
 
@@ -54,4 +55,3 @@ QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c, const QVa
     }
     return error;
 }
-

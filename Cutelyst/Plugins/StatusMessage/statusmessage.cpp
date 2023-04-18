@@ -7,10 +7,9 @@
 #include <Cutelyst/Application>
 #include <Cutelyst/Plugins/Session/session.h>
 
+#include <QRandomGenerator>
 #include <QtCore/QDateTime>
 #include <QtCore/QLoggingCategory>
-
-#include <QRandomGenerator>
 
 using namespace Cutelyst;
 
@@ -25,10 +24,10 @@ class StatusMessagePrivate
 public:
     static void _q_postFork(Application *app);
 
-    QString sessionPrefix = QStringLiteral("status_msg");
-    QString tokenParam = QStringLiteral("mid");
+    QString sessionPrefix     = QStringLiteral("status_msg");
+    QString tokenParam        = QStringLiteral("mid");
     QString statusMsgStashKey = QStringLiteral("status_msg");
-    QString errorMsgStashKey = QStringLiteral("error_msg");
+    QString errorMsgStashKey  = QStringLiteral("error_msg");
 };
 
 void StatusMessagePrivate::_q_postFork(Application *app)
@@ -36,9 +35,11 @@ void StatusMessagePrivate::_q_postFork(Application *app)
     m_instance = app->plugin<StatusMessage *>();
 }
 
-}
+} // namespace Cutelyst
 
-StatusMessage::StatusMessage(Application *parent) : Plugin(parent), d_ptr(new StatusMessagePrivate)
+StatusMessage::StatusMessage(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new StatusMessagePrivate)
 {
     m_instance = this;
 }
@@ -110,14 +111,14 @@ void StatusMessage::load(Context *c)
     }
 
     QStringList deleteKeys;
-    const QString statusKey = priv->sessionPrefix + QLatin1String("status") + token;
+    const QString statusKey    = priv->sessionPrefix + QLatin1String("status") + token;
     const QVariant statusValue = Session::value(c, statusKey);
     if (!statusValue.isNull()) {
         deleteKeys.append(statusKey);
         c->setStash(priv->statusMsgStashKey, statusValue);
     }
 
-    const QString errorKey = priv->sessionPrefix + QLatin1String("error") + token;
+    const QString errorKey    = priv->sessionPrefix + QLatin1String("error") + token;
     const QVariant errorValue = Session::value(c, errorKey);
     if (!errorValue.isNull()) {
         deleteKeys.append(errorKey);

@@ -6,9 +6,8 @@
 #define ASYNC_H
 
 #include <Cutelyst/cutelyst_global.h>
-
-#include <memory>
 #include <functional>
+#include <memory>
 
 namespace Cutelyst {
 
@@ -25,9 +24,9 @@ public:
 
     ~ASync();
 
-    ASync &operator =(const ASync &copy);
+    ASync &operator=(const ASync &copy);
 
-    ASync &operator =(ASync &&other) noexcept
+    ASync &operator=(ASync &&other) noexcept
     {
         std::swap(d, other.d);
         return *this;
@@ -37,6 +36,6 @@ private:
     std::shared_ptr<ASyncPrivate> d;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // ASYNC_H

@@ -5,18 +5,18 @@
 #ifndef PROTOCOLHTTP2_H
 #define PROTOCOLHTTP2_H
 
-#include <QObject>
-
-#include <enginerequest.h>
-#include <context.h>
-
+#include "hpack.h"
 #include "protocol.h"
 #include "socket.h"
-#include "hpack.h"
 
-//namespace Cutelyst {
-//class Headers;
-//}
+#include <context.h>
+#include <enginerequest.h>
+
+#include <QObject>
+
+// namespace Cutelyst {
+// class Headers;
+// }
 
 class QEventLoop;
 namespace Cutelyst {
@@ -55,12 +55,12 @@ public:
     QString scheme;
     ProtoRequestHttp2 *protoRequest;
     quint32 streamId;
-    qint32 windowSize = 65535;
+    qint32 windowSize    = 65535;
     qint64 contentLength = -1;
-    qint32 dataSent = 0;
-    qint64 consumedData = 0;
-    quint8 state = Idle;
-    bool gotPath = false;
+    qint32 dataSent      = 0;
+    qint64 consumedData  = 0;
+    quint8 state         = Idle;
+    bool gotPath         = false;
 };
 
 class ProtoRequestHttp2 final : public ProtocolData
@@ -72,11 +72,12 @@ public:
 
     void setupNewConnection(Cutelyst::Socket *sock) override final;
 
-    inline void resetData() override final {
+    inline void resetData() override final
+    {
         ProtocolData::resetData();
 
         stream_id = 0;
-        pktsize = 0;
+        pktsize   = 0;
         delete hpack;
         hpack = nullptr;
 
@@ -92,27 +93,27 @@ public:
         streams.clear();
 
         headersBuffer.clear();
-        maxStreamId = 0;
-        streamForContinuation = 0;
-        dataSent = 0;
-        windowSize = 65535;
+        maxStreamId               = 0;
+        streamForContinuation     = 0;
+        dataSent                  = 0;
+        windowSize                = 65535;
         settingsInitialWindowSize = 65535;
-        canPush = false;
+        canPush                   = false;
     }
 
     quint32 stream_id = 0;
-    quint32 pktsize = 0;
+    quint32 pktsize   = 0;
 
     QByteArray headersBuffer;
-    HPack *hpack = nullptr;
-    quint64 streamForContinuation = 0;
-    quint32 maxStreamId = 0;
-    qint32 dataSent = 0;
-    qint32 windowSize = 65535;
+    HPack *hpack                     = nullptr;
+    quint64 streamForContinuation    = 0;
+    quint32 maxStreamId              = 0;
+    qint32 dataSent                  = 0;
+    qint32 windowSize                = 65535;
     qint32 settingsInitialWindowSize = 65535;
-    quint32 settingsMaxFrameSize = 16384;
-    quint8 processing = 0;
-    bool canPush = true;
+    quint32 settingsMaxFrameSize     = 16384;
+    quint8 processing                = 0;
+    bool canPush                     = true;
 
     QHash<quint32, H2Stream *> streams;
 };
@@ -139,7 +140,7 @@ public:
 
     int sendGoAway(QIODevice *io, quint32 lastStreamId, quint32 error) const;
     int sendRstStream(QIODevice *io, quint32 streamId, quint32 error) const;
-    int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32> > &settings) const;
+    int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32>> &settings) const;
     int sendSettingsAck(QIODevice *io) const;
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
     int sendData(QIODevice *io, quint32 streamId, qint32 flags, const char *data, qint32 dataLen) const;
@@ -154,6 +155,6 @@ public:
     qint32 m_headerTableSize;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // PROTOCOLHTTP2_H

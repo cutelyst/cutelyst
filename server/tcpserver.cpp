@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "tcpserver.h"
-#include "protocolhttp.h"
-#include "socket.h"
+
 #include "protocol.h"
+#include "protocolhttp.h"
 #include "server.h"
+#include "socket.h"
 
 #include <Cutelyst/Engine>
+
 #include <QDateTime>
 #include <QLoggingCategory>
 
@@ -16,32 +18,33 @@ Q_LOGGING_CATEGORY(CWSGI_TCPSERVER, "cwsgi.tcpserver", QtWarningMsg)
 
 using namespace Cutelyst;
 
-TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent) : QTcpServer(parent)
-  , m_serverAddress(serverAddress)
-  , m_wsgi(wsgi)
-  , m_protocol(protocol)
+TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent)
+    : QTcpServer(parent)
+    , m_serverAddress(serverAddress)
+    , m_wsgi(wsgi)
+    , m_protocol(protocol)
 {
-    m_engine = qobject_cast<CWsgiEngine*>(parent);
+    m_engine = qobject_cast<CWsgiEngine *>(parent);
 
     if (m_wsgi->tcpNodelay()) {
-        m_socketOptions.push_back({ QAbstractSocket::LowDelayOption, 1 });
+        m_socketOptions.push_back({QAbstractSocket::LowDelayOption, 1});
     }
     if (m_wsgi->soKeepalive()) {
-        m_socketOptions.push_back({ QAbstractSocket::KeepAliveOption, 1 });
+        m_socketOptions.push_back({QAbstractSocket::KeepAliveOption, 1});
     }
     if (m_wsgi->socketSndbuf() != -1) {
-        m_socketOptions.push_back({ QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf() });
+        m_socketOptions.push_back({QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf()});
     }
     if (m_wsgi->socketRcvbuf() != -1) {
-        m_socketOptions.push_back({ QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf() });
+        m_socketOptions.push_back({QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf()});
     }
 }
 
 void TcpServer::incomingConnection(qintptr handle)
 {
-    auto sock = new TcpSocket(m_engine, this);
+    auto sock           = new TcpSocket(m_engine, this);
     sock->serverAddress = m_serverAddress;
-    sock->protoData = m_protocol->createData(sock);
+    sock->protoData     = m_protocol->createData(sock);
 
     connect(sock, &QIODevice::readyRead, [sock] {
         sock->timeout = false;
@@ -58,7 +61,7 @@ void TcpServer::incomingConnection(qintptr handle)
         sock->proto = m_protocol;
 
         sock->remoteAddress = sock->peerAddress();
-        sock->remotePort = sock->peerPort();
+        sock->remotePort    = sock->peerPort();
         sock->protoData->setupNewConnection(sock);
 
         for (const auto &opt : m_socketOptions) {
@@ -82,9 +85,9 @@ void TcpServer::shutdown()
     } else {
         const auto childrenL = children();
         for (auto child : childrenL) {
-            auto socket = qobject_cast<TcpSocket*>(child);
+            auto socket = qobject_cast<TcpSocket *>(child);
             if (socket) {
-                connect(socket, &TcpSocket::finished, this, [this] () {
+                connect(socket, &TcpSocket::finished, this, [this]() {
                     if (m_processing == 0) {
                         m_engine->serverShutdown();
                     }
@@ -100,7 +103,7 @@ void TcpServer::timeoutConnections()
     if (m_processing) {
         const auto childrenL = children();
         for (auto child : childrenL) {
-            auto socket = qobject_cast<TcpSocket*>(child);
+            auto socket = qobject_cast<TcpSocket *>(child);
             if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
                 if (socket->timeout) {
                     qCInfo(CWSGI_TCPSERVER) << "timing out connection" << socket->peerAddress().toString() << socket->peerPort();

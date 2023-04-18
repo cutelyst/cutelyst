@@ -4,16 +4,17 @@
  */
 
 #include "validatordomain_p.h"
-#include <QUrl>
-#include <QStringList>
-#include <QEventLoop>
+
 #include <QDnsLookup>
+#include <QEventLoop>
+#include <QStringList>
 #include <QTimer>
+#include <QUrl>
 
 using namespace Cutelyst;
 
-ValidatorDomain::ValidatorDomain(const QString &field, bool checkDNS, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(* new ValidatorDomainPrivate(field, checkDNS, messages, defValKey))
+ValidatorDomain::ValidatorDomain(const QString &field, bool checkDNS, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorDomainPrivate(field, checkDNS, messages, defValKey))
 {
 }
 
@@ -27,7 +28,7 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
 
     Diagnose diag = Valid;
 
-    QString _v = value;
+    QString _v      = value;
     bool hasRootDot = false;
     if (_v.endsWith(u'.')) {
         hasRootDot = true;
@@ -49,7 +50,7 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
             for (const QChar &ch : tld) {
                 const ushort &uc = ch.unicode();
                 if (((uc > 47) && (uc < 58)) || (uc == 45)) {
-                    diag = InvalidTLD;
+                    diag  = InvalidTLD;
                     valid = false;
                     break;
                 }
@@ -70,22 +71,22 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                                         if (!part.isEmpty()) {
                                             // labels/parts can have a maximum length of 63 chars
                                             if (part.length() < 64) {
-                                                bool isTld = (i == (parts.size() -1));
+                                                bool isTld      = (i == (parts.size() - 1));
                                                 bool isPunyCode = part.startsWith(u"xn--");
                                                 for (int j = 0; j < part.size(); ++j) {
-                                                    const ushort &uc = part.at(j).unicode();
+                                                    const ushort &uc   = part.at(j).unicode();
                                                     const bool isDigit = ((uc > 47) && (uc < 58));
-                                                    const bool isDash = (uc == 45);
+                                                    const bool isDash  = (uc == 45);
                                                     // no part/label can start with a digit or a dash
                                                     if ((j == 0) && (isDash || isDigit)) {
                                                         valid = false;
-                                                        diag = isDash ? DashStart : DigitStart;
+                                                        diag  = isDash ? DashStart : DigitStart;
                                                         break;
                                                     }
                                                     // no part/label can end with a dash
                                                     if ((j == (part.size() - 1)) && isDash) {
                                                         valid = false;
-                                                        diag = DashEnd;
+                                                        diag  = DashEnd;
                                                         break;
                                                     }
                                                     const bool isChar = ((uc > 96) && (uc < 123));
@@ -93,20 +94,20 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                                                         // if it is not the tld, it can have a-z 0-9 and -
                                                         if (!(isDigit || isDash || isChar)) {
                                                             valid = false;
-                                                            diag = InvalidChars;
+                                                            diag  = InvalidChars;
                                                             break;
                                                         }
                                                     } else {
                                                         if (isPunyCode) {
                                                             if (!(isDigit || isDash || isChar)) {
                                                                 valid = false;
-                                                                diag = InvalidTLD;
+                                                                diag  = InvalidTLD;
                                                                 break;
                                                             }
                                                         } else {
                                                             if (!isChar) {
                                                                 valid = false;
-                                                                diag = InvalidTLD;
+                                                                diag  = InvalidTLD;
                                                                 break;
                                                             }
                                                         }
@@ -114,12 +115,12 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                                                 }
                                             } else {
                                                 valid = false;
-                                                diag = LabelTooLong;
+                                                diag  = LabelTooLong;
                                                 break;
                                             }
                                         } else {
                                             valid = false;
-                                            diag = EmptyLabel;
+                                            diag  = EmptyLabel;
                                             break;
                                         }
                                     } else {
@@ -128,30 +129,29 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
                                 }
                             } else {
                                 valid = false;
-                                diag = InvalidTLD;
+                                diag  = InvalidTLD;
                             }
                         } else {
                             valid = false;
-                            diag = InvalidLabelCount;
+                            diag  = InvalidLabelCount;
                         }
                     } else {
                         valid = false;
-                        diag = TooLong;
+                        diag  = TooLong;
                     }
                 } else {
                     valid = false;
-                    diag = EmptyLabel;
+                    diag  = EmptyLabel;
                 }
             }
         } else {
             valid = false;
-            diag = EmptyLabel;
+            diag  = EmptyLabel;
         }
     } else {
         valid = false;
-        diag = EmptyLabel;
+        diag  = EmptyLabel;
     }
-
 
     if (valid && checkDNS) {
         QDnsLookup alookup(QDnsLookup::A, v);
@@ -171,14 +171,14 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
 
             if (((aaaaLookup.error() != QDnsLookup::NoError) && (aaaaLookup.error() != QDnsLookup::OperationCancelledError)) || aaaaLookup.hostAddressRecords().empty()) {
                 valid = false;
-                diag = MissingDNS;
+                diag  = MissingDNS;
             } else if (aaaaLookup.error() == QDnsLookup::OperationCancelledError) {
                 valid = false;
-                diag = DNSTimeout;
+                diag  = DNSTimeout;
             }
         } else if (alookup.error() == QDnsLookup::OperationCancelledError) {
             valid = false;
-            diag = DNSTimeout;
+            diag  = DNSTimeout;
         }
     }
 
@@ -316,8 +316,8 @@ QString ValidatorDomain::genericValidationError(Context *c, const QVariant &erro
 {
     QString error;
     const QString _label = label(c);
-    const Diagnose diag = errorData.value<Diagnose>();
-    error = ValidatorDomain::diagnoseString(c, diag, _label);
+    const Diagnose diag  = errorData.value<Diagnose>();
+    error                = ValidatorDomain::diagnoseString(c, diag, _label);
     return error;
 }
 

@@ -17,7 +17,8 @@ public:
     Root(QObject *app);
     ~Root();
 
-    C_ATTR(index, :Path)
+    C_ATTR(index,
+           : Path)
     void index(Context *c);
 
 Q_SIGNALS:

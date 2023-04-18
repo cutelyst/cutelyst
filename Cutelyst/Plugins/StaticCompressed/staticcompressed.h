@@ -5,8 +5,8 @@
 #ifndef STATICCOMPRESSED_H
 #define STATICCOMPRESSED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugin>
+#include <Cutelyst/cutelyst_global.h>
 
 namespace Cutelyst {
 
@@ -163,6 +163,6 @@ protected:
     QScopedPointer<StaticCompressedPrivate> d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // STATICCOMPRESSED_H

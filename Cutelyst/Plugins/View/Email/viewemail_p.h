@@ -5,14 +5,14 @@
 #ifndef VIEWJSON_P_H
 #define VIEWJSON_P_H
 
-#include "viewemail.h"
 #include "view_p.h"
+#include "viewemail.h"
 
-#include <QtCore/QStringList>
-
+#include <SimpleMail/mimepart.h>
 #include <SimpleMail/sender.h>
 #include <SimpleMail/server.h>
-#include <SimpleMail/mimepart.h>
+
+#include <QtCore/QStringList>
 
 using namespace SimpleMail;
 namespace Cutelyst {
@@ -24,7 +24,7 @@ public:
     void setupAttributes(MimePart *part, const QVariantHash &attrs) const;
     void setupEncoding(MimePart *part, const QByteArray &encoding) const;
 
-    QString stashKey = QStringLiteral("email");
+    QString stashKey              = QStringLiteral("email");
     QByteArray defaultContentType = QByteArrayLiteral("text/plain");
     QByteArray defaultCharset;
     QByteArray defaultEncoding;
@@ -33,7 +33,6 @@ public:
     Server *server = nullptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // VIEWJSON_P_H
-

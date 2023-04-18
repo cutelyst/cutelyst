@@ -5,8 +5,9 @@
 #ifndef PAGINATION_H
 #define PAGINATION_H
 
-#include <QVariantMap>
 #include <Cutelyst/cutelyst_global.h>
+
+#include <QVariantMap>
 
 namespace Cutelyst {
 
@@ -79,7 +80,7 @@ public:
     QVector<int> pages() const;
 };
 
-}
+} // namespace Cutelyst
 Q_DECLARE_METATYPE(Cutelyst::Pagination)
 
 #endif // PAGINATION_H

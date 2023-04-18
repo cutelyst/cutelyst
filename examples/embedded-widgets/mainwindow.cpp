@@ -1,16 +1,15 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 #include "embeddedapp.h"
+#include "ui_mainwindow.h"
 
-#include <server/server.h>
 #include <Cutelyst/Context>
 #include <Cutelyst/Response>
+#include <server/server.h>
 
 #include <QMessageBox>
-
-#include <QNetworkReply>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -39,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_server, &Cutelyst::Server::stopped, this, [=] {
         ui->serverListenPB->setEnabled(true);
     });
-    connect(m_server, &Cutelyst::Server::errorOccured, this, [=] (const QString &message) {
+    connect(m_server, &Cutelyst::Server::errorOccured, this, [=](const QString &message) {
         ui->serverListenPB->setEnabled(true);
         ui->serverStopListenPB->setEnabled(false);
         QMessageBox::critical(this, tr("Failed to start server"), message);
@@ -71,7 +70,7 @@ void MainWindow::clientSend()
 
         const QByteArray body = reply->readAll();
         ui->clientResponsePTE->setPlainText(QString::fromUtf8(body));
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        int status           = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QString statusReason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
         qDebug() << "client finished" << body.size() << status << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
         ui->clientResponseLE->setText(QString::number(status) + QLatin1String(" - ") + statusReason);
@@ -79,12 +78,12 @@ void MainWindow::clientSend()
         m_clientReceivedHeaders->clear();
         for (auto &header : reply->rawHeaderPairs()) {
             qDebug() << "client " << header.first << header.second;
-            auto keyItem = new QStandardItem(QString::fromLatin1(header.first));
+            auto keyItem   = new QStandardItem(QString::fromLatin1(header.first));
             auto valueItem = new QStandardItem(QString::fromLatin1(header.second));
             m_clientReceivedHeaders->appendRow({
-                                                   keyItem,
-                                                   valueItem,
-                                               });
+                keyItem,
+                valueItem,
+            });
         }
     });
     ui->clientSendPB->setEnabled(false);
@@ -95,7 +94,7 @@ void MainWindow::listenClicked()
     ui->serverListenPB->setEnabled(false);
 
     const QString address = QLatin1String("localhost:") + QString::number(ui->serverPortSB->value());
-    m_server->setHttpSocket({ address });
+    m_server->setHttpSocket({address});
     m_server->start(m_app);
 }
 
@@ -113,14 +112,14 @@ void MainWindow::indexCalled(Cutelyst::Context *c)
 
     m_serverReceivedHeaders->clear();
     const auto headersData = c->request()->headers().data();
-    auto hIt = headersData.begin();
+    auto hIt               = headersData.begin();
     while (hIt != headersData.end()) {
-        auto keyItem = new QStandardItem(hIt.key());
+        auto keyItem   = new QStandardItem(hIt.key());
         auto valueItem = new QStandardItem(hIt.value());
         m_serverReceivedHeaders->appendRow({
-                                               keyItem,
-                                               valueItem,
-                                           });
+            keyItem,
+            valueItem,
+        });
         ++hIt;
     }
 

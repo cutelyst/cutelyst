@@ -15,7 +15,7 @@ class AuthenticationRealm;
 class AuthenticationPrivate
 {
 public:
-    AuthenticationRealm* realm(const QString &realmName) const;
+    AuthenticationRealm *realm(const QString &realmName) const;
 
     static inline AuthenticationUser restoreUser(Context *c, const QVariant &frozenUser, const QString &realmName);
     static inline AuthenticationRealm *findRealmForPersistedUser(Cutelyst::Context *c, const QMap<QString, AuthenticationRealm *> &realms, const QStringList &realmsOrder);
@@ -28,6 +28,6 @@ public:
     QStringList realmsOrder;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // AUTHENTICATION_P_H

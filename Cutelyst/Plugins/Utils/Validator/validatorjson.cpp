@@ -4,13 +4,14 @@
  */
 
 #include "validatorjson_p.h"
+
 #include <QJsonDocument>
 #include <QJsonParseError>
 
 using namespace Cutelyst;
 
-ValidatorJson::ValidatorJson(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorJsonPrivate(field, messages, defValKey))
+ValidatorJson::ValidatorJson(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorJsonPrivate(field, messages, defValKey))
 {
 }
 
@@ -43,7 +44,7 @@ ValidatorReturnType ValidatorJson::validate(Cutelyst::Context *c, const ParamsMu
 QString ValidatorJson::genericValidationError(Context *c, const QVariant &errorData) const
 {
     QString error;
-    const QString _label = label(c);
+    const QString _label    = label(c);
     const QString jsonError = errorData.toString();
     if (_label.isEmpty()) {
         if (!jsonError.isEmpty()) {

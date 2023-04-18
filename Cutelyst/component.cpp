@@ -2,19 +2,21 @@
  * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "component_p.h"
 #include "common.h"
+#include "component_p.h"
 #include "context.h"
 
 using namespace Cutelyst;
 
-Component::Component(QObject *parent) : QObject(parent)
-  , d_ptr(new ComponentPrivate)
+Component::Component(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new ComponentPrivate)
 {
 }
 
-Component::Component(ComponentPrivate* d, QObject *parent) : QObject(parent)
-  , d_ptr(d)
+Component::Component(ComponentPrivate *d, QObject *parent)
+    : QObject(parent)
+    , d_ptr(d)
 {
 }
 
@@ -145,7 +147,7 @@ void Component::applyRoles(const QStack<Cutelyst::Component *> &roles)
             d->afterRoles.push(code);
         }
     }
-    d->roles = roles;
+    d->roles         = roles;
     d->proccessRoles = true;
 }
 

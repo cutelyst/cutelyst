@@ -42,6 +42,6 @@ public:
     virtual bool deleteExpiredSessions(Context *c, quint64 expires) final;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // SESSIONSTOREFILE_H

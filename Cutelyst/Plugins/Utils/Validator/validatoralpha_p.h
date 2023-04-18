@@ -13,14 +13,15 @@ namespace Cutelyst {
 class ValidatorAlphaPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorAlphaPrivate(const QString &f, bool ao, const ValidatorMessages &m, const QString &dvk) :
-        ValidatorRulePrivate(f, m, dvk),
-        asciiOnly(ao)
-    {}
+    ValidatorAlphaPrivate(const QString &f, bool ao, const ValidatorMessages &m, const QString &dvk)
+        : ValidatorRulePrivate(f, m, dvk)
+        , asciiOnly(ao)
+    {
+    }
 
     bool asciiOnly = false;
 };
 
-}
+} // namespace Cutelyst
 
-#endif //CUTELYSTVALIDATORALPHA_P_H
+#endif // CUTELYSTVALIDATORALPHA_P_H

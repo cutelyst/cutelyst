@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, const QVariant &min, const QVariant &max, const ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, messages, defValKey))
+ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, const QVariant &min, const QVariant &max, const ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, messages, defValKey))
 {
 }
 
@@ -24,7 +24,7 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
 
     const QString v = value(params);
 
-    bool ok = false;
+    bool ok  = false;
     int _max = 0;
     int _min = d->extractInt(c, params, d->min, &ok);
     if (!ok) {
@@ -86,9 +86,9 @@ QString ValidatorDigitsBetween::genericValidationError(Context *c, const QVarian
     QString error;
 
     const QVariantList list = errorData.toList();
-    const QString min = list.at(0).toString();
-    const QString max = list.at(1).toString();
-    const QString _label = label(c);
+    const QString min       = list.at(0).toString();
+    const QString max       = list.at(1).toString();
+    const QString _label    = label(c);
 
     if (_label.isEmpty()) {
         error = c->translate("Cutelyst::ValidatorDigitsBetween", "Must contain between %1 and %2 digits.").arg(min, max);

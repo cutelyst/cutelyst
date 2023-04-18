@@ -4,15 +4,15 @@
  */
 #include "protocolfastcgi.h"
 
-#include "socket.h"
 #include "server.h"
+#include "socket.h"
 
 #include <Cutelyst/Context>
 
+#include <QBuffer>
 #include <QCoreApplication>
 #include <QLoggingCategory>
 #include <QTemporaryFile>
-#include <QBuffer>
 
 Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi", QtWarningMsg)
 
@@ -25,68 +25,68 @@ Q_LOGGING_CATEGORY(CWSGI_FCGI, "cwsgi.fcgi", QtWarningMsg)
  * Number of bytes in a FCGI_Header.  Future versions of the protocol
  * will not reduce this number.
  */
-#define FCGI_HEADER_LEN  8
+#define FCGI_HEADER_LEN 8
 
 /*
  * Value for version component of FCGI_Header
  */
-#define FCGI_VERSION_1           1
+#define FCGI_VERSION_1 1
 
 /*
  * Values for type component of FCGI_Header
  */
-#define FCGI_BEGIN_REQUEST       1
-#define FCGI_ABORT_REQUEST       2
-#define FCGI_END_REQUEST         3
-#define FCGI_PARAMS              4
-#define FCGI_STDIN               5
-#define FCGI_STDOUT              6
-#define FCGI_STDERR              7
-#define FCGI_DATA                8
-#define FCGI_GET_VALUES          9
-#define FCGI_GET_VALUES_RESULT  10
-#define FCGI_UNKNOWN_TYPE       11
+#define FCGI_BEGIN_REQUEST 1
+#define FCGI_ABORT_REQUEST 2
+#define FCGI_END_REQUEST 3
+#define FCGI_PARAMS 4
+#define FCGI_STDIN 5
+#define FCGI_STDOUT 6
+#define FCGI_STDERR 7
+#define FCGI_DATA 8
+#define FCGI_GET_VALUES 9
+#define FCGI_GET_VALUES_RESULT 10
+#define FCGI_UNKNOWN_TYPE 11
 #define FCGI_MAXTYPE (FCGI_UNKNOWN_TYPE)
 
 /*
  * Value for requestId component of FCGI_Header
  */
-#define FCGI_NULL_REQUEST_ID     0
+#define FCGI_NULL_REQUEST_ID 0
 
 /*
  * Mask for flags component of FCGI_BeginRequestBody
  */
-#define FCGI_KEEP_CONN  1
+#define FCGI_KEEP_CONN 1
 
 /*
  * Values for role component of FCGI_BeginRequestBody
  */
-#define FCGI_RESPONDER  1
+#define FCGI_RESPONDER 1
 #define FCGI_AUTHORIZER 2
-#define FCGI_FILTER     3
+#define FCGI_FILTER 3
 
 /*
  * Values for protocolStatus component of FCGI_EndRequestBody
  */
 #define FCGI_REQUEST_COMPLETE 0
-#define FCGI_CANT_MPX_CONN    1
-#define FCGI_OVERLOADED       2
-#define FCGI_UNKNOWN_ROLE     3
+#define FCGI_CANT_MPX_CONN 1
+#define FCGI_OVERLOADED 2
+#define FCGI_UNKNOWN_ROLE 3
 
 /*
  * Variable names for FCGI_GET_VALUES / FCGI_GET_VALUES_RESULT records
  */
-#define FCGI_MAX_CONNS  "FCGI_MAX_CONNS"
-#define FCGI_MAX_REQS   "FCGI_MAX_REQS"
+#define FCGI_MAX_CONNS "FCGI_MAX_CONNS"
+#define FCGI_MAX_REQS "FCGI_MAX_REQS"
 #define FCGI_MPXS_CONNS "FCGI_MPXS_CONNS"
 
-#define WSGI_OK     0
-#define WSGI_AGAIN  1
-#define WSGI_BODY   2
+#define WSGI_OK 0
+#define WSGI_AGAIN 1
+#define WSGI_BODY 2
 #define WSGI_ERROR -1
 
-#define FCGI_ALIGNMENT		 8
-#define FCGI_ALIGN(n)		 \
+#define FCGI_ALIGNMENT 8
+#define FCGI_ALIGN(n) \
     (((n) + (FCGI_ALIGNMENT - 1)) & ~(FCGI_ALIGNMENT - 1))
 
 using namespace Cutelyst;
@@ -103,22 +103,23 @@ struct fcgi_record {
 };
 
 #ifdef Q_CC_MSVC
-#pragma pack(push)
-#pragma pack(1)
+#    pragma pack(push)
+#    pragma pack(1)
 #endif
 struct fcgi_begin_request_body {
     quint16 role;
-    quint8  flags;
-    quint8  reserved[5];
+    quint8 flags;
+    quint8 reserved[5];
 }
 #ifdef Q_CC_MSVC
 ;
-#pragma pack(pop)
+#    pragma pack(pop)
 #else
-__attribute__ ((__packed__));
+__attribute__((__packed__));
 #endif
 
-ProtocolFastCGI::ProtocolFastCGI(Server *wsgi) : Protocol(wsgi)
+ProtocolFastCGI::ProtocolFastCGI(Server *wsgi)
+    : Protocol(wsgi)
 {
 }
 
@@ -133,7 +134,7 @@ Protocol::Type ProtocolFastCGI::type() const
 
 quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key, quint16 keylen, const char *val, quint16 vallen) const
 {
-    char *buffer = request->buffer + request->pktsize;
+    char *buffer    = request->buffer + request->pktsize;
     char *watermark = request->buffer + m_bufferSize;
 
     if (buffer + keylen + vallen + 2 + 2 >= watermark) {
@@ -145,7 +146,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
         const QString value = QString::fromLatin1(val, vallen);
         if (!request->headerHost && memcmp(key + 5, "HOST", 4) == 0) {
             request->serverAddress = value;
-            request->headerHost = true;
+            request->headerHost    = true;
             request->headers.pushRawHeader(QStringLiteral("HOST"), value);
         } else {
             const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
@@ -179,9 +180,9 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request, const char *key
         request->isSecure = QByteArray(val, vallen) == "https" ? true : false;
     }
 
-//#ifdef DEBUG
-//    qCDebug(CWSGI_FCGI, "add uwsgi var: %.*s = %.*s", keylen, key, vallen, val);
-//#endif
+    //#ifdef DEBUG
+    //    qCDebug(CWSGI_FCGI, "add uwsgi var: %.*s = %.*s", keylen, key, vallen, val);
+    //#endif
 
     return keylen + vallen + 2 + 2;
 }
@@ -236,14 +237,15 @@ int ProtocolFastCGI::parseHeaders(ProtoRequestFastCGI *request, const char *buf,
 
 int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
 {
-    Q_FOREVER {
+    Q_FOREVER
+    {
         if (request->buf_size >= int(sizeof(struct fcgi_record))) {
             auto fr = reinterpret_cast<struct fcgi_record *>(request->buffer);
 
-            quint8 fcgi_type = fr->type;
-            quint16 fcgi_len = quint16(fr->cl0 | (fr->cl1 << 8));
+            quint8 fcgi_type    = fr->type;
+            quint16 fcgi_len    = quint16(fr->cl0 | (fr->cl1 << 8));
             qint32 fcgi_all_len = sizeof(struct fcgi_record) + fcgi_len + fr->pad;
-            request->stream_id = quint16(fr->req0 | (fr->req1 << 8));
+            request->stream_id  = quint16(fr->req0 | (fr->req1 << 8));
 
             // if STDIN, end of the loop
             if (fcgi_type == FCGI_STDIN) {
@@ -254,16 +256,15 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
                 }
 
                 int content_size = request->buf_size - int(sizeof(struct fcgi_record));
-                if (!writeBody(request, request->buffer + sizeof(struct fcgi_record),
-                               qMin(content_size, int(fcgi_len)))) {
+                if (!writeBody(request, request->buffer + sizeof(struct fcgi_record), qMin(content_size, int(fcgi_len)))) {
                     return WSGI_ERROR;
                 }
 
                 if (content_size < fcgi_len) {
                     // we still need the rest of the pkt body
                     request->connState = ProtoRequestFastCGI::ContentBody;
-                    request->pktsize = quint16(fcgi_len - content_size);
-                    request->buf_size = fr->pad;
+                    request->pktsize   = quint16(fcgi_len - content_size);
+                    request->buf_size  = fr->pad;
                     return WSGI_BODY;
                 }
 
@@ -276,11 +277,11 @@ int ProtocolFastCGI::processPacket(ProtoRequestFastCGI *request) const
                         return WSGI_ERROR;
                     }
                 } else if (fcgi_type == FCGI_BEGIN_REQUEST) {
-                    auto brb = reinterpret_cast<struct fcgi_begin_request_body *>(request->buffer + sizeof(struct fcgi_begin_request_body));
+                    auto brb                  = reinterpret_cast<struct fcgi_begin_request_body *>(request->buffer + sizeof(struct fcgi_begin_request_body));
                     request->headerConnection = (brb->flags & FCGI_KEEP_CONN) ? ProtoRequestFastCGI::HeaderConnectionKeep : ProtoRequestFastCGI::HeaderConnectionClose;
-                    request->contentLength = -1;
-                    request->headers = Cutelyst::Headers();
-                    request->connState = ProtoRequestFastCGI::MethodLine;
+                    request->contentLength    = -1;
+                    request->headers          = Cutelyst::Headers();
+                    request->connState        = ProtoRequestFastCGI::MethodLine;
                 }
 
                 memmove(request->buffer, request->buffer + fcgi_all_len, size_t(request->buf_size - fcgi_all_len));
@@ -309,9 +310,9 @@ bool ProtocolFastCGI::writeBody(ProtoRequestFastCGI *request, char *buf, qint64 
 
 qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvailable) const
 {
-    auto request = static_cast<ProtoRequestFastCGI *>(sock->protoData);
+    auto request    = static_cast<ProtoRequestFastCGI *>(sock->protoData);
     QIODevice *body = request->body;
-    int &pad = request->buf_size;
+    int &pad        = request->buf_size;
     while (bytesAvailable && request->pktsize + pad) {
         // We need to read and ignore ending PAD data
         qint64 len = io->read(m_postBuffer, qMin(m_postBufferSize, static_cast<qint64>(request->pktsize + pad)));
@@ -324,7 +325,7 @@ qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvaila
         if (len > request->pktsize) {
             // We read past pktsize, so possibly PAD data was read too.
             pad -= len - request->pktsize;
-            len = request->pktsize;
+            len              = request->pktsize;
             request->pktsize = 0;
         } else {
             request->pktsize -= len;
@@ -333,7 +334,7 @@ qint64 ProtocolFastCGI::readBody(Socket *sock, QIODevice *io, qint64 bytesAvaila
         body->write(m_postBuffer, len);
     }
 
-    if ( request->pktsize + pad == 0) {
+    if (request->pktsize + pad == 0) {
         request->connState = ProtoRequestFastCGI::MethodLine;
     }
 
@@ -406,30 +407,29 @@ ProtocolData *ProtocolFastCGI::createData(Socket *sock) const
     return new ProtoRequestFastCGI(sock, m_bufferSize);
 }
 
-ProtoRequestFastCGI::ProtoRequestFastCGI(Socket *sock, int bufferSize) : ProtocolData(sock, bufferSize)
+ProtoRequestFastCGI::ProtoRequestFastCGI(Socket *sock, int bufferSize)
+    : ProtocolData(sock, bufferSize)
 {
-
 }
 
 ProtoRequestFastCGI::~ProtoRequestFastCGI()
 {
-
 }
 
 void ProtoRequestFastCGI::setupNewConnection(Socket *sock)
 {
     serverAddress = sock->serverAddress;
     remoteAddress = sock->remoteAddress;
-    remotePort = sock->remotePort;
+    remotePort    = sock->remotePort;
 }
 
 bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &headers)
 {
     static thread_local QByteArray headerBuffer = ([]() -> QByteArray {
-                                                       QByteArray ret;
-                                                       ret.reserve(1024);
-                                                       return ret;
-                                                   }());
+        QByteArray ret;
+        ret.reserve(1024);
+        return ret;
+    }());
 
     headerBuffer.resize(0);
     headerBuffer.append(QByteArrayLiteral("Status: ") + QByteArray::number(status));
@@ -437,9 +437,9 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     const auto headersData = headers.data();
 
     bool hasDate = false;
-    auto it = headersData.constBegin();
+    auto it      = headersData.constBegin();
     while (it != headersData.constEnd()) {
-        const QString &key = it.key();
+        const QString &key   = it.key();
         const QString &value = it.value();
         if (!hasDate && key.compare(u"DATE") == 0) {
             hasDate = true;
@@ -463,10 +463,11 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
 qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 {
     // reset for next write
-    qint64 write_pos = 0;
+    qint64 write_pos            = 0;
     quint32 proto_parser_status = 0;
 
-    Q_FOREVER {
+    Q_FOREVER
+    {
         // fastcgi packets are limited to 64k
         quint8 padding = 0;
 
@@ -481,7 +482,7 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 
             struct fcgi_record fr;
             fr.version = FCGI_VERSION_1;
-            fr.type = FCGI_STDOUT;
+            fr.type    = FCGI_STDOUT;
 
             fr.req1 = quint8(stream_id >> 8);
             fr.req0 = quint8(stream_id);
@@ -493,8 +494,8 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
             fr.pad = padding;
 
             fr.reserved = 0;
-            fr.cl1 = quint8(fcgi_len >> 8);
-            fr.cl0 = quint8(fcgi_len);
+            fr.cl1      = quint8(fcgi_len >> 8);
+            fr.cl0      = quint8(fcgi_len);
             if (io->write(reinterpret_cast<const char *>(&fr), sizeof(struct fcgi_record)) != sizeof(struct fcgi_record)) {
                 return -1;
             }
@@ -525,10 +526,10 @@ qint64 ProtoRequestFastCGI::doWrite(const char *data, qint64 len)
 void ProtoRequestFastCGI::processingFinished()
 {
     char end_request[] = FCGI_END_REQUEST_DATA;
-    char *sid = reinterpret_cast<char *>(&stream_id);
+    char *sid          = reinterpret_cast<char *>(&stream_id);
     // update with request id
-    end_request[2] = sid[1];
-    end_request[3] = sid[0];
+    end_request[2]  = sid[1];
+    end_request[3]  = sid[0];
     end_request[10] = sid[1];
     end_request[11] = sid[0];
     io->write(end_request, 24);

@@ -5,23 +5,29 @@
 #ifndef EVENTDISPATCHER_EPOLL_P_H
 #define EVENTDISPATCHER_EPOLL_P_H
 
-#include <qplatformdefs.h>
 #include <QtCore/QAbstractEventDispatcher>
-#include <QtCore/QHash>
-
 #include <QtCore/QAtomicInt>
+#include <QtCore/QHash>
+#include <qplatformdefs.h>
 
 class EpollAbastractEvent
 {
 public:
-    explicit EpollAbastractEvent(int _fd = 0) : fd(_fd) {}
+    explicit EpollAbastractEvent(int _fd = 0)
+        : fd(_fd)
+    {
+    }
     virtual ~EpollAbastractEvent() = default;
 
     virtual void process(quint32 events) = 0;
 
     inline bool canProcess() { return refs > 1; }
     inline void ref() { ++refs; }
-    inline void deref() { if (--refs == 0) delete this; }
+    inline void deref()
+    {
+        if (--refs == 0)
+            delete this;
+    }
 
     int fd;
     int refs = 1;
@@ -31,7 +37,11 @@ class EventDispatcherEPollPrivate;
 class EventFdInfo final : public EpollAbastractEvent
 {
 public:
-    EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv) : EpollAbastractEvent(_fd), epPriv(prv) {}
+    EventFdInfo(int _fd, EventDispatcherEPollPrivate *prv)
+        : EpollAbastractEvent(_fd)
+        , epPriv(prv)
+    {
+    }
 
     virtual void process(quint32 events) override;
 
@@ -41,20 +51,27 @@ public:
 class SocketNotifierInfo final : public EpollAbastractEvent
 {
 public:
-    SocketNotifierInfo(int _fd) : EpollAbastractEvent(_fd) { }
+    SocketNotifierInfo(int _fd)
+        : EpollAbastractEvent(_fd)
+    {
+    }
 
     virtual void process(quint32 events) override;
 
     QSocketNotifier *r = nullptr;
     QSocketNotifier *w = nullptr;
     QSocketNotifier *x = nullptr;
-    quint32 events = 0;
+    quint32 events     = 0;
 };
 
 class ZeroTimer final : public EpollAbastractEvent
 {
 public:
-    ZeroTimer(int _timerId, QObject *obj) : object(obj), timerId(_timerId) {}
+    ZeroTimer(int _timerId, QObject *obj)
+        : object(obj)
+        , timerId(_timerId)
+    {
+    }
 
     void process(quint32 events) override;
 
@@ -67,7 +84,12 @@ class TimerInfo final : public EpollAbastractEvent
 {
 public:
     TimerInfo(int fd, int _timerId, int _interval, QObject *obj)
-        : EpollAbastractEvent(fd), object(obj), timerId(_timerId), interval(_interval) {}
+        : EpollAbastractEvent(fd)
+        , object(obj)
+        , timerId(_timerId)
+        , interval(_interval)
+    {
+    }
 
     void process(quint32 events) override;
 
@@ -80,15 +102,16 @@ public:
 
 class EventDispatcherEPoll;
 
-class Q_DECL_HIDDEN EventDispatcherEPollPrivate {
+class Q_DECL_HIDDEN EventDispatcherEPollPrivate
+{
 public:
-    EventDispatcherEPollPrivate(EventDispatcherEPoll* const q);
+    EventDispatcherEPollPrivate(EventDispatcherEPoll *const q);
     ~EventDispatcherEPollPrivate();
     void createEpoll();
     bool processEvents(QEventLoop::ProcessEventsFlags flags);
     void registerSocketNotifier(QSocketNotifier *notifier);
     void unregisterSocketNotifier(QSocketNotifier *notifier);
-    void registerTimer(int timerId, int interval, Qt::TimerType type, QObject* object);
+    void registerTimer(int timerId, int interval, Qt::TimerType type, QObject *object);
     void registerZeroTimer(int timerId, QObject *object);
     bool unregisterTimer(int timerId);
     bool unregisterTimers(QObject *object);
@@ -101,17 +124,17 @@ public:
 private:
     Q_DISABLE_COPY(EventDispatcherEPollPrivate)
     Q_DECLARE_PUBLIC(EventDispatcherEPoll)
-    EventDispatcherEPoll* const q_ptr;
+    EventDispatcherEPoll *const q_ptr;
 
-    int m_epoll_fd = -1;
-    int m_event_fd = -1;
+    int m_epoll_fd   = -1;
+    int m_event_fd   = -1;
     bool m_interrupt = false;
     EventFdInfo *m_event_fd_info;
     QAtomicInt m_wakeups;
-    QHash<int, EpollAbastractEvent*> m_handles;
-    QHash<QSocketNotifier*, SocketNotifierInfo*> m_notifiers;
-    QHash<int, TimerInfo*> m_timers;
-    QHash<int, ZeroTimer*> m_zero_timers;
+    QHash<int, EpollAbastractEvent *> m_handles;
+    QHash<QSocketNotifier *, SocketNotifierInfo *> m_notifiers;
+    QHash<int, TimerInfo *> m_timers;
+    QHash<int, ZeroTimer *> m_zero_timers;
 
     bool disableSocketNotifiers(bool disable);
     bool disableTimers(bool disable);

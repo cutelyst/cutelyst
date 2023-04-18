@@ -5,15 +5,16 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <QTcpSocket>
-#include <QSslSocket>
-#include <QLocalSocket>
-#include <QHostAddress>
-#include <Cutelyst/Headers>
 #include "Cutelyst/enginerequest.h"
-
-#include "protocol.h"
 #include "cwsgiengine.h"
+#include "protocol.h"
+
+#include <Cutelyst/Headers>
+
+#include <QHostAddress>
+#include <QLocalSocket>
+#include <QSslSocket>
+#include <QTcpSocket>
 
 class QIODevice;
 
@@ -31,9 +32,10 @@ public:
 
     // Returns false if disconnected
     virtual bool requestFinished() = 0;
-    virtual bool flush() = 0;
+    virtual bool flush()           = 0;
 
-    inline void resetSocket() {
+    inline void resetSocket()
+    {
         if (protoData->upgradedFrom) {
             ProtocolData *data = protoData->upgradedFrom;
             delete protoData;
@@ -48,14 +50,15 @@ public:
     QHostAddress remoteAddress;
     quint16 remotePort = 0;
     Engine *engine;
-    Protocol *proto = nullptr;
+    Protocol *proto         = nullptr;
     ProtocolData *protoData = nullptr;
-    qint8 processing = 0;
+    qint8 processing        = 0;
     bool isSecure;
     bool timeout = false;
 };
 
-class TcpSocket final : public QTcpSocket, public Socket
+class TcpSocket final : public QTcpSocket
+    , public Socket
 {
     Q_OBJECT
 public:
@@ -75,7 +78,8 @@ Q_SIGNALS:
 
 #ifndef QT_NO_SSL
 
-class SslSocket final : public QSslSocket, public Socket
+class SslSocket final : public QSslSocket
+    , public Socket
 {
     Q_OBJECT
 public:
@@ -93,7 +97,8 @@ Q_SIGNALS:
 
 #endif // QT_NO_SSL
 
-class LocalSocket final : public QLocalSocket, public Socket
+class LocalSocket final : public QLocalSocket
+    , public Socket
 {
     Q_OBJECT
 public:
@@ -109,6 +114,6 @@ Q_SIGNALS:
     void finished();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // SOCKET_H

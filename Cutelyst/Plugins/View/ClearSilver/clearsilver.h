@@ -5,10 +5,10 @@
 #ifndef CLEARSILVER_H
 #define CLEARSILVER_H
 
+#include <Cutelyst/View>
+
 #include <QObject>
 #include <QStringList>
-
-#include <Cutelyst/View>
 
 namespace Cutelyst {
 
@@ -63,6 +63,6 @@ Q_SIGNALS:
     void changed();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CLEARSILVER_H

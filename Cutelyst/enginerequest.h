@@ -12,11 +12,11 @@
 #ifndef ENGINEREQUEST_H
 #define ENGINEREQUEST_H
 
-#include <QObject>
-#include <QHostAddress>
-#include <QElapsedTimer>
-
 #include <Cutelyst/Headers>
+
+#include <QElapsedTimer>
+#include <QHostAddress>
+#include <QObject>
 
 namespace Cutelyst {
 
@@ -26,15 +26,16 @@ class CUTELYST_LIBRARY EngineRequest
 {
     Q_GADGET
     friend class Engine;
+
 public:
     enum StatusFlag {
-        InitialState = 0x00,
+        InitialState     = 0x00,
         FinalizedHeaders = 0x01,
-        IOWrite = 0x02,
-        Chunked = 0x04,
-        ChunkedDone = 0x08,
-        Async = 0x10,
-        Finalized = 0x20,
+        IOWrite          = 0x02,
+        Chunked          = 0x04,
+        ChunkedDone      = 0x08,
+        Async            = 0x10,
+        Finalized        = 0x20,
     };
     Q_DECLARE_FLAGS(Status, StatusFlag)
 
@@ -125,7 +126,8 @@ public:
      */
     void setPath(char *rawPath, const int len);
 
-    inline void setPath(const QString &path) {
+    inline void setPath(const QString &path)
+    {
         QByteArray rawPath = path.toLatin1();
         setPath(rawPath.data(), rawPath.size());
     }
@@ -179,7 +181,7 @@ public:
     QElapsedTimer elapsed;
 };
 
-}
+} // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::EngineRequest::Status)
 

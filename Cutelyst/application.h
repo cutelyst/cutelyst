@@ -5,12 +5,12 @@
 #ifndef CUTELYST_APPLICATION_H
 #define CUTELYST_APPLICATION_H
 
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/QLocale>
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
-#include <QtCore/QLocale>
 #include <QtCore/QVector>
-
-#include <Cutelyst/cutelyst_global.h>
 
 class QTranslator;
 
@@ -448,7 +448,7 @@ protected:
     ApplicationPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #define CutelystApplicationInterface_iid "org.cutelyst.CutelystApplicationInterface"
 

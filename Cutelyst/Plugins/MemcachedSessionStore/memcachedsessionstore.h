@@ -100,6 +100,6 @@ protected:
     QScopedPointer<MemcachedSessionStorePrivate> d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYSTMEMCACHEDSESSIONSTORE_H

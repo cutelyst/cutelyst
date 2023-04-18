@@ -2,14 +2,16 @@
  * SPDX-FileCopyrightText: (C) 2017 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "eventdispatcher_epoll_p.h"
+
+#include <errno.h>
+#include <sys/epoll.h>
+#include <sys/time.h>
+#include <sys/timerfd.h>
+#include <time.h>
+
 #include <QtCore/QCoreApplication>
 #include <QtCore/QEvent>
-#include <sys/epoll.h>
-#include <sys/timerfd.h>
-#include <sys/time.h>
-#include <time.h>
-#include <errno.h>
-#include "eventdispatcher_epoll_p.h"
 
 namespace {
 
@@ -40,14 +42,12 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
     if (interval < 100 && (interval % 25) != 0) {
         if (interval < 50) {
             uint round_up = ((msec % 50) >= 25) ? 1 : 0;
-            msec = ((msec >> 1) | round_up) << 1;
-        }
-        else {
+            msec          = ((msec >> 1) | round_up) << 1;
+        } else {
             uint round_up = ((msec % 100) >= 50) ? 1 : 0;
-            msec = ((msec >> 2) | round_up) << 2;
+            msec          = ((msec >> 2) | round_up) << 2;
         }
-    }
-    else {
+    } else {
         int min = qMax(0, msec - max_rounding);
         int max = qMin(1000, msec + max_rounding);
 
@@ -57,8 +57,7 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
         if (min == 0) {
             msec = 0;
             done = true;
-        }
-        else if (max == 1000) {
+        } else if (max == 1000) {
             msec = 1000;
             done = true;
         }
@@ -72,28 +71,22 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
                 if (interval >= 5000) {
                     msec = msec >= 500 ? max : min;
                     done = true;
-                }
-                else {
+                } else {
                     boundary = 500;
                 }
-            }
-            else if ((interval % 50) == 0) {
+            } else if ((interval % 50) == 0) {
                 // same for multiples of 250, 200, 100, 50
                 uint tmp = interval / 50;
                 if ((tmp % 4) == 0) {
                     boundary = 200;
-                }
-                else if ((tmp % 2) == 0) {
+                } else if ((tmp % 2) == 0) {
                     boundary = 100;
-                }
-                else if ((tmp % 5) == 0) {
+                } else if ((tmp % 5) == 0) {
                     boundary = 250;
-                }
-                else {
+                } else {
                     boundary = 50;
                 }
-            }
-            else {
+            } else {
                 boundary = 25;
             }
 
@@ -108,13 +101,12 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
     if (msec == 1000) {
         ++when.tv_sec;
         when.tv_usec = 0;
-    }
-    else {
+    } else {
         when.tv_usec = msec * 1000;
     }
 
     if (timercmp(&when, &now, <)) {
-        when.tv_sec  += interval / 1000;
+        when.tv_sec += interval / 1000;
         when.tv_usec += (interval % 1000) * 1000;
         if (when.tv_usec > 999999) {
             ++when.tv_sec;
@@ -125,7 +117,7 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
     Q_ASSERT(timercmp(&now, &when, <=));
 }
 
-}
+} // namespace
 
 void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta)
 {
@@ -136,10 +128,10 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
 
     info->when = now;
     if (info->interval) {
-        qlonglong tnow  = (qlonglong(now.tv_sec)        * 1000) + (now.tv_usec        / 1000);
+        qlonglong tnow  = (qlonglong(now.tv_sec) * 1000) + (now.tv_usec / 1000);
         qlonglong twhen = (qlonglong(info->when.tv_sec) * 1000) + (info->when.tv_usec / 1000);
 
-        if (Q_UNLIKELY((info->interval < 1000 && twhen - tnow > 1500) || (info->interval >= 1000 && twhen - tnow > 1.2*info->interval))) {
+        if (Q_UNLIKELY((info->interval < 1000 && twhen - tnow > 1500) || (info->interval >= 1000 && twhen - tnow > 1.2 * info->interval))) {
             info->when = now;
         }
     }
@@ -156,8 +148,7 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
         }
 
         when = info->when;
-    }
-    else if (Qt::PreciseTimer == info->type) {
+    } else if (Qt::PreciseTimer == info->type) {
         if (info->interval) {
             timeradd(&info->when, &tv_interval, &info->when);
             if (Q_UNLIKELY(timercmp(&info->when, &now, <))) {
@@ -165,12 +156,10 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
             }
 
             when = info->when;
-        }
-        else {
+        } else {
             when = now;
         }
-    }
-    else {
+    } else {
         timeradd(&info->when, &tv_interval, &info->when);
         if (Q_UNLIKELY(timercmp(&info->when, &now, <))) {
             timeradd(&now, &tv_interval, &info->when);
@@ -191,7 +180,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
         struct timeval now;
         gettimeofday(&now, 0);
 
-        auto data = new TimerInfo(fd, timerId, interval, object);
+        auto data  = new TimerInfo(fd, timerId, interval, object);
         data->when = now;
         data->type = type;
 
@@ -223,7 +212,7 @@ void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::T
         }
 
         struct epoll_event event;
-        event.events = EPOLLIN;
+        event.events   = EPOLLIN;
         event.data.ptr = data;
 
         if (Q_UNLIKELY(-1 == epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, fd, &event))) {
@@ -313,8 +302,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
 
             it = m_timers.erase(it); // Hash is not rehashed
             m_handles.remove(fd);
-        }
-        else {
+        } else {
             ++it;
         }
     }
@@ -324,7 +312,7 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
         ZeroTimer *data = zit.value();
         if (object == data->object) {
             result = true;
-            zit = m_zero_timers.erase(zit);
+            zit    = m_zero_timers.erase(zit);
             data->deref();
         } else {
             ++zit;
@@ -401,8 +389,7 @@ bool EventDispatcherEPollPrivate::disableTimers(bool disable)
 
     if (!disable) {
         gettimeofday(&now, 0);
-    }
-    else {
+    } else {
         spec.it_value.tv_sec  = 0;
         spec.it_value.tv_nsec = 0;
     }

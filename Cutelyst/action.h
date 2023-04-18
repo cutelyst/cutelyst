@@ -5,12 +5,12 @@
 #ifndef CUTELYST_ACTION_H
 #define CUTELYST_ACTION_H
 
-#include <QtCore/QStringList>
-#include <QtCore/QMetaMethod>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/component.h>
 #include <Cutelyst/context.h>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/QMetaMethod>
+#include <QtCore/QStringList>
 
 namespace Cutelyst {
 
@@ -73,7 +73,7 @@ public:
     /**
      * Returns the controller where this action is defined
      */
-    Controller* controller() const;
+    Controller *controller() const;
 
     /**
      * Dispatch this action against a context
@@ -150,8 +150,8 @@ private:
 };
 
 /** Defines a list (vector) of Action pointers */
-typedef QVector<Action*> ActionList;
+typedef QVector<Action *> ActionList;
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_ACTION_H

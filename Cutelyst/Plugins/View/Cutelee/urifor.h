@@ -7,10 +7,10 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-#include <cutelee/filter.h>
-#include <cutelee/safestring.h>
-#include <cutelee/util.h>
-#include <cutelee/node.h>
+#    include <cutelee/filter.h>
+#    include <cutelee/node.h>
+#    include <cutelee/safestring.h>
+#    include <cutelee/util.h>
 
 class UriForTag final : public Cutelee::AbstractNodeFactory
 {

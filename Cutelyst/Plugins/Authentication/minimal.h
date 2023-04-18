@@ -5,8 +5,9 @@
 #ifndef AUTHENTICATION_STORE_MINIMAL_H
 #define AUTHENTICATION_STORE_MINIMAL_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authenticationstore.h>
+#include <Cutelyst/cutelyst_global.h>
+
 #include <QVector>
 
 namespace Cutelyst {
@@ -46,6 +47,6 @@ private:
     QVector<AuthenticationUser> m_users;
 };
 
-} // namespace CutelystPlugin
+} // namespace Cutelyst
 
 #endif // AUTHENTICATION_STORE_MINIMAL_H

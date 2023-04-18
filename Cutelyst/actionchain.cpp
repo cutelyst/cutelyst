@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "actionchain_p.h"
-#include "request_p.h"
-
 #include "context_p.h"
+#include "request_p.h"
 
 using namespace Cutelyst;
 
-ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new ActionChainPrivate, parent)
+ActionChain::ActionChain(const ActionList &chain, QObject *parent)
+    : Action(new ActionChainPrivate, parent)
 {
     Q_D(ActionChain);
     d->chain = chain;
@@ -27,7 +27,7 @@ ActionChain::ActionChain(const ActionList &chain, QObject *parent) : Action(new 
 
     for (Action *action : chain) {
         // FINAL should not have captures?
-        if (/*action != final && */action->numberOfCaptures() > 0) {
+        if (/*action != final && */ action->numberOfCaptures() > 0) {
             d->captures += action->numberOfCaptures();
         }
     }
@@ -49,14 +49,14 @@ bool ActionChain::doExecute(Context *c)
 {
     Q_D(const ActionChain);
 
-    Request *request =  c->request();
-    const QStringList captures = request->captures();
+    Request *request              = c->request();
+    const QStringList captures    = request->captures();
     const QStringList currentArgs = request->args();
-    const ActionList chain = d->chain;
+    const ActionList chain        = d->chain;
 
     int &actionRefCount = c->d_ptr->actionRefCount;
-    int &captured = c->d_ptr->chainedCaptured;
-    int &chainedIx = c->d_ptr->chainedIx;
+    int &captured       = c->d_ptr->chainedCaptured;
+    int &chainedIx      = c->d_ptr->chainedIx;
 
     for (; chainedIx < chain.size(); ++chainedIx) {
         if (actionRefCount) {

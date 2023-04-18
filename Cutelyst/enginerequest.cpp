@@ -6,8 +6,8 @@
 
 #include "common.h"
 
-#include <Cutelyst/response_p.h>
 #include <Cutelyst/Context>
+#include <Cutelyst/response_p.h>
 
 #include <QLoggingCategory>
 Q_LOGGING_CATEGORY(CUTELYST_ENGINEREQUEST, "cutelyst.engine_request", QtWarningMsg)
@@ -16,7 +16,6 @@ using namespace Cutelyst;
 
 EngineRequest::EngineRequest()
 {
-
 }
 
 EngineRequest::~EngineRequest()
@@ -28,7 +27,7 @@ void EngineRequest::finalizeBody()
 {
     if (!(status & EngineRequest::Chunked)) {
         Response *response = context->response();
-        QIODevice *body = response->bodyDevice();
+        QIODevice *body    = response->bodyDevice();
 
         if (body) {
             if (!body->isSequential()) {
@@ -93,8 +92,8 @@ void EngineRequest::finalize()
 
 void EngineRequest::finalizeCookies()
 {
-    Response *res = context->response();
-    Headers &headers = res->headers();
+    Response *res      = context->response();
+    Headers &headers   = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
         headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
@@ -110,7 +109,7 @@ void EngineRequest::finalizeCookies()
 bool EngineRequest::finalizeHeaders()
 {
     Response *response = context->response();
-    Headers &headers = response->headers();
+    Headers &headers   = response->headers();
 
     // Fix missing content length
     if (headers.contentLength() < 0) {
@@ -135,8 +134,7 @@ qint64 EngineRequest::write(const char *data, qint64 len)
         const QByteArray chunkSize = QByteArray::number(len, 16).toUpper();
         QByteArray chunk;
         chunk.reserve(int(len + chunkSize.size() + 4));
-        chunk.append(chunkSize).append("\r\n", 2)
-                .append(data, int(len)).append("\r\n", 2);
+        chunk.append(chunkSize).append("\r\n", 2).append(data, int(len)).append("\r\n", 2);
 
         qint64 retWrite = doWrite(chunk.data(), chunk.size());
 
@@ -211,26 +209,32 @@ void EngineRequest::setPath(char *rawPath, const int len)
         return;
     }
 
-    char *data = rawPath;
+    char *data           = rawPath;
     const char *inputPtr = data;
 
     bool skipUtf8 = true;
-    int outlen = 0;
+    int outlen    = 0;
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
             int a = inputPtr[++i];
             int b = inputPtr[++i];
 
-            if (a >= '0' && a <= '9') a -= '0';
-            else if (a >= 'a' && a <= 'f') a = a - 'a' + 10;
-            else if (a >= 'A' && a <= 'F') a = a - 'A' + 10;
+            if (a >= '0' && a <= '9')
+                a -= '0';
+            else if (a >= 'a' && a <= 'f')
+                a = a - 'a' + 10;
+            else if (a >= 'A' && a <= 'F')
+                a = a - 'A' + 10;
 
-            if (b >= '0' && b <= '9') b -= '0';
-            else if (b >= 'a' && b <= 'f') b  = b - 'a' + 10;
-            else if (b >= 'A' && b <= 'F') b  = b - 'A' + 10;
+            if (b >= '0' && b <= '9')
+                b -= '0';
+            else if (b >= 'a' && b <= 'f')
+                b = b - 'a' + 10;
+            else if (b >= 'A' && b <= 'F')
+                b = b - 'A' + 10;
 
-            *data++ = char((a << 4) | b);
+            *data++  = char((a << 4) | b);
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';

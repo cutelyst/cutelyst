@@ -2,13 +2,12 @@
  * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "application.h"
+#include "componentfactory.h"
+#include "context.h"
 #include "renderview_p.h"
-
 #include "response.h"
 #include "view.h"
-#include "application.h"
-#include "context.h"
-#include "componentfactory.h"
 
 #include <QtCore/QLoggingCategory>
 
@@ -48,7 +47,8 @@ using namespace Cutelyst;
  * ...
  * \endcode
  */
-RenderView::RenderView(QObject *parent) : Action(new RenderViewPrivate, parent)
+RenderView::RenderView(QObject *parent)
+    : Action(new RenderViewPrivate, parent)
 {
     setObjectName(QString::fromLatin1(metaObject()->className()) + QLatin1String("->execute"));
 }

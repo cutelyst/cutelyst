@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredWithAll::ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorRequiredWithAllPrivate(field, otherFields, messages))
+ValidatorRequiredWithAll::ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorRequiredWithAllPrivate(field, otherFields, messages))
 {
 }
 

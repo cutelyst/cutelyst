@@ -8,11 +8,11 @@
 
 #include "csrfprotection.h"
 #if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#include "cookie.h"
+#    include "cookie.h"
 #endif
 
-#include <QRegularExpression>
 #include <QNetworkCookie>
+#include <QRegularExpression>
 
 namespace Cutelyst {
 
@@ -32,7 +32,7 @@ public:
 
     void beforeDispatch(Context *c);
 
-    qint64 cookieAge {0};
+    qint64 cookieAge{0};
     QStringList trustedOrigins;
     static const QStringList secureMethods;
     QStringList ignoredNamespaces;
@@ -44,19 +44,19 @@ public:
     QString defaultDetachTo;
     QString errorMsgStashKey;
     QString genericErrorMessage;
-    QString genericContentType {QStringLiteral("text/plain; charset=utf8")};
+    QString genericContentType{QStringLiteral("text/plain; charset=utf8")};
     static const QRegularExpression sanitizeRe;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
 #else
     Cookie::SameSite cookieSameSite = Cookie::SameSite::Strict;
 #endif
-    bool cookieHttpOnly {false};
-    bool cookieSecure {false};
-    bool useSessions {false};
-    bool logFailedIp {false};
+    bool cookieHttpOnly{false};
+    bool cookieSecure{false};
+    bool useSessions{false};
+    bool logFailedIp{false};
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CSRFPROTECTION_P_H

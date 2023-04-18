@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORURL_H
 #define CUTELYSTVALIDATORURL_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorUrlPrivate;
 
 /*!
@@ -34,11 +35,11 @@ public:
      * \brief Constraints to limit the validation.
      */
     enum Constraint {
-        NoConstraint    = 0,    /**< No constraints set. */
-        StrictParsing   = 1,    /**< String will be parsed in strict mode. See http://doc.qt.io/qt-5/qurl.html#ParsingMode-enum */
-        NoRelative      = 2,    /**< Relative URLs are not valid. */
-        NoLocalFile     = 4,    /**< Local file URLs are not Vaid. */
-        WebsiteOnly     = 8,    /**< Combines NoRelative and NoLocalFile and sets http and https to the schemes list. (Will overwrite existing list) */
+        NoConstraint  = 0, /**< No constraints set. */
+        StrictParsing = 1, /**< String will be parsed in strict mode. See http://doc.qt.io/qt-5/qurl.html#ParsingMode-enum */
+        NoRelative    = 2, /**< Relative URLs are not valid. */
+        NoLocalFile   = 4, /**< Local file URLs are not Vaid. */
+        WebsiteOnly   = 8, /**< Combines NoRelative and NoLocalFile and sets http and https to the schemes list. (Will overwrite existing list) */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
@@ -51,12 +52,12 @@ public:
      * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
      */
     ValidatorUrl(const QString &field, Constraints constraints = NoConstraint, const QStringList &schemes = QStringList(), const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the validator.
      */
     ~ValidatorUrl() override;
-    
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -70,15 +71,14 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorUrl)
     Q_DISABLE_COPY(ValidatorUrl)
 };
-    
-}
+
+} // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::ValidatorUrl::Constraints)
 
-#endif //CUTELYSTVALIDATORURL_H
-
+#endif // CUTELYSTVALIDATORURL_H

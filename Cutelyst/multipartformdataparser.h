@@ -5,8 +5,8 @@
 #ifndef MULTIPARTFORMDATAINTERNAL_H
 #define MULTIPARTFORMDATAINTERNAL_H
 
-#include <Cutelyst/upload.h>
 #include <Cutelyst/cutelyst_global.h>
+#include <Cutelyst/upload.h>
 
 namespace Cutelyst {
 
@@ -22,6 +22,6 @@ public:
     static Uploads parse(QIODevice *body, QStringView contentType, int bufferSize = 4096);
 };
 
-}
+} // namespace Cutelyst
 
 #endif // MULTIPARTFORMDATAINTERNAL_H

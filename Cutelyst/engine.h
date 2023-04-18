@@ -5,11 +5,11 @@
 #ifndef CUTELYST_ENGINE_H
 #define CUTELYST_ENGINE_H
 
-#include <QObject>
-#include <QHostAddress>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Headers>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QHostAddress>
+#include <QObject>
 
 namespace Cutelyst {
 
@@ -100,16 +100,17 @@ public:
     /**
      * Returns the header key in camel case form
      */
-    static inline QString camelCaseHeader(const QString &headerKey) {
+    static inline QString camelCaseHeader(const QString &headerKey)
+    {
         // The RFC 2616 and 7230 states keys are not case
         // case sensitive, however several tools fail
         // if the headers are not on camel case form.
-        QString key = headerKey;
+        QString key        = headerKey;
         bool lastWasLetter = false;
-        for (int i = 0 ; i < key.size() ; ++i) {
+        for (int i = 0; i < key.size(); ++i) {
             QChar c = key[i];
             if (c == u'_') {
-                key[i] = u'-';
+                key[i]        = u'-';
                 lastWasLetter = false;
             } else if (lastWasLetter) {
                 key[i] = c.toLower();
@@ -123,15 +124,16 @@ public:
     /**
      * Convert Header key to camel case
      */
-    static inline void camelCaseByteArrayHeader(QByteArray &key) {
+    static inline void camelCaseByteArrayHeader(QByteArray &key)
+    {
         // The RFC 2616 and 7230 states keys are not case
         // case sensitive, however several tools fail
         // if the headers are not on camel case form.
         bool lastWasLetter = false;
-        for (int i = 0 ; i < key.size() ; ++i) {
+        for (int i = 0; i < key.size(); ++i) {
             char c = key[i];
             if (c == '_') {
-                key[i] = '-';
+                key[i]        = '-';
                 lastWasLetter = false;
             } else if (lastWasLetter) {
                 key[i] = QChar::toLower(c);
@@ -201,10 +203,11 @@ private:
     virtual bool init() = 0;
 };
 
-inline bool Engine::isZeroWorker() const {
+inline bool Engine::isZeroWorker() const
+{
     return !workerId() && !workerCore();
 }
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_ENGINE_H

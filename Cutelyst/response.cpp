@@ -2,22 +2,20 @@
  * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "response_p.h"
-
+#include "common.h"
 #include "context_p.h"
 #include "engine.h"
 #include "enginerequest.h"
-#include "common.h"
-
-#include <QtCore/QJsonDocument>
+#include "response_p.h"
 
 #include <QCryptographicHash>
 #include <QEventLoop>
+#include <QtCore/QJsonDocument>
 
 using namespace Cutelyst;
 
 Response::Response(const Headers &defaultHeaders, EngineRequest *engineRequest)
-  : d_ptr(new ResponsePrivate(defaultHeaders, engineRequest))
+    : d_ptr(new ResponsePrivate(defaultHeaders, engineRequest))
 {
     open(QIODevice::WriteOnly);
 }
@@ -49,7 +47,7 @@ qint64 Response::writeData(const char *data, qint64 len)
         }
         delete d->bodyIODevice;
         d->bodyIODevice = nullptr;
-        d->bodyData = QByteArray();
+        d->bodyData     = QByteArray();
 
         d->engineRequest->finalizeHeaders();
     }
@@ -278,7 +276,7 @@ void Response::redirect(const QUrl &url, quint16 status)
 {
     Q_D(Response);
     d->location = url;
-    d->status = status;
+    d->status   = status;
 
     if (url.isValid()) {
         const auto location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
@@ -293,7 +291,8 @@ void Response::redirect(const QUrl &url, quint16 status)
     <title>Moved</title>
   </head>
   <body>
-     <p>This item has moved <a href=")V0G0N") + location + QLatin1String(R"V0G0N(">here</a>.</p>
+     <p>This item has moved <a href=")V0G0N") +
+                            location + QLatin1String(R"V0G0N(">here</a>.</p>
   </body>
 </html>
 )V0G0N");

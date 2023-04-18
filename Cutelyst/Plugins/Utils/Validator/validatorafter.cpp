@@ -10,14 +10,13 @@
 
 using namespace Cutelyst;
 
-ValidatorAfter::ValidatorAfter(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const Cutelyst::ValidatorMessages &messages, const QString &defValKey) :
-    ValidatorRule(*new ValidatorAfterPrivate(field, comparison, timeZone, inputFormat, messages, defValKey))
+ValidatorAfter::ValidatorAfter(const QString &field, const QVariant &comparison, const QString &timeZone, const char *inputFormat, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+    : ValidatorRule(*new ValidatorAfterPrivate(field, comparison, timeZone, inputFormat, messages, defValKey))
 {
 }
 
 ValidatorAfter::~ValidatorAfter()
 {
-
 }
 
 ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &params) const
@@ -33,8 +32,8 @@ ValidatorReturnType ValidatorAfter::validate(Context *c, const ParamsMultiMap &p
         const QTimeZone tz = d->extractTimeZone(c, params, d->timeZone);
 
         const QVariant _comp = (d->comparison.userType() == QMetaType::QString)
-                ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
-                : d->comparison;
+                                   ? d->extractOtherDateTime(c, params, d->comparison.toString(), tz, d->inputFormat)
+                                   : d->comparison;
 
         if (_comp.userType() == QMetaType::QDate) {
 
@@ -134,7 +133,7 @@ QString ValidatorAfter::genericValidationError(Cutelyst::Context *c, const QVari
 
     } else {
 
-        switch(errorData.userType()) {
+        switch (errorData.userType()) {
         case QMetaType::QDate:
             error = c->translate("Cutelyst::ValidatorAfter", "The date in the “%1” field must be after %2.").arg(_label, errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
@@ -148,7 +147,6 @@ QString ValidatorAfter::genericValidationError(Cutelyst::Context *c, const QVari
             error = validationDataError(c);
             break;
         }
-
     }
 
     return error;

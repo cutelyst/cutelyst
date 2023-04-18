@@ -9,7 +9,8 @@
 
 using namespace Cutelyst;
 
-Plugin::Plugin(Application *parent) : QObject(parent)
+Plugin::Plugin(Application *parent)
+    : QObject(parent)
 {
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTFACTORY_H
 
 #include <Context>
+
 #include <QString>
 
 namespace Cutelyst {
@@ -22,7 +23,7 @@ public:
     virtual Component *createComponent(QObject *parent = nullptr) = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #define ComponentFactory_iid "org.cutelyst.ComponentFactory"
 Q_DECLARE_INTERFACE(Cutelyst::ComponentFactory, ComponentFactory_iid)

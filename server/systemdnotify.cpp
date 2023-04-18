@@ -6,17 +6,16 @@
 
 #include "server.h"
 
+#include <fcntl.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <string.h>
-
 #include <unistd.h>
-#include <fcntl.h>
 
-#include <QTimer>
-#include <QScopeGuard>
 #include <QCoreApplication>
 #include <QLoggingCategory>
+#include <QScopeGuard>
+#include <QTimer>
 
 /* The first passed file descriptor is fd 3 */
 #define SD_LISTEN_FDS_START 3
@@ -31,15 +30,16 @@ class systemdNotifyPrivate
 {
 public:
     struct msghdr *notification_object = nullptr;
-    QTimer *watchdog = nullptr;
-    int notification_fd = 0;
-    int watchdog_usec = 0;
+    QTimer *watchdog                   = nullptr;
+    int notification_fd                = 0;
+    int watchdog_usec                  = 0;
 };
 
-}
+} // namespace Cutelyst
 
-systemdNotify::systemdNotify(QObject *parent) : QObject(parent)
-  , d_ptr(new systemdNotifyPrivate)
+systemdNotify::systemdNotify(QObject *parent)
+    : QObject(parent)
+    , d_ptr(new systemdNotifyPrivate)
 {
     Q_D(systemdNotify);
 
@@ -53,8 +53,8 @@ systemdNotify::systemdNotify(QObject *parent) : QObject(parent)
     }
 
     auto systemd_socket = getenv("NOTIFY_SOCKET");
-    size_t len = strlen(systemd_socket);
-    sd_sun = new struct sockaddr_un;
+    size_t len          = strlen(systemd_socket);
+    sd_sun              = new struct sockaddr_un;
     memset(sd_sun, 0, sizeof(struct sockaddr_un));
     sd_sun->sun_family = AF_UNIX;
     strncpy(sd_sun->sun_path, systemd_socket, qMin(len, sizeof(sd_sun->sun_path)));
@@ -67,7 +67,7 @@ systemdNotify::systemdNotify(QObject *parent) : QObject(parent)
     msghdr->msg_iov = new struct iovec[3];
     memset(msghdr->msg_iov, 0, sizeof(struct iovec) * 3);
 
-    msghdr->msg_name = sd_sun;
+    msghdr->msg_name    = sd_sun;
     msghdr->msg_namelen = sizeof(struct sockaddr_un) - (sizeof(sd_sun->sun_path) - len);
 
     d->notification_object = msghdr;
@@ -78,7 +78,7 @@ systemdNotify::~systemdNotify()
     Q_D(systemdNotify);
     if (d->notification_object) {
         delete static_cast<struct sockaddr_un *>(d->notification_object->msg_name);
-        delete [] d->notification_object->msg_iov;
+        delete[] d->notification_object->msg_iov;
         delete d->notification_object;
     }
     delete d_ptr;
@@ -125,16 +125,16 @@ void systemdNotify::sendStatus(const QByteArray &data)
     Q_ASSERT(d->notification_fd);
 
     struct msghdr *msghdr = d->notification_object;
-    struct iovec *iovec = msghdr->msg_iov;
+    struct iovec *iovec   = msghdr->msg_iov;
 
     iovec[0].iov_base = const_cast<char *>("STATUS=");
-    iovec[0].iov_len = 7;
+    iovec[0].iov_len  = 7;
 
     iovec[1].iov_base = const_cast<char *>(data.constData());
-    iovec[1].iov_len = data.size();
+    iovec[1].iov_len  = data.size();
 
     iovec[2].iov_base = const_cast<char *>("\n");
-    iovec[2].iov_len = 1;
+    iovec[2].iov_len  = 1;
 
     msghdr->msg_iovlen = 3;
 
@@ -149,16 +149,16 @@ void systemdNotify::sendWatchdog(const QByteArray &data)
     Q_ASSERT(d->notification_fd);
 
     struct msghdr *msghdr = d->notification_object;
-    struct iovec *iovec = msghdr->msg_iov;
+    struct iovec *iovec   = msghdr->msg_iov;
 
     iovec[0].iov_base = const_cast<char *>("WATCHDOG=");
-    iovec[0].iov_len = 9;
+    iovec[0].iov_len  = 9;
 
     iovec[1].iov_base = const_cast<char *>(data.constData());
-    iovec[1].iov_len = data.size();
+    iovec[1].iov_len  = data.size();
 
     iovec[2].iov_base = const_cast<char *>("\n");
-    iovec[2].iov_len = 1;
+    iovec[2].iov_len  = 1;
 
     msghdr->msg_iovlen = 3;
 
@@ -173,16 +173,16 @@ void systemdNotify::sendReady(const QByteArray &data)
     Q_ASSERT(d->notification_fd);
 
     struct msghdr *msghdr = d->notification_object;
-    struct iovec *iovec = msghdr->msg_iov;
+    struct iovec *iovec   = msghdr->msg_iov;
 
     iovec[0].iov_base = const_cast<char *>("READY=");
-    iovec[0].iov_len = 6;
+    iovec[0].iov_len  = 6;
 
     iovec[1].iov_base = const_cast<char *>(data.constData());
-    iovec[1].iov_len = data.size();
+    iovec[1].iov_len  = data.size();
 
     iovec[2].iov_base = const_cast<char *>("\n");
-    iovec[2].iov_len = 1;
+    iovec[2].iov_len  = 1;
 
     msghdr->msg_iovlen = 3;
 
@@ -210,7 +210,7 @@ int systemdNotify::sd_watchdog_enabled(bool unset)
 
     if (qEnvironmentVariableIsSet("WATCHDOG_PID")) {
         QByteArray wpid = qgetenv("WATCHDOG_PID");
-        qint64 pid = wpid.toLongLong(&ok);
+        qint64 pid      = wpid.toLongLong(&ok);
         if (pid != qApp->applicationPid()) {
             return -2;
         }
@@ -224,7 +224,8 @@ bool systemdNotify::is_systemd_notify_available()
     return qEnvironmentVariableIsSet("NOTIFY_SOCKET");
 }
 
-int fd_cloexec(int fd, bool cloexec) {
+int fd_cloexec(int fd, bool cloexec)
+{
     int flags, nflags;
 
     Q_ASSERT(fd >= 0);
@@ -262,20 +263,20 @@ int sd_listen_fds()
     }
 
     const QByteArray listenFDS = qgetenv("LISTEN_FDS");
-    int n = listenFDS.toInt(&ok);
+    int n                      = listenFDS.toInt(&ok);
     if (!ok) {
         return 0;
     }
 
     Q_ASSERT(SD_LISTEN_FDS_START < INT_MAX);
     if (n <= 0 || n > INT_MAX - SD_LISTEN_FDS_START) {
-        return  -EINVAL;
+        return -EINVAL;
     }
 
     qCInfo(C_SYSTEMD, "systemd socket activation detected");
 
     int r = 0;
-    for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd ++) {
+    for (int fd = SD_LISTEN_FDS_START; fd < SD_LISTEN_FDS_START + n; fd++) {
         r = fd_cloexec(fd, true);
         if (r < 0) {
             return r;

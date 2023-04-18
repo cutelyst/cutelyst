@@ -5,12 +5,12 @@
 #ifndef GRANTLEE_VIEW_H
 #define GRANTLEE_VIEW_H
 
+#include <Cutelyst/View>
+
+#include <QLocale>
 #include <QObject>
 #include <QStringList>
-#include <QLocale>
 #include <QVector>
-
-#include <Cutelyst/View>
 
 class QTranslator;
 
@@ -216,6 +216,6 @@ Q_SIGNALS:
     void changed();
 };
 
-}
+} // namespace Cutelyst
 
 #endif // GRANTLEE_VIEW_H

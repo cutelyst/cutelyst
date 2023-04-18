@@ -5,10 +5,10 @@
 #ifndef CREDENTIALHTTP_H
 #define CREDENTIALHTTP_H
 
-#include <QtCore/QCryptographicHash>
-
-#include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/cutelyst_global.h>
+
+#include <QtCore/QCryptographicHash>
 
 namespace Cutelyst {
 
@@ -113,9 +113,8 @@ public:
 
 protected:
     CredentialHttpPrivate *d_ptr;
-
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CREDENTIALHTTP_H

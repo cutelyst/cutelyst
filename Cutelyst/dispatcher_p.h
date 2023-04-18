@@ -13,7 +13,10 @@ class DispatcherPrivate
 {
     Q_DECLARE_PUBLIC(Dispatcher)
 public:
-    DispatcherPrivate(Dispatcher *q) : q_ptr(q) {}
+    DispatcherPrivate(Dispatcher *q)
+        : q_ptr(q)
+    {
+    }
 
     inline void prepareAction(Context *c, const QString &requestPath) const;
 
@@ -34,10 +37,10 @@ public:
     QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
     QMap<QString, Controller *> controllers;
-    QVector<DispatchType*> dispatchers;
+    QVector<DispatchType *> dispatchers;
     Dispatcher *q_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_DISPATCHER_P_H

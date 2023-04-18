@@ -4,17 +4,17 @@
  */
 #include "urifor.h"
 
-#include <grantlee/exception.h>
-#include <grantlee/parser.h>
-
 #include <Context>
 #include <Cutelyst/Context>
 #include <Cutelyst/ParamsMultiMap>
+#include <grantlee/exception.h>
+#include <grantlee/parser.h>
 
 #include <QDebug>
 
-UriFor::UriFor(const QString &path, const QStringList &args, Grantlee::Parser *parser) : Grantlee::Node(parser)
-  , m_path(path, parser)
+UriFor::UriFor(const QString &path, const QStringList &args, Grantlee::Parser *parser)
+    : Grantlee::Node(parser)
+    , m_path(path, parser)
 {
     bool foundQuery = false;
     for (const QString &expression : args) {
@@ -33,11 +33,11 @@ UriFor::UriFor(const QString &path, const QStringList &args, Grantlee::Parser *p
     std::reverse(m_queryExpressions.begin(), m_queryExpressions.end());
 }
 
-std::pair<QString,QString> splitQuery(const QString &query)
+std::pair<QString, QString> splitQuery(const QString &query)
 {
-    std::pair<QString,QString> ret;
+    std::pair<QString, QString> ret;
 
-    ret.first = query.section(QLatin1Char('='), 0, 0);
+    ret.first  = query.section(QLatin1Char('='), 0, 0);
     ret.second = query.section(QLatin1Char('='), 1);
 
     return ret;
@@ -49,7 +49,7 @@ void UriFor::render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const
     auto c = gc->lookup(m_cutelystContext).value<Cutelyst::Context *>();
     if (!c) {
         const QVariantHash hash = gc->stackHash(0);
-        auto it = hash.constBegin();
+        auto it                 = hash.constBegin();
         while (it != hash.constEnd()) {
             if (it.value().userType() == qMetaTypeId<Cutelyst::Context *>()) {
                 c = it.value().value<Cutelyst::Context *>();

@@ -9,19 +9,19 @@
 #include "validatorrule_p.h"
 
 namespace Cutelyst {
-    
+
 class ValidatorRequiredWithoutAllPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredWithoutAllPrivate(const QString &f, const QStringList &o, const ValidatorMessages &m) :
-        ValidatorRulePrivate(f, m, QString()),
-        otherFields(o)
-    {}
+    ValidatorRequiredWithoutAllPrivate(const QString &f, const QStringList &o, const ValidatorMessages &m)
+        : ValidatorRulePrivate(f, m, QString())
+        , otherFields(o)
+    {
+    }
 
     QStringList otherFields;
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORREQUIREDWITHOUTALL_P_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORREQUIREDWITHOUTALL_P_H

@@ -5,11 +5,11 @@
 #ifndef CWSGI_ENGINE_H
 #define CWSGI_ENGINE_H
 
-#include <QObject>
-#include <QElapsedTimer>
-#include <QTimer>
-
 #include <Cutelyst/Engine>
+
+#include <QElapsedTimer>
+#include <QObject>
+#include <QTimer>
 
 class QTcpServer;
 
@@ -39,7 +39,8 @@ public:
 
     virtual bool init() override;
 
-    inline QByteArray lastDate() {
+    inline QByteArray lastDate()
+    {
         if (m_lastDateTimer.hasExpired(1000)) {
             m_lastDate = dateHeader();
             m_lastDateTimer.restart();
@@ -55,19 +56,22 @@ Q_SIGNALS:
     void shutdownCompleted(Cutelyst::CWsgiEngine *engine);
 
 protected:
-    inline void startSocketTimeout() {
+    inline void startSocketTimeout()
+    {
         if (m_socketTimeout && ++m_serversTimeout == 1) {
             m_socketTimeout->start();
         }
     }
 
-    inline void stopSocketTimeout() {
+    inline void stopSocketTimeout()
+    {
         if (m_socketTimeout && --m_serversTimeout == 0) {
             m_socketTimeout->stop();
         }
     }
 
-    inline void serverShutdown() {
+    inline void serverShutdown()
+    {
         if (--m_runningServers == 0) {
             Q_EMIT shutdownCompleted(this);
         }
@@ -88,18 +92,17 @@ private:
     ProtocolHttp2 *getProtoHttp2();
     Protocol *getProtoFastCgi();
 
-
     QByteArray m_lastDate;
     QElapsedTimer m_lastDateTimer;
     QTimer *m_socketTimeout = nullptr;
     Server *m_wsgi;
-    ProtocolHttp *m_protoHttp = nullptr;
-    ProtocolHttp2 *m_protoHttp2 = nullptr;
+    ProtocolHttp *m_protoHttp    = nullptr;
+    ProtocolHttp2 *m_protoHttp2  = nullptr;
     ProtocolFastCGI *m_protoFcgi = nullptr;
-    int m_runningServers = 0;
-    int m_serversTimeout = 0;
+    int m_runningServers         = 0;
+    int m_serversTimeout         = 0;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CWSGI_ENGINE_H

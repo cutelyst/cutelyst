@@ -39,6 +39,6 @@ private:
     systemdNotifyPrivate *d_ptr;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // SYSTEMDNOTIFY_H

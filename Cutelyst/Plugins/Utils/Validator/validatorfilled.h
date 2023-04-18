@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORFILLED_H
 #define CUTELYSTVALIDATORFILLED_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorFilledPrivate;
 
 /*!
@@ -36,12 +37,12 @@ public:
      * \param messages  Custom error message if validation fails.
      */
     ValidatorFilled(const QString &field, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
-    
+
     /*!
      * \brief Deconstructs the filled validator.
      */
     ~ValidatorFilled() override;
-     
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -54,13 +55,12 @@ protected:
      * \brief Creates a generic error message.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorFilled)
     Q_DISABLE_COPY(ValidatorFilled)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORFILLED_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORFILLED_H

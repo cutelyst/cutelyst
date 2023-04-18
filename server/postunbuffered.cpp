@@ -4,9 +4,9 @@
  */
 #include "postunbuffered.h"
 
-PostUnbuffered::PostUnbuffered(QObject *parent) : QIODevice(parent)
+PostUnbuffered::PostUnbuffered(QObject *parent)
+    : QIODevice(parent)
 {
-
 }
 
 #include "moc_postunbuffered.cpp"

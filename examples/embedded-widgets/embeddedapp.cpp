@@ -6,13 +6,13 @@
 
 #include "root.h"
 
-#include <QDebug>
-#include <QCoreApplication>
-
 #include <Cutelyst/Plugins/Session/Session>
 
-EmbeddedApp::EmbeddedApp(QObject *parent) :
-    Cutelyst::Application(parent)
+#include <QCoreApplication>
+#include <QDebug>
+
+EmbeddedApp::EmbeddedApp(QObject *parent)
+    : Cutelyst::Application(parent)
 {
 }
 

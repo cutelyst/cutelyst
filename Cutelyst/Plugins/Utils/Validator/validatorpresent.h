@@ -5,11 +5,12 @@
 #ifndef CUTELYSTVALIDATORPRESENT_H
 #define CUTELYSTVALIDATORPRESENT_H
 
-#include <Cutelyst/cutelyst_global.h>
 #include "validatorrule.h"
 
+#include <Cutelyst/cutelyst_global.h>
+
 namespace Cutelyst {
-    
+
 class ValidatorPresentPrivate;
 
 /*!
@@ -33,12 +34,12 @@ public:
      * \param messages      Custom error message if validation fails.
      */
     ValidatorPresent(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
-    
+
     /*!
      * \brief Deconstructs the present validator.
      */
     ~ValidatorPresent() override;
-        
+
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -52,13 +53,12 @@ protected:
      * \brief Returns a generic error message if validation failed.
      */
     QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
-    
+
 private:
     Q_DECLARE_PRIVATE(ValidatorPresent)
     Q_DISABLE_COPY(ValidatorPresent)
 };
-    
-}
 
-#endif //CUTELYSTVALIDATORPRESENT_H
+} // namespace Cutelyst
 
+#endif // CUTELYSTVALIDATORPRESENT_H

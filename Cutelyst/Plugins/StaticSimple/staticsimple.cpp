@@ -2,25 +2,25 @@
  * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include "staticsimple_p.h"
-
 #include "application.h"
+#include "context.h"
 #include "request.h"
 #include "response.h"
-#include "context.h"
+#include "staticsimple_p.h"
 
-#include <QMimeDatabase>
-#include <QFile>
-#include <QDir>
 #include <QDateTime>
+#include <QDir>
+#include <QFile>
 #include <QLoggingCategory>
+#include <QMimeDatabase>
 
 using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_STATICSIMPLE, "cutelyst.plugin.staticsimple", QtWarningMsg)
 
-StaticSimple::StaticSimple(Application *parent) : Plugin(parent)
-  , d_ptr(new StaticSimplePrivate)
+StaticSimple::StaticSimple(Application *parent)
+    : Plugin(parent)
+    , d_ptr(new StaticSimplePrivate)
 {
     Q_D(StaticSimple);
     d->includePaths.append(parent->config(QLatin1String("root")).toString());
@@ -48,8 +48,7 @@ void StaticSimple::setDirs(const QStringList &dirs)
 
 bool StaticSimple::setup(Cutelyst::Application *app)
 {
-    connect(app, &Application::beforePrepareAction,
-            this, &StaticSimple::beforePrepareAction);
+    connect(app, &Application::beforePrepareAction, this, &StaticSimple::beforePrepareAction);
     return true;
 }
 
@@ -61,7 +60,7 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path = c->req()->path();
+    const QString path          = c->req()->path();
     const QRegularExpression re = d->re; // Thread-safe
 
     for (const QString &dir : d->dirs) {
@@ -92,7 +91,7 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
         QString path = includePath.absoluteFilePath(relPath);
         QFileInfo fileInfo(path);
         if (fileInfo.exists()) {
-            Response *res = c->res();
+            Response *res                   = c->res();
             const QDateTime currentDateTime = fileInfo.lastModified();
             if (!c->req()->headers().ifModifiedSince(currentDateTime)) {
                 res->setStatus(Response::NotModified);

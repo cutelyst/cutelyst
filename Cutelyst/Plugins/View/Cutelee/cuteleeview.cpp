@@ -2,22 +2,21 @@
  * SPDX-FileCopyrightText: (C) 2020-2022 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include "action.h"
+#include "application.h"
+#include "config.h"
+#include "context.h"
 #include "cuteleeview_p.h"
 #include "cutelystcutelee.h"
-
-#include "application.h"
-#include "context.h"
-#include "action.h"
 #include "response.h"
-#include "config.h"
 
-#include <cutelee/qtlocalizer.h>
 #include <cutelee/metatype.h>
+#include <cutelee/qtlocalizer.h>
 
-#include <QString>
 #include <QDirIterator>
-#include <QtCore/QLoggingCategory>
+#include <QString>
 #include <QTranslator>
+#include <QtCore/QLoggingCategory>
 
 Q_LOGGING_CATEGORY(CUTELYST_CUTELEE, "cutelyst.cutelee", QtWarningMsg)
 
@@ -31,12 +30,13 @@ CUTELEE_BEGIN_LOOKUP_PTR(Cutelyst::Request)
 return object->property(property.toLatin1().constData());
 CUTELEE_END_LOOKUP
 
-CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new CuteleeViewPrivate, parent, name)
+CuteleeView::CuteleeView(QObject *parent, const QString &name)
+    : View(new CuteleeViewPrivate, parent, name)
 {
     Q_D(CuteleeView);
 
     Cutelee::registerMetaType<ParamsMultiMap>();
-    Cutelee::registerMetaType<Cutelyst::Request*>(); // To be able to access it's properties
+    Cutelee::registerMetaType<Cutelyst::Request *>(); // To be able to access it's properties
 
     d->loader = std::make_shared<Cutelee::FileSystemTemplateLoader>();
 
@@ -48,7 +48,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
     auto app = qobject_cast<Application *>(parent);
     if (app) {
         // make sure templates can be found on the current directory
-        setIncludePaths({ app->config(QStringLiteral("root")).toString() });
+        setIncludePaths({app->config(QStringLiteral("root")).toString()});
 
         // If CUTELYST_VAR is set the template might have become
         // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
@@ -57,7 +57,7 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name) : View(new Cutele
         app->loadTranslations(QStringLiteral("plugin_view_cutelee"));
     } else {
         // make sure templates can be found on the current directory
-        setIncludePaths({ QDir::currentPath() });
+        setIncludePaths({QDir::currentPath()});
     }
 }
 
@@ -139,11 +139,7 @@ void CuteleeView::preloadTemplates()
 
     const auto includePaths = d->includePaths;
     for (const QString &includePath : includePaths) {
-        QDirIterator it(includePath, {
-                            QLatin1Char('*') + d->extension
-                        },
-                        QDir::Files | QDir::NoDotAndDotDot,
-                        QDirIterator::Subdirectories);
+        QDirIterator it(includePath, {QLatin1Char('*') + d->extension}, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString path = it.next();
             path.remove(includePath);
@@ -171,7 +167,7 @@ QByteArray CuteleeView::render(Context *c) const
     QByteArray ret;
     c->setStash(d->cutelystVar, QVariant::fromValue(c));
     const QVariantHash stash = c->stash();
-    auto it = stash.constFind(QStringLiteral("template"));
+    auto it                  = stash.constFind(QStringLiteral("template"));
     QString templateFile;
     if (it != stash.constEnd()) {
         templateFile = it.value().toString();
@@ -279,15 +275,15 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename, c
     if (Q_LIKELY(!filename.isEmpty() && !directory.isEmpty())) {
         const QDir i18nDir(directory);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QString _prefix         = prefix.isEmpty() ? QStringLiteral(".") : prefix;
+            const QString _suffix         = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
             const QStringList namesFilter = QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
-            const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
+            const QFileInfoList tsFiles   = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
                 locales.reserve(tsFiles.size());
                 for (const QFileInfo &ts : tsFiles) {
-                    const QString fn = ts.fileName();
-                    const int prefIdx = fn.indexOf(_prefix);
+                    const QString fn        = ts.fileName();
+                    const int prefIdx       = fn.indexOf(_prefix);
                     const QString locString = fn.mid(prefIdx + _prefix.length(), fn.length() - prefIdx - _suffix.length() - _prefix.length());
                     QLocale loc(locString);
                     if (Q_LIKELY(loc.language() != QLocale::C)) {
@@ -321,7 +317,7 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename, c
 void CuteleeViewPrivate::initEngine()
 {
     // Set also the paths from CUTELYST_PLUGINS_DIR env variable as plugin paths of cutelee engine
-    const QByteArrayList dirs = QByteArrayList{ QByteArrayLiteral(CUTELYST_PLUGINS_DIR) } + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+    const QByteArrayList dirs = QByteArrayList{QByteArrayLiteral(CUTELYST_PLUGINS_DIR)} + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
     for (const QByteArray &dir : dirs) {
         engine->addPluginPath(QString::fromLocal8Bit(dir));
     }

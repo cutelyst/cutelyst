@@ -3,17 +3,19 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "action_p.h"
-#include "controller.h"
-#include "context.h"
 #include "common.h"
+#include "context.h"
+#include "controller.h"
 
 using namespace Cutelyst;
 
-Action::Action(QObject *parent) : Component(new ActionPrivate, parent)
+Action::Action(QObject *parent)
+    : Component(new ActionPrivate, parent)
 {
 }
 
-Action::Action(ActionPrivate *ptr, QObject *parent) : Component(ptr, parent)
+Action::Action(ActionPrivate *ptr, QObject *parent)
+    : Component(ptr, parent)
 {
 }
 
@@ -50,7 +52,7 @@ void Action::setupAction(const QVariantHash &args, Application *app)
     d->ns = args.value(QLatin1String("namespace")).toString();
 
     const auto attributes = args.value(QLatin1String("attributes")).value<ParamsMultiMap>();
-    d->attributes = attributes;
+    d->attributes         = attributes;
 
     const QString argsAttr = attributes.value(QLatin1String("Args"));
     if (!argsAttr.isEmpty()) {
@@ -146,8 +148,8 @@ bool Action::doExecute(Context *c)
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context*, c),
-                                   Q_ARG(QStringList,  c->request()->args()));
+                                   Q_ARG(Cutelyst::Context *, c),
+                                   Q_ARG(QStringList, c->request()->args()));
         } else {
             QStringList args = c->request()->args();
             // Fill the missing arguments
@@ -156,7 +158,7 @@ bool Action::doExecute(Context *c)
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context*, c),
+                                   Q_ARG(Cutelyst::Context *, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
                                    Q_ARG(QString, args.at(2)),
@@ -182,7 +184,7 @@ bool Action::doExecute(Context *c)
         if (d->listSignature) {
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context*, c),
+                                   Q_ARG(Cutelyst::Context *, c),
                                    Q_ARG(QStringList, c->request()->args()));
         } else {
             QStringList args = c->request()->args();
@@ -191,7 +193,7 @@ bool Action::doExecute(Context *c)
 
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context*, c),
+                                   Q_ARG(Cutelyst::Context *, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
                                    Q_ARG(QString, args.at(2)),

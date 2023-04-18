@@ -6,15 +6,15 @@
 
 #include <windows.h>
 
-#include <QLoggingCategory>
 #include <QCoreApplication>
+#include <QLoggingCategory>
 #include <QTimer>
 
 Q_LOGGING_CATEGORY(WSGI_WIN, "wsgi.win", QtWarningMsg)
 
-WindowsFork::WindowsFork(QObject *parent) : AbstractFork(parent)
+WindowsFork::WindowsFork(QObject *parent)
+    : AbstractFork(parent)
 {
-
 }
 
 bool WindowsFork::continueMaster(int *exit)
@@ -22,8 +22,7 @@ bool WindowsFork::continueMaster(int *exit)
     installTouchReload();
 
     m_masterChildProcess = new QProcess(this);
-    connect(m_masterChildProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
-            this, &WindowsFork::childFinished);
+    connect(m_masterChildProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &WindowsFork::childFinished);
 
     auto env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));

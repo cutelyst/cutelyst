@@ -18,6 +18,6 @@ public:
     int workerCore;
 };
 
-}
+} // namespace Cutelyst
 
 #endif // CUTELYST_ENGINE_P_H

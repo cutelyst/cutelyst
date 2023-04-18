@@ -7,8 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredUnless::ValidatorRequiredUnless(const QString &field, const QString &otherField, const QStringList &otherValues, const Cutelyst::ValidatorMessages &messages) :
-    ValidatorRule(*new ValidatorRequiredUnlessPrivate(field, otherField, otherValues, messages))
+ValidatorRequiredUnless::ValidatorRequiredUnless(const QString &field, const QString &otherField, const QStringList &otherValues, const Cutelyst::ValidatorMessages &messages)
+    : ValidatorRule(*new ValidatorRequiredUnlessPrivate(field, otherField, otherValues, messages))
 {
 }
 
@@ -26,7 +26,7 @@ ValidatorReturnType ValidatorRequiredUnless::validate(Context *c, const ParamsMu
         result.errorMessage = validationDataError(c);
         qCWarning(C_VALIDATOR, "ValidatorRequiredUnless: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
     } else {
-        const QString v = value(params);
+        const QString v  = value(params);
         const QString ov = trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
         if (!d->otherValues.contains(ov)) {
             if (!v.isEmpty()) {
