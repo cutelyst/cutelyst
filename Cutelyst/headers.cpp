@@ -422,7 +422,7 @@ void Headers::removeHeader(const QString &field)
     m_data.remove(normalizeHeaderKey(field));
 }
 
-bool Headers::contains(const QString &field)
+bool Headers::contains(const QString &field) const
 {
     return m_data.contains(normalizeHeaderKey(field));
 }

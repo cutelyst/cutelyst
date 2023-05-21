@@ -383,7 +383,7 @@ public:
     /**
      * Returns true if the header field is defined.
      */
-    bool contains(const QString &field);
+    bool contains(const QString &field) const;
 
     /**
      * Returns the value associated with key.
