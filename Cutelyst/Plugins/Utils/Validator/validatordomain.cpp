@@ -157,7 +157,7 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
         QDnsLookup alookup(QDnsLookup::A, v);
         QEventLoop aloop;
         QObject::connect(&alookup, &QDnsLookup::finished, &aloop, &QEventLoop::quit);
-        QTimer::singleShot(3100, &alookup, &QDnsLookup::abort);
+        QTimer::singleShot(std::chrono::milliseconds{3100}, &alookup, &QDnsLookup::abort);
         alookup.lookup();
         aloop.exec();
 
@@ -165,7 +165,7 @@ bool ValidatorDomain::validate(const QString &value, bool checkDNS, Cutelyst::Va
             QDnsLookup aaaaLookup(QDnsLookup::AAAA, v);
             QEventLoop aaaaLoop;
             QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
-            QTimer::singleShot(3100, &aaaaLookup, &QDnsLookup::abort);
+            QTimer::singleShot(std::chrono::milliseconds{3100}, &aaaaLookup, &QDnsLookup::abort);
             aaaaLookup.lookup();
             aaaaLoop.exec();
 

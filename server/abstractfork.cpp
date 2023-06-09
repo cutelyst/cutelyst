@@ -37,7 +37,7 @@ void AbstractFork::installTouchReload()
 
         m_restartTimer = new QTimer(this);
         connect(m_restartTimer, &QTimer::timeout, this, &AbstractFork::restart);
-        m_restartTimer->setInterval(1 * 1000);
+        m_restartTimer->setInterval(std::chrono::seconds{1});
         m_restartTimer->setSingleShot(true);
     }
 }

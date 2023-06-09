@@ -100,7 +100,7 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
                 // Issue first ping immediately
                 d->watchdog = new QTimer(this);
                 // SD recommends half the defined interval
-                d->watchdog->setInterval(d->watchdog_usec / 1000 / 2);
+                d->watchdog->setInterval(std::chrono::seconds{d->watchdog_usec} / 2);
                 sendWatchdog(QByteArrayLiteral("1"));
                 connect(d->watchdog, &QTimer::timeout, this, [this] {
                     sendWatchdog(QByteArrayLiteral("1"));

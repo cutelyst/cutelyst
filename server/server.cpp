@@ -1557,7 +1557,7 @@ void ServerPrivate::checkEngineShutdown()
             Q_Q(Server);
             Q_EMIT q->stopped();
         } else {
-            QTimer::singleShot(0, this, [] {
+            QTimer::singleShot(std::chrono::seconds{0}, this, [] {
                 qApp->exit(15);
             });
         }
@@ -1604,7 +1604,7 @@ bool ServerPrivate::postFork(int workerId)
 
     Q_EMIT postForked(workerId);
 
-    QTimer::singleShot(1000, this, [=]() {
+    QTimer::singleShot(std::chrono::seconds{1}, this, [=]() {
         // THIS IS NEEDED when
         // --master --threads N --experimental-thread-balancer
         // for some reason sometimes the balancer doesn't get

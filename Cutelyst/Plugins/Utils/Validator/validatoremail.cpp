@@ -1054,7 +1054,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
         QDnsLookup mxLookup(QDnsLookup::MX, parseDomain);
         QEventLoop mxLoop;
         QObject::connect(&mxLookup, &QDnsLookup::finished, &mxLoop, &QEventLoop::quit);
-        QTimer::singleShot(3100, &mxLookup, &QDnsLookup::abort);
+        QTimer::singleShot(std::chrono::milliseconds{3100}, &mxLookup, &QDnsLookup::abort);
         mxLookup.lookup();
         mxLoop.exec();
 
@@ -1065,7 +1065,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             QDnsLookup aLookup(QDnsLookup::A, parseDomain);
             QEventLoop aLoop;
             QObject::connect(&aLookup, &QDnsLookup::finished, &aLoop, &QEventLoop::quit);
-            QTimer::singleShot(3100, &aLookup, &QDnsLookup::abort);
+            QTimer::singleShot(std::chrono::milliseconds{3100}, &aLookup, &QDnsLookup::abort);
             aLookup.lookup();
             aLoop.exec();
 

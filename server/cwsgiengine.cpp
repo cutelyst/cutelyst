@@ -48,7 +48,7 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
     if (m_wsgi->socketTimeout()) {
         m_socketTimeout = new QTimer(this);
         m_socketTimeout->setObjectName(QStringLiteral("Cutelyst::socketTimeout"));
-        m_socketTimeout->setInterval(m_wsgi->socketTimeout() * 1000);
+        m_socketTimeout->setInterval(std::chrono::seconds{m_wsgi->socketTimeout()});
     }
 
     connect(this, &CWsgiEngine::shutdown, app(), [this] {

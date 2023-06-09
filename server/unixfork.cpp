@@ -165,7 +165,7 @@ void UnixFork::decreaseWorkerRespawn()
     }
 
     if (missingRespawn) {
-        QTimer::singleShot(1 * 1000, this, &UnixFork::decreaseWorkerRespawn);
+        QTimer::singleShot(std::chrono::seconds{1}, this, &UnixFork::decreaseWorkerRespawn);
     }
 }
 
@@ -252,7 +252,7 @@ void UnixFork::setupCheckChildTimer()
 {
     if (!m_checkChildRestart) {
         m_checkChildRestart = new QTimer(this);
-        m_checkChildRestart->start(500);
+        m_checkChildRestart->start(std::chrono::milliseconds{500});
         connect(m_checkChildRestart, &QTimer::timeout, this, &UnixFork::handleSigChld);
     }
 }
@@ -469,14 +469,14 @@ void UnixFork::handleSigInt()
         if (count++ > 2) {
             std::cout << "KILL workers..." << std::endl;
             killChild();
-            QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);
+            QTimer::singleShot(std::chrono::seconds{3}, qApp, &QCoreApplication::quit);
         } else if (count > 1) {
             terminateChild();
         } else {
-            QTimer::singleShot(30 * 1000, this, [this]() {
+            QTimer::singleShot(std::chrono::seconds{30}, this, [this]() {
                 std::cout << "workers terminating timeout, KILL ..." << std::endl;
                 killChild();
-                QTimer::singleShot(3 * 1000, qApp, &QCoreApplication::quit);
+                QTimer::singleShot(std::chrono::seconds{30}, qApp, &QCoreApplication::quit);
             });
 
             terminateChild();
@@ -516,7 +516,7 @@ void UnixFork::handleSigChld()
             }
             worker.restart = 0;
             ++worker.respawn;
-            QTimer::singleShot(1 * 1000, this, &UnixFork::decreaseWorkerRespawn);
+            QTimer::singleShot(std::chrono::seconds{1}, this, &UnixFork::decreaseWorkerRespawn);
             m_recreateWorker.push_back(worker);
             qApp->quit();
         } else if (!m_child && m_childs.isEmpty()) {
@@ -678,7 +678,7 @@ void UnixFork::setupSocketPair(bool closeSignalsFD, bool createPair)
         //        qCDebug(WSGI_UNIX) << "Got signal:" << static_cast<int>(signal) << "pid:" << QCoreApplication::applicationPid();
         switch (signal) {
         case SIGCHLD:
-            QTimer::singleShot(0, this, &UnixFork::handleSigChld);
+            QTimer::singleShot(std::chrono::seconds{0}, this, &UnixFork::handleSigChld);
             break;
         case SIGINT:
         case SIGQUIT:
