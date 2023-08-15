@@ -609,7 +609,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                             }
                         }
 
-                        if (ipv6.size() == 1 && ipv6[0] == QLatin1Char(':') || ipv6[0] == QLatin1Char(':') && ipv6[1] != QLatin1Char(':')) {
+                        if ((ipv6.size() == 1 && ipv6[0] == QLatin1Char(':')) || (ipv6[0] == QLatin1Char(':') && ipv6[1] != QLatin1Char(':'))) {
                             returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonStart); // Address starts with a single colon
                         } else if (ipv6.right(2).at(1) == QLatin1Char(':') && ipv6.right(2).at(0) != QLatin1Char(':')) {
                             returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single colon
