@@ -224,23 +224,18 @@ bool Action::doExecute(Context *c)
      * TODO: check for more flexible implementation
      */
 
+    const QStringList args = c->request()->args();
+
     if (d->evaluateBool) {
         bool methodRet;
 
         if (d->listSignature) {
-
-            QStringList args = c->request()->args();
-
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    qReturnArg(methodRet),
                                    c,
                                    args);
         } else {
-            QStringList args = c->request()->args();
-            // Fill the missing arguments
-            args.append(d->emptyArgs);
-
             switch (d->method.parameterCount()) {
             case 0:
                 ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet));
@@ -290,18 +285,11 @@ bool Action::doExecute(Context *c)
         return false;
     } else {
         if (d->listSignature) {
-
-            QStringList args = c->request()->args();
-
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    c,
                                    args);
         } else {
-            QStringList args = c->request()->args();
-            // Fill the missing arguments
-            args.append(d->emptyArgs);
-
             switch (d->method.parameterCount()) {
             case 0:
                 ret = d->method.invoke(d->controller, Qt::DirectConnection);
