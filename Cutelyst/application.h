@@ -169,8 +169,8 @@ public:
      *
      *      auto trans = new QTranslator(this);
      *      QLocale deDE(QLocale::German, QLocale::Germany);
-     *      if (trans->load(deDE, QStringLiteral("mycutelystapp"), QStringLiteral("."), QStringLiteral("/usr/share/mycutelystapp/l10n")) {
-     *          addTranslator(deDE, trans);
+     *      if (trans->load(deDE, QStringLiteral("mycutelystapp"), QStringLiteral("."),
+     * QStringLiteral("/usr/share/mycutelystapp/l10n")) { addTranslator(deDE, trans);
      *      }
      *
      *      // ...
@@ -206,84 +206,105 @@ public:
     /**
      * Translates the @a sourceText into the target @a locale language.
      *
-     * This uses the installed translators for the specified @a locale to translate the @a sourceText for the
-     * given @a context into the target locale. Optionally you can use a @a disambiguation and/or the @a n parameter
-     * to translate a pluralized version.
+     * This uses the installed translators for the specified @a locale to translate the @a
+     * sourceText for the given @a context into the target locale. Optionally you can use a @a
+     * disambiguation and/or the @a n parameter to translate a pluralized version.
      *
      * @sa Context::translate(), QTranslator::translate()
      *
      * @since Cutelyst 1.5.0
      */
-    QString translate(const QLocale &locale, const char *context, const char *sourceText, const char *disambiguation = nullptr, int n = -1) const;
+    QString translate(const QLocale &locale,
+                      const char *context,
+                      const char *sourceText,
+                      const char *disambiguation = nullptr,
+                      int n                      = -1) const;
 
     /**
      * Loads translations for a specific @a filename from a single directory.
      *
-     * This can be used to load translations for a specific component if the translation file names follow a common schema.
-     * Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a specific component if the translation file names
+     * follow a common schema. Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/myapp_de.qm
      * @li @c /usr/share/myapp/translations/myapp_pt_BR.qm
      * @li @c ...
      *
-     * You can then use loadTranslations() in your reimplementation of Application::init() as follows:
+     * You can then use loadTranslations() in your reimplementation of Application::init() as
+     * follows:
      * @code{.cpp}
      * bool MyApp::init()
      * {
-     *      loadTranslations(QStringLiteral("myapp"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *      loadTranslations(QStringLiteral("myapp"),
+     * QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
      * }
      * @endcode
      *
-     * If @a directory is empty, the default directory, set by <code>-DI18NDIR</code>, will be used. @a prefix is the part between
-     * the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
+     * If @a directory is empty, the default directory, set by <code>-DI18NDIR</code>, will be used.
+     * @a prefix is the part between the file name and the locale part. In the example above it is
+     * @c "_", if it is not set the default @c "." will be used. The
      * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDir(), loadTranslationsFromDirs()
      *
      * @since Cuteylst 2.0.0
      */
-    void loadTranslations(const QString &filename, const QString &directory = QString(), const QString &prefix = QString(), const QString &suffix = QString());
+    void loadTranslations(const QString &filename,
+                          const QString &directory = QString(),
+                          const QString &prefix    = QString(),
+                          const QString &suffix    = QString());
 
     /**
-     * Loads translations for a specific @a filename from a single directory and returns a list of added locales.
+     * Loads translations for a specific @a filename from a single directory and returns a list of
+     * added locales.
      *
-     * This can be used to load translations for a specific component if the translation file names follow a common schema.
-     * Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a specific component if the translation file names
+     * follow a common schema. Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/myapp_de.qm
      * @li @c /usr/share/myapp/translations/myapp_pt_BR.qm
      * @li @c ...
      *
-     * You can then use loadTranslationsFromDir() in your reimplementation of Application::init() as follows:
+     * You can then use loadTranslationsFromDir() in your reimplementation of Application::init() as
+     * follows:
      * @code{.cpp}
      * bool MyApp::init()
      * {
-     *      loadTranslationsFromDir(QStringLiteral("myapp"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *      loadTranslationsFromDir(QStringLiteral("myapp"),
+     * QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
      * }
      * @endcode
      *
-     * If @a directory is empty, the default directory, set by <code>-DI18NDIR</code>, will be used. @a prefix is the part between
-     * the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
+     * If @a directory is empty, the default directory, set by <code>-DI18NDIR</code>, will be used.
+     * @a prefix is the part between the file name and the locale part. In the example above it is
+     * @c "_", if it is not set the default @c "." will be used. The
      * @a suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDirs()
      *
      * @since Cuteylst 2.1.0
      */
-    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory = QString(), const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
+    QVector<QLocale> loadTranslationsFromDir(const QString &filename,
+                                             const QString &directory = QString(),
+                                             const QString &prefix    = QStringLiteral("."),
+                                             const QString &suffix    = QStringLiteral(".qm"));
 
     /**
-     * Loads translations for a specific @a filename from a directory structure under @a directory and returns a list of added locales.
+     * Loads translations for a specific @a filename from a directory structure under @a directory
+     * and returns a list of added locales.
      *
-     * This can be used to load translations for a specific component or application if the the translation files are organized in
-     * subdirectories named after locale codes. Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a specific component or application if the the
+     * translation files are organized in subdirectories named after locale codes. Let us assume you
+     * organised your translation files as follows:
      * @li @c /usr/share/locale/de/LC_MESSAGES/myapp.qm
      * @li @c /usr/share/locale/pt_BR/LC_MESSAGES/myapp.qm
      * @li @c ...
      *
-     * You can then use loadTranslationsFromDirs() in your reimplementation of Application::init() as follows:
+     * You can then use loadTranslationsFromDirs() in your reimplementation of Application::init()
+     * as follows:
      * @code{.cpp}
      * bool MyApp::init()
      * {
-     *     loadTranslationsFromDirs(QStringLiteral("/usr/share/locale"), QStringLiteral("LC_MESSAGES/myapp.qm"));
+     *     loadTranslationsFromDirs(QStringLiteral("/usr/share/locale"),
+     * QStringLiteral("LC_MESSAGES/myapp.qm"));
      * }
      * @endcode
      *

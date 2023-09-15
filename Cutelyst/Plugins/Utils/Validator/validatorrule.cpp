@@ -10,7 +10,9 @@
 
 using namespace Cutelyst;
 
-ValidatorRule::ValidatorRule(const QString &field, const ValidatorMessages &messages, const QString &defValKey)
+ValidatorRule::ValidatorRule(const QString &field,
+                             const ValidatorMessages &messages,
+                             const QString &defValKey)
     : d_ptr(new ValidatorRulePrivate(field, messages, defValKey))
 {
 }
@@ -84,7 +86,9 @@ QString ValidatorRule::genericValidationError(Context *c, const QVariant &errorD
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (!_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRule", "The input data in the “%1” field is not acceptable.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorRule",
+                             "The input data in the “%1” field is not acceptable.")
+                    .arg(_label);
     } else {
         error = c->translate("Cutelyst::ValidatorRule", "The input data is not acceptable.");
     }
@@ -114,7 +118,9 @@ QString ValidatorRule::genericParsingError(Cutelyst::Context *c, const QVariant 
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (!_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRule", "The input data in the “%1“ field could not be parsed.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorRule",
+                             "The input data in the “%1“ field could not be parsed.")
+                    .arg(_label);
     } else {
         error = c->translate("Cutelyst::ValidatorRule", "The input data could not be parsed.");
     }
@@ -144,14 +150,18 @@ QString ValidatorRule::genericValidationDataError(Context *c, const QVariant &er
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (!_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorRule", "Missing or invalid validation data for the “%1” field.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorRule",
+                             "Missing or invalid validation data for the “%1” field.")
+                    .arg(_label);
     } else {
         error = c->translate("Cutelyst::ValidatorRule", "Missing or invalid validation data.");
     }
     return error;
 }
 
-void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result, const char *validatorName) const
+void ValidatorRule::defaultValue(Context *c,
+                                 ValidatorReturnType *result,
+                                 const char *validatorName) const
 {
     Q_ASSERT_X(c, "getting default value", "invalid context object");
     Q_ASSERT_X(result, "getting default value", "invalid result object");
@@ -159,7 +169,13 @@ void ValidatorRule::defaultValue(Context *c, ValidatorReturnType *result, const 
     Q_D(const ValidatorRule);
     if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
         result->value.setValue(c->stash(d->defValKey));
-        qCDebug(C_VALIDATOR, "%s: Using default value \"%s\" for field %s in %s::%s.", validatorName, qPrintable(result->value.toString()), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR,
+                "%s: Using default value \"%s\" for field %s in %s::%s.",
+                validatorName,
+                qPrintable(result->value.toString()),
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
     }
 }
 

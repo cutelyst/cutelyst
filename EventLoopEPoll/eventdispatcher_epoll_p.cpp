@@ -80,8 +80,7 @@ bool EventDispatcherEPollPrivate::processEvents(QEventLoop::ProcessEventsFlags f
 
     QCoreApplication::sendPostedEvents();
 
-    bool can_wait =
-        !m_interrupt && (flags & QEventLoop::WaitForMoreEvents) && !result;
+    bool can_wait = !m_interrupt && (flags & QEventLoop::WaitForMoreEvents) && !result;
 
     int n_events = 0;
 

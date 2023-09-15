@@ -212,7 +212,9 @@ QJsonObject Sql::queryToIndexedJsonObject(QSqlQuery &query, const QString &key)
     return ret;
 }
 
-void Sql::bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped)
+void Sql::bindParamsToQuery(QSqlQuery &query,
+                            const Cutelyst::ParamsMultiMap &params,
+                            bool htmlEscaped)
 {
     auto it = params.constBegin();
     if (htmlEscaped) {
@@ -241,7 +243,8 @@ QSqlQuery Sql::preparedQuery(const QString &query, QSqlDatabase db, bool forward
     QSqlQuery sqlQuery(db);
     sqlQuery.setForwardOnly(forwardOnly);
     if (!sqlQuery.prepare(query)) {
-        qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
+        qCCritical(C_SQL) << "Failed to prepare query:" << query
+                          << sqlQuery.lastError().databaseText();
     }
     return sqlQuery;
 }
@@ -251,7 +254,8 @@ QSqlQuery Sql::preparedQueryThread(const QString &query, const QString &dbName, 
     QSqlQuery sqlQuery(QSqlDatabase::database(databaseNameThread(dbName)));
     sqlQuery.setForwardOnly(forwardOnly);
     if (!sqlQuery.prepare(query)) {
-        qCCritical(C_SQL) << "Failed to prepare query:" << query << sqlQuery.lastError().databaseText();
+        qCCritical(C_SQL) << "Failed to prepare query:" << query
+                          << sqlQuery.lastError().databaseText();
     }
     return sqlQuery;
 }

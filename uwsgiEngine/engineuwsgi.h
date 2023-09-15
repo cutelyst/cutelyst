@@ -7,8 +7,8 @@
 
 #include <Cutelyst/engine.h>
 
-#include <QPluginLoader>
 #include <QLoggingCategory>
+#include <QPluginLoader>
 #include <QThread>
 
 extern struct uwsgi_server uwsgi;
@@ -19,7 +19,7 @@ struct uwsgi_socket;
 namespace Cutelyst {
 class Dispatcher;
 class Application;
-}
+} // namespace Cutelyst
 
 using namespace Cutelyst;
 class uWSGI : public Engine

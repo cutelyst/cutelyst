@@ -15,7 +15,8 @@
 #        define CUTELYST_CUTELEE_URIFOR_EXPORT Q_DECL_IMPORT
 #    endif
 
-class CutelystCutelee final : public QObject
+class CutelystCutelee final
+    : public QObject
     , public Cutelee::TagLibraryInterface
 {
     Q_OBJECT
@@ -23,7 +24,8 @@ class CutelystCutelee final : public QObject
 public:
     explicit CutelystCutelee(QObject *parent = nullptr);
 
-    virtual QHash<QString, Cutelee::AbstractNodeFactory *> nodeFactories(const QString &name = QString()) override;
+    virtual QHash<QString, Cutelee::AbstractNodeFactory *>
+        nodeFactories(const QString &name = QString()) override;
 
     virtual QHash<QString, Cutelee::Filter *> filters(const QString &name = QString()) override;
 };

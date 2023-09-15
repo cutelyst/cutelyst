@@ -60,7 +60,8 @@ private:
 
 protected:
     /*!
-     * A derived class using pimpl should call this constructor, to reduce the number of memory allocations
+     * A derived class using pimpl should call this constructor, to reduce the number of memory
+     * allocations
      */
     explicit View(ViewPrivate *d, QObject *parent, const QString &name);
 };

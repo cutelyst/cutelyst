@@ -16,7 +16,11 @@
 
 using namespace Cutelyst;
 
-ValidatorEmail::ValidatorEmail(const QString &field, Category threshold, Options options, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorEmail::ValidatorEmail(const QString &field,
+                               Category threshold,
+                               Options options,
+                               const Cutelyst::ValidatorMessages &messages,
+                               const QString &defValKey)
     : ValidatorRule(*new ValidatorEmailPrivate(field, threshold, options, messages, defValKey))
 {
 }
@@ -52,7 +56,8 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
         //            if (asciiDomain) {
         //                email = v;
         //            } else {
-        //                email = local + QLatin1Char('@') + QString::fromLatin1(QUrl::toAce(domain));
+        //                email = local + QLatin1Char('@') +
+        //                QString::fromLatin1(QUrl::toAce(domain));
         //            }
         //        } else {
         //            email = v;
@@ -67,7 +72,8 @@ ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &p
                 result.value.setValue<QString>(diag.localpart + QLatin1Char('@') + diag.domain);
             }
         } else {
-            result.errorMessage = validationError(c, QVariant::fromValue<Diagnose>(diag.finalStatus));
+            result.errorMessage =
+                validationError(c, QVariant::fromValue<Diagnose>(diag.finalStatus));
         }
 
         result.extra = QVariant::fromValue<QList<Diagnose>>(diag.returnStatus);
@@ -88,7 +94,10 @@ QString ValidatorEmail::genericValidationError(Context *c, const QVariant &error
     return error;
 }
 
-bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::Options options, ValidatorEmail::Category threshold, ValidatorEmailDiagnoseStruct *diagnoseStruct)
+bool ValidatorEmailPrivate::checkEmail(const QString &address,
+                                       ValidatorEmail::Options options,
+                                       ValidatorEmail::Category threshold,
+                                       ValidatorEmailDiagnoseStruct *diagnoseStruct)
 {
     bool ret;
 
@@ -112,7 +121,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
     bool endOrDie    = false;
     int crlf_count   = 0;
 
-    // US-ASCII visible characters not valid for atext (https://tools.ietf.org/html/rfc5322#section-3.2.3)
+    // US-ASCII visible characters not valid for atext
+    // (https://tools.ietf.org/html/rfc5322#section-3.2.3)
     const QString stringSpecials = QStringLiteral("()<>[]:;@\\,.\"");
 
     const bool checkDns       = options.testFlag(ValidatorEmail::CheckDNS);
@@ -177,10 +187,12 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             if (token == QLatin1Char('(')) { // comment
                 if (elementLen == 0) {
                     // Comments are OK at the beginning of an element
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::CFWSComment : ValidatorEmail::DeprecatedComment);
+                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::CFWSComment
+                                                               : ValidatorEmail::DeprecatedComment);
                 } else {
                     returnStatus.push_back(ValidatorEmail::CFWSComment);
-                    endOrDie = true; // We can't start a comment in the middle of an element, so this better be the end
+                    endOrDie = true; // We can't start a comment in the middle of an element, so
+                                     // this better be the end
                 }
 
                 contextStack.push_back(context);
@@ -188,7 +200,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             } else if (token == QLatin1Char('.')) { // Next dot-atom element
                 if (elementLen == 0) {
                     // Another dot, already?
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::ErrorDotStart : ValidatorEmail::ErrorConsecutiveDots);
+                    returnStatus.push_back((elementCount == 0)
+                                               ? ValidatorEmail::ErrorDotStart
+                                               : ValidatorEmail::ErrorConsecutiveDots);
                 } else {
                     // The entire local part can be a quoted string for RFC 5321
                     // If it's just one atom that is quoten then it's an RFC 5322 obsolete form
@@ -197,7 +211,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     }
                 }
 
-                endOrDie   = false; // CFWS & quoted strings are OK again now we're at the beginning of an element (although they are obsolete forms)
+                endOrDie = false; // CFWS & quoted strings are OK again now we're at the beginning
+                                  // of an element (although they are obsolete forms)
                 elementLen = 0;
                 elementCount++;
                 parseLocalPart += token;
@@ -206,7 +221,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 if (elementLen == 0) {
                     // The entire local-part can be a quoted string for RFC 5321
                     // If it's just one atom that is quoted then it's an RFC 5322 obsolete form
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::RFC5321QuotedString : ValidatorEmail::DeprecatedLocalpart);
+                    returnStatus.push_back((elementCount == 0)
+                                               ? ValidatorEmail::RFC5321QuotedString
+                                               : ValidatorEmail::DeprecatedLocalpart);
 
                     parseLocalPart += token;
                     atomListLocalPart[elementCount] += token;
@@ -217,16 +234,20 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 } else {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
                 }
-            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) || (token == QChar(QChar::Tabulation))) { // Folding White Space
-                if ((token == QChar(QChar::CarriageReturn)) && ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
+            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) ||
+                       (token == QChar(QChar::Tabulation))) { // Folding White Space
+                if ((token == QChar(QChar::CarriageReturn)) &&
+                    ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF);
                     break;
                 }
 
                 if (elementLen == 0) {
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::CFWSFWS : ValidatorEmail::DeprecatedFWS);
+                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::CFWSFWS
+                                                               : ValidatorEmail::DeprecatedFWS);
                 } else {
-                    endOrDie = true; // We can't start FWS in the middle of an element, so this better be the end
+                    endOrDie = true; // We can't start FWS in the middle of an element, so this
+                                     // better be the end
                 }
 
                 contextStack.push_back(context);
@@ -294,7 +315,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                         break;
                     default:
                         returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                        qCCritical(C_VALIDATOR, "ValidatorEmail: More atext found where none is allowed, but unrecognised prior context.");
+                        qCCritical(C_VALIDATOR,
+                                   "ValidatorEmail: More atext found where none is allowed, but "
+                                   "unrecognised prior context.");
                         break;
                     }
                 } else {
@@ -303,12 +326,14 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
 
                     if (!allowUtf8Local) {
                         if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
-                            returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // fatal error
+                            returnStatus.push_back(
+                                ValidatorEmail::ErrorExpectingAText); // fatal error
                         }
                     } else {
                         if (!token.isLetterOrNumber()) {
                             if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
-                                returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // fatal error
+                                returnStatus.push_back(
+                                    ValidatorEmail::ErrorExpectingAText); // fatal error
                             }
                         }
                     }
@@ -367,10 +392,13 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     // Comments at the start of the domain are deprecated in the text
                     // Comments at the start of a subdomain are obs-domain
                     // (https://tools.ietf.org/html/rfc5322#section-3.4.1)
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::DeprecatedCFWSNearAt : ValidatorEmail::DeprecatedComment);
+                    returnStatus.push_back((elementCount == 0)
+                                               ? ValidatorEmail::DeprecatedCFWSNearAt
+                                               : ValidatorEmail::DeprecatedComment);
                 } else {
                     returnStatus.push_back(ValidatorEmail::CFWSComment);
-                    endOrDie = true; // We can't start a comment in the middle of an element, so this better be the end
+                    endOrDie = true; // We can't start a comment in the middle of an element, so
+                                     // this better be the end
                 }
 
                 contextStack.push_back(context);
@@ -378,7 +406,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             } else if (token == QLatin1Char('.')) { // next dot-atom element
                 if (elementLen == 0) {
                     // another dot, already?
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::ErrorDotStart : ValidatorEmail::ErrorConsecutiveDots);
+                    returnStatus.push_back((elementCount == 0)
+                                               ? ValidatorEmail::ErrorDotStart
+                                               : ValidatorEmail::ErrorConsecutiveDots);
                 } else if (hypenFlag) {
                     // Previous subdomain ended in a hyphen
                     returnStatus.push_back(ValidatorEmail::ErrorDomainHyphenEnd); // fatal error
@@ -400,7 +430,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     }
                 }
 
-                endOrDie   = false; // CFWS is OK again now we're at the beginning of an element (although it may be obsolete CFWS)
+                endOrDie = false; // CFWS is OK again now we're at the beginning of an element
+                                  // (although it may be obsolete CFWS)
                 elementLen = 0;
                 elementCount++;
                 atomListDomain[elementCount] = QString();
@@ -418,17 +449,22 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 } else {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
                 }
-            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) || (token == QChar(QChar::Tabulation))) { // Folding White Space
-                if ((token == QChar(QChar::CarriageReturn)) && ((++i == rawLength) || email[i] != QChar(QChar::LineFeed))) {
+            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) ||
+                       (token == QChar(QChar::Tabulation))) { // Folding White Space
+                if ((token == QChar(QChar::CarriageReturn)) &&
+                    ((++i == rawLength) || email[i] != QChar(QChar::LineFeed))) {
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF); // Fatal error
                     break;
                 }
 
                 if (elementLen == 0) {
-                    returnStatus.push_back((elementCount == 0) ? ValidatorEmail::DeprecatedCFWSNearAt : ValidatorEmail::DeprecatedFWS);
+                    returnStatus.push_back((elementCount == 0)
+                                               ? ValidatorEmail::DeprecatedCFWSNearAt
+                                               : ValidatorEmail::DeprecatedFWS);
                 } else {
                     returnStatus.push_back(ValidatorEmail::CFWSFWS);
-                    endOrDie = true; // We can't start FWS in the middle of an element, so this better be the end
+                    endOrDie = true; // We can't start FWS in the middle of an element, so this
+                                     // better be the end
                 }
 
                 contextStack.push_back(context);
@@ -449,8 +485,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 //                        "`" / "{" /
                 //                        "|" / "}" /
                 //                        "~"
-                // But RFC 5321 only allows letter-digit-hyphen to comply with DNS rules (RFCs 1034 & 1123)
-                // https://tools.ietf.org/html/rfc5321#section-4.1.2
+                // But RFC 5321 only allows letter-digit-hyphen to comply with DNS rules (RFCs 1034
+                // & 1123) https://tools.ietf.org/html/rfc5321#section-4.1.2
                 //   sub-domain     = Let-dig [Ldh-str]
                 //
                 //   Let-dig        = ALPHA / DIGIT
@@ -470,23 +506,27 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                         break;
                     default:
                         returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                        qCCritical(C_VALIDATOR, "ValidatorEmail: More atext found where none is allowed, but unrecognised prior context.");
+                        qCCritical(C_VALIDATOR,
+                                   "ValidatorEmail: More atext found where none is allowed, but "
+                                   "unrecognised prior context.");
                         break;
                     }
                 }
 
                 const ushort uni = token.unicode();
-                hypenFlag        = false; // Assume this token isn't a hyphen unless we discover it is
+                hypenFlag = false; // Assume this token isn't a hyphen unless we discover it is
 
                 if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingAText); // Fatal error
                 } else if (token == QLatin1Char('-')) {
                     if (elementLen == 0) {
                         // Hyphens can't be at the beggining of a subdomain
-                        returnStatus.push_back(ValidatorEmail::ErrorDomainHyphenStart); // Fatal error
+                        returnStatus.push_back(
+                            ValidatorEmail::ErrorDomainHyphenStart); // Fatal error
                     }
                     hypenFlag = true;
-                } else if (!(((uni > 47) && (uni < 58)) || ((uni > 64) && (uni < 91)) || ((uni > 96) && (uni < 123)))) {
+                } else if (!(((uni > 47) && (uni < 58)) || ((uni > 64) && (uni < 91)) ||
+                             ((uni > 96) && (uni < 123)))) {
                     // NOt an RFC 5321 subdomain, but still ok by RFC 5322
                     returnStatus.push_back(ValidatorEmail::RFC5322Domain);
                 }
@@ -510,7 +550,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             //
             //   obs-dtext       =   obs-NO-WS-CTL / quoted-pair
             if (token == QLatin1Char(']')) { // End of domain literal
-                if (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(ValidatorEmail::Deprecated)) {
+                if (static_cast<int>(
+                        *std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+                    static_cast<int>(ValidatorEmail::Deprecated)) {
                     // Could be a valid RFC 5321 address literal, so let's check
 
                     // https://tools.ietf.org/html/rfc5321#section-4.1.2
@@ -568,19 +610,25 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                     int index              = -1;
                     QString addressLiteral = parseLiteral;
 
-                    QRegularExpression ipv4Regex(QStringLiteral("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"));
+                    QRegularExpression ipv4Regex(
+                        QStringLiteral("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25["
+                                       "0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"));
                     QRegularExpressionMatch ipv4Match = ipv4Regex.match(addressLiteral);
                     if (ipv4Match.hasMatch()) {
                         index = addressLiteral.lastIndexOf(ipv4Match.captured());
                         if (index != 0) {
-                            addressLiteral = addressLiteral.mid(0, index) + QLatin1String("0:0"); // Convert IPv4 part to IPv6 format for further testing
+                            addressLiteral =
+                                addressLiteral.mid(0, index) +
+                                QLatin1String(
+                                    "0:0"); // Convert IPv4 part to IPv6 format for further testing
                         }
                     }
 
                     if (index == 0) {
                         // Nothing there except a valid IPv4 address, so...
                         returnStatus.push_back(ValidatorEmail::RFC5321AddressLiteral);
-                    } else if (QString::compare(addressLiteral.left(5), QLatin1String("IPv6:")) != 0) {
+                    } else if (QString::compare(addressLiteral.left(5), QLatin1String("IPv6:")) !=
+                               0) {
                         returnStatus.push_back(ValidatorEmail::RFC5322DomainLiteral);
                     } else {
                         QString ipv6                = addressLiteral.mid(5);
@@ -604,19 +652,28 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                                 if (groupCount > maxGroups) {
                                     returnStatus.push_back(ValidatorEmail::RFC5322IPv6MaxGroups);
                                 } else if (groupCount == maxGroups) {
-                                    returnStatus.push_back(ValidatorEmail::RFC5321IPv6Deprecated); // Eliding a single "::"
+                                    returnStatus.push_back(
+                                        ValidatorEmail::RFC5321IPv6Deprecated); // Eliding a single
+                                                                                // "::"
                                 }
                             }
                         }
 
-                        if ((ipv6.size() == 1 && ipv6[0] == QLatin1Char(':')) || (ipv6[0] == QLatin1Char(':') && ipv6[1] != QLatin1Char(':'))) {
-                            returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonStart); // Address starts with a single colon
-                        } else if (ipv6.right(2).at(1) == QLatin1Char(':') && ipv6.right(2).at(0) != QLatin1Char(':')) {
-                            returnStatus.push_back(ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single colon
+                        if ((ipv6.size() == 1 && ipv6[0] == QLatin1Char(':')) ||
+                            (ipv6[0] == QLatin1Char(':') && ipv6[1] != QLatin1Char(':'))) {
+                            returnStatus.push_back(
+                                ValidatorEmail::RFC5322IPv6ColonStart); // Address starts with a
+                                                                        // single colon
+                        } else if (ipv6.right(2).at(1) == QLatin1Char(':') &&
+                                   ipv6.right(2).at(0) != QLatin1Char(':')) {
+                            returnStatus.push_back(
+                                ValidatorEmail::RFC5322IPv6ColonEnd); // Address ends with a single
+                                                                      // colon
                         } else {
                             int unmatchedChars = 0;
                             for (const QString &ip : matchesIP) {
-                                if (!ip.contains(QRegularExpression(QStringLiteral("^[0-9A-Fa-f]{0,4}$")))) {
+                                if (!ip.contains(
+                                        QRegularExpression(QStringLiteral("^[0-9A-Fa-f]{0,4}$")))) {
                                     unmatchedChars++;
                                 }
                             }
@@ -641,8 +698,10 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 returnStatus.push_back(ValidatorEmail::RFC5322DomLitOBSDText);
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
-            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) || (token == QChar(QChar::Tabulation))) { // Folding White Space
-                if ((token == QChar(QChar::CarriageReturn)) && ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
+            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) ||
+                       (token == QChar(QChar::Tabulation))) { // Folding White Space
+                if ((token == QChar(QChar::CarriageReturn)) &&
+                    ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF); // Fatal error
                     break;
                 }
@@ -695,10 +754,12 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             if (token == QLatin1Char('\\')) { // Quoted pair
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
-            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Tabulation))) { // Folding White Space
+            } else if ((token == QChar(QChar::CarriageReturn)) ||
+                       (token == QChar(QChar::Tabulation))) { // Folding White Space
                 // Inside a quoted string, spaces are allowed as regular characters.
                 // It's only FWS if we include HTAB or CRLF
-                if ((token == QChar(QChar::CarriageReturn)) && ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
+                if ((token == QChar(QChar::CarriageReturn)) &&
+                    ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF);
                     break;
                 }
@@ -751,7 +812,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 } else {
                     if (!token.isLetterOrNumber()) {
                         if ((uni > 127) || (uni == 0) || (uni == 10)) {
-                            returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
+                            returnStatus.push_back(
+                                ValidatorEmail::ErrorExpectingQText); // Fatal error
                         } else if ((uni < 32) || (uni == 127)) {
                             returnStatus.push_back(ValidatorEmail::DeprecatedQText);
                         }
@@ -818,18 +880,21 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 parseLocalPart += token;
                 atomListLocalPart[elementCount] += QLatin1Char('\\');
                 atomListLocalPart[elementCount] += token;
-                elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we must include the backslash
+                elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we
+                                 // must include the backslash
                 break;
             case ComponentLiteral:
                 parseDomain += QLatin1Char('\\');
                 parseDomain += token;
                 atomListDomain[elementCount] += QLatin1Char('\\');
                 atomListDomain[elementCount] += token;
-                elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we must include the backslash
+                elementLen += 2; // The maximum sizes specified by RFC 5321 are octet counts, so we
+                                 // must include the backslash
                 break;
             default:
                 returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                qCCritical(C_VALIDATOR, "ValidatorEmail: Quoted pair logic invoked in an invalid context.");
+                qCCritical(C_VALIDATOR,
+                           "ValidatorEmail: Quoted pair logic invoked in an invalid context.");
                 break;
             }
         } break;
@@ -859,16 +924,20 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 // space to the address wherever CFWS appears. This would result in
                 // any addr-spec that had CFWS outside a quoted string being invalid
                 // for RFC 5321.
-                //				if (($context === ISEMAIL_COMPONENT_LOCALPART) || ($context === ISEMAIL_COMPONENT_DOMAIN)) {
-                //					$parsedata[$context]			.= ISEMAIL_STRING_SP;
-                //					$atomlist[$context][$element_count]	.= ISEMAIL_STRING_SP;
-                //					$element_len++;
+                //				if (($context === ISEMAIL_COMPONENT_LOCALPART) ||
+                //($context === ISEMAIL_COMPONENT_DOMAIN)) {
+                //					$parsedata[$context]			.=
+                // ISEMAIL_STRING_SP;
+                // $atomlist[$context][$element_count]
+                // .= ISEMAIL_STRING_SP; 					$element_len++;
                 //				}
             } else if (token == QLatin1Char('\\')) { // Quoted pair
                 contextStack.push_back(context);
                 context = ContextQuotedPair;
-            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) || (token == QChar(QChar::Tabulation))) { // Folding White Space
-                if ((token == QChar(QChar::CarriageReturn)) && ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
+            } else if ((token == QChar(QChar::CarriageReturn)) || (token == QChar(QChar::Space)) ||
+                       (token == QChar(QChar::Tabulation))) { // Folding White Space
+                if ((token == QChar(QChar::CarriageReturn)) &&
+                    ((++i == rawLength) || (email[i] != QChar(QChar::LineFeed)))) {
                     returnStatus.push_back(ValidatorEmail::ErrorCRnoLF);
                     break;
                 }
@@ -927,7 +996,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
 
                 if (crlf_count > 0) {
                     if (++crlf_count > 1) {
-                        returnStatus.push_back(ValidatorEmail::DeprecatedFWS); // Multiple folds = obsolete FWS
+                        returnStatus.push_back(
+                            ValidatorEmail::DeprecatedFWS); // Multiple folds = obsolete FWS
                     }
                 } else {
                     crlf_count = 1;
@@ -961,10 +1031,12 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
                 // space to the address wherever CFWS appears. This would result in
                 // any addr-spec that had CFWS outside a quoted string being invalid
                 // for RFC 5321.
-                //				if (($context === ISEMAIL_COMPONENT_LOCALPART) || ($context === ISEMAIL_COMPONENT_DOMAIN)) {
-                //					$parsedata[$context]			.= ISEMAIL_STRING_SP;
-                //					$atomlist[$context][$element_count]	.= ISEMAIL_STRING_SP;
-                //					$element_len++;
+                //				if (($context === ISEMAIL_COMPONENT_LOCALPART) ||
+                //($context === ISEMAIL_COMPONENT_DOMAIN)) {
+                //					$parsedata[$context]			.=
+                // ISEMAIL_STRING_SP;
+                // $atomlist[$context][$element_count]
+                // .= ISEMAIL_STRING_SP; 					$element_len++;
                 //				}
 
                 i--; // Look at this token again in the parent context
@@ -978,13 +1050,16 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
             break;
         }
 
-        if (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) > static_cast<int>(ValidatorEmail::RFC5322)) {
+        if (static_cast<int>(
+                *std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) >
+            static_cast<int>(ValidatorEmail::RFC5322)) {
             break;
         }
     }
 
     // Some simple final tests
-    if (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(ValidatorEmail::RFC5322)) {
+    if (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+        static_cast<int>(ValidatorEmail::RFC5322)) {
         if (context == ContextQuotedString) {
             returnStatus.push_back(ValidatorEmail::ErrorUnclosedQuotedStr);
         } else if (context == ContextQuotedPair) {
@@ -1033,7 +1108,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
     // Check DNS?
     bool dnsChecked = false;
 
-    if (checkDns && (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(threshold))) {
+    if (checkDns &&
+        (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+         static_cast<int>(threshold))) {
         // https://tools.ietf.org/html/rfc5321#section-2.3.5
         //   Names that can
         //   be resolved to MX RRs or address (i.e., A or AAAA) RRs (as discussed
@@ -1109,7 +1186,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
     //   However, a valid host name can never have the dotted-decimal
     //   form #.#.#.#, since this change does not permit the highest-level
     //   component label to start with a digit even if it is not all-numeric.
-    if (!dnsChecked && (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) < static_cast<int>(ValidatorEmail::DNSWarn))) {
+    if (!dnsChecked &&
+        (static_cast<int>(*std::max_element(returnStatus.constBegin(), returnStatus.constEnd())) <
+         static_cast<int>(ValidatorEmail::DNSWarn))) {
         if (elementCount == 0) {
             returnStatus.push_back(ValidatorEmail::RFC5321TLD);
         }
@@ -1129,7 +1208,8 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address, ValidatorEmail::O
         }
         returnStatus = _rs;
 
-        std::sort(returnStatus.begin(), returnStatus.end(), std::greater<ValidatorEmail::Diagnose>());
+        std::sort(
+            returnStatus.begin(), returnStatus.end(), std::greater<ValidatorEmail::Diagnose>());
     }
 
     const ValidatorEmail::Diagnose finalStatus = returnStatus.at(0);
@@ -1154,97 +1234,134 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
     if (label.isEmpty()) {
         switch (diagnose) {
         case ValidAddress:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.");
+            ret =
+                c->translate("Cutelyst::ValidatorEmail",
+                             "Address is valid. Please note that this does not mean that both the "
+                             "address and the domain actually exist. This address could be issued "
+                             "by the domain owner without breaking the rules of any RFCs.");
             break;
         case DnsWarnNoMxRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Could not find an MX record for this address’ domain but an A record does exist.");
+            ret = c->translate(
+                "Cutelyst::ValidatorEmail",
+                "Could not find an MX record for this address’ domain but an A record does exist.");
             break;
         case DnsWarnNoRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Could neither find an MX record nor an A record for this address’ domain.");
+            ret = c->translate(
+                "Cutelyst::ValidatorEmail",
+                "Could neither find an MX record nor an A record for this address’ domain.");
             break;
         case RFC5321TLD:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but at a Top Level Domain.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but at a Top Level Domain.");
             break;
         case RFC5321TLDNumberic:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but the Top Level Domain begins with a number.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but the Top Level Domain begins with a number.");
             break;
         case RFC5321QuotedString:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but contains a quoted string.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but contains a quoted string.");
             break;
         case RFC5321AddressLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but uses an IP address instead of a domain name.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but uses an IP address instead of a domain name.");
             break;
         case RFC5321IPv6Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but uses an IP address that contains a :: only eliding one zero group. All implementations must accept and be able to handle any legitimate RFC 4291 format.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but uses an IP address that contains a :: only "
+                               "eliding one zero group. All implementations must accept and be "
+                               "able to handle any legitimate RFC 4291 format.");
             break;
         case CFWSComment:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address contains comments.");
             break;
         case CFWSFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains folding white spaces like line breaks.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains folding white spaces like line breaks.");
             break;
         case DeprecatedLocalpart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The local part is in a deprecated form.");
+            ret =
+                c->translate("Cutelyst::ValidatorEmail", "The local part is in a deprecated form.");
             break;
         case DeprecatedFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains an obsolete form of folding white spaces.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains an obsolete form of folding white spaces.");
             break;
         case DeprecatedQText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted string contains a deprecated character.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted string contains a deprecated character.");
             break;
         case DeprecatedQP:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted pair contains a deprecated character.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted pair contains a deprecated character.");
             break;
         case DeprecatedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a comment in a position that is deprecated.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains a comment in a position that is deprecated.");
             break;
         case DeprecatedCText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A comment contains a deprecated character.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A comment contains a deprecated character.");
             break;
         case DeprecatedCFWSNearAt:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a comment or folding white space around the @ sign.");
+            ret = c->translate(
+                "Cutelyst::ValidatorEmail",
+                "Address contains a comment or folding white space around the @ sign.");
             break;
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is RFC 5322 compliant but contains domain characters that are not allowed by DNS.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is RFC 5322 compliant but contains domain characters that "
+                               "are not allowed by DNS.");
             break;
         case RFC5322TooLong:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is too long.");
             break;
         case RFC5322LocalTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The local part of the address is too long.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The local part of the address is too long.");
             break;
         case RFC5322DomainTooLong:
             ret = c->translate("Cutelyst::ValidatorEmail", "The domain part is too long.");
             break;
         case RFC5322LabelTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain part contains an element that is too long.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain part contains an element that is too long.");
             break;
         case RFC5322DomainLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain literal is not a valid RFC 5321 address literal.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain literal is not a valid RFC 5321 address literal.");
             break;
         case RFC5322DomLitOBSDText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain literal is not a valid RFC 5321 domain literal and it contains obsolete characters.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain literal is not a valid RFC 5321 domain literal and it "
+                               "contains obsolete characters.");
             break;
         case RFC5322IPv6GroupCount:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 literal address contains the wrong number of groups.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 literal address contains the wrong number of groups.");
             break;
         case RFC5322IPv62x2xColon:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 literal address contains too many :: sequences.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 literal address contains too many :: sequences.");
             break;
         case RFC5322IPv6BadChar:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address contains an illegal group of characters.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address contains an illegal group of characters.");
             break;
         case RFC5322IPv6MaxGroups:
             ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address has too many groups.");
             break;
         case RFC5322IPv6ColonStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address starts with a single colon.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address starts with a single colon.");
             break;
         case RFC5322IPv6ColonEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address ends with a single colon.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address ends with a single colon.");
             break;
         case ErrorExpectingDText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain literal contains a character that is not allowed.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain literal contains a character that is not allowed.");
             break;
         case ErrorNoLocalPart:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address has no local part.");
@@ -1253,64 +1370,87 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address has no domain part.");
             break;
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address must not contain consecutive dots.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address must not contain consecutive dots.");
             break;
         case ErrorATextAfterCFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains text after a comment or folding white space.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains text after a comment or folding white space.");
             break;
         case ErrorATextAfterQS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains text after a quoted string.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains text after a quoted string.");
             break;
         case ErrorATextAfterDomLit:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Extra characters were found after the end of the domain literal.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Extra characters were found after the end of the domain literal.");
             break;
         case ErrorExpectingQpair:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The Address contains a character that is not allowed in a quoted pair.");
+            ret = c->translate(
+                "Cutelyst::ValidatorEmail",
+                "The Address contains a character that is not allowed in a quoted pair.");
             break;
         case ErrorExpectingAText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a character that is not allowed.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains a character that is not allowed.");
             break;
         case ErrorExpectingQText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted string contains a character that is not allowed.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted string contains a character that is not allowed.");
             break;
         case ErrorExpectingCText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A comment contains a character that is not allowed.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A comment contains a character that is not allowed.");
             break;
         case ErrorBackslashEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address can not end with a backslash.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address can not end with a backslash.");
             break;
         case ErrorDotStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Neither part of the address may begin with a dot.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Neither part of the address may begin with a dot.");
             break;
         case ErrorDotEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Neither part of the address may end with a dot.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Neither part of the address may end with a dot.");
             break;
         case ErrorDomainHyphenStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain or subdomain can not begin with a hyphen.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain or subdomain can not begin with a hyphen.");
             break;
         case ErrorDomainHyphenEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain or subdomain can not end with a hyphen.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain or subdomain can not end with a hyphen.");
             break;
         case ErrorUnclosedQuotedStr:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed quoted string. (Missing double quotation mark)");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Unclosed quoted string. (Missing double quotation mark)");
             break;
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment. (Missing closing parentheses)");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Unclosed comment. (Missing closing parentheses)");
             break;
         case ErrorUnclosedDomLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Domain literal is missing its closing bracket.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Domain literal is missing its closing bracket.");
             break;
         case ErrorFWSCRLFx2:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Folding white space contains consecutive line break sequences (CRLF).");
+            ret = c->translate(
+                "Cutelyst::ValidatorEmail",
+                "Folding white space contains consecutive line break sequences (CRLF).");
             break;
         case ErrorFWSCRLFEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Folding white space ends with a line break sequence (CRLF).");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Folding white space ends with a line break sequence (CRLF).");
             break;
         case ErrorCRnoLF:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains a carriage return (CR) that is not followed by a line feed (LF).");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains a carriage return (CR) that is not followed by a "
+                               "line feed (LF).");
             break;
         case ErrorFatal:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occurred while parsing the address.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A fatal error occurred while parsing the address.");
             break;
         default:
             break;
@@ -1320,163 +1460,317 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
 
         switch (diagnose) {
         case ValidAddress:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid. Please note that this does not mean that both the address and the domain actually exist. This address could be issued by the domain owner without breaking the rules of any RFCs.").arg(label);
+            ret =
+                c->translate(
+                     "Cutelyst::ValidatorEmail",
+                     "The address in the “%1” field is valid. Please note that this does not mean "
+                     "that both the address and the domain actually exist. This address could be "
+                     "issued by the domain owner without breaking the rules of any RFCs.")
+                    .arg(label);
             break;
         case DnsWarnNoMxRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Could not find an MX record for the address’ domain in the “%1” field but an A record does exist.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Could not find an MX record for the address’ domain in the “%1” "
+                               "field but an A record does exist.")
+                      .arg(label);
             break;
         case DnsWarnNoRecord:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Could neither find an MX record nor an A record for address’ domain in the “%1” field.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Could neither find an MX record nor an A record for address’ "
+                               "domain in the “%1” field.")
+                      .arg(label);
             break;
         case RFC5321TLD:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but at a Top Level Domain.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is valid but at a Top Level Domain.")
+                      .arg(label);
             break;
         case RFC5321TLDNumberic:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but the Top Level Domain begins with a number.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is valid but the Top Level Domain "
+                               "begins with a number.")
+                      .arg(label);
             break;
         case RFC5321QuotedString:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but contains a quoted string.").arg(label);
+            ret =
+                c->translate("Cutelyst::ValidatorEmail",
+                             "The address in the “%1” field is valid but contains a quoted string.")
+                    .arg(label);
             break;
         case RFC5321AddressLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but uses an IP address instead of a domain name.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is valid but uses an IP address "
+                               "instead of a domain name.")
+                      .arg(label);
             break;
         case RFC5321IPv6Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but uses an IP address that contains a :: only eliding one zero group. All implementations must accept and be able to handle any legitimate RFC 4291 format.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is valid but uses an IP address that "
+                               "contains a :: only eliding one zero group. All implementations "
+                               "must accept and be able to handle any legitimate RFC 4291 format.")
+                      .arg(label);
             break;
         case CFWSComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains comments.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains comments.")
+                      .arg(label);
             break;
         case CFWSFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains folding white spaces like line breaks.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains folding white spaces like "
+                               "line breaks.")
+                      .arg(label);
             break;
         case DeprecatedLocalpart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The local part of the address in the “%1” field is in a deprecated form.").arg(label);
+            ret = c->translate(
+                       "Cutelyst::ValidatorEmail",
+                       "The local part of the address in the “%1” field is in a deprecated form.")
+                      .arg(label);
             break;
         case DeprecatedFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains an obsolete form of folding white spaces.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains an obsolete form of folding "
+                               "white spaces.")
+                      .arg(label);
             break;
         case DeprecatedQText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted string in the address in the “%1” field contains a deprecated character.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted string in the address in the “%1” field contains a "
+                               "deprecated character.")
+                      .arg(label);
             break;
         case DeprecatedQP:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted pair in the address in the “%1” field contains a deprecate character.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted pair in the address in the “%1” field contains a "
+                               "deprecate character.")
+                      .arg(label);
             break;
         case DeprecatedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a comment in a position that is deprecated.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains a comment in a position "
+                               "that is deprecated.")
+                      .arg(label);
             break;
         case DeprecatedCText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A comment in the address in the “%1” field contains a deprecated character.").arg(label);
+            ret =
+                c->translate(
+                     "Cutelyst::ValidatorEmail",
+                     "A comment in the address in the “%1” field contains a deprecated character.")
+                    .arg(label);
             break;
         case DeprecatedCFWSNearAt:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a comment or folding white space around the @ sign.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains a comment or folding white "
+                               "space around the @ sign.")
+                      .arg(label);
             break;
         case RFC5322Domain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is RFC 5322 compliant but contains domain characters that are not allowed by DNS.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is RFC 5322 compliant but contains "
+                               "domain characters that are not allowed by DNS.")
+                      .arg(label);
             break;
         case RFC5322TooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is too long.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is too long.")
+                      .arg(label);
             break;
         case RFC5322LocalTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The local part of the address in the “%1” field is too long.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The local part of the address in the “%1” field is too long.")
+                      .arg(label);
             break;
         case RFC5322DomainTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain part of the address in the “%1” field is too long.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain part of the address in the “%1” field is too long.")
+                      .arg(label);
             break;
         case RFC5322LabelTooLong:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain part of the address in the “%1” field contains an element that is too long.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain part of the address in the “%1” field contains an "
+                               "element that is too long.")
+                      .arg(label);
             break;
         case RFC5322DomainLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain literal of the address in the “%1” field is not a valid RFC 5321 address literal.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain literal of the address in the “%1” field is not a valid "
+                               "RFC 5321 address literal.")
+                      .arg(label);
             break;
         case RFC5322DomLitOBSDText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The domain literal of the address in the “%1” field is not a valid RFC 5321 domain literal and it contains obsolete characters.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The domain literal of the address in the “%1” field is not a valid "
+                               "RFC 5321 domain literal and it contains obsolete characters.")
+                      .arg(label);
             break;
         case RFC5322IPv6GroupCount:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 literal of the address in the “%1” field contains the wrong number of groups.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 literal of the address in the “%1” field contains the "
+                               "wrong number of groups.")
+                      .arg(label);
             break;
         case RFC5322IPv62x2xColon:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 literal of the address in the “%1” field contains too many :: sequences.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 literal of the address in the “%1” field contains too "
+                               "many :: sequences.")
+                      .arg(label);
             break;
         case RFC5322IPv6BadChar:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address of the email address in the “%1” field contains an illegal group of characters.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address of the email address in the “%1” field contains "
+                               "an illegal group of characters.")
+                      .arg(label);
             break;
         case RFC5322IPv6MaxGroups:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address of the email address in the “%1” field has too many groups.").arg(label);
+            ret =
+                c->translate(
+                     "Cutelyst::ValidatorEmail",
+                     "The IPv6 address of the email address in the “%1” field has too many groups.")
+                    .arg(label);
             break;
         case RFC5322IPv6ColonStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address of the email address in the “%1” field starts with a single colon.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address of the email address in the “%1” field starts "
+                               "with a single colon.")
+                      .arg(label);
             break;
         case RFC5322IPv6ColonEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The IPv6 address of the email address in the “%1” field ends with a single colon.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The IPv6 address of the email address in the “%1” field ends with "
+                               "a single colon.")
+                      .arg(label);
             break;
         case ErrorExpectingDText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain literal of the address in the “%1” field contains a character that is not allowed.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain literal of the address in the “%1” field contains a "
+                               "character that is not allowed.")
+                      .arg(label);
             break;
         case ErrorNoLocalPart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field has no local part.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field has no local part.")
+                      .arg(label);
             break;
         case ErrorNoDomain:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field has no domain part.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field has no domain part.")
+                      .arg(label);
             break;
         case ErrorConsecutiveDots:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field must not contain consecutive dots.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field must not contain consecutive dots.")
+                      .arg(label);
             break;
         case ErrorATextAfterCFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains text after a comment or folding white space.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains text after a comment or "
+                               "folding white space.")
+                      .arg(label);
             break;
         case ErrorATextAfterQS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains text after a quoted string.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains text after a quoted string.")
+                      .arg(label);
             break;
         case ErrorATextAfterDomLit:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Extra characters were found after the end of the domain literal of the address in the “%1” field.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Extra characters were found after the end of the domain literal of "
+                               "the address in the “%1” field.")
+                      .arg(label);
             break;
         case ErrorExpectingQpair:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a character that is not allowed in a quoted pair.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains a character that is not "
+                               "allowed in a quoted pair.")
+                      .arg(label);
             break;
         case ErrorExpectingAText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a character that is not allowed.").arg(label);
+            ret = c->translate(
+                       "Cutelyst::ValidatorEmail",
+                       "The address in the “%1” field contains a character that is not allowed.")
+                      .arg(label);
             break;
         case ErrorExpectingQText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A quoted string in the address in the “%1” field contains a character that is not allowed.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A quoted string in the address in the “%1” field contains a "
+                               "character that is not allowed.")
+                      .arg(label);
             break;
         case ErrorExpectingCText:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A comment in the address in the “%1” field contains a character that is not allowed.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A comment in the address in the “%1” field contains a character "
+                               "that is not allowed.")
+                      .arg(label);
             break;
         case ErrorBackslashEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field can't end with a backslash.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field can't end with a backslash.")
+                      .arg(label);
             break;
         case ErrorDotStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Neither part of the address in the “%1” field may begin with a dot.").arg(label);
+            ret =
+                c->translate("Cutelyst::ValidatorEmail",
+                             "Neither part of the address in the “%1” field may begin with a dot.")
+                    .arg(label);
             break;
         case ErrorDotEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Neither part of the address in the “%1” field may end with a dot.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Neither part of the address in the “%1” field may end with a dot.")
+                      .arg(label);
             break;
         case ErrorDomainHyphenStart:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain or subdomain of the address in the “%1” field can not begin with a hyphen.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain or subdomain of the address in the “%1” field can not "
+                               "begin with a hyphen.")
+                      .arg(label);
             break;
         case ErrorDomainHyphenEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A domain or subdomain of the address in the “%1” field can not end with a hyphen.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "A domain or subdomain of the address in the “%1” field can not end "
+                               "with a hyphen.")
+                      .arg(label);
             break;
         case ErrorUnclosedQuotedStr:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed quoted string in the address in the “%1” field. (Missing double quotation mark)").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Unclosed quoted string in the address in the “%1” field. (Missing "
+                               "double quotation mark)")
+                      .arg(label);
             break;
         case ErrorUnclosedComment:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Unclosed comment in the address in the “%1” field. (Missing closing parentheses)").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Unclosed comment in the address in the “%1” field. (Missing "
+                               "closing parentheses)")
+                      .arg(label);
             break;
         case ErrorUnclosedDomLiteral:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Domain literal of the address in the “%1” field is missing its closing bracket.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Domain literal of the address in the “%1” field is missing its "
+                               "closing bracket.")
+                      .arg(label);
             break;
         case ErrorFWSCRLFx2:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Folding white space in the address in the “%1” field contains consecutive line break sequences (CRLF).").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Folding white space in the address in the “%1” field contains "
+                               "consecutive line break sequences (CRLF).")
+                      .arg(label);
             break;
         case ErrorFWSCRLFEnd:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Folding white space in the address in the “%1” field ends with a line break sequence (CRLF).").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Folding white space in the address in the “%1” field ends with a "
+                               "line break sequence (CRLF).")
+                      .arg(label);
             break;
         case ErrorCRnoLF:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains a carriage return (CR) that is not followed by a line feed (LF).").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains a carriage return (CR) that "
+                               "is not followed by a line feed (LF).")
+                      .arg(label);
             break;
         case ErrorFatal:
-            ret = c->translate("Cutelyst::ValidatorEmail", "A fatal error occurred while parsing the address in the “%1” field.").arg(label);
+            ret =
+                c->translate("Cutelyst::ValidatorEmail",
+                             "A fatal error occurred while parsing the address in the “%1” field.")
+                    .arg(label);
             break;
         default:
             break;
@@ -1495,19 +1789,27 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid.");
             break;
         case DNSWarn:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid but a DNS check was not successful.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid but a DNS check was not successful.");
             break;
         case RFC5321:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid for SMTP but has unusual elements.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid for SMTP but has unusual elements.");
             break;
         case CFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address is valid within the message but can not be used unmodified for the envelope.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address is valid within the message but can not be used unmodified "
+                               "for the envelope.");
             break;
         case Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail", "Address contains deprecated elements but my still be valid in restricted contexts.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "Address contains deprecated elements but my still be valid in "
+                               "restricted contexts.");
             break;
         case RFC5322:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address is only valid according to the broad definition of RFC 5322. It is otherwise invalid.");
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address is only valid according to the broad definition of RFC "
+                               "5322. It is otherwise invalid.");
             break;
         default:
             ret = c->translate("Cutelyst::ValidatorEmail", "Address is invalid for any purpose.");
@@ -1516,25 +1818,44 @@ QString ValidatorEmail::categoryString(Context *c, Category category, const QStr
     } else {
         switch (category) {
         case Valid:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid.").arg(label);
+            ret =
+                c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid.")
+                    .arg(label);
             break;
         case DNSWarn:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid but a DNS check was not successful.").arg(label);
+            ret = c->translate(
+                       "Cutelyst::ValidatorEmail",
+                       "The address in the “%1” field is valid but a DNS check was not successful.")
+                      .arg(label);
             break;
         case RFC5321:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid for SMTP but has unusual elements.").arg(label);
+            ret = c->translate(
+                       "Cutelyst::ValidatorEmail",
+                       "The address in the “%1” field is valid for SMTP but has unusual elements.")
+                      .arg(label);
             break;
         case CFWS:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is valid within the message but can not be used unmodified for the envelope.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is valid within the message but can "
+                               "not be used unmodified for the envelope.")
+                      .arg(label);
             break;
         case Deprecated:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field contains deprecated elements but my still be valid in restricted contexts.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field contains deprecated elements but my "
+                               "still be valid in restricted contexts.")
+                      .arg(label);
             break;
         case RFC5322:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is only valid according to the broad definition of RFC 5322. It is otherwise invalid.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is only valid according to the broad "
+                               "definition of RFC 5322. It is otherwise invalid.")
+                      .arg(label);
             break;
         default:
-            ret = c->translate("Cutelyst::ValidatorEmail", "The address in the “%1” field is invalid for any purpose.").arg(label);
+            ret = c->translate("Cutelyst::ValidatorEmail",
+                               "The address in the “%1” field is invalid for any purpose.")
+                      .arg(label);
             break;
         }
     }
@@ -1572,7 +1893,10 @@ QString ValidatorEmail::categoryString(Context *c, Diagnose diagnose, const QStr
     return ret;
 }
 
-bool ValidatorEmail::validate(const QString &email, Category threshold, Options options, QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
+bool ValidatorEmail::validate(const QString &email,
+                              Category threshold,
+                              Options options,
+                              QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
 {
     bool ret;
 

@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorIpPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorIpPrivate(const QString &f, ValidatorIp::Constraints c, const ValidatorMessages &m, const QString &dvk)
+    ValidatorIpPrivate(const QString &f,
+                       ValidatorIp::Constraints c,
+                       const ValidatorMessages &m,
+                       const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , constraints(c)
     {

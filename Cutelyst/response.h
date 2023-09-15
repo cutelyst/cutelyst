@@ -217,10 +217,7 @@ public:
     /**
      * Short for headers().setContentType(type);
      */
-    void setContentType(const QString &type)
-    {
-        headers().setContentType(type);
-    }
+    void setContentType(const QString &type) { headers().setContentType(type); }
 
     /**
      * Short for headers().contentTypeCharset();
@@ -397,7 +394,9 @@ public:
      * it's best to always do the proper websocket handshake and then \sa webSocketClose() the
      * connection, with some meaning reason.
      */
-    bool webSocketHandshake(const QString &key = {}, const QString &origin = {}, const QString &protocol = {});
+    bool webSocketHandshake(const QString &key      = {},
+                            const QString &origin   = {},
+                            const QString &protocol = {});
 
     /*!
      * Sends a WebSocket text message
@@ -413,9 +412,9 @@ public:
      * Sends a WebSocket ping with an optional payload limited to 125 bytes,
      * which will be truncated if larger.
      *
-     * \note Some front-end servers will close the conetion if no activity is seem, NGINX closes in 60 seconds by default,
-     * in order to avoid that, sending a ping is the best to way to keep the connection alive and to know that your
-     * client is still there.
+     * \note Some front-end servers will close the conetion if no activity is seem, NGINX closes in
+     * 60 seconds by default, in order to avoid that, sending a ping is the best to way to keep the
+     * connection alive and to know that your client is still there.
      */
     bool webSocketPing(const QByteArray &payload = {});
 

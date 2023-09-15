@@ -30,7 +30,9 @@ QByteArray buildTableDivision(const QVector<int> &columnsSize)
     return buffer;
 }
 
-QByteArray Utils::buildTable(const QVector<QStringList> &table, const QStringList &headers, const QString &title)
+QByteArray Utils::buildTable(const QVector<QStringList> &table,
+                             const QStringList &headers,
+                             const QString &title)
 {
     QByteArray buffer;
     QVector<int> columnsSize;
@@ -189,10 +191,14 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
                     ret.insertMulti(key, {});
                 }
             } else {
-                ret.insertMulti(key, skipUtf8 ? QString::fromLatin1(from, data - from) : QString::fromUtf8(from, data - from));
+                ret.insertMulti(key,
+                                skipUtf8 ? QString::fromLatin1(from, data - from)
+                                         : QString::fromUtf8(from, data - from));
             }
         } else if ((data - from) > 0) {
-            ret.insertMulti(skipUtf8 ? QString::fromLatin1(from, data - from) : QString::fromUtf8(from, data - from), {});
+            ret.insertMulti(skipUtf8 ? QString::fromLatin1(from, data - from)
+                                     : QString::fromUtf8(from, data - from),
+                            {});
         }
     };
 
@@ -221,7 +227,8 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
         } else if (c == '+') {
             *data++ = ' ';
         } else if (c == '=') {
-            key      = skipUtf8 ? QString::fromLatin1(from, data - from) : QString::fromUtf8(from, data - from);
+            key      = skipUtf8 ? QString::fromLatin1(from, data - from)
+                                : QString::fromUtf8(from, data - from);
             from     = data;
             hasKey   = true;
             skipUtf8 = true; // reset

@@ -20,8 +20,7 @@
 
 #define CActionFor(str) \
     ([this]() -> Cutelyst::Action * { \
-        static thread_local Cutelyst::Action *action = \
-            Cutelyst::Controller::actionFor(str); \
+        static thread_local Cutelyst::Action *action = Cutelyst::Controller::actionFor(str); \
         return action; \
     }()) /**/
 

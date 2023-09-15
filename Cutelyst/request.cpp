@@ -62,7 +62,8 @@ QString Request::hostname() const
 
     const QHostInfo ptr = QHostInfo::fromName(d->engineRequest->remoteAddress.toString());
     if (ptr.error() != QHostInfo::NoError) {
-        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed" << d->engineRequest->remoteAddress;
+        qCDebug(CUTELYST_REQUEST) << "DNS lookup for the client hostname failed"
+                                  << d->engineRequest->remoteAddress;
         return ret;
     }
 
@@ -90,7 +91,8 @@ QUrl Request::uri() const
             uri.setAuthority(d->engineRequest->serverAddress);
         }
 
-        uri.setScheme(d->engineRequest->isSecure ? QStringLiteral("https") : QStringLiteral("http"));
+        uri.setScheme(d->engineRequest->isSecure ? QStringLiteral("https")
+                                                 : QStringLiteral("http"));
 
         // if the path does not start with a slash it cleans the uri
         uri.setPath(QLatin1Char('/') + d->engineRequest->path);
@@ -362,7 +364,8 @@ QString Request::protocol() const noexcept
 bool Request::xhr() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH")).compare(u"XMLHttpRequest") == 0;
+    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH"))
+               .compare(u"XMLHttpRequest") == 0;
 }
 
 QString Request::remoteUser() const noexcept
@@ -447,7 +450,8 @@ void RequestPrivate::parseUrlQuery() const
             queryKeywords  = Utils::decodePercentEncoding(&aux);
         } else {
             if (parserStatus & RequestPrivate::UrlParsed) {
-                queryParam = Utils::decodePercentEncoding(engineRequest->query.data(), engineRequest->query.size());
+                queryParam = Utils::decodePercentEncoding(engineRequest->query.data(),
+                                                          engineRequest->query.size());
             } else {
                 QByteArray aux = engineRequest->query;
                 // We can't manipulate query directly
@@ -492,7 +496,8 @@ void RequestPrivate::parseBody() const
 
         const Uploads ups = MultiPartFormDataParser::parse(body, contentType);
         for (Upload *upload : ups) {
-            if (upload->filename().isEmpty() && upload->headers().header(contentTypeKey).isEmpty()) {
+            if (upload->filename().isEmpty() &&
+                upload->headers().header(contentTypeKey).isEmpty()) {
                 bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
                 upload->seek(0);
             }
@@ -572,7 +577,7 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
         return ret; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    ret.first        = QStringView(text).mid(position, equalsPosition - position).trimmed().toString();
+    ret.first = QStringView(text).mid(position, equalsPosition - position).trimmed().toString();
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0) {
         ret.second = QStringView(text).mid(equalsPosition + 1, secondLength).trimmed().toString();

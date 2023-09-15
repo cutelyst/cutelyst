@@ -13,7 +13,8 @@ Q_LOGGING_CATEGORY(C_PAGINATION, "cutelyst.utils.pagination", QtWarningMsg)
 Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int pageLinks)
 {
     if (itemsPerPage <= 0) {
-        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 1";
+        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage
+                                << "failing back to 1";
         itemsPerPage = 1;
     }
 
@@ -23,7 +24,8 @@ Pagination::Pagination(int numberOfItems, int itemsPerPage, int currentPage, int
     }
 
     if (pageLinks <= 0) {
-        qCWarning(C_PAGINATION) << "Invalid number of page links:" << pageLinks << "failing back to 1";
+        qCWarning(C_PAGINATION) << "Invalid number of page links:" << pageLinks
+                                << "failing back to 1";
         pageLinks = 1;
     }
 
@@ -71,7 +73,8 @@ int Pagination::offset() const
 int Pagination::offset(int itemsPerPage, int currentPage)
 {
     if (itemsPerPage <= 0) {
-        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage << "failing back to 1";
+        qCWarning(C_PAGINATION) << "Invalid number of items per page:" << itemsPerPage
+                                << "failing back to 1";
         itemsPerPage = 1;
     }
     if (currentPage <= 0) {

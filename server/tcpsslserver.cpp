@@ -14,7 +14,10 @@
 
 using namespace Cutelyst;
 
-TcpSslServer::TcpSslServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent)
+TcpSslServer::TcpSslServer(const QString &serverAddress,
+                           Protocol *protocol,
+                           Server *wsgi,
+                           QObject *parent)
     : TcpServer(serverAddress, protocol, wsgi, parent)
 {
 }
@@ -36,7 +39,8 @@ void TcpSslServer::incomingConnection(qintptr handle)
         }
     });
 
-    if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
+    if (Q_LIKELY(sock->setSocketDescriptor(
+            handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
 
         sock->serverAddress = m_serverAddress;
@@ -94,7 +98,8 @@ void TcpSslServer::timeoutConnections()
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<SslSocket *>(child);
-            if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
+            if (socket && !socket->processing &&
+                socket->state() == QAbstractSocket::ConnectedState) {
                 if (socket->timeout) {
                     socket->connectionClose();
                 } else {

@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorDomainPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDomainPrivate(const QString &f, bool cd, const ValidatorMessages &m, const QString &dvk)
+    ValidatorDomainPrivate(const QString &f,
+                           bool cd,
+                           const ValidatorMessages &m,
+                           const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , checkDNS(cd)
     {

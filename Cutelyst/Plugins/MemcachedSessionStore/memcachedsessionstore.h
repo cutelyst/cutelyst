@@ -16,18 +16,21 @@ class MemcachedSessionStorePrivate;
 /**
  * @brief Memcached based session store.
  *
- * This session store saves session data to <A HREF="http://memcached.org">Memcached</A> servers using the Memcached plugin.
- * It obsoletes the SessionStoreMemcached class.
+ * This session store saves session data to <A HREF="http://memcached.org">Memcached</A> servers
+ * using the Memcached plugin. It obsoletes the SessionStoreMemcached class.
  *
- * @note The memcached server does not guarantee the existence of the session data. It might for example delete the data because
- * it runs out of memory and deletes session data. So be careful when using this plugin to store sessions.
+ * @note The memcached server does not guarantee the existence of the session data. It might for
+ * example delete the data because it runs out of memory and deletes session data. So be careful
+ * when using this plugin to store sessions.
  *
  * <H3>Configuration</h3>
  *
- * The %MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the @c Cutelyst_MemcachedSessionStore_Plugin section.
+ * The %MemcachedSessionStore plugin can be configured in the cutelyst configuration file in the @c
+ * Cutelyst_MemcachedSessionStore_Plugin section.
  *
  * Currently there are the following configuration options:
- * @li @a group_key - string value, defines a group key to store the data on a specific server (default: empty)
+ * @li @a group_key - string value, defines a group key to store the data on a specific server
+ * (default: empty)
  *
  * <H4>Configuration example</H4>
  *
@@ -58,9 +61,10 @@ class MemcachedSessionStorePrivate;
  *
  * <H3>Build requirements</H3>
  *
- * To build this plugin you need the development and header files for <A HREF="http://libmemcached.org">libmemcached</A>
- * and have to enable the Memcached plugin. If the Memcached plugin is enabled, the %MemcachedSessionStore plugin will be
- * enabled automatically, too. To disable the build of the %MemcachedSessionStore plugin, run cmake with
+ * To build this plugin you need the development and header files for <A
+ * HREF="http://libmemcached.org">libmemcached</A> and have to enable the Memcached plugin. If the
+ * Memcached plugin is enabled, the %MemcachedSessionStore plugin will be enabled automatically,
+ * too. To disable the build of the %MemcachedSessionStore plugin, run cmake with
  * <CODE>-DPLUGIN_MEMCACHEDSESSIONSTORE:BOOL=OFF</CODE>.
  *
  * @since Cutelyst 1.11.0
@@ -82,9 +86,15 @@ public:
      */
     ~MemcachedSessionStore();
 
-    virtual QVariant getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue) final;
+    virtual QVariant getSessionData(Context *c,
+                                    const QString &sid,
+                                    const QString &key,
+                                    const QVariant &defaultValue) final;
 
-    virtual bool storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value) final;
+    virtual bool storeSessionData(Context *c,
+                                  const QString &sid,
+                                  const QString &key,
+                                  const QVariant &value) final;
 
     virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
 

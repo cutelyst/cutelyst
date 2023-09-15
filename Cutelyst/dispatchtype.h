@@ -20,11 +20,7 @@ class CUTELYST_LIBRARY DispatchType : public QObject
     Q_OBJECT
 public:
     /** This enum is used to describe the kind of a match  */
-    enum MatchType {
-        NoMatch = 0,
-        PartialMatch,
-        ExactMatch
-    };
+    enum MatchType { NoMatch = 0, PartialMatch, ExactMatch };
     Q_ENUM(MatchType)
 
     /**

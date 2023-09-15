@@ -40,12 +40,7 @@ public:
     void setOutputFormat(JsonFormat format);
 
     /**  This value defines which kind of exposition was defined */
-    enum ExposeMode {
-        All,
-        String,
-        StringList,
-        RegularExpression
-    };
+    enum ExposeMode { All, String, StringList, RegularExpression };
     Q_ENUM(ExposeMode)
 
     /**
@@ -73,8 +68,9 @@ public:
     void setExposeStash(const QRegularExpression &re);
 
     /**
-     * By default this plugin does \b NOT sets X-JSON header if the requested client is a Prototype.js with X-JSON support.
-     * By setting true, you can opt-out this behavior so that you do not need to do eval() by your own.
+     * By default this plugin does \b NOT sets X-JSON header if the requested client is a
+     * Prototype.js with X-JSON support. By setting true, you can opt-out this behavior so that you
+     * do not need to do eval() by your own.
      */
     void setXJsonHeader(bool enable);
 

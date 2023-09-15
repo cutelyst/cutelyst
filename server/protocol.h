@@ -30,12 +30,7 @@ public:
     };
     Q_ENUM(HeaderConnection)
 
-    enum ParserState {
-        MethodLine = 0,
-        HeaderLine,
-        ContentBody,
-        H2Frames
-    };
+    enum ParserState { MethodLine = 0, HeaderLine, ContentBody, H2Frames };
     Q_ENUM(ParserState)
 
     inline virtual void resetData()
@@ -70,13 +65,7 @@ class Protocol
 {
     Q_GADGET
 public:
-    enum class Type {
-        Unknown,
-        Http11,
-        Http11Websocket,
-        Http2,
-        FastCGI1
-    };
+    enum class Type { Unknown, Http11, Http11Websocket, Http2, FastCGI1 };
     Q_ENUM(Type)
 
     Protocol(Server *wsgi);

@@ -27,7 +27,11 @@ Q_LOGGING_CATEGORY(CWSGI_BALANCER, "wsgi.tcp_server_balancer", QtWarningMsg)
 using namespace Cutelyst;
 
 #ifdef Q_OS_LINUX
-int listenReuse(const QHostAddress &address, int listenQueue, quint16 port, bool reusePort, bool startListening);
+int listenReuse(const QHostAddress &address,
+                int listenQueue,
+                quint16 port,
+                bool reusePort,
+                bool startListening);
 #endif
 
 TcpServerBalancer::TcpServerBalancer(Server *wsgi)
@@ -113,7 +117,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
             } else if (keyAlgorithm.compare(QLatin1String("ec"), Qt::CaseInsensitive) == 0) {
                 algorithm = QSsl::Ec;
             } else {
-                std::cerr << "Failed to select SSL Key Algorithm" << qPrintable(keyAlgorithm) << std::endl;
+                std::cerr << "Failed to select SSL Key Algorithm" << qPrintable(keyAlgorithm)
+                          << std::endl;
                 return false;
             }
         }
@@ -127,9 +132,11 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
         m_sslConfiguration = new QSslConfiguration;
         m_sslConfiguration->setLocalCertificate(cert);
         m_sslConfiguration->setPrivateKey(key);
-        m_sslConfiguration->setPeerVerifyMode(QSslSocket::VerifyNone); // prevent asking for client certificate
+        m_sslConfiguration->setPeerVerifyMode(
+            QSslSocket::VerifyNone); // prevent asking for client certificate
         if (m_wsgi->httpsH2()) {
-            m_sslConfiguration->setAllowedNextProtocols({QByteArrayLiteral("h2"), QSslConfiguration::NextProtocolHttp1_1});
+            m_sslConfiguration->setAllowedNextProtocols(
+                {QByteArrayLiteral("h2"), QSslConfiguration::NextProtocolHttp1_1});
         }
     }
 #endif // QT_NO_SSL
@@ -138,12 +145,13 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     m_port    = port;
 
 #ifdef Q_OS_LINUX
-    int socket = listenReuse(address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), !m_wsgi->reusePort());
+    int socket = listenReuse(
+        address, m_wsgi->listenQueue(), port, m_wsgi->reusePort(), !m_wsgi->reusePort());
     if (socket > 0 && setSocketDescriptor(socket)) {
         pauseAccepting();
     } else {
-        std::cerr << "Failed to listen on TCP: " << qPrintable(line)
-                  << " : " << qPrintable(errorString()) << std::endl;
+        std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
+                  << qPrintable(errorString()) << std::endl;
         return false;
     }
 #else
@@ -151,8 +159,8 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     if (ret) {
         pauseAccepting();
     } else {
-        std::cerr << "Failed to listen on TCP: " << qPrintable(line)
-                  << " : " << qPrintable(errorString()) << std::endl;
+        std::cerr << "Failed to listen on TCP: " << qPrintable(line) << " : "
+                  << qPrintable(errorString()) << std::endl;
         return false;
     }
 #endif
@@ -193,7 +201,10 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
 {
     int protocol = 0;
 
-    int domain = (socketProtocol == QAbstractSocket::IPv6Protocol || socketProtocol == QAbstractSocket::AnyIPProtocol) ? AF_INET6 : AF_INET;
+    int domain = (socketProtocol == QAbstractSocket::IPv6Protocol ||
+                  socketProtocol == QAbstractSocket::AnyIPProtocol)
+                     ? AF_INET6
+                     : AF_INET;
     int type   = SOCK_STREAM;
 
     int socket = qt_safe_socket(domain, type, protocol, O_NONBLOCK);
@@ -209,30 +220,40 @@ int createNewSocket(QAbstractSocket::NetworkLayerProtocol &socketProtocol)
         case EPROTONOSUPPORT:
         case EAFNOSUPPORT:
         case EINVAL:
-            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::UnsupportedSocketOperationError, ProtocolUnsupportedErrorString)";
+            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::UnsupportedSocketOperationError, "
+                                       "ProtocolUnsupportedErrorString)";
             break;
         case ENFILE:
         case EMFILE:
         case ENOBUFS:
         case ENOMEM:
-            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::SocketResourceError, ResourceErrorString)";
+            qCDebug(CWSGI_BALANCER)
+                << "setError(QAbstractSocket::SocketResourceError, ResourceErrorString)";
             break;
         case EACCES:
-            qCDebug(CWSGI_BALANCER) << "setError(QAbstractSocket::SocketAccessError, AccessErrorString)";
+            qCDebug(CWSGI_BALANCER)
+                << "setError(QAbstractSocket::SocketAccessError, AccessErrorString)";
             break;
         default:
             break;
         }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-        qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == false (%s)", socketType, socketProtocol, strerror(ecopy));
+        qCDebug(CWSGI_BALANCER,
+                "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == false (%s)",
+                socketType,
+                socketProtocol,
+                strerror(ecopy));
 #    endif
 
         return false;
     }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-    qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == true", socketType, socketProtocol);
+    qCDebug(CWSGI_BALANCER,
+            "QNativeSocketEnginePrivate::createNewSocket(%d, %d) == true",
+            socketType,
+            socketProtocol);
 #    endif
 
     return socket;
@@ -266,14 +287,21 @@ void set(T *, ...)
 } // namespace SetSALen
 } // namespace
 
-void setPortAndAddress(quint16 port, const QHostAddress &address, QAbstractSocket::NetworkLayerProtocol socketProtocol, qt_sockaddr *aa, int *sockAddrSize)
+void setPortAndAddress(quint16 port,
+                       const QHostAddress &address,
+                       QAbstractSocket::NetworkLayerProtocol socketProtocol,
+                       qt_sockaddr *aa,
+                       int *sockAddrSize)
 {
-    if (address.protocol() == QAbstractSocket::IPv6Protocol || address.protocol() == QAbstractSocket::AnyIPProtocol || socketProtocol == QAbstractSocket::IPv6Protocol || socketProtocol == QAbstractSocket::AnyIPProtocol) {
+    if (address.protocol() == QAbstractSocket::IPv6Protocol ||
+        address.protocol() == QAbstractSocket::AnyIPProtocol ||
+        socketProtocol == QAbstractSocket::IPv6Protocol ||
+        socketProtocol == QAbstractSocket::AnyIPProtocol) {
         memset(&aa->a6, 0, sizeof(sockaddr_in6));
         aa->a6.sin6_family = AF_INET6;
-        //#if QT_CONFIG(networkinterface)
-        //            aa->a6.sin6_scope_id = scopeIdFromString(address.scopeId());
-        //#endif
+        // #if QT_CONFIG(networkinterface)
+        //             aa->a6.sin6_scope_id = scopeIdFromString(address.scopeId());
+        // #endif
         aa->a6.sin6_port = htons(port);
         Q_IPV6ADDR tmp   = address.toIPv6Address();
         memcpy(&aa->a6.sin6_addr, &tmp, sizeof(tmp));
@@ -300,13 +328,16 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
         int ipv6only = 0;
         if (address.protocol() == QAbstractSocket::IPv6Protocol)
             ipv6only = 1;
-        // default value of this socket option varies depending on unix variant (or system configuration on BSD), so always set it explicitly
-        ::setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &ipv6only, sizeof(ipv6only));
+        // default value of this socket option varies depending on unix variant (or system
+        // configuration on BSD), so always set it explicitly
+        ::setsockopt(
+            socketDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, (char *) &ipv6only, sizeof(ipv6only));
     }
 #    endif
 
     int bindResult = ::bind(socketDescriptor, &aa.a, sockAddrSize);
-    if (bindResult < 0 && errno == EAFNOSUPPORT && address.protocol() == QAbstractSocket::AnyIPProtocol) {
+    if (bindResult < 0 && errno == EAFNOSUPPORT &&
+        address.protocol() == QAbstractSocket::AnyIPProtocol) {
         // retry with v4
         aa.a4.sin_family      = AF_INET;
         aa.a4.sin_port        = htons(port);
@@ -327,30 +358,41 @@ bool nativeBind(int socketDescriptor, const QHostAddress &address, quint16 port)
         //            setError(QAbstractSocket::SocketAccessError, AddressProtectedErrorString);
         //            break;
         //        case EINVAL:
-        //            setError(QAbstractSocket::UnsupportedSocketOperationError, OperationUnsupportedErrorString);
-        //            break;
+        //            setError(QAbstractSocket::UnsupportedSocketOperationError,
+        //            OperationUnsupportedErrorString); break;
         //        case EADDRNOTAVAIL:
-        //            setError(QAbstractSocket::SocketAddressNotAvailableError, AddressNotAvailableErrorString);
-        //            break;
+        //            setError(QAbstractSocket::SocketAddressNotAvailableError,
+        //            AddressNotAvailableErrorString); break;
         //        default:
         //            break;
         //        }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-        qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::nativeBind(%s, %i) == false (%s)", address.toString().toLatin1().constData(), port, strerror(ecopy));
+        qCDebug(CWSGI_BALANCER,
+                "QNativeSocketEnginePrivate::nativeBind(%s, %i) == false (%s)",
+                address.toString().toLatin1().constData(),
+                port,
+                strerror(ecopy));
 #    endif
 
         return false;
     }
 
 #    if defined(QNATIVESOCKETENGINE_DEBUG)
-    qCDebug(CWSGI_BALANCER, "QNativeSocketEnginePrivate::nativeBind(%s, %i) == true", address.toString().toLatin1().constData(), port);
+    qCDebug(CWSGI_BALANCER,
+            "QNativeSocketEnginePrivate::nativeBind(%s, %i) == true",
+            address.toString().toLatin1().constData(),
+            port);
 #    endif
     //    socketState = QAbstractSocket::BoundState;
     return true;
 }
 
-int listenReuse(const QHostAddress &address, int listenQueue, quint16 port, bool reusePort, bool startListening)
+int listenReuse(const QHostAddress &address,
+                int listenQueue,
+                quint16 port,
+                bool reusePort,
+                bool startListening)
 {
     QAbstractSocket::NetworkLayerProtocol proto = address.protocol();
 
@@ -417,22 +459,33 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 
     if (m_balancer) {
         connect(
-            engine, &CWsgiEngine::started, this, [=]() {
-                m_servers.push_back(server);
-                resumeAccepting();
+            engine,
+            &CWsgiEngine::started,
+            this,
+            [=]() {
+            m_servers.push_back(server);
+            resumeAccepting();
             },
             Qt::QueuedConnection);
-        connect(server, &TcpServer::createConnection, server, &TcpServer::incomingConnection, Qt::QueuedConnection);
+        connect(server,
+                &TcpServer::createConnection,
+                server,
+                &TcpServer::incomingConnection,
+                Qt::QueuedConnection);
     } else {
 
 #ifdef Q_OS_LINUX
         if (m_wsgi->reusePort()) {
             connect(
-                engine, &CWsgiEngine::started, this, [=]() {
-                    int socket = listenReuse(m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
-                    if (!server->setSocketDescriptor(socket)) {
-                        qFatal("Failed to set server socket descriptor, reuse-port");
-                    }
+                engine,
+                &CWsgiEngine::started,
+                this,
+                [=]() {
+                int socket = listenReuse(
+                    m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
+                if (!server->setSocketDescriptor(socket)) {
+                    qFatal("Failed to set server socket descriptor, reuse-port");
+                }
                 },
                 Qt::DirectConnection);
             return server;
@@ -441,7 +494,11 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
 
         if (server->setSocketDescriptor(socketDescriptor())) {
             server->pauseAccepting();
-            connect(engine, &CWsgiEngine::started, server, &TcpServer::resumeAccepting, Qt::DirectConnection);
+            connect(engine,
+                    &CWsgiEngine::started,
+                    server,
+                    &TcpServer::resumeAccepting,
+                    Qt::DirectConnection);
         } else {
             qFatal("Failed to set server socket descriptor");
         }

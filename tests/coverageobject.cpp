@@ -1,13 +1,14 @@
 #include "coverageobject.h"
+
 #include "enginerequest.h"
 
-#include <QTest>
-#include <QMetaObject>
-#include <QString>
+#include <Cutelyst/context.h>
+
 #include <QDebug>
 #include <QLibrary>
-
-#include <Cutelyst/context.h>
+#include <QMetaObject>
+#include <QString>
+#include <QTest>
 
 using namespace Cutelyst;
 
@@ -55,7 +56,7 @@ void CoverageObject::saveCoverageData()
     if (QTest::currentTestFailed())
         __coveragescanner_teststate("FAILED");
     else
-        __coveragescanner_teststate("PASSED") ;
+        __coveragescanner_teststate("PASSED");
     __coveragescanner_save();
     __coveragescanner_testname("");
     __coveragescanner_clear();
@@ -68,9 +69,9 @@ void CoverageObject::cleanup()
     saveCoverageData();
 }
 
-TestEngine::TestEngine(Application *app, const QVariantMap &opts) : Engine(app, 0, opts)
+TestEngine::TestEngine(Application *app, const QVariantMap &opts)
+    : Engine(app, 0, opts)
 {
-
 }
 
 int TestEngine::workerId() const
@@ -78,7 +79,11 @@ int TestEngine::workerId() const
     return 0;
 }
 
-QVariantMap TestEngine::createRequest(const QString &method, const QString &path, const QByteArray &query, const Headers &headers, QByteArray *body)
+QVariantMap TestEngine::createRequest(const QString &method,
+                                      const QString &path,
+                                      const QByteArray &query,
+                                      const Headers &headers,
+                                      QByteArray *body)
 {
     QIODevice *bodyDevice = nullptr;
     if (headers.header(QStringLiteral("sequential")).isEmpty()) {
@@ -98,25 +103,23 @@ QVariantMap TestEngine::createRequest(const QString &method, const QString &path
     TestEngineConnection req;
     req.method = method;
     req.setPath(path);
-    req.query = query;
-    req.protocol = QStringLiteral("HTTP/1.1");
-    req.isSecure = false;
+    req.query         = query;
+    req.protocol      = QStringLiteral("HTTP/1.1");
+    req.isSecure      = false;
     req.serverAddress = QStringLiteral("127.0.0.1");
     req.remoteAddress = QHostAddress(QStringLiteral("127.0.0.1"));
-    req.remotePort = 3000;
-    req.remoteUser = QString();
-    req.headers = headersCL;
+    req.remotePort    = 3000;
+    req.remoteUser    = QString();
+    req.headers       = headersCL;
     req.elapsed.start();
     req.body = bodyDevice;
 
     processRequest(&req);
 
-    ret = {
-        {QStringLiteral("body"), req.m_responseData},
-        {QStringLiteral("status"), req.m_status},
-        {QStringLiteral("statusCode"), req.m_statusCode},
-        {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}
-    };
+    ret = {{QStringLiteral("body"), req.m_responseData},
+           {QStringLiteral("status"), req.m_status},
+           {QStringLiteral("statusCode"), req.m_statusCode},
+           {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}};
 
     return ret;
 }
@@ -126,7 +129,8 @@ bool TestEngine::init()
     return initApplication() && postForkApplication();
 }
 
-SequentialBuffer::SequentialBuffer(QByteArray *buffer) : buf(buffer)
+SequentialBuffer::SequentialBuffer(QByteArray *buffer)
+    : buf(buffer)
 {
 }
 
@@ -156,7 +160,6 @@ qint64 SequentialBuffer::writeData(const char *data, qint64 len)
 
 #include "moc_coverageobject.cpp"
 
-
 qint64 TestEngineConnection::doWrite(const char *data, qint64 len)
 {
     m_responseData.append(data, len);
@@ -168,9 +171,9 @@ bool TestEngineConnection::writeHeaders(quint16 status, const Headers &headers)
     qDebug() << "---------= " << status;
     int len;
     const auto *statusChar = TestEngine::httpStatusMessage(status, &len);
-    m_statusCode = status;
-    m_status = QByteArray(statusChar + 9, len - 9);
-    m_headers = headers;
+    m_statusCode           = status;
+    m_status               = QByteArray(statusChar + 9, len - 9);
+    m_headers              = headers;
 
     return true;
 }

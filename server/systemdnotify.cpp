@@ -106,7 +106,8 @@ bool systemdNotify::setWatchdog(bool enable, int usec)
                     sendWatchdog(QByteArrayLiteral("1"));
                 });
                 d->watchdog->start();
-                qCInfo(C_SYSTEMD) << "watchdog enabled" << d->watchdog_usec << d->watchdog->interval();
+                qCInfo(C_SYSTEMD) << "watchdog enabled" << d->watchdog_usec
+                                  << d->watchdog->interval();
             }
             return true;
         } else {

@@ -72,7 +72,8 @@ bool UnixFork::continueMaster(int *exit)
 int UnixFork::exec(bool lazy, bool master)
 {
     if (master) {
-        std::cout << "spawned WSGI master process (pid: " << QCoreApplication::applicationPid() << ")" << std::endl;
+        std::cout << "spawned WSGI master process (pid: " << QCoreApplication::applicationPid()
+                  << ")" << std::endl;
     }
 
     int ret;
@@ -501,7 +502,8 @@ void UnixFork::handleSigChld()
             worker = it.value();
             m_childs.erase(it);
         } else {
-            std::cout << "DAMN ! *UNKNOWN* worker (pid: " << p << ") died, killed by signal " << exitStatus << " :( ignoring .." << std::endl;
+            std::cout << "DAMN ! *UNKNOWN* worker (pid: " << p << ") died, killed by signal "
+                      << exitStatus << " :( ignoring .." << std::endl;
             continue;
         }
 
@@ -512,7 +514,9 @@ void UnixFork::handleSigChld()
 
         if (!worker.null && !m_terminating) {
             if (worker.restart == 0) {
-                std::cout << "DAMN ! worker " << worker.id << " (pid: " << p << ") died, killed by signal " << exitStatus << " :( trying respawn .." << std::endl;
+                std::cout << "DAMN ! worker " << worker.id << " (pid: " << p
+                          << ") died, killed by signal " << exitStatus << " :( trying respawn .."
+                          << std::endl;
             }
             worker.restart = 0;
             ++worker.respawn;
@@ -550,7 +554,8 @@ void UnixFork::setSched(Cutelyst::Server *wsgi, int workerId, int workerCore)
     if (cpu_affinity) {
         char buf[4096];
 
-        int pos = snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
+        int pos =
+            snprintf(buf, 4096, "mapping worker %d core %d to CPUs:", workerId + 1, workerCore + 1);
         if (pos < 25 || pos >= 4096) {
             qCCritical(WSGI_UNIX) << "unable to initialize cpu affinity !!!";
             exit(1);
@@ -675,7 +680,8 @@ void UnixFork::setupSocketPair(bool closeSignalsFD, bool createPair)
         char signal;
         read(signalsFd[1], &signal, sizeof(signal));
 
-        //        qCDebug(WSGI_UNIX) << "Got signal:" << static_cast<int>(signal) << "pid:" << QCoreApplication::applicationPid();
+        //        qCDebug(WSGI_UNIX) << "Got signal:" << static_cast<int>(signal) << "pid:" <<
+        //        QCoreApplication::applicationPid();
         switch (signal) {
         case SIGCHLD:
             QTimer::singleShot(std::chrono::seconds{0}, this, &UnixFork::handleSigChld);
@@ -704,7 +710,8 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
     if (childPID >= 0) {
         if (childPID == 0) {
             if (worker.respawn >= 5) {
-                std::cout << "WSGI worker " << worker.id << " respawned too much, sleeping a bit" << std::endl;
+                std::cout << "WSGI worker " << worker.id << " respawned too much, sleeping a bit"
+                          << std::endl;
                 sleep(2);
             }
 
@@ -726,12 +733,15 @@ bool UnixFork::createChild(const Worker &worker, bool respawn)
             setupSocketPair(false, false);
 
             if (respawn) {
-                std::cout << "Respawned WSGI worker " << worker.id << " (new pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
+                std::cout << "Respawned WSGI worker " << worker.id << " (new pid: " << childPID
+                          << ", cores: " << m_threads << ")" << std::endl;
             } else {
                 if (m_processes == 1) {
-                    std::cout << "spawned WSGI worker (and the only) (pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
+                    std::cout << "spawned WSGI worker (and the only) (pid: " << childPID
+                              << ", cores: " << m_threads << ")" << std::endl;
                 } else {
-                    std::cout << "spawned WSGI worker " << worker.id << " (pid: " << childPID << ", cores: " << m_threads << ")" << std::endl;
+                    std::cout << "spawned WSGI worker " << worker.id << " (pid: " << childPID
+                              << ", cores: " << m_threads << ")" << std::endl;
                 }
             }
             m_childs.insert(childPID, worker);

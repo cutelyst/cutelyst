@@ -1,8 +1,12 @@
-%{Cpp:LicenseTemplate}\
+%
+{
+Cpp:
+    LicenseTemplate
+}
 #ifndef ROOT_H
-#define ROOT_H
+#    define ROOT_H
 
-#include <Cutelyst/Controller>
+#    include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
@@ -25,4 +29,4 @@ private:
     void End(Context *c) { Q_UNUSED(c); }
 };
 
-#endif //ROOT_H
+#endif // ROOT_H

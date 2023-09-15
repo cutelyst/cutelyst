@@ -27,16 +27,22 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
     , d_ptr(new MemcachedSessionStorePrivate)
 {
     Q_D(MemcachedSessionStore);
-    Q_ASSERT_X(app, "construct MemachedSessionStore", "you have to specifiy a pointer to the Application object");
-    const QVariantMap map = app->engine()->config(QStringLiteral("Cutelyst_MemcachedSessionStore_Plugin"));
-    d->groupKey           = map.value(QStringLiteral("group_key")).toString();
+    Q_ASSERT_X(app,
+               "construct MemachedSessionStore",
+               "you have to specifiy a pointer to the Application object");
+    const QVariantMap map =
+        app->engine()->config(QStringLiteral("Cutelyst_MemcachedSessionStore_Plugin"));
+    d->groupKey = map.value(QStringLiteral("group_key")).toString();
 }
 
 MemcachedSessionStore::~MemcachedSessionStore()
 {
 }
 
-QVariant MemcachedSessionStore::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
+QVariant MemcachedSessionStore::getSessionData(Context *c,
+                                               const QString &sid,
+                                               const QString &key,
+                                               const QVariant &defaultValue)
 {
     QVariant data;
     Q_D(MemcachedSessionStore);
@@ -45,7 +51,10 @@ QVariant MemcachedSessionStore::getSessionData(Context *c, const QString &sid, c
     return data;
 }
 
-bool MemcachedSessionStore::storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value)
+bool MemcachedSessionStore::storeSessionData(Context *c,
+                                             const QString &sid,
+                                             const QString &key,
+                                             const QVariant &value)
 {
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
@@ -90,8 +99,9 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
         return data;
     }
 
-    const static QString sessionPrefix = QCoreApplication::applicationName() + QLatin1String("_sess_");
-    const QString sessionKey           = sessionPrefix + sid;
+    const static QString sessionPrefix =
+        QCoreApplication::applicationName() + QLatin1String("_sess_");
+    const QString sessionKey = sessionPrefix + sid;
 
     QObject::connect(c->app(), &Application::afterDispatch, c, [=]() {
         if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {

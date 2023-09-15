@@ -127,22 +127,26 @@ void Root::ws(Context *c)
     if (response->webSocketHandshake()) {
         Request *req = c->req();
         connect(req, &Request::webSocketTextFrame, c, [=](const QString &msg, bool isLastFrame) {
-            //            qDebug() << "Got text frame" << isLastFrame << msg.size() << msg.left(25) << c->actionName();
-            //            response->webSocketTextMessage(msg);
+            //            qDebug() << "Got text frame" << isLastFrame << msg.size() << msg.left(25)
+            //            << c->actionName(); response->webSocketTextMessage(msg);
         });
 
         connect(req, &Request::webSocketTextMessage, c, [=](const QString &msg) {
-            //            qDebug() << "Got text msg" << msg.size() << msg.left(25) << c->actionName();
+            //            qDebug() << "Got text msg" << msg.size() << msg.left(25) <<
+            //            c->actionName();
             response->webSocketTextMessage(msg);
         });
 
-        connect(req, &Request::webSocketBinaryFrame, c, [=](const QByteArray &msg, bool isLastFrame) {
-            //            qDebug() << "Got binary frame" << isLastFrame << msg.size() << msg.left(25) << c->actionName();
-            //            response->webSocketBinaryMessage(msg);
-        });
+        connect(
+            req, &Request::webSocketBinaryFrame, c, [=](const QByteArray &msg, bool isLastFrame) {
+                //            qDebug() << "Got binary frame" << isLastFrame << msg.size() <<
+                //            msg.left(25) << c->actionName();
+                //            response->webSocketBinaryMessage(msg);
+            });
 
         connect(req, &Request::webSocketBinaryMessage, c, [=](const QByteArray &msg) {
-            //            qDebug() << "Got binary msg" << msg.size() << msg.left(25) << c->actionName();
+            //            qDebug() << "Got binary msg" << msg.size() << msg.left(25) <<
+            //            c->actionName();
             response->webSocketBinaryMessage(msg);
         });
 

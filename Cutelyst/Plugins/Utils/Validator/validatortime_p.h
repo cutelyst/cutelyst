@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorTimePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorTimePrivate(const QString &f, const char *fo, const ValidatorMessages &m, const QString &dvk)
+    ValidatorTimePrivate(const QString &f,
+                         const char *fo,
+                         const ValidatorMessages &m,
+                         const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , format(fo)
     {

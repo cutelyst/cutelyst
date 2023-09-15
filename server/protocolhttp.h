@@ -15,7 +15,8 @@
 namespace Cutelyst {
 class Server;
 class Socket;
-class ProtoRequestHttp final : public ProtocolData
+class ProtoRequestHttp final
+    : public ProtocolData
     , public Cutelyst::EngineRequest
 {
     Q_GADGET
@@ -56,10 +57,7 @@ public:
     bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
     qint64 doWrite(const char *data, qint64 len) override final;
-    inline qint64 doWrite(const QByteArray &data)
-    {
-        return doWrite(data.constData(), data.size());
-    }
+    inline qint64 doWrite(const QByteArray &data) { return doWrite(data.constData(), data.size()); }
 
     void processingFinished() override final;
 
@@ -113,7 +111,9 @@ public:
     bool websocketUpgraded           = false;
 
 protected:
-    bool webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol) override final;
+    bool webSocketHandshakeDo(const QString &key,
+                              const QString &origin,
+                              const QString &protocol) override final;
 };
 
 class ProtocolHttp2;

@@ -25,7 +25,8 @@ StaticMap::StaticMap(Cutelyst::Application *parent)
 
 bool StaticMap::setup(Cutelyst::Application *app)
 {
-    connect(app, &Cutelyst::Application::beforePrepareAction, this, &StaticMap::beforePrepareAction);
+    connect(
+        app, &Cutelyst::Application::beforePrepareAction, this, &StaticMap::beforePrepareAction);
     return true;
 }
 
@@ -39,9 +40,11 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
     qCInfo(CUTELYST_SM) << "added mapping for" << mp << "=>" << path;
 
     m_staticMaps.push_back({mp, path, append});
-    std::sort(m_staticMaps.begin(), m_staticMaps.end(), [](const MountPoint &a, const MountPoint &b) -> bool {
-        return a.mountPoint.size() < b.mountPoint.size();
-    });
+    std::sort(m_staticMaps.begin(),
+              m_staticMaps.end(),
+              [](const MountPoint &a, const MountPoint &b) -> bool {
+                  return a.mountPoint.size() < b.mountPoint.size();
+              });
 }
 
 void StaticMap::beforePrepareAction(Cutelyst::Context *c, bool *skipMethod)

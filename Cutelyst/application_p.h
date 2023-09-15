@@ -24,7 +24,8 @@ public:
     void logRequest(Request *req);
     void logRequestParameters(const ParamsMultiMap &params, const QString &title);
     void logRequestUploads(const QVector<Upload *> &uploads);
-    Component *createComponentPlugin(const QString &name, QObject *parent, const QString &directory);
+    Component *
+        createComponentPlugin(const QString &name, QObject *parent, const QString &directory);
 
     Application *q_ptr;
     Dispatcher *dispatcher;

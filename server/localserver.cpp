@@ -14,10 +14,10 @@
 #include <QSocketNotifier>
 
 #ifdef Q_OS_UNIX
-//#include <sys/types.h>
+// #include <sys/types.h>
 #    include <sys/socket.h>
 #    include <sys/un.h>
-//#include <netinet/in.h>
+// #include <netinet/in.h>
 #    include <fcntl.h>
 
 static inline int cutelyst_safe_accept(int s, struct sockaddr *addr, uint *addrlen, int flags = 0);
@@ -46,7 +46,10 @@ LocalServer *LocalServer::createServer(CWsgiEngine *engine) const
     server->m_socket         = socket();
     server->m_socketNotifier = new QSocketNotifier(server->m_socket, QSocketNotifier::Read, server);
     server->m_socketNotifier->setEnabled(false);
-    connect(server->m_socketNotifier, &QSocketNotifier::activated, server, &LocalServer::socketNotifierActivated);
+    connect(server->m_socketNotifier,
+            &QSocketNotifier::activated,
+            server,
+            &LocalServer::socketNotifierActivated);
 #else
     if (server->listen(socket())) {
         server->pauseAccepting();
@@ -189,8 +192,9 @@ void LocalServer::socketNotifierActivated()
         return;
 
     ::sockaddr_un addr;
-    uint length         = sizeof(sockaddr_un);
-    int connectedSocket = cutelyst_safe_accept(int(m_socket), reinterpret_cast<sockaddr *>(&addr), &length);
+    uint length = sizeof(sockaddr_un);
+    int connectedSocket =
+        cutelyst_safe_accept(int(m_socket), reinterpret_cast<sockaddr *>(&addr), &length);
     if (-1 != connectedSocket) {
         incomingConnection(quintptr(connectedSocket));
     }

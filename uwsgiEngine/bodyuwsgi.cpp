@@ -4,13 +4,14 @@
  */
 #include "bodyuwsgi.h"
 
-#include <uwsgi.h>
-
 #include "engineuwsgi.h"
 
-BodyUWSGI::BodyUWSGI(wsgi_request *request, bool sequential, QObject *parent) : QIODevice(parent)
-  , m_request(request)
-  , m_sequential(sequential)
+#include <uwsgi.h>
+
+BodyUWSGI::BodyUWSGI(wsgi_request *request, bool sequential, QObject *parent)
+    : QIODevice(parent)
+    , m_request(request)
+    , m_sequential(sequential)
 {
     open(QIODevice::ReadOnly | QIODevice::Unbuffered);
 }
@@ -46,7 +47,7 @@ void BodyUWSGI::close()
 qint64 BodyUWSGI::readData(char *data, qint64 maxlen)
 {
     ssize_t rlen = 0;
-    char *buf = uwsgi_request_body_read(m_request, maxlen, &rlen);
+    char *buf    = uwsgi_request_body_read(m_request, maxlen, &rlen);
 
     if (buf == uwsgi.empty) {
         return 0;

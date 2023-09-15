@@ -1,152 +1,190 @@
 {
-    "version": 1,
-    "kind": "file",
-    "id": "A.CutelystController",
-    "category": "C.Cutelyst",
-    "trDescription": "Creates a Cutelyst Controller.",
-    "trDisplayName": "Cutelyst Controller",
-    "trDisplayCategory": "Cutelyst",
-    "enabled": "%{JS: [ %{Plugins} ].indexOf('CppEditor') >= 0}",
+  "version": 1,
+  "kind": "file",
+  "id": "A.CutelystController",
+  "category": "C.Cutelyst",
+  "trDescription": "Creates a Cutelyst Controller.",
+  "trDisplayName": "Cutelyst Controller",
+  "trDisplayCategory": "Cutelyst",
+  "enabled": "%{JS: [ %{Plugins} ].indexOf('CppEditor') >= 0}",
 
-    "options":
-    [
-        { "key": "TargetPath", "value": "%{Path}" },
-        { "key": "HdrPath", "value": "%{Path}/%{HdrFileName}" },
-        { "key": "SrcPath", "value": "%{Path}/%{SrcFileName}" },
-        { "key": "CN", "value": "%{JS: Cpp.className('%{Class}')}" },
-        { "key": "GUARD", "value": "%{JS: Cpp.classToHeaderGuard('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" }
-    ],
-
-    "pages":
-    [
+  "options":
+      [
         {
-            "trDisplayName": "Define Controller Class",
-            "trShortTitle": "Details",
-            "typeId": "Fields",
-            "data" :
-            [
+          "key": "TargetPath",
+          "value": "%{Path}"
+        },
+        {
+          "key": "HdrPath",
+          "value": "%{Path}/%{HdrFileName}"
+        },
+        {
+          "key": "SrcPath",
+          "value": "%{Path}/%{SrcFileName}"
+        },
+        {
+          "key": "CN",
+          "value": "%{JS: Cpp.className('%{Class}')}"
+        },
+        {
+          "key": "GUARD",
+          "value": "%{JS: Cpp.classToHeaderGuard('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}"
+        }
+      ],
+
+  "pages":
+      [
+        {
+          "trDisplayName": "Define Controller Class",
+          "trShortTitle": "Details",
+          "typeId": "Fields",
+          "data":
+              [
                 {
-                    "name": "Class",
-                    "trDisplayName": "Class name:",
-                    "mandatory": true,
-                    "type": "LineEdit",
-                    "data": { "validator": "(?:(?:[a-zA-Z_][a-zA-Z_0-9]*::)+[a-zA-Z_][a-zA-Z_0-9]*|)" }
+                  "name": "Class",
+                  "trDisplayName": "Class name:",
+                  "mandatory": true,
+                  "type": "LineEdit",
+                  "data": {
+                    "validator": "(?:(?:[a-zA-Z_][a-zA-Z_0-9]*::)+[a-zA-Z_][a-zA-Z_0-9]*|)"
+                  }
                 },
                 {
-                    "name": "Sp1",
-                    "type": "Spacer",
-                    "data": { "factor": 2 }
+                  "name": "Sp1",
+                  "type": "Spacer",
+                  "data": {
+                    "factor": 2
+                  }
                 },
                 {
-                    "name": "CustomNamespace",
-                    "trDisplayName": "Manual Cutelyst Namespace",
-                    "type": "CheckBox",
-                    "data": {
-                        "checkedValue": true,
-                        "uncheckedValue": false
-                    }
+                  "name": "CustomNamespace",
+                  "trDisplayName": "Manual Cutelyst Namespace",
+                  "type": "CheckBox",
+                  "data": {
+                    "checkedValue": true,
+                    "uncheckedValue": false
+                  }
                 },
                 {
-                    "name": "CustomNamespaceValue",
-                    "trDisplayName": "Namespace:",
-                    "enabled": "%{JS: %{CustomNamespace} }",
-                    "type": "LineEdit",
-                    "mandatory": false,
-                    "data": { "validator": "(^$)|(?:(?:[a-zA-Z_][a-zA-Z_0-9]*/)+[a-zA-Z_][a-zA-Z_0-9]*|)" }
+                  "name": "CustomNamespaceValue",
+                  "trDisplayName": "Namespace:",
+                  "enabled": "%{JS: %{CustomNamespace} }",
+                  "type": "LineEdit",
+                  "mandatory": false,
+                  "data": {
+                    "validator": "(^$)|(?:(?:[a-zA-Z_][a-zA-Z_0-9]*/)+[a-zA-Z_][a-zA-Z_0-9]*|)"
+                  }
                 },
                 {
-                    "name": "Sp1",
-                    "type": "Spacer",
-                    "data": { "factor": 2 }
+                  "name": "Sp1",
+                  "type": "Spacer",
+                  "data": {
+                    "factor": 2
+                  }
                 },
                 {
-                    "name": "BeginMethod",
-                    "trDisplayName": "Begin Action",
-                    "type": "CheckBox",
-                    "data": {
-                        "checkedValue": true,
-                        "uncheckedValue": false
-                    }
+                  "name": "BeginMethod",
+                  "trDisplayName": "Begin Action",
+                  "type": "CheckBox",
+                  "data": {
+                    "checkedValue": true,
+                    "uncheckedValue": false
+                  }
                 },
                 {
-                    "name": "AutoMethod",
-                    "trDisplayName": "Auto Action",
-                    "type": "CheckBox",
-                    "data": {
-                        "checkedValue": true,
-                        "uncheckedValue": false
-                    }
+                  "name": "AutoMethod",
+                  "trDisplayName": "Auto Action",
+                  "type": "CheckBox",
+                  "data": {
+                    "checkedValue": true,
+                    "uncheckedValue": false
+                  }
                 },
                 {
-                    "name": "EndMethod",
-                    "trDisplayName": "End Action",
-                    "type": "CheckBox",
-                    "data": {
-                        "checkedValue": true,
-                        "uncheckedValue": false
-                    }
+                  "name": "EndMethod",
+                  "trDisplayName": "End Action",
+                  "type": "CheckBox",
+                  "data": {
+                    "checkedValue": true,
+                    "uncheckedValue": false
+                  }
                 },
-                
 
                 {
-                    "name": "HdrFileName",
-                    "type": "LineEdit",
-                    "trDisplayName": "Header file:",
-                    "mandatory": true,
-                    "data": { "trText": "%{JS: Cpp.classToFileName('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" }
+                  "name": "HdrFileName",
+                  "type": "LineEdit",
+                  "trDisplayName": "Header file:",
+                  "mandatory": true,
+                  "data": {
+                    "trText": "%{JS: Cpp.classToFileName('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}"
+                  }
                 },
                 {
-                    "name": "SrcFileName",
-                    "type": "LineEdit",
-                    "trDisplayName": "Source file:",
-                    "mandatory": true,
-                    "data": { "trText": "%{JS: Cpp.classToFileName('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++src')}')}" }
+                  "name": "SrcFileName",
+                  "type": "LineEdit",
+                  "trDisplayName": "Source file:",
+                  "mandatory": true,
+                  "data": {
+                    "trText": "%{JS: Cpp.classToFileName('%{Class}', '%{JS: Util.preferredSuffix('text/x-c++src')}')}"
+                  }
                 },
                 {
-                    "name": "Path",
-                    "type": "PathChooser",
-                    "trDisplayName": "Path:",
-                    "mandatory": true,
-                    "data":
-                    {
+                  "name": "Path",
+                  "type": "PathChooser",
+                  "trDisplayName": "Path:",
+                  "mandatory": true,
+                  "data":
+                      {
                         "kind": "existingDirectory",
                         "basePath": "%{InitialPath}",
                         "path": "%{InitialPath}"
-                    }
+                      }
                 }
-            ]
+              ]
         },
         {
-            "trDisplayName": "Project Management",
-            "trShortTitle": "Summary",
-            "typeId": "Summary"
+          "trDisplayName": "Project Management",
+          "trShortTitle": "Summary",
+          "typeId": "Summary"
         }
-    ],
+      ],
 
-    "generators":
-    [
+  "generators":
+      [
         {
-            "typeId": "File",
-            "data":
-            [
+          "typeId": "File",
+          "data":
+              [
                 {
-                    "source": "controller.h",
-                    "target": "%{HdrPath}",
-                    "options": [
-                        { "key": "Cpp:License:FileName", "value": "%{HdrFileName}" },
-                        { "key": "Cpp:License:ClassName", "value": "%{CN}" }
-                    ]
+                  "source": "controller.h",
+                  "target": "%{HdrPath}",
+                  "options": [
+                    {
+                      "key": "Cpp:License:FileName",
+                      "value": "%{HdrFileName}"
+                    },
+                    {
+                      "key": "Cpp:License:ClassName",
+                      "value": "%{CN}"
+                    }
+                  ]
                 },
                 {
-                    "source": "controller.cpp",
-                    "target": "%{SrcPath}",
-                    "openInEditor": true,
-                    "options": [
-                        { "key": "Cpp:License:FileName", "value": "%{SrcFileName}" },
-                        { "key": "Cpp:License:ClassName", "value": "%{CN}" }
-                    ]
+                  "source": "controller.cpp",
+                  "target": "%{SrcPath}",
+                  "openInEditor": true,
+                  "options": [
+                    {
+                      "key": "Cpp:License:FileName",
+                      "value": "%{SrcFileName}"
+                    },
+                    {
+                      "key": "Cpp:License:ClassName",
+                      "value": "%{CN}"
+                    }
+                  ]
                 }
-            ]
+              ]
         }
-    ]
+      ]
 }

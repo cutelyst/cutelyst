@@ -76,7 +76,8 @@ void Response::setStatus(quint16 status) noexcept
 bool Response::hasBody() const noexcept
 {
     Q_D(const Response);
-    return !d->bodyData.isEmpty() || d->bodyIODevice || d->engineRequest->status & EngineRequest::IOWrite;
+    return !d->bodyData.isEmpty() || d->bodyIODevice ||
+           d->engineRequest->status & EngineRequest::IOWrite;
 }
 
 QByteArray &Response::body()
@@ -165,7 +166,8 @@ void Cutelyst::Response::setContentEncoding(const QString &encoding)
     Q_D(Response);
     Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
                "setContentEncoding",
-               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+               "setting a header value after finalize_headers and the response callback has been "
+               "called. Not what you want.");
 
     d->headers.setContentEncoding(encoding);
 }
@@ -181,7 +183,8 @@ void Response::setContentLength(qint64 length)
     Q_D(Response);
     Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
                "setContentLength",
-               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+               "setting a header value after finalize_headers and the response callback has been "
+               "called. Not what you want.");
 
     d->headers.setContentLength(length);
 }
@@ -311,7 +314,8 @@ void Response::redirect(const QString &url, quint16 status)
 void Response::redirectSafe(const QUrl &url, const QUrl &fallback)
 {
     Q_D(const Response);
-    if (url.matches(d->engineRequest->context->req()->uri(), QUrl::RemovePath | QUrl::RemoveQuery)) {
+    if (url.matches(d->engineRequest->context->req()->uri(),
+                    QUrl::RemovePath | QUrl::RemoveQuery)) {
         redirect(url);
     } else {
         redirect(fallback);
@@ -335,7 +339,8 @@ void Response::setHeader(const QString &field, const QString &value)
     Q_D(Response);
     Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
                "setHeader",
-               "setting a header value after finalize_headers and the response callback has been called. Not what you want.");
+               "setting a header value after finalize_headers and the response callback has been "
+               "called. Not what you want.");
 
     d->headers.setHeader(field, value);
 }
@@ -369,7 +374,9 @@ qint64 Response::size() const noexcept
     }
 }
 
-bool Response::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
+bool Response::webSocketHandshake(const QString &key,
+                                  const QString &origin,
+                                  const QString &protocol)
 {
     Q_D(Response);
     return d->engineRequest->webSocketHandshake(key, origin, protocol);

@@ -4,27 +4,27 @@
  */
 #include "engineuwsgi.h"
 
-#include "uwsgiconnection.h"
 #include "bodyuwsgi.h"
+#include "uwsgiconnection.h"
 
+#include <Cutelyst/application.h>
+#include <Cutelyst/common.h>
+#include <Cutelyst/context.h>
+#include <Cutelyst/request.h>
+#include <Cutelyst/response.h>
 #include <uwsgi.h>
 
-#include <QtCore/QSocketNotifier>
 #include <QtCore/QCoreApplication>
-#include <QtCore/QTimer>
 #include <QtCore/QFile>
-
-#include <Cutelyst/common.h>
-#include <Cutelyst/application.h>
-#include <Cutelyst/context.h>
-#include <Cutelyst/response.h>
-#include <Cutelyst/request.h>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QTimer>
 
 Q_LOGGING_CATEGORY(CUTELYST_UWSGI, "cutelyst.uwsgi", QtWarningMsg)
 
 using namespace Cutelyst;
 
-uWSGI::uWSGI(Application *app, int workerCore, const QVariantMap &opts) : Engine(app, workerCore, opts)
+uWSGI::uWSGI(Application *app, int workerCore, const QVariantMap &opts)
+    : Engine(app, workerCore, opts)
 {
     connect(this, &uWSGI::postFork, this, &uWSGI::forked);
 }
@@ -47,8 +47,7 @@ void uWSGI::setThread(QThread *thread)
 {
     moveToThread(thread);
     if (this->thread() == thread) {
-        connect(thread, &QThread::started,
-                this, &uWSGI::forked, Qt::DirectConnection);
+        connect(thread, &QThread::started, this, &uWSGI::forked, Qt::DirectConnection);
     } else {
         qCWarning(CUTELYST_UWSGI) << "Failed to set thread";
     }
@@ -56,7 +55,8 @@ void uWSGI::setThread(QThread *thread)
 
 void uWSGI::readRequestUWSGI(wsgi_request *wsgi_req)
 {
-    Q_FOREVER {
+    Q_FOREVER
+    {
         int ret = uwsgi_wait_read_req(wsgi_req);
         if (ret <= 0) {
             qCDebug(CUTELYST_UWSGI) << "Failed wait read.";
@@ -80,13 +80,11 @@ void uWSGI::addUnusedRequest(wsgi_request *wsgi_req)
     m_unusedReq.push_back(wsgi_req);
 }
 
-uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
+uwsgi_socket *uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
 {
     auto socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
-    connect(this, &uWSGI::enableSockets,
-            socketNotifier, &QSocketNotifier::setEnabled);
-    connect(socketNotifier, &QSocketNotifier::activated, this,
-            [=](int fd) {
+    connect(this, &uWSGI::enableSockets, socketNotifier, &QSocketNotifier::setEnabled);
+    connect(socketNotifier, &QSocketNotifier::activated, this, [=](int fd) {
         if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
@@ -108,8 +106,8 @@ uwsgi_socket* uWSGI::watchSocket(struct uwsgi_socket *uwsgi_sock)
         }
         m_unusedReq.pop_back();
 
-        wsgi_req->start_of_request = uwsgi_micros();
-        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
+        wsgi_req->start_of_request        = uwsgi_micros();
+        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request / 1000000;
 
 #ifdef UWSGI_GO_CHEAP_CODE
         // enter harakiri mode
@@ -158,10 +156,8 @@ void uWSGI::validateAndExecuteRequest(wsgi_request *wsgi_req, int status)
 uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 {
     auto socketNotifier = new QSocketNotifier(uwsgi_sock->fd, QSocketNotifier::Read, this);
-    connect(this, &uWSGI::enableSockets,
-            socketNotifier, &QSocketNotifier::setEnabled);
-    connect(socketNotifier, &QSocketNotifier::activated, this,
-            [=](int fd) {
+    connect(this, &uWSGI::enableSockets, socketNotifier, &QSocketNotifier::setEnabled);
+    connect(socketNotifier, &QSocketNotifier::activated, this, [=](int fd) {
         if (m_unusedReq.empty()) {
             uwsgi_async_queue_is_full(uwsgi_now());
             return;
@@ -183,8 +179,8 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         }
         m_unusedReq.pop_back();
 
-        wsgi_req->start_of_request = uwsgi_micros();
-        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request/1000000;
+        wsgi_req->start_of_request        = uwsgi_micros();
+        wsgi_req->start_of_request_in_sec = wsgi_req->start_of_request / 1000000;
 
 #ifdef UWSGI_GO_CHEAP_CODE
         // enter harakiri mode
@@ -194,7 +190,7 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
 #endif // UWSGI_GO_CHEAP_CODE
 
         auto requestNotifier = new QSocketNotifier(wsgi_req->fd, QSocketNotifier::Read, this);
-        auto timeoutTimer = new QTimer(requestNotifier);
+        auto timeoutTimer    = new QTimer(requestNotifier);
 
 #ifdef UWSGI_GO_CHEAP_CODE
         timeoutTimer->setInterval(uwsgi.socket_timeout * 1000);
@@ -202,16 +198,14 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         timeoutTimer->setInterval(15 * 1000);
 #endif // UWSGI_GO_CHEAP_CODE
 
-        connect(timeoutTimer, &QTimer::timeout, this,
-                [=]() {
+        connect(timeoutTimer, &QTimer::timeout, this, [=]() {
             requestNotifier->setEnabled(false);
             uwsgi_close_request(wsgi_req);
             requestNotifier->deleteLater();
             m_unusedReq.push_back(wsgi_req);
         });
 
-        connect(requestNotifier, &QSocketNotifier::activated, this,
-                [=]() {
+        connect(requestNotifier, &QSocketNotifier::activated, this, [=]() {
             int status = wsgi_req->socket->proto(wsgi_req);
             if (status > 0) {
                 // still need to read
@@ -233,7 +227,6 @@ uwsgi_socket *uWSGI::watchSocketAsync(struct uwsgi_socket *uwsgi_sock)
         });
 
         timeoutTimer->start();
-
     });
 
     return uwsgi_sock->next;
@@ -263,7 +256,8 @@ bool uWSGI::forked()
     if (workerCore() > 0) {
         // init and postfork
         if (!initApplication()) {
-            qFatal("Failed to init application on a different thread than main. Are you sure threaded mode is supported in this application?");
+            qFatal("Failed to init application on a different thread than main. Are you sure "
+                   "threaded mode is supported in this application?");
             return false;
         }
     }
@@ -281,11 +275,11 @@ bool uWSGI::forked()
         // Start Monitoring Sockets
         struct uwsgi_socket *uwsgi_sock = uwsgi.sockets;
         if (m_unusedReq.size() > 1) {
-            while(uwsgi_sock) {
+            while (uwsgi_sock) {
                 uwsgi_sock = watchSocketAsync(uwsgi_sock);
             }
         } else {
-            while(uwsgi_sock) {
+            while (uwsgi_sock) {
                 uwsgi_sock = watchSocket(uwsgi_sock);
             }
         }

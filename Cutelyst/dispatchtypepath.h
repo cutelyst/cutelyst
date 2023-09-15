@@ -25,7 +25,8 @@ public:
 
     virtual QByteArray list() const override;
 
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const override;
+    virtual MatchType
+        match(Context *c, const QString &path, const QStringList &args) const override;
 
     virtual bool registerAction(Action *action) override;
 

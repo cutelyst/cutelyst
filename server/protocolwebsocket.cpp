@@ -80,7 +80,8 @@ QByteArray ProtocolWebSocket::createWebsocketCloseReply(const QString &msg, quin
 
     const QByteArray data = msg.toUtf8().left(123);
 
-    payload = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeClose, quint64(data.size() + 2));
+    payload = ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodeClose,
+                                                       quint64(data.size() + 2));
 
     quint8 buf[2];
     buf[1] = quint8(closeCode & 0xff);
@@ -100,9 +101,9 @@ void ProtocolWebSocket::parse(Socket *sock, QIODevice *io) const
 
     Q_FOREVER
     {
-        if (!bytesAvailable ||
-            !request->websocket_need ||
-            (bytesAvailable < request->websocket_need && request->websocket_phase != ProtoRequestHttp::WebSocketPhasePayload)) {
+        if (!bytesAvailable || !request->websocket_need ||
+            (bytesAvailable < request->websocket_need &&
+             request->websocket_phase != ProtoRequestHttp::WebSocketPhasePayload)) {
             // Need more data
             return;
         }
@@ -172,9 +173,8 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         return false;
     } else if (!failed) {
         protoRequest->websocket_start_of_frame = protoRequest->websocket_message.size();
-        Q_EMIT request->webSocketTextFrame(frame,
-                                           protoRequest->websocket_finn_opcode & 0x80,
-                                           protoRequest->context);
+        Q_EMIT request->webSocketTextFrame(
+            frame, protoRequest->websocket_finn_opcode & 0x80, protoRequest->context);
     }
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
@@ -184,7 +184,9 @@ bool ProtocolWebSocket::send_text(Cutelyst::Context *c, Socket *sock, bool singl
         } else {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
             QTextCodec::ConverterState stateMsg;
-            const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &stateMsg);
+            const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(),
+                                                   protoRequest->websocket_message.size(),
+                                                   &stateMsg);
             const bool failed = stateMsg.invalidChars || stateMsg.remainingChars;
 #else
             auto toUtf16      = QStringDecoder(QStringDecoder::Utf8);
@@ -212,9 +214,8 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
     protoRequest->websocket_message.append(protoRequest->websocket_payload);
 
     const QByteArray frame = protoRequest->websocket_payload;
-    Q_EMIT request->webSocketBinaryFrame(frame,
-                                         protoRequest->websocket_finn_opcode & 0x80,
-                                         protoRequest->context);
+    Q_EMIT request->webSocketBinaryFrame(
+        frame, protoRequest->websocket_finn_opcode & 0x80, protoRequest->context);
 
     if (protoRequest->websocket_finn_opcode & 0x80) {
         protoRequest->websocket_continue_opcode = 0;
@@ -231,7 +232,8 @@ void ProtocolWebSocket::send_binary(Cutelyst::Context *c, Socket *sock, bool sin
 
 void ProtocolWebSocket::send_pong(QIODevice *io, const QByteArray data) const
 {
-    io->write(ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePong, quint64(data.size())));
+    io->write(ProtocolWebSocket::createWebsocketHeader(ProtoRequestHttp::OpCodePong,
+                                                       quint64(data.size())));
     io->write(data);
 }
 
@@ -242,7 +244,8 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     QString reason;
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QTextCodec::ConverterState state;
-    const QString msg = m_codec->toUnicode(protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &state);
+    const QString msg = m_codec->toUnicode(
+        protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &state);
     const bool failed = state.invalidChars || state.remainingChars;
 #else
     const bool failed = false;           // FIXME
@@ -251,7 +254,9 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
     if (protoRequest->websocket_payload.size() >= 2) {
         closeCode = net_be16(protoRequest->websocket_payload.data());
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2, protoRequest->websocket_payload.size() - 2, &state);
+        reason = m_codec->toUnicode(protoRequest->websocket_payload.data() + 2,
+                                    protoRequest->websocket_payload.size() - 2,
+                                    &state);
 #else
         auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
         reason       = toUtf16(protoRequest->websocket_payload.mid(2));
@@ -311,12 +316,17 @@ bool ProtocolWebSocket::websocket_parse_header(Socket *sock, const char *buf, QI
 
     bool websocket_has_mask = byte2 >> 7;
     if (!websocket_has_mask ||
-        ((opcode == ProtoRequestHttp::OpCodePing || opcode == ProtoRequestHttp::OpCodeClose) && protoRequest->websocket_payload_size > 125) ||
+        ((opcode == ProtoRequestHttp::OpCodePing || opcode == ProtoRequestHttp::OpCodeClose) &&
+         protoRequest->websocket_payload_size > 125) ||
         (byte1 & 0x70) ||
-        ((opcode >= ProtoRequestHttp::OpCodeReserved3 && opcode <= ProtoRequestHttp::OpCodeReserved7) ||
-         (opcode >= ProtoRequestHttp::OpCodeReservedB && opcode <= ProtoRequestHttp::OpCodeReservedF)) ||
-        (!(byte1 & 0x80) && opcode != ProtoRequestHttp::OpCodeText && opcode != ProtoRequestHttp::OpCodeBinary && opcode != ProtoRequestHttp::OpCodeContinue) ||
-        (protoRequest->websocket_continue_opcode && (opcode == ProtoRequestHttp::OpCodeText || opcode == ProtoRequestHttp::OpCodeBinary))) {
+        ((opcode >= ProtoRequestHttp::OpCodeReserved3 &&
+          opcode <= ProtoRequestHttp::OpCodeReserved7) ||
+         (opcode >= ProtoRequestHttp::OpCodeReservedB &&
+          opcode <= ProtoRequestHttp::OpCodeReservedF)) ||
+        (!(byte1 & 0x80) && opcode != ProtoRequestHttp::OpCodeText &&
+         opcode != ProtoRequestHttp::OpCodeBinary && opcode != ProtoRequestHttp::OpCodeContinue) ||
+        (protoRequest->websocket_continue_opcode &&
+         (opcode == ProtoRequestHttp::OpCodeText || opcode == ProtoRequestHttp::OpCodeBinary))) {
         // RFC errors
         // client to server MUST have a mask
         // Control opcode cannot have payload bigger than 125
@@ -354,7 +364,9 @@ bool ProtocolWebSocket::websocket_parse_header(Socket *sock, const char *buf, QI
     return true;
 }
 
-bool ProtocolWebSocket::websocket_parse_size(Socket *sock, const char *buf, int websockets_max_message_size) const
+bool ProtocolWebSocket::websocket_parse_size(Socket *sock,
+                                             const char *buf,
+                                             int websockets_max_message_size) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     quint64 size;
@@ -363,13 +375,15 @@ bool ProtocolWebSocket::websocket_parse_size(Socket *sock, const char *buf, int 
     } else if (protoRequest->websocket_payload_size == 127) {
         size = net_be64(buf);
     } else {
-        qCCritical(CWSGI_WS) << "BUG error in websocket parser:" << protoRequest->websocket_payload_size;
+        qCCritical(CWSGI_WS) << "BUG error in websocket parser:"
+                             << protoRequest->websocket_payload_size;
         sock->connectionClose();
         return false;
     }
 
     if (size > static_cast<quint64>(websockets_max_message_size)) {
-        qCCritical(CWSGI_WS) << "Payload size too big" << size << "max allowed" << websockets_max_message_size;
+        qCCritical(CWSGI_WS) << "Payload size too big" << size << "max allowed"
+                             << websockets_max_message_size;
         sock->connectionClose();
         return false;
     }
@@ -398,7 +412,10 @@ void ProtocolWebSocket::websocket_parse_mask(Socket *sock, char *buf, QIODevice 
     }
 }
 
-bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, int len, QIODevice *io) const
+bool ProtocolWebSocket::websocket_parse_payload(Socket *sock,
+                                                char *buf,
+                                                int len,
+                                                QIODevice *io) const
 {
     auto protoRequest = static_cast<ProtoRequestHttp *>(sock->protoData);
     auto mask         = reinterpret_cast<quint8 *>(&protoRequest->websocket_mask);
@@ -430,7 +447,8 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, int len
             send_binary(protoRequest->context, sock, false);
             break;
         default:
-            qCCritical(CWSGI_WS) << "Invalid CONTINUE opcode:" << (protoRequest->websocket_finn_opcode & 0xf);
+            qCCritical(CWSGI_WS) << "Invalid CONTINUE opcode:"
+                                 << (protoRequest->websocket_finn_opcode & 0xf);
             sock->connectionClose();
             return false;
         }
@@ -451,8 +469,7 @@ bool ProtocolWebSocket::websocket_parse_payload(Socket *sock, char *buf, int len
         sock->flush();
         break;
     case ProtoRequestHttp::OpCodePong:
-        Q_EMIT request->webSocketPong(protoRequest->websocket_payload,
-                                      protoRequest->context);
+        Q_EMIT request->webSocketPong(protoRequest->websocket_payload, protoRequest->context);
         break;
     default:
         break;

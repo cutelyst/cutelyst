@@ -5,14 +5,14 @@
 #ifndef UWSGICONNECTION_H
 #define UWSGICONNECTION_H
 
-#include <QObject>
-
 #include "Cutelyst/enginerequest.h"
+
+#include <QObject>
 
 namespace Cutelyst {
 class Context;
 class Headers;
-}
+} // namespace Cutelyst
 
 struct wsgi_request;
 

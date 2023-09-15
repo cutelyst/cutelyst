@@ -122,7 +122,8 @@ QByteArray DispatchTypeChained::list() const
         if (endPoint->numberOfArgs() == -1) {
             line.append(QLatin1String(" (...)"));
         } else {
-            line.append(QLatin1String(" (") + QString::number(endPoint->numberOfArgs()) + QLatin1Char(')'));
+            line.append(QLatin1String(" (") + QString::number(endPoint->numberOfArgs()) +
+                        QLatin1Char(')'));
         }
 
         if (!consumes.isEmpty()) {
@@ -141,17 +142,22 @@ QByteArray DispatchTypeChained::list() const
 #endif
 
     if (!paths.isEmpty()) {
-        out << Utils::buildTable(paths, {QLatin1String("Path Spec"), QLatin1String("Private")}, QLatin1String("Loaded Chained actions:"));
+        out << Utils::buildTable(paths,
+                                 {QLatin1String("Path Spec"), QLatin1String("Private")},
+                                 QLatin1String("Loaded Chained actions:"));
     }
 
     if (!unattachedTable.isEmpty()) {
-        out << Utils::buildTable(unattachedTable, {QLatin1String("Private"), QLatin1String("Missing parent")}, QLatin1String("Unattached Chained actions:"));
+        out << Utils::buildTable(unattachedTable,
+                                 {QLatin1String("Private"), QLatin1String("Missing parent")},
+                                 QLatin1String("Unattached Chained actions:"));
     }
 
     return buffer;
 }
 
-DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
+DispatchType::MatchType
+    DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
         return NoMatch;
@@ -159,8 +165,9 @@ DispatchType::MatchType DispatchTypeChained::match(Context *c, const QString &pa
 
     Q_D(const DispatchTypeChained);
 
-    const BestActionMatch ret = d->recurseMatch(args.size(), QStringLiteral("/"), path.split(QLatin1Char('/')));
-    const ActionList chain    = ret.actions;
+    const BestActionMatch ret =
+        d->recurseMatch(args.size(), QStringLiteral("/"), path.split(QLatin1Char('/')));
+    const ActionList chain = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;
     }
@@ -213,15 +220,13 @@ bool DispatchTypeChained::registerAction(Action *action)
         part = pathPart[0];
     } else if (pathPart.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-            << "Multiple PathPart attributes not supported registering"
-            << action->reverse();
+            << "Multiple PathPart attributes not supported registering" << action->reverse();
         return false;
     }
 
     if (part.startsWith(QLatin1Char('/'))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-            << "Absolute parameters to PathPart not allowed registering"
-            << action->reverse();
+            << "Absolute parameters to PathPart not allowed registering" << action->reverse();
         return false;
     }
 
@@ -238,7 +243,8 @@ bool DispatchTypeChained::registerAction(Action *action)
         return false;
     }
 
-    if (attributes.contains(QLatin1String("Args")) && attributes.contains(QLatin1String("CaptureArgs"))) {
+    if (attributes.contains(QLatin1String("Args")) &&
+        attributes.contains(QLatin1String("CaptureArgs"))) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
             << "Combining Args and CaptureArgs attributes not supported registering"
             << action->reverse();
@@ -260,7 +266,8 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
     const ParamsMultiMap attributes = action->attributes();
     if (!(attributes.contains(QStringLiteral("Chained")) &&
           !attributes.contains(QStringLiteral("CaptureArgs")))) {
-        qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: action is not an end point" << action;
+        qCWarning(CUTELYST_DISPATCHER_CHAINED)
+            << "uriForAction: action is not an end point" << action;
         return ret;
     }
 
@@ -273,11 +280,13 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
         if (curr_attributes.contains(QStringLiteral("CaptureArgs"))) {
             if (localCaptures.size() < curr->numberOfCaptures()) {
                 // Not enough captures
-                qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: not enough captures" << curr->numberOfCaptures() << captures.size();
+                qCWarning(CUTELYST_DISPATCHER_CHAINED)
+                    << "uriForAction: not enough captures" << curr->numberOfCaptures()
+                    << captures.size();
                 return ret;
             }
 
-            parts         = localCaptures.mid(localCaptures.size() - curr->numberOfCaptures()) + parts;
+            parts = localCaptures.mid(localCaptures.size() - curr->numberOfCaptures()) + parts;
             localCaptures = localCaptures.mid(0, localCaptures.size() - curr->numberOfCaptures());
         }
 
@@ -298,7 +307,8 @@ QString DispatchTypeChained::uriForAction(Action *action, const QStringList &cap
 
     if (!localCaptures.isEmpty()) {
         // fail for too many captures
-        qCWarning(CUTELYST_DISPATCHER_CHAINED) << "uriForAction: too many captures" << localCaptures;
+        qCWarning(CUTELYST_DISPATCHER_CHAINED)
+            << "uriForAction: too many captures" << localCaptures;
         return ret;
     }
 
@@ -345,7 +355,9 @@ bool DispatchTypeChained::inUse()
     return true;
 }
 
-BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const QString &parent, const QStringList &pathParts) const
+BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize,
+                                                         const QString &parent,
+                                                         const QStringList &pathParts) const
 {
     BestActionMatch bestAction;
     auto it = childrenOf.constFind(parent);
@@ -394,7 +406,8 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                 const QStringList localParts = parts.mid(captureCount);
 
                 // try the remaining parts against children of this action
-                const BestActionMatch ret = recurseMatch(reqArgsSize, QLatin1Char('/') + action->reverse(), localParts);
+                const BestActionMatch ret =
+                    recurseMatch(reqArgsSize, QLatin1Char('/') + action->reverse(), localParts);
 
                 //    No best action currently
                 // OR The action has less parts
@@ -405,13 +418,13 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                 int bestActionParts              = bestAction.parts.size();
 
                 if (!actions.isEmpty() &&
-                    (bestAction.isNull ||
-                     actionParts.size() < bestActionParts ||
+                    (bestAction.isNull || actionParts.size() < bestActionParts ||
                      (actionParts.size() == bestActionParts &&
                       actionCaptures.size() < bestAction.captures.size() &&
                       ret.n_pathParts > bestAction.n_pathParts))) {
                     actions.prepend(action);
-                    int pathparts          = attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                    int pathparts =
+                        attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
                     bestAction.actions     = actions;
                     bestAction.captures    = captures + actionCaptures;
                     bestAction.parts       = actionParts;
@@ -424,7 +437,8 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                 }
 
                 const QString argsAttr = attributes.value(QStringLiteral("Args"));
-                const int pathparts    = attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
+                const int pathparts =
+                    attributes.value(QStringLiteral("PathPart")).count(QLatin1Char('/')) + 1;
                 //    No best action currently
                 // OR This one matches with fewer parts left than the current best action,
                 //    And therefore is a better match
@@ -432,8 +446,7 @@ BestActionMatch DispatchTypeChainedPrivate::recurseMatch(int reqArgsSize, const 
                 //    The current best action might also be Args(0),
                 //    but we couldn't chose between then anyway so we'll take the last seen
 
-                if (bestAction.isNull ||
-                    parts.size() < bestAction.parts.size() ||
+                if (bestAction.isNull || parts.size() < bestAction.parts.size() ||
                     (parts.isEmpty() && !argsAttr.isEmpty() && action->numberOfArgs() == 0)) {
                     bestAction.actions     = {action};
                     bestAction.captures    = QStringList();
@@ -458,10 +471,7 @@ bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
     const QStringList values = attributes.values(name);
     if (values.size() > 1) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-            << "Multiple"
-            << name
-            << "attributes not supported registering"
-            << action->reverse();
+            << "Multiple" << name << "attributes not supported registering" << action->reverse();
         return false;
     }
 
@@ -469,10 +479,8 @@ bool DispatchTypeChainedPrivate::checkArgsAttr(Action *action, const QString &na
     bool ok;
     if (!args.isEmpty() && args.toInt(&ok) < 0 && !ok) {
         qCCritical(CUTELYST_DISPATCHER_CHAINED)
-            << "Invalid"
-            << name << "(" << args << ") for action"
-            << action->reverse()
-            << "(use '" << name << "' or '" << name << "(<number>)')";
+            << "Invalid" << name << "(" << args << ") for action" << action->reverse() << "(use '"
+            << name << "' or '" << name << "(<number>)')";
         return false;
     }
 

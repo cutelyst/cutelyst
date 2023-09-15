@@ -9,7 +9,10 @@
 
 using namespace Cutelyst;
 
-ValidatorDate::ValidatorDate(const QString &field, const char *inputFormat, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorDate::ValidatorDate(const QString &field,
+                             const char *inputFormat,
+                             const Cutelyst::ValidatorMessages &messages,
+                             const QString &defValKey)
     : ValidatorRule(*new ValidatorDatePrivate(field, inputFormat, messages, defValKey))
 {
 }
@@ -31,7 +34,13 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
 
         if (!date.isValid()) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR, "ValidatorDate: Validation failed for value \"%s\" in field %s in %s::%s: not a valid date.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorDate: Validation failed for value \"%s\" in field %s in %s::%s: not "
+                    "a valid date.",
+                    qPrintable(v),
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
         } else {
             result.value.setValue(date);
         }
@@ -55,7 +64,9 @@ QString ValidatorDate::genericValidationError(Context *c, const QVariant &errorD
 
         if (d->inputFormat) {
             //: %1 will be replaced by the date format
-            error = c->translate("Cutelyst::ValidatorDate", "Not a valid date according to the following date format: %1").arg(c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorDate",
+                                 "Not a valid date according to the following date format: %1")
+                        .arg(c->translate(d->translationContext.data(), d->inputFormat));
         } else {
             error = c->translate("Cutelyst::ValidatorDate", "Not a valid date.");
         }
@@ -64,10 +75,15 @@ QString ValidatorDate::genericValidationError(Context *c, const QVariant &errorD
 
         if (d->inputFormat) {
             //: %1 will be replaced by the field label, %2 will be replaced by the date format
-            error = c->translate("Cutelyst::ValidatorDate", "The value in the “%1” field can not be parsed as date according to the following scheme: %2").arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
+            error = c->translate("Cutelyst::ValidatorDate",
+                                 "The value in the “%1” field can not be parsed as date according "
+                                 "to the following scheme: %2")
+                        .arg(_label, c->translate(d->translationContext.data(), d->inputFormat));
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDate", "The value in the “%1” field can not be parsed as date.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorDate",
+                                 "The value in the “%1” field can not be parsed as date.")
+                        .arg(_label);
         }
     }
 

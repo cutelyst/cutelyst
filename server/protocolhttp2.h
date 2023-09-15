@@ -34,12 +34,7 @@ class ProtoRequestHttp2;
 class H2Stream final : public Cutelyst::EngineRequest
 {
 public:
-    enum State {
-        Idle,
-        Open,
-        HalfClosed,
-        Closed
-    };
+    enum State { Idle, Open, HalfClosed, Closed };
     H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protoRequestH2);
     ~H2Stream() override;
 
@@ -143,12 +138,22 @@ public:
     int sendSettings(QIODevice *io, const std::vector<std::pair<quint16, quint32>> &settings) const;
     int sendSettingsAck(QIODevice *io) const;
     int sendPing(QIODevice *io, quint8 flags, const char *data = nullptr, qint32 dataLen = 0) const;
-    int sendData(QIODevice *io, quint32 streamId, qint32 flags, const char *data, qint32 dataLen) const;
-    int sendFrame(QIODevice *io, quint8 type, quint8 flags = 0, quint32 streamId = 0, const char *data = nullptr, qint32 dataLen = 0) const;
+    int sendData(QIODevice *io,
+                 quint32 streamId,
+                 qint32 flags,
+                 const char *data,
+                 qint32 dataLen) const;
+    int sendFrame(QIODevice *io,
+                  quint8 type,
+                  quint8 flags     = 0,
+                  quint32 streamId = 0,
+                  const char *data = nullptr,
+                  qint32 dataLen   = 0) const;
 
     void queueStream(Cutelyst::Socket *socket, H2Stream *stream) const;
 
-    bool upgradeH2C(Cutelyst::Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request);
+    bool
+        upgradeH2C(Cutelyst::Socket *socket, QIODevice *io, const Cutelyst::EngineRequest &request);
 
 public:
     quint32 m_maxFrameSize;

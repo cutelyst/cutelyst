@@ -63,10 +63,7 @@ public:
 
     inline QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
-    inline operator QVariant() const
-    {
-        return QVariant::fromValue(m_data);
-    }
+    inline operator QVariant() const { return QVariant::fromValue(m_data); }
 
 protected:
     QVariantMap m_data;
@@ -98,6 +95,7 @@ Q_DECLARE_METATYPE(Cutelyst::AuthenticationUser)
 QDataStream &operator<<(QDataStream &out, const Cutelyst::AuthenticationUser &myObj);
 QDataStream &operator>>(QDataStream &in, Cutelyst::AuthenticationUser &myObj);
 
-QDebug CUTELYST_PLUGIN_AUTHENTICATION_EXPORT operator<<(QDebug dbg, const Cutelyst::AuthenticationUser &user);
+QDebug CUTELYST_PLUGIN_AUTHENTICATION_EXPORT operator<<(QDebug dbg,
+                                                        const Cutelyst::AuthenticationUser &user);
 
 #endif // AUTHENTICATIONUSER_H

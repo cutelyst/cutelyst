@@ -7,7 +7,11 @@
 
 using namespace Cutelyst;
 
-ValidatorSame::ValidatorSame(const QString &field, const QString &otherField, const char *otherLabel, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorSame::ValidatorSame(const QString &field,
+                             const QString &otherField,
+                             const char *otherLabel,
+                             const Cutelyst::ValidatorMessages &messages,
+                             const QString &defValKey)
     : ValidatorRule(*new ValidatorSamePrivate(field, otherField, otherLabel, messages, defValKey))
 {
 }
@@ -25,10 +29,17 @@ ValidatorReturnType ValidatorSame::validate(Context *c, const ParamsMultiMap &pa
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        const QString ov = trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
+        const QString ov =
+            trimBefore() ? params.value(d->otherField).trimmed() : params.value(d->otherField);
         if (v != ov) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR, "ValidatorSame: Validation failed for field %s at %s::%s: value is not the same as in the field %s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(d->otherField));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorSame: Validation failed for field %s at %s::%s: value is not the "
+                    "same as in the field %s",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()),
+                    qPrintable(d->otherField));
         } else {
             result.value.setValue(v);
         }
@@ -48,17 +59,23 @@ QString ValidatorSame::genericValidationError(Context *c, const QVariant &errorD
     const QString _label = label(c);
     QString _olabel;
     if (d->otherLabel) {
-        _olabel = d->translationContext.size() ? c->translate(d->translationContext.data(), d->otherLabel) : QString::fromUtf8(d->otherLabel);
+        _olabel = d->translationContext.size()
+                      ? c->translate(d->translationContext.data(), d->otherLabel)
+                      : QString::fromUtf8(d->otherLabel);
     } else {
         _olabel = d->otherField;
     }
 
     if (_label.isEmpty()) {
         //: %1 will be replaced by the label of the other field
-        error = c->translate("Cutelyst::ValidatorSame", "Must be the same as in the “%1” field.").arg(_olabel);
+        error = c->translate("Cutelyst::ValidatorSame", "Must be the same as in the “%1” field.")
+                    .arg(_olabel);
     } else {
-        //: %1 will be replaced by the field label, %2 will be replaced by the label of the other field
-        error = c->translate("Cutelyst::ValidatorSame", "The “%1” field must have the same value as the “%2” field.").arg(_label, _olabel);
+        //: %1 will be replaced by the field label, %2 will be replaced by the label of the other
+        //: field
+        error = c->translate("Cutelyst::ValidatorSame",
+                             "The “%1” field must have the same value as the “%2” field.")
+                    .arg(_label, _olabel);
     }
 
     return error;

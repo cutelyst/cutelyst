@@ -22,7 +22,10 @@ bool WindowsFork::continueMaster(int *exit)
     installTouchReload();
 
     m_masterChildProcess = new QProcess(this);
-    connect(m_masterChildProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &WindowsFork::childFinished);
+    connect(m_masterChildProcess,
+            static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            this,
+            &WindowsFork::childFinished);
 
     auto env = QProcessEnvironment::systemEnvironment();
     env.insert(QStringLiteral("CUTELYST_WSGI_IGNORE_MASTER"), QStringLiteral("1"));

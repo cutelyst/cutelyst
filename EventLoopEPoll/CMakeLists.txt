@@ -30,4 +30,3 @@ if(TARGET epoll-shim::epoll-shim) # FreeBSD only
 endif()
 
 install(TARGETS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll EXPORT CutelystTargets DESTINATION ${CMAKE_INSTALL_LIBDIR})
-

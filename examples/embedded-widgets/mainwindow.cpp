@@ -24,7 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serverReceivedHeaders->setModel(m_serverReceivedHeaders);
     ui->clientReceivedHeaders->setModel(m_clientReceivedHeaders);
 
-    connect(ui->serverPortSB, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::updateUrl);
+    connect(ui->serverPortSB,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &MainWindow::updateUrl);
     connect(ui->clientSendPB, &QPushButton::clicked, this, &MainWindow::clientSend);
     connect(ui->serverListenPB, &QPushButton::clicked, this, &MainWindow::listenClicked);
     connect(ui->serverStopListenPB, &QPushButton::clicked, this, [=] {
@@ -35,9 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_server, &Cutelyst::Server::ready, this, [=] {
         ui->serverStopListenPB->setEnabled(true);
     });
-    connect(m_server, &Cutelyst::Server::stopped, this, [=] {
-        ui->serverListenPB->setEnabled(true);
-    });
+    connect(
+        m_server, &Cutelyst::Server::stopped, this, [=] { ui->serverListenPB->setEnabled(true); });
     connect(m_server, &Cutelyst::Server::errorOccured, this, [=](const QString &message) {
         ui->serverListenPB->setEnabled(true);
         ui->serverStopListenPB->setEnabled(false);
@@ -59,10 +61,13 @@ void MainWindow::clientSend()
     if (!path.startsWith(QLatin1Char('/'))) {
         path.prepend(QLatin1Char('/'));
     }
-    QUrl url(QLatin1String("http://localhost:") + QString::number(ui->serverPortSB->value()) + path);
+    QUrl url(QLatin1String("http://localhost:") + QString::number(ui->serverPortSB->value()) +
+             path);
     QNetworkRequest request(url);
 
-    QNetworkReply *reply = m_nam->sendCustomRequest(request, ui->clientMethodLE->currentText().toLatin1(), ui->clientBodyPTE->toPlainText().toUtf8());
+    QNetworkReply *reply = m_nam->sendCustomRequest(request,
+                                                    ui->clientMethodLE->currentText().toLatin1(),
+                                                    ui->clientBodyPTE->toPlainText().toUtf8());
     connect(reply, &QNetworkReply::finished, this, [=] {
         reply->deleteLater();
 
@@ -70,10 +75,13 @@ void MainWindow::clientSend()
 
         const QByteArray body = reply->readAll();
         ui->clientResponsePTE->setPlainText(QString::fromUtf8(body));
-        int status           = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        QString statusReason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        qDebug() << "client finished" << body.size() << status << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
-        ui->clientResponseLE->setText(QString::number(status) + QLatin1String(" - ") + statusReason);
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QString statusReason =
+            reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+        qDebug() << "client finished" << body.size() << status
+                 << reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute);
+        ui->clientResponseLE->setText(QString::number(status) + QLatin1String(" - ") +
+                                      statusReason);
 
         m_clientReceivedHeaders->clear();
         for (auto &header : reply->rawHeaderPairs()) {
@@ -93,7 +101,8 @@ void MainWindow::listenClicked()
 {
     ui->serverListenPB->setEnabled(false);
 
-    const QString address = QLatin1String("localhost:") + QString::number(ui->serverPortSB->value());
+    const QString address =
+        QLatin1String("localhost:") + QString::number(ui->serverPortSB->value());
     m_server->setHttpSocket({address});
     m_server->start(m_app);
 }
@@ -130,6 +139,7 @@ void MainWindow::indexCalled(Cutelyst::Context *c)
 
 void MainWindow::updateUrl()
 {
-    const QString url = QLatin1String("http://localhost:") + QString::number(ui->serverPortSB->value());
+    const QString url =
+        QLatin1String("http://localhost:") + QString::number(ui->serverPortSB->value());
     ui->serverL->setText(tr("Server: <a href=\"%1\">%1</a>").arg(url));
 }

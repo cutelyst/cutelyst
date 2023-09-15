@@ -31,7 +31,8 @@ protected:
     virtual bool doExecute(Cutelyst::Context *c) override;
 };
 
-class RenderViewFactory final : public QObject
+class RenderViewFactory final
+    : public QObject
     , public ComponentFactory
 {
     Q_OBJECT

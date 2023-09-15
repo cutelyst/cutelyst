@@ -132,7 +132,8 @@ void StatusMessage::load(Context *c)
 
 inline QString createToken()
 {
-    return QString::number(QRandomGenerator::global()->generate() % 99999999).rightJustified(8, u'0', true);
+    return QString::number(QRandomGenerator::global()->generate() % 99999999)
+        .rightJustified(8, u'0', true);
 }
 
 QString StatusMessage::error(Context *c, const QString &msg)

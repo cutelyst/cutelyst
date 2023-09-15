@@ -7,7 +7,9 @@
 
 using namespace Cutelyst;
 
-ValidatorFilled::ValidatorFilled(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorFilled::ValidatorFilled(const QString &field,
+                                 const Cutelyst::ValidatorMessages &messages,
+                                 const QString &defValKey)
     : ValidatorRule(*new ValidatorFilledPrivate(field, messages, defValKey))
 {
 }

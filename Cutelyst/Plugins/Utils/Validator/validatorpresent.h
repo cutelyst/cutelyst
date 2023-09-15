@@ -18,8 +18,9 @@ class ValidatorPresentPrivate;
  * \class ValidatorPresent validatorpresent.h <Cutelyst/Plugins/Utils/validatorpresent.h>
  * \brief The field under validation must be present in input data but can be empty.
  *
- * This validator checks if the \a field is present in the input data, but not if it contains any content.
- * If you want to check the fields presence and require it to have content, use one of the \link ValidatorRequired required validators \endlink.
+ * This validator checks if the \a field is present in the input data, but not if it contains any
+ * content. If you want to check the fields presence and require it to have content, use one of the
+ * \link ValidatorRequired required validators \endlink.
  *
  * \sa Validator for general usage of validators.
  *
@@ -52,7 +53,8 @@ protected:
     /*!
      * \brief Returns a generic error message if validation failed.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorPresent)

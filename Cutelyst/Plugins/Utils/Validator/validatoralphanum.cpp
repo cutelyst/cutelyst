@@ -9,7 +9,10 @@
 
 using namespace Cutelyst;
 
-ValidatorAlphaNum::ValidatorAlphaNum(const QString &field, bool asciiOnly, const ValidatorMessages &messages, const QString &defValKey)
+ValidatorAlphaNum::ValidatorAlphaNum(const QString &field,
+                                     bool asciiOnly,
+                                     const ValidatorMessages &messages,
+                                     const QString &defValKey)
     : ValidatorRule(*new ValidatorAlphaNumPrivate(field, asciiOnly, messages, defValKey))
 {
 }
@@ -29,7 +32,13 @@ ValidatorReturnType ValidatorAlphaNum::validate(Context *c, const ParamsMultiMap
         if (Q_LIKELY(ValidatorAlphaNum::validate(v, d->asciiOnly))) {
             result.value.setValue(v);
         } else {
-            qCDebug(C_VALIDATOR, "ValidatorAlphaNum: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorAlphaNum: Validation failed for field %s at %s::%s: %s contains "
+                    "characters that are not allowed.",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()),
+                    qPrintable(v));
             result.errorMessage = validationError(c);
         }
 
@@ -46,7 +55,8 @@ bool ValidatorAlphaNum::validate(const QString &value, bool asciiOnly)
     if (asciiOnly) {
         for (const QChar &ch : value) {
             const ushort &uc = ch.unicode();
-            if (!(((uc > 64) && (uc < 91)) || ((uc > 96) && (uc < 123)) || ((uc > 47) && (uc < 58)))) {
+            if (!(((uc > 64) && (uc < 91)) || ((uc > 96) && (uc < 123)) ||
+                  ((uc > 47) && (uc < 58)))) {
                 valid = false;
                 break;
             }
@@ -65,17 +75,26 @@ QString ValidatorAlphaNum::genericValidationError(Context *c, const QVariant &er
     const QString _label = label(c);
     if (_label.isEmpty()) {
         if (d->asciiOnly) {
-            error = c->translate("Cutelyst::ValidatorAlphaNum", "Must only contain alpha-numeric latin characters.");
+            error = c->translate("Cutelyst::ValidatorAlphaNum",
+                                 "Must only contain alpha-numeric latin characters.");
         } else {
-            error = c->translate("Cutelyst::ValidatorAlphaNum", "Must only contain alpha-numeric characters.");
+            error = c->translate("Cutelyst::ValidatorAlphaNum",
+                                 "Must only contain alpha-numeric characters.");
         }
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric latin characters.").arg(_label);
+            error =
+                c->translate(
+                     "Cutelyst::ValidatorAlphaNum",
+                     "The text in the “%1” field must only contain alpha-numeric latin characters.")
+                    .arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlphaNum", "The text in the “%1” field must only contain alpha-numeric characters.").arg(_label);
+            error = c->translate(
+                         "Cutelyst::ValidatorAlphaNum",
+                         "The text in the “%1” field must only contain alpha-numeric characters.")
+                        .arg(_label);
         }
     }
     return error;

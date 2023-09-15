@@ -13,7 +13,11 @@ namespace Cutelyst {
 class ValidatorUrlPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorUrlPrivate(const QString &f, ValidatorUrl::Constraints c, const QStringList &s, const Cutelyst::ValidatorMessages &m, const QString &dvk)
+    ValidatorUrlPrivate(const QString &f,
+                        ValidatorUrl::Constraints c,
+                        const QStringList &s,
+                        const Cutelyst::ValidatorMessages &m,
+                        const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , constraints(c)
         , schemes(s)

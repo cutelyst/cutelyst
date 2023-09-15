@@ -9,7 +9,11 @@
 
 using namespace Cutelyst;
 
-ValidatorUrl::ValidatorUrl(const QString &field, Constraints constraints, const QStringList &schemes, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorUrl::ValidatorUrl(const QString &field,
+                           Constraints constraints,
+                           const QStringList &schemes,
+                           const Cutelyst::ValidatorMessages &messages,
+                           const QString &defValKey)
     : ValidatorRule(*new ValidatorUrlPrivate(field, constraints, schemes, messages, defValKey))
 {
 }
@@ -40,22 +44,31 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
             valid = false;
         }
 
-        if (valid && (d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) && url.isRelative()) {
+        if (valid &&
+            (d->constraints.testFlag(NoRelative) || d->constraints.testFlag(WebsiteOnly)) &&
+            url.isRelative()) {
             valid = false;
         }
 
-        if (valid && (d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) && url.isLocalFile()) {
+        if (valid &&
+            (d->constraints.testFlag(NoLocalFile) || d->constraints.testFlag(WebsiteOnly)) &&
+            url.isLocalFile()) {
             valid = false;
         }
 
         if (valid) {
-            const QStringList schemeList = d->constraints.testFlag(WebsiteOnly) ? QStringList({QStringLiteral("http"), QStringLiteral("https")}) : d->schemes;
+            const QStringList schemeList =
+                d->constraints.testFlag(WebsiteOnly)
+                    ? QStringList({QStringLiteral("http"), QStringLiteral("https")})
+                    : d->schemes;
 
             //            if (d->constraints.testFlag(WebsiteOnly)) {
-            //                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive)) {
+            //                if (!schemeList.contains(QStringLiteral("http"), Qt::CaseInsensitive))
+            //                {
             //                    schemeList.append(QStringLiteral("http"));
             //                }
-            //                if (!schemeList.contains(QStringLiteral("https"), Qt::CaseInsensitive)) {
+            //                if (!schemeList.contains(QStringLiteral("https"),
+            //                Qt::CaseInsensitive)) {
             //                    schemeList.append(QStringLiteral("https"));
             //                }
             //            }
@@ -80,7 +93,11 @@ ValidatorReturnType ValidatorUrl::validate(Context *c, const ParamsMultiMap &par
 
         if (!valid) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR, "ValidatorUrl: Validation failed for field %s at %s::%s: not a valid URL", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorUrl: Validation failed for field %s at %s::%s: not a valid URL",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
         } else {
             result.value.setValue(url);
         }
@@ -100,7 +117,9 @@ QString ValidatorUrl::genericValidationError(Context *c, const QVariant &errorDa
         error = c->translate("Cutelyst::ValidatorUrl", "Not a valid URL.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorUrl", "The value in the “%1” field is not a valid URL.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorUrl",
+                             "The value in the “%1” field is not a valid URL.")
+                    .arg(_label);
     }
     return error;
 }

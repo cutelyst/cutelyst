@@ -7,7 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorRequired::ValidatorRequired(const QString &field, const Cutelyst::ValidatorMessages &messages)
+ValidatorRequired::ValidatorRequired(const QString &field,
+                                     const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorRequiredPrivate(field, messages))
 {
 }
@@ -16,7 +17,8 @@ ValidatorRequired::~ValidatorRequired()
 {
 }
 
-ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &params) const
+ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c,
+                                                const Cutelyst::ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
@@ -30,7 +32,8 @@ ValidatorReturnType ValidatorRequired::validate(Cutelyst::Context *c, const Cute
     return result;
 }
 
-QString ValidatorRequired::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
+QString ValidatorRequired::genericValidationError(Cutelyst::Context *c,
+                                                  const QVariant &errorData) const
 {
     QString error;
     Q_UNUSED(errorData)
@@ -39,7 +42,8 @@ QString ValidatorRequired::genericValidationError(Cutelyst::Context *c, const QV
         error = c->translate("Cutelyst::ValidatorRequired", "This is required.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRequired", "The “%1” field is required.").arg(_label);
+        error =
+            c->translate("Cutelyst::ValidatorRequired", "The “%1” field is required.").arg(_label);
     }
     return error;
 }

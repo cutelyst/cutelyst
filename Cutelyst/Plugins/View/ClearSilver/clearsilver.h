@@ -34,7 +34,8 @@ public:
      */
     void setIncludePaths(const QStringList &paths);
 
-    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
+    Q_PROPERTY(
+        QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
     /*!
      * Returns the template extension
      */

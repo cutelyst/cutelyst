@@ -31,7 +31,8 @@ public:
 
     virtual bool unregisterTimer(int timerId) override;
     virtual bool unregisterTimers(QObject *object) override;
-    virtual QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject *object) const override;
+    virtual QList<QAbstractEventDispatcher::TimerInfo>
+        registeredTimers(QObject *object) const override;
     virtual int remainingTime(int timerId) override;
 
     virtual void wakeUp() override;
@@ -39,14 +40,14 @@ public:
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     virtual bool hasPendingEvents() override;
-    virtual void registerTimer(
-        int timerId,
-        int interval,
-        Qt::TimerType timerType,
-        QObject *object) override;
+    virtual void
+        registerTimer(int timerId, int interval, Qt::TimerType timerType, QObject *object) override;
     virtual void flush() override;
 #else
-    virtual void registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object) override;
+    virtual void registerTimer(int timerId,
+                               qint64 interval,
+                               Qt::TimerType timerType,
+                               QObject *object) override;
 #endif
 
 private:

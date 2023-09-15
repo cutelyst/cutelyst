@@ -32,7 +32,9 @@ public:
      */
     inline Headers(std::initializer_list<std::pair<QString, QString>> list)
     {
-        for (std::initializer_list<std::pair<QString, QString>>::const_iterator it = list.begin(); it != list.end(); ++it)
+        for (std::initializer_list<std::pair<QString, QString>>::const_iterator it = list.begin();
+             it != list.end();
+             ++it)
             pushHeader(it->first, it->second);
     }
 #endif
@@ -64,7 +66,8 @@ public:
 
     /**
      * The Content-Encoding header field is used as a modifier to the media type.
-     * When present, its value indicates what additional encoding mechanism has been applied to the resource.
+     * When present, its value indicates what additional encoding mechanism has been applied to the
+     * resource.
      */
     QString contentEncoding() const;
 
@@ -230,18 +233,21 @@ public:
     QString connection() const;
 
     /**
-     * Returns the 'Host' header field used in request messages, containing information about which host the client
-     * would like to talk to, this is especially useful for building URIs and for VirtualHosts.
+     * Returns the 'Host' header field used in request messages, containing information about which
+     * host the client would like to talk to, this is especially useful for building URIs and for
+     * VirtualHosts.
      */
     QString host() const;
 
     /**
-     * Returns the header field used in request messages, containing information about the user agent originating the request.
+     * Returns the header field used in request messages, containing information about the user
+     * agent originating the request.
      */
     QString userAgent() const;
 
     /**
-     * Used to specify the address (URI) of the document from which the requested resource address was obtained.
+     * Used to specify the address (URI) of the document from which the requested resource address
+     * was obtained.
      */
     QString referer() const;
 
@@ -302,7 +308,8 @@ public:
     QString setAuthorizationBasic(const QString &username, const QString &password);
 
     /**
-     * A user agent that wishes to authenticate itself with a server or a proxy, may do so by including these headers.
+     * A user agent that wishes to authenticate itself with a server or a proxy, may do so by
+     * including these headers.
      */
     QString proxyAuthorization() const;
 
@@ -367,18 +374,12 @@ public:
     /**
      * Clears all headers.
      */
-    inline void clear()
-    {
-        m_data.clear();
-    }
+    inline void clear() { m_data.clear(); }
 
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline QMultiHash<QString, QString> data() const
-    {
-        return m_data;
-    }
+    inline QMultiHash<QString, QString> data() const { return m_data; }
 
     /**
      * Returns true if the header field is defined.
@@ -402,18 +403,12 @@ public:
     /**
      * Compares if another Header object has the same data as this.
      */
-    inline bool operator==(const Headers &other) const
-    {
-        return m_data == other.m_data;
-    }
+    inline bool operator==(const Headers &other) const { return m_data == other.m_data; }
 
     /**
      * Compares if another Header object does not have the same data as this.
      */
-    inline bool operator!=(const Headers &other) const
-    {
-        return m_data != other.m_data;
-    }
+    inline bool operator!=(const Headers &other) const { return m_data != other.m_data; }
 
 private:
     QMultiHash<QString, QString> m_data;

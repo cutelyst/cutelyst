@@ -1,11 +1,11 @@
 #ifndef HEADERSTEST_H
 #define HEADERSTEST_H
 
-#include <QtTest/QTest>
-#include <QtCore/QObject>
-
-#include "headers.h"
 #include "coverageobject.h"
+#include "headers.h"
+
+#include <QtCore/QObject>
+#include <QtTest/QTest>
 
 using namespace Cutelyst;
 
@@ -38,16 +38,19 @@ void TestHeaders::testCombining()
 
     headers.setContentType(QStringLiteral("TEXT/HTML; charset=utf-8"));
     QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML; charset=utf-8"));
+    QCOMPARE(headers.header(QStringLiteral("content-type")),
+             QStringLiteral("TEXT/HTML; charset=utf-8"));
 
     headers.setContentTypeCharset(QStringLiteral("utf-8"));
     QCOMPARE(headers.contentTypeCharset(), QStringLiteral("UTF-8"));
     // Make sure content-type still fine
     QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML; charset=utf-8"));
+    QCOMPARE(headers.header(QStringLiteral("content-type")),
+             QStringLiteral("TEXT/HTML; charset=utf-8"));
 
     headers.setContentTypeCharset(QStringLiteral("utf-16"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML; charset=utf-16"));
+    QCOMPARE(headers.header(QStringLiteral("content-type")),
+             QStringLiteral("TEXT/HTML; charset=utf-16"));
 
     // This removes the charset part...
     headers.setContentType(QStringLiteral("text/plain"));
@@ -91,7 +94,7 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.contentEncoding(), QStringLiteral("utf-8"));
 
     QDateTime dt = QDateTime::currentDateTime();
-    QTime time = dt.time();
+    QTime time   = dt.time();
     // make sure ms is 0 as we loose this precision
     time.setHMS(time.hour(), time.minute(), time.second());
     dt.setTime(time);

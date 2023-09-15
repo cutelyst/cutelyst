@@ -21,7 +21,9 @@ class UriFor final : public Cutelee::Node
 {
     Q_OBJECT
 public:
-    explicit UriFor(const QString &path, const QStringList &args, Cutelee::Parser *parser = nullptr);
+    explicit UriFor(const QString &path,
+                    const QStringList &args,
+                    Cutelee::Parser *parser = nullptr);
 
     void render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const override;
 

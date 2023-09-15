@@ -52,7 +52,8 @@ protected:
     virtual bool dispatcherReady(const Dispatcher *dispatcher, Controller *controller) override;
 };
 
-class RoleACLFactory final : public QObject
+class RoleACLFactory final
+    : public QObject
     , public ComponentFactory
 {
     Q_OBJECT

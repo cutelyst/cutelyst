@@ -15,7 +15,8 @@
 
 namespace {
 
-static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, struct timeval &when)
+static void
+    calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &now, struct timeval &when)
 {
     Q_ASSERT(info->interval > 20);
     // The coarse timer works like this:
@@ -65,8 +66,9 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
         if (!done) {
             int boundary;
 
-            // if the interval is a multiple of 500 ms and > 5000 ms, always round towards a round-to-the-second
-            // if the interval is a multiple of 500 ms, round towards the nearest multiple of 500 ms
+            // if the interval is a multiple of 500 ms and > 5000 ms, always round towards a
+            // round-to-the-second if the interval is a multiple of 500 ms, round towards the
+            // nearest multiple of 500 ms
             if ((interval % 500) == 0) {
                 if (interval >= 5000) {
                     msec = msec >= 500 ? max : min;
@@ -119,7 +121,9 @@ static void calculateCoarseTimerTimeout(TimerInfo *info, const struct timeval &n
 
 } // namespace
 
-void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta)
+void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info,
+                                                       const struct timeval &now,
+                                                       struct timeval &delta)
 {
     struct timeval tv_interval;
     struct timeval when;
@@ -131,7 +135,8 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
         qlonglong tnow  = (qlonglong(now.tv_sec) * 1000) + (now.tv_usec / 1000);
         qlonglong twhen = (qlonglong(info->when.tv_sec) * 1000) + (info->when.tv_usec / 1000);
 
-        if (Q_UNLIKELY((info->interval < 1000 && twhen - tnow > 1500) || (info->interval >= 1000 && twhen - tnow > 1.2 * info->interval))) {
+        if (Q_UNLIKELY((info->interval < 1000 && twhen - tnow > 1500) ||
+                       (info->interval >= 1000 && twhen - tnow > 1.2 * info->interval))) {
             info->when = now;
         }
     }
@@ -171,7 +176,10 @@ void EventDispatcherEPollPrivate::calculateNextTimeout(TimerInfo *info, const st
     timersub(&when, &now, &delta);
 }
 
-void EventDispatcherEPollPrivate::registerTimer(int timerId, int interval, Qt::TimerType type, QObject *object)
+void EventDispatcherEPollPrivate::registerTimer(int timerId,
+                                                int interval,
+                                                Qt::TimerType type,
+                                                QObject *object)
 {
     Q_ASSERT(interval > 0);
 
@@ -322,7 +330,8 @@ bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
     return result;
 }
 
-QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPollPrivate::registeredTimers(QObject *object) const
+QList<QAbstractEventDispatcher::TimerInfo>
+    EventDispatcherEPollPrivate::registeredTimers(QObject *object) const
 {
     QList<QAbstractEventDispatcher::TimerInfo> res;
     res.reserve(m_timers.size() + m_zero_timers.size());

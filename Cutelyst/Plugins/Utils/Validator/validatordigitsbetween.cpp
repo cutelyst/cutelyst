@@ -7,7 +7,11 @@
 
 using namespace Cutelyst;
 
-ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field, const QVariant &min, const QVariant &max, const ValidatorMessages &messages, const QString &defValKey)
+ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field,
+                                               const QVariant &min,
+                                               const QVariant &max,
+                                               const ValidatorMessages &messages,
+                                               const QString &defValKey)
     : ValidatorRule(*new ValidatorDigitsBetweenPrivate(field, min, max, messages, defValKey))
 {
 }
@@ -29,20 +33,37 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     int _min = d->extractInt(c, params, d->min, &ok);
     if (!ok) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR, "ValidatorDigitsBetween: Invalid minimum validation length for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCWarning(
+            C_VALIDATOR,
+            "ValidatorDigitsBetween: Invalid minimum validation length for field %s at %s::%s.",
+            qPrintable(field()),
+            qPrintable(c->controllerName()),
+            qPrintable(c->actionName()));
         return result;
     } else {
         _max = d->extractInt(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
-            qCWarning(C_VALIDATOR, "ValidatorDigitsBetween: Invalid maximum validation length for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCWarning(
+                C_VALIDATOR,
+                "ValidatorDigitsBetween: Invalid maximum validation length for field %s at %s::%s.",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
             return result;
         }
     }
 
     if (_min > _max) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR, "ValidatorDigitsBetween: Minimum length %i is larger than maximum length %i for field %s at %s::%s", _min, _max, qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR,
+                  "ValidatorDigitsBetween: Minimum length %i is larger than maximum length %i for "
+                  "field %s at %s::%s",
+                  _min,
+                  _max,
+                  qPrintable(field()),
+                  qPrintable(c->controllerName()),
+                  qPrintable(c->actionName()));
         return result;
     }
 
@@ -52,7 +73,15 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c, QVariantList{_min, _max});
-            qCDebug(C_VALIDATOR, "ValidatorDigitsBetween: Validation failed for value \"%s\" in field %s at %s::%s: length not between %i and %i and/or non-digit characters.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), _min, _max);
+            qCDebug(C_VALIDATOR,
+                    "ValidatorDigitsBetween: Validation failed for value \"%s\" in field %s at "
+                    "%s::%s: length not between %i and %i and/or non-digit characters.",
+                    qPrintable(v),
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()),
+                    _min,
+                    _max);
         }
 
     } else {
@@ -91,10 +120,14 @@ QString ValidatorDigitsBetween::genericValidationError(Context *c, const QVarian
     const QString _label    = label(c);
 
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorDigitsBetween", "Must contain between %1 and %2 digits.").arg(min, max);
+        error = c->translate("Cutelyst::ValidatorDigitsBetween",
+                             "Must contain between %1 and %2 digits.")
+                    .arg(min, max);
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorDigitsBetween", "The “%1” field must contain between %2 and %3 digits.").arg(_label, min, max);
+        error = c->translate("Cutelyst::ValidatorDigitsBetween",
+                             "The “%1” field must contain between %2 and %3 digits.")
+                    .arg(_label, min, max);
     }
 
     return error;

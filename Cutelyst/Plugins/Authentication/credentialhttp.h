@@ -21,13 +21,13 @@ public:
     enum PasswordType {
         None,
         Clear,
-        Hashed
+        Hashed,
     };
     Q_ENUM(PasswordType)
 
     enum AuthType {
         Any,
-        Basic
+        Basic,
     };
     Q_ENUM(AuthType)
 
@@ -109,7 +109,8 @@ public:
      */
     void setRequireSsl(bool require);
 
-    AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
+    AuthenticationUser
+        authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
 protected:
     CredentialHttpPrivate *d_ptr;

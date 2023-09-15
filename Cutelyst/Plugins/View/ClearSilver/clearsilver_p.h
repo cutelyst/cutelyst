@@ -21,7 +21,10 @@ public:
     void serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix = QString()) const;
     void serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix = QString()) const;
     void serializeVariant(HDF *hdf, const QVariant &value, const QString &key) const;
-    bool render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output) const;
+    bool render(Context *c,
+                const QString &filename,
+                const QVariantHash &stash,
+                QByteArray &output) const;
     void renderError(Context *c, const QString &error) const;
 
     QStringList includePaths;

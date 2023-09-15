@@ -14,7 +14,10 @@ namespace Cutelyst {
 class ValidatorRequiredUnlessStashPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredUnlessStashPrivate(const QString &f, const QString &sk, const QVariantList &sv, const ValidatorMessages &m)
+    ValidatorRequiredUnlessStashPrivate(const QString &f,
+                                        const QString &sk,
+                                        const QVariantList &sv,
+                                        const ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString())
         , stashKey(sk)
         , stashValues(sv)

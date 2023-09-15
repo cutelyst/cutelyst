@@ -52,7 +52,8 @@ CuteleeView::CuteleeView(QObject *parent, const QString &name)
 
         // If CUTELYST_VAR is set the template might have become
         // {{ Cutelyst.req.base }} instead of {{ c.req.base }}
-        d->cutelystVar = app->config(QStringLiteral("CUTELYST_VAR"), QStringLiteral("c")).toString();
+        d->cutelystVar =
+            app->config(QStringLiteral("CUTELYST_VAR"), QStringLiteral("c")).toString();
 
         app->loadTranslations(QStringLiteral("plugin_view_cutelee"));
     } else {
@@ -139,7 +140,10 @@ void CuteleeView::preloadTemplates()
 
     const auto includePaths = d->includePaths;
     for (const QString &includePath : includePaths) {
-        QDirIterator it(includePath, {QLatin1Char('*') + d->extension}, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+        QDirIterator it(includePath,
+                        {QLatin1Char('*') + d->extension},
+                        QDir::Files | QDir::NoDotAndDotDot,
+                        QDirIterator::Subdirectories);
         while (it.hasNext()) {
             QString path = it.next();
             path.remove(includePath);
@@ -180,7 +184,8 @@ QByteArray CuteleeView::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
+            c->error(QStringLiteral(
+                "Cannot render template, template name or template stash key not defined"));
             return ret;
         }
     }
@@ -268,47 +273,59 @@ void CuteleeView::addTranslationCatalogs(const QMultiHash<QString, QString> &cat
     d->translationCatalogs.unite(catalogs);
 }
 
-QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix, const QString &suffix)
+QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename,
+                                                      const QString &directory,
+                                                      const QString &prefix,
+                                                      const QString &suffix)
 {
     QVector<QLocale> locales;
 
     if (Q_LIKELY(!filename.isEmpty() && !directory.isEmpty())) {
         const QDir i18nDir(directory);
         if (Q_LIKELY(i18nDir.exists())) {
-            const QString _prefix         = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const QString _suffix         = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
-            const QStringList namesFilter = QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
-            const QFileInfoList tsFiles   = i18nDir.entryInfoList(namesFilter, QDir::Files);
+            const QString _prefix = prefix.isEmpty() ? QStringLiteral(".") : prefix;
+            const QString _suffix = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const QStringList namesFilter =
+                QStringList({filename + _prefix + QLatin1Char('*') + _suffix});
+            const QFileInfoList tsFiles = i18nDir.entryInfoList(namesFilter, QDir::Files);
             if (Q_LIKELY(!tsFiles.empty())) {
                 locales.reserve(tsFiles.size());
                 for (const QFileInfo &ts : tsFiles) {
-                    const QString fn        = ts.fileName();
-                    const int prefIdx       = fn.indexOf(_prefix);
-                    const QString locString = fn.mid(prefIdx + _prefix.length(), fn.length() - prefIdx - _suffix.length() - _prefix.length());
+                    const QString fn  = ts.fileName();
+                    const int prefIdx = fn.indexOf(_prefix);
+                    const QString locString =
+                        fn.mid(prefIdx + _prefix.length(),
+                               fn.length() - prefIdx - _suffix.length() - _prefix.length());
                     QLocale loc(locString);
                     if (Q_LIKELY(loc.language() != QLocale::C)) {
                         auto trans = new QTranslator(this);
                         if (Q_LIKELY(trans->load(loc, filename, _prefix, directory))) {
                             addTranslator(loc, trans);
                             locales.append(loc);
-                            qCDebug(CUTELYST_CUTELEE) << "Loaded translations for locale" << loc << "from" << ts.absoluteFilePath();
+                            qCDebug(CUTELYST_CUTELEE) << "Loaded translations for locale" << loc
+                                                      << "from" << ts.absoluteFilePath();
                         } else {
                             delete trans;
-                            qCWarning(CUTELYST_CUTELEE) << "Can not load translations for locale" << loc;
+                            qCWarning(CUTELYST_CUTELEE)
+                                << "Can not load translations for locale" << loc;
                         }
                     } else {
-                        qCWarning(CUTELYST_CUTELEE) << "Can not load translations for invalid locale string" << locString;
+                        qCWarning(CUTELYST_CUTELEE)
+                            << "Can not load translations for invalid locale string" << locString;
                     }
                 }
                 locales.squeeze();
             } else {
-                qCWarning(CUTELYST_CUTELEE) << "Can not find translation files for" << filename << "in directory" << directory;
+                qCWarning(CUTELYST_CUTELEE) << "Can not find translation files for" << filename
+                                            << "in directory" << directory;
             }
         } else {
-            qCWarning(CUTELYST_CUTELEE) << "Can not load translations from not existing directory:" << directory;
+            qCWarning(CUTELYST_CUTELEE)
+                << "Can not load translations from not existing directory:" << directory;
         }
     } else {
-        qCWarning(CUTELYST_CUTELEE) << "Can not load translations for empty file name or empty path.";
+        qCWarning(CUTELYST_CUTELEE)
+            << "Can not load translations for empty file name or empty path.";
     }
 
     return locales;
@@ -317,7 +334,8 @@ QVector<QLocale> CuteleeView::loadTranslationsFromDir(const QString &filename, c
 void CuteleeViewPrivate::initEngine()
 {
     // Set also the paths from CUTELYST_PLUGINS_DIR env variable as plugin paths of cutelee engine
-    const QByteArrayList dirs = QByteArrayList{QByteArrayLiteral(CUTELYST_PLUGINS_DIR)} + qgetenv("CUTELYST_PLUGINS_DIR").split(';');
+    const QByteArrayList dirs = QByteArrayList{QByteArrayLiteral(CUTELYST_PLUGINS_DIR)} +
+                                qgetenv("CUTELYST_PLUGINS_DIR").split(';');
     for (const QByteArray &dir : dirs) {
         engine->addPluginPath(QString::fromLocal8Bit(dir));
     }

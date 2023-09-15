@@ -1,22 +1,36 @@
-%{Cpp:LicenseTemplate}\
+%
+{
+Cpp:
+    LicenseTemplate
+}
 #include "%{AppHdrFileName}"
-
 #include "root.h"
 
 using namespace Cutelyst;
 
-%{ProjectName}::%{ProjectName}(QObject *parent) : Application(parent)
+%
+{
+    ProjectName
+}
+:: %
+    {ProjectName}(QObject *parent)
+    : Application(parent){}
+
+    %
+{
+    ProjectName
+}
+::~ % {ProjectName}()
 {
 }
 
-%{ProjectName}::~%{ProjectName}()
+bool %
 {
+    ProjectName
 }
-
-bool %{ProjectName}::init()
+::init()
 {
     new Root(this);
 
     return true;
 }
-

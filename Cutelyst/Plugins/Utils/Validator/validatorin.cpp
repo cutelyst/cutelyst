@@ -7,7 +7,11 @@
 
 using namespace Cutelyst;
 
-ValidatorIn::ValidatorIn(const QString &field, const QVariant &values, Qt::CaseSensitivity cs, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorIn::ValidatorIn(const QString &field,
+                         const QVariant &values,
+                         Qt::CaseSensitivity cs,
+                         const Cutelyst::ValidatorMessages &messages,
+                         const QString &defValKey)
     : ValidatorRule(*new ValidatorInPrivate(field, values, cs, messages, defValKey))
 {
 }
@@ -33,13 +37,24 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
         }
 
         if (vals.empty()) {
-            qCWarning(C_VALIDATOR, "ValidatorIn: The list of comparison values for the field %s at %s::%s is empty.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCWarning(
+                C_VALIDATOR,
+                "ValidatorIn: The list of comparison values for the field %s at %s::%s is empty.",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
             result.errorMessage = validationDataError(c);
         } else {
             if (vals.contains(v, d->cs)) {
                 result.value.setValue(v);
             } else {
-                qCDebug(C_VALIDATOR, "ValidatorIn: Validation failed for field %s at %s::%s: \"%s\" is not part of the list of comparison values.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+                qCDebug(C_VALIDATOR,
+                        "ValidatorIn: Validation failed for field %s at %s::%s: \"%s\" is not part "
+                        "of the list of comparison values.",
+                        qPrintable(field()),
+                        qPrintable(c->controllerName()),
+                        qPrintable(c->actionName()),
+                        qPrintable(v));
                 result.errorMessage = validationError(c, vals);
             }
         }
@@ -57,10 +72,15 @@ QString ValidatorIn::genericValidationError(Context *c, const QVariant &errorDat
     const QString _label   = label(c);
     if (_label.isEmpty()) {
         //: %1 will be replaced by a comma separated list of allowed values
-        error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following values: %1").arg(c->locale().createSeparatedList(vals));
+        error = c->translate("Cutelyst::ValidatorIn", "Has to be one of the following values: %1")
+                    .arg(c->locale().createSeparatedList(vals));
     } else {
-        //: %1 will be replaced by the field label, %2 will be replaced by a comma separated list of allowed values
-        error = c->translate("Cutelyst::ValidatorIn", "The value in the “%1” field has to be one of the following values: %2").arg(_label, c->locale().createSeparatedList(vals));
+        //: %1 will be replaced by the field label, %2 will be replaced by a comma separated list of
+        //: allowed values
+        error =
+            c->translate("Cutelyst::ValidatorIn",
+                         "The value in the “%1” field has to be one of the following values: %2")
+                .arg(_label, c->locale().createSeparatedList(vals));
     }
     return error;
 }
@@ -74,7 +94,9 @@ QString ValidatorIn::genericValidationDataError(Context *c, const QVariant &erro
         error = c->translate("Cutelyst::ValidatorIn", "The list of comparison values is empty.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorIn", "The list of comparison values for the “%1” field is empty.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorIn",
+                             "The list of comparison values for the “%1” field is empty.")
+                    .arg(_label);
     }
     return error;
 }

@@ -4,9 +4,9 @@
 #include <Cutelyst/Controller>
 #include <Cutelyst/Plugins/CSRFProtection/CSRFProtection>
 
+#include <QNetworkCookie>
 #include <QObject>
 #include <QTest>
-#include <QNetworkCookie>
 
 using namespace Cutelyst;
 
@@ -14,7 +14,10 @@ class TestCsrfProtection : public CoverageObject
 {
     Q_OBJECT
 public:
-    explicit TestCsrfProtection(QObject *parent = nullptr) : CoverageObject(parent) {}
+    explicit TestCsrfProtection(QObject *parent = nullptr)
+        : CoverageObject(parent)
+    {
+    }
 
     void initTest();
     void cleanupTest();
@@ -36,7 +39,7 @@ private:
     TestEngine *m_engine;
     QNetworkCookie m_cookie;
     const QString m_cookieName = QStringLiteral("xsrftoken");
-    const QString m_fieldName = QStringLiteral("xsrfprotect");
+    const QString m_fieldName  = QStringLiteral("xsrfprotect");
     const QString m_headerName = QStringLiteral("X-MY-CSRF");
     QString m_fieldValue;
 
@@ -49,7 +52,10 @@ class CsrfprotectionTest : public Controller
 {
     Q_OBJECT
 public:
-    explicit CsrfprotectionTest(QObject *parent) : Controller(parent) {}
+    explicit CsrfprotectionTest(QObject *parent)
+        : Controller(parent)
+    {
+    }
 
     C_ATTR(testCsrf, :Local :AutoArgs)
     void testCsrf(Context *c)
@@ -96,7 +102,10 @@ class CsrfprotectionNsTest : public Controller
     Q_OBJECT
     C_NAMESPACE("testns")
 public:
-    explicit CsrfprotectionNsTest(QObject *parent) : Controller(parent) {}
+    explicit CsrfprotectionNsTest(QObject *parent)
+        : Controller(parent)
+    {
+    }
 
     C_ATTR(testCsrf, :Local :AutoArgs)
     void testCsrf(Context *c)
@@ -118,8 +127,17 @@ void TestCsrfProtection::initTestCase()
     m_engine = getEngine();
     QVERIFY(m_engine);
     if (m_cookie.value().isEmpty()) {
-        const QVariantMap result = m_engine->createRequest(QStringLiteral("GET"), QStringLiteral("csrfprotection/test/testCsrf"), QByteArray(), Headers(), nullptr);
-        const QList<QNetworkCookie> cookies = QNetworkCookie::parseCookies(result.value(QStringLiteral("headers")).value<Headers>().header(QStringLiteral("Set-Cookie")).toLatin1());
+        const QVariantMap result =
+            m_engine->createRequest(QStringLiteral("GET"),
+                                    QStringLiteral("csrfprotection/test/testCsrf"),
+                                    QByteArray(),
+                                    Headers(),
+                                    nullptr);
+        const QList<QNetworkCookie> cookies =
+            QNetworkCookie::parseCookies(result.value(QStringLiteral("headers"))
+                                             .value<Headers>()
+                                             .header(QStringLiteral("Set-Cookie"))
+                                             .toLatin1());
         QVERIFY(!cookies.empty());
         for (const QNetworkCookie &cookie : cookies) {
             if (cookie.name() == m_cookieName.toLatin1()) {
@@ -132,12 +150,12 @@ void TestCsrfProtection::initTestCase()
     }
 }
 
-TestEngine* TestCsrfProtection::getEngine()
+TestEngine *TestCsrfProtection::getEngine()
 {
     qputenv("RECURSION", QByteArrayLiteral("100"));
-    auto app = new TestApplication;
+    auto app    = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
-    auto csrf = new CSRFProtection(app);
+    auto csrf   = new CSRFProtection(app);
     csrf->setCookieName(m_cookieName);
     csrf->setGenericErrorMessage(QStringLiteral("denied"));
     csrf->setFormFieldName(m_fieldName);
@@ -160,8 +178,16 @@ void TestCsrfProtection::cleanupTestCase()
 void TestCsrfProtection::initTest()
 {
     Headers headers;
-    headers.setHeader(QStringLiteral("Cookie"), QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly)));
-    m_fieldValue = m_engine->createRequest(QStringLiteral("GET"), QStringLiteral("csrfprotection/test/testCsrf"), QByteArray(), headers, nullptr).value(QStringLiteral("body")).toString();
+    headers.setHeader(QStringLiteral("Cookie"),
+                      QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly)));
+    m_fieldValue = m_engine
+                       ->createRequest(QStringLiteral("GET"),
+                                       QStringLiteral("csrfprotection/test/testCsrf"),
+                                       QByteArray(),
+                                       headers,
+                                       nullptr)
+                       .value(QStringLiteral("body"))
+                       .toString();
 }
 
 void TestCsrfProtection::cleanupTest()
@@ -177,7 +203,8 @@ void TestCsrfProtection::doTest()
     QFETCH(int, status);
     QFETCH(QByteArray, output);
 
-    const QVariantMap result = m_engine->createRequest(method, QStringLiteral("csrfprotection/test/testCsrf"), QByteArray(), headers, &body);
+    const QVariantMap result = m_engine->createRequest(
+        method, QStringLiteral("csrfprotection/test/testCsrf"), QByteArray(), headers, &body);
 
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), status);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
@@ -191,11 +218,15 @@ void TestCsrfProtection::doTest_data()
     QTest::addColumn<int>("status");
     QTest::addColumn<QByteArray>("output");
 
-    for (const QString &method : {QStringLiteral("POST"), QStringLiteral("PUT"), QStringLiteral("PATCH"), QStringLiteral("DELETE")}) {
-        const QString cookieValid = QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
+    for (const QString &method : {QStringLiteral("POST"),
+                                  QStringLiteral("PUT"),
+                                  QStringLiteral("PATCH"),
+                                  QStringLiteral("DELETE")}) {
+        const QString cookieValid =
+            QString::fromLatin1(m_cookie.toRawForm(QNetworkCookie::NameAndValueOnly));
         QString cookieInvalid = cookieValid;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        auto& cookieLast = cookieInvalid[cookieInvalid.size() - 1];
+        auto &cookieLast = cookieInvalid[cookieInvalid.size() - 1];
 #else
         QCharRef cookieLast = cookieInvalid[cookieInvalid.size() - 1];
 #endif
@@ -215,9 +246,9 @@ void TestCsrfProtection::doTest_data()
 
         QString fieldValueInvalid = m_fieldValue;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-        auto& fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+        auto &fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
 #else
-        QCharRef fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
+        QCharRef fieldLast  = fieldValueInvalid[fieldValueInvalid.size() - 2];
 #endif
         if (fieldLast.isDigit()) {
             if (fieldLast.unicode() < 57) {
@@ -233,87 +264,135 @@ void TestCsrfProtection::doTest_data()
             }
         }
 
-        const QString fieldValid = m_fieldName + QLatin1Char('=') + m_fieldValue;
+        const QString fieldValid   = m_fieldName + QLatin1Char('=') + m_fieldValue;
         const QString fieldInvalid = m_fieldName + QLatin1Char('=') + fieldValueInvalid;
 
         Headers headers;
         headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
         QByteArray body;
 
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(absent), header(absent), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(absent), header(absent), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(QStringLiteral("Cookie"), cookieValid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(absent), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(absent), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(QStringLiteral("Cookie"), cookieInvalid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(invalid), header(absent), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(invalid), header(absent), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.removeHeader(QStringLiteral("Cookie"));
         headers.setHeader(m_headerName, m_fieldValue);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(absent), header(valid), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(absent), header(valid), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(QStringLiteral("Cookie"), cookieValid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(valid), field(absent)").arg(method))) << method << headers << body << 200 << QByteArrayLiteral("allowed");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(valid), field(absent)").arg(method)))
+            << method << headers << body << 200 << QByteArrayLiteral("allowed");
 
         headers.setHeader(QStringLiteral("Cookie"), cookieInvalid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(invalid), header(valid), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(invalid), header(valid), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(m_headerName, fieldValueInvalid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(invalid), header(invalid), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(invalid), header(invalid), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(QStringLiteral("Cookie"), cookieValid);
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(invalid), field(absent)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(invalid), field(absent)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
-        body = method != u"DELETE" ? fieldValid.toLatin1() : QByteArray();
+        body       = method != u"DELETE" ? fieldValid.toLatin1() : QByteArray();
         int status = (method != u"DELETE") ? 200 : 403;
-        QByteArray result = (method != u"DELETE") ? QByteArrayLiteral("allowed") : QByteArrayLiteral("denied");
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(invalid), field(valid)").arg(method))) << method << headers << body << status << result;
+        QByteArray result =
+            (method != u"DELETE") ? QByteArrayLiteral("allowed") : QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(invalid), field(valid)").arg(method)))
+            << method << headers << body << status << result;
 
         body = fieldInvalid.toLatin1();
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(invalid), field(invalid)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(invalid), field(invalid)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
 
         headers.setHeader(m_headerName, m_fieldValue);
         status = method == u"DELETE" ? 200 : 403;
         result = method == u"DELETE" ? QByteArrayLiteral("allowed") : QByteArrayLiteral("denied");
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(valid), header(valid), field(invalid)").arg(method))) << method << headers << body << status << result;
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(valid), header(valid), field(invalid)").arg(method)))
+            << method << headers << body << status << result;
 
         headers.setHeader(QStringLiteral("Cookie"), cookieInvalid);
         body = fieldValid.toLatin1();
-        QTest::newRow(qUtf8Printable(QStringLiteral("%1: cookie(invalid), header(valid), field(valid)").arg(method))) << method << headers << body << 403 << QByteArrayLiteral("denied");
+        QTest::newRow(qUtf8Printable(
+            QStringLiteral("%1: cookie(invalid), header(valid), field(valid)").arg(method)))
+            << method << headers << body << 403 << QByteArrayLiteral("denied");
     }
 }
 
 void TestCsrfProtection::detachToOnArgument()
 {
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"), QStringLiteral("csrfprotection/test/testCsrfDetachTo"), QByteArray(), Headers(), nullptr);
+    const QVariantMap result =
+        m_engine->createRequest(QStringLiteral("POST"),
+                                QStringLiteral("csrfprotection/test/testCsrfDetachTo"),
+                                QByteArray(),
+                                Headers(),
+                                nullptr);
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), 403);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), QByteArrayLiteral("detachdenied"));
 }
 
 void TestCsrfProtection::csrfIgnorArgument()
 {
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"), QStringLiteral("csrfprotection/test/testCsrfIgnore"), QByteArray(), Headers(), nullptr);
+    const QVariantMap result =
+        m_engine->createRequest(QStringLiteral("POST"),
+                                QStringLiteral("csrfprotection/test/testCsrfIgnore"),
+                                QByteArray(),
+                                Headers(),
+                                nullptr);
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), 200);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), QByteArrayLiteral("allowed"));
 }
 
 void TestCsrfProtection::ignoreNamespace()
 {
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"), QStringLiteral("testns/testCsrf"), QByteArray(), Headers(), nullptr);
+    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"),
+                                                       QStringLiteral("testns/testCsrf"),
+                                                       QByteArray(),
+                                                       Headers(),
+                                                       nullptr);
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), 200);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), QByteArrayLiteral("allowed"));
 }
 
 void TestCsrfProtection::ignoreNamespaceRequired()
 {
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"), QStringLiteral("testns/testCsrfRequired"), QByteArray(), Headers(), nullptr);
+    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"),
+                                                       QStringLiteral("testns/testCsrfRequired"),
+                                                       QByteArray(),
+                                                       Headers(),
+                                                       nullptr);
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), 403);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), QByteArrayLiteral("denied"));
 }
 
 void TestCsrfProtection::csrfRedirect()
 {
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"), QStringLiteral("csrfprotection/test/testCsrfRedirect"), QByteArray(), Headers(), nullptr);
+    const QVariantMap result =
+        m_engine->createRequest(QStringLiteral("POST"),
+                                QStringLiteral("csrfprotection/test/testCsrfRedirect"),
+                                QByteArray(),
+                                Headers(),
+                                nullptr);
     QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), 403);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), QByteArrayLiteral("denied"));
 }

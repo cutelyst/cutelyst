@@ -7,7 +7,8 @@
 
 using namespace Cutelyst;
 
-ValidatorPresent::ValidatorPresent(const QString &field, const Cutelyst::ValidatorMessages &messages)
+ValidatorPresent::ValidatorPresent(const QString &field,
+                                   const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorPresentPrivate(field, messages))
 {
 }
@@ -22,7 +23,12 @@ ValidatorReturnType ValidatorPresent::validate(Context *c, const ParamsMultiMap 
 
     if (!params.contains(field())) {
         result.errorMessage = validationError(c);
-        qCDebug(C_VALIDATOR, "ValidatorPresent: Validation failed for field %s at %s::%s: field was not found in the input data", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR,
+                "ValidatorPresent: Validation failed for field %s at %s::%s: field was not found "
+                "in the input data",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
     } else {
         result.value.setValue<QString>(value(params));
     }
@@ -39,7 +45,9 @@ QString ValidatorPresent::genericValidationError(Context *c, const QVariant &err
         error = c->translate("Cutelyst::ValidatorPresent", "Has to be present in input data.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorPresent", "The “%1” field was not found in the input data.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorPresent",
+                             "The “%1” field was not found in the input data.")
+                    .arg(_label);
     }
     return error;
 }

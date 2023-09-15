@@ -1,11 +1,11 @@
 #ifndef PAGINATIONTEST_H
 #define PAGINATIONTEST_H
 
-#include <QtTest/QTest>
-#include <QtCore/QObject>
-
 #include "Cutelyst/Plugins/Utils/Pagination/Pagination"
 #include "coverageobject.h"
+
+#include <QtCore/QObject>
+#include <QtTest/QTest>
 
 using namespace Cutelyst;
 
@@ -23,9 +23,9 @@ private Q_SLOTS:
 void TestPagination::testPagination()
 {
     int numberOfItems = 100;
-    int itemsPerPage = 5;
-    int currentPage = 3;
-    int pageLinks = 3;
+    int itemsPerPage  = 5;
+    int currentPage   = 3;
+    int pageLinks     = 3;
     Pagination pagination(numberOfItems, itemsPerPage, currentPage, pageLinks);
 
     QCOMPARE(pagination.limit(), 5);
@@ -43,9 +43,9 @@ void TestPagination::testPagination()
 void TestPagination::testPagination3()
 {
     int numberOfItems = 100;
-    int itemsPerPage = 5;
-    int currentPage = 1;
-    int pageLinks = 3;
+    int itemsPerPage  = 5;
+    int currentPage   = 1;
+    int pageLinks     = 3;
     Pagination pagination(numberOfItems, itemsPerPage, currentPage, pageLinks);
 
     QCOMPARE(pagination.limit(), 5);
@@ -60,13 +60,12 @@ void TestPagination::testPagination3()
     QCOMPARE(pagination.pages(), pages);
 }
 
-
 void TestPagination::testPagination2()
 {
     int numberOfItems = 100;
-    int itemsPerPage = 5;
-    int currentPage = 0;
-    int pageLinks = 3;
+    int itemsPerPage  = 5;
+    int currentPage   = 0;
+    int pageLinks     = 3;
     Pagination pagination(numberOfItems, itemsPerPage, currentPage, pageLinks);
 
     QCOMPARE(pagination.limit(), 5);
@@ -84,9 +83,9 @@ void TestPagination::testPagination2()
 void TestPagination::testPaginationZeroPageLinks()
 {
     int numberOfItems = 100;
-    int itemsPerPage = 5;
-    int currentPage = 0;
-    int pageLinks = 0;
+    int itemsPerPage  = 5;
+    int currentPage   = 0;
+    int pageLinks     = 0;
     Pagination pagination(numberOfItems, itemsPerPage, currentPage, pageLinks);
 
     QCOMPARE(pagination.limit(), 5);
@@ -105,9 +104,9 @@ void TestPagination::testPaginationZeroPageLinks()
 void TestPagination::testPaginationDisabledLastPageLink()
 {
     int numberOfItems = 10;
-    int itemsPerPage = 2;
-    int currentPage = 10;
-    int pageLinks = 10;
+    int itemsPerPage  = 2;
+    int currentPage   = 10;
+    int pageLinks     = 10;
     Pagination pagination(numberOfItems, itemsPerPage, currentPage, pageLinks);
 
     QCOMPARE(pagination.limit(), 2);

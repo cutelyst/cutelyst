@@ -9,7 +9,10 @@
 
 using namespace Cutelyst;
 
-ValidatorAlpha::ValidatorAlpha(const QString &field, bool asciiOnly, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorAlpha::ValidatorAlpha(const QString &field,
+                               bool asciiOnly,
+                               const Cutelyst::ValidatorMessages &messages,
+                               const QString &defValKey)
     : ValidatorRule(*new ValidatorAlphaPrivate(field, asciiOnly, messages, defValKey))
 {
 }
@@ -18,7 +21,8 @@ ValidatorAlpha::~ValidatorAlpha()
 {
 }
 
-ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
+ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c,
+                                             const ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
@@ -29,7 +33,13 @@ ValidatorReturnType ValidatorAlpha::validate(Cutelyst::Context *c, const ParamsM
         if (Q_LIKELY(ValidatorAlpha::validate(v, d->asciiOnly))) {
             result.value.setValue(v);
         } else {
-            qCDebug(C_VALIDATOR, "ValidatorAlhpa: Validation failed for field %s at %s::%s: %s contains characters that are not allowed.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), qPrintable(v));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorAlhpa: Validation failed for field %s at %s::%s: %s contains "
+                    "characters that are not allowed.",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()),
+                    qPrintable(v));
             result.errorMessage = validationError(c);
         }
     } else {
@@ -66,17 +76,26 @@ QString ValidatorAlpha::genericValidationError(Context *c, const QVariant &error
     const QString _label = label(c);
     if (_label.isEmpty()) {
         if (d->asciiOnly) {
-            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical latin characters.");
+            error = c->translate("Cutelyst::ValidatorAlhpa",
+                                 "Must only contain alphabetical latin characters.");
         } else {
-            error = c->translate("Cutelyst::ValidatorAlhpa", "Must only contain alphabetical characters.");
+            error = c->translate("Cutelyst::ValidatorAlhpa",
+                                 "Must only contain alphabetical characters.");
         }
     } else {
         if (d->asciiOnly) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical latin characters.").arg(_label);
+            error =
+                c->translate(
+                     "Cutelyst::ValidatorAlhpa",
+                     "The text in the “%1” field must only contain alphabetical latin characters.")
+                    .arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorAlhpa", "The text in the “%1” field must only contain alphabetical characters.").arg(_label);
+            error = c->translate(
+                         "Cutelyst::ValidatorAlhpa",
+                         "The text in the “%1” field must only contain alphabetical characters.")
+                        .arg(_label);
         }
     }
     return error;

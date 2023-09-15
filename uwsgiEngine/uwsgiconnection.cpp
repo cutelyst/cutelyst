@@ -4,12 +4,11 @@
  */
 #include "uwsgiconnection.h"
 
-#include "engineuwsgi.h"
 #include "bodyuwsgi.h"
-
-#include <uwsgi.h>
+#include "engineuwsgi.h"
 
 #include <Cutelyst/Context>
+#include <uwsgi.h>
 
 #include <QFile>
 #include <QLoggingCategory>
@@ -18,7 +17,8 @@ Q_LOGGING_CATEGORY(CUTELYST_UWSGI_CONN, "cutelyst.uwsgi.connection", QtWarningMs
 
 using namespace Cutelyst;
 
-static inline quint16 notSlash(char *str, quint16 length) {
+static inline quint16 notSlash(char *str, quint16 length)
+{
     for (quint16 i = 0; i < length; ++i) {
         if (str[i] != '/') {
             return i;
@@ -27,7 +27,8 @@ static inline quint16 notSlash(char *str, quint16 length) {
     return length;
 }
 
-static inline quint16 questionMark(char *str, quint16 length) {
+static inline quint16 questionMark(char *str, quint16 length)
+{
     for (quint16 i = 0; i < length; ++i) {
         if (str[i] == '?') {
             return i;
@@ -37,7 +38,7 @@ static inline quint16 questionMark(char *str, quint16 length) {
 }
 
 uwsgiConnection::uwsgiConnection(wsgi_request *req)
-  : request(req)
+    : request(req)
 {
     quint16 len = questionMark(req->uri, req->uri_len);
     quint16 pos = notSlash(req->uri, len);
@@ -45,29 +46,31 @@ uwsgiConnection::uwsgiConnection(wsgi_request *req)
     setPath(rawPath.data(), rawPath.size());
 
     serverAddress = QString::fromLatin1(req->host, req->host_len);
-    query = QByteArray::fromRawData(req->query_string, req->query_string_len);
+    query         = QByteArray::fromRawData(req->query_string, req->query_string_len);
 
-    method = QString::fromLatin1(req->method, req->method_len);
+    method   = QString::fromLatin1(req->method, req->method_len);
     protocol = QString::fromLatin1(req->protocol, req->protocol_len);
     remoteAddress.setAddress(QString::fromLatin1(req->remote_addr, req->remote_addr_len));
-    remoteUser = QString::fromLatin1(req->remote_user, req->remote_user_len);
-    isSecure = req->https_len;
+    remoteUser     = QString::fromLatin1(req->remote_user, req->remote_user_len);
+    isSecure       = req->https_len;
     startOfRequest = req->start_of_request;
     elapsed.start();
 
     remotePort = 0;
     // we scan the table in reverse, as updated values are at the end
     for (int i = req->var_cnt - 1; i > 0; i -= 2) {
-        struct iovec &name = req->hvec[i - 1];
+        struct iovec &name  = req->hvec[i - 1];
         struct iovec &value = req->hvec[i];
-        if (!uwsgi_startswith(static_cast<char *>(name.iov_base),
-                              const_cast<char *>("HTTP_"), 5)) {
-            headers.pushRawHeader(QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
-                                  QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
-        } else if (!remotePort &&
-                   !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"), 11,
-                                  static_cast<char *>(name.iov_base), name.iov_len)) {
-            remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len).toUInt();
+        if (!uwsgi_startswith(static_cast<char *>(name.iov_base), const_cast<char *>("HTTP_"), 5)) {
+            headers.pushRawHeader(
+                QString::fromLatin1(static_cast<char *>(name.iov_base) + 5, name.iov_len - 5),
+                QString::fromLatin1(static_cast<char *>(value.iov_base), value.iov_len));
+        } else if (!remotePort && !uwsgi_strncmp(const_cast<char *>("REMOTE_PORT"),
+                                                 11,
+                                                 static_cast<char *>(name.iov_base),
+                                                 name.iov_len)) {
+            remotePort = QByteArray::fromRawData(static_cast<char *>(value.iov_base), value.iov_len)
+                             .toUInt();
         }
     }
 
@@ -87,7 +90,8 @@ uwsgiConnection::uwsgiConnection(wsgi_request *req)
             if (upload->open(req->post_file, QIODevice::ReadOnly)) {
                 body = upload;
             } else {
-                //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" << upload->errorString();
+                //            qCDebug(CUTELYST_UWSGI) << "Could not open post file:" <<
+                //            upload->errorString();
                 body = new BodyUWSGI(req, !uwsgi.post_buffering);
                 body->open(QIODevice::ReadOnly | QIODevice::Unbuffered);
             }
@@ -111,16 +115,16 @@ bool uwsgiConnection::writeHeaders(quint16 status, const Headers &headers)
     }
 
     const auto headersData = headers.data();
-    auto it = headersData.constBegin();
-    const auto endIt = headersData.constEnd();
+    auto it                = headersData.constBegin();
+    const auto endIt       = headersData.constEnd();
     while (it != endIt) {
-        const QByteArray key = uWSGI::camelCaseHeader(it.key()).toLatin1();
+        const QByteArray key   = uWSGI::camelCaseHeader(it.key()).toLatin1();
         const QByteArray value = it.value().toLatin1();
 
         if (uwsgi_response_add_header(request,
-                                      const_cast<char*>(key.constData()),
+                                      const_cast<char *>(key.constData()),
                                       key.size(),
-                                      const_cast<char*>(value.constData()),
+                                      const_cast<char *>(value.constData()),
                                       value.size())) {
             return false;
         }
@@ -133,9 +137,7 @@ bool uwsgiConnection::writeHeaders(quint16 status, const Headers &headers)
 
 qint64 uwsgiConnection::doWrite(const char *data, qint64 len)
 {
-    if (uwsgi_response_write_body_do(request,
-                                     const_cast<char *>(data),
-                                     len) != UWSGI_OK) {
+    if (uwsgi_response_write_body_do(request, const_cast<char *>(data), len) != UWSGI_OK) {
         qCWarning(CUTELYST_UWSGI_CONN) << "Failed to write body";
         return -1;
     }

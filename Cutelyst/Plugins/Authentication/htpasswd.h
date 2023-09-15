@@ -15,7 +15,8 @@ class CUTELYST_PLUGIN_AUTHENTICATION_EXPORT StoreHtpasswd : public Authenticatio
     Q_OBJECT
 public:
     /**
-     * Constructs a new htpasswd store object with the given parent to represent the file with the specified name.
+     * Constructs a new htpasswd store object with the given parent to represent the file with the
+     * specified name.
      */
     explicit StoreHtpasswd(const QString &name, QObject *parent = nullptr);
     virtual ~StoreHtpasswd() override;

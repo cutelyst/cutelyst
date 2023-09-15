@@ -7,7 +7,9 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredWith::ValidatorRequiredWith(const QString &field, const QStringList &otherFields, const Cutelyst::ValidatorMessages &messages)
+ValidatorRequiredWith::ValidatorRequiredWith(const QString &field,
+                                             const QStringList &otherFields,
+                                             const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorRequiredWithPrivate(field, otherFields, messages))
 {
 }
@@ -24,7 +26,11 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
 
     if (d->otherFields.empty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR, "ValidatorRequiredWith: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR,
+                  "ValidatorRequiredWith: invalid validation data for field %s at %s::%s",
+                  qPrintable(field()),
+                  qPrintable(c->controllerName()),
+                  qPrintable(c->actionName()));
     } else {
         bool containsOther = false;
         const QString v    = value(params);
@@ -43,7 +49,11 @@ ValidatorReturnType ValidatorRequiredWith::validate(Context *c, const ParamsMult
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR, "ValidatorRequiredWith: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                qCDebug(C_VALIDATOR,
+                        "ValidatorRequiredWith: Validation failed for field %s at %s::%s",
+                        qPrintable(field()),
+                        qPrintable(c->controllerName()),
+                        qPrintable(c->actionName()));
             }
         } else {
             if (!v.isEmpty()) {
@@ -64,7 +74,8 @@ QString ValidatorRequiredWith::genericValidationError(Context *c, const QVariant
         error = c->translate("Cutelyst::ValidatorRequiredWith", "This is required.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRequiredWith", "The “%1” field is required.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorRequiredWith", "The “%1” field is required.")
+                    .arg(_label);
     }
     return error;
 }

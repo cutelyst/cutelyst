@@ -142,7 +142,8 @@ public:
      * Defines the HTTP2 header table size (SETTINGS_HEADER_TABLE_SIZE) default value: 4096
      * @accessors http2Socket(), setHttp2Socket()
      */
-    Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE setHttp2HeaderTableSize NOTIFY changed)
+    Q_PROPERTY(quint32 http2_header_table_size READ http2HeaderTableSize WRITE
+                   setHttp2HeaderTableSize NOTIFY changed)
     void setHttp2HeaderTableSize(quint32 headerTableSize);
     quint32 http2HeaderTableSize() const;
 
@@ -229,7 +230,8 @@ public:
     QStringList staticMap() const;
 
     /**
-     * Map the mountpoint to static directory (or file), completely appending the requested resource to the docroot
+     * Map the mountpoint to static directory (or file), completely appending the requested resource
+     * to the docroot
      * @accessors staticMap2(), setStaticMap2()
      */
     Q_PROPERTY(QStringList static_map2 READ staticMap2 WRITE setStaticMap2 NOTIFY changed)
@@ -292,7 +294,8 @@ public:
      * Defines the buffer size when reading a POST request
      * @accessors postBufferingBufsize(), setPostBufferingBufsize()
      */
-    Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize NOTIFY changed)
+    Q_PROPERTY(qint64 post_buffering_bufsize READ postBufferingBufsize WRITE setPostBufferingBufsize
+                   NOTIFY changed)
     void setPostBufferingBufsize(qint64 size);
     qint64 postBufferingBufsize() const;
 
@@ -313,7 +316,8 @@ public:
     bool soKeepalive() const;
 
     /**
-     * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket option
+     * Sets the socket send buffer size in bytes at the OS level. This maps to the SO_SNDBUF socket
+     * option
      * @accessors %socketSndbuf(), setSocketSndbuf()
      */
     Q_PROPERTY(int socket_sndbuf READ socketSndbuf WRITE setSocketSndbuf NOTIFY changed)
@@ -321,7 +325,8 @@ public:
     int socketSndbuf() const;
 
     /**
-     * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF socket option
+     * Sets the socket receive buffer size in bytes at the OS level. This maps to the SO_RCVBUF
+     * socket option
      * @accessors %socketRcvbuf(), setSocketRcvbuf()
      */
     Q_PROPERTY(int socket_rcvbuf READ socketRcvbuf WRITE setSocketRcvbuf NOTIFY changed)
@@ -332,7 +337,8 @@ public:
      * Sets the maximum allowed size of websocket messages (in Kbytes, default 1024)
      * @accessors %websocketMaxSize(), setWebsocketMaxSize()
      */
-    Q_PROPERTY(int websocket_max_size READ websocketMaxSize WRITE setWebsocketMaxSize NOTIFY changed)
+    Q_PROPERTY(
+        int websocket_max_size READ websocketMaxSize WRITE setWebsocketMaxSize NOTIFY changed)
     void setWebsocketMaxSize(int value);
     int websocketMaxSize() const;
 
@@ -429,7 +435,8 @@ public:
      * and uses this info to update Cutelyst::EngineRequest
      * @accessors usingFrontendProxy(), setUsingFrontendProxy()
      */
-    Q_PROPERTY(bool using_frontend_proxy READ usingFrontendProxy WRITE setUsingFrontendProxy NOTIFY changed)
+    Q_PROPERTY(bool using_frontend_proxy READ usingFrontendProxy WRITE setUsingFrontendProxy NOTIFY
+                   changed)
     void setUsingFrontendProxy(bool enable);
     bool usingFrontendProxy() const;
 

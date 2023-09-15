@@ -40,7 +40,8 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
             QByteArray line      = file.readLine();
             QByteArrayList parts = line.split(':');
             if (!wrote && parts.size() >= 2 && parts.first() == username.toLatin1()) {
-                line  = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
+                line = username.toLatin1() + ':' +
+                       user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
                 wrote = true;
             }
             tmp.write(line);
@@ -49,7 +50,9 @@ void StoreHtpasswd::addUser(const ParamsMultiMap &user)
     }
 
     if (!wrote) {
-        QByteArray line = username.toLatin1() + ':' + user.value(QStringLiteral("password")).toLatin1().replace(':', ',') + '\n';
+        QByteArray line = username.toLatin1() + ':' +
+                          user.value(QStringLiteral("password")).toLatin1().replace(':', ',') +
+                          '\n';
         tmp.write(line);
     }
 
@@ -74,11 +77,13 @@ AuthenticationUser StoreHtpasswd::findUser(Context *c, const ParamsMultiMap &use
         while (!file.atEnd()) {
             QByteArray line      = file.readLine();
             QByteArrayList parts = line.trimmed().split(':');
-            if (parts.size() >= 2 && !parts.first().startsWith('#') && parts.first() == username.toLatin1()) {
+            if (parts.size() >= 2 && !parts.first().startsWith('#') &&
+                parts.first() == username.toLatin1()) {
                 ret.insert(QStringLiteral("username"), username);
                 ret.setId(username);
                 QByteArray password = parts.at(1);
-                ret.insert(QStringLiteral("password"), QString::fromLatin1(password.replace(',', ':')));
+                ret.insert(QStringLiteral("password"),
+                           QString::fromLatin1(password.replace(',', ':')));
                 break;
             }
         }

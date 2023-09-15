@@ -9,7 +9,8 @@
 
 using namespace Cutelyst;
 
-ValidatorAccepted::ValidatorAccepted(const QString &field, const Cutelyst::ValidatorMessages &messages)
+ValidatorAccepted::ValidatorAccepted(const QString &field,
+                                     const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorAcceptedPrivate(field, messages))
 {
 }
@@ -18,7 +19,8 @@ ValidatorAccepted::~ValidatorAccepted()
 {
 }
 
-ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &params) const
+ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
+                                                const Cutelyst::ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
@@ -27,7 +29,11 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c, const Cute
     } else {
         result.errorMessage = validationError(c);
         result.value.setValue<bool>(false);
-        qCDebug(C_VALIDATOR, "ValidatorAccepted: Validation failed for field %s at %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR,
+                "ValidatorAccepted: Validation failed for field %s at %s::%s.",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
     }
 
     return result;
@@ -36,12 +42,14 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c, const Cute
 bool ValidatorAccepted::validate(const QString &value)
 {
     bool ret = true;
-    static const QStringList l({QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
+    static const QStringList l(
+        {QStringLiteral("yes"), QStringLiteral("on"), QStringLiteral("1"), QStringLiteral("true")});
     ret = l.contains(value, Qt::CaseInsensitive);
     return ret;
 }
 
-QString ValidatorAccepted::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
+QString ValidatorAccepted::genericValidationError(Cutelyst::Context *c,
+                                                  const QVariant &errorData) const
 {
     QString error;
     Q_UNUSED(errorData)

@@ -66,8 +66,9 @@ public:
     QString uriForAction(Action *action, const QStringList &captures) const;
 
     /**
-     * Expand an action into a full representation of the dispatch. mostly useful for chained where the
-     * returned Action will be of ActionChain type, other actions will just return a single action.
+     * Expand an action into a full representation of the dispatch. mostly useful for chained where
+     * the returned Action will be of ActionChain type, other actions will just return a single
+     * action.
      */
     Action *expandAction(const Context *c, Action *action) const;
 
@@ -81,7 +82,9 @@ protected:
     /**
      * Used by Application to register all Controllers Actions into the list of DispatchType
      */
-    void setupActions(const QVector<Controller *> &controllers, const QVector<DispatchType *> &dispatchers, bool printActions);
+    void setupActions(const QVector<Controller *> &controllers,
+                      const QVector<DispatchType *> &dispatchers,
+                      bool printActions);
 
     /**
      * Delegate the dispatch to the action that matched the url, or return a

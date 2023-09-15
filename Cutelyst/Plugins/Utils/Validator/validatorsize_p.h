@@ -13,7 +13,11 @@ namespace Cutelyst {
 class ValidatorSizePrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorSizePrivate(const QString &f, QMetaType::Type t, const QVariant &s, const ValidatorMessages &m, const QString &dvk)
+    ValidatorSizePrivate(const QString &f,
+                         QMetaType::Type t,
+                         const QVariant &s,
+                         const ValidatorMessages &m,
+                         const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , type(t)
         , size(s)

@@ -13,7 +13,9 @@ namespace Cutelyst {
 class ValidatorRequiredWithoutAllPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredWithoutAllPrivate(const QString &f, const QStringList &o, const ValidatorMessages &m)
+    ValidatorRequiredWithoutAllPrivate(const QString &f,
+                                       const QStringList &o,
+                                       const ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString())
         , otherFields(o)
     {

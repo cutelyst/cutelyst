@@ -25,7 +25,10 @@ public:
      * Constructs a new AuthenticationRealm object with the given parent.
      * \note This class will take ownership of store and credential.
      */
-    explicit AuthenticationRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm), QObject *parent = nullptr);
+    explicit AuthenticationRealm(AuthenticationStore *store,
+                                 AuthenticationCredential *credential,
+                                 const QString &name = QLatin1String(defaultRealm),
+                                 QObject *parent     = nullptr);
     virtual ~AuthenticationRealm() override;
 
     /*!
@@ -44,7 +47,8 @@ public:
     virtual AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo);
 
     /*!
-     * Tries to authenticate the user with \p authinfo returning a non null AuthenticationUser on success
+     * Tries to authenticate the user with \p authinfo returning a non null AuthenticationUser on
+     * success
      */
     virtual AuthenticationUser authenticate(Context *c, const ParamsMultiMap &authinfo);
 

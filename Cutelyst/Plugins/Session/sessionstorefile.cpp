@@ -32,14 +32,20 @@ SessionStoreFile::~SessionStoreFile()
 {
 }
 
-QVariant SessionStoreFile::getSessionData(Context *c, const QString &sid, const QString &key, const QVariant &defaultValue)
+QVariant SessionStoreFile::getSessionData(Context *c,
+                                          const QString &sid,
+                                          const QString &key,
+                                          const QVariant &defaultValue)
 {
     const QVariantHash data = loadSessionData(c, sid);
 
     return data.value(key, defaultValue);
 }
 
-bool SessionStoreFile::storeSessionData(Context *c, const QString &sid, const QString &key, const QVariant &value)
+bool SessionStoreFile::storeSessionData(Context *c,
+                                        const QString &sid,
+                                        const QString &key,
+                                        const QVariant &value)
 {
     QVariantHash data = loadSessionData(c, sid);
 
@@ -63,7 +69,8 @@ bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const Q
 
 static QString rootPath()
 {
-    static QString rootPath = QDir::tempPath() + u'/' + QCoreApplication::applicationName() + u"/session/data";
+    static QString rootPath =
+        QDir::tempPath() + u'/' + QCoreApplication::applicationName() + u"/session/data";
     return rootPath;
 }
 

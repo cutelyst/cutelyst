@@ -27,7 +27,11 @@ TcpSocket::TcpSocket(Cutelyst::Engine *engine, QObject *parent)
     : QTcpSocket(parent)
     , Socket(false, engine)
 {
-    connect(this, &QTcpSocket::disconnected, this, &TcpSocket::socketDisconnected, Qt::DirectConnection);
+    connect(this,
+            &QTcpSocket::disconnected,
+            this,
+            &TcpSocket::socketDisconnected,
+            Qt::DirectConnection);
 }
 
 void TcpSocket::connectionClose()
@@ -63,7 +67,11 @@ LocalSocket::LocalSocket(Cutelyst::Engine *engine, QObject *parent)
     : QLocalSocket(parent)
     , Socket(false, engine)
 {
-    connect(this, &QLocalSocket::disconnected, this, &LocalSocket::socketDisconnected, Qt::DirectConnection);
+    connect(this,
+            &QLocalSocket::disconnected,
+            this,
+            &LocalSocket::socketDisconnected,
+            Qt::DirectConnection);
 }
 
 void LocalSocket::connectionClose()
@@ -101,7 +109,11 @@ SslSocket::SslSocket(Cutelyst::Engine *engine, QObject *parent)
     : QSslSocket(parent)
     , Socket(true, engine)
 {
-    connect(this, &QSslSocket::disconnected, this, &SslSocket::socketDisconnected, Qt::DirectConnection);
+    connect(this,
+            &QSslSocket::disconnected,
+            this,
+            &SslSocket::socketDisconnected,
+            Qt::DirectConnection);
 }
 
 void SslSocket::connectionClose()

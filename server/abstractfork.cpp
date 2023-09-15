@@ -26,8 +26,14 @@ void AbstractFork::installTouchReload()
 {
     if (!m_touchReloadPaths.isEmpty() && !m_touchReloadWatcher) {
         m_touchReloadWatcher = new QFileSystemWatcher(this);
-        connect(m_touchReloadWatcher, &QFileSystemWatcher::fileChanged, this, &AbstractFork::fileChanged);
-        connect(m_touchReloadWatcher, &QFileSystemWatcher::directoryChanged, this, &AbstractFork::directoryChanged);
+        connect(m_touchReloadWatcher,
+                &QFileSystemWatcher::fileChanged,
+                this,
+                &AbstractFork::fileChanged);
+        connect(m_touchReloadWatcher,
+                &QFileSystemWatcher::directoryChanged,
+                this,
+                &AbstractFork::directoryChanged);
         const QStringList ret = m_touchReloadWatcher->addPaths(m_touchReloadPaths);
         if (!ret.empty()) {
             std::cerr << "Failed setup file watcher" << std::endl;

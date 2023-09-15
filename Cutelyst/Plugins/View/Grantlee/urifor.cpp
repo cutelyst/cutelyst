@@ -121,7 +121,8 @@ Grantlee::Node *UriForTag::getNode(const QString &tagContent, Grantlee::Parser *
 
     parts.removeFirst(); // Not interested in the name of the tag.
     if (parts.isEmpty()) {
-        throw Grantlee::Exception(Grantlee::TagSyntaxError, QStringLiteral("c_uri_for requires at least the path"));
+        throw Grantlee::Exception(Grantlee::TagSyntaxError,
+                                  QStringLiteral("c_uri_for requires at least the path"));
     }
 
     return new UriFor(parts.first(), parts.mid(1), p);

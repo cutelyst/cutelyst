@@ -121,7 +121,8 @@ protected:
     friend class ControllerPrivate;
 
     /*!
-     * A derived class using pimpl should call this constructor, to reduce the number of memory allocations
+     * A derived class using pimpl should call this constructor, to reduce the number of memory
+     * allocations
      */
     explicit Action(ActionPrivate *ptr, QObject *parent = nullptr);
 

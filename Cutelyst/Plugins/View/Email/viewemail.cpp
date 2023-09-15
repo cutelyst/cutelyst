@@ -184,7 +184,8 @@ void ViewEmail::setAsync(bool enable)
             d->server->setUsername(d->sender->user());
             d->server->setPassword(d->sender->password());
             d->server->setAuthMethod(static_cast<Server::AuthMethod>(d->sender->authMethod()));
-            d->server->setConnectionType(static_cast<Server::ConnectionType>(d->sender->connectionType()));
+            d->server->setConnectionType(
+                static_cast<Server::ConnectionType>(d->sender->connectionType()));
         }
     } else {
         delete d->server;
@@ -198,7 +199,8 @@ QByteArray ViewEmail::render(Context *c) const
     QByteArray ret;
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
-        c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
+        c->error(QStringLiteral(
+            "Cannot render template, template name or template stash key not defined"));
         return ret;
     }
 
@@ -257,7 +259,8 @@ QByteArray ViewEmail::render(Context *c) const
         }
 
         auto contentTypeIt = email.constFind(QStringLiteral("content_type"));
-        if (contentTypeIt != email.constEnd() && !contentTypeIt.value().isNull() && !contentTypeIt.value().toString().isEmpty()) {
+        if (contentTypeIt != email.constEnd() && !contentTypeIt.value().isNull() &&
+            !contentTypeIt.value().toString().isEmpty()) {
             const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
             qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
             message.getContent().setContentType(contentType);
@@ -318,7 +321,8 @@ void ViewEmail::initSender()
 void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs) const
 {
     auto contentTypeIt = attrs.constFind(QStringLiteral("content_type"));
-    if (contentTypeIt != attrs.constEnd() && !contentTypeIt.value().isNull() && !contentTypeIt.value().toString().isEmpty()) {
+    if (contentTypeIt != attrs.constEnd() && !contentTypeIt.value().isNull() &&
+        !contentTypeIt.value().toString().isEmpty()) {
         const QByteArray contentType = contentTypeIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified content_type" << contentType;
         part->setContentType(contentType);
@@ -328,7 +332,8 @@ void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs
     }
 
     auto charsetIt = attrs.constFind(QStringLiteral("charset"));
-    if (charsetIt != attrs.constEnd() && !charsetIt.value().isNull() && !charsetIt.value().toString().isEmpty()) {
+    if (charsetIt != attrs.constEnd() && !charsetIt.value().isNull() &&
+        !charsetIt.value().toString().isEmpty()) {
         const QByteArray charset = charsetIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified charset" << charset;
         part->setCharset(charset);
@@ -338,7 +343,8 @@ void ViewEmailPrivate::setupAttributes(MimePart *part, const QVariantHash &attrs
     }
 
     auto encodingIt = attrs.constFind(QStringLiteral("encoding"));
-    if (encodingIt != attrs.constEnd() && !encodingIt.value().isNull() && !encodingIt.value().toString().isEmpty()) {
+    if (encodingIt != attrs.constEnd() && !encodingIt.value().isNull() &&
+        !encodingIt.value().toString().isEmpty()) {
         const QByteArray encoding = encodingIt.value().toString().toLatin1();
         qCDebug(CUTELYST_VIEW_EMAIL) << "Using specified encoding" << encoding;
         setupEncoding(part, encoding);

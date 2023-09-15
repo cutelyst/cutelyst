@@ -102,21 +102,25 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonArray queryToJsonArray(QSqlQuery &query);
  * is the field name in the query result. This is useful when you
  * want to access specific user by user name or user id.
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedHash(QSqlQuery &query, const QString &key);
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QVariantHash queryToIndexedHash(QSqlQuery &query,
+                                                                 const QString &key);
 
 /**
  * Returns a QJsonObject of QJsonObject where the key parameter
  * is the field name in the query result. This is useful when you
  * want to access specific user by user name or user id.
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonObject queryToIndexedJsonObject(QSqlQuery &query, const QString &key);
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QJsonObject queryToIndexedJsonObject(QSqlQuery &query,
+                                                                      const QString &key);
 
 /**
  * Bind params to the query, using the param name as
  * the placeholder prebended with ':', if htmlEscaped
  * is true the bound values will be the return of toHtmlEscaped()
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT void bindParamsToQuery(QSqlQuery &query, const Cutelyst::ParamsMultiMap &params, bool htmlEscaped = true);
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT void bindParamsToQuery(QSqlQuery &query,
+                                                        const Cutelyst::ParamsMultiMap &params,
+                                                        bool htmlEscaped = true);
 
 /**
  * Returns a QSqlQuery object prepared with \pa query using the \pa db database
@@ -126,14 +130,17 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT void bindParamsToQuery(QSqlQuery &query, const 
  * QSqlQuery query = CPreparedSqlQuery("SELECT * FROM");
  *
  * For applications that do not use default QSqlDatabase(), the returned QSqlQuery
- * is a CUTELYST_PLUGIN_UTILS_SQL_EXPORT thread_local which glues QSqlQuery to the current thread but you must
- * have a per thread QSqlDatabase() connection for this to be completely safe:
+ * is a CUTELYST_PLUGIN_UTILS_SQL_EXPORT thread_local which glues QSqlQuery to the current thread
+ * but you must have a per thread QSqlDatabase() connection for this to be completely safe:
  * QSqlQuery query = CPreparedSqlQueryForDatabase("SELECT * FROM", QSqlDatabase::data);
  *
  * The returned object is set to forward only and you must use a different
- * database connection and thread_local on CUTELYST_PLUGIN_UTILS_SQL_EXPORT objects to be thread-safe.
+ * database connection and thread_local on CUTELYST_PLUGIN_UTILS_SQL_EXPORT objects to be
+ * thread-safe.
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQuery(const QString &query, QSqlDatabase db = QSqlDatabase(), bool forwardOnly = false);
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQuery(const QString &query,
+                                                         QSqlDatabase db  = QSqlDatabase(),
+                                                         bool forwardOnly = false);
 
 /**
  * Returns a string with as "dbName-threadNumber" to be used for connecting
@@ -154,57 +161,54 @@ CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlDatabase databaseThread(const QString &dbNa
  * QSqlQuery query = CPreparedSqlQuery("SELECT * FROM");
  *
  * For applications that do not use default QSqlDatabase(), the returned QSqlQuery
- * is a CUTELYST_PLUGIN_UTILS_SQL_EXPORT thread_local which glues QSqlQuery to the current thread but you must
- * have a per thread QSqlDatabase() connection for this to be completely safe:
+ * is a CUTELYST_PLUGIN_UTILS_SQL_EXPORT thread_local which glues QSqlQuery to the current thread
+ * but you must have a per thread QSqlDatabase() connection for this to be completely safe:
  * QSqlQuery query = CPreparedSqlQueryForDatabase("SELECT * FROM", QSqlDatabase::data);
  *
  * The returned object is set to forward only and you must use a different
- * database connection and thread_local on CUTELYST_PLUGIN_UTILS_SQL_EXPORT objects to be thread-safe.
+ * database connection and thread_local on CUTELYST_PLUGIN_UTILS_SQL_EXPORT objects to be
+ * thread-safe.
  */
-CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &query, const QString &dbName = QString(), bool forwardOnly = false);
+CUTELYST_PLUGIN_UTILS_SQL_EXPORT QSqlQuery preparedQueryThread(const QString &query,
+                                                               const QString &dbName = QString(),
+                                                               bool forwardOnly      = false);
 } // namespace Sql
 
 } // namespace Cutelyst
 
 #define CPreparedSqlQueryForDatabase(str, db) \
     ([]() -> QSqlQuery { \
-        static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQuery(str, db); \
+        static thread_local QSqlQuery query_temp = Cutelyst::Sql::preparedQuery(str, db); \
         return query_temp; \
     }()) /**/
 
 #define CPreparedSqlQuery(str) \
     ([]() -> QSqlQuery { \
-        static QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQuery(str); \
+        static QSqlQuery query_temp = Cutelyst::Sql::preparedQuery(str); \
         return query_temp; \
     }()) /**/
 
 #define CPreparedSqlQueryThread(str) \
     ([]() -> QSqlQuery { \
-        static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQueryThread(str); \
+        static thread_local QSqlQuery query_temp = Cutelyst::Sql::preparedQueryThread(str); \
         return query_temp; \
     }()) /**/
 
 #define CPreparedSqlQueryThreadForDB(str, db) \
     ([]() -> QSqlQuery { \
-        static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQueryThread(str, db); \
+        static thread_local QSqlQuery query_temp = Cutelyst::Sql::preparedQueryThread(str, db); \
         return query_temp; \
     }()) /**/
 
 #define CPreparedSqlQueryForDatabaseFO(str, db) \
     ([]() -> QSqlQuery { \
-        static thread_local QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQuery(str, db, true); \
+        static thread_local QSqlQuery query_temp = Cutelyst::Sql::preparedQuery(str, db, true); \
         return query_temp; \
     }()) /**/
 
 #define CPreparedSqlQueryFO(str) \
     ([]() -> QSqlQuery { \
-        static QSqlQuery query_temp = \
-            Cutelyst::Sql::preparedQuery(str, QSqlDatabase(), true); \
+        static QSqlQuery query_temp = Cutelyst::Sql::preparedQuery(str, QSqlDatabase(), true); \
         return query_temp; \
     }()) /**/
 

@@ -43,7 +43,8 @@ Engine::Engine(Cutelyst::Application *app, int workerCore, const QVariantMap &op
 {
     Q_D(Engine);
 
-    connect(this, &Engine::processRequestAsync, this, &Engine::processRequest, Qt::QueuedConnection);
+    connect(
+        this, &Engine::processRequestAsync, this, &Engine::processRequest, Qt::QueuedConnection);
 
     d->opts       = opts;
     d->workerCore = workerCore;

@@ -93,8 +93,9 @@ QByteArray Cookie::toRawForm(RawForm form) const
         }
         if (!isSessionCookie()) {
             result += "; expires=";
-            result += QLocale::c().toString(expirationDate().toUTC(),
-                                            QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT"))
+            result += QLocale::c()
+                          .toString(expirationDate().toUTC(),
+                                    QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT"))
                           .toLatin1();
         }
         if (!domain().isEmpty()) {

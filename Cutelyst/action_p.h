@@ -20,15 +20,15 @@ public:
     QMultiMap<QString, QString> attributes;
     Controller *controller = nullptr;
     QStringList emptyArgs  = {
-         QString(),
-         QString(),
-         QString(),
-         QString(),
-         QString(),
-         QString(),
-         QString(),
-         QString(),
-         QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
+        QString(),
     };
     qint8 numberOfArgs     = -1;
     qint8 numberOfCaptures = -1;

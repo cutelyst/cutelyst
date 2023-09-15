@@ -40,16 +40,25 @@ public:
     static void saveSessionExpires(Context *c);
     static QVariant loadSessionExpires(Session *session, Context *c, const QString &sessionId);
     static inline qint64 initialSessionExpires(Session *session, Context *c);
-    static inline qint64 calculateInitialSessionExpires(Session *session, Context *c, const QString &sessionId);
-    static inline qint64 resetSessionExpires(Session *session, Context *c, const QString &sessionId);
+    static inline qint64
+        calculateInitialSessionExpires(Session *session, Context *c, const QString &sessionId);
+    static inline qint64
+        resetSessionExpires(Session *session, Context *c, const QString &sessionId);
 
     static inline void updateSessionCookie(Context *c, const QNetworkCookie &updated);
-    static inline QNetworkCookie makeSessionCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
+    static inline QNetworkCookie makeSessionCookie(Session *session,
+                                                   Context *c,
+                                                   const QString &sid,
+                                                   const QDateTime &expires);
 #if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
     static inline void updateSessionCuteCookie(Context *c, const Cookie &updated);
-    static inline Cookie makeSessionCuteCookie(Session *session, Context *c, const QString &sid, const QDateTime &expires);
+    static inline Cookie makeSessionCuteCookie(Session *session,
+                                               Context *c,
+                                               const QString &sid,
+                                               const QDateTime &expires);
 #endif
-    static inline void extendSessionId(Session *session, Context *c, const QString &sid, qint64 expires);
+    static inline void
+        extendSessionId(Session *session, Context *c, const QString &sid, qint64 expires);
     static inline void setSessionId(Session *session, Context *c, const QString &sid);
 
     Session *q_ptr;

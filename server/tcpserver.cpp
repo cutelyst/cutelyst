@@ -18,7 +18,10 @@ Q_LOGGING_CATEGORY(CWSGI_TCPSERVER, "cwsgi.tcpserver", QtWarningMsg)
 
 using namespace Cutelyst;
 
-TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent)
+TcpServer::TcpServer(const QString &serverAddress,
+                     Protocol *protocol,
+                     Server *wsgi,
+                     QObject *parent)
     : QTcpServer(parent)
     , m_serverAddress(serverAddress)
     , m_wsgi(wsgi)
@@ -33,10 +36,12 @@ TcpServer::TcpServer(const QString &serverAddress, Protocol *protocol, Server *w
         m_socketOptions.push_back({QAbstractSocket::KeepAliveOption, 1});
     }
     if (m_wsgi->socketSndbuf() != -1) {
-        m_socketOptions.push_back({QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf()});
+        m_socketOptions.push_back(
+            {QAbstractSocket::SendBufferSizeSocketOption, m_wsgi->socketSndbuf()});
     }
     if (m_wsgi->socketRcvbuf() != -1) {
-        m_socketOptions.push_back({QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf()});
+        m_socketOptions.push_back(
+            {QAbstractSocket::ReceiveBufferSizeSocketOption, m_wsgi->socketRcvbuf()});
     }
 }
 
@@ -57,7 +62,8 @@ void TcpServer::incomingConnection(qintptr handle)
         }
     });
 
-    if (Q_LIKELY(sock->setSocketDescriptor(handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
+    if (Q_LIKELY(sock->setSocketDescriptor(
+            handle, QTcpSocket::ConnectedState, QTcpSocket::ReadWrite | QTcpSocket::Unbuffered))) {
         sock->proto = m_protocol;
 
         sock->remoteAddress = sock->peerAddress();
@@ -104,9 +110,12 @@ void TcpServer::timeoutConnections()
         const auto childrenL = children();
         for (auto child : childrenL) {
             auto socket = qobject_cast<TcpSocket *>(child);
-            if (socket && !socket->processing && socket->state() == QAbstractSocket::ConnectedState) {
+            if (socket && !socket->processing &&
+                socket->state() == QAbstractSocket::ConnectedState) {
                 if (socket->timeout) {
-                    qCInfo(CWSGI_TCPSERVER) << "timing out connection" << socket->peerAddress().toString() << socket->peerPort();
+                    qCInfo(CWSGI_TCPSERVER)
+                        << "timing out connection" << socket->peerAddress().toString()
+                        << socket->peerPort();
                     socket->connectionClose();
                 } else {
                     socket->timeout = true;

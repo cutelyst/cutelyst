@@ -20,13 +20,15 @@ class ValidatorRequiredPrivate;
  *
  * The \a field under validation must be present in the input data and not empty.
  *
- * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
- * whitespaces will be removed from the beginning and the end of the input value before validation.
- * So, fields that only contain whitespaces will be treated as empty and are invalid.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link
+ * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
+ * end of the input value before validation. So, fields that only contain whitespaces will be
+ * treated as empty and are invalid.
  *
  * \sa Validator for general usage of validators.
  *
- * \sa ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
+ * \sa ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith,
+ * ValidatorRequiredWithAll, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequired : public ValidatorRule
 {
@@ -37,7 +39,8 @@ public:
      * \param field     Name of the input field that is required.
      * \param messages  Custom error message if validation fails.
      */
-    ValidatorRequired(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
+    ValidatorRequired(const QString &field,
+                      const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the required validator.
@@ -48,14 +51,16 @@ protected:
     /*!
      * \brief Performs the validation and returns the result.
      *
-     * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as QString.
+     * If validation succeeded, ValidatorReturnType::value will contain the input parameter value as
+     * QString.
      */
     ValidatorReturnType validate(Context *c, const ParamsMultiMap &params) const override;
 
     /*!
      * \brief Returns a generic error message.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRequired)

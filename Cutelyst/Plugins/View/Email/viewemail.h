@@ -20,9 +20,11 @@ class CUTELYST_VIEW_EMAIL_EXPORT ViewEmail : public Cutelyst::View
     Q_OBJECT
     Q_DECLARE_PRIVATE(ViewEmail)
     Q_PROPERTY(QString stashKey READ stashKey WRITE setStashKey NOTIFY changed)
-    Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType NOTIFY changed)
+    Q_PROPERTY(QByteArray defaultContentType READ defaultContentType WRITE setDefaultContentType
+                   NOTIFY changed)
     Q_PROPERTY(QByteArray defaultCharset READ defaultCharset WRITE setDefaultCharset NOTIFY changed)
-    Q_PROPERTY(QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
+    Q_PROPERTY(
+        QByteArray defaultEncoding READ defaultEncoding WRITE setDefaultEncoding NOTIFY changed)
     Q_PROPERTY(bool async READ async WRITE setAsync NOTIFY changed)
 public:
     /**  This value defines which kind of connection should be used */

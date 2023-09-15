@@ -33,7 +33,9 @@ Dispatcher::~Dispatcher()
     delete d_ptr;
 }
 
-void Dispatcher::setupActions(const QVector<Controller *> &controllers, const QVector<Cutelyst::DispatchType *> &dispatchers, bool printActions)
+void Dispatcher::setupActions(const QVector<Controller *> &controllers,
+                              const QVector<Cutelyst::DispatchType *> &dispatchers,
+                              bool printActions)
 {
     Q_D(Dispatcher);
 
@@ -69,11 +71,11 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers, const QV
                 registeredActions.append(action);
                 instanceUsed = true;
             } else {
-                qCDebug(CUTELYST_DISPATCHER) << "The action" << action->name() << "of"
-                                             << action->controller()->objectName()
-                                             << "controller was not registered in any dispatcher."
-                                                " If you still want to access it internally (via actionFor())"
-                                                " you may make it's method private.";
+                qCDebug(CUTELYST_DISPATCHER)
+                    << "The action" << action->name() << "of" << action->controller()->objectName()
+                    << "controller was not registered in any dispatcher."
+                       " If you still want to access it internally (via actionFor())"
+                       " you may make it's method private.";
             }
         }
 
@@ -362,7 +364,12 @@ void DispatcherPrivate::printActions() const
         table.append(row);
     }
 
-    qCDebug(CUTELYST_DISPATCHER) << Utils::buildTable(table, {QLatin1String("Private"), QLatin1String("Class"), QLatin1String("Method")}, QLatin1String("Loaded Private actions:")).constData();
+    qCDebug(CUTELYST_DISPATCHER) << Utils::buildTable(table,
+                                                      {QLatin1String("Private"),
+                                                       QLatin1String("Class"),
+                                                       QLatin1String("Method")},
+                                                      QLatin1String("Loaded Private actions:"))
+                                        .constData();
 }
 
 ActionList DispatcherPrivate::getContainers(const QString &ns) const
@@ -384,7 +391,9 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
     return ret;
 }
 
-Action *DispatcherPrivate::command2Action(Context *c, const QString &command, const QStringList &args) const
+Action *DispatcherPrivate::command2Action(Context *c,
+                                          const QString &command,
+                                          const QStringList &args) const
 {
     auto it = actions.constFind(command);
     if (it != actions.constEnd()) {
@@ -394,7 +403,9 @@ Action *DispatcherPrivate::command2Action(Context *c, const QString &command, co
     return invokeAsPath(c, command, args);
 }
 
-Action *DispatcherPrivate::invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const
+Action *DispatcherPrivate::invokeAsPath(Context *c,
+                                        const QString &relativePath,
+                                        const QStringList &args) const
 {
     Q_UNUSED(args);
     Q_Q(const Dispatcher);

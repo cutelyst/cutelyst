@@ -82,7 +82,8 @@ QByteArray ClearSilver::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            c->error(QStringLiteral("Cannot render template, template name or template stash key not defined"));
+            c->error(QStringLiteral(
+                "Cannot render template, template name or template stash key not defined"));
             return output;
         }
     }
@@ -122,7 +123,8 @@ NEOERR *findFile(void *c, HDF *hdf, const char *filename, char **contents)
 
         if (file.exists()) {
             if (!file.open(QFile::ReadOnly)) {
-                return nerr_raise(NERR_IO, "Cound not open file: %s", file.errorString().toLatin1().data());
+                return nerr_raise(
+                    NERR_IO, "Cound not open file: %s", file.errorString().toLatin1().data());
             }
 
             *contents = qstrdup(file.readAll().constData());
@@ -134,7 +136,10 @@ NEOERR *findFile(void *c, HDF *hdf, const char *filename, char **contents)
     return nerr_raise(NERR_NOT_FOUND, "Cound not find file: %s", filename);
 }
 
-bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVariantHash &stash, QByteArray &output) const
+bool ClearSilverPrivate::render(Context *c,
+                                const QString &filename,
+                                const QVariantHash &stash,
+                                QByteArray &output) const
 {
     HDF *hdf = hdfForStash(c, stash);
     CSPARSE *cs;
@@ -146,7 +151,8 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(&msg);
         nerr_error_traceback(error, &msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to init ClearSilver:\n+1").arg(QString::fromLatin1(msg.buf, msg.len));
+        errorMsg = QStringLiteral("Failed to init ClearSilver:\n+1")
+                       .arg(QString::fromLatin1(msg.buf, msg.len));
         renderError(c, errorMsg);
 
         string_clear(&msg);
@@ -163,7 +169,8 @@ bool ClearSilverPrivate::render(Context *c, const QString &filename, const QVari
         string_init(&msg);
         nerr_error_traceback(error, &msg);
         QString errorMsg;
-        errorMsg = QStringLiteral("Failed to parse template file: +1\n+2").arg(filename, QString::fromLatin1(msg.buf, msg.len));
+        errorMsg = QStringLiteral("Failed to parse template file: +1\n+2")
+                       .arg(filename, QString::fromLatin1(msg.buf, msg.len));
         renderError(c, errorMsg);
         nerr_log_error(error);
 
@@ -204,7 +211,9 @@ HDF *ClearSilverPrivate::hdfForStash(Context *c, const QVariantHash &stash) cons
     return hdf;
 }
 
-void ClearSilverPrivate::serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix) const
+void ClearSilverPrivate::serializeHash(HDF *hdf,
+                                       const QVariantHash &hash,
+                                       const QString &prefix) const
 {
     QString _prefix;
     if (!prefix.isEmpty()) {

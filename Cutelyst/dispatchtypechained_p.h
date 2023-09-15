@@ -27,7 +27,8 @@ struct BestActionMatch {
 class DispatchTypeChainedPrivate
 {
 public:
-    BestActionMatch recurseMatch(int reqArgsSize, const QString &parent, const QStringList &pathParts) const;
+    BestActionMatch
+        recurseMatch(int reqArgsSize, const QString &parent, const QStringList &pathParts) const;
     bool checkArgsAttr(Action *action, const QString &name) const;
     static QString listExtraHttpMethods(Action *action);
     static QString listExtraConsumes(Action *action);

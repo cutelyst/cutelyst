@@ -56,8 +56,9 @@ QByteArray Stats::report()
 
     QVector<QStringList> table;
     for (const auto &stat : d->actions) {
-        table.append({stat.action,
-                      QString::number((stat.end - stat.begin) / 1000000000.0, 'f') + QLatin1Char('s')});
+        table.append(
+            {stat.action,
+             QString::number((stat.end - stat.begin) / 1000000000.0, 'f') + QLatin1Char('s')});
     }
 
     ret = Utils::buildTable(table, {QStringLiteral("Action"), QStringLiteral("Time")});

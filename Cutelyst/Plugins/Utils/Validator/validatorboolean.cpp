@@ -9,7 +9,9 @@
 
 using namespace Cutelyst;
 
-ValidatorBoolean::ValidatorBoolean(const QString &field, const ValidatorMessages &messages, const QString &defValKey)
+ValidatorBoolean::ValidatorBoolean(const QString &field,
+                                   const ValidatorMessages &messages,
+                                   const QString &defValKey)
     : ValidatorRule(*new ValidatorBooleanPrivate(field, messages, defValKey))
 {
 }
@@ -25,15 +27,23 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        static const QStringList lt({QStringLiteral("1"), QStringLiteral("true"), QStringLiteral("on")});
-        static const QStringList lf({QStringLiteral("0"), QStringLiteral("false"), QStringLiteral("off")});
+        static const QStringList lt(
+            {QStringLiteral("1"), QStringLiteral("true"), QStringLiteral("on")});
+        static const QStringList lf(
+            {QStringLiteral("0"), QStringLiteral("false"), QStringLiteral("off")});
         if (lt.contains(v, Qt::CaseInsensitive)) {
             result.value.setValue<bool>(true);
         } else if (lf.contains(v, Qt::CaseInsensitive)) {
             result.value.setValue<bool>(false);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR, "ValidatorBoolean: The value %s of field %s in %s::%s can not be interpreted as boolean.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorBoolean: The value %s of field %s in %s::%s can not be interpreted "
+                    "as boolean.",
+                    qPrintable(v),
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
         }
     } else {
         defaultValue(c, &result, "ValidatorBoolean");
@@ -42,16 +52,21 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
     return result;
 }
 
-QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c, const QVariant &errorData) const
+QString ValidatorBoolean::genericValidationError(Cutelyst::Context *c,
+                                                 const QVariant &errorData) const
 {
     QString error;
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorBoolean", "Can not be interpreted as boolean value.");
+        error =
+            c->translate("Cutelyst::ValidatorBoolean", "Can not be interpreted as boolean value.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorBoolean", "The value in the “%1” field can not be interpreted as a boolean value.").arg(_label);
+        error =
+            c->translate("Cutelyst::ValidatorBoolean",
+                         "The value in the “%1” field can not be interpreted as a boolean value.")
+                .arg(_label);
     }
     return error;
 }

@@ -51,7 +51,8 @@ QIODevice *Cutelyst::Protocol::createBody(qint64 contentLength) const
     if (m_postBuffering && contentLength > m_postBuffering) {
         auto temp = new QTemporaryFile;
         if (!temp->open()) {
-            qCWarning(CWSGI_PROTO) << "Failed to open temporary file to store post" << temp->errorString();
+            qCWarning(CWSGI_PROTO)
+                << "Failed to open temporary file to store post" << temp->errorString();
             // On error close connection immediately
             return nullptr;
         }

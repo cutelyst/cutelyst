@@ -119,7 +119,8 @@ public:
     int remainingTime(int timerId) const;
     void wake_up_handler();
 
-    static void calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta);
+    static void
+        calculateNextTimeout(TimerInfo *info, const struct timeval &now, struct timeval &delta);
 
 private:
     Q_DISABLE_COPY(EventDispatcherEPollPrivate)

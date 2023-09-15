@@ -56,10 +56,13 @@ QByteArray DispatchTypePath::list() const
         }
     }
 
-    return Utils::buildTable(table, {QLatin1String("Path"), QLatin1String("Private")}, QLatin1String("Loaded Path actions:"));
+    return Utils::buildTable(table,
+                             {QLatin1String("Path"), QLatin1String("Private")},
+                             QLatin1String("Loaded Path actions:"));
 }
 
-Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
+Cutelyst::DispatchType::MatchType
+    DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
 {
     Q_D(const DispatchTypePath);
 
@@ -85,8 +88,7 @@ Cutelyst::DispatchType::MatchType DispatchTypePath::match(Context *c, const QStr
             request->setMatch(_path);
             setupMatchedAction(c, action);
             return ExactMatch;
-        } else if (action->numberOfArgs() == -1 &&
-                   !c->action()) {
+        } else if (action->numberOfArgs() == -1 && !c->action()) {
             // Only setup partial matches if no action is
             // currently set
             Request *request = c->request();
@@ -157,14 +159,11 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
         int actionNumberOfArgs = action->numberOfArgs();
         for (const Action *regAction : it.value()) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
-                qCCritical(CUTELYST_DISPATCHER_PATH) << "Not registering Action"
-                                                     << action->name()
-                                                     << "of controller"
-                                                     << action->controller()->objectName()
-                                                     << "because it conflicts with"
-                                                     << regAction->name()
-                                                     << "of controller"
-                                                     << regAction->controller()->objectName();
+                qCCritical(CUTELYST_DISPATCHER_PATH)
+                    << "Not registering Action" << action->name() << "of controller"
+                    << action->controller()->objectName() << "because it conflicts with"
+                    << regAction->name() << "of controller"
+                    << regAction->controller()->objectName();
                 return false;
             }
         }

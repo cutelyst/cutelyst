@@ -35,10 +35,7 @@ public:
         }
     }
 
-    enum Flag : quint32 {
-        NoFlags    = 0x0,
-        Compressed = 0x1
-    };
+    enum Flag : quint32 { NoFlags = 0x0, Compressed = 0x1 };
     Q_DECLARE_FLAGS(Flags, Flag)
 
     static Memcached::MemcachedReturnType returnTypeConvert(memcached_return_t rt);

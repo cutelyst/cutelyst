@@ -21,7 +21,7 @@ public:
     enum PasswordType {
         None,
         Clear,
-        Hashed
+        Hashed,
     };
     Q_ENUM(PasswordType)
 
@@ -31,7 +31,8 @@ public:
     explicit CredentialPassword(QObject *parent = nullptr);
     virtual ~CredentialPassword() override;
 
-    AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
+    AuthenticationUser
+        authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) final;
 
     /*!
      * Returns the field to look for when authenticating the user. \sa authenticate().
@@ -93,7 +94,11 @@ public:
      * \param hashByteSize
      * \return the pbkdf2 representation of the password
      */
-    static QByteArray createPassword(const QByteArray &password, QCryptographicHash::Algorithm method, int iterations, int saltByteSize, int hashByteSize);
+    static QByteArray createPassword(const QByteArray &password,
+                                     QCryptographicHash::Algorithm method,
+                                     int iterations,
+                                     int saltByteSize,
+                                     int hashByteSize);
 
     /*!
      * Creates a password hash string using sensible defaults
@@ -129,13 +134,16 @@ public:
     /*!
      * Generates the Hash-based message authentication code.
      */
-    static QByteArray hmac(QCryptographicHash::Algorithm method, const QByteArray &key, const QByteArray &message);
+    static QByteArray hmac(QCryptographicHash::Algorithm method,
+                           const QByteArray &key,
+                           const QByteArray &message);
 
 protected:
     CredentialPasswordPrivate *d_ptr;
 };
 
-inline bool CredentialPassword::validatePassword(const QString &password, const QString &correctHash)
+inline bool CredentialPassword::validatePassword(const QString &password,
+                                                 const QString &correctHash)
 {
     return validatePassword(password.toUtf8(), correctHash.toLatin1());
 }

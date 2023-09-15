@@ -214,16 +214,17 @@ Action *ControllerPrivate::actionClass(const QVariantHash &args)
         if (action) {
             return action;
         }
-        qCWarning(CUTELYST_CONTROLLER) << "ActionClass"
-                                       << actionClass
-                                       << "is not an ActionClass";
+        qCWarning(CUTELYST_CONTROLLER) << "ActionClass" << actionClass << "is not an ActionClass";
         delete object;
     }
 
     return new Action;
 }
 
-Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app)
+Action *ControllerPrivate::createAction(const QVariantHash &args,
+                                        const QMetaMethod &method,
+                                        Controller *controller,
+                                        Application *app)
 {
     Action *action = actionClass(args);
     if (!action) {
@@ -246,7 +247,9 @@ Action *ControllerPrivate::createAction(const QVariantHash &args, const QMetaMet
     return action;
 }
 
-void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app)
+void ControllerPrivate::registerActionMethods(const QMetaObject *meta,
+                                              Controller *controller,
+                                              Application *app)
 {
     // Setup actions
     for (int i = 0; i < meta->methodCount(); ++i) {
@@ -257,8 +260,10 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
         // or a Q_INVOKABLE function which has the first
         // parameter type equal to Context*
         if (method.isValid() &&
-            (method.methodType() == QMetaMethod::Method || method.methodType() == QMetaMethod::Slot) &&
-            (method.parameterCount() && method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
+            (method.methodType() == QMetaMethod::Method ||
+             method.methodType() == QMetaMethod::Slot) &&
+            (method.parameterCount() &&
+             method.parameterType(0) == qMetaTypeId<Cutelyst::Context *>())) {
 
             // Build up the list of attributes for the class info
             QByteArray attributeArray;
@@ -277,13 +282,14 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
                 reverse = controller->ns() + QLatin1Char('/') + QString::fromLatin1(name);
             }
 
-            Action *action = createAction({{QStringLiteral("name"), QVariant::fromValue(name)},
-                                           {QStringLiteral("reverse"), QVariant::fromValue(reverse)},
-                                           {QStringLiteral("namespace"), QVariant::fromValue(controller->ns())},
-                                           {QStringLiteral("attributes"), QVariant::fromValue(attrs)}},
-                                          method,
-                                          controller,
-                                          app);
+            Action *action =
+                createAction({{QStringLiteral("name"), QVariant::fromValue(name)},
+                              {QStringLiteral("reverse"), QVariant::fromValue(reverse)},
+                              {QStringLiteral("namespace"), QVariant::fromValue(controller->ns())},
+                              {QStringLiteral("attributes"), QVariant::fromValue(attrs)}},
+                             method,
+                             controller,
+                             app);
 
             actions.insert(action->reverse(), {action->reverse(), action});
             actionList.append(action);
@@ -291,7 +297,9 @@ void ControllerPrivate::registerActionMethods(const QMetaObject *meta, Controlle
     }
 }
 
-ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name)
+ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
+                                                  const QByteArray &str,
+                                                  const QByteArray &name)
 {
     ParamsMultiMap ret;
     std::vector<std::pair<QString, QString>> attributes;
@@ -322,12 +330,14 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
                             if (++pos < size && str.at(pos) == ':') {
                                 // found the start of a key so this is
                                 // really the end of a value
-                                value = QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
+                                value =
+                                    QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
                                 break;
                             } else if (pos >= size) {
                                 // found the end of the string
                                 // save the remainig as the value
-                                value = QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
+                                value =
+                                    QString::fromLatin1(str.mid(valueStart, valueEnd - valueStart));
                                 break;
                             }
                             // string was not '):' or ')$'
@@ -394,9 +404,12 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
 
     // Handle special AutoArgs and AutoCaptureArgs case
     if (!ret.contains(QStringLiteral("Args")) && !ret.contains(QStringLiteral("CaptureArgs")) &&
-        (ret.contains(QStringLiteral("AutoArgs")) || ret.contains(QStringLiteral("AutoCaptureArgs")))) {
-        if (ret.contains(QStringLiteral("AutoArgs")) && ret.contains(QStringLiteral("AutoCaptureArgs"))) {
-            qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed", name.constData());
+        (ret.contains(QStringLiteral("AutoArgs")) ||
+         ret.contains(QStringLiteral("AutoCaptureArgs")))) {
+        if (ret.contains(QStringLiteral("AutoArgs")) &&
+            ret.contains(QStringLiteral("AutoCaptureArgs"))) {
+            qFatal("Action '%s' has both AutoArgs and AutoCaptureArgs, which is not allowed",
+                   name.constData());
         } else {
             QString parameterName;
             if (ret.contains(QStringLiteral("AutoArgs"))) {
@@ -408,7 +421,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method, con
             }
 
             // If the signature is not QStringList we count them
-            if (!(method.parameterCount() == 2 && method.parameterType(1) == QMetaType::QStringList)) {
+            if (!(method.parameterCount() == 2 &&
+                  method.parameterType(1) == QMetaType::QStringList)) {
                 int parameterCount = 0;
                 for (int i2 = 1; i2 < method.parameterCount(); ++i2) {
                     int typeId = method.parameterType(i2);
@@ -435,7 +449,8 @@ QStack<Component *> ControllerPrivate::gatherActionRoles(const QVariantHash &arg
     const auto attributes = args.value(QStringLiteral("attributes")).value<ParamsMultiMap>();
     auto doesIt           = attributes.constFind(QStringLiteral("Does"));
     while (doesIt != attributes.constEnd() && doesIt.key().compare(u"Does") == 0) {
-        QObject *object = instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
+        QObject *object =
+            instantiateClass(doesIt.value(), QByteArrayLiteral("Cutelyst::Component"));
         if (object) {
             roles.push(qobject_cast<Component *>(object));
         }
@@ -503,17 +518,13 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
             if (metaObj) {
                 if (!superIsClassName(metaObj->superClass(), super)) {
                     qCWarning(CUTELYST_CONTROLLER)
-                        << "Class name"
-                        << instanceName
-                        << "is not a derived class of"
-                        << super;
+                        << "Class name" << instanceName << "is not a derived class of" << super;
                 }
 
                 QObject *object = metaObj->newInstance();
                 if (!object) {
                     qCWarning(CUTELYST_CONTROLLER)
-                        << "Could create a new instance of"
-                        << instanceName
+                        << "Could create a new instance of" << instanceName
                         << "make sure it's default constructor is "
                            "marked with the Q_INVOKABLE macro";
                 }
@@ -534,7 +545,8 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 
         if (!id.isValid()) {
             qCCritical(CUTELYST_CONTROLLER,
-                       "Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                       "Could not create component '%s', you can register it with "
+                       "qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
                        qPrintable(instanceName),
                        qPrintable(instanceName));
         }
@@ -558,17 +570,13 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
             if (metaObj) {
                 if (!superIsClassName(metaObj->superClass(), super)) {
                     qCWarning(CUTELYST_CONTROLLER)
-                        << "Class name"
-                        << instanceName
-                        << "is not a derived class of"
-                        << super;
+                        << "Class name" << instanceName << "is not a derived class of" << super;
                 }
 
                 QObject *object = metaObj->newInstance();
                 if (!object) {
                     qCWarning(CUTELYST_CONTROLLER)
-                        << "Could create a new instance of"
-                        << instanceName
+                        << "Could create a new instance of" << instanceName
                         << "make sure it's default constructor is "
                            "marked with the Q_INVOKABLE macro";
                 }
@@ -589,7 +597,8 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
 
         if (!id) {
             qCCritical(CUTELYST_CONTROLLER,
-                       "Could not create component '%s', you can register it with qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
+                       "Could not create component '%s', you can register it with "
+                       "qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
                        qPrintable(instanceName),
                        qPrintable(instanceName));
         }

@@ -40,7 +40,9 @@ public:
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size() ? c->translate(translationContext.data(), format) : QString::fromUtf8(format);
+            const QString _format = translationContext.size()
+                                        ? c->translate(translationContext.data(), format)
+                                        : QString::fromUtf8(format);
             d                     = QDate::fromString(date, _format);
             if (d.isValid()) {
                 return d;
@@ -75,7 +77,9 @@ public:
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size() ? c->translate(translationContext.data(), format) : QString::fromUtf8(format);
+            const QString _format = translationContext.size()
+                                        ? c->translate(translationContext.data(), format)
+                                        : QString::fromUtf8(format);
             t                     = QTime::fromString(time, _format);
             if (t.isValid()) {
                 return t;
@@ -103,14 +107,19 @@ public:
         return t;
     }
 
-    QDateTime extractDateTime(Context *c, const QString &dateTime, const char *format = nullptr, const QTimeZone &tz = QTimeZone()) const
+    QDateTime extractDateTime(Context *c,
+                              const QString &dateTime,
+                              const char *format  = nullptr,
+                              const QTimeZone &tz = QTimeZone()) const
     {
         QDateTime dt;
 
         Q_ASSERT(c);
 
         if (format) {
-            const QString _format = translationContext.size() ? c->translate(translationContext.data(), format) : QString::fromUtf8(format);
+            const QString _format = translationContext.size()
+                                        ? c->translate(translationContext.data(), format)
+                                        : QString::fromUtf8(format);
             dt                    = QDateTime::fromString(dateTime, _format);
             if (dt.isValid()) {
                 if (tz.isValid()) {
@@ -151,7 +160,11 @@ public:
         return dt;
     }
 
-    QVariant extractOtherDateTime(Context *c, const ParamsMultiMap &params, const QString &field, const QTimeZone &tz = QTimeZone(), const char *format = nullptr) const
+    QVariant extractOtherDateTime(Context *c,
+                                  const ParamsMultiMap &params,
+                                  const QString &field,
+                                  const QTimeZone &tz = QTimeZone(),
+                                  const char *format  = nullptr) const
     {
         QVariant var;
 
@@ -213,7 +226,8 @@ public:
         return tz;
     }
 
-    static qlonglong extractLongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
+    static qlonglong
+        extractLongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         qlonglong val = 0;
 
@@ -242,7 +256,8 @@ public:
         return val;
     }
 
-    static qulonglong extractULongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
+    static qulonglong
+        extractULongLong(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         qulonglong val = 0;
 
@@ -271,7 +286,8 @@ public:
         return val;
     }
 
-    static double extractDouble(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
+    static double
+        extractDouble(Context *c, const ParamsMultiMap &params, const QVariant &value, bool *ok)
     {
         double val = 0.0;
 
@@ -342,7 +358,8 @@ public:
         {
             const short _v = value.toShort(&ok);
             if (ok) {
-                if ((_v < static_cast<short>(std::numeric_limits<char>::max())) && (_v > static_cast<short>(std::numeric_limits<char>::min()))) {
+                if ((_v < static_cast<short>(std::numeric_limits<char>::max())) &&
+                    (_v > static_cast<short>(std::numeric_limits<char>::min()))) {
                     var.setValue<char>(static_cast<char>(_v));
                 }
             }
@@ -375,7 +392,8 @@ public:
             //            const qlonglong v = c->locale().toLongLong(value, &ok);
             //            if (ok) {
             //                if (type == QMetaType::Long) {
-            //                    if (v < static_cast<qlonglong>(std::numeric_limits<long>::max())) {
+            //                    if (v < static_cast<qlonglong>(std::numeric_limits<long>::max()))
+            //                    {
             //                        var.setValue<long>(static_cast<long>(v));
             //                    }
             //                } else {
@@ -391,7 +409,8 @@ public:
         {
             const ushort _v = value.toUShort(&ok);
             if (ok) {
-                if ((_v < static_cast<ushort>(std::numeric_limits<uchar>::max())) && (_v > static_cast<ushort>(std::numeric_limits<uchar>::min()))) {
+                if ((_v < static_cast<ushort>(std::numeric_limits<uchar>::max())) &&
+                    (_v > static_cast<ushort>(std::numeric_limits<uchar>::min()))) {
                     var.setValue<uchar>(static_cast<uchar>(_v));
                 }
             }
@@ -424,7 +443,9 @@ public:
             //            const qulonglong v = c->locale().toULongLong(value, &ok);
             //            if (ok) {
             //                if (type == QMetaType::ULong) {
-            //                    if ((v > static_cast<qulonglong>(std::numeric_limits<ulong>::min())) && (v < static_cast<qulonglong>(std::numeric_limits<ulong>::max()))) {
+            //                    if ((v >
+            //                    static_cast<qulonglong>(std::numeric_limits<ulong>::min())) && (v
+            //                    < static_cast<qulonglong>(std::numeric_limits<ulong>::max()))) {
             //                        var.setValue<ulong>(static_cast<ulong>(v));
             //                    }
             //                } else {

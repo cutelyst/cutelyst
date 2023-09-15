@@ -13,7 +13,11 @@ namespace Cutelyst {
 class ValidatorMaxPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorMaxPrivate(const QString &f, QMetaType::Type t, const QVariant &m, const ValidatorMessages &msgs, const QString &dvk)
+    ValidatorMaxPrivate(const QString &f,
+                        QMetaType::Type t,
+                        const QVariant &m,
+                        const ValidatorMessages &msgs,
+                        const QString &dvk)
         : ValidatorRulePrivate(f, msgs, dvk)
         , type(t)
         , max(m)

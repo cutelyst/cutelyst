@@ -23,7 +23,10 @@ class TcpSslServer final : public TcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpSslServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent = nullptr);
+    explicit TcpSslServer(const QString &serverAddress,
+                          Protocol *protocol,
+                          Server *wsgi,
+                          QObject *parent = nullptr);
 
     virtual void incomingConnection(qintptr handle) override;
 

@@ -1,12 +1,12 @@
 #ifndef COOKIETEST_H
 #define COOKIETEST_H
 
-#include <QTest>
-#include <QLocale>
-
 #include "coverageobject.h"
 
 #include <Cutelyst/cookie.h>
+
+#include <QLocale>
+#include <QTest>
 
 using namespace Cutelyst;
 
@@ -14,7 +14,10 @@ class TestCookie : public CoverageObject
 {
     Q_OBJECT
 public:
-    explicit TestCookie(QObject *parent = nullptr) : CoverageObject(parent) {}
+    explicit TestCookie(QObject *parent = nullptr)
+        : CoverageObject(parent)
+    {
+    }
 
 private Q_SLOTS:
     void testDefaultConstructor();
@@ -155,15 +158,21 @@ void TestCookie::testToRawForm_data()
     const auto expire = QDateTime::currentDateTimeUtc().addDays(1);
     c.setExpirationDate(expire);
     QByteArray result = QByteArrayLiteral("foo=bar; secure; HttpOnly; SameSite=Strict; expires=");
-    result.append(QLocale::c().toString(expire, QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT")).toLatin1());
+    result.append(
+        QLocale::c().toString(expire, QStringLiteral("ddd, dd-MMM-yyyy hh:mm:ss 'GMT")).toLatin1());
     QTest::newRow("5") << c << result;
 
     c.setExpirationDate(QDateTime());
     c.setDomain(QStringLiteral("example.net"));
-    QTest::newRow("6") << c << QByteArrayLiteral("foo=bar; secure; HttpOnly; SameSite=Strict; domain=example.net");
+    QTest::newRow("6") << c
+                       << QByteArrayLiteral(
+                              "foo=bar; secure; HttpOnly; SameSite=Strict; domain=example.net");
 
     c.setPath(QStringLiteral("/somewhere"));
-    QTest::newRow("7") << c << QByteArrayLiteral("foo=bar; secure; HttpOnly; SameSite=Strict; domain=example.net; path=/somewhere");
+    QTest::newRow("7")
+        << c
+        << QByteArrayLiteral(
+               "foo=bar; secure; HttpOnly; SameSite=Strict; domain=example.net; path=/somewhere");
 }
 
 QTEST_MAIN(TestCookie)

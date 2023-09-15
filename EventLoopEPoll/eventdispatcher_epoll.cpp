@@ -107,7 +107,8 @@ bool EventDispatcherEPoll::unregisterTimers(QObject *object)
     return d->unregisterTimers(object);
 }
 
-QList<QAbstractEventDispatcher::TimerInfo> EventDispatcherEPoll::registeredTimers(QObject *object) const
+QList<QAbstractEventDispatcher::TimerInfo>
+    EventDispatcherEPoll::registeredTimers(QObject *object) const
 {
     if (!object) {
         qWarning("%s: invalid argument", Q_FUNC_INFO);
@@ -157,11 +158,10 @@ bool EventDispatcherEPoll::hasPendingEvents()
     return qGlobalPostedEventsCount() > 0;
 }
 
-void EventDispatcherEPoll::registerTimer(
-    int timerId,
-    int interval,
-    Qt::TimerType timerType,
-    QObject *object)
+void EventDispatcherEPoll::registerTimer(int timerId,
+                                         int interval,
+                                         Qt::TimerType timerType,
+                                         QObject *object)
 {
 #    ifndef QT_NO_DEBUG
     if (timerId < 1 || interval < 0 || !object) {
@@ -187,7 +187,10 @@ void EventDispatcherEPoll::flush()
 {
 }
 #else
-void EventDispatcherEPoll::registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object)
+void EventDispatcherEPoll::registerTimer(int timerId,
+                                         qint64 interval,
+                                         Qt::TimerType timerType,
+                                         QObject *object)
 {
 #    ifndef QT_NO_DEBUG
     if (timerId < 1 || interval < 0 || !object) {

@@ -121,7 +121,8 @@ Cutelee::Node *UriForTag::getNode(const QString &tagContent, Cutelee::Parser *p)
 
     parts.removeFirst(); // Not interested in the name of the tag.
     if (parts.isEmpty()) {
-        throw Cutelee::Exception(Cutelee::TagSyntaxError, QStringLiteral("c_uri_for requires at least the path"));
+        throw Cutelee::Exception(Cutelee::TagSyntaxError,
+                                 QStringLiteral("c_uri_for requires at least the path"));
     }
 
     return new UriFor(parts.first(), parts.mid(1), p);

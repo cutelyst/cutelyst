@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorIntegerPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorIntegerPrivate(const QString &f, QMetaType::Type t, const ValidatorMessages &m, const QString &dvk)
+    ValidatorIntegerPrivate(const QString &f,
+                            QMetaType::Type t,
+                            const ValidatorMessages &m,
+                            const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , type(t)
     {

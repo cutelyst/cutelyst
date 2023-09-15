@@ -38,7 +38,10 @@ using namespace Cutelyst;
 
 QByteArray dateHeader();
 
-CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMap &opts, Server *wsgi)
+CWsgiEngine::CWsgiEngine(Application *localApp,
+                         int workerCore,
+                         const QVariantMap &opts,
+                         Server *wsgi)
     : Engine(localApp, workerCore, opts)
     , m_wsgi(wsgi)
 {
@@ -51,9 +54,7 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
         m_socketTimeout->setInterval(std::chrono::seconds{m_wsgi->socketTimeout()});
     }
 
-    connect(this, &CWsgiEngine::shutdown, app(), [this] {
-        Q_EMIT app()->shuttingDown(app());
-    });
+    connect(this, &CWsgiEngine::shutdown, app(), [this] { Q_EMIT app()->shuttingDown(app()); });
 
     const QStringList staticMap  = m_wsgi->staticMap();
     const QStringList staticMap2 = m_wsgi->staticMap2();
@@ -61,11 +62,13 @@ CWsgiEngine::CWsgiEngine(Application *localApp, int workerCore, const QVariantMa
         auto staticMapPlugin = new StaticMap(app());
 
         for (const QString &part : staticMap) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
+            staticMapPlugin->addStaticMap(
+                part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), false);
         }
 
         for (const QString &part : staticMap2) {
-            staticMapPlugin->addStaticMap(part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
+            staticMapPlugin->addStaticMap(
+                part.section(QLatin1Char('='), 0, 0), part.section(QLatin1Char('='), 1, 1), true);
         }
     }
 }
@@ -91,7 +94,8 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
             if (server) {
                 ++m_runningServers;
                 if (m_socketTimeout) {
-                    connect(m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
+                    connect(
+                        m_socketTimeout, &QTimer::timeout, server, &TcpServer::timeoutConnections);
                 }
 
                 if (server->protocol()->type() == Protocol::Type::Http11) {
@@ -119,7 +123,10 @@ void CWsgiEngine::setServers(const std::vector<QObject *> &servers)
             if (server) {
                 ++m_runningServers;
                 if (m_socketTimeout) {
-                    connect(m_socketTimeout, &QTimer::timeout, server, &LocalServer::timeoutConnections);
+                    connect(m_socketTimeout,
+                            &QTimer::timeout,
+                            server,
+                            &LocalServer::timeoutConnections);
                 }
 
                 if (server->protocol()->type() == Protocol::Type::Http11) {
@@ -145,7 +152,8 @@ void CWsgiEngine::postFork(int workerId)
     if (Q_LIKELY(postForkApplication())) {
         Q_EMIT started();
     } else {
-        std::cerr << "Application failed to post fork, cheaping worker: " << workerId << ", core: " << workerCore() << std::endl;
+        std::cerr << "Application failed to post fork, cheaping worker: " << workerId
+                  << ", core: " << workerCore() << std::endl;
         Q_EMIT shutdown();
     }
 }
@@ -153,8 +161,9 @@ void CWsgiEngine::postFork(int workerId)
 QByteArray CWsgiEngine::dateHeader()
 {
     QString ret;
-    ret = QLatin1String("\r\nDate: ") + QLocale::c().toString(QDateTime::currentDateTimeUtc(),
-                                                              QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    ret = QLatin1String("\r\nDate: ") +
+          QLocale::c().toString(QDateTime::currentDateTimeUtc(),
+                                QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     return ret.toLatin1();
 }
 

@@ -58,11 +58,13 @@ MimePart *generatePart(Context *c, const ViewEmailTemplatePrivate *d, const QVar
     if (viewIt != partHash.constEnd() && !viewIt.value().toString().isEmpty()) {
         // use the view specified for the email part
         const QString viewString = viewIt.value().toString();
-        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Using specified view" << viewString << "for rendering.";
+        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE)
+            << "Using specified view" << viewString << "for rendering.";
         view = c->view(viewString);
     } else if (!defaultView.isEmpty()) {
         // if none specified use the configured default view
-        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE) << "Using default view" << defaultView << "for rendering.";
+        qCDebug(CUTELYST_VIEW_EMAILTEMPLATE)
+            << "Using default view" << defaultView << "for rendering.";
         view = c->view(defaultView);
     } else {
         // else fallback to Cutelysts default view

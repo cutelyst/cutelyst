@@ -7,7 +7,10 @@
 
 using namespace Cutelyst;
 
-ValidatorInteger::ValidatorInteger(const QString &field, QMetaType::Type type, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorInteger::ValidatorInteger(const QString &field,
+                                   QMetaType::Type type,
+                                   const Cutelyst::ValidatorMessages &messages,
+                                   const QString &defValKey)
     : ValidatorRule(*new ValidatorIntegerPrivate(field, type, messages, defValKey))
 {
 }
@@ -16,7 +19,8 @@ ValidatorInteger::~ValidatorInteger()
 {
 }
 
-ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
+ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
+                                               const ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
@@ -41,14 +45,24 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c, const Param
             break;
         default:
             result.errorMessage = validationDataError(c);
-            qCWarning(C_VALIDATOR, "ValidatorInteger: Conversion type for field %s at %s::%s is not an integer type.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCWarning(
+                C_VALIDATOR,
+                "ValidatorInteger: Conversion type for field %s at %s::%s is not an integer type.",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
             break;
         }
 
         if (converted.isValid()) {
             result.value = converted;
         } else {
-            qCDebug(C_VALIDATOR, "ValidatorInteger: Validation failed for field %s at %s::%s: not an integer value.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(
+                C_VALIDATOR,
+                "ValidatorInteger: Validation failed for field %s at %s::%s: not an integer value.",
+                qPrintable(field()),
+                qPrintable(c->controllerName()),
+                qPrintable(c->actionName()));
             result.errorMessage = validationError(c);
         }
     } else {
@@ -111,10 +125,16 @@ QString ValidatorInteger::genericValidationError(Context *c, const QVariant &err
     }
     if (_label.isEmpty()) {
         //: %1 is the minimum numerical limit for the selected type, %2 is the maximum numeric limit
-        error = c->translate("Cutelyst::ValidatorInteger", "Not a valid integer value between %1 and %2.").arg(min, max);
+        error = c->translate("Cutelyst::ValidatorInteger",
+                             "Not a valid integer value between %1 and %2.")
+                    .arg(min, max);
     } else {
-        //: %1 will be replaced by the field name, %2 is the minimum numerical limit for the selected type, %3 is the maximum numeric limit
-        error = c->translate("Cutelyst::ValidatorInteger", "The value in the “%1“ field is not a valid integer between %2 and %3.").arg(_label, min, max);
+        //: %1 will be replaced by the field name, %2 is the minimum numerical limit for the
+        //: selected type, %3 is the maximum numeric limit
+        error =
+            c->translate("Cutelyst::ValidatorInteger",
+                         "The value in the “%1“ field is not a valid integer between %2 and %3.")
+                .arg(_label, min, max);
     }
     return error;
 }

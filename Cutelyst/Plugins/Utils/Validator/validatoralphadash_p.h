@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorAlphaDashPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorAlphaDashPrivate(const QString &f, bool ao, const ValidatorMessages &m, const QString &dvk)
+    ValidatorAlphaDashPrivate(const QString &f,
+                              bool ao,
+                              const ValidatorMessages &m,
+                              const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , asciiOnly(ao)
     {

@@ -7,7 +7,9 @@
 
 using namespace Cutelyst;
 
-ValidatorNumeric::ValidatorNumeric(const QString &field, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorNumeric::ValidatorNumeric(const QString &field,
+                                   const Cutelyst::ValidatorMessages &messages,
+                                   const QString &defValKey)
     : ValidatorRule(*new ValidatorNumericPrivate(field, messages, defValKey))
 {
 }
@@ -28,7 +30,12 @@ ValidatorReturnType ValidatorNumeric::validate(Context *c, const ParamsMultiMap 
         if (Q_LIKELY(ok)) {
             result.value.setValue(_v);
         } else {
-            qCDebug(C_VALIDATOR, "ValidatorNumeric: Validation failed for field %s at %s::%s: can not convert input value into a numeric value.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorNumeric: Validation failed for field %s at %s::%s: can not convert "
+                    "input value into a numeric value.",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
             result.errorMessage = validationError(c);
         }
     } else {
@@ -44,10 +51,15 @@ QString ValidatorNumeric::genericValidationError(Context *c, const QVariant &err
     Q_UNUSED(errorData)
     const QString _label = label(c);
     if (_label.isEmpty()) {
-        error = c->translate("Cutelyst::ValidatorNumeric", "Must be numeric, like 1, -2.5 or 3.454e3.");
+        error =
+            c->translate("Cutelyst::ValidatorNumeric", "Must be numeric, like 1, -2.5 or 3.454e3.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorNumeric", "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3.").arg(_label);
+        error =
+            c->translate(
+                 "Cutelyst::ValidatorNumeric",
+                 "You have to enter a numeric value into the “%1” field, like 1, -2.5 or 3.454e3.")
+                .arg(_label);
     }
     return error;
 }

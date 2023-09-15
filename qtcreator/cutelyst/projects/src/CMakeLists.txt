@@ -14,4 +14,3 @@ target_link_libraries(%{ProjectName}
     Qt5::Core
     Qt5::Network
 )
-

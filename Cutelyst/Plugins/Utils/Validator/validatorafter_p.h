@@ -15,7 +15,12 @@ namespace Cutelyst {
 class ValidatorAfterPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorAfterPrivate(const QString &f, const QVariant &comp, const QString &tz, const char *i, const ValidatorMessages &m, const QString &dvk)
+    ValidatorAfterPrivate(const QString &f,
+                          const QVariant &comp,
+                          const QString &tz,
+                          const char *i,
+                          const ValidatorMessages &m,
+                          const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , comparison(comp)
         , timeZone(tz)

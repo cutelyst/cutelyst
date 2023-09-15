@@ -13,7 +13,12 @@ namespace Cutelyst {
 class ValidatorBetweenPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorBetweenPrivate(const QString &f, QMetaType::Type t, const QVariant &mi, const QVariant &ma, const ValidatorMessages &m, const QString &dvk)
+    ValidatorBetweenPrivate(const QString &f,
+                            QMetaType::Type t,
+                            const QVariant &mi,
+                            const QVariant &ma,
+                            const ValidatorMessages &m,
+                            const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , min(mi)
         , max(ma)

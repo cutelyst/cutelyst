@@ -26,7 +26,8 @@ protected:
     bool doExecute(Context *c) override;
 };
 
-class ActionRESTFactory final : public QObject
+class ActionRESTFactory final
+    : public QObject
     , public ComponentFactory
 {
     Q_OBJECT

@@ -15,7 +15,11 @@ namespace Cutelyst {
 class ValidatorInPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorInPrivate(const QString &f, const QVariant &vs, Qt::CaseSensitivity c, const ValidatorMessages &m, const QString &dvk)
+    ValidatorInPrivate(const QString &f,
+                       const QVariant &vs,
+                       Qt::CaseSensitivity c,
+                       const ValidatorMessages &m,
+                       const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , cs(c)
         , values(vs)

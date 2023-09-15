@@ -21,7 +21,9 @@ class UriFor final : public Grantlee::Node
 {
     Q_OBJECT
 public:
-    explicit UriFor(const QString &path, const QStringList &args, Grantlee::Parser *parser = nullptr);
+    explicit UriFor(const QString &path,
+                    const QStringList &args,
+                    Grantlee::Parser *parser = nullptr);
 
     void render(Grantlee::OutputStream *stream, Grantlee::Context *gc) const override;
 

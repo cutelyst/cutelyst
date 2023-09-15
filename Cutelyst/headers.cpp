@@ -40,7 +40,8 @@ void Headers::setContentDispositionAttachment(const QString &filename)
     if (filename.isEmpty()) {
         setContentDisposition(QStringLiteral("attachment"));
     } else {
-        setContentDisposition(QLatin1String("attachment; filename=\"") + filename + QLatin1Char('"'));
+        setContentDisposition(QLatin1String("attachment; filename=\"") + filename +
+                              QLatin1Char('"'));
     }
 }
 
@@ -127,8 +128,7 @@ bool Headers::contentIsText() const
 bool Headers::contentIsHtml() const
 {
     const QString ct = contentType();
-    return ct.compare(u"text/html") == 0 ||
-           ct.compare(u"application/xhtml+xml") == 0 ||
+    return ct.compare(u"text/html") == 0 || ct.compare(u"application/xhtml+xml") == 0 ||
            ct.compare(u"application/vnd.wap.xhtml+xml") == 0;
 }
 
@@ -142,8 +142,7 @@ bool Headers::contentIsXHtml() const
 bool Headers::contentIsXml() const
 {
     const QString ct = contentType();
-    return ct.compare(u"text/xml") == 0 ||
-           ct.compare(u"application/xml") == 0 ||
+    return ct.compare(u"text/xml") == 0 || ct.compare(u"application/xml") == 0 ||
            ct.endsWith(u"xml");
 }
 
@@ -174,8 +173,7 @@ QString Headers::setDateWithDateTime(const QDateTime &date)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    QString dt = QLocale::c().toString(date.toUTC(),
-                                       u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
+    QString dt = QLocale::c().toString(date.toUTC(), u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     m_data.replace(QStringLiteral("DATE"), dt);
     return dt;
 }
@@ -191,8 +189,7 @@ QDateTime Headers::date() const
             ret = QLocale::c().toDateTime(date.left(date.size() - 4),
                                           QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
-            ret = QLocale::c().toDateTime(date,
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret = QLocale::c().toDateTime(date, QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         }
         ret.setTimeSpec(Qt::UTC);
     }
@@ -216,8 +213,8 @@ QDateTime Headers::ifModifiedSinceDateTime() const
             ret = QLocale::c().toDateTime(ifModifiedStr.left(ifModifiedStr.size() - 4),
                                           QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         } else {
-            ret = QLocale::c().toDateTime(ifModifiedStr,
-                                          QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
+            ret =
+                QLocale::c().toDateTime(ifModifiedStr, QStringLiteral("ddd, dd MMM yyyy hh:mm:ss"));
         }
         ret.setTimeSpec(Qt::UTC);
     }
@@ -229,8 +226,8 @@ bool Headers::ifModifiedSince(const QDateTime &lastModified) const
 {
     auto it = m_data.constFind(QStringLiteral("IF_MODIFIED_SINCE"));
     if (it != m_data.constEnd()) {
-        return it.value() != QLocale::c().toString(lastModified.toUTC(),
-                                                   u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
+        return it.value() !=
+               QLocale::c().toString(lastModified.toUTC(), u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     }
     return true;
 }
@@ -276,8 +273,7 @@ QString Headers::setLastModified(const QDateTime &lastModified)
 {
     // ALL dates must be in GMT timezone http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html
     // and follow RFC 822
-    auto dt = QLocale::c().toString(lastModified.toUTC(),
-                                    u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
+    auto dt = QLocale::c().toString(lastModified.toUTC(), u"ddd, dd MMM yyyy hh:mm:ss 'GMT");
     setLastModified(dt);
     return dt;
 }
@@ -367,7 +363,7 @@ QString Headers::setAuthorizationBasic(const QString &username, const QString &p
     }
 
     const QString result = username + QLatin1Char(':') + password;
-    ret                  = QLatin1String("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
+    ret = QLatin1String("Basic ") + QString::fromLatin1(result.toLatin1().toBase64());
     m_data.replace(QStringLiteral("AUTHORIZATION"), ret);
     return ret;
 }
@@ -483,9 +479,7 @@ QDebug operator<<(QDebug debug, const Headers &headers)
     const QMultiHash<QString, QString> data = headers.data();
     const bool oldSetting                   = debug.autoInsertSpaces();
     debug.nospace() << "Headers[";
-    for (auto it = data.constBegin();
-         it != data.constEnd();
-         ++it) {
+    for (auto it = data.constBegin(); it != data.constEnd(); ++it) {
         debug << '(' << Engine::camelCaseHeader(it.key()) + QLatin1Char('=') + it.value() << ')';
     }
     debug << ']';

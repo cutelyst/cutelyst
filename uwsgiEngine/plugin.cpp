@@ -3,21 +3,19 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include "engineuwsgi.h"
-
 #include "uwsgiconnection.h"
 
+#include <Cutelyst/application.h>
 #include <uwsgi.h>
 
-#include <Cutelyst/application.h>
-
 #include <QCoreApplication>
-#include <QSocketNotifier>
-#include <QPluginLoader>
-#include <QFileInfo>
 #include <QDir>
+#include <QFileInfo>
+#include <QPluginLoader>
+#include <QSocketNotifier>
 
 #ifdef Q_OS_LINUX
-#include "../EventLoopEPoll/eventdispatcher_epoll.h"
+#    include "../EventLoopEPoll/eventdispatcher_epoll.h"
 #endif
 
 #define CUTELYST_MODIFIER1 0
@@ -40,7 +38,7 @@ void uwsgi_cutelyst_loop(void);
  */
 void uwsgi_cutelyst_on_load()
 {
-    uwsgi_register_loop( (char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
+    uwsgi_register_loop((char *) "CutelystQtLoop", uwsgi_cutelyst_loop);
     config = new QVariantMap;
 
     // Get the uwsgi options
@@ -61,7 +59,7 @@ void uwsgi_cutelyst_on_load()
     // Set the configuration env
     auto it = opts.constFind(QLatin1String("ini"));
     if (it != opts.constEnd()) {
-        const QString ini = cwd.absoluteFilePath(it.value().toString());
+        const QString ini     = cwd.absoluteFilePath(it.value().toString());
         QVariantMap iniConfig = Engine::loadIniConfig(ini);
         config->unite(iniConfig);
         if (!qEnvironmentVariableIsSet("QT_LOGGING_CONF")) {
@@ -182,13 +180,15 @@ void uwsgi_cutelyst_init_apps()
 
     QObject *instance = loader->instance();
     if (!instance) {
-        qCCritical(CUTELYST_UWSGI) << "Could not get a QObject instance: %s\n" << loader->errorString();
+        qCCritical(CUTELYST_UWSGI) << "Could not get a QObject instance: %s\n"
+                                   << loader->errorString();
         exit(1);
     }
 
     auto app = qobject_cast<Application *>(instance);
     if (!app) {
-        qCCritical(CUTELYST_UWSGI) << "Could not cast Cutelyst::Application from instance: %s\n" << loader->errorString();
+        qCCritical(CUTELYST_UWSGI) << "Could not cast Cutelyst::Application from instance: %s\n"
+                                   << loader->errorString();
         exit(1);
     }
 
@@ -260,8 +260,7 @@ void uwsgi_cutelyst_init_apps()
 void uwsgi_cutelyst_watch_signal(int signalFD)
 {
     auto socketNotifier = new QSocketNotifier(signalFD, QSocketNotifier::Read);
-    QObject::connect(socketNotifier, &QSocketNotifier::activated,
-                     [=](int fd) {
+    QObject::connect(socketNotifier, &QSocketNotifier::activated, [=](int fd) {
         socketNotifier->setEnabled(false);
         uwsgi_receive_signal(fd, (char *) "worker", uwsgi.mywid);
         socketNotifier->setEnabled(true);
@@ -310,39 +309,45 @@ void cuteOutput(QtMsgType type, const QMessageLogContext &context, const QString
 
 struct uwsgi_option uwsgi_cutelyst_options[] = {
 
-{const_cast<char *>("cutelyst-app"), required_argument, 0, const_cast<char *>("loads the Cutelyst Application"), uwsgi_opt_set_str, &options.app, 0},
-{0, 0, 0, 0, 0, 0, 0},
+    {const_cast<char *>("cutelyst-app"),
+     required_argument,
+     0,
+     const_cast<char *>("loads the Cutelyst Application"),
+     uwsgi_opt_set_str,
+     &options.app,
+     0},
+    {0, 0, 0, 0, 0, 0, 0},
 
 };
 
 struct uwsgi_plugin CUTELYST_LIBRARY cutelyst2_plugin = {
-    "cutelyst", // name
-    0, // alias
-    0, // modifier1
-    0, // data
-    uwsgi_cutelyst_on_load, // on_load
-    uwsgi_cutelyst_init, // init
-    0, // post_init
+    "cutelyst",               // name
+    0,                        // alias
+    0,                        // modifier1
+    0,                        // data
+    uwsgi_cutelyst_on_load,   // on_load
+    uwsgi_cutelyst_init,      // init
+    0,                        // post_init
     uwsgi_cutelyst_post_fork, // post_fork
-    uwsgi_cutelyst_options, // options
-    0, // enable threads
-    0, // init thread
-    uwsgi_cutelyst_request, // request
-    0, // after request
-    0, // pre init apps
+    uwsgi_cutelyst_options,   // options
+    0,                        // enable threads
+    0,                        // init thread
+    uwsgi_cutelyst_request,   // request
+    0,                        // after request
+    0,                        // pre init apps
     uwsgi_cutelyst_init_apps, // init apps
-    0, // post init apps
-    0, // (*fixup) (void);
-    0, //void (*master_fixup) (int);
-    0, // master_cycle) (void);
-    0, //int (*mount_app) (char *, char *);
-    0, //int (*manage_udp) (char *, int, char *, int);
-    0, //void (*suspend) (struct wsgi_request *);
-    0, //void (*resume) (struct wsgi_request *);
+    0,                        // post init apps
+    0,                        // (*fixup) (void);
+    0,                        // void (*master_fixup) (int);
+    0,                        // master_cycle) (void);
+    0,                        // int (*mount_app) (char *, char *);
+    0,                        // int (*manage_udp) (char *, int, char *, int);
+    0,                        // void (*suspend) (struct wsgi_request *);
+    0,                        // void (*resume) (struct wsgi_request *);
 
-    0, //void (*harakiri) (int);
+    0, // void (*harakiri) (int);
 
-    0, //void (*hijack_worker) (void);
-    0, //void (*spooler_init) (void);
+    0,                     // void (*hijack_worker) (void);
+    0,                     // void (*spooler_init) (void);
     uwsgi_cutelyst_atexit, // atexit
 };

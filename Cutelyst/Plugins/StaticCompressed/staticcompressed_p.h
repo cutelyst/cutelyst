@@ -18,17 +18,16 @@ class Context;
 class StaticCompressedPrivate
 {
 public:
-    enum Compression {
-        Gzip,
-        Zopfli,
-        Brotli,
-        Deflate
-    };
+    enum Compression { Gzip, Zopfli, Brotli, Deflate };
 
     void beforePrepareAction(Context *c, bool *skipMethod);
     bool locateCompressedFile(Context *c, const QString &relPath) const;
-    QString locateCacheFile(const QString &origPath, const QDateTime &origLastModified, Compression compression) const;
-    bool compressGzip(const QString &inputPath, const QString &outputPath, const QDateTime &origLastModified) const;
+    QString locateCacheFile(const QString &origPath,
+                            const QDateTime &origLastModified,
+                            Compression compression) const;
+    bool compressGzip(const QString &inputPath,
+                      const QString &outputPath,
+                      const QDateTime &origLastModified) const;
     bool compressDeflate(const QString &inputPath, const QString &outputPath) const;
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
     bool compressZopfli(const QString &inputPath, const QString &outputPath) const;

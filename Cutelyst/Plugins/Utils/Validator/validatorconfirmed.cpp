@@ -32,7 +32,11 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 
         if (Q_UNLIKELY(v != ofv)) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR, "ValidatorConfirmed: Failed to confirm the value in the field %s in %s::%s.", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorConfirmed: Failed to confirm the value in the field %s in %s::%s.",
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
         } else {
             result.value.setValue(v);
         }
@@ -50,7 +54,9 @@ QString ValidatorConfirmed::genericValidationError(Context *c, const QVariant &e
         error = c->translate("Cutelyst::ValidatorConfirmed", "Confirmation failed.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorConfirmed", "The value in the “%1“ field has not been confirmed.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorConfirmed",
+                             "The value in the “%1“ field has not been confirmed.")
+                    .arg(_label);
     }
     return error;
 }

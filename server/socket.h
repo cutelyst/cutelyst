@@ -57,7 +57,8 @@ public:
     bool timeout = false;
 };
 
-class TcpSocket final : public QTcpSocket
+class TcpSocket final
+    : public QTcpSocket
     , public Socket
 {
     Q_OBJECT
@@ -78,7 +79,8 @@ Q_SIGNALS:
 
 #ifndef QT_NO_SSL
 
-class SslSocket final : public QSslSocket
+class SslSocket final
+    : public QSslSocket
     , public Socket
 {
     Q_OBJECT
@@ -97,7 +99,8 @@ Q_SIGNALS:
 
 #endif // QT_NO_SSL
 
-class LocalSocket final : public QLocalSocket
+class LocalSocket final
+    : public QLocalSocket
     , public Socket
 {
     Q_OBJECT

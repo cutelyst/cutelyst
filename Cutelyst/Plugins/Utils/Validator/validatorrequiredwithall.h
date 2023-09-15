@@ -17,19 +17,23 @@ class ValidatorRequiredWithAllPrivate;
 
 /*!
  * \ingroup plugins-utils-validator-rules
- * \class ValidatorRequiredWithAll validatorrequiredwithall.h <Cutelyst/Plugins/Utils/validatorrequiredwithall.h>
- * \brief The field under validation must be present and not empty only if all of the other specified fields are present.
+ * \class ValidatorRequiredWithAll validatorrequiredwithall.h
+ * <Cutelyst/Plugins/Utils/validatorrequiredwithall.h> \brief The field under validation must be
+ * present and not empty only if all of the other specified fields are present.
  *
- * If \b all of the fields defined in the \a otherFields list are present in the input data, the \a field under validation must
- * be present and not empty. For the other fields only their presence will be checked, not their content.
+ * If \b all of the fields defined in the \a otherFields list are present in the input data, the \a
+ * field under validation must be present and not empty. For the other fields only their presence
+ * will be checked, not their content.
  *
- * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
- * whitespaces will be removed from the beginning and the end of the input value before validation. So, fields that only contain
- * whitespaces will be treated as empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link
+ * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
+ * end of the input value before validation. So, fields that only contain whitespaces will be
+ * treated as empty.
  *
  * \sa Validator for general usage of validators.
  *
- * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith, ValidatorRequiredWithout, ValidatorRequiredWithoutAll
+ * \sa ValidatorRequired, ValidatorRequiredIf, ValidatorRequiredUnless, ValidatorRequiredWith,
+ * ValidatorRequiredWithout, ValidatorRequiredWithoutAll
  */
 class CUTELYST_PLUGIN_UTILS_VALIDATOR_EXPORT ValidatorRequiredWithAll : public ValidatorRule
 {
@@ -37,10 +41,12 @@ public:
     /*!
      * \brief Constructs a new required with all validator.
      * \param field         Name of the input field to validate.
-     * \param otherFields   List of fields that mus all be present in the input data to require the field.
-     * \param messages      Custom error messages if validation fails.
+     * \param otherFields   List of fields that mus all be present in the input data to require the
+     * field. \param messages      Custom error messages if validation fails.
      */
-    ValidatorRequiredWithAll(const QString &field, const QStringList &otherFields, const ValidatorMessages &messages = ValidatorMessages());
+    ValidatorRequiredWithAll(const QString &field,
+                             const QStringList &otherFields,
+                             const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the required with all validator.
@@ -59,7 +65,8 @@ protected:
     /*!
      * \brief Returns a generic error message if validation failed.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorRequiredWithAll)

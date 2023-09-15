@@ -15,7 +15,8 @@
 #        define CUTELYST_GRANTLEE_URIFOR_EXPORT Q_DECL_IMPORT
 #    endif
 
-class CutelystGrantlee final : public QObject
+class CutelystGrantlee final
+    : public QObject
     , public Grantlee::TagLibraryInterface
 {
     Q_OBJECT
@@ -24,7 +25,8 @@ class CutelystGrantlee final : public QObject
 public:
     explicit CutelystGrantlee(QObject *parent = nullptr);
 
-    virtual QHash<QString, Grantlee::AbstractNodeFactory *> nodeFactories(const QString &name = QString()) override;
+    virtual QHash<QString, Grantlee::AbstractNodeFactory *>
+        nodeFactories(const QString &name = QString()) override;
 
     virtual QHash<QString, Grantlee::Filter *> filters(const QString &name = QString()) override;
 };

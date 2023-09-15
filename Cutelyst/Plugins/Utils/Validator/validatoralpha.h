@@ -19,13 +19,15 @@ class ValidatorAlphaPrivate;
  * \brief Validates an input field for only alphabetic content.
  *
  * The \a field under validation is only allowed to contain alphabetic characters.
- * If \a asciiOnly is set to \c true, only US-ASCII characters are allowed, otherwise all UTF-8 alpha-numeric characters are allowed.
+ * If \a asciiOnly is set to \c true, only US-ASCII characters are allowed, otherwise all UTF-8
+ * alpha-numeric characters are allowed.
  *
- * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
- * whitespaces will be removed from the beginning and the end of the input value before validation.
- * If the \a field's value is empty or if the \a field is missing in the input data, the validation will succeed without
- * performing the validation itself. Use one of the \link ValidatorRequired required validators \endlink to require the
- * field to be present and not empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link
+ * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
+ * end of the input value before validation. If the \a field's value is empty or if the \a field is
+ * missing in the input data, the validation will succeed without performing the validation itself.
+ * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
+ * present and not empty.
  *
  * \par Examples
  * \code
@@ -48,9 +50,13 @@ public:
      * \param field         Name of the input field to validate.
      * \param asciiOnly     If \c true, only ASCII characters are allowed.
      * \param messages      Custom error messages if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
+     * input field is empty. This value will \b NOT be validated.
      */
-    ValidatorAlpha(const QString &field, bool asciiOnly = false, const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
+    ValidatorAlpha(const QString &field,
+                   bool asciiOnly                    = false,
+                   const ValidatorMessages &messages = ValidatorMessages(),
+                   const QString &defValKey          = QString());
 
     /*!
      * \brief Deconstructs the alpha validator.
@@ -78,7 +84,8 @@ protected:
     /*!
      * \brief Returns a generic error message if validation failed.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorAlpha)

@@ -4,13 +4,13 @@
  */
 #include "helper.h"
 
-#include <QMimeDatabase>
 #include <QDir>
 #include <QDirIterator>
+#include <QMimeDatabase>
 
-Helper::Helper(QObject *parent) : QObject(parent)
+Helper::Helper(QObject *parent)
+    : QObject(parent)
 {
-
 }
 
 bool Helper::findProjectDir(const QDir &dir, QDir *projectDir)
@@ -41,7 +41,7 @@ QString Helper::findApplication(const QDir &projectDir)
 
     QDirIterator it(projectDir.absolutePath(), QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext()) {
-        QString file = it.next();
+        QString file         = it.next();
         const QMimeType mime = m_db.mimeTypeForFile(file);
         if (mime.inherits(QStringLiteral("application/x-sharedlib"))) {
             return file;

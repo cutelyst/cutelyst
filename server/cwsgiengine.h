@@ -26,7 +26,10 @@ class CWsgiEngine final : public Cutelyst::Engine
 {
     Q_OBJECT
 public:
-    CWsgiEngine(Cutelyst::Application *localApp, int workerCore, const QVariantMap &opts, Server *wsgi);
+    CWsgiEngine(Cutelyst::Application *localApp,
+                int workerCore,
+                const QVariantMap &opts,
+                Server *wsgi);
     virtual ~CWsgiEngine() override;
 
     virtual int workerId() const override;

@@ -22,21 +22,23 @@ class ValidatorResultPrivate;
  * \class ValidatorResult validatorresult.h <Cutelyst/Plugins/Utils/ValdatorResult>
  * \brief Provides information about performed validations.
  *
- * %ValidatorResult will be returned by Validator when calling \link Validator::validate() validate()\endlink on it.
- * It contains information about occurred validation errors, like the error strings of each failed validator and a
- * list of fields where validation failed.
+ * %ValidatorResult will be returned by Validator when calling \link Validator::validate()
+ * validate()\endlink on it. It contains information about occurred validation errors, like the
+ * error strings of each failed validator and a list of fields where validation failed.
  *
- * Additionally to the error messages that occure if validation fails for one or more fields, %ValidatorResult will
- * also contain the extracted values from the input parameters. Use values() to return all values or value() to
- * return the value for a single field. Because there will be only one value stored for each field, you should order
- * your validators in a way that a validator for a field comes last that converts the input QString into the
- * wanted type. See the documentation for the specific validator to see what type of data it returns.
+ * Additionally to the error messages that occure if validation fails for one or more fields,
+ * %ValidatorResult will also contain the extracted values from the input parameters. Use values()
+ * to return all values or value() to return the value for a single field. Because there will be
+ * only one value stored for each field, you should order your validators in a way that a validator
+ * for a field comes last that converts the input QString into the wanted type. See the
+ * documentation for the specific validator to see what type of data it returns.
  *
- * Some validators might even return more details about the validation result. This extra data can be returned with
- * the extras() method for all input parameters or with extra() for a single one.
+ * Some validators might even return more details about the validation result. This extra data can
+ * be returned with the extras() method for all input parameters or with extra() for a single one.
  *
- * Beside the isValid() function, that returns \c true if the complete validation process was successful and \c false
- * if any of the validators failed, %ValidatorResult provides a bool operator that makes it usable in \c if statements.
+ * Beside the isValid() function, that returns \c true if the complete validation process was
+ * successful and \c false if any of the validators failed, %ValidatorResult provides a bool
+ * operator that makes it usable in \c if statements.
  *
  * \code{.cpp}
  * void MyController:do_form(Context *c)
@@ -101,9 +103,9 @@ public:
 
     /*!
      * \brief Adds new error information to the internal QHash.
-     * \param field     Name of the input \link Request::parameters() parameter\endlink that has validation errors.
-     * \param message   Error message shown to the user.
-     * \sa errorString() errors() hasErrors()
+     * \param field     Name of the input \link Request::parameters() parameter\endlink that has
+     * validation errors. \param message   Error message shown to the user. \sa errorString()
+     * errors() hasErrors()
      */
     void addError(const QString &field, const QString &message);
 
@@ -115,8 +117,9 @@ public:
 
     /*!
      * \brief Returns a dictionary containing fields with errors.
-     * \return A QHash containing the name of the input \link Request::parameters() parameter\endlink as key and
-     * a list of validation errors for this parameter in a QStringList as value.
+     * \return A QHash containing the name of the input \link Request::parameters()
+     * parameter\endlink as key and a list of validation errors for this parameter in a QStringList
+     * as value.
      */
     QHash<QString, QStringList> errors() const;
 
@@ -152,8 +155,8 @@ public:
 
     /*!
      * \brief Returns a list of fields with errors.
-     * \return A list of of  input \link Request::parameters() parameter\endlink names that have validation errors.
-     * \since Cutelyst 1.12.0
+     * \return A list of of  input \link Request::parameters() parameter\endlink names that have
+     * validation errors. \since Cutelyst 1.12.0
      */
     QStringList failedFields() const;
 
@@ -162,46 +165,40 @@ public:
      *
      * \note A newly constructed ValidatorResult will be valid by default.
      */
-    explicit operator bool() const
-    {
-        return isValid();
-    }
+    explicit operator bool() const { return isValid(); }
 
     /*!
      * \brief Returns the values that have been extracted by the validators.
-     * \return A QVariantHash where the key is the name of the input \link Request::parameters() parameter\endlink and
-     * the value contains the value extracted from the input parameter. Have a look at the documentation of the specific
-     * validator to see what kind of extracted value they will provide.
-     * \sa value() addValue()
-     * \since Cutelyst 2.0.0
+     * \return A QVariantHash where the key is the name of the input \link Request::parameters()
+     * parameter\endlink and the value contains the value extracted from the input parameter. Have a
+     * look at the documentation of the specific validator to see what kind of extracted value they
+     * will provide. \sa value() addValue() \since Cutelyst 2.0.0
      */
     QVariantHash values() const;
 
     /*!
      * \brief Returns the extracted value for the input \a field.
-     * \param field Name of the input \link Request::parameters() parameter\endlink to get the value for.
-     * \return The extracted value in a QVariant. If there is no value for the \a field, the returned QVariant will
-     * be default constructed. Have a look at the documentation of the specific validator to see what kind of extracted
-     * value they will provide.
-     * \sa values() addValue()
-     * \since Cutelyst 2.0.0
+     * \param field Name of the input \link Request::parameters() parameter\endlink to get the value
+     * for. \return The extracted value in a QVariant. If there is no value for the \a field, the
+     * returned QVariant will be default constructed. Have a look at the documentation of the
+     * specific validator to see what kind of extracted value they will provide. \sa values()
+     * addValue() \since Cutelyst 2.0.0
      */
     QVariant value(const QString &field) const;
 
     /*!
      * \brief Adds a new \a value extracted from the specified input \a field.
-     * \param field Name of the input \link Request::parameters() parameter\endlink the value has been extracted from.
-     * \param value Value as it has been extracted and maybe converted by the validator.
-     * \sa values() value()
-     * \since Cutelyst 2.0.0
+     * \param field Name of the input \link Request::parameters() parameter\endlink the value has
+     * been extracted from. \param value Value as it has been extracted and maybe converted by the
+     * validator. \sa values() value() \since Cutelyst 2.0.0
      */
     void addValue(const QString &field, const QVariant &value);
 
     /*!
      * \brief Returns all extra data that has been extracted by the validators.
-     * \return A QVariantHash where the key is the name of the input \link Request::parameters() parameter\endlink
-     * and the value contains the extra data for that field.Have a look at the documentation of the specific
-     * validators to see what kind of extra data they might generate.
+     * \return A QVariantHash where the key is the name of the input \link Request::parameters()
+     * parameter\endlink and the value contains the extra data for that field.Have a look at the
+     * documentation of the specific validators to see what kind of extra data they might generate.
      * \sa extra() addExtra()
      * \since Cutelyst 2.0.0
      */
@@ -209,21 +206,19 @@ public:
 
     /*!
      * \brief Returns the extra data for the input \a field.
-     * \param field Name of the input \link Request::parameters() parameter\endlink to get the extra data for.
-     * \return A QVariant containing extra data generated by the validators. If the \a field does not have any
-     * extra data, a default constructed QVariant will be returned. Have a look at the documentation of the
-     * specific validators to see what kind of extra data they might generate.
-     * \sa extras() addExtra()
-     * \since Cutelyst 2.0.0
+     * \param field Name of the input \link Request::parameters() parameter\endlink to get the extra
+     * data for. \return A QVariant containing extra data generated by the validators. If the \a
+     * field does not have any extra data, a default constructed QVariant will be returned. Have a
+     * look at the documentation of the specific validators to see what kind of extra data they
+     * might generate. \sa extras() addExtra() \since Cutelyst 2.0.0
      */
     QVariant extra(const QString &field) const;
 
     /*!
      * \brief Adds new \a extra data that came up when validating the input \a field.
-     * \param field Name of the input \link Request::parameters() parameter\endlink the extra data occurred for.
-     * \param extra The additional validation data.
-     * \sa extras() extra()
-     * \since Cutelyst 2.0.0
+     * \param field Name of the input \link Request::parameters() parameter\endlink the extra data
+     * occurred for. \param extra The additional validation data. \sa extras() extra() \since
+     * Cutelyst 2.0.0
      */
     void addExtra(const QString &field, const QVariant &extra);
 

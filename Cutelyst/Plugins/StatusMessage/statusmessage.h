@@ -34,22 +34,26 @@ public:
     void setSessionPrefix(const QString &sessionPrefix);
 
     /**
-     * Returns the name of the URL param that holds the token on the page where you want to retrieve/display the status message.
+     * Returns the name of the URL param that holds the token on the page where you want to
+     * retrieve/display the status message.
      */
     QString tokenParam() const;
 
     /**
-     * Sets the name of the URL param that holds the token on the page where you want to retrieve/display the status message. Defaults to "mid".
+     * Sets the name of the URL param that holds the token on the page where you want to
+     * retrieve/display the status message. Defaults to "mid".
      */
     void setTokenParam(const QString &tokenParam);
 
     /**
-     * Returns the name of the stash key where "success" status messages are loaded when load() is called. Defaults to status_msg.
+     * Returns the name of the stash key where "success" status messages are loaded when load() is
+     * called. Defaults to status_msg.
      */
     QString statusMsgStashKey() const;
 
     /**
-     * Sets the name of the stash key where "success" status messages are loaded when load() is called. Defaults to status_msg.
+     * Sets the name of the stash key where "success" status messages are loaded when load() is
+     * called. Defaults to status_msg.
      */
     void setStatusMsgStashKey(const QString &statusMsgStashKey);
 
@@ -59,12 +63,14 @@ public:
     QString errorMgStashKey() const;
 
     /**
-     * Sets the name of the stash key where error messages are loaded when load() is called. Defaults to error_msg.
+     * Sets the name of the stash key where error messages are loaded when load() is called.
+     * Defaults to error_msg.
      */
     void setErrorMgStashKey(const QString &errorMgStashKey);
 
     /**
-     * Load both messages that match the token param (mid=###) into the stash for display by the view.
+     * Load both messages that match the token param (mid=###) into the stash for display by the
+     * view.
      */
     static void load(Context *c);
 
@@ -74,9 +80,11 @@ public:
     static QString error(Context *c, const QString &msg);
 
     /**
-     * Saves an error message returning query parameters with the generated message id (mid) and it's token
+     * Saves an error message returning query parameters with the generated message id (mid) and
+     * it's token
      */
-    static ParamsMultiMap errorQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
+    static ParamsMultiMap
+        errorQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
 
     /**
      * Saves a status message returning the generated message id (mid)
@@ -84,9 +92,11 @@ public:
     static QString status(Context *c, const QString &msg);
 
     /**
-     * Saves an status message returning query parameters with the generated message id (mid) and it's token
+     * Saves an status message returning query parameters with the generated message id (mid) and
+     * it's token
      */
-    static ParamsMultiMap statusQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
+    static ParamsMultiMap
+        statusQuery(Context *c, const QString &msg, ParamsMultiMap query = ParamsMultiMap());
 
 protected:
     /**

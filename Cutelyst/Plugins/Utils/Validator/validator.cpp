@@ -21,7 +21,8 @@ Validator::Validator(QLatin1String translationContext)
 }
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
-Validator::Validator(std::initializer_list<ValidatorRule *> validators, QLatin1String translationContext)
+Validator::Validator(std::initializer_list<ValidatorRule *> validators,
+                     QLatin1String translationContext)
     : d_ptr(new ValidatorPrivate(validators, translationContext))
 {
 }
@@ -62,7 +63,8 @@ Cutelyst::ValidatorResult Validator::validate(Context *c, ValidatorFlags flags) 
     return result;
 }
 
-ValidatorResult Validator::validate(Context *c, const ParamsMultiMap &params, ValidatorFlags flags) const
+ValidatorResult
+    Validator::validate(Context *c, const ParamsMultiMap &params, ValidatorFlags flags) const
 {
     ValidatorResult result;
 

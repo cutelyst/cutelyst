@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorDifferentPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorDifferentPrivate(const QString &f, const QString &of, const char *ol, const ValidatorMessages &m)
+    ValidatorDifferentPrivate(const QString &f,
+                              const QString &of,
+                              const char *ol,
+                              const ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString())
         , otherField(of)
         , otherLabel(ol)

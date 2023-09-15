@@ -148,7 +148,9 @@ qint64 EngineRequest::write(const char *data, qint64 len)
     return -1;
 }
 
-bool EngineRequest::webSocketHandshake(const QString &key, const QString &origin, const QString &protocol)
+bool EngineRequest::webSocketHandshake(const QString &key,
+                                       const QString &origin,
+                                       const QString &protocol)
 {
     if (status & EngineRequest::FinalizedHeaders) {
         return false;
@@ -194,7 +196,9 @@ void EngineRequest::processingFinished()
 {
 }
 
-bool EngineRequest::webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol)
+bool EngineRequest::webSocketHandshakeDo(const QString &key,
+                                         const QString &origin,
+                                         const QString &protocol)
 {
     Q_UNUSED(key)
     Q_UNUSED(origin)

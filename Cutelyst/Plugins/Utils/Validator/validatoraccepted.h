@@ -18,11 +18,13 @@ class ValidatorAcceptedPrivate;
  * \class ValidatorAccepted validatoraccepted.h <Cutelyst/Plugins/Utils/validatoraccepted.h>
  * \brief Checks if a field is available and has a specific value.
  *
- * The \a field under validation must be \c yes, \c on, \c 1, or \c true. This is useful for validating "Terms of Service" acceptance.
- * This check will also fail if the input data for the specified \a field is empty or if the \a field is not part of the input data.
+ * The \a field under validation must be \c yes, \c on, \c 1, or \c true. This is useful for
+ * validating "Terms of Service" acceptance. This check will also fail if the input data for the
+ * specified \a field is empty or if the \a field is not part of the input data.
  *
- * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
- * whitespaces will be removed from the beginning and the end of the input value before validation.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link
+ * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
+ * end of the input value before validation.
  *
  * \sa Validator for general usage of validators.
  */
@@ -35,7 +37,8 @@ public:
      * \param field     Name of the input field to validate.
      * \param messages  Custom error message if validation fails.
      */
-    ValidatorAccepted(const QString &field, const ValidatorMessages &messages = ValidatorMessages());
+    ValidatorAccepted(const QString &field,
+                      const ValidatorMessages &messages = ValidatorMessages());
 
     /*!
      * \brief Deconstructs the accepted validator.
@@ -61,7 +64,8 @@ protected:
     /*!
      * \brief Creates a generic error message.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorAccepted)

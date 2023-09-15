@@ -48,9 +48,10 @@ QVariant StoreMinimal::forSession(Context *c, const AuthenticationUser &user)
 
 AuthenticationUser StoreMinimal::fromSession(Context *c, const QVariant &frozenUser)
 {
-    return findUser(c, {
-                           {m_idField, frozenUser.toString()},
-                       });
+    return findUser(c,
+                    {
+                        {m_idField, frozenUser.toString()},
+                    });
 }
 
 #include "moc_minimal.cpp"

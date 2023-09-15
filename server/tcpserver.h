@@ -17,7 +17,10 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress, Protocol *protocol, Server *wsgi, QObject *parent = nullptr);
+    explicit TcpServer(const QString &serverAddress,
+                       Protocol *protocol,
+                       Server *wsgi,
+                       QObject *parent = nullptr);
 
     Q_INVOKABLE
     virtual void incomingConnection(qintptr handle) override;

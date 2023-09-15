@@ -20,9 +20,13 @@ public:
     // setting up all controllers
     void setupFinished();
     Action *actionClass(const QVariantHash &args);
-    Action *createAction(const QVariantHash &args, const QMetaMethod &method, Controller *controller, Application *app);
+    Action *createAction(const QVariantHash &args,
+                         const QMetaMethod &method,
+                         Controller *controller,
+                         Application *app);
     void registerActionMethods(const QMetaObject *meta, Controller *controller, Application *app);
-    ParamsMultiMap parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
+    ParamsMultiMap
+        parseAttributes(const QMetaMethod &method, const QByteArray &str, const QByteArray &name);
     QStack<Component *> gatherActionRoles(const QVariantHash &args);
     QString parsePathAttr(const QString &value);
     QString parseChainedAttr(const QString &attr);

@@ -29,7 +29,8 @@ public:
      * Tries to authenticate the \p authinfo using the give \p realm.
      * Returns a not null AuthenticationUser object in case of success.
      */
-    virtual AuthenticationUser authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) = 0;
+    virtual AuthenticationUser
+        authenticate(Context *c, AuthenticationRealm *realm, const ParamsMultiMap &authinfo) = 0;
 };
 
 class AuthenticationPrivate;
@@ -57,7 +58,9 @@ public:
      * Creates a new AuthenticationRealm using \p store, \p credential and \p name to build it.
      * \note This class will take ownership of realm, store and credential.
      */
-    void addRealm(AuthenticationStore *store, AuthenticationCredential *credential, const QString &name = QLatin1String(defaultRealm));
+    void addRealm(AuthenticationStore *store,
+                  AuthenticationCredential *credential,
+                  const QString &name = QLatin1String(defaultRealm));
 
     /*!
      * Returns an AuthenticationRealm object that was registered with \p name.
@@ -67,7 +70,9 @@ public:
     /**
      * Returns true if the userinfo could be validated against a realm.
      */
-    static bool authenticate(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
+    static bool authenticate(Context *c,
+                             const ParamsMultiMap &userinfo,
+                             const QString &realm = QLatin1String(defaultRealm));
 
     /**
      * Returns true if the request information could be validated against a realm.
@@ -75,9 +80,12 @@ public:
     inline static bool authenticate(Context *c, const QString &realm = QLatin1String(defaultRealm));
 
     /*!
-     * Tries to find the user with \p userinfo using the \p realm, returning a non null AuthenticationUser on success
+     * Tries to find the user with \p userinfo using the \p realm, returning a non null
+     * AuthenticationUser on success
      */
-    static AuthenticationUser findUser(Context *c, const ParamsMultiMap &userinfo, const QString &realm = QLatin1String(defaultRealm));
+    static AuthenticationUser findUser(Context *c,
+                                       const ParamsMultiMap &userinfo,
+                                       const QString &realm = QLatin1String(defaultRealm));
 
     /**
      * Returns the authenticated user if any, if you only need to know if the user is

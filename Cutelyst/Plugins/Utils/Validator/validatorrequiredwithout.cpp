@@ -7,7 +7,9 @@
 
 using namespace Cutelyst;
 
-ValidatorRequiredWithout::ValidatorRequiredWithout(const QString &field, const QStringList &otherFields, const Cutelyst::ValidatorMessages &messages)
+ValidatorRequiredWithout::ValidatorRequiredWithout(const QString &field,
+                                                   const QStringList &otherFields,
+                                                   const Cutelyst::ValidatorMessages &messages)
     : ValidatorRule(*new ValidatorRequiredWithoutPrivate(field, otherFields, messages))
 {
 }
@@ -16,7 +18,8 @@ ValidatorRequiredWithout::~ValidatorRequiredWithout()
 {
 }
 
-ValidatorReturnType ValidatorRequiredWithout::validate(Context *c, const ParamsMultiMap &params) const
+ValidatorReturnType ValidatorRequiredWithout::validate(Context *c,
+                                                       const ParamsMultiMap &params) const
 {
     ValidatorReturnType result;
 
@@ -24,7 +27,11 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c, const ParamsM
 
     if (d->otherFields.isEmpty()) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR, "ValidatorRequiredWithout: invalid validation data for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR,
+                  "ValidatorRequiredWithout: invalid validation data for field %s at %s::%s",
+                  qPrintable(field()),
+                  qPrintable(c->controllerName()),
+                  qPrintable(c->actionName()));
     } else {
 
         bool otherMissing = false;
@@ -45,7 +52,11 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c, const ParamsM
                 result.value.setValue(v);
             } else {
                 result.errorMessage = validationError(c);
-                qCDebug(C_VALIDATOR, "ValidatorRequiredWithout: Validation failed for field %s at %s::%s", qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+                qCDebug(C_VALIDATOR,
+                        "ValidatorRequiredWithout: Validation failed for field %s at %s::%s",
+                        qPrintable(field()),
+                        qPrintable(c->controllerName()),
+                        qPrintable(c->actionName()));
             }
         } else {
             if (!v.isEmpty()) {
@@ -57,7 +68,8 @@ ValidatorReturnType ValidatorRequiredWithout::validate(Context *c, const ParamsM
     return result;
 }
 
-QString ValidatorRequiredWithout::genericValidationError(Context *c, const QVariant &errorData) const
+QString ValidatorRequiredWithout::genericValidationError(Context *c,
+                                                         const QVariant &errorData) const
 {
     QString error;
     Q_UNUSED(errorData)
@@ -66,7 +78,8 @@ QString ValidatorRequiredWithout::genericValidationError(Context *c, const QVari
         error = c->translate("Cutelyst::ValidatorRequiredWithout", "This is required.");
     } else {
         //: %1 will be replaced by the field label
-        error = c->translate("Cutelyst::ValidatorRequiredWithout", "The “%1” field is required.").arg(_label);
+        error = c->translate("Cutelyst::ValidatorRequiredWithout", "The “%1” field is required.")
+                    .arg(_label);
     }
     return error;
 }

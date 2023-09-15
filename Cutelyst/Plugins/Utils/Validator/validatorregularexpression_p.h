@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorRegularExpressionPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRegularExpressionPrivate(const QString &f, const QRegularExpression &r, const ValidatorMessages &m, const QString &dvk)
+    ValidatorRegularExpressionPrivate(const QString &f,
+                                      const QRegularExpression &r,
+                                      const ValidatorMessages &m,
+                                      const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , regex(r)
     {

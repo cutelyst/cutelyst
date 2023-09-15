@@ -27,8 +27,13 @@ public:
     };
     Q_ENUM(ParserState)
 
-    static Uploads execute(char *buffer, int bufferSize, QIODevice *body, const QByteArray &boundary);
-    static inline int findBoundary(char *buffer, int len, const QByteArrayMatcher &matcher, int boundarySize, ParserState &state);
+    static Uploads
+        execute(char *buffer, int bufferSize, QIODevice *body, const QByteArray &boundary);
+    static inline int findBoundary(char *buffer,
+                                   int len,
+                                   const QByteArrayMatcher &matcher,
+                                   int boundarySize,
+                                   ParserState &state);
 };
 
 } // namespace Cutelyst

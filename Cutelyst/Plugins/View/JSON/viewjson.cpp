@@ -142,7 +142,8 @@ QByteArray ViewJson::render(Context *c) const
 
     Response *res = c->response();
     if (d->xJsonHeader && c->request()->headers().contains(QStringLiteral("X_PROTOTYPE_VERSION"))) {
-        res->setHeader(QStringLiteral("X_JSON"), QStringLiteral("eval(\"(\"+this.transport.responseText+\")\")"));
+        res->setHeader(QStringLiteral("X_JSON"),
+                       QStringLiteral("eval(\"(\"+this.transport.responseText+\")\")"));
     }
 
     res->setContentType(QStringLiteral("application/json"));

@@ -13,7 +13,10 @@ namespace Cutelyst {
 class ValidatorRequiredIfPrivate : public ValidatorRulePrivate
 {
 public:
-    ValidatorRequiredIfPrivate(const QString &f, const QString &of, const QStringList &ov, const Cutelyst::ValidatorMessages &m)
+    ValidatorRequiredIfPrivate(const QString &f,
+                               const QString &of,
+                               const QStringList &ov,
+                               const Cutelyst::ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString())
         , otherField(of)
         , otherValues(ov)

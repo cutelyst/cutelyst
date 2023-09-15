@@ -66,9 +66,7 @@ QDebug operator<<(QDebug dbg, const AuthenticationUser &user)
     const QVariantMap map = user.data();
     const bool oldSetting = dbg.autoInsertSpaces();
     dbg.nospace() << "AuthenticationUser(";
-    for (auto it = map.constBegin();
-         it != map.constEnd();
-         ++it) {
+    for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
         dbg << '(' << it.key() << ", " << it.value() << ')';
     }
     dbg << ')';

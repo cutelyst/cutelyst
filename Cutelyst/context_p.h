@@ -21,7 +21,10 @@ class Stats;
 class ContextPrivate
 {
 public:
-    inline ContextPrivate(Application *_app, Engine *_ngine, Dispatcher *_dispatcher, const QVector<Plugin *> &_plugins)
+    inline ContextPrivate(Application *_app,
+                          Engine *_ngine,
+                          Dispatcher *_dispatcher,
+                          const QVector<Plugin *> &_plugins)
         : plugins(_plugins)
         , app(_app)
         , engine(_ngine)
@@ -59,7 +62,8 @@ public:
     bool state          = false;
 };
 
-class DummyRequest : public QObject
+class DummyRequest
+    : public QObject
     , public EngineRequest
 {
     Q_OBJECT

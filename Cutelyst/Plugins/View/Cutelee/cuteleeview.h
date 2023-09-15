@@ -53,7 +53,8 @@ public:
      */
     void setIncludePaths(const QStringList &paths);
 
-    Q_PROPERTY(QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
+    Q_PROPERTY(
+        QString templateExtension READ templateExtension WRITE setTemplateExtension NOTIFY changed)
     /*!
      * Returns the template extension
      */
@@ -113,13 +114,13 @@ public:
      *      auto view = new CuteleeView(this);
      *
      *      auto deDeTrans = new QTranslator(this);
-     *      if (deDeTrans->load(QStringLiteral("de_DE"), QStringLiteral("/path/to/my/translations")) {
-     *          view->addTranslator(QLocale("de_DE"), deDeTrans);
+     *      if (deDeTrans->load(QStringLiteral("de_DE"), QStringLiteral("/path/to/my/translations"))
+     * { view->addTranslator(QLocale("de_DE"), deDeTrans);
      *      }
      *
      *      auto ptBrTrans = new QTranslator(this);
-     *      if (ptBrTrans->load(QStringLiteral("pt_BR"), QStringLiteral("/path/to/my/translations")) {
-     *          view->addTranslator(QLocale("pt_BR"), ptBrTrans);
+     *      if (ptBrTrans->load(QStringLiteral("pt_BR"), QStringLiteral("/path/to/my/translations"))
+     * { view->addTranslator(QLocale("pt_BR"), ptBrTrans);
      *      }
      *
      *      // ...
@@ -165,7 +166,8 @@ public:
      *      // ...
      *
      *      auto view = new CuteleeView(this);
-     *      view->addTranslationCatalog(QStringLiteral("/usr/share/mycutelystapp/l10n"), QStringLiteral("fancytheme"));
+     *      view->addTranslationCatalog(QStringLiteral("/usr/share/mycutelystapp/l10n"),
+     * QStringLiteral("fancytheme"));
      *
      *      // ...
      * }
@@ -186,10 +188,11 @@ public:
     void addTranslationCatalogs(const QMultiHash<QString, QString> &catalogs);
 
     /**
-     * Loads translations for a specific @p filename from a single directory and returns a list of added locales.
+     * Loads translations for a specific @p filename from a single directory and returns a list of
+     * added locales.
      *
-     * This can be used to load translations for a template if the translation file names follow a common schema.
-     * Let us assume you organised your translation files as follows:
+     * This can be used to load translations for a template if the translation file names follow a
+     * common schema. Let us assume you organised your translation files as follows:
      * @li @c /usr/share/myapp/translations/mytemplate_de.qm
      * @li @c /usr/share/myapp/translations/mytemplate_pt_BR.qm
      * @li @c ...
@@ -199,18 +202,23 @@ public:
      * bool MyApp::init()
      * {
      *      auto view = new CuteleeView(this);
-     *      view->loadTranslationsFromDir(QStringLiteral("mytemplate"), QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
+     *      view->loadTranslationsFromDir(QStringLiteral("mytemplate"),
+     * QStringLiteral("/usr/share/myapp/translations"), QStringLiteral("_"));
      * }
      * @endcode
      *
-     * @p prefix is the part between the file name and the locale part. In the example above it is @c "_", if it is not set the default @c "." will be used. The
+     * @p prefix is the part between the file name and the locale part. In the example above it is
+     * @c "_", if it is not set the default @c "." will be used. The
      * @p suffix is the file name suffix that defaults to <code>".qm"</code>.
      *
      * @sa addTranslator(), loadTranslationsFromDir()
      *
      * @since Cuteylst 2.1.0
      */
-    QVector<QLocale> loadTranslationsFromDir(const QString &filename, const QString &directory, const QString &prefix = QStringLiteral("."), const QString &suffix = QStringLiteral(".qm"));
+    QVector<QLocale> loadTranslationsFromDir(const QString &filename,
+                                             const QString &directory,
+                                             const QString &prefix = QStringLiteral("."),
+                                             const QString &suffix = QStringLiteral(".qm"));
 
 Q_SIGNALS:
     void changed();

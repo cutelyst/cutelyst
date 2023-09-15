@@ -20,11 +20,12 @@ class ValidatorUrlPrivate;
  *
  * Checks if the \a field contains a valid URL by loading it into a QUrl and testing it's validity.
  *
- * \note Unless \link Validator::validate() validation\endlink is started with \link Validator::NoTrimming NoTrimming\endlink,
- * whitespaces will be removed from the beginning and the end of the input value before validation.
- * If the \a field's value is empty or if the \a field is missing in the input data, the validation will succeed without
- * performing the validation itself. Use one of the \link ValidatorRequired required validators \endlink to require the
- * field to be present and not empty.
+ * \note Unless \link Validator::validate() validation\endlink is started with \link
+ * Validator::NoTrimming NoTrimming\endlink, whitespaces will be removed from the beginning and the
+ * end of the input value before validation. If the \a field's value is empty or if the \a field is
+ * missing in the input data, the validation will succeed without performing the validation itself.
+ * Use one of the \link ValidatorRequired required validators \endlink to require the field to be
+ * present and not empty.
  *
  * \sa Validator for general usage of validators.
  */
@@ -36,10 +37,12 @@ public:
      */
     enum Constraint {
         NoConstraint  = 0, /**< No constraints set. */
-        StrictParsing = 1, /**< String will be parsed in strict mode. See http://doc.qt.io/qt-5/qurl.html#ParsingMode-enum */
-        NoRelative    = 2, /**< Relative URLs are not valid. */
-        NoLocalFile   = 4, /**< Local file URLs are not Vaid. */
-        WebsiteOnly   = 8, /**< Combines NoRelative and NoLocalFile and sets http and https to the schemes list. (Will overwrite existing list) */
+        StrictParsing = 1, /**< String will be parsed in strict mode. See
+                              http://doc.qt.io/qt-5/qurl.html#ParsingMode-enum */
+        NoRelative  = 2,   /**< Relative URLs are not valid. */
+        NoLocalFile = 4,   /**< Local file URLs are not Vaid. */
+        WebsiteOnly = 8,   /**< Combines NoRelative and NoLocalFile and sets http and https to the
+                              schemes list. (Will overwrite existing list) */
     };
     Q_DECLARE_FLAGS(Constraints, Constraint)
 
@@ -49,9 +52,14 @@ public:
      * \param constraints   Constraints for parsing and validating the URL.
      * \param schemes       List of allowed schemes for a valid URL.
      * \param messages      Custom error messages if validation fails.
-     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if input field is empty. This value will \b NOT be validated.
+     * \param defValKey     \link Context::stash() Stash \endlink key containing a default value if
+     * input field is empty. This value will \b NOT be validated.
      */
-    ValidatorUrl(const QString &field, Constraints constraints = NoConstraint, const QStringList &schemes = QStringList(), const ValidatorMessages &messages = ValidatorMessages(), const QString &defValKey = QString());
+    ValidatorUrl(const QString &field,
+                 Constraints constraints           = NoConstraint,
+                 const QStringList &schemes        = QStringList(),
+                 const ValidatorMessages &messages = ValidatorMessages(),
+                 const QString &defValKey          = QString());
 
     /*!
      * \brief Deconstructs the validator.
@@ -70,7 +78,8 @@ protected:
     /*!
      * \brief Returns a generic error message if validation failed.
      */
-    QString genericValidationError(Context *c, const QVariant &errorData = QVariant()) const override;
+    QString genericValidationError(Context *c,
+                                   const QVariant &errorData = QVariant()) const override;
 
 private:
     Q_DECLARE_PRIVATE(ValidatorUrl)

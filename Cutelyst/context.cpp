@@ -232,7 +232,9 @@ QStack<Component *> Context::stack() const noexcept
     return d->stack;
 }
 
-QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsMultiMap &queryValues) const
+QUrl Context::uriFor(const QString &path,
+                     const QStringList &args,
+                     const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -278,7 +280,10 @@ QUrl Context::uriFor(const QString &path, const QStringList &args, const ParamsM
     return uri;
 }
 
-QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
+QUrl Context::uriFor(Action *action,
+                     const QStringList &captures,
+                     const QStringList &args,
+                     const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -313,7 +318,10 @@ QUrl Context::uriFor(Action *action, const QStringList &captures, const QStringL
     return uri;
 }
 
-QUrl Context::uriForAction(const QString &path, const QStringList &captures, const QStringList &args, const ParamsMultiMap &queryValues) const
+QUrl Context::uriForAction(const QString &path,
+                           const QStringList &captures,
+                           const QStringList &args,
+                           const ParamsMultiMap &queryValues) const
 {
     Q_D(const Context);
 
@@ -417,7 +425,8 @@ bool Context::execute(Component *code)
     Q_D(Context);
     Q_ASSERT_X(code, "Context::execute", "trying to execute a null Cutelyst::Component");
 
-    static int recursion = qEnvironmentVariableIsSet("RECURSION") ? qEnvironmentVariableIntValue("RECURSION") : 1000;
+    static int recursion =
+        qEnvironmentVariableIsSet("RECURSION") ? qEnvironmentVariableIntValue("RECURSION") : 1000;
     if (d->stack.size() >= recursion) {
         QString msg = QStringLiteral("Deep recursion detected (stack size %1) calling %2, %3")
                           .arg(QString::number(d->stack.size()), code->reverse(), code->name());
@@ -472,7 +481,10 @@ QVariantMap Context::config() const noexcept
     return d->app->config();
 }
 
-QString Context::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
+QString Context::translate(const char *context,
+                           const char *sourceText,
+                           const char *disambiguation,
+                           int n) const
 {
     Q_D(const Context);
     return d->app->translate(d->locale, context, sourceText, disambiguation, n);
@@ -488,7 +500,13 @@ void Context::finalize()
     }
 
     if (d->stats) {
-        qCDebug(CUTELYST_STATS, "Response Code: %d; Content-Type: %s; Content-Length: %s", d->response->status(), qPrintable(d->response->headers().header(QStringLiteral("CONTENT_TYPE"), QStringLiteral("unknown"))), qPrintable(d->response->headers().header(QStringLiteral("CONTENT_LENGTH"), QStringLiteral("unknown"))));
+        qCDebug(CUTELYST_STATS,
+                "Response Code: %d; Content-Type: %s; Content-Length: %s",
+                d->response->status(),
+                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_TYPE"),
+                                                         QStringLiteral("unknown"))),
+                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_LENGTH"),
+                                                         QStringLiteral("unknown"))));
 
         const double enlapsed = d->engineRequest->elapsed.nsecsElapsed() / 1000000000.0;
         QString average;
@@ -525,7 +543,8 @@ QString ContextPrivate::statsStartExecute(Component *code)
 
     if (stack.size() > 2) {
         actionName = u"-> " + actionName;
-        actionName = actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
+        actionName =
+            actionName.rightJustified(actionName.size() + stack.size() - 2, QLatin1Char(' '));
     }
 
     stats->profileStart(actionName);

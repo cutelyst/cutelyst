@@ -7,7 +7,10 @@
 
 using namespace Cutelyst;
 
-ValidatorDigits::ValidatorDigits(const QString &field, const QVariant &length, const Cutelyst::ValidatorMessages &messages, const QString &defValKey)
+ValidatorDigits::ValidatorDigits(const QString &field,
+                                 const QVariant &length,
+                                 const Cutelyst::ValidatorMessages &messages,
+                                 const QString &defValKey)
     : ValidatorRule(*new ValidatorDigitsPrivate(field, length, messages, defValKey))
 {
 }
@@ -35,13 +38,26 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
         if (Q_LIKELY(ValidatorDigits::validate(v, _length))) {
             if ((_length > 0) && (v.length() != _length)) {
                 result.errorMessage = validationError(c, _length);
-                qCDebug(C_VALIDATOR, "ValidatorDigits: Validation failed for value \"%s\" in field %s at %s::%s: does not contain exactly %i digit(s).", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()), _length);
+                qCDebug(C_VALIDATOR,
+                        "ValidatorDigits: Validation failed for value \"%s\" in field %s at "
+                        "%s::%s: does not contain exactly %i digit(s).",
+                        qPrintable(v),
+                        qPrintable(field()),
+                        qPrintable(c->controllerName()),
+                        qPrintable(c->actionName()),
+                        _length);
             } else {
                 result.value.setValue(v);
             }
         } else {
             result.errorMessage = validationError(c, _length);
-            qCDebug(C_VALIDATOR, "ValidatorDigits: Validation failed for value \"%s\" in field %s at %s::%s: does not only contain digits.", qPrintable(v), qPrintable(field()), qPrintable(c->controllerName()), qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR,
+                    "ValidatorDigits: Validation failed for value \"%s\" in field %s at %s::%s: "
+                    "does not only contain digits.",
+                    qPrintable(v),
+                    qPrintable(field()),
+                    qPrintable(c->controllerName()),
+                    qPrintable(c->actionName()));
         }
 
     } else {
@@ -79,17 +95,24 @@ QString ValidatorDigits::genericValidationError(Context *c, const QVariant &erro
 
     if (_label.isEmpty()) {
         if (_length > 0) {
-            error = c->translate("Cutelyst::ValidatorDigits", "Must contain exactly %n digit(s).", "", _length);
+            error = c->translate(
+                "Cutelyst::ValidatorDigits", "Must contain exactly %n digit(s).", "", _length);
         } else {
             error = c->translate("Cutelyst::ValidatorDigits", "Must only contain digits.");
         }
     } else {
         if (_length > 0) {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDigits", "The “%1” field must contain exactly %n digit(s).", "", _length).arg(_label);
+            error = c->translate("Cutelyst::ValidatorDigits",
+                                 "The “%1” field must contain exactly %n digit(s).",
+                                 "",
+                                 _length)
+                        .arg(_label);
         } else {
             //: %1 will be replaced by the field label
-            error = c->translate("Cutelyst::ValidatorDigits", "The “%1” field must only contain digits.").arg(_label);
+            error = c->translate("Cutelyst::ValidatorDigits",
+                                 "The “%1” field must only contain digits.")
+                        .arg(_label);
         }
     }
 

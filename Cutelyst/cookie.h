@@ -31,16 +31,21 @@ class CUTELYST_LIBRARY Cookie : public QNetworkCookie
 public:
     enum class SameSite {
         Default, /**< SameSite is not set. Can be interpreted as None or Lax by the browser. */
-        None,    /**< Cookies can be sent in all contexts. This used to be default, but recent browsers made Lax default, and will now require the cookie to be both secure and to set SameSite=None. */
-        Lax,     /**< Cookies are sent on first party requests and GET requests initiated by third party website. This is the default in modern browsers (since mid 2020). */
-        Strict   /**< Cookies will only be sent in a first-party context. */
+        None, /**< Cookies can be sent in all contexts. This used to be default, but recent browsers
+                 made Lax default, and will now require the cookie to be both secure and to set
+                 SameSite=None. */
+        Lax, /**< Cookies are sent on first party requests and GET requests initiated by third party
+                website. This is the default in modern browsers (since mid 2020). */
+        Strict /**< Cookies will only be sent in a first-party context. */
     };
     Q_ENUM(SameSite)
 
     /*!
-     * Create a new %Cookie object, initializing the cookie name to \a name and its value to \a value.
+     * Create a new %Cookie object, initializing the cookie name to \a name and its value to \a
+     * value.
      *
-     * A cookie is only valid if it has a name. However, the value is opaque to the application and being empty may have significance to the remote server.
+     * A cookie is only valid if it has a name. However, the value is opaque to the application and
+     * being empty may have significance to the remote server.
      */
     explicit Cookie(const QByteArray &name = QByteArray(), const QByteArray &value = QByteArray());
     /*!
@@ -74,7 +79,8 @@ public:
     }
 
     /*!
-     * Returns true if this cookie is equal to \a other. This function only returns true if all fields of the cookie are the same.
+     * Returns true if this cookie is equal to \a other. This function only returns true if all
+     * fields of the cookie are the same.
      *
      * However, in some contexts, two cookies of the same name could be considered equal.
      */
@@ -82,13 +88,11 @@ public:
     /*!
      * Returns true if this cookie is not equal to \a other.
      */
-    inline bool operator!=(const Cookie &other) const
-    {
-        return !(*this == other);
-    }
+    inline bool operator!=(const Cookie &other) const { return !(*this == other); }
 
     /*!
-     * Returns the "SameSite" option if specified in the cookie string, SameSite::Default if not present.
+     * Returns the "SameSite" option if specified in the cookie string, SameSite::Default if not
+     * present.
      */
     SameSite sameSitePolicy() const;
     /*!
@@ -97,9 +101,9 @@ public:
     void setSameSitePolicy(SameSite sameSite);
 
     /*!
-     * Returns the raw form of this %Cookie. The QByteArray returned by this function is suitable for an HTTP header,
-     * either in a server response (the Set-Cookie header) or the client request (the Cookie header).
-     * You can choose from one of two formats, using \a form.
+     * Returns the raw form of this %Cookie. The QByteArray returned by this function is suitable
+     * for an HTTP header, either in a server response (the Set-Cookie header) or the client request
+     * (the Cookie header). You can choose from one of two formats, using \a form.
      */
     QByteArray toRawForm(RawForm form = Full) const;
 

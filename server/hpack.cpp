@@ -16,7 +16,8 @@
 
 using namespace Cutelyst;
 
-unsigned char *hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
+unsigned char *
+    hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
 
 // This decodes an UInt
 // it returns nullptr if it tries to read past end
@@ -144,7 +145,10 @@ HPack::~HPack()
 {
 }
 
-void HPack::encodeHeaders(int status, const QMultiHash<QString, QString> &headers, QByteArray &buf, CWsgiEngine *engine)
+void HPack::encodeHeaders(int status,
+                          const QMultiHash<QString, QString> &headers,
+                          QByteArray &buf,
+                          CWsgiEngine *engine)
 {
     if (status == 200) {
         buf.append(char(0x88));
@@ -227,7 +231,8 @@ enum ErrorCodes {
 
 inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
 {
-    //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method << stream->scheme;
+    //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method <<
+    //    stream->scheme;
     if (k.compare(u":path") == 0) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
@@ -265,8 +270,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
 
 inline bool validHeader(const QString &k, const QString &v)
 {
-    return k.compare(u"connection") != 0 &&
-           (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
+    return k.compare(u"connection") != 0 && (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
 }
 
 inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
@@ -284,7 +288,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
         quint16 intValue(0);
         if (*it & 0x80) {
             it = decodeUInt16(it, itEnd, intValue, INT_MASK(7));
-            //            qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue << it;
+            //            qDebug() << "6.1 Indexed Header Field Representation" << *it << intValue
+            //            << it;
             if (!it || intValue == 0) {
                 return ErrorCompressionError;
             }
@@ -292,7 +297,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             QString key;
             QString value;
             if (intValue > 61) {
-                //                qDebug() << "6.1 Indexed Header Field Representation dynamic table lookup" << *it << intValue << m_dynamicTable.size();
+                //                qDebug() << "6.1 Indexed Header Field Representation dynamic table
+                //                lookup" << *it << intValue << m_dynamicTable.size();
                 intValue -= 62;
                 if (intValue < qint64(m_dynamicTable.size())) {
                     const auto h = m_dynamicTable[intValue];
@@ -329,16 +335,20 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                     return ErrorCompressionError;
                 }
                 addToDynamicTable = true;
-                //                qDebug() << "6.2.1 Literal Header Field" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate;
+                //                qDebug() << "6.2.1 Literal Header Field" << *it << "value" <<
+                //                intValue << "allowedToUpdate" << allowedToUpdate;
             } else if (*it & 0x20) {
                 it = decodeUInt16(it, itEnd, intValue, INT_MASK(5));
-                //                qDebug() << "6.3 Dynamic Table update" << *it << "value" << intValue << "allowedToUpdate" << allowedToUpdate << m_maxTableSize;
+                //                qDebug() << "6.3 Dynamic Table update" << *it << "value" <<
+                //                intValue << "allowedToUpdate" << allowedToUpdate <<
+                //                m_maxTableSize;
                 if (!it || intValue > m_maxTableSize || !allowedToUpdate) {
                     return ErrorCompressionError;
                 }
 
                 m_currentMaxDynamicTableSize = intValue;
-                while (m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
+                while (m_dynamicTableSize > m_currentMaxDynamicTableSize &&
+                       !m_dynamicTable.empty()) {
                     auto header = m_dynamicTable.takeLast();
                     m_dynamicTableSize -= header.key.length() + header.value.length() + 32;
                 }
@@ -398,7 +408,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
 
             if (addToDynamicTable) {
                 const int size = key.length() + value.length() + 32;
-                while (size + m_dynamicTableSize > m_currentMaxDynamicTableSize && !m_dynamicTable.empty()) {
+                while (size + m_dynamicTableSize > m_currentMaxDynamicTableSize &&
+                       !m_dynamicTable.empty()) {
                     const DynamicTableEntry entry = m_dynamicTable.takeLast();
                     m_dynamicTableSize -= entry.key.length() + entry.value.length() + 32;
                 }
@@ -422,7 +433,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
     return 0;
 }
 
-unsigned char *hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
+unsigned char *
+    hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
 {
     quint8 state                          = 0;
     const HPackPrivate::HuffDecode *entry = nullptr;
@@ -456,7 +468,8 @@ unsigned char *hpackDecodeString(unsigned char *src, unsigned char *src_end, QSt
 
     } while (++src < src_end);
 
-    //      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) << "entry->state =" << entry->state;
+    //      qDebug() << "maybe_eos = " << ((entry->flags & HPackPrivate::HUFF_ACCEPTED) != 0) <<
+    //      "entry->state =" << entry->state;
 
     if ((entry->flags & HPackPrivate::HUFF_ACCEPTED) == 0) {
         // entry->state == 28 // A invalid header name or value character was coded
