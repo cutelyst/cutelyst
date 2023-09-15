@@ -1,4 +1,4 @@
-﻿# .clang-format for Cutelyst projects 2023-04-18
+﻿# .clang-format for Cutelyst projects 2023-09-15
 # Tries to be close to Qt coding style
 # but meh for ASql lambdas which LambdaBodyIndentation ins't enough
 ---
