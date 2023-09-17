@@ -20,7 +20,6 @@ namespace Cutelyst {
 class ViewEmailPrivate : public ViewPrivate
 {
 public:
-    virtual ~ViewEmailPrivate() override = default;
     void setupAttributes(MimePart *part, const QVariantHash &attrs) const;
     void setupEncoding(MimePart *part, const QByteArray &encoding) const;
 

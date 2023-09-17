@@ -135,7 +135,7 @@ void TestContext::initTestCase()
 
 TestEngine *TestContext::getEngine()
 {
-    qputenv("RECURSION", QByteArrayLiteral("100"));
+    qputenv("RECURSION", QByteArrayLiteral("50"));
     auto app    = new TestApplication;
     auto engine = new TestEngine(app, QVariantMap());
     new ContextGetActionsTest(app);
@@ -422,7 +422,7 @@ void TestContext::testController_data()
     QTest::newRow("forward-test01")
         << QStringLiteral("/context/test_ns/forwardToActionString?") +
                query.toString(QUrl::FullyEncoded)
-        << QByteArrayLiteral("Deep recursion detected (stack size 100) calling "
+        << QByteArrayLiteral("Deep recursion detected (stack size 50) calling "
                              "context/test_ns/forwardToActionString, forwardToActionString");
 
     // GetAction

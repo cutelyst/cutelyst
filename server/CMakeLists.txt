@@ -88,6 +88,7 @@ set_target_properties(${target_name_server} PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
+set_compiler_flags(${target_name_server})
 
 target_link_libraries(${target_name_server}
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core

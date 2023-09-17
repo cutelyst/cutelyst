@@ -14,8 +14,6 @@ namespace Cutelyst {
 class ComponentPrivate
 {
 public:
-    virtual ~ComponentPrivate() = default;
-
     QString name;
     QString reverse;
     QStack<Component *> beforeRoles;

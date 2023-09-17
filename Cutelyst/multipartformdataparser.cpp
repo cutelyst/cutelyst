@@ -146,6 +146,7 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer,
                 //                i;
                 startOffset = pos - len + i;
                 state       = EndData;
+                break;
             case EndData:
                 i += findBoundary(buffer + i, len - i, matcher, boundarySize, state);
 

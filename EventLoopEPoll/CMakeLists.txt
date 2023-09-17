@@ -10,17 +10,19 @@ set(eventloop_epoll_HEADERS
     eventdispatcher_epoll.h
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
+add_library(${target_name}
     ${eventloop_epoll_SRC}
     ${eventloop_epoll_HEADERS}
 )
 add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::EventLoopEPoll ALIAS Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll)
 
-set_target_properties(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll PROPERTIES
+set_target_properties(${target_name} PROPERTIES
     EXPORT_NAME EventLoopEPoll
     VERSION ${PROJECT_VERSION}
     SOVERSION ${CUTELYST_API_LEVEL}
 )
+set_compiler_flags(${target_name})
 
 target_link_libraries(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}EventLoopEpoll
     Qt${QT_VERSION_MAJOR}::Core

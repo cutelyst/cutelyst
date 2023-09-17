@@ -17,8 +17,6 @@ namespace Cutelyst {
 class CuteleeViewPrivate : public ViewPrivate
 {
 public:
-    virtual ~CuteleeViewPrivate() override = default;
-
     QStringList includePaths;
     QString extension = QStringLiteral(".html");
     QString wrapper;

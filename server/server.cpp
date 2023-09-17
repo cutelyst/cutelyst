@@ -1485,6 +1485,8 @@ void Server::setReusePort(bool enable)
     Q_D(Server);
     d->reusePort = enable;
     Q_EMIT changed();
+#else
+    Q_UNUSED(enable);
 #endif
 }
 

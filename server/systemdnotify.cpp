@@ -194,7 +194,7 @@ void systemdNotify::sendReady(const QByteArray &data)
 
 int systemdNotify::sd_watchdog_enabled(bool unset)
 {
-    int ret;
+    int ret      = 0;
     auto cleanup = qScopeGuard([unset, &ret] {
         if (unset && ret > 0) {
             qunsetenv("WATCHDOG_USEC");

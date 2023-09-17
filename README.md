@@ -1,9 +1,5 @@
 # Cutelyst - The Qt Web Framework <img title="Cutelyst" src="http://i.imgur.com/us1pKAP.png" width="60px" alt="Cutelyst logo"/>
 
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/cutelyst/cutelyst?branch=master&svg=true)](https://ci.appveyor.com/project/dantti/cutelyst/branch/master)
-[![Code Quality: Cpp](https://img.shields.io/lgtm/grade/cpp/g/cutelyst/cutelyst.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cutelyst/cutelyst/context:cpp)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/cutelyst/cutelyst.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/cutelyst/cutelyst/alerts)
-
 A Web Framework built on top of Qt, using the simple and elegant approach of Catalyst (Perl) framework.
 
 Qt's meta object system is what powers the core of Cutelyst, it allows for introspecting controller's methods signatures and generate matching actions that can be invoked later.
@@ -65,8 +61,8 @@ Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutely
 
 ## REQUIREMENTS
 
- * CMake - for the build system (>= 3.9)
- * Qt - the core library of this framework (>= 5.12)
+ * CMake - for the build system (>= 3.16)
+ * Qt - the core library of this framework (>= 5.15.2)
 
 ## OPTIONAL
 

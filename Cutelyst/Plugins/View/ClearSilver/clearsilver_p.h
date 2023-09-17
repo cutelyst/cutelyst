@@ -15,8 +15,6 @@ namespace Cutelyst {
 class ClearSilverPrivate : public ViewPrivate
 {
 public:
-    virtual ~ClearSilverPrivate() override = default;
-
     HDF *hdfForStash(Context *c, const QVariantHash &stash) const;
     void serializeHash(HDF *hdf, const QVariantHash &hash, const QString &prefix = QString()) const;
     void serializeMap(HDF *hdf, const QVariantMap &map, const QString &prefix = QString()) const;

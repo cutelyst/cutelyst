@@ -17,8 +17,6 @@ namespace Cutelyst {
 class ViewJsonPrivate : public ViewPrivate
 {
 public:
-    virtual ~ViewJsonPrivate() override = default;
-
     ViewJson::ExposeMode exposeMode = ViewJson::All;
     QString exposeKey;
     QStringList exposeKeys;
