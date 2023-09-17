@@ -13,8 +13,6 @@ namespace Cutelyst {
 class ActionPrivate : public ComponentPrivate
 {
 public:
-    virtual ~ActionPrivate() override = default;
-
     QString ns;
     QMetaMethod method;
     QMultiMap<QString, QString> attributes;

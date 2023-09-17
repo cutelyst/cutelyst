@@ -104,7 +104,8 @@ set(cutelystqt_HEADERS_PRIVATE
     common.h
 )
 
-add_library(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
+set(target_name Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR})
+add_library(${target_name}
     ${cutelystqt_SRC}
     ${cutelystqt_HEADERS}
     ${cutelystqt_HEADERS_PRIVATE}
@@ -116,6 +117,7 @@ target_compile_features(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
   PUBLIC
     cxx_nullptr
 )
+set_compiler_flags(${target_name})
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
   set_property(TARGET Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR} PROPERTY DEBUG_POSTFIX "d")

@@ -14,8 +14,6 @@ namespace Cutelyst {
 class ComponentFactory
 {
 public:
-    virtual ~ComponentFactory() {}
-
     /**
      * Component plugins should reimplement this to get a new
      * instace of their component

@@ -14,8 +14,6 @@ namespace Cutelyst {
 class ViewEmailTemplatePrivate : public ViewEmailPrivate
 {
 public:
-    virtual ~ViewEmailTemplatePrivate() override = default;
-
     QString templatePrefix;
     QString defaultView;
 };

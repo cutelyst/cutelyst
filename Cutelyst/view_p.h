@@ -11,8 +11,6 @@ namespace Cutelyst {
 class ViewPrivate : public ComponentPrivate
 {
 public:
-    virtual ~ViewPrivate() override = default;
-
     qint32 minimalSizeToDeflate = -1;
 };
 } // namespace Cutelyst

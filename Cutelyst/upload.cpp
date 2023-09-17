@@ -50,12 +50,10 @@ bool Upload::save(const QString &newName)
         seek(0);
 
         char block[4096];
-        qint64 totalRead = 0;
         while (!atEnd()) {
             qint64 in = read(block, sizeof(block));
             if (in <= 0)
                 break;
-            totalRead += in;
             if (in != out.write(block, in)) {
                 setErrorString(QLatin1String("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
@@ -99,12 +97,11 @@ QTemporaryFile *Upload::createTemporaryFile(const QString &templateName)
         seek(0);
 
         char block[4096];
-        qint64 totalRead = 0;
         while (!atEnd()) {
             qint64 in = read(block, sizeof(block));
             if (in <= 0)
                 break;
-            totalRead += in;
+
             if (in != ret->write(block, in)) {
                 setErrorString(QLatin1String("Failure to write block"));
                 qCWarning(CUTELYST_UPLOAD) << errorString();
