@@ -60,6 +60,11 @@ QHash<QString, QStringList> ValidatorResult::errors() const
     return d->errors;
 }
 
+QStringList ValidatorResult::errors(const QString &field) const
+{
+    return d->errors.value(field);
+}
+
 bool ValidatorResult::hasErrors(const QString &field) const
 {
     return d->errors.contains(field);
