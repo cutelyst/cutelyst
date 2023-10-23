@@ -248,7 +248,7 @@ void ProtocolWebSocket::send_closed(Cutelyst::Context *c, Socket *sock, QIODevic
         protoRequest->websocket_message.data(), protoRequest->websocket_message.size(), &state);
     const bool failed = state.invalidChars || state.remainingChars;
 #else
-    const bool failed = false;           // FIXME
+    const bool failed = false; // FIXME
 #endif
 
     if (protoRequest->websocket_payload.size() >= 2) {

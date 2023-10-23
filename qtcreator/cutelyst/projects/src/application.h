@@ -1,4 +1,8 @@
-% {Cpp: LicenseTemplate}
+%
+{
+Cpp:
+    LicenseTemplate
+}
 #ifndef %
 {
     GUARD

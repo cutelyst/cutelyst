@@ -139,10 +139,10 @@ void Root::ws(Context *c)
 
         connect(
             req, &Request::webSocketBinaryFrame, c, [=](const QByteArray &msg, bool isLastFrame) {
-                //            qDebug() << "Got binary frame" << isLastFrame << msg.size() <<
-                //            msg.left(25) << c->actionName();
-                //            response->webSocketBinaryMessage(msg);
-            });
+            //            qDebug() << "Got binary frame" << isLastFrame << msg.size() <<
+            //            msg.left(25) << c->actionName();
+            //            response->webSocketBinaryMessage(msg);
+        });
 
         connect(req, &Request::webSocketBinaryMessage, c, [=](const QByteArray &msg) {
             //            qDebug() << "Got binary msg" << msg.size() << msg.left(25) <<

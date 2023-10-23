@@ -248,7 +248,7 @@ void TestCsrfProtection::doTest_data()
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
         auto &fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
 #else
-        QCharRef fieldLast  = fieldValueInvalid[fieldValueInvalid.size() - 2];
+        QCharRef fieldLast = fieldValueInvalid[fieldValueInvalid.size() - 2];
 #endif
         if (fieldLast.isDigit()) {
             if (fieldLast.unicode() < 57) {
