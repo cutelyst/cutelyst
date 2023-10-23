@@ -465,7 +465,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
             [=]() {
             m_servers.push_back(server);
             resumeAccepting();
-            },
+        },
             Qt::QueuedConnection);
         connect(server,
                 &TcpServer::createConnection,
@@ -486,7 +486,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
                 if (!server->setSocketDescriptor(socket)) {
                     qFatal("Failed to set server socket descriptor, reuse-port");
                 }
-                },
+            },
                 Qt::DirectConnection);
             return server;
         }

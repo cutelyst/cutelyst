@@ -43,8 +43,8 @@ void StaticMap::addStaticMap(const QString &mountPoint, const QString &path, boo
     std::sort(m_staticMaps.begin(),
               m_staticMaps.end(),
               [](const MountPoint &a, const MountPoint &b) -> bool {
-                  return a.mountPoint.size() < b.mountPoint.size();
-              });
+        return a.mountPoint.size() < b.mountPoint.size();
+    });
 }
 
 void StaticMap::beforePrepareAction(Cutelyst::Context *c, bool *skipMethod)
