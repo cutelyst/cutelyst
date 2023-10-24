@@ -230,45 +230,112 @@ bool Action::doExecute(Context *c)
         bool methodRet;
 
         if (d->listSignature) {
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   qReturnArg(methodRet),
-                                   c,
-                                   args);
+            ret = d->method.invoke(
+                d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args);
         } else {
             switch (d->method.parameterCount()) {
             case 0:
                 ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet));
                 break;
             case 1:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c);
+                ret =
+                    d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c);
                 break;
             case 2:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0));
+                ret = d->method.invoke(
+                    d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0));
                 break;
             case 3:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1));
                 break;
             case 4:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2));
                 break;
             case 5:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3));
                 break;
             case 6:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4));
                 break;
             case 7:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5));
                 break;
             case 8:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6));
                 break;
             case 9:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6), args.value(7));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6),
+                                       args.value(7));
                 break;
             default:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, qReturnArg(methodRet), c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6), args.value(7), args.value(8));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       qReturnArg(methodRet),
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6),
+                                       args.value(7),
+                                       args.value(8));
                 break;
             }
         }
@@ -285,10 +352,7 @@ bool Action::doExecute(Context *c)
         return false;
     } else {
         if (d->listSignature) {
-            ret = d->method.invoke(d->controller,
-                                   Qt::DirectConnection,
-                                   c,
-                                   args);
+            ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args);
         } else {
             switch (d->method.parameterCount()) {
             case 0:
@@ -301,28 +365,85 @@ bool Action::doExecute(Context *c)
                 ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0));
                 break;
             case 3:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1));
+                ret = d->method.invoke(
+                    d->controller, Qt::DirectConnection, c, args.value(0), args.value(1));
                 break;
             case 4:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2));
                 break;
             case 5:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3));
                 break;
             case 6:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4));
                 break;
             case 7:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5));
                 break;
             case 8:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6));
                 break;
             case 9:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6), args.value(7));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6),
+                                       args.value(7));
                 break;
             default:
-                ret = d->method.invoke(d->controller, Qt::DirectConnection, c, args.value(0), args.value(1), args.value(2), args.value(3), args.value(4), args.value(5), args.value(6), args.value(7), args.value(8));
+                ret = d->method.invoke(d->controller,
+                                       Qt::DirectConnection,
+                                       c,
+                                       args.value(0),
+                                       args.value(1),
+                                       args.value(2),
+                                       args.value(3),
+                                       args.value(4),
+                                       args.value(5),
+                                       args.value(6),
+                                       args.value(7),
+                                       args.value(8));
                 break;
             }
         }
