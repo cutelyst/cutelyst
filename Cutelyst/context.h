@@ -506,6 +506,40 @@ public:
                       const char *sourceText,
                       const char *disambiguation = nullptr,
                       int n                      = -1) const;
+    /**
+     * Finds and returns a translated string.
+     *
+     * Returns a translated string identified by \a id. If no matching string is found,
+     * the \a id itself is returned. This can be used similar to Qt’s global %qtTrId()
+     * function.
+     *
+     * If \a n >= 0, all occurences of %%n in the resulting string are replaced with a
+     * decimal representationof \a n. In addition, appending \a n’s value, the translation
+     * may vary.
+     *
+     * Meta data and comments can be passed as documented for QObject::tr(). In addition,
+     * it is possible to supply a source string template like that:
+     *
+     * <pre>//% &lt;C string&gt;</pre>
+     *
+     * or
+     *
+     * <pre>\begincomment% &lt;C string&gt; \endcomment</pre>
+     *
+     * Example:
+     * \code{.cpp}
+     * void MyController::index(Context *c)
+     * {
+     *      //% "%n fooish bar(s) found.\n"
+     *      //% "Do you want to continue?"
+     *      c->res()->setBody(c->qtTrId("my-app-translation-id", n));
+     * }
+     * \endcode
+     *
+     * Creating QM files suitable for use with this function requires passing the \c -idbased
+     * option to the \c lrelease tool.
+     */
+    inline QString qtTrId(const char *id, int n = -1) const;
 
 public Q_SLOTS:
     /*!
@@ -547,6 +581,11 @@ inline QUrl Context::uriFor(Action *action, const ParamsMultiMap &queryValues) c
 inline QUrl Context::uriForAction(const QString &path, const ParamsMultiMap &queryValues) const
 {
     return uriForAction(path, QStringList(), QStringList(), queryValues);
+}
+
+inline QString Context::qtTrId(const char *id, int n) const
+{
+    return translate(nullptr, id, nullptr, n);
 }
 
 } // namespace Cutelyst
