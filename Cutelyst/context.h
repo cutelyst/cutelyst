@@ -514,7 +514,7 @@ public:
      * function.
      *
      * If \a n >= 0, all occurences of %%n in the resulting string are replaced with a
-     * decimal representationof \a n. In addition, appending \a n’s value, the translation
+     * decimal representation of \a n. In addition, appending \a n’s value, the translation
      * may vary.
      *
      * Meta data and comments can be passed as documented for QObject::tr(). In addition,
@@ -538,6 +538,8 @@ public:
      *
      * Creating QM files suitable for use with this function requires passing the \c -idbased
      * option to the \c lrelease tool.
+     *
+     * \since Cutelyst 3.9.0
      */
     inline QString qtTrId(const char *id, int n = -1) const;
 
