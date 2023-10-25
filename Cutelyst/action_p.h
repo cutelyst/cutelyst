@@ -18,7 +18,7 @@ public:
     QMultiMap<QString, QString> attributes;
     Controller *controller = nullptr;
 #if (QT_VERSION < QT_VERSION_CHECK(6, 5, 0))
-    QStringList emptyArgs  = {
+    QStringList emptyArgs = {
         QString(),
         QString(),
         QString(),
