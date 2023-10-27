@@ -102,13 +102,13 @@ install(TARGETS ${target_name_server}
 
 add_executable(cutelystd main.cpp)
 
-if (JEMALLOC_FOUND)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
-    target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
-endif()
+
 
 if (USE_MIMALLOC)
     target_link_libraries(cutelystd PRIVATE mimalloc-static)
+elseif (JEMALLOC_FOUND)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
+    target_link_libraries(cutelystd PRIVATE ${JEMALLOC_LIBRARIES})
 endif()
 
 if(ENABLE_LTO)
