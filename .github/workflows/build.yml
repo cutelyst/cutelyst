@@ -19,10 +19,10 @@ jobs:
           - Debug
           - Release
         qt:
-          - version: "5.15.2"
-            requested: "5.15"
           - version: "6.3.2"  # Qt 6.3 is not an LTS version, so '6.3.*' always resolves to '6.3.2'
             requested: "6.3.*"
+          - version: "6.6.0"
+            requested: "6.6.0"
 
     steps:
       - name: Install Qt with options and default aqtversion
@@ -57,7 +57,7 @@ jobs:
         run: >
           cmake -S . -B ./build -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
-          -DPLUGIN_VIEW_GRANTLEE=OFF -DPLUGIN_VIEW_CUTELEE=OFF -DPLUGIN_VIEW_CLEARSILVER=OFF
+          -DPLUGIN_VIEW_CUTELEE=OFF
           -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=ON -DPLUGIN_UWSGI=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
 
@@ -66,7 +66,7 @@ jobs:
         run: >
           cmake -S . -B ./build -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
-          -DPLUGIN_VIEW_GRANTLEE=OFF -DPLUGIN_VIEW_CUTELEE=OFF -DPLUGIN_VIEW_CLEARSILVER=OFF
+          -DPLUGIN_VIEW_CUTELEE=OFF
           -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=OFF -DPLUGIN_UWSGI=OFF -DBUILD_DOCS=OFF
           -DPLUGIN_VALIDATOR_PWQUALITY=OFF -DPLUGIN_MEMCACHED=OFF -DUSE_MIMALLOC=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
@@ -76,7 +76,7 @@ jobs:
         run: >
           cmake -S . -B ./build -G Ninja
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DBUILD_ALL=ON
-          -DPLUGIN_VIEW_GRANTLEE=OFF -DPLUGIN_VIEW_CUTELEE=OFF -DPLUGIN_VIEW_CLEARSILVER=OFF
+          -DPLUGIN_VIEW_CUTELEE=OFF
           -DPLUGIN_VIEW_EMAIL=OFF -DUSE_JEMALLOC=OFF -DPLUGIN_UWSGI=OFF -DBUILD_DOCS=OFF
           -DPLUGIN_VALIDATOR_PWQUALITY=OFF -DPLUGIN_MEMCACHED=OFF -DUSE_MIMALLOC=OFF
           -DENABLE_MAINTAINER_CFLAGS=${{ matrix.build_type == 'Debug' }}
