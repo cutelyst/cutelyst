@@ -147,8 +147,8 @@ public:
     {
         QUrlQuery ret;
         auto cookies = c->request()->cookies();
-        for (const auto &[key, value] : cookies) {
-            ret.addQueryItem(QString::fromLatin1(key), QString::fromLatin1(value));
+        for (const auto &cookie : cookies) {
+            ret.addQueryItem(QString::fromLatin1(cookie.name), QString::fromLatin1(cookie.value));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -158,8 +158,8 @@ public:
     {
         QUrlQuery ret;
         const auto values = c->request()->cookies(name.toLatin1());
-        for (const auto &value : values) {
-            ret.addQueryItem(name, QString::fromLatin1(value));
+        for (const auto &cookie : values) {
+            ret.addQueryItem(name, QString::fromLatin1(cookie));
         }
         c->response()->setBody(ret.toString(QUrl::FullyEncoded));
     }
@@ -490,7 +490,7 @@ void TestRequest::testController_data()
     QTest::newRow("headers-test00")
         << get << QStringLiteral("/request/test/headers") << headers << QByteArray()
         << QByteArrayLiteral(
-               "AUTHORIZATION=Basic%20Zm9vOmJhcg%3D%3D&REFERER=http://www.cutelyst.org");
+               "Authorization=Basic%20Zm9vOmJhcg%3D%3D&Referer=http://www.cutelyst.org");
 
     headers.clear();
     headers.setHeader("User-Agent",

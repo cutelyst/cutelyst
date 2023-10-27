@@ -189,7 +189,7 @@ void TestStatusMessage::doTest()
                                                  Headers(),
                                                  nullptr);
     Headers headers    = result.value(QStringLiteral("headers")).value<Headers>();
-    headers.setHeader("Cookie"_qba, headers.header("SET_COOKIE"));
+    headers.setHeader("Cookie"_qba, headers.header("Set-Cookie"));
 
     QUrl urlAux2(url.mid(1) + QLatin1String("Test/") + m_sm->statusMsgStashKey() +
                  QLatin1Char('/') + m_sm->errorMgStashKey());

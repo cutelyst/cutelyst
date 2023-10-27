@@ -14,6 +14,7 @@
 
 class QIODevice;
 class QHostAddress;
+class QNetworkCookie;
 
 namespace Cutelyst {
 
@@ -311,22 +312,27 @@ public:
      */
     inline QByteArray contentType() const;
 
+    struct Cookie {
+        QByteArray name;
+        QByteArray value;
+    };
+
     /**
-     * Returns the cookie with the given name
+     * Returns the first cookie value with the given name
      */
     QByteArray cookie(QByteArrayView name) const;
 
     /**
      * Returns a list of cookies that match with the given name
      *
-     * \note Unlike QMap::values() this return values in insertion order.
+     * \note this return values in insertion order.
      */
     QByteArrayList cookies(QByteArrayView name) const;
 
     /**
      * Returns all the cookies from the request
      */
-    std::multimap<QByteArray, QByteArray> cookies() const;
+    QMultiMap<QByteArrayView, Cookie> cookies() const;
 
     /**
      * Short for headers().header(key);

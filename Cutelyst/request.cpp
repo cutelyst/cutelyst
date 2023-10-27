@@ -278,12 +278,7 @@ QByteArray Request::cookie(QByteArrayView name) const
         d->parseCookies();
     }
 
-    for (const auto &[key, value] : d->cookies) {
-        if (key == name) {
-            return value;
-        }
-    }
-    return {};
+    return d->cookies.value(name).value;
 }
 
 QByteArrayList Request::cookies(QByteArrayView name) const
@@ -295,15 +290,14 @@ QByteArrayList Request::cookies(QByteArrayView name) const
         d->parseCookies();
     }
 
-    for (const auto &[key, value] : d->cookies) {
-        if (key == name) {
-            ret.prepend(value);
-        }
+    for (auto it = d->cookies.constFind(name); it != d->cookies.constEnd() && it->name == name;
+         ++it) {
+        ret.prepend(it->value);
     }
     return ret;
 }
 
-std::multimap<QByteArray, QByteArray> Request::cookies() const
+QMultiMap<QByteArrayView, Request::Cookie> Request::cookies() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
@@ -561,9 +555,9 @@ static int nextNonWhitespace(QByteArrayView text, int from, int length)
     return text.length();
 }
 
-static std::pair<QByteArray, QByteArray> nextField(QByteArrayView text, int &position)
+static Request::Cookie nextField(QByteArrayView text, int &position)
 {
-    std::pair<QByteArray, QByteArray> ret;
+    Request::Cookie cookie;
     // format is one of:
     //    (1)  token
     //    (2)  token = token
@@ -577,22 +571,22 @@ static std::pair<QByteArray, QByteArray> nextField(QByteArrayView text, int &pos
 
     int equalsPosition = text.indexOf('=', position);
     if (equalsPosition < 0 || equalsPosition > semiColonPosition) {
-        return ret; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
+        return cookie; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
     // TODO Qt 6.3
     //    ret.first = text.sliced(position, equalsPosition - position).trimmed().toByteArray();
-    ret.first        = text.sliced(position, equalsPosition - position).toByteArray().trimmed();
+    cookie.name      = text.sliced(position, equalsPosition - position).toByteArray().trimmed();
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0) {
         // TODO Qt 6.3
         //        ret.second = text.sliced(equalsPosition + 1,
         //        secondLength).trimmed().toByteArray();
-        ret.second = text.sliced(equalsPosition + 1, secondLength).toByteArray().trimmed();
+        cookie.value = text.sliced(equalsPosition + 1, secondLength).toByteArray().trimmed();
     }
 
     position = semiColonPosition;
-    return ret;
+    return cookie;
 }
 
 void RequestPrivate::parseCookies() const
@@ -601,18 +595,18 @@ void RequestPrivate::parseCookies() const
     int position                  = 0;
     const int length              = cookieString.length();
     while (position < length) {
-        const auto field = nextField(cookieString, position);
-        if (field.first.isEmpty()) {
+        const auto cookie = nextField(cookieString, position);
+        if (cookie.name.isEmpty()) {
             // parsing error
             break;
         }
 
         // Some foreign cookies are not in name=value format, so ignore them.
-        if (field.second.isEmpty()) {
+        if (cookie.value.isEmpty()) {
             ++position;
             continue;
         }
-        cookies.emplace(field.first, field.second);
+        cookies.insert(cookie.name, cookie);
         ++position;
     }
 

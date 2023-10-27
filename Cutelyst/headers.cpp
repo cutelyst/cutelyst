@@ -317,9 +317,9 @@ void Headers::setReferer(const QByteArray &uri)
     int fragmentPos = uri.indexOf('#');
     if (fragmentPos != -1) {
         // Strip fragment per RFC 2616, section 14.36.
-        setHeader("REFERER", uri.mid(0, fragmentPos));
+        setHeader("Referer", uri.mid(0, fragmentPos));
     } else {
-        setHeader("REFERER", uri);
+        setHeader("Referer", uri);
     }
 }
 

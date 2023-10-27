@@ -54,9 +54,8 @@ bool Session::setup(Application *app)
     d->verifyUserAgent       = config.value(QLatin1String("verify_user_agent"), false).toBool();
     d->cookieHttpOnly        = config.value(QLatin1String("cookie_http_only"), true).toBool();
     d->cookieSecure          = config.value(QLatin1String("cookie_secure"), false).toBool();
-    const QString _sameSite =
-        config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+
+    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"strict"_qs).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -66,17 +65,6 @@ bool Session::setup(Application *app)
     } else {
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
     }
-#else
-    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::Default;
-    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::None;
-    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::Lax;
-    } else {
-        d->cookieSameSite = Cookie::SameSite::Strict;
-    }
-#endif
 
     connect(app, &Application::afterDispatch, this, &SessionPrivate::_q_saveSession);
     connect(app, &Application::postForked, this, [this] { m_instance = this; });

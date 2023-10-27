@@ -369,7 +369,6 @@ QByteArray CSRFProtectionPrivate::getToken(Context *c)
         token = Session::value(c, QStringLiteral(CSRF_SESSION_KEY)).toByteArray();
     } else {
         QByteArray cookieToken = c->req()->cookie(csrf->d_ptr->cookieName);
-
         if (cookieToken.isEmpty()) {
             return token;
         }
