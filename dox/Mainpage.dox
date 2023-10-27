@@ -53,16 +53,12 @@ namespace Cutelyst
       - StatusMessage
       - Validator
     </td><td>
-      - ClearSilver
       - ViewEmail
-      - GrantleeView
       - ViewJson
     </td><td>
       - RenderView
       - ActionREST
       - RoleACL
-    </td><td>
-      - CWSGI::WSGI
     </td></tr>
   </table>
 
