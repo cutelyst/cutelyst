@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_ENGINE_H
-#define CUTELYST_ENGINE_H
+#pragma once
 
 #include <Cutelyst/Headers>
 #include <Cutelyst/cutelyst_global.h>
@@ -98,52 +97,6 @@ public:
     void processRequest(EngineRequest *request);
 
     /**
-     * Returns the header key in camel case form
-     */
-    static inline QString camelCaseHeader(const QString &headerKey)
-    {
-        // The RFC 2616 and 7230 states keys are not case
-        // case sensitive, however several tools fail
-        // if the headers are not on camel case form.
-        QString key        = headerKey;
-        bool lastWasLetter = false;
-        for (int i = 0; i < key.size(); ++i) {
-            QChar c = key[i];
-            if (c == u'_') {
-                key[i]        = u'-';
-                lastWasLetter = false;
-            } else if (lastWasLetter) {
-                key[i] = c.toLower();
-            } else if (c.isLetter()) {
-                lastWasLetter = true;
-            }
-        }
-        return key;
-    }
-
-    /**
-     * Convert Header key to camel case
-     */
-    static inline void camelCaseByteArrayHeader(QByteArray &key)
-    {
-        // The RFC 2616 and 7230 states keys are not case
-        // case sensitive, however several tools fail
-        // if the headers are not on camel case form.
-        bool lastWasLetter = false;
-        for (int i = 0; i < key.size(); ++i) {
-            char c = key[i];
-            if (c == '_') {
-                key[i]        = '-';
-                lastWasLetter = false;
-            } else if (lastWasLetter) {
-                key[i] = QChar::toLower(c);
-            } else if (QChar::isLetter(c)) {
-                lastWasLetter = true;
-            }
-        }
-    }
-
-    /**
      * Returns the HTTP status message for the given \p status.
      */
     static const char *httpStatusMessage(quint16 status, int *len = nullptr);
@@ -209,5 +162,3 @@ inline bool Engine::isZeroWorker() const
 }
 
 } // namespace Cutelyst
-
-#endif // CUTELYST_ENGINE_H

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: (C) 2017-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2017-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
 /*!
@@ -9,8 +9,7 @@
  * It is meant to be used by unit tests. See TestEngineConnection in tests/coverageobject.cpp
  * for an example on how to use it.
  */
-#ifndef ENGINEREQUEST_H
-#define ENGINEREQUEST_H
+#pragma once
 
 #include <Cutelyst/Headers>
 
@@ -189,5 +188,3 @@ public:
 } // namespace Cutelyst
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cutelyst::EngineRequest::Status)
-
-#endif // ENGINEREQUEST_H

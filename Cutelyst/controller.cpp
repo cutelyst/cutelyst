@@ -33,16 +33,6 @@ QString Controller::ns() const
     return d->pathPrefix;
 }
 
-Action *Controller::actionFor(const QString &name) const
-{
-    Q_D(const Controller);
-    auto it = d->actions.constFind(name);
-    if (it != d->actions.constEnd()) {
-        return it->action;
-    }
-    return d->dispatcher->getAction(name, d->pathPrefix);
-}
-
 Action *Controller::actionFor(QStringView name) const
 {
     Q_D(const Controller);
