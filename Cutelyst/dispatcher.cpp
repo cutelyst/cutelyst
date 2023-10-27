@@ -392,7 +392,7 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
 }
 
 Action *DispatcherPrivate::command2Action(Context *c,
-                                          const QString &command,
+                                          QStringView command,
                                           const QStringList &args) const
 {
     auto it = actions.constFind(command);
@@ -404,7 +404,7 @@ Action *DispatcherPrivate::command2Action(Context *c,
 }
 
 Action *DispatcherPrivate::invokeAsPath(Context *c,
-                                        const QString &relativePath,
+                                        QStringView relativePath,
                                         const QStringList &args) const
 {
     Q_UNUSED(args);
@@ -437,17 +437,17 @@ Action *DispatcherPrivate::invokeAsPath(Context *c,
     return nullptr;
 }
 
-QString DispatcherPrivate::actionRel2Abs(Context *c, const QString &path)
+QString DispatcherPrivate::actionRel2Abs(Context *c, QStringView path)
 {
     QString ret;
-    if (path.startsWith(QLatin1Char('/'))) {
-        ret = path.mid(1);
+    if (path.startsWith(u'/')) {
+        ret = path.mid(1).toString();
         return ret;
     }
 
     const QString ns = qobject_cast<Action *>(c->stack().constLast())->ns();
     if (ns.isEmpty()) {
-        ret = path;
+        ret = path.toString();
     } else {
         ret = ns + QLatin1Char('/') + path;
     }

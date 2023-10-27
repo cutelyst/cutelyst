@@ -172,7 +172,7 @@ void Authentication::logout(Context *c)
 
 bool Authentication::setup(Application *app)
 {
-    return connect(app, &Application::postForked, this, [=] { auth = this; });
+    return connect(app, &Application::postForked, this, [this] { auth = this; });
 }
 
 AuthenticationRealm *AuthenticationPrivate::realm(const QString &realmName) const

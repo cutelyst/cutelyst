@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_CONTEXT_H
-#define CUTELYST_CONTEXT_H
+#pragma once
 
 #include <Cutelyst/async.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -269,9 +268,9 @@ public:
      * c->request()->base() any \p args are appended as additional path
      * components; and any queryValues> are appended as "?foo=bar" parameters.
      */
-    QUrl uriFor(const QString &path               = QString(),
-                const QStringList &args           = QStringList(),
-                const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
+    QUrl uriFor(const QString &path               = {},
+                const QStringList &args           = {},
+                const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -295,9 +294,9 @@ public:
      * c->uriFor(c->action(), args).
      */
     QUrl uriFor(Action *action,
-                const QStringList &captures       = QStringList(),
-                const QStringList &args           = QStringList(),
-                const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
+                const QStringList &captures       = {},
+                const QStringList &args           = {},
+                const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -330,9 +329,9 @@ public:
      * and it will create the URI /users/the-list.
      */
     QUrl uriForAction(const QString &path,
-                      const QStringList &captures       = QStringList(),
-                      const QStringList &args           = QStringList(),
-                      const ParamsMultiMap &queryValues = ParamsMultiMap()) const;
+                      const QStringList &captures       = {},
+                      const QStringList &args           = {},
+                      const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * A convenience method for the uriForAction() without the arguments parameter
@@ -593,5 +592,3 @@ inline QString Context::qtTrId(const char *id, int n) const
 } // namespace Cutelyst
 
 Q_DECLARE_METATYPE(Cutelyst::Context *)
-
-#endif // CUTELYST_CONTEXT_H

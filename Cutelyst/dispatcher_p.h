@@ -22,12 +22,11 @@ public:
 
     void printActions() const;
     inline ActionList getContainers(const QString &ns) const;
+    inline Action *command2Action(Context *c, QStringView command, const QStringList &args) const;
     inline Action *
-        command2Action(Context *c, const QString &command, const QStringList &args) const;
-    inline Action *
-        invokeAsPath(Context *c, const QString &relativePath, const QStringList &args) const;
+        invokeAsPath(Context *c, QStringView relativePath, const QStringList &args) const;
 
-    static inline QString actionRel2Abs(Context *c, const QString &path);
+    static inline QString actionRel2Abs(Context *c, QStringView path);
     static inline QString cleanNamespace(const QString &ns);
     static inline QString normalizePath(const QString &path);
 
