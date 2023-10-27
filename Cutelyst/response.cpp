@@ -128,7 +128,6 @@ void Response::setJsonBody(const QByteArray &json)
 
 void Response::setJsonBody(const QJsonValue &json)
 {
-    Q_D(Response);
     if (json.isArray()) {
         setJsonBody(QJsonDocument(json.toArray()).toJson(QJsonDocument::Compact));
     } else {

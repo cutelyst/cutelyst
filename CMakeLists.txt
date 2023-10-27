@@ -116,6 +116,7 @@ macro(set_compiler_flags targetName)
         -Wformat-security
         -Wformat
         -Winit-self
+        -Wunused-variable
       )
     endif()
 
