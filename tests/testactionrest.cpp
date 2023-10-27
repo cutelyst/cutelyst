@@ -140,7 +140,7 @@ void TestActionREST::doTest()
     QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), statusCode);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
     Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
-    QCOMPARE(headers.header(QStringLiteral("ALLOW")), allow);
+    QCOMPARE(headers.header("Allow"), allow.toLatin1());
 }
 
 void TestActionREST::testController_data()

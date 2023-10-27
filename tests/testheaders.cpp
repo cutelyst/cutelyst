@@ -20,65 +20,62 @@ void TestHeaders::testCombining()
 {
     Headers headers;
 
-    // insensitive and underscore
-    headers.setHeader(QStringLiteral("x-test"), QStringLiteral("test1"));
-    QCOMPARE(headers.header(QStringLiteral("x-test")), QStringLiteral("test1"));
+    // insensitive
+    headers.setHeader("x-test"_qba, "test1"_qba);
+    QCOMPARE(headers.header("x-test"_qba), "test1"_qba);
 
-    headers.setHeader(QStringLiteral("x-TEST"), QStringLiteral("test2"));
-    QCOMPARE(headers.header(QStringLiteral("x-test")), QStringLiteral("test2"));
+    headers.setHeader("x-TEST"_qba, "test2"_qba);
+    QCOMPARE(headers.header("x-test"), "test2");
 
-    headers.setHeader(QStringLiteral("x-TEST"), QStringLiteral("test3"));
-    QCOMPARE(headers.header(QStringLiteral("x_test")), QStringLiteral("test3"));
+    headers.setHeader("x-TEST"_qba, "test3");
+    QCOMPARE(headers.header("x-test"), "test3");
 
     // header helpers
-    headers.setContentType(QStringLiteral("TEXT/HTML"));
-    QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("TEXT/HTML"));
-    QCOMPARE(headers.contentTypeCharset(), QString());
+    headers.setContentType("TEXT/HTML");
+    QCOMPARE(headers.contentType(), "text/html");
+    QCOMPARE(headers.header("content-type"), "TEXT/HTML");
+    QCOMPARE(headers.contentTypeCharset(), QByteArray{});
 
-    headers.setContentType(QStringLiteral("TEXT/HTML; charset=utf-8"));
-    QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")),
-             QStringLiteral("TEXT/HTML; charset=utf-8"));
+    headers.setContentType("TEXT/HTML; charset=utf-8");
+    QCOMPARE(headers.contentType(), "text/html");
+    QCOMPARE(headers.header("content-type"), "TEXT/HTML; charset=utf-8");
 
-    headers.setContentTypeCharset(QStringLiteral("utf-8"));
-    QCOMPARE(headers.contentTypeCharset(), QStringLiteral("UTF-8"));
+    headers.setContentTypeCharset("utf-8");
+    QCOMPARE(headers.contentTypeCharset(), "UTF-8");
     // Make sure content-type still fine
-    QCOMPARE(headers.contentType(), QStringLiteral("text/html"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")),
-             QStringLiteral("TEXT/HTML; charset=utf-8"));
+    QCOMPARE(headers.contentType(), "text/html");
+    QCOMPARE(headers.header("content-type"), "TEXT/HTML; charset=utf-8");
 
-    headers.setContentTypeCharset(QStringLiteral("utf-16"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")),
-             QStringLiteral("TEXT/HTML; charset=utf-16"));
+    headers.setContentTypeCharset("utf-16");
+    QCOMPARE(headers.header("content-type"), "TEXT/HTML; charset=utf-16");
 
     // This removes the charset part...
-    headers.setContentType(QStringLiteral("text/plain"));
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("text/plain"));
+    headers.setContentType("text/plain");
+    QCOMPARE(headers.header("content-type"), "text/plain");
 
-    headers.setContentTypeCharset(QStringLiteral("utf-16"));
-    headers.setContentTypeCharset(QString());
-    QCOMPARE(headers.header(QStringLiteral("content-type")), QStringLiteral("text/plain"));
+    headers.setContentTypeCharset("utf-16");
+    headers.setContentTypeCharset({});
+    QCOMPARE(headers.header("content-type"), "text/plain");
 
-    headers.setContentType(QStringLiteral("text/plain"));
+    headers.setContentType("text/plain");
     QCOMPARE(headers.contentIsText(), true);
     QCOMPARE(headers.contentIsHtml(), false);
     QCOMPARE(headers.contentIsXHtml(), false);
     QCOMPARE(headers.contentIsXml(), false);
 
-    headers.setContentType(QStringLiteral("text/html"));
+    headers.setContentType("text/html");
     QCOMPARE(headers.contentIsText(), true);
     QCOMPARE(headers.contentIsHtml(), true);
     QCOMPARE(headers.contentIsXHtml(), false);
     QCOMPARE(headers.contentIsXml(), false);
 
-    headers.setContentType(QStringLiteral("application/xhtml+xml"));
+    headers.setContentType("application/xhtml+xml");
     QCOMPARE(headers.contentIsText(), false);
     QCOMPARE(headers.contentIsHtml(), true);
     QCOMPARE(headers.contentIsXHtml(), true);
     QCOMPARE(headers.contentIsXml(), true);
 
-    headers.setContentType(QStringLiteral("application/xml"));
+    headers.setContentType("application/xml");
     QCOMPARE(headers.contentIsText(), false);
     QCOMPARE(headers.contentIsHtml(), false);
     QCOMPARE(headers.contentIsXHtml(), false);
@@ -90,8 +87,8 @@ void TestHeaders::testCombining()
     headers.setContentLength(123456);
     QCOMPARE(headers.contentLength(), 123456);
 
-    headers.setContentEncoding(QStringLiteral("utf-8"));
-    QCOMPARE(headers.contentEncoding(), QStringLiteral("utf-8"));
+    headers.setContentEncoding("utf-8");
+    QCOMPARE(headers.contentEncoding(), "utf-8");
 
     QDateTime dt = QDateTime::currentDateTime();
     QTime time   = dt.time();
@@ -103,11 +100,11 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.date(), dt);
     QCOMPARE(headers.date(), dt.toUTC());
 
-    headers.setAuthorizationBasic(QStringLiteral("user"), QStringLiteral("pass"));
-    QCOMPARE(headers.authorization(), QStringLiteral("Basic dXNlcjpwYXNz"));
-    QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
-    QCOMPARE(headers.authorizationBasic(), QStringLiteral("user:pass"));
-    QCOMPARE(headers.authorizationBasicObject().user, QStringLiteral("user"));
+    headers.setAuthorizationBasic(u"user"_qs, u"pass"_qs);
+    QCOMPARE(headers.authorization(), "Basic dXNlcjpwYXNz");
+    QCOMPARE(headers.authorizationBasic(), "user:pass");
+    QCOMPARE(headers.authorizationBasic(), "user:pass");
+    QCOMPARE(headers.authorizationBasicObject().user, u"user"_qs);
 
     Headers copy = headers;
     QCOMPARE(copy, headers);
@@ -123,26 +120,26 @@ void TestHeaders::testCombining()
     QCOMPARE(headers.contentType().isNull(), true);
 
     headers.clear();
-    headers.setContentType(QStringLiteral(""));
+    headers.setContentType("");
     QCOMPARE(headers.contentType().isEmpty(), true);
     QCOMPARE(headers.contentType().isNull(), false);
 
     headers.clear();
-    headers.setContentDisposition(QStringLiteral(""));
+    headers.setContentDisposition("");
     QCOMPARE(headers.contentDisposition().isEmpty(), true);
     QCOMPARE(headers.contentDisposition().isNull(), false);
 
     headers.clear();
-    headers.setContentDisposition(QStringLiteral("attachment; filename=\"foo.txt\""));
-    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment; filename=\"foo.txt\""));
+    headers.setContentDisposition("attachment; filename=\"foo.txt\"");
+    QCOMPARE(headers.contentDisposition(), "attachment; filename=\"foo.txt\"");
 
     headers.clear();
     headers.setContentDispositionAttachment();
-    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment"));
+    QCOMPARE(headers.contentDisposition(), "attachment");
 
     headers.clear();
-    headers.setContentDispositionAttachment(QStringLiteral("foo.txt"));
-    QCOMPARE(headers.contentDisposition(), QStringLiteral("attachment; filename=\"foo.txt\""));
+    headers.setContentDispositionAttachment("foo.txt");
+    QCOMPARE(headers.contentDisposition(), "attachment; filename=\"foo.txt\"");
 }
 
 QTEST_MAIN(TestHeaders)

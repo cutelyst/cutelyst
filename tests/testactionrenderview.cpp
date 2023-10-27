@@ -53,7 +53,7 @@ public:
     C_ATTR(test3, :Local :ActionClass(RenderView))
     void test3(Context *c)
     {
-        c->response()->setContentType(QStringLiteral("plain/text"));
+        c->response()->setContentType("plain/text"_qba);
         c->setStash(QStringLiteral("data"), QByteArrayLiteral("test3"));
     }
 
@@ -179,7 +179,7 @@ void TestActionRenderView::doTest()
     QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), statusCode);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
     Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
-    QCOMPARE(headers.header(QStringLiteral("CONTENT_TYPE")), contentType);
+    QCOMPARE(headers.header("Content-Type"), contentType.toLatin1());
 }
 
 void TestActionRenderView::testController_data()

@@ -66,7 +66,8 @@ public:
     C_ATTR(contentEncoding, :Local :AutoArgs)
     void contentEncoding(Context *c)
     {
-        c->response()->setContentEncoding(c->request()->queryParam(QStringLiteral("data")));
+        c->response()->setContentEncoding(
+            c->request()->queryParam(QStringLiteral("data")).toLatin1());
         c->response()->setBody(c->response()->contentEncoding());
     }
 
@@ -81,14 +82,14 @@ public:
     C_ATTR(contentType, :Local :AutoArgs)
     void contentType(Context *c)
     {
-        c->response()->setContentType(c->request()->queryParam(QStringLiteral("data")));
+        c->response()->setContentType(c->request()->queryParam(QStringLiteral("data")).toLatin1());
         c->response()->setBody(c->response()->contentType());
     }
 
     C_ATTR(contentTypeCharset, :Local :AutoArgs)
     void contentTypeCharset(Context *c)
     {
-        c->response()->setContentType(c->request()->queryParam(QStringLiteral("data")));
+        c->response()->setContentType(c->request()->queryParam(u"data"_qs).toLatin1());
         c->response()->setBody(c->response()->contentTypeCharset());
     }
 
@@ -102,7 +103,7 @@ public:
             obj.insert(it.key(), it.value());
             ++it;
         }
-        c->response()->setJsonBody(QJsonDocument(obj));
+        c->response()->setJsonBody(obj);
     }
 
     C_ATTR(largeSetBody, :Local :AutoArgs)
@@ -242,7 +243,7 @@ void TestResponse::doTest()
     QCOMPARE(result.value(QStringLiteral("status")).toByteArray(), responseStatus);
     auto resultHeaders = result.value(QStringLiteral("headers")).value<Headers>();
     if (responseHeaders != resultHeaders) {
-        qDebug() << resultHeaders.data() << responseHeaders.data();
+        //        qDebug() << resultHeaders.data() << responseHeaders.data();
         QCOMPARE(resultHeaders, responseHeaders);
     }
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
@@ -264,48 +265,39 @@ void TestResponse::testController_data()
     QUrlQuery query;
     Headers headers;
 
-    QTest::newRow("status-test00")
-        << get << QStringLiteral("/response/test/status?data=200") << headers << QByteArray()
-        << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("3")}}
-        << QByteArrayLiteral("200");
+    QTest::newRow("status-test00") << get << QStringLiteral("/response/test/status?data=200")
+                                   << headers << QByteArray() << QByteArrayLiteral("200 OK")
+                                   << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("200");
 
-    QTest::newRow("status-test01")
-        << get << QStringLiteral("/response/test/status?data=404") << headers << QByteArray()
-        << QByteArrayLiteral("404 Not Found")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("3")}}
-        << QByteArrayLiteral("404");
+    QTest::newRow("status-test01") << get << QStringLiteral("/response/test/status?data=404")
+                                   << headers << QByteArray() << QByteArrayLiteral("404 Not Found")
+                                   << Headers{{"Content-Length", "3"}} << QByteArrayLiteral("404");
 
     QTest::newRow("status-test02")
         << get << QStringLiteral("/response/test/status?data=301") << headers << QByteArray()
-        << QByteArrayLiteral("301 Moved Permanently")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("3")}}
+        << QByteArrayLiteral("301 Moved Permanently") << Headers{{"Content-Length", "3"}}
         << QByteArrayLiteral("301");
 
     QTest::newRow("status-test03")
         << get << QStringLiteral("/response/test/status?data=400") << headers << QByteArray()
-        << QByteArrayLiteral("400 Bad Request")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("3")}}
+        << QByteArrayLiteral("400 Bad Request") << Headers{{"Content-Length", "3"}}
         << QByteArrayLiteral("400");
 
     QTest::newRow("contentEncoding-test00")
         << get << QStringLiteral("/response/test/contentEncoding?data=UTF-8") << headers
         << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("5")},
-                   {QStringLiteral("Content-Encoding"), QStringLiteral("UTF-8")}}
+        << Headers{{"Content-Length", "5"}, {"Content-Encoding", "UTF-8"}}
         << QByteArrayLiteral("UTF-8");
 
     QTest::newRow("contentEncoding-test01")
         << get << QStringLiteral("/response/test/contentEncoding?data=UTF-16") << headers
         << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("6")},
-                   {QStringLiteral("Content-Encoding"), QStringLiteral("UTF-16")}}
+        << Headers{{"Content-Length", "6"}, {"Content-Encoding", "UTF-16"}}
         << QByteArrayLiteral("UTF-16");
 
     QTest::newRow("contentLength-test00")
         << get << QStringLiteral("/response/test/contentLength?data=Hello") << headers
-        << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("1")}}
+        << QByteArray() << QByteArrayLiteral("200 OK") << Headers{{"Content-Length", "1"}}
         << QByteArrayLiteral("5");
 
     query.clear();
@@ -313,8 +305,7 @@ void TestResponse::testController_data()
     QTest::newRow("contentType-test00")
         << get << QStringLiteral("/response/test/contentType?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("17")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("appplication/json")}}
+        << Headers{{"Content-Length", "17"}, {"Content-Type", "appplication/json"}}
         << QByteArrayLiteral("appplication/json");
 
     query.clear();
@@ -322,8 +313,7 @@ void TestResponse::testController_data()
     QTest::newRow("contentType-test01")
         << get << QStringLiteral("/response/test/contentType?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("10")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("TEXT/PLAIN; charset=UTF-8")}}
+        << Headers{{"Content-Length", "10"}, {"Content-Type", "TEXT/PLAIN; charset=UTF-8"}}
         << QByteArrayLiteral("text/plain");
 
     query.clear();
@@ -332,8 +322,8 @@ void TestResponse::testController_data()
         << get
         << QStringLiteral("/response/test/contentTypeCharset?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("0")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("appplication/json")}}
+        << Headers{{"Content-Length", "0"},
+                   {"Content-Type", "appplication/json"},}
         << QByteArrayLiteral("");
 
     query.clear();
@@ -342,22 +332,22 @@ void TestResponse::testController_data()
         << get
         << QStringLiteral("/response/test/contentTypeCharset?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("5")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("TEXT/PLAIN; charset=utf-8")}}
+        << Headers{{"Content-Length", "5"},
+                   {"Content-Type", "TEXT/PLAIN; charset=utf-8"},}
         << QByteArrayLiteral("UTF-8");
 
     query.clear();
     QTest::newRow("largeBody-test00")
         << get << QStringLiteral("/response/test/largeBody") << headers << QByteArray()
         << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("4194304")}}
+        << Headers{{"Content-Length", "4194304"},}
         << QByteArrayLiteral("abcd").repeated(1024 * 1024);
 
     query.clear();
     QTest::newRow("largeSetBody-test01")
         << get << QStringLiteral("/response/test/largeSetBody") << headers << QByteArray()
         << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("4194304")}}
+        << Headers{{"Content-Length", "4194304"},}
         << QByteArrayLiteral("abcd").repeated(1024 * 1024);
 
     query.clear();
@@ -366,8 +356,8 @@ void TestResponse::testController_data()
     QTest::newRow("setJsonBody-test00")
         << get << QStringLiteral("/response/test/setJsonBody?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("14")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("application/json")}}
+        << Headers{{"Content-Length", "14"},
+                   {"Content-Type", "application/json"},}
         << QByteArrayLiteral("{\"foo\":\"barz\"}");
 
     query.clear();
@@ -376,8 +366,8 @@ void TestResponse::testController_data()
     QTest::newRow("setJsonBody-test01")
         << get << QStringLiteral("/response/test/setJsonBody?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("21")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("application/json")}}
+        << Headers{{"Content-Length", "21"},
+                   {"Content-Type", "application/json"},}
         << QByteArrayLiteral("{\"foo\":\"bar\",\"x\":\"y\"}");
 
     query.clear();
@@ -385,10 +375,10 @@ void TestResponse::testController_data()
     QTest::newRow("redirect-test00")
         << get << QStringLiteral("/response/test/redirect?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("302 Found")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("217")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")},
-                   {QStringLiteral("Location"),
-                    QStringLiteral("http://cutelyst.org/foo#something")}}
+        << Headers{{"Content-Length", "217"},
+                   {"Content-Type", "text/html; charset=utf-8"},
+                   {"Location",
+                    "http://cutelyst.org/foo#something"},}
         << QByteArrayLiteral(
                "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    "
                "<title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a "
@@ -399,10 +389,10 @@ void TestResponse::testController_data()
     QTest::newRow("redirecturl-test0")
         << get << QStringLiteral("/response/test/redirectUrl?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("302 Found")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("217")},
-                   {QStringLiteral("Content-Type"), QStringLiteral("text/html; charset=utf-8")},
-                   {QStringLiteral("Location"),
-                    QStringLiteral("http://cutelyst.org/foo#something")}}
+        << Headers{{"Content-Length", "217"},
+                   {"Content-Type", "text/html; charset=utf-8"},
+                   {"Location",
+                    "http://cutelyst.org/foo#something"},}
         << QByteArrayLiteral(
                "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n  <head>\n    "
                "<title>Moved</title>\n  </head>\n  <body>\n     <p>This item has moved <a "
@@ -414,8 +404,7 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test00")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("7")},
-                   {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar")}}
+        << Headers{{"Content-Length", "7"}, {"Set-Cookie", "foo=bar"}}
         << QByteArrayLiteral("foo=bar");
 
     query.clear();
@@ -425,8 +414,7 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test01")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("28")},
-                   {QStringLiteral("Set-Cookie"), QStringLiteral("foo=bar; domain=cutelyst.org")}}
+        << Headers{{"Content-Length", "28"}, {"Set-Cookie", "foo=bar; domain=cutelyst.org"}}
         << QByteArrayLiteral("foo=bar; domain=cutelyst.org");
 
     query.clear();
@@ -437,10 +425,10 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test02")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("67")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral(
-                        "foo=bar; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org")}}
+        << Headers{{"Content-Length", "67"},
+                   {"Set-Cookie",
+
+                    "foo=bar; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org"}}
         << QByteArrayLiteral("foo=bar; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org");
 
     query.clear();
@@ -452,10 +440,10 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test03")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("77")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
-                                   "domain=cutelyst.org")}}
+        << Headers{{"Content-Length", "77"},
+                   {"Set-Cookie",
+                    "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
+                    "domain=cutelyst.org"}}
         << QByteArrayLiteral(
                "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; domain=cutelyst.org");
 
@@ -469,10 +457,10 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test04")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("89")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
-                                   "domain=cutelyst.org; path=/path")}}
+        << Headers{{"Content-Length", "89"},
+                   {"Set-Cookie",
+                    "foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
+                    "domain=cutelyst.org; path=/path"}}
         << QByteArrayLiteral("foo=bar; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 
@@ -487,10 +475,10 @@ void TestResponse::testController_data()
     QTest::newRow("setCookie-test05")
         << get << QStringLiteral("/response/test/setCookie?") + query.toString(QUrl::FullyEncoded)
         << headers << QByteArray() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("97")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("foo=bar; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
-                                   "GMT; domain=cutelyst.org; path=/path")}}
+        << Headers{{"Content-Length", "97"},
+                   {"Set-Cookie",
+                    "foo=bar; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
+                    "GMT; domain=cutelyst.org; path=/path"}}
         << QByteArrayLiteral("foo=bar; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 
@@ -502,14 +490,14 @@ void TestResponse::testController_data()
     query.addQueryItem(QStringLiteral("http_only"), QStringLiteral("true"));
     query.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
     query.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("setCookies-test00")
         << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded)
         << headers << query.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("97")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
-                                   "GMT; domain=cutelyst.org; path=/path")}}
+        << Headers{{"Content-Length", "97"},
+                   {"Set-Cookie",
+                    "bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
+                    "GMT; domain=cutelyst.org; path=/path"}}
         << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 
@@ -528,17 +516,17 @@ void TestResponse::testController_data()
     cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
     cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
     cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("setCookies-test01")
         << post << QStringLiteral("/response/test/setCookies?") + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("97")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
-                                   "GMT; domain=cutelyst.org; path=/path")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("foo=bar; secure; expires=Tue, 21-Jun-2016 11:08:15 GMT; "
-                                   "domain=cutelyst.org; path=/path")}}
+        << Headers{{"Content-Length", "97"},
+                   {"Set-Cookie",
+                    "bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
+                                   "GMT; domain=cutelyst.org; path=/path"},
+                   {"Set-Cookie",
+                    "foo=bar; secure; expires=Tue, 21-Jun-2016 11:08:15 GMT; "
+                    "domain=cutelyst.org; path=/path"},}
         << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 
@@ -557,15 +545,15 @@ void TestResponse::testController_data()
     cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
     cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
     cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("removeCookies-test00")
         << post
         << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("97")},
-                   {QStringLiteral("Set-Cookie"),
-                    QStringLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
-                                   "GMT; domain=cutelyst.org; path=/path")}}
+        << Headers{{"Content-Length", "97"},
+                   {"Set-Cookie",
+                    "bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 "
+                    "GMT; domain=cutelyst.org; path=/path"}}
         << QByteArrayLiteral("bar=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 
@@ -584,12 +572,12 @@ void TestResponse::testController_data()
     cookies.addQueryItem(QStringLiteral("expiration_date"), QStringLiteral("2016-06-21T11:08:15Z"));
     cookies.addQueryItem(QStringLiteral("path"), QStringLiteral("/path"));
     cookies.addQueryItem(QStringLiteral("secure"), QStringLiteral("true"));
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QTest::newRow("removeCookies-test01")
         << post
         << QStringLiteral("/response/test/removeCookies/foo?") + query.toString(QUrl::FullyEncoded)
         << headers << cookies.toString(QUrl::FullyEncoded).toLatin1() << QByteArrayLiteral("200 OK")
-        << Headers{{QStringLiteral("Content-Length"), QStringLiteral("97")}}
+        << Headers{{"Content-Length", "97"}}
         << QByteArrayLiteral("foo=baz; secure; HttpOnly; expires=Tue, 21-Jun-2016 10:08:15 GMT; "
                              "domain=cutelyst.org; path=/path");
 }

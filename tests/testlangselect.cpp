@@ -83,7 +83,7 @@ TestEngine *TestLangselect::getEngine()
     auto plugin = new LangSelect(app, LangSelect::Cookie);
     plugin->setSupportedLocales({QLocale(QLocale::German), QLocale(QLocale::Portuguese)});
     plugin->setFallbackLocale(QLocale(QLocale::English, QLocale::UnitedKingdom));
-    plugin->setCookieName(QStringLiteral("lang"));
+    plugin->setCookieName("lang");
     new LangselectTest(app);
     if (!engine->init()) {
         return nullptr;
@@ -126,20 +126,15 @@ void TestLangselect::testController_data()
 
     QTest::newRow("test-auto-cookie-00") << QStringLiteral("/langselect/test/testLang") << headers
                                          << 200 << QByteArrayLiteral("en-GB");
-    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("de-AT"));
+    headers.setHeader("Accept-Language", "de-AT");
     QTest::newRow("test-auto-cookie-01")
         << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("de");
-    headers.setHeader(
-        QStringLiteral("Cookie"),
-        QString::fromLatin1(
-            QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("pt")).toRawForm()));
+    headers.setHeader("Cookie", QNetworkCookie("lang", QByteArrayLiteral("pt")).toRawForm());
     QTest::newRow("test-auto-cookie-02")
         << QStringLiteral("/langselect/test/testLang") << headers << 200 << QByteArrayLiteral("pt");
-    headers.setHeader(QStringLiteral("Accept-Language"), QStringLiteral("ru"));
+    headers.setHeader("Accept-Language", "ru");
     headers.setHeader(
-        QStringLiteral("Cookie"),
-        QString::fromLatin1(
-            QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("dk")).toRawForm()));
+        "Cookie", QNetworkCookie(QByteArrayLiteral("lang"), QByteArrayLiteral("dk")).toRawForm());
     QTest::newRow("test-auto-cookie-03") << QStringLiteral("/langselect/test/testLang") << headers
                                          << 200 << QByteArrayLiteral("en-GB");
 

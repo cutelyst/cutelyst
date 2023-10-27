@@ -27,10 +27,7 @@ public:
     HPack(int maxTableSize);
     ~HPack();
 
-    void encodeHeaders(int status,
-                       const std::vector<Cutelyst::Headers::HeaderKeyValue> &headers,
-                       QByteArray &buf,
-                       CWsgiEngine *engine);
+    void encodeHeaders(int status, const Headers &headers, QByteArray &buf, CWsgiEngine *engine);
 
     int decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream);
 

@@ -1217,7 +1217,7 @@ void TestMemcached::testController_data()
     QTest::addColumn<QByteArray>("output");
 
     Headers headers;
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QUrlQuery q;
 
     const QMap<QString, QString> simpleInput{

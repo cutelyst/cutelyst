@@ -63,26 +63,14 @@ set(plugin_view_cutelee_TS_FILES
     i18n/plugin_view_cutelee.en.ts
 )
 
-if (${QT_VERSION} VERSION_GREATER "6.2.0")
+qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+    TS_FILES ${plugin_view_cutelee_TS_FILES}
+    OPTIONS -no-obsolete -locations none
+)
 
-    qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
-        TS_FILES ${plugin_view_cutelee_TS_FILES}
-        OPTIONS -no-obsolete -locations none
-    )
-
-    qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
-        TS_FILES ${plugin_view_cutelee_TS_FILES}
-        QM_FILES_OUTPUT_VARIABLE plugin_view_cutelee_QM_FILES
-    )
-
-else ()
-
-    qt_add_translation(plugin_view_cutelee_QM_FILES ${plugin_view_cutelee_TS_FILES})
-    add_custom_target(plugin_view_cutelee_TRANSLATIONS ALL
-        DEPENDS ${plugin_view_cutelee_QM_FILES}
-        SOURCES ${plugin_view_cutelee_TS_FILES}
-    )
-
-endif ()
+qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ViewCutelee
+    TS_FILES ${plugin_view_cutelee_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE plugin_view_cutelee_QM_FILES
+)
 
 install(FILES ${plugin_view_cutelee_QM_FILES} DESTINATION ${I18NDIR})

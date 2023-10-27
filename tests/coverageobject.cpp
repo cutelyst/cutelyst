@@ -86,7 +86,7 @@ QVariantMap TestEngine::createRequest(const QString &method,
                                       QByteArray *body)
 {
     QIODevice *bodyDevice = nullptr;
-    if (headers.header(QStringLiteral("sequential")).isEmpty()) {
+    if (headers.header("Sequential"_qba).isEmpty()) {
         bodyDevice = new QBuffer(body);
     } else {
         bodyDevice = new SequentialBuffer(body);
@@ -104,22 +104,22 @@ QVariantMap TestEngine::createRequest(const QString &method,
     req.method = method;
     req.setPath(path);
     req.query         = query;
-    req.protocol      = QStringLiteral("HTTP/1.1");
+    req.protocol      = "HTTP/1.1"_qba;
     req.isSecure      = false;
-    req.serverAddress = QStringLiteral("127.0.0.1");
-    req.remoteAddress = QHostAddress(QStringLiteral("127.0.0.1"));
+    req.serverAddress = "127.0.0.1"_qba;
+    req.remoteAddress = QHostAddress(u"127.0.0.1"_qs);
     req.remotePort    = 3000;
-    req.remoteUser    = QString();
+    req.remoteUser    = QString{};
     req.headers       = headersCL;
     req.elapsed.start();
     req.body = bodyDevice;
 
     processRequest(&req);
 
-    ret = {{QStringLiteral("body"), req.m_responseData},
-           {QStringLiteral("status"), req.m_status},
-           {QStringLiteral("statusCode"), req.m_statusCode},
-           {QStringLiteral("headers"), QVariant::fromValue(req.m_headers)}};
+    ret = {{u"body"_qs, req.m_responseData},
+           {u"status"_qs, req.m_status},
+           {u"statusCode"_qs, req.m_statusCode},
+           {u"headers"_qs, QVariant::fromValue(req.m_headers)}};
 
     return ret;
 }

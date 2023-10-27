@@ -145,10 +145,7 @@ HPack::~HPack()
 {
 }
 
-void HPack::encodeHeaders(int status,
-                          const std::vector<Headers::HeaderKeyValue> &headers,
-                          QByteArray &buf,
-                          CWsgiEngine *engine)
+void HPack::encodeHeaders(int status, const Headers &headers, QByteArray &buf, CWsgiEngine *engine)
 {
     if (status == 200) {
         buf.append(char(0x88));
@@ -172,9 +169,10 @@ void HPack::encodeHeaders(int status,
         buf.append(statusStr);
     }
 
-    bool hasDate = false;
-    auto it      = headers.begin();
-    while (it != headers.end()) {
+    bool hasDate     = false;
+    auto headersData = headers.data();
+    auto it          = headersData.begin();
+    while (it != headersData.end()) {
         if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }

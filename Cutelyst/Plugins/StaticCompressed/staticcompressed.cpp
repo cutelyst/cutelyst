@@ -161,8 +161,8 @@ void StaticCompressedPrivate::beforePrepareAction(Context *c, bool *skipMethod)
             if (!locateCompressedFile(c, path)) {
                 Response *res = c->response();
                 res->setStatus(Response::NotFound);
-                res->setContentType(QStringLiteral("text/html"));
-                res->setBody(QStringLiteral("File not found: ") + path);
+                res->setContentType("text/html"_qba);
+                res->setBody(u"File not found: "_qs + path);
             }
 
             *skipMethod = true;
@@ -192,9 +192,9 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
             static QMimeDatabase db;
             // use the extension to match to be faster
             const QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
-            QString contentEncoding;
+            QByteArray contentEncoding;
             QString compressedPath;
-            QString _mimeTypeName;
+            QByteArray _mimeTypeName;
 
             if (mimeType.isValid()) {
 
@@ -203,15 +203,14 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 if (mimeType.isDefault()) {
                     if (path.endsWith(u"css.map", Qt::CaseInsensitive) ||
                         path.endsWith(u"js.map", Qt::CaseInsensitive)) {
-                        _mimeTypeName = QStringLiteral("application/json");
+                        _mimeTypeName = "application/json"_qba;
                     }
                 }
 
                 if (mimeTypes.contains(mimeType.name(), Qt::CaseInsensitive) ||
                     suffixes.contains(fileInfo.completeSuffix(), Qt::CaseInsensitive)) {
 
-                    const QString acceptEncoding =
-                        c->req()->header(QStringLiteral("Accept-Encoding"));
+                    const auto acceptEncoding = c->req()->header("Accept-Encoding");
                     qCDebug(C_STATICCOMPRESSED) << "Accept-Encoding:" << acceptEncoding;
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
@@ -225,7 +224,7 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                         }
                     } else
 #endif
-                        if (acceptEncoding.contains(QLatin1String("gzip"), Qt::CaseInsensitive)) {
+                        if (acceptEncoding.contains("gzip")) {
                         compressedPath =
                             locateCacheFile(path, currentDateTime, useZopfli ? Zopfli : Gzip);
                         if (!compressedPath.isEmpty()) {
@@ -233,16 +232,15 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                                     "Serving %s compressed data from \"%s\".",
                                     useZopfli ? "zopfli" : "gzip",
                                     qPrintable(compressedPath));
-                            contentEncoding = QStringLiteral("gzip");
+                            contentEncoding = "gzip"_qba;
                         }
-                    } else if (acceptEncoding.contains(QLatin1String("deflate"),
-                                                       Qt::CaseInsensitive)) {
+                    } else if (acceptEncoding.contains("deflate")) {
                         compressedPath = locateCacheFile(path, currentDateTime, Deflate);
                         if (!compressedPath.isEmpty()) {
                             qCDebug(C_STATICCOMPRESSED,
                                     "Serving deflate compressed data from \"%s\".",
                                     qPrintable(compressedPath));
-                            contentEncoding = QStringLiteral("deflate");
+                            contentEncoding = "deflate"_qba;
                         }
                     }
                 }
@@ -261,20 +259,20 @@ bool StaticCompressedPrivate::locateCompressedFile(Context *c, const QString &re
                 if (!_mimeTypeName.isEmpty()) {
                     headers.setContentType(_mimeTypeName);
                 } else if (mimeType.isValid()) {
-                    headers.setContentType(mimeType.name());
+                    headers.setContentType(mimeType.name().toLatin1());
                 }
                 headers.setContentLength(file->size());
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL
-                headers.setHeader(QStringLiteral("CACHE_CONTROL"), QStringLiteral("public"));
+                headers.setCacheControl("public"_qba);
 
                 if (!contentEncoding.isEmpty()) {
                     // serve correct encoding type
                     headers.setContentEncoding(contentEncoding);
 
                     // force proxies to cache compressed and non-compressed files separately
-                    headers.pushHeader(QStringLiteral("Vary"), QStringLiteral("Accept-Encoding"));
+                    headers.pushHeader("Vary"_qba, "Accept-Encoding"_qba);
                 }
 
                 return true;

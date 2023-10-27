@@ -17,7 +17,7 @@ inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
 auto findHeader(const std::vector<Headers::HeaderKeyValue> &headers, QByteArrayView key)
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
     return std::find_if(headers.begin(), headers.end(), matchKey);
 }
@@ -34,12 +34,12 @@ QByteArray Headers::contentDisposition() const
 
 void Headers::setCacheControl(const QByteArray &value)
 {
-    setHeader("Cache-Control", value);
+    setHeader("Cache-Control"_qba, value);
 }
 
 void Headers::setContentDisposition(const QByteArray &contentDisposition)
 {
-    setHeader("Content-Disposition", contentDisposition);
+    setHeader("Content-Disposition"_qba, contentDisposition);
 }
 
 void Headers::setContentDispositionAttachment(const QByteArray &filename)
@@ -58,22 +58,21 @@ QByteArray Headers::contentEncoding() const
 
 void Headers::setContentEncoding(const QByteArray &encoding)
 {
-    setHeader("Content-Encoding", encoding);
+    setHeader("Content-Encoding"_qba, encoding);
 }
 
 QByteArray Headers::contentType() const
 {
-    QByteArray ret;
-    const auto ct = header("Content-Type");
-    if (!ct.isEmpty()) {
-        ret = ct.mid(0, ct.indexOf(';')).toLower();
+    QByteArray ret = header("Content-Type");
+    if (!ret.isEmpty()) {
+        ret = ret.mid(0, ret.indexOf(';')).toLower();
     }
     return ret;
 }
 
 void Headers::setContentType(const QByteArray &contentType)
 {
-    setHeader("Content-Type", contentType);
+    setHeader("Content-Type"_qba, contentType);
 }
 
 QByteArray Headers::contentTypeCharset() const
@@ -94,7 +93,7 @@ QByteArray Headers::contentTypeCharset() const
 void Headers::setContentTypeCharset(const QByteArray &charset)
 {
     auto matchKey = [](HeaderKeyValue entry) {
-        return entry.key.compare("Content-Type", Qt::CaseInsensitive);
+        return entry.key.compare("Content-Type", Qt::CaseInsensitive) == 0;
     };
     auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
     if (result == m_data.end() || (result->value.isEmpty() && !charset.isEmpty())) {
@@ -129,7 +128,7 @@ void Headers::setContentTypeCharset(const QByteArray &charset)
 
 bool Headers::contentIsText() const
 {
-    return header("CONTENT_TYPE").startsWith("text/");
+    return header("CONTENT-TYPE").startsWith("text/");
 }
 
 bool Headers::contentIsHtml() const
@@ -391,7 +390,7 @@ Headers::Authorization Headers::proxyAuthorizationBasicObject() const
 QByteArray Headers::header(QByteArrayView key) const
 {
     auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
     if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
         result != m_data.end()) {
@@ -403,7 +402,7 @@ QByteArray Headers::header(QByteArrayView key) const
 QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const
 {
     auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
     if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
         result != m_data.end()) {
@@ -415,14 +414,15 @@ QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) c
 void Headers::setHeader(const QByteArray &key, const QByteArray &value)
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
+
     if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
         result != m_data.end()) {
         result->value = value;
         ++result;
 
-        m_data.erase(std::remove_if(result, m_data.end(), matchKey));
+        m_data.erase(std::remove_if(result, m_data.end(), matchKey), m_data.end());
     } else {
         m_data.emplace_back(HeaderKeyValue{key, value});
     }
@@ -445,15 +445,14 @@ void Headers::pushHeader(const QByteArray &key, const QByteArrayList &values)
 
 void Headers::removeHeader(QByteArrayView key)
 {
-    std::erase_if(m_data, [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
-    });
+    m_data.removeIf(
+        [key](HeaderKeyValue entry) { return key.compare(entry.key, Qt::CaseInsensitive); });
 }
 
 bool Headers::contains(QByteArrayView key) const
 {
     auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive);
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
     auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
     return result != m_data.end();

@@ -18,6 +18,11 @@ public:
     struct HeaderKeyValue {
         QByteArray key;
         QByteArray value;
+
+        inline bool operator==(const HeaderKeyValue &other) const
+        {
+            return (key.compare(other.key, Qt::CaseInsensitive) == 0) && value == other.value;
+        }
     };
 
     /**
@@ -375,7 +380,7 @@ public:
     /**
      * Returns the internal structure of headers, to be used by Engine subclasses.
      */
-    inline std::vector<HeaderKeyValue> data() const { return m_data; }
+    inline QVector<HeaderKeyValue> data() const { return m_data; }
 
     /**
      * Returns true if the header field is defined.
@@ -396,10 +401,10 @@ public:
         return *this;
     }
 
-    //    /**
-    //     * Compares if another Header object has the same data as this.
-    //     */
-    //    inline bool operator==(const Headers &other) const { return m_data == other.m_data; }
+    /**
+     * Compares if another Header object has the same data as this.
+     */
+    inline bool operator==(const Headers &other) const { return m_data == other.m_data; }
 
     //    /**
     //     * Compares if another Header object does not have the same data as this.
@@ -407,7 +412,7 @@ public:
     //    inline bool operator!=(const Headers &other) const { return m_data != other.m_data; }
 
 private:
-    std::vector<HeaderKeyValue> m_data;
+    QVector<HeaderKeyValue> m_data;
 };
 
 } // namespace Cutelyst

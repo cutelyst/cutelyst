@@ -270,7 +270,7 @@ bool Memcached::setup(Application *app)
     }
 
     if (ok) {
-        connect(app, &Application::postForked, this, [=] { mcd = this; });
+        connect(app, &Application::postForked, this, [this] { mcd = this; });
         app->loadTranslations(QStringLiteral("plugin_memcached"));
     } else {
         qCCritical(C_MEMCACHED) << "Failed to configure the connection to the memcached server(s)";

@@ -54,6 +54,7 @@ public:
     mutable ParamsMultiMap bodyParam;
     mutable QVariant bodyData;
     mutable QString remoteHostname;
+    // TODO maybe QByteArrayView?
     mutable QMultiMap<QStringView, Upload *> uploadsMap;
     mutable QVector<Upload *> uploads;
     mutable ParserStatus parserStatus = NotParsed;

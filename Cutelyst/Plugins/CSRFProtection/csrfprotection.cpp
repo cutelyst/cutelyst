@@ -83,16 +83,14 @@ bool CSRFProtection::setup(Application *app)
     }
     d->cookieDomain = config.value(QStringLiteral("cookie_domain")).toString();
     if (d->cookieName.isEmpty()) {
-        d->cookieName = QStringLiteral(DEFAULT_COOKIE_NAME);
+        d->cookieName = QByteArrayLiteral(DEFAULT_COOKIE_NAME);
     }
     d->cookiePath   = QStringLiteral(DEFAULT_COOKIE_PATH);
-    d->cookieSecure = config.value(QStringLiteral("cookie_secure"), false).toBool();
+    d->cookieSecure = config.value(u"cookie_secure"_qs, false).toBool();
     if (d->headerName.isEmpty()) {
-        d->headerName = QStringLiteral(DEFAULT_HEADER_NAME);
+        d->headerName = QByteArrayLiteral(DEFAULT_HEADER_NAME);
     }
-    const QString _sameSite =
-        config.value(QLatin1String("cookie_same_site"), QStringLiteral("strict")).toString();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+    const QString _sameSite = config.value(u"cookie_same_site"_qs, u"strict"_qs).toString();
     if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
         d->cookieSameSite = QNetworkCookie::SameSite::Default;
     } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
@@ -102,22 +100,11 @@ bool CSRFProtection::setup(Application *app)
     } else {
         d->cookieSameSite = QNetworkCookie::SameSite::Strict;
     }
-#else
-    if (_sameSite.compare(u"default", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::Default;
-    } else if (_sameSite.compare(u"none", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::None;
-    } else if (_sameSite.compare(u"lax", Qt::CaseInsensitive) == 0) {
-        d->cookieSameSite = Cookie::SameSite::Lax;
-    } else {
-        d->cookieSameSite = Cookie::SameSite::Strict;
-    }
-#endif
 
     d->trustedOrigins =
         config.value(QStringLiteral("trusted_origins")).toString().split(u',', Qt::SkipEmptyParts);
     if (d->formInputName.isEmpty()) {
-        d->formInputName = QStringLiteral(DEFAULT_FORM_INPUT_NAME);
+        d->formInputName = QByteArrayLiteral(DEFAULT_FORM_INPUT_NAME);
     }
     d->logFailedIp = config.value(QStringLiteral("log_failed_ip"), false).toBool();
     if (d->errorMsgStashKey.isEmpty()) {
@@ -139,13 +126,13 @@ void CSRFProtection::setDefaultDetachTo(const QString &actionNameOrPath)
     d->defaultDetachTo = actionNameOrPath;
 }
 
-void CSRFProtection::setFormFieldName(const QString &fieldName)
+void CSRFProtection::setFormFieldName(const QByteArray &fieldName)
 {
     Q_D(CSRFProtection);
     if (!fieldName.isEmpty()) {
         d->formInputName = fieldName;
     } else {
-        d->formInputName = QStringLiteral(DEFAULT_FORM_INPUT_NAME);
+        d->formInputName = QByteArrayLiteral(DEFAULT_FORM_INPUT_NAME);
     }
 }
 
@@ -177,13 +164,13 @@ void CSRFProtection::setCookieHttpOnly(bool httpOnly)
     d->cookieHttpOnly = httpOnly;
 }
 
-void CSRFProtection::setCookieName(const QString &cookieName)
+void CSRFProtection::setCookieName(const QByteArray &cookieName)
 {
     Q_D(CSRFProtection);
     d->cookieName = cookieName;
 }
 
-void CSRFProtection::setHeaderName(const QString &headerName)
+void CSRFProtection::setHeaderName(const QByteArray &headerName)
 {
     Q_D(CSRFProtection);
     d->headerName = headerName;
@@ -195,7 +182,7 @@ void CSRFProtection::setGenericErrorMessage(const QString &message)
     d->genericErrorMessage = message;
 }
 
-void CSRFProtection::setGenericErrorContentTyp(const QString &type)
+void CSRFProtection::setGenericErrorContentType(const QByteArray &type)
 {
     Q_D(CSRFProtection);
     d->genericContentType = type;
@@ -231,7 +218,8 @@ QString CSRFProtection::getTokenFormField(Context *c)
     }
 
     form = QStringLiteral("<input type=\"hidden\" name=\"%1\" value=\"%2\" />")
-               .arg(csrf->d_ptr->formInputName, QString::fromLatin1(CSRFProtection::getToken(c)));
+               .arg(QString::fromLatin1(csrf->d_ptr->formInputName))
+               .arg(QString::fromLatin1(CSRFProtection::getToken(c)));
 
     return form;
 }
@@ -380,7 +368,7 @@ QByteArray CSRFProtectionPrivate::getToken(Context *c)
     if (csrf->d_ptr->useSessions) {
         token = Session::value(c, QStringLiteral(CSRF_SESSION_KEY)).toByteArray();
     } else {
-        QByteArray cookieToken = c->req()->cookie(csrf->d_ptr->cookieName).toLatin1();
+        QByteArray cookieToken = c->req()->cookie(csrf->d_ptr->cookieName);
 
         if (cookieToken.isEmpty()) {
             return token;
@@ -415,13 +403,7 @@ void CSRFProtectionPrivate::setToken(Context *c)
         Session::setValue(
             c, QStringLiteral(CSRF_SESSION_KEY), c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
     } else {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
-        QNetworkCookie cookie(csrf->d_ptr->cookieName.toLatin1(),
-                              c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
-#else
-        Cookie cookie(csrf->d_ptr->cookieName.toLatin1(),
-                      c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
-#endif
+        QNetworkCookie cookie(csrf->d_ptr->cookieName, c->stash(CONTEXT_CSRF_COOKIE).toByteArray());
         if (!csrf->d_ptr->cookieDomain.isEmpty()) {
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
@@ -430,12 +412,8 @@ void CSRFProtectionPrivate::setToken(Context *c)
         cookie.setPath(csrf->d_ptr->cookiePath);
         cookie.setSecure(csrf->d_ptr->cookieSecure);
         cookie.setSameSitePolicy(csrf->d_ptr->cookieSameSite);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
         c->res()->setCookie(cookie);
-#else
-        c->res()->setCuteCookie(cookie);
-#endif
-        c->res()->headers().pushHeader(QStringLiteral("Vary"), QStringLiteral("Cookie"));
+        c->res()->headers().pushHeader("Vary"_qba, "Cookie"_qba);
     }
 
     qCDebug(C_CSRFPROTECTION,
@@ -515,7 +493,7 @@ void CSRFProtectionPrivate::reject(Context *c,
                               QStringLiteral("</p>\n"
                                              "  </body>\n"
                                              "</html>\n"));
-            c->res()->setContentType(QStringLiteral("text/html; charset=utf-8"));
+            c->res()->setContentType("text/html; charset=utf-8"_qba);
         }
         c->detach();
     }
@@ -605,7 +583,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
         // Referer header is missing for same-domain requests in only about 0.2% of cases or less,
         // so we can use strict Referer checking.
         if (c->req()->secure()) {
-            const QString referer = c->req()->headers().referer();
+            const auto referer = c->req()->headers().referer();
 
             if (Q_UNLIKELY(referer.isEmpty())) {
                 CSRFProtectionPrivate::reject(
@@ -615,7 +593,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                                  "Referer checking failed - no Referer."));
                 ok = false;
             } else {
-                const QUrl refererUrl(referer);
+                const QUrl refererUrl(QString::fromLatin1(referer));
                 if (Q_UNLIKELY(!refererUrl.isValid())) {
                     CSRFProtectionPrivate::reject(
                         c,
@@ -677,11 +655,11 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                                 c,
                                 QStringLiteral("Referer checking failed - %1 does not match any "
                                                "trusted origins")
-                                    .arg(referer),
+                                    .arg(QString::fromLatin1(referer)),
                                 c->translate("Cutelyst::CSRFProtection",
                                              "Referer checking failed - %1 does not match any "
                                              "trusted origins.")
-                                    .arg(referer));
+                                    .arg(QString::fromLatin1(referer)));
                         }
                     }
                 }
@@ -700,24 +678,27 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                 QByteArray requestCsrfToken;
                 // delete does not have body data
                 if (!c->req()->isDelete()) {
-                    if (c->req()->contentType().compare(u"multipart/form-data") == 0) {
+                    if (c->req()->contentType().startsWith("multipart/form-data")) {
                         // everything is an upload, even our token
-                        Upload *upload = c->req()->upload(csrf->d_ptr->formInputName);
+                        Upload *upload =
+                            c->req()->upload(QString::fromLatin1(csrf->d_ptr->formInputName));
                         if (upload && upload->size() < 1024 /*FIXME*/) {
                             requestCsrfToken = upload->readAll();
                         }
                     } else
                         requestCsrfToken =
-                            c->req()->bodyParam(csrf->d_ptr->formInputName).toLatin1();
+                            c->req()
+                                ->bodyParam(QString::fromLatin1(csrf->d_ptr->formInputName))
+                                .toLatin1();
                 }
 
                 if (requestCsrfToken.isEmpty()) {
-                    requestCsrfToken = c->req()->header(csrf->d_ptr->headerName).toLatin1();
+                    requestCsrfToken = c->req()->header(csrf->d_ptr->headerName);
                     if (Q_LIKELY(!requestCsrfToken.isEmpty())) {
                         qCDebug(C_CSRFPROTECTION,
                                 "Got token \"%s\" from HTTP header %s.",
                                 requestCsrfToken.constData(),
-                                qPrintable(csrf->d_ptr->headerName));
+                                csrf->d_ptr->headerName.constData());
                     } else {
                         qCDebug(C_CSRFPROTECTION,
                                 "Can not get token from HTTP header or form field.");
@@ -726,7 +707,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                     qCDebug(C_CSRFPROTECTION,
                             "Got token \"%s\" from form field %s.",
                             requestCsrfToken.constData(),
-                            qPrintable(csrf->d_ptr->formInputName));
+                            csrf->d_ptr->formInputName.constData());
                 }
 
                 requestCsrfToken = CSRFProtectionPrivate::sanitizeToken(requestCsrfToken);

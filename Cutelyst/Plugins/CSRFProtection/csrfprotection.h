@@ -271,7 +271,7 @@ public:
      * Sets the name for the hidden form field that takes the CSRF token. This field name is used
      * by CSRFProtection::getTokenFormField(). The default value is @a "csrfprotectiontoken".
      */
-    void setFormFieldName(const QString &fieldName);
+    void setFormFieldName(const QByteArray &fieldName);
 
     /**
      * Sets the name of the stash key that that will contains the error message if the CSRF
@@ -318,13 +318,13 @@ public:
      * "csrftoken". This can be whatever you want (as long as it’s different from the other cookie
      * names in your application).
      */
-    void setCookieName(const QString &cookieName);
+    void setCookieName(const QByteArray &cookieName);
 
     /**
      * The name of the request header used for CSRF authentication. The header can contain the token
      * if you don't have a input form on your protected site. The default value is @a "X-CSRFTOKEN".
      */
-    void setHeaderName(const QString &headerName);
+    void setHeaderName(const QByteArray &headerName);
 
     /**
      * Sets a generic error @a message that will be set to the Response::body() if the check fails
@@ -339,7 +339,7 @@ public:
      * to <code>text/plain; charset=utf-8</code>.
      * @since Cutelyst 2.2.0
      */
-    void setGenericErrorContentTyp(const QString &type);
+    void setGenericErrorContentType(const QByteArray &type);
 
     /**
      * Returns the current token.

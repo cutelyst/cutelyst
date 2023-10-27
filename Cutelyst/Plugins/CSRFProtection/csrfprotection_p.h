@@ -37,20 +37,16 @@ public:
     static const QStringList secureMethods;
     QStringList ignoredNamespaces;
     QString cookieDomain;
-    QString cookieName;
+    QByteArray cookieName;
     QString cookiePath;
-    QString headerName;
-    QString formInputName;
+    QByteArray headerName;
+    QByteArray formInputName;
     QString defaultDetachTo;
     QString errorMsgStashKey;
     QString genericErrorMessage;
-    QString genericContentType{QStringLiteral("text/plain; charset=utf8")};
+    QByteArray genericContentType{"text/plain; charset=utf8"_qba};
     static const QRegularExpression sanitizeRe;
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
-#else
-    Cookie::SameSite cookieSameSite = Cookie::SameSite::Strict;
-#endif
     bool cookieHttpOnly{false};
     bool cookieSecure{false};
     bool useSessions{false};

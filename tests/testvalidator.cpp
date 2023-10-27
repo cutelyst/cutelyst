@@ -1142,7 +1142,7 @@ void TestValidator::testController_data()
     const QByteArray validationDataError = QByteArrayLiteral("validationdataerror");
 
     Headers headers;
-    headers.setContentType(QStringLiteral("application/x-www-form-urlencoded"));
+    headers.setContentType("application/x-www-form-urlencoded");
     QUrlQuery query;
 
     const QList<Qt::DateFormat> dateFormats({Qt::ISODate, Qt::RFC2822Date, Qt::TextDate});

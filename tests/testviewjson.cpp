@@ -26,10 +26,10 @@ public:
     C_ATTR(test0, :Local)
     void test0(Context *c)
     {
-        c->response()->setContentType(QStringLiteral("text/plain"));
+        c->response()->setContentType("text/plain"_qba);
         c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
         c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
-        c->forward(c->view(QString()));
+        c->forward(c->view());
     }
 
     C_ATTR(test1, :Local)
@@ -38,7 +38,7 @@ public:
         c->setStash(QStringLiteral("foo"), QByteArrayLiteral("bar"));
         c->setStash(QStringLiteral("bar"), QByteArrayLiteral("baz"));
         c->setStash(QStringLiteral("SingleKey"), QByteArrayLiteral("ok"));
-        c->forward(c->view(QStringLiteral("view1")));
+        c->forward(c->view(u"view1"));
     }
 
     C_ATTR(test2, :Local)
@@ -149,7 +149,7 @@ void TestActionRenderView::doTest()
     QUrl urlAux(url.mid(1));
     Headers sendHeaders;
     if (sendXJsonVersion) {
-        sendHeaders.pushRawHeader(QStringLiteral("X_PROTOTYPE_VERSION"), QStringLiteral("1.5.0"));
+        sendHeaders.pushHeader("X-Prototype-Version"_qba, "1.5.0");
     }
     QVariantMap result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), sendHeaders, nullptr);
@@ -157,8 +157,8 @@ void TestActionRenderView::doTest()
     QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), statusCode);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
     Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
-    QCOMPARE(headers.header(QStringLiteral("CONTENT_TYPE")), contentType);
-    QCOMPARE(headers.contains(QStringLiteral("X_JSON")), hasXJson);
+    QCOMPARE(headers.header("Content-Type"), contentType.toLatin1());
+    QCOMPARE(headers.contains("X-Json"), hasXJson);
 }
 
 void TestActionRenderView::testController_data()
