@@ -138,7 +138,7 @@ bool Dispatcher::forward(Context *c, Component *component)
     return c->execute(component);
 }
 
-bool Dispatcher::forward(Context *c, const QString &opname)
+bool Dispatcher::forward(Context *c, QStringView opname)
 {
     Q_D(const Dispatcher);
 
@@ -203,7 +203,7 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
     }
 }
 
-Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) const
+Action *Dispatcher::getAction(QStringView name, const QString &nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -217,24 +217,23 @@ Action *Dispatcher::getAction(const QString &name, const QString &nameSpace) con
     }
 
     const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return getActionByPath(ns + u'/' + name);
+    return getActionByPath(QString{ns + u'/' + name});
 }
 
-Action *Dispatcher::getActionByPath(const QString &path) const
+Action *Dispatcher::getActionByPath(QStringView path) const
 {
     Q_D(const Dispatcher);
 
-    QString _path = path;
-    int slashes   = _path.count(u'/');
+    int slashes = path.count(u'/');
     if (slashes == 0) {
-        _path.prepend(u'/');
-    } else if (_path.startsWith(u'/') && slashes != 1) {
-        _path.remove(0, 1);
+        return d->actions.value(QString{u'/' + path}).action;
+    } else if (path.startsWith(u'/') && slashes != 1) {
+        return d->actions.value(path.mid(1)).action;
     }
-    return d->actions.value(_path).action;
+    return d->actions.value(path).action;
 }
 
-ActionList Dispatcher::getActions(const QString &name, const QString &nameSpace) const
+ActionList Dispatcher::getActions(QStringView name, const QString &nameSpace) const
 {
     Q_D(const Dispatcher);
 

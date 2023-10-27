@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_DISPATCHER_H
-#define CUTELYST_DISPATCHER_H
+#pragma once
 
 #include <Cutelyst/action.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -37,18 +36,18 @@ public:
     /**
      * Returns a named action from a given namespace.
      */
-    Action *getAction(const QString &name, const QString &nameSpace = QString()) const;
+    Action *getAction(QStringView name, const QString &nameSpace = {}) const;
 
     /**
      * Returns the named action by its full private path.
      */
-    Action *getActionByPath(const QString &path) const;
+    Action *getActionByPath(QStringView path) const;
 
     /**
      * Returns a list of actions that match \p name on
      * the desired namespace \p nameSpace
      */
-    ActionList getActions(const QString &name, const QString &nameSpace) const;
+    ActionList getActions(QStringView name, const QString &nameSpace) const;
 
     /**
      * Returns a hash of registered controllers
@@ -100,7 +99,7 @@ protected:
     /**
      * Used by Application to forward execution to \p opname that is resolved to an Action
      */
-    bool forward(Context *c, const QString &opname);
+    bool forward(Context *c, QStringView opname);
 
     /**
      * Used by Application to find a matching action for the current Context
@@ -118,5 +117,3 @@ private:
 };
 
 } // namespace Cutelyst
-
-#endif // CUTELYST_DISPATCHER_H
