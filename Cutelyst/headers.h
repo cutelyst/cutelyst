@@ -348,6 +348,11 @@ public:
     QByteArray header(QByteArrayView key, const QByteArray &defaultValue) const;
 
     /**
+     * Returns all values associated with \p key
+     */
+    QByteArrayList headers(QByteArrayView key) const;
+
+    /**
      * Sets the header field to value
      */
     void setHeader(const QByteArray &key, const QByteArray &value);
@@ -387,6 +392,8 @@ public:
      */
     bool contains(QByteArrayView key) const;
 
+    QByteArrayList keys() const;
+
     /**
      * Returns the value associated with key.
      */
@@ -404,12 +411,7 @@ public:
     /**
      * Compares if another Header object has the same data as this.
      */
-    inline bool operator==(const Headers &other) const { return m_data == other.m_data; }
-
-    //    /**
-    //     * Compares if another Header object does not have the same data as this.
-    //     */
-    //    inline bool operator!=(const Headers &other) const { return m_data != other.m_data; }
+    bool operator==(const Headers &other) const;
 
 private:
     QVector<HeaderKeyValue> m_data;

@@ -243,7 +243,7 @@ void TestResponse::doTest()
     QCOMPARE(result.value(QStringLiteral("status")).toByteArray(), responseStatus);
     auto resultHeaders = result.value(QStringLiteral("headers")).value<Headers>();
     if (responseHeaders != resultHeaders) {
-        //        qDebug() << resultHeaders.data() << responseHeaders.data();
+        qDebug() << resultHeaders << responseHeaders;
         QCOMPARE(resultHeaders, responseHeaders);
     }
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);

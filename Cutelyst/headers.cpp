@@ -411,6 +411,20 @@ QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) c
     return defaultValue;
 }
 
+QByteArrayList Headers::headers(QByteArrayView key) const
+{
+    QByteArrayList ret;
+    auto matchKey = [key](HeaderKeyValue entry) {
+        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
+    };
+
+    for (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey); result != m_data.end();
+         ++result) {
+        ret.append(result->value);
+    }
+    return ret;
+}
+
 void Headers::setHeader(const QByteArray &key, const QByteArray &value)
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
@@ -458,9 +472,46 @@ bool Headers::contains(QByteArrayView key) const
     return result != m_data.end();
 }
 
+QByteArrayList Headers::keys() const
+{
+    QByteArrayList ret;
+
+    for (const auto &header : m_data) {
+        bool found = false;
+        for (const auto &key : ret) {
+            if (header.key.compare(key, Qt::CaseInsensitive) == 0) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            ret.append(header.key);
+        }
+    }
+
+    return ret;
+}
+
 QByteArray Headers::operator[](QByteArrayView key) const
 {
     return header(key);
+}
+
+bool Headers::operator==(const Headers &other) const
+{
+    const auto otherData = other.data();
+    if (m_data.size() != otherData.size()) {
+        return false;
+    }
+
+    for (const auto &myValue : m_data) {
+        if (!other.data().contains(myValue)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 QByteArray decodeBasicAuth(const QByteArray &auth)

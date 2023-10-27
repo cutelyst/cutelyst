@@ -265,7 +265,7 @@ void Response::redirect(const QUrl &url, quint16 status)
         const auto location = url.toEncoded(QUrl::FullyEncoded);
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
 
-        d->headers.setHeader("LOCATION"_qba, location);
+        d->headers.setHeader("Location"_qba, location);
         d->headers.setContentType("text/html; charset=utf-8"_qba);
 
         const QByteArray buf = R"V0G0N(<!DOCTYPE html>
