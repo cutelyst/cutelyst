@@ -12,7 +12,7 @@ http://www.techempower.com/benchmarks/
 ## FEATURES:
 
  * Cross-platform
- * Stable API/ABI - v3 tagged from master, v2 tags, v1 on v1.x.x branch (unmaintained)
+ * Stable API/ABI - v3 tagged from v3.x.x, v2 tags, v1 on v1.x.x branch (unmaintained)
  * Pluggable Engines
    * Cutelyst::Server - A cross-platform and fast server engine
      * HTTP/1.1 - Pipelining and Keep-Alive
@@ -22,7 +22,6 @@ http://www.techempower.com/benchmarks/
  * REST with ActionREST
  * Plugin based views
    * [Cutelee](https://github.com/cutelyst/cutelee) (A Qt implementation of Django's template engine)
-   * [Grantlee](http://www.grantlee.org) (A Qt implementation of Django's template engine)
    * JSON
    * [Email](https://github.com/cutelyst/simple-mail)
  * Dispatcher

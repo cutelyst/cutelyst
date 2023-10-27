@@ -64,7 +64,6 @@ cmake_dependent_option(PLUGIN_MEMCACHEDSESSIONSTORE "Enables the memcached based
 option(PLUGIN_STATICCOMPRESSED "Enables the StaticCompressed plugin" ${BUILD_ALL})
 option(PLUGIN_CSRFPROTECTION "Enables the CSRF protection plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_EMAIL "Enables View::Email plugin" ${BUILD_ALL})
-option(PLUGIN_VIEW_GRANTLEE "Enables View::Grantlee plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_CUTELEE "Enables View::Cutelee plugin" ${BUILD_ALL})
 option(PLUGIN_VALIDATOR_PWQUALITY "Enables ValidatorPwQuality that requires libpwquality 1.2.2 or newer" ${BUILD_ALL})
 
