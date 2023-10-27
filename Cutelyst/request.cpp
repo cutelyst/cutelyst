@@ -387,7 +387,7 @@ QVector<Upload *> Request::uploads() const
     return d->uploads;
 }
 
-QMultiMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
+QMultiMap<QStringView, Cutelyst::Upload *> Request::uploadsMap() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::BodyParsed)) {
@@ -396,7 +396,7 @@ QMultiMap<QString, Cutelyst::Upload *> Request::uploadsMap() const
     return d->uploadsMap;
 }
 
-Uploads Request::uploads(const QString &name) const
+Uploads Request::uploads(QStringView name) const
 {
     Uploads ret;
     const auto map   = uploadsMap();

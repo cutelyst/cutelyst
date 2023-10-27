@@ -408,19 +408,19 @@ public:
      * Returns a map containing uploads, where their key is
      * the field name.
      */
-    QMultiMap<QString, Upload *> uploadsMap() const;
+    QMultiMap<QStringView, Upload *> uploadsMap() const;
 
     /**
      * Returns all (if any) Upload objects for the given field.
      */
-    Uploads uploads(const QString &name) const;
+    Uploads uploads(QStringView name) const;
 
     /**
      * Returns the first Upload object for the given field,
      * if no upload matches the field name this function
      * returns 0.
      */
-    inline Upload *upload(const QString &name) const;
+    inline Upload *upload(QStringView name) const;
 
     /**
      * Returns a ParamsMultiMap of parameters stemming from the current request's params,
@@ -593,7 +593,7 @@ inline QByteArray Request::referer() const
     return headers().referer();
 }
 
-inline Upload *Request::upload(const QString &name) const
+inline Upload *Request::upload(QStringView name) const
 {
     return uploadsMap().value(name);
 }
