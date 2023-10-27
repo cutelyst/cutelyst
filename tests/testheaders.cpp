@@ -140,6 +140,12 @@ void TestHeaders::testCombining()
     headers.clear();
     headers.setContentDispositionAttachment("foo.txt");
     QCOMPARE(headers.contentDisposition(), "attachment; filename=\"foo.txt\"");
+
+    headers.setHeader("x-hbn-foo", "bar");
+    QVERIFY(headers.contains("x-hbn-foo"));
+
+    headers.removeHeader("x-hbn-foo");
+    QVERIFY(!headers.contains("x-hbn-foo"));
 }
 
 QTEST_MAIN(TestHeaders)
