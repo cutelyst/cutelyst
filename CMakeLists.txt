@@ -9,9 +9,9 @@ project(cutelyst
 include(GNUInstallDirs)
 include(FetchContent)
 
-
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.15.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
+set(QT_VERSION_MAJOR 6)
+#find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} 6 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
 set(CUTELYST_API_LEVEL "3")
 
@@ -66,7 +66,6 @@ option(PLUGIN_VIEW_EMAIL "Enables View::Email plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_GRANTLEE "Enables View::Grantlee plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_CUTELEE "Enables View::Cutelee plugin" ${BUILD_ALL})
 option(PLUGIN_VIEW_CLEARSILVER "Enables View::ClearSilver plugin" ${BUILD_ALL})
-option(PLUGIN_UWSGI "Enables uWSGI plugin" ${BUILD_ALL})
 option(PLUGIN_VALIDATOR_PWQUALITY "Enables ValidatorPwQuality that requires libpwquality 1.2.2 or newer" ${BUILD_ALL})
 
 # NONE
@@ -203,17 +202,6 @@ if (LINUX OR FREEBSD)
 endif()
 
 add_subdirectory(server)
-
-if (PLUGIN_UWSGI)
-    find_program(UWSGI_EXEC_PATH NAMES uwsgi)
-    set (UWSGI_EXEC_PATH "uwsgi" CACHE FILEPATH "Path to the uWSGI executable")
-    find_program(UWSGI_BIN NAMES uwsgi)
-    set (UWSGI_PLUGINS_DIR "${CMAKE_INSTALL_PREFIX}/lib/uwsgi/plugins" CACHE PATH "Output directory for uWSGI plugin")
-    add_subdirectory(uwsgiEngine)
-    message(STATUS "PLUGIN: uWSGI, enabled.")
-else()
-    message(STATUS "PLUGIN: uWSGI, disabled.")
-endif ()
 
 add_subdirectory(cmd)
 

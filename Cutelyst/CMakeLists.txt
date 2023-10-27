@@ -44,13 +44,6 @@ set(cutelystqt_SRC
     plugin.cpp
 )
 
-if (${QT_VERSION} VERSION_LESS "6.1.0")
-    list(APPEND cutelystqt_SRC
-        cookie.cpp
-        cookie_p.h
-    )
-endif (${QT_VERSION} VERSION_LESS "6.1.0")
-
 set(cutelystqt_HEADERS
     paramsmultimap.h
     ParamsMultiMap
@@ -92,13 +85,6 @@ set(cutelystqt_HEADERS
     Plugin
     utils.h
 )
-
-if (${QT_VERSION} VERSION_LESS "6.1.0")
-    list(APPEND cutelystqt_HEADERS
-        Cookie
-        cookie.h
-    )
-endif (${QT_VERSION} VERSION_LESS "6.1.0")
 
 set(cutelystqt_HEADERS_PRIVATE
     common.h
@@ -171,27 +157,15 @@ set(cutelystcore_TS_FILES
     i18n/cutelystcore.en.ts
 )
 
-if (${QT_VERSION} VERSION_GREATER "6.2.0")
+qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
+    TS_FILES ${cutelystcore_TS_FILES}
+    OPTIONS -no-obsolete -no-recursive -locations none
+)
 
-    qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
-        TS_FILES ${cutelystcore_TS_FILES}
-        OPTIONS -no-obsolete -no-recursive -locations none
-    )
-
-    qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
-        TS_FILES ${cutelystcore_TS_FILES}
-        QM_FILES_OUTPUT_VARIABLE cutelystcore_QM_FILES
-    )
-
-else ()
-
-    qt_add_translation(cutelystcore_QM_FILES ${cutelystcore_TS_FILES})
-    add_custom_target(cutelystcore_TRANSLATIONS ALL
-        DEPENDS ${cutelystcore_QM_FILES}
-        SOURCES ${cutelystcore_TS_FILES}
-    )
-
-endif ()
+qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}
+    TS_FILES ${cutelystcore_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE cutelystcore_QM_FILES
+)
 
 install(FILES ${cutelystcore_QM_FILES} DESTINATION ${I18NDIR})
 

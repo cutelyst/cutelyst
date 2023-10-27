@@ -156,27 +156,15 @@ set(cutelystd_TS_FILES
     i18n/cutelystserver.en.ts
 )
 
-if (${QT_VERSION} VERSION_GREATER "6.2.0")
+qt_add_lupdate(cutelystd
+    TS_FILES ${cutelystd_TS_FILES}
+    SOURCES ${cutelyst_server_SRC} main.cpp
+    OPTIONS -no-obsolete -locations none
+)
 
-    qt_add_lupdate(cutelystd
-        TS_FILES ${cutelystd_TS_FILES}
-        SOURCES ${cutelyst_server_SRC} main.cpp
-        OPTIONS -no-obsolete -locations none
-    )
-
-    qt_add_lrelease(cutelystd
-        TS_FILES ${cutelystd_TS_FILES}
-        QM_FILES_OUTPUT_VARIABLE cutelystd_QM_FILES
-    )
-
-else ()
-
-    qt_add_translation(cutelystd_QM_FILES ${cutelystd_TS_FILES})
-    add_custom_target(cutelystd_TRANSLATIONS ALL
-        DEPENDS ${cutelystd_QM_FILES}
-        SOURCES ${cutelystd_TS_FILES}
-    )
-
-endif ()
+qt_add_lrelease(cutelystd
+    TS_FILES ${cutelystd_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE cutelystd_QM_FILES
+)
 
 install(FILES ${cutelystd_QM_FILES} DESTINATION ${I18NDIR})

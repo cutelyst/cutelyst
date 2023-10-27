@@ -36,26 +36,14 @@ set(cutelyst-skell_TS_FILES
     i18n/cutelystcmd.en.ts
 )
 
-if (${QT_VERSION} VERSION_GREATER "6.2.0")
+qt_add_lupdate(cutelyst-skell
+    TS_FILES ${cutelyst-skell_TS_FILES}
+    OPTIONS -no-obsolete -locations none
+)
 
-    qt_add_lupdate(cutelyst-skell
-        TS_FILES ${cutelyst-skell_TS_FILES}
-        OPTIONS -no-obsolete -locations none
-    )
-
-    qt_add_lrelease(cutelyst-skell
-        TS_FILES ${cutelyst-skell_TS_FILES}
-        QM_FILES_OUTPUT_VARIABLE cutelyst-skell_QM_FILES
-    )
-
-else ()
-
-    qt_add_translation(cutelyst-skell_QM_FILES ${cutelyst-skell_TS_FILES})
-    add_custom_target(cutelyst-skell_TRANSLATIONS ALL
-        DEPENDS ${cutelyst-skell_QM_FILES}
-        SOURCES ${cutelyst-skell_TS_FILES}
-    )
-
-endif ()
+qt_add_lrelease(cutelyst-skell
+    TS_FILES ${cutelyst-skell_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE cutelyst-skell_QM_FILES
+)
 
 install(FILES ${cutelyst-skell_QM_FILES} DESTINATION ${I18NDIR})

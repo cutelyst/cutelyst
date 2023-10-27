@@ -18,7 +18,6 @@ http://www.techempower.com/benchmarks/
      * HTTP/1.1 - Pipelining and Keep-Alive
      * HTTP/2 - Upgrade to H2, ALPN negotiation on HTTPS and direct H2C
      * FastCGI - Pipelining and Keep-Alive
-   * [uWSGI](http://projects.unbit.it/uwsgi) - Multiple protocols support (HTTP 1.0, FastCGI, uWSGI)
  * WebSockets
  * REST with ActionREST
  * Plugin based views
@@ -62,11 +61,7 @@ Or you can use the [Mailing List](https://groups.google.com/forum/#!forum/cutely
 ## REQUIREMENTS
 
  * CMake - for the build system (>= 3.16)
- * Qt - the core library of this framework (>= 5.15.2)
-
-## OPTIONAL
-
-  * uWSGI - to receive and parse protocols requests (>= 1.9 recommended)
+ * Qt - the core library of this framework (>= 6.2)
 
 ## LICENSE
 

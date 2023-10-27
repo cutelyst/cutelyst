@@ -211,26 +211,14 @@ set(plugin_utils_validator_TS_FILES
     i18n/plugin_utils_validator.en.ts
 )
 
-if (${QT_VERSION} VERSION_GREATER "6.2.0")
+qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+    TS_FILES ${plugin_utils_validator_TS_FILES}
+    OPTIONS -no-obsolete -locations none
+)
 
-    qt_add_lupdate(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
-        TS_FILES ${plugin_utils_validator_TS_FILES}
-        OPTIONS -no-obsolete -locations none
-    )
-
-    qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
-        TS_FILES ${plugin_utils_validator_TS_FILES}
-        QM_FILES_OUTPUT_VARIABLE plugin_utils_validator_QM_FILES
-    )
-
-else ()
-
-    qt_add_translation(plugin_utils_validator_QM_FILES ${plugin_utils_validator_TS_FILES})
-    add_custom_target(plugin_utils_validator_TRANSLATIONS ALL
-        DEPENDS ${plugin_utils_validator_QM_FILES}
-        SOURCES ${plugin_utils_validator_TS_FILES}
-    )
-
-endif ()
+qt_add_lrelease(Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}UtilsValidator
+    TS_FILES ${plugin_utils_validator_TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE plugin_utils_validator_QM_FILES
+)
 
 install(FILES ${plugin_utils_validator_QM_FILES} DESTINATION ${I18NDIR})
