@@ -19,7 +19,11 @@
 #include <QUrl>
 #include <QUrlQuery>
 
+#if defined(QT_DEBUG)
+Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect")
+#else
 Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
+#endif
 
 using namespace Cutelyst;
 
@@ -54,23 +58,23 @@ bool LangSelect::setup(Application *app)
 {
     Q_D(LangSelect);
     if (d->fallbackLocale.language() == QLocale::C) {
-        qCCritical(C_LANGSELECT, "We need a valid fallback locale.");
+        qCCritical(C_LANGSELECT) << "We need a valid fallback locale.";
         return false;
     }
     if (d->autoDetect) {
         if (d->source < Fallback) {
             if (d->source == URLQuery && d->queryKey.isEmpty()) {
-                qCCritical(C_LANGSELECT, "Can not use url query as source with empty key name.");
+                qCCritical(C_LANGSELECT) << "Can not use url query as source with empty key name.";
                 return false;
             } else if (d->source == Session && d->sessionKey.isEmpty()) {
-                qCCritical(C_LANGSELECT, "Can not use session as source with empty key name.");
+                qCCritical(C_LANGSELECT) << "Can not use session as source with empty key name.";
                 return false;
             } else if (d->source == Cookie && d->cookieName.isEmpty()) {
-                qCCritical(C_LANGSELECT, "Can not use cookie as source with empty cookie name.");
+                qCCritical(C_LANGSELECT) << "Can not use cookie as source with empty cookie name.";
                 return false;
             }
         } else {
-            qCCritical(C_LANGSELECT, "Invalid source.");
+            qCCritical(C_LANGSELECT) << "Invalid source.";
             return false;
         }
         connect(app, &Application::beforePrepareAction, this, [d](Context *c, bool *skipMethod) {
@@ -116,9 +120,7 @@ void LangSelect::setSupportedLocales(const QStringList &locales)
         if (Q_LIKELY(locale.language() != QLocale::C)) {
             d->locales.push_back(locale);
         } else {
-            qCWarning(C_LANGSELECT,
-                      "Can not add invalid locale \"%s\" to the list of supported locales.",
-                      qUtf8Printable(l));
+            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << l << "to the list of supported locales.";
         }
     }
 }
@@ -141,9 +143,7 @@ void LangSelect::addSupportedLocale(const QString &locale)
         Q_D(LangSelect);
         d->locales.push_back(l);
     } else {
-        qCWarning(C_LANGSELECT,
-                  "Can not add invalid locale \"%s\" to the list of supported locales.",
-                  qUtf8Printable(locale));
+        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locale << "to the list of supported locales.";
     }
 }
 
@@ -173,33 +173,23 @@ void LangSelect::setLocalesFromDir(const QString &path,
                     QLocale l(locPart);
                     if (Q_LIKELY(l.language() != QLocale::C)) {
                         d->locales.push_back(l);
-                        qCDebug(C_LANGSELECT,
-                                "Added locale \"%s\" to the list of supported locales.",
-                                qUtf8Printable(locPart));
+                        qCDebug(C_LANGSELECT) << "Added locale" << locPart << "to the list of supported locales.";
                     } else {
                         shrinkToFit = true;
-                        qCWarning(
-                            C_LANGSELECT,
-                            "Can not add invalid locale \"%s\" to the list of supported locales.",
-                            qUtf8Printable(locPart));
+                        qCWarning(C_LANGSELECT) << "Can not add invalid locale" << locPart << "to the list of supported locales.";
                     }
                 }
                 if (shrinkToFit) {
                     d->locales.squeeze();
                 }
             } else {
-                qCWarning(C_LANGSELECT,
-                          "Can not find translation files for \"%s\" in \"%s\".",
-                          qUtf8Printable(filter),
-                          qUtf8Printable(path));
+                qCWarning(C_LANGSELECT) << "Can not find translation files for" << filter << "in" << path;
             }
         } else {
-            qCWarning(C_LANGSELECT,
-                      "Can not set locales from not existing directory \"%s\".",
-                      qUtf8Printable(path));
+            qCWarning(C_LANGSELECT) << "Can not set locales from not existing directory" << path;
         }
     } else {
-        qCWarning(C_LANGSELECT, "Can not set locales from dir with empty path or name.");
+        qCWarning(C_LANGSELECT) << "Can not set locales from dir with empty path or name.";
     }
 }
 
@@ -220,15 +210,10 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                         QLocale l(subDir);
                         if (Q_LIKELY(l.language() != QLocale::C)) {
                             d->locales.push_back(l);
-                            qCDebug(C_LANGSELECT,
-                                    "Added locale \"%s\" to the list of supported locales.",
-                                    qUtf8Printable(subDir));
+                            qCDebug(C_LANGSELECT) << "Added locale" << subDir << "to the list of supported locales.";
                         } else {
                             shrinkToFit = true;
-                            qCWarning(C_LANGSELECT,
-                                      "Can not add invalid locale \"%s\" to the list of supported "
-                                      "locales.",
-                                      qUtf8Printable(subDir));
+                            qCWarning(C_LANGSELECT) << "Can not add invalid locale" << subDir << "to the list of supported locales.";
                         }
                     } else {
                         shrinkToFit = true;
@@ -239,12 +224,10 @@ void LangSelect::setLocalesFromDirs(const QString &path, const QString &name)
                 }
             }
         } else {
-            qCWarning(C_LANGSELECT,
-                      "Can not set locales from not existing directory \"%s\".",
-                      qUtf8Printable(path));
+            qCWarning(C_LANGSELECT) << "Can not set locales from not existing directory" << path;
         }
     } else {
-        qCWarning(C_LANGSELECT, "Can not set locales from dirs with empty path or names.");
+        qCWarning(C_LANGSELECT) << "Can not set locales from dirs with empty path or names.";
     }
 }
 
@@ -352,7 +335,7 @@ QVector<QLocale> LangSelect::getSupportedLocales()
 {
     if (!lsp) {
         qCCritical(C_LANGSELECT) << "LangSelect plugin not registered";
-        return QVector<QLocale>();
+        return {};
     }
 
     return lsp->supportedLocales();

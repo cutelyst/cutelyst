@@ -374,7 +374,7 @@ public:
     /**
      * Deconstructs the %LangSelect object.
      */
-    virtual ~LangSelect() override;
+    ~LangSelect() override;
 
     /**
      * Sets the list of supported @a locales.
@@ -650,7 +650,7 @@ protected:
      * with auto detection constructor, it will connect the plugin to the
      * Application::beforePrepareAction() signal.
      */
-    virtual bool setup(Application *app) override;
+    bool setup(Application *app) override;
 
 private:
     LangSelectPrivate *const d_ptr;
