@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef VIEW_H
-#define VIEW_H
+#pragma once
 
 #include <Cutelyst/component.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -67,5 +66,3 @@ protected:
 };
 
 } // namespace Cutelyst
-
-#endif // VIEW_H

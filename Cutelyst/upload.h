@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2014-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef UPLOAD_H
-#define UPLOAD_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
@@ -60,7 +59,7 @@ public:
      * the content of this upload.
      * Returns zero if an error occours.
      */
-    QTemporaryFile *createTemporaryFile(const QString &templateName = QString());
+    QTemporaryFile *createTemporaryFile(const QString &templateName = {});
 
     /**
      * Reimplemented from QIODevice::pos().
@@ -99,5 +98,3 @@ protected:
 using Uploads = QVector<Upload *>;
 
 } // namespace Cutelyst
-
-#endif // UPLOAD_H

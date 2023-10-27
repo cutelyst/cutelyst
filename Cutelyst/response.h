@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef CUTELYST_RESPONSE_H
-#define CUTELYST_RESPONSE_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/headers.h>
@@ -14,9 +13,6 @@ class QNetworkCookie;
 
 namespace Cutelyst {
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-class Cookie;
-#endif
 class Context;
 class Engine;
 class EngineRequest;
@@ -217,29 +213,10 @@ public:
      */
     QVariant cookie(const QByteArray &name) const;
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    /**
-     * Returns the first Cookie matching the name or a
-     * null QVariant if not found.
-     *
-     * Please read the decription of the Cookie class before using this.
-     */
-    QVariant cuteCookie(const QByteArray &name) const;
-#endif
-
     /**
      * Returns a list of all cookies set
      */
     QList<QNetworkCookie> cookies() const;
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    /**
-     * Returns a list of all %Cutelyst cookies set.
-     *
-     * Please read the decription of the Cookie class before using this.
-     */
-    QList<Cookie> cuteCookies() const;
-#endif
 
     /**
      * Defines a QNetworkCookie to be sent to the user-agent,
@@ -247,47 +224,17 @@ public:
      */
     void setCookie(const QNetworkCookie &cookie);
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    /**
-     * Defines a Cookie to be sent to the user-agent,
-     * if a previous cookie->name() was set it will be replaced.
-     *
-     * Please read the decription of the Cookie class before using this.
-     */
-    void setCuteCookie(const Cookie &cookie);
-#endif
-
     /**
      * Defines a list of QNetworkCookie to be sent to the user-agent,
      * all previous matches to cookie->name() will be preserved.
      */
     void setCookies(const QList<QNetworkCookie> &cookies);
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    /**
-     * Defines a list of Cookie to be sent to the user-agent,
-     * all previous matches to cookie->name() will be preserved.
-     *
-     * Please read the decription of the Cookie class before using this.
-     */
-    void setCuteCookies(const QList<Cookie> &cookies);
-#endif
-
     /**
      * Removes all cookies that matches name, returning
      * the number of cookies removed
      */
     int removeCookies(const QByteArray &name);
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    /**
-     * Removes all cookies that matches name, returning
-     * the number of cookies removed.
-     *
-     * Please read the decription of the Cookie class before using this.
-     */
-    int removeCuteCookies(const QByteArray &name);
-#endif
 
     /**
      * Causes the response to redirect to the specified URL. The default status is 302.
@@ -458,5 +405,3 @@ inline void Response::setJsonBody(QStringView _body)
 }
 
 } // namespace Cutelyst
-
-#endif // CUTELYST_RESPONSE_H
