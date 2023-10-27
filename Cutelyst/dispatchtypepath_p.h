@@ -1,10 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2014-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2014-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef DISPATCHTYPEPATH_P_H
-#define DISPATCHTYPEPATH_P_H
-
+#pragma once
 #include "dispatchtypepath.h"
 
 #include <vector>
@@ -12,7 +10,11 @@
 namespace Cutelyst {
 
 typedef std::vector<Action *> Actions;
-typedef QHash<QString, Actions> StringActionsMap;
+struct DispatchTypePathReplacement {
+    QString name;
+    Actions actions;
+};
+typedef QHash<QStringView, DispatchTypePathReplacement> StringActionsMap;
 
 class DispatchTypePathPrivate
 {
@@ -23,5 +25,3 @@ public:
 };
 
 } // namespace Cutelyst
-
-#endif // DISPATCHTYPEPATH_P_H

@@ -157,7 +157,7 @@ QByteArray DispatchTypeChained::list() const
 }
 
 DispatchType::MatchType
-    DispatchTypeChained::match(Context *c, const QString &path, const QStringList &args) const
+    DispatchTypeChained::match(Context *c, QStringView path, const QStringList &args) const
 {
     if (!args.isEmpty()) {
         return NoMatch;
@@ -166,7 +166,7 @@ DispatchType::MatchType
     Q_D(const DispatchTypeChained);
 
     const BestActionMatch ret =
-        d->recurseMatch(args.size(), QStringLiteral("/"), path.split(QLatin1Char('/')));
+        d->recurseMatch(args.size(), QStringLiteral("/"), path.toString().split(QLatin1Char('/')));
     const ActionList chain = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;

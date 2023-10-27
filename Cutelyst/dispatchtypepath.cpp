@@ -32,12 +32,15 @@ QByteArray DispatchTypePath::list() const
 
     QVector<QStringList> table;
 
-    QStringList keys = d->paths.keys();
-    keys.sort(Qt::CaseInsensitive);
-    for (const QString &path : keys) {
+    auto keys = d->paths.keys();
+
+    std::sort(keys.begin(), keys.end(), [](QStringView a, QStringView b) {
+        return a.compare(b, Qt::CaseInsensitive);
+    });
+    for (const auto &path : keys) {
         const auto paths = d->paths.value(path);
-        for (Action *action : paths) {
-            QString _path = QLatin1Char('/') + path;
+        for (Action *action : paths.actions) {
+            QString _path = u'/' + path;
             if (action->attribute(QLatin1String("Args")).isEmpty()) {
                 _path.append(QLatin1String("/..."));
             } else {
@@ -62,30 +65,32 @@ QByteArray DispatchTypePath::list() const
 }
 
 Cutelyst::DispatchType::MatchType
-    DispatchTypePath::match(Context *c, const QString &path, const QStringList &args) const
+    DispatchTypePath::match(Context *c, QStringView path, const QStringList &args) const
 {
     Q_D(const DispatchTypePath);
 
-    QString _path = path;
-    if (_path.isEmpty()) {
-        _path = QStringLiteral("/");
+    StringActionsMap::const_iterator it;
+
+    if (Q_UNLIKELY(path.isEmpty())) {
+        it = d->paths.constFind(u"/");
+    } else {
+        it = d->paths.constFind(path);
     }
 
-    const auto it = d->paths.constFind(_path);
     if (it == d->paths.constEnd()) {
         return NoMatch;
     }
 
     MatchType ret    = NoMatch;
     int numberOfArgs = args.size();
-    for (Action *action : it.value()) {
+    for (Action *action : it->actions) {
         // If the number of args is -1 (not defined)
         // it will slurp all args so we don't care
         // about how many args was passed
         if (action->numberOfArgs() == numberOfArgs) {
             Request *request = c->request();
             request->setArguments(args);
-            request->setMatch(_path);
+            request->setMatch(it->name);
             setupMatchedAction(c, action);
             return ExactMatch;
         } else if (action->numberOfArgs() == -1 && !c->action()) {
@@ -93,7 +98,7 @@ Cutelyst::DispatchType::MatchType
             // currently set
             Request *request = c->request();
             request->setArguments(args);
-            request->setMatch(_path);
+            request->setMatch(it->name);
             setupMatchedAction(c, action);
             ret = PartialMatch;
         }
@@ -157,7 +162,8 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
     auto it = paths.find(_path);
     if (it != paths.end()) {
         int actionNumberOfArgs = action->numberOfArgs();
-        for (const Action *regAction : it.value()) {
+        auto &actions          = it->actions;
+        for (const Action *regAction : actions) {
             if (regAction->numberOfArgs() == actionNumberOfArgs) {
                 qCCritical(CUTELYST_DISPATCHER_PATH)
                     << "Not registering Action" << action->name() << "of controller"
@@ -168,12 +174,12 @@ bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
             }
         }
 
-        it.value().push_back(action);
-        std::sort(it.value().begin(), it.value().end(), [](Action *a, Action *b) -> bool {
+        actions.push_back(action);
+        std::sort(actions.begin(), actions.end(), [](Action *a, Action *b) -> bool {
             return a->numberOfArgs() < b->numberOfArgs();
         });
     } else {
-        paths.insert(_path, {action});
+        paths.insert(_path, DispatchTypePathReplacement{_path, {action}});
     }
     return true;
 }

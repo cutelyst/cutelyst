@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2015-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2015-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef DISPATCHTYPECHAINED_H
-#define DISPATCHTYPECHAINED_H
+#pragma once
 
 #include <Cutelyst/action.h>
 #include <Cutelyst/cutelyst_global.h>
@@ -25,8 +24,7 @@ public:
 
     virtual QByteArray list() const override;
 
-    virtual MatchType
-        match(Context *c, const QString &path, const QStringList &args) const override;
+    virtual MatchType match(Context *c, QStringView path, const QStringList &args) const override;
 
     virtual bool registerAction(Action *action) override;
 
@@ -41,5 +39,3 @@ private:
 };
 
 } // namespace Cutelyst
-
-#endif // DISPATCHTYPECHAINED_H

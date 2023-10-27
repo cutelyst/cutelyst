@@ -21,22 +21,21 @@ public:
      * Constructs a DispatchTypePath object with the given \p parent.
      */
     explicit DispatchTypePath(QObject *parent = nullptr);
-    virtual ~DispatchTypePath() override;
+    ~DispatchTypePath() override;
 
-    virtual QByteArray list() const override;
+    QByteArray list() const override;
 
-    virtual MatchType
-        match(Context *c, const QString &path, const QStringList &args) const override;
+    MatchType match(Context *c, QStringView path, const QStringList &args) const override;
 
-    virtual bool registerAction(Action *action) override;
+    bool registerAction(Action *action) override;
 
-    virtual bool inUse() override;
+    bool inUse() override;
 
     /**
      * Get a URI part for an action
      * Always returns NULL if captures is not empty since Path actions don't have captures
      */
-    virtual QString uriForAction(Action *action, const QStringList &captures) const override;
+    QString uriForAction(Action *action, const QStringList &captures) const override;
 
 protected:
     DispatchTypePathPrivate *d_ptr;

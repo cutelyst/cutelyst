@@ -1,9 +1,8 @@
 /*
- * SPDX-FileCopyrightText: (C) 2013-2022 Daniel Nicoletti <dantti12@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2013-2023 Daniel Nicoletti <dantti12@gmail.com>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef DISPATCHTYPE_H
-#define DISPATCHTYPE_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 
@@ -20,7 +19,11 @@ class CUTELYST_LIBRARY DispatchType : public QObject
     Q_OBJECT
 public:
     /** This enum is used to describe the kind of a match  */
-    enum MatchType { NoMatch = 0, PartialMatch, ExactMatch };
+    enum MatchType {
+        NoMatch = 0,
+        PartialMatch,
+        ExactMatch,
+    };
     Q_ENUM(MatchType)
 
     /**
@@ -38,7 +41,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual MatchType match(Context *c, const QString &path, const QStringList &args) const = 0;
+    virtual MatchType match(Context *c, QStringView path, const QStringList &args) const = 0;
 
     /**
      * Returns an uri for an action
@@ -87,5 +90,3 @@ protected:
 };
 
 } // namespace Cutelyst
-
-#endif // DISPATCHTYPE_H
