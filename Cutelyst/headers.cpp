@@ -460,7 +460,7 @@ void Headers::pushHeader(const QByteArray &key, const QByteArrayList &values)
 void Headers::removeHeader(QByteArrayView key)
 {
     m_data.removeIf(
-        [key](HeaderKeyValue entry) { return key.compare(entry.key, Qt::CaseInsensitive); });
+        [key](HeaderKeyValue entry) { return key.compare(entry.key, Qt::CaseInsensitive) == 0; });
 }
 
 bool Headers::contains(QByteArrayView key) const
