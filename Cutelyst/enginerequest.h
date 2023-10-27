@@ -146,7 +146,7 @@ public:
     QByteArray query;
 
     /*! The protocol requested by the user agent 'HTTP1/1' */
-    QString protocol;
+    QByteArray protocol;
 
     /*! The server address which the server is listening to,
      *  usually the 'Host' header but if that's not present should be filled with the server address

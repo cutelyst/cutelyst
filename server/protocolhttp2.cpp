@@ -846,7 +846,7 @@ H2Stream::H2Stream(quint32 _streamId, qint32 _initialWindowSize, ProtoRequestHtt
     , streamId(_streamId)
     , windowSize(_initialWindowSize)
 {
-    protocol      = QStringLiteral("HTTP/2");
+    protocol      = "HTTP/2"_qba;
     serverAddress = protoRequestH2->sock->serverAddress;
     remoteAddress = protoRequestH2->sock->remoteAddress;
     remotePort    = protoRequestH2->sock->remotePort;

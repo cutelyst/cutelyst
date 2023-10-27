@@ -265,7 +265,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
     }
-    protoRequest->protocol = QString::fromLatin1(ptr, int(word_boundary - ptr));
+    protoRequest->protocol = QByteArray(ptr, int(word_boundary - ptr));
 }
 
 inline QString normalizeHeaderKey(const char *str, int size)
@@ -398,7 +398,7 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet) {
         if (fallbackConnection == ProtoRequestHttp::HeaderConnectionKeep ||
             (fallbackConnection != ProtoRequestHttp::HeaderConnectionClose &&
-             protocol.compare(u"HTTP/1.1") == 0)) {
+             protocol.compare("HTTP/1.1") == 0)) {
             headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             data.append("\r\nConnection: keep-alive", 24);
         } else {

@@ -360,7 +360,7 @@ bool Request::isDelete() const noexcept
     return d->engineRequest->method.compare(u"DELETE") == 0;
 }
 
-QString Request::protocol() const noexcept
+QByteArray Request::protocol() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->protocol;

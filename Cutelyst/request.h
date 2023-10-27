@@ -44,7 +44,7 @@ class CUTELYST_LIBRARY Request final : public QObject
     Q_PROPERTY(QByteArray contentEncoding READ contentEncoding CONSTANT)
     Q_PROPERTY(QByteArray contentType READ contentType CONSTANT)
     Q_PROPERTY(QString method READ method CONSTANT)
-    Q_PROPERTY(QString protocol READ protocol CONSTANT)
+    Q_PROPERTY(QByteArray protocol READ protocol CONSTANT)
     Q_PROPERTY(QByteArray userAgent READ userAgent CONSTANT)
     Q_PROPERTY(QByteArray referer READ referer CONSTANT)
     Q_PROPERTY(QString remoteUser READ remoteUser CONSTANT)
@@ -376,7 +376,7 @@ public:
     /**
      * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
-    QString protocol() const noexcept;
+    QByteArray protocol() const noexcept;
 
     /**
      * Returns true if the request's X-Requested-With header field is "XMLHttpRequest",

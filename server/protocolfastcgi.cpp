@@ -173,7 +173,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
             request->query = QByteArray();
         }
     } else if (memcmp(key, "SERVER_PROTOCOL", 15) == 0) {
-        request->protocol = QString::fromLatin1(val, vallen);
+        request->protocol = QByteArray(val, vallen);
     } else if (memcmp(key, "REMOTE_ADDR", 11) == 0) {
         request->remoteAddress.setAddress(QString::fromLatin1(val, vallen));
     } else if (memcmp(key, "REMOTE_PORT", 11) == 0) {
