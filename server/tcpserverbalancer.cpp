@@ -165,7 +165,7 @@ bool TcpServerBalancer::listen(const QString &line, Protocol *protocol, bool sec
     }
 #endif
 
-    m_serverName = serverAddress().toString() + QLatin1Char(':') + QString::number(port);
+    m_serverName = serverAddress().toString().toLatin1() + ':' + QByteArray::number(port);
     return true;
 }
 
@@ -462,7 +462,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
             engine,
             &CWsgiEngine::started,
             this,
-            [=]() {
+            [this, server]() {
             m_servers.push_back(server);
             resumeAccepting();
         },
@@ -480,7 +480,7 @@ TcpServer *TcpServerBalancer::createServer(CWsgiEngine *engine)
                 engine,
                 &CWsgiEngine::started,
                 this,
-                [=]() {
+                [this, server]() {
                 int socket = listenReuse(
                     m_address, m_wsgi->listenQueue(), m_port, m_wsgi->reusePort(), true);
                 if (!server->setSocketDescriptor(socket)) {

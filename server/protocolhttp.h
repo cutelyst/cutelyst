@@ -111,9 +111,9 @@ public:
     bool websocketUpgraded           = false;
 
 protected:
-    bool webSocketHandshakeDo(const QString &key,
-                              const QString &origin,
-                              const QString &protocol) override final;
+    bool webSocketHandshakeDo(const QByteArray &key,
+                              const QByteArray &origin,
+                              const QByteArray &protocol) override final;
 };
 
 class ProtocolHttp2;

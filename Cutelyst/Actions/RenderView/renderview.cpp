@@ -74,7 +74,7 @@ bool RenderView::doExecute(Cutelyst::Context *c)
 
     Response *res = c->res();
     if (res->contentType().isEmpty()) {
-        res->setContentType(QStringLiteral("text/html; charset=utf-8"));
+        res->setContentType("text/html; charset=utf-8"_qba);
     }
 
     if (c->req()->isHead()) {

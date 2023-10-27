@@ -141,12 +141,11 @@ QByteArray ViewJson::render(Context *c) const
     }
 
     Response *res = c->response();
-    if (d->xJsonHeader && c->request()->headers().contains(QStringLiteral("X_PROTOTYPE_VERSION"))) {
-        res->setHeader(QStringLiteral("X_JSON"),
-                       QStringLiteral("eval(\"(\"+this.transport.responseText+\")\")"));
+    if (d->xJsonHeader && c->request()->headers().contains("X-Prototype-Version")) {
+        res->setHeader("X-Json"_qba, "eval(\"(\"+this.transport.responseText+\")\")"_qba);
     }
 
-    res->setContentType(QStringLiteral("application/json"));
+    res->setContentType("application/json"_qba);
 
     return QJsonDocument(obj).toJson(d->format);
 }

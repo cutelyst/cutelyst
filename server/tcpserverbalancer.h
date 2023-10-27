@@ -26,7 +26,7 @@ public:
     bool listen(const QString &address, Protocol *protocol, bool secure);
 
     void setBalancer(bool enable);
-    QString serverName() const { return m_serverName; }
+    QByteArray serverName() const { return m_serverName; }
 
     void incomingConnection(qintptr handle) override;
 
@@ -35,7 +35,7 @@ public:
 private:
     QHostAddress m_address;
     quint16 m_port = 0;
-    QString m_serverName;
+    QByteArray m_serverName;
     std::vector<TcpServer *> m_servers;
     Server *m_wsgi;
     Protocol *m_protocol                  = nullptr;

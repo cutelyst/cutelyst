@@ -5,6 +5,8 @@
 #ifndef HPACKTABLES_H
 #define HPACKTABLES_H
 
+#include <Cutelyst/Headers>
+
 #include <QHash>
 #include <QString>
 #include <QVector>
@@ -26,7 +28,7 @@ public:
     ~HPack();
 
     void encodeHeaders(int status,
-                       const QMultiHash<QString, QString> &headers,
+                       const std::vector<Cutelyst::Headers::HeaderKeyValue> &headers,
                        QByteArray &buf,
                        CWsgiEngine *engine);
 

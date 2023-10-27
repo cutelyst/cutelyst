@@ -151,19 +151,6 @@ public:
     inline void setBody(QStringView body);
 
     /**
-     * Sets a QJsonDocument as the response body,
-     * using toJson(QJsonDocument::Compact) output and setting
-     * content-type to application/json.
-     */
-    void setJsonBody(const QJsonDocument &documment);
-
-    /**
-     * Sets a JSON string as the response body,
-     * this method is provided for convenience as it sets the content-type to application/json.
-     */
-    void setJsonBody(const QString &json);
-
-    /**
      * Sets a JSON string as the response body,
      * this method is provided for convenience as it sets the content-type to application/json.
      */
@@ -180,7 +167,7 @@ public:
      * using toJson(QJsonDocument::Compact) output and setting
      * content-type to application/json.
      */
-    void setJsonObjectBody(const QJsonObject &object);
+    void setJsonBody(const QJsonValue &json);
 
     /**
      * Sets a QJsonArray on a QJsonDocument as the response body,
@@ -192,12 +179,12 @@ public:
     /**
      * Short for headers().contentEncoding();
      */
-    QString contentEncoding() const;
+    QByteArray contentEncoding() const;
 
     /**
      * Short for headers().setContentEncoding(encoding);
      */
-    void setContentEncoding(const QString &encoding);
+    void setContentEncoding(const QByteArray &encoding);
 
     /**
      * Short for headers().contentLength();
@@ -212,17 +199,17 @@ public:
     /**
      * Short for headers().contentType();
      */
-    QString contentType() const;
+    QByteArray contentType() const;
 
     /**
      * Short for headers().setContentType(type);
      */
-    void setContentType(const QString &type) { headers().setContentType(type); }
+    void setContentType(const QByteArray &type) { headers().setContentType(type); }
 
     /**
      * Short for headers().contentTypeCharset();
      */
-    QString contentTypeCharset() const;
+    QByteArray contentTypeCharset() const;
 
     /**
      * Returns the first QNetworkCookie matching the name
@@ -357,12 +344,12 @@ public:
     /**
      * Shortcut headers().header()
      */
-    QString header(const QString &field) const;
+    QByteArray header(const QByteArray &field) const;
 
     /**
      * Shortcut headers().setHeader()
      */
-    void setHeader(const QString &field, const QString &value);
+    void setHeader(const QByteArray &key, const QByteArray &value);
 
     /**
      * Returns a reference to the response headers class
@@ -394,9 +381,9 @@ public:
      * it's best to always do the proper websocket handshake and then \sa webSocketClose() the
      * connection, with some meaning reason.
      */
-    bool webSocketHandshake(const QString &key      = {},
-                            const QString &origin   = {},
-                            const QString &protocol = {});
+    bool webSocketHandshake(const QByteArray &key      = {},
+                            const QByteArray &origin   = {},
+                            const QByteArray &protocol = {});
 
     /*!
      * Sends a WebSocket text message

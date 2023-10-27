@@ -42,7 +42,7 @@ http://www.techempower.com/benchmarks/
    * Async SQL with [ASql](https://github.com/cutelyst/asql)
  * Upload parser
  * JSON body as QJsonDocument when uploaded data is in JSON format
- * C++17
+ * C++20
  * Chunked reponses (via QIODevice write API)
  * Request profiling/stats
  * Unit tested

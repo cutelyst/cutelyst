@@ -43,7 +43,7 @@ public:
     /**
      * Returns the content type provided by the user agent
      */
-    QString contentType() const;
+    QByteArray contentType() const;
 
     /**
      * Returns the headers provided by the user agent

@@ -24,23 +24,26 @@ MainWindow::MainWindow(QWidget *parent)
     ui->serverReceivedHeaders->setModel(m_serverReceivedHeaders);
     ui->clientReceivedHeaders->setModel(m_clientReceivedHeaders);
 
+    m_nam->setAutoDeleteReplies(true);
+
     connect(ui->serverPortSB,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &MainWindow::updateUrl);
     connect(ui->clientSendPB, &QPushButton::clicked, this, &MainWindow::clientSend);
     connect(ui->serverListenPB, &QPushButton::clicked, this, &MainWindow::listenClicked);
-    connect(ui->serverStopListenPB, &QPushButton::clicked, this, [=] {
+    connect(ui->serverStopListenPB, &QPushButton::clicked, this, [this] {
         ui->serverStopListenPB->setEnabled(false);
         m_server->stop();
     });
 
-    connect(m_server, &Cutelyst::Server::ready, this, [=] {
+    connect(m_server, &Cutelyst::Server::ready, this, [this] {
         ui->serverStopListenPB->setEnabled(true);
     });
-    connect(
-        m_server, &Cutelyst::Server::stopped, this, [=] { ui->serverListenPB->setEnabled(true); });
-    connect(m_server, &Cutelyst::Server::errorOccured, this, [=](const QString &message) {
+    connect(m_server, &Cutelyst::Server::stopped, this, [this] {
+        ui->serverListenPB->setEnabled(true);
+    });
+    connect(m_server, &Cutelyst::Server::errorOccured, this, [this](const QString &message) {
         ui->serverListenPB->setEnabled(true);
         ui->serverStopListenPB->setEnabled(false);
         QMessageBox::critical(this, tr("Failed to start server"), message);
@@ -68,9 +71,7 @@ void MainWindow::clientSend()
     QNetworkReply *reply = m_nam->sendCustomRequest(request,
                                                     ui->clientMethodLE->currentText().toLatin1(),
                                                     ui->clientBodyPTE->toPlainText().toUtf8());
-    connect(reply, &QNetworkReply::finished, this, [=] {
-        reply->deleteLater();
-
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
         ui->clientSendPB->setEnabled(true);
 
         const QByteArray body = reply->readAll();
@@ -123,8 +124,8 @@ void MainWindow::indexCalled(Cutelyst::Context *c)
     const auto headersData = c->request()->headers().data();
     auto hIt               = headersData.begin();
     while (hIt != headersData.end()) {
-        auto keyItem   = new QStandardItem(hIt.key());
-        auto valueItem = new QStandardItem(hIt.value());
+        auto keyItem   = new QStandardItem(QString::fromLatin1(hIt->key));
+        auto valueItem = new QStandardItem(QString::fromLatin1(hIt->value));
         m_serverReceivedHeaders->appendRow({
             keyItem,
             valueItem,

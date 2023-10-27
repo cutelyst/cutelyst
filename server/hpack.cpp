@@ -146,7 +146,7 @@ HPack::~HPack()
 }
 
 void HPack::encodeHeaders(int status,
-                          const QMultiHash<QString, QString> &headers,
+                          const std::vector<Headers::HeaderKeyValue> &headers,
                           QByteArray &buf,
                           CWsgiEngine *engine)
 {
@@ -173,26 +173,25 @@ void HPack::encodeHeaders(int status,
     }
 
     bool hasDate = false;
-    auto it      = headers.constBegin();
-    while (it != headers.constEnd()) {
-        const QString &key   = it.key();
-        const QString &value = it.value();
-        if (!hasDate && key.compare(u"DATE") == 0) {
+    auto it      = headers.begin();
+    while (it != headers.end()) {
+        if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
-        auto staticIt = HPackPrivate::hpackStaticHeadersCode.constFind(key);
+        auto staticIt =
+            HPackPrivate::hpackStaticHeadersCode.constFind(QString::fromLatin1(it->key));
         if (staticIt != HPackPrivate::hpackStaticHeadersCode.constEnd()) {
             buf.append(staticIt.value(), 2);
 
-            encodeUInt16(buf, value.length(), INT_MASK(7));
-            buf.append(value.toLatin1());
+            encodeUInt16(buf, it->value.length(), INT_MASK(7));
+            buf.append(it->value);
         } else {
             buf.append('\x00');
-            encodeH2caseHeader(buf, key);
+            encodeH2caseHeader(buf, QString::fromLatin1(it->key));
 
-            encodeUInt16(buf, value.length(), INT_MASK(7));
-            buf.append(value.toLatin1());
+            encodeUInt16(buf, it->value.length(), INT_MASK(7));
+            buf.append(it->value);
         }
 
         ++it;
@@ -256,7 +255,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
             return true;
         }
     } else if (k.compare(u":authority") == 0) {
-        stream->serverAddress = v;
+        stream->serverAddress = v.toLatin1();
         return true;
     } else if (k.compare(u":scheme") == 0) {
         if (stream->scheme.isEmpty()) {
@@ -324,7 +323,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                stream->headers.pushHeader(key, value);
+                stream->headers.pushHeader(key.toLatin1(), value.toLatin1());
             }
         } else {
             bool addToDynamicTable = false;
@@ -403,7 +402,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                stream->headers.pushHeader(key, value);
+                stream->headers.pushHeader(key.toLatin1(), value.toLatin1());
             }
 
             if (addToDynamicTable) {

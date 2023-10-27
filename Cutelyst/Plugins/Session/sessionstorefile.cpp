@@ -21,7 +21,7 @@ Q_LOGGING_CATEGORY(C_SESSION_FILE, "cutelyst.plugin.sessionfile", QtWarningMsg)
 #define SESSION_STORE_FILE_SAVE QStringLiteral("_c_session_store_file_save")
 #define SESSION_STORE_FILE_DATA QStringLiteral("_c_session_store_file_data")
 
-static QVariantHash loadSessionData(Context *c, const QString &sid);
+static QVariantHash loadSessionData(Context *c, const QByteArray &sid);
 
 SessionStoreFile::SessionStoreFile(QObject *parent)
     : SessionStore(parent)
@@ -33,7 +33,7 @@ SessionStoreFile::~SessionStoreFile()
 }
 
 QVariant SessionStoreFile::getSessionData(Context *c,
-                                          const QString &sid,
+                                          const QByteArray &sid,
                                           const QString &key,
                                           const QVariant &defaultValue)
 {
@@ -43,7 +43,7 @@ QVariant SessionStoreFile::getSessionData(Context *c,
 }
 
 bool SessionStoreFile::storeSessionData(Context *c,
-                                        const QString &sid,
+                                        const QByteArray &sid,
                                         const QString &key,
                                         const QVariant &value)
 {
@@ -56,7 +56,7 @@ bool SessionStoreFile::storeSessionData(Context *c,
     return true;
 }
 
-bool SessionStoreFile::deleteSessionData(Context *c, const QString &sid, const QString &key)
+bool SessionStoreFile::deleteSessionData(Context *c, const QByteArray &sid, const QString &key)
 {
     QVariantHash data = loadSessionData(c, sid);
 
@@ -84,7 +84,7 @@ bool SessionStoreFile::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
-QVariantHash loadSessionData(Context *c, const QString &sid)
+QVariantHash loadSessionData(Context *c, const QByteArray &sid)
 {
     QVariantHash data;
     const QVariant sessionVariant = c->stash(SESSION_STORE_FILE_DATA);
@@ -95,7 +95,7 @@ QVariantHash loadSessionData(Context *c, const QString &sid)
 
     const QString root = rootPath();
 
-    auto file = new QFile(root + u'/' + sid, c);
+    auto file = new QFile(root + u'/' + QString::fromLatin1(sid), c);
     if (!file->open(QIODevice::ReadWrite)) {
         if (!QDir().mkpath(root)) {
             qCWarning(C_SESSION_FILE) << "Failed to create path for session object" << root;

@@ -48,7 +48,7 @@ public:
 
     mutable QUrl url;
     mutable QString base;
-    mutable QMultiMap<QString, QString> cookies;
+    mutable std::multimap<QByteArray, QByteArray> cookies;
     mutable ParamsMultiMap queryParam;
     mutable QString queryKeywords;
     mutable ParamsMultiMap bodyParam;

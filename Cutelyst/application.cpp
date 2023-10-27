@@ -89,7 +89,7 @@ Headers &Application::defaultHeaders() noexcept
 void Application::addXCutelystVersionHeader()
 {
     Q_D(Application);
-    d->headers.setHeader(QStringLiteral("X_CUTELYST"), QStringLiteral(VERSION));
+    d->headers.setHeader("X-Cutelyst"_qba, QByteArrayLiteral(VERSION));
 }
 
 bool Application::registerPlugin(Plugin *plugin)
@@ -735,7 +735,7 @@ void Cutelyst::ApplicationPrivate::logRequestUploads(const QVector<Cutelyst::Upl
     for (Upload *upload : uploads) {
         table.append({upload->name(),
                       upload->filename(),
-                      upload->contentType(),
+                      QString::fromLatin1(upload->contentType()),
                       QString::number(upload->size())});
     }
     qCDebug(CUTELYST_REQUEST) << Utils::buildTable(table,

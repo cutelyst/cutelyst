@@ -111,9 +111,9 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
 bool ActionRESTPrivate::returnOptions(Context *c, const QString &methodName) const
 {
     Response *response = c->response();
-    response->setContentType(QStringLiteral("text/plain"));
+    response->setContentType("text/plain"_qba);
     response->setStatus(Response::OK); // 200
-    response->setHeader(QStringLiteral("ALLOW"), getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
     response->body().clear();
     return true;
 }
@@ -122,15 +122,15 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
 {
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
-    response->setHeader(QStringLiteral("ALLOW"), getAllowedMethods(c->controller(), methodName));
+    response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
     const QString body = QLatin1String("Method ") + c->req()->method() +
                          QLatin1String(" not implemented for ") + c->uriFor(methodName).toString();
     response->setBody(body);
     return true;
 }
 
-QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller,
-                                                       const QString &methodName) const
+QByteArray Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller,
+                                                          const QString &methodName) const
 {
     QStringList methods;
     const QString name       = methodName + u'_';
@@ -150,7 +150,7 @@ QString Cutelyst::ActionRESTPrivate::getAllowedMethods(Controller *controller,
     methods.sort();
     methods.removeDuplicates();
 
-    return methods.join(u", ");
+    return methods.join(u", ").toLatin1();
 }
 
 #include "moc_actionrest.cpp"

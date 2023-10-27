@@ -46,7 +46,7 @@ public:
         protoData->resetData();
     }
 
-    QString serverAddress;
+    QByteArray serverAddress;
     QHostAddress remoteAddress;
     quint16 remotePort = 0;
     Engine *engine;

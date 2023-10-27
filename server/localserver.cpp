@@ -103,7 +103,7 @@ void LocalServer::incomingConnection(quintptr handle)
     if (Q_LIKELY(sock->setSocketDescriptor(qintptr(handle)))) {
         sock->proto = m_protocol;
 
-        sock->serverAddress = QStringLiteral("localhost");
+        sock->serverAddress = "localhost"_qba;
         if (++m_processing) {
             m_engine->startSocketTimeout();
         }

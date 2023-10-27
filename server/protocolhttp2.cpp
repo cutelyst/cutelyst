@@ -783,9 +783,9 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket,
                                const Cutelyst::EngineRequest &request)
 {
     const Cutelyst::Headers &headers = request.headers;
-    if (headers.header(QStringLiteral("UPGRADE")).compare(u"h2c") == 0 &&
-        headers.connection().compare(u"Upgrade, HTTP2-Settings") == 0) {
-        const QString settings = headers.header(QStringLiteral("HTTP2_SETTINGS"));
+    if (headers.header("Upgrade").compare("h2c") == 0 &&
+        headers.connection().compare("Upgrade, HTTP2-Settings") == 0) {
+        const auto settings = headers.header("Http2-Settings");
         if (!settings.isEmpty()) {
             io->write("HTTP/1.1 101 Switching Protocols\r\n"
                       "Connection: Upgrade\r\n"

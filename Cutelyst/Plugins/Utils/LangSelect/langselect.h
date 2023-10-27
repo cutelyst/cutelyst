@@ -483,7 +483,7 @@ public:
     /**
      * Sets the @a name of a cookie to store and retrieve the locale.
      */
-    void setCookieName(const QString &name);
+    void setCookieName(const QByteArray &name);
 
     /**
      * Sets the @a map for subdomains as source for locale selection. The @a map should contain
@@ -586,7 +586,7 @@ public:
      * setCookieName() will be used.
      * @return @c true if the cookie contained a supported locale, otherwise @c false.
      */
-    static bool fromCookie(Context *c, const QString &name = QString());
+    static bool fromCookie(Context *c, const QByteArray &name = {});
 
     /**
      * Tries to get the locale from the subdomain specified in the @a subDomainMap. The @a

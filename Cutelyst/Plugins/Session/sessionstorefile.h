@@ -25,7 +25,7 @@ public:
      * Reimplemented from SessionStore::getSessionData().
      */
     virtual QVariant getSessionData(Context *c,
-                                    const QString &sid,
+                                    const QByteArray &sid,
                                     const QString &key,
                                     const QVariant &defaultValue) final;
 
@@ -33,14 +33,14 @@ public:
      * Reimplemented from SessionStore::storeSessionData().
      */
     virtual bool storeSessionData(Context *c,
-                                  const QString &sid,
+                                  const QByteArray &sid,
                                   const QString &key,
                                   const QVariant &value) final;
 
     /**
      * Reimplemented from SessionStore::deleteSessionData().
      */
-    virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
+    virtual bool deleteSessionData(Context *c, const QByteArray &sid, const QString &key) final;
 
     /**
      * Reimplemented from SessionStore::deleteExpiredSessions().

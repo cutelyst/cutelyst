@@ -27,7 +27,7 @@ public:
      * defaultValue.
      */
     virtual QVariant getSessionData(Context *c,
-                                    const QString &sid,
+                                    const QByteArray &sid,
                                     const QString &key,
                                     const QVariant &defaultValue = QVariant()) = 0;
 
@@ -35,14 +35,14 @@ public:
      * Stores the session data for the given session id sid and key to value.
      */
     virtual bool storeSessionData(Context *c,
-                                  const QString &sid,
+                                  const QByteArray &sid,
                                   const QString &key,
                                   const QVariant &value) = 0;
 
     /**
      * Removes all session data for the given session id sid and key.
      */
-    virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) = 0;
+    virtual bool deleteSessionData(Context *c, const QByteArray &sid, const QString &key) = 0;
 
     /**
      * Removes all expired sessions which are above expires.
@@ -127,7 +127,7 @@ public:
     /**
      * Sets the session storage
      */
-    void setStorage(SessionStore *store);
+    void setStorage(std::unique_ptr<SessionStore> store);
 
     /**
      * Returns the session storage
@@ -138,7 +138,7 @@ public:
      * Returns the current session id or null if
      * there is no current session
      */
-    static QString id(Context *c);
+    static QByteArray id(Context *c);
 
     /**
      * This method returns the time when the current session will expire, or 0 if there is no

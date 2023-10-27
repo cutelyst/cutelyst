@@ -293,46 +293,50 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ':' && word_boundary < end) {
         ++word_boundary;
     }
-    const QString key = normalizeHeaderKey(ptr, int(word_boundary - ptr));
+    const auto key = QByteArray(ptr, int(word_boundary - ptr));
 
     while ((*word_boundary == ':' || *word_boundary == ' ') && word_boundary < end) {
         ++word_boundary;
     }
-    const QString value = QString::fromLatin1(word_boundary, int(end - word_boundary));
+    const auto value = QByteArray(word_boundary, int(end - word_boundary));
 
     if (protoRequest->headerConnection == ProtoRequestHttp::HeaderConnectionNotSet &&
-        key.compare(u"CONNECTION") == 0) {
-        if (value.compare(u"close", Qt::CaseInsensitive) == 0) {
+        key.compare("Connection", Qt::CaseInsensitive) == 0) {
+        if (value.compare("close", Qt::CaseInsensitive) == 0) {
             protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionClose;
         } else {
             protoRequest->headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
         }
-    } else if (protoRequest->contentLength < 0 && key.compare(u"CONTENT_LENGTH") == 0) {
+    } else if (protoRequest->contentLength < 0 &&
+               key.compare("Content-Length", Qt::CaseInsensitive) == 0) {
         bool ok;
         qint64 cl = value.toLongLong(&ok);
         if (ok && cl >= 0) {
             protoRequest->contentLength = cl;
         }
-    } else if (!protoRequest->headerHost && key.compare(u"HOST") == 0) {
+    } else if (!protoRequest->headerHost && key.compare("Host", Qt::CaseInsensitive) == 0) {
         protoRequest->serverAddress = value;
         protoRequest->headerHost    = true;
     } else if (usingFrontendProxy) {
         if (!protoRequest->X_Forwarded_For &&
-            (key.compare(u"X_FORWARDED_FOR") == 0 || key.compare(u"X_REAL_IP") == 0)) {
-            protoRequest->remoteAddress =
-                QHostAddress(value); // configure your reverse-proxy to list only one IP address
+            (key.compare("X-Forwarded-For", Qt::CaseInsensitive) == 0 ||
+             key.compare("X-Real-Ip", Qt::CaseInsensitive) == 0)) {
+            // configure your reverse-proxy to list only one IP address
+            protoRequest->remoteAddress   = QHostAddress(QString::fromLatin1(value));
             protoRequest->remotePort      = 0; // unknown
             protoRequest->X_Forwarded_For = true;
-        } else if (!protoRequest->X_Forwarded_Host && key.compare(u"X_FORWARDED_HOST") == 0) {
+        } else if (!protoRequest->X_Forwarded_Host &&
+                   key.compare("X-Forwarded-Host", Qt::CaseInsensitive) == 0) {
             protoRequest->serverAddress    = value;
             protoRequest->X_Forwarded_Host = true;
             protoRequest->headerHost       = true; // ignore a following Host: header (if any)
-        } else if (!protoRequest->X_Forwarded_Proto && key.compare(u"X_FORWARDED_PROTO") == 0) {
-            protoRequest->isSecure          = (value.compare(u"https") == 0);
+        } else if (!protoRequest->X_Forwarded_Proto &&
+                   key.compare("X-Forwarded-Proto", Qt::CaseInsensitive) == 0) {
+            protoRequest->isSecure          = (value.compare("https") == 0);
             protoRequest->X_Forwarded_Proto = true;
         }
     }
-    protoRequest->headers.pushRawHeader(key, value);
+    protoRequest->headers.pushHeader(key, value);
 }
 
 ProtoRequestHttp::ProtoRequestHttp(Socket *sock, int bufferSize)
@@ -368,26 +372,25 @@ bool ProtoRequestHttp::writeHeaders(quint16 status, const Cutelyst::Headers &hea
     headerConnection = ProtoRequestHttp::HeaderConnectionNotSet;
 
     bool hasDate = false;
-    auto it      = headersData.constBegin();
-    while (it != headersData.constEnd()) {
-        const QString &key   = it.key();
-        const QString &value = it.value();
+    auto it      = headersData.begin();
+    while (it != headersData.end()) {
         if (headerConnection == ProtoRequestHttp::HeaderConnectionNotSet &&
-            key.compare(u"CONNECTION") == 0) {
-            if (value.compare(u"close", Qt::CaseInsensitive) == 0) {
+            it->key.compare("Connection", Qt::CaseInsensitive) == 0) {
+            if (it->value.compare("close") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionClose;
-            } else if (value.compare(u"upgrade", Qt::CaseInsensitive) == 0) {
+            } else if (it->value.compare("upgrade") == 0) {
                 headerConnection = ProtoRequestHttp::HeaderConnectionUpgrade;
             } else {
                 headerConnection = ProtoRequestHttp::HeaderConnectionKeep;
             }
-        } else if (!hasDate && key.compare(u"DATE") == 0) {
+        } else if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
-        QString ret(QLatin1String("\r\n") + Cutelyst::Engine::camelCaseHeader(key) +
-                    QLatin1String(": ") + value);
-        data.append(ret.toLatin1());
+        data.append("\r\n");
+        data.append(it->key);
+        data.append(": ");
+        data.append(it->value);
 
         ++it;
     }
@@ -520,9 +523,9 @@ void ProtoRequestHttp::socketDisconnected()
     }
 }
 
-bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key,
-                                            const QString &origin,
-                                            const QString &protocol)
+bool ProtoRequestHttp::webSocketHandshakeDo(const QByteArray &key,
+                                            const QByteArray &origin,
+                                            const QByteArray &protocol)
 {
     if (headerConnection == ProtoRequestHttp::HeaderConnectionUpgrade) {
         return true;
@@ -540,31 +543,28 @@ bool ProtoRequestHttp::webSocketHandshakeDo(const QString &key,
     Cutelyst::Headers &headers             = response->headers();
 
     response->setStatus(Cutelyst::Response::SwitchingProtocols);
-    headers.setHeader(QStringLiteral("UPGRADE"), QStringLiteral("WebSocket"));
-    headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("Upgrade"));
-    const QString localOrigin =
-        origin.isEmpty() ? requestHeaders.header(QStringLiteral("ORIGIN")) : origin;
-    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ORIGIN"),
-                      localOrigin.isEmpty() ? QStringLiteral("*") : localOrigin);
+    headers.setHeader("Upgrade"_qba, "WebSocket"_qba);
+    headers.setHeader("Connection"_qba, "Upgrade"_qba);
+    const auto localOrigin = origin.isEmpty() ? requestHeaders.header("Origin") : origin;
+    headers.setHeader("Sec-Websocket-Origin"_qba, localOrigin.isEmpty() ? "*"_qba : localOrigin);
 
-    const QString wsProtocol = protocol.isEmpty()
-                                   ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_PROTOCOL"))
-                                   : protocol;
-    if (!wsProtocol.isEmpty()) {
-        headers.setHeader(QStringLiteral("SEC_WEBSOCKET_PROTOCOL"), wsProtocol);
+    if (!protocol.isEmpty()) {
+        headers.setHeader("Sec-Websocket-Protocol"_qba, protocol);
+    } else if (const auto wsProtocol = requestHeaders.header("Sec-Websocket-Protocol");
+               !wsProtocol.isEmpty()) {
+        headers.setHeader("Sec-Websocket-Protocol"_qba, wsProtocol);
     }
 
-    const QString localKey =
-        key.isEmpty() ? requestHeaders.header(QStringLiteral("SEC_WEBSOCKET_KEY")) : key;
-    const QString wsKey = localKey + QLatin1String("258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+    const QByteArray localKey = key.isEmpty() ? requestHeaders.header("Sec-Websocket-Key") : key;
+    const QByteArray wsKey    = localKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
     if (wsKey.length() == 36) {
         qCWarning(CWSGI_SOCK) << "Missing websocket key";
         return false;
     }
 
     const QByteArray wsAccept =
-        QCryptographicHash::hash(wsKey.toLatin1(), QCryptographicHash::Sha1).toBase64();
-    headers.setHeader(QStringLiteral("SEC_WEBSOCKET_ACCEPT"), QString::fromLatin1(wsAccept));
+        QCryptographicHash::hash(wsKey, QCryptographicHash::Sha1).toBase64();
+    headers.setHeader("Sec-Websocket-Accept"_qba, wsAccept);
 
     headerConnection  = ProtoRequestHttp::HeaderConnectionUpgrade;
     websocketUpgraded = true;

@@ -17,7 +17,7 @@ class TcpServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QString &serverAddress,
+    explicit TcpServer(const QByteArray &serverAddress,
                        Protocol *protocol,
                        Server *wsgi,
                        QObject *parent = nullptr);
@@ -37,7 +37,7 @@ Q_SIGNALS:
 protected:
     friend class TcpServerBalancer;
 
-    QString m_serverAddress;
+    QByteArray m_serverAddress;
     CWsgiEngine *m_engine;
     Server *m_wsgi;
 

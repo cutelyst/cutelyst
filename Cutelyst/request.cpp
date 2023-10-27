@@ -88,7 +88,7 @@ QUrl Request::uri() const
         if (d->engineRequest->serverAddress.isEmpty()) {
             uri.setHost(QHostInfo::localHostName());
         } else {
-            uri.setAuthority(d->engineRequest->serverAddress);
+            uri.setAuthority(QString::fromLatin1(d->engineRequest->serverAddress));
         }
 
         uri.setScheme(d->engineRequest->isSecure ? QStringLiteral("https")
@@ -118,7 +118,7 @@ QString Request::base() const
         if (d->engineRequest->serverAddress.isEmpty()) {
             base.append(QHostInfo::localHostName());
         } else {
-            base.append(d->engineRequest->serverAddress);
+            base.append(QString::fromLatin1(d->engineRequest->serverAddress));
         }
 
         // base always have a trailing slash
@@ -271,34 +271,39 @@ QStringList Request::queryParameters(const QString &key) const
     return ret;
 }
 
-QString Request::cookie(const QString &name) const
+QByteArray Request::cookie(QByteArrayView name) const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
         d->parseCookies();
     }
 
-    return d->cookies.value(name);
+    for (const auto &[key, value] : d->cookies) {
+        if (key == name) {
+            return value;
+        }
+    }
+    return {};
 }
 
-QStringList Request::cookies(const QString &name) const
+QByteArrayList Request::cookies(QByteArrayView name) const
 {
-    QStringList ret;
+    QByteArrayList ret;
     Q_D(const Request);
 
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
         d->parseCookies();
     }
 
-    auto it = d->cookies.constFind(name);
-    while (it != d->cookies.constEnd() && it.key() == name) {
-        ret.prepend(it.value());
-        ++it;
+    for (const auto &[key, value] : d->cookies) {
+        if (key == name) {
+            ret.prepend(value);
+        }
     }
     return ret;
 }
 
-Cutelyst::ParamsMultiMap Request::cookies() const
+std::multimap<QByteArray, QByteArray> Request::cookies() const
 {
     Q_D(const Request);
     if (!(d->parserStatus & RequestPrivate::CookiesParsed)) {
@@ -364,8 +369,7 @@ QString Request::protocol() const noexcept
 bool Request::xhr() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->headers.header(QStringLiteral("X_REQUESTED_WITH"))
-               .compare(u"XMLHttpRequest") == 0;
+    return d->engineRequest->headers.header("X-Requested-With").compare("XMLHttpRequest") == 0;
 }
 
 QString Request::remoteUser() const noexcept
@@ -477,9 +481,8 @@ void RequestPrivate::parseBody() const
         return;
     }
 
-    const QString contentTypeKey = QStringLiteral("CONTENT_TYPE");
-    const QString contentType    = engineRequest->headers.header(contentTypeKey);
-    if (contentType.startsWith(u"application/x-www-form-urlencoded", Qt::CaseInsensitive)) {
+    const QByteArray contentType = engineRequest->headers.header("Content-Type"_qba);
+    if (contentType.startsWith("application/x-www-form-urlencoded")) {
         // Parse the query (BODY) of type "application/x-www-form-urlencoded"
         // parameters ie "?foo=bar&bar=baz"
         if (posOrig) {
@@ -489,7 +492,7 @@ void RequestPrivate::parseBody() const
         QByteArray line = body->readAll();
         bodyParam       = Utils::decodePercentEncoding(line.data(), line.size());
         bodyData        = QVariant::fromValue(bodyParam);
-    } else if (contentType.startsWith(u"multipart/form-data", Qt::CaseInsensitive)) {
+    } else if (contentType.startsWith("multipart/form-data")) {
         if (posOrig) {
             body->seek(0);
         }
@@ -497,7 +500,7 @@ void RequestPrivate::parseBody() const
         const Uploads ups = MultiPartFormDataParser::parse(body, contentType);
         for (Upload *upload : ups) {
             if (upload->filename().isEmpty() &&
-                upload->headers().header(contentTypeKey).isEmpty()) {
+                upload->headers().header("Content-Type"_qba).isEmpty()) {
                 bodyParam.insert(upload->name(), QString::fromUtf8(upload->readAll()));
                 upload->seek(0);
             }
@@ -505,7 +508,7 @@ void RequestPrivate::parseBody() const
         }
         uploads = ups;
         //        bodyData = QVariant::fromValue(uploadsMap);
-    } else if (contentType.startsWith(u"application/json", Qt::CaseInsensitive)) {
+    } else if (contentType.startsWith("application/json")) {
         if (posOrig) {
             body->seek(0);
         }
@@ -520,12 +523,12 @@ void RequestPrivate::parseBody() const
     parserStatus |= RequestPrivate::BodyParsed;
 }
 
-static inline bool isSlit(QChar c)
+static inline bool isSlit(char c)
 {
-    return c == u';' || c == u',';
+    return c == ';' || c == ',';
 }
 
-int findNextSplit(const QString &text, int from, int length)
+int findNextSplit(QByteArrayView text, int from, int length)
 {
     while (from < length) {
         if (isSlit(text.at(from))) {
@@ -536,12 +539,12 @@ int findNextSplit(const QString &text, int from, int length)
     return -1;
 }
 
-static inline bool isLWS(QChar c)
+static inline bool isLWS(char c)
 {
-    return c == u' ' || c == u'\t' || c == u'\r' || c == u'\n';
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
 
-static int nextNonWhitespace(const QString &text, int from, int length)
+static int nextNonWhitespace(QByteArrayView text, int from, int length)
 {
     // RFC 2616 defines linear whitespace as:
     //  LWS = [CRLF] 1*( SP | HT )
@@ -558,9 +561,9 @@ static int nextNonWhitespace(const QString &text, int from, int length)
     return text.length();
 }
 
-static std::pair<QString, QString> nextField(const QString &text, int &position)
+static std::pair<QByteArray, QByteArray> nextField(QByteArrayView text, int &position)
 {
-    std::pair<QString, QString> ret;
+    std::pair<QByteArray, QByteArray> ret;
     // format is one of:
     //    (1)  token
     //    (2)  token = token
@@ -572,15 +575,20 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
     if (semiColonPosition < 0)
         semiColonPosition = length; // no ';' means take everything to end of string
 
-    int equalsPosition = text.indexOf(QLatin1Char('='), position);
+    int equalsPosition = text.indexOf('=', position);
     if (equalsPosition < 0 || equalsPosition > semiColonPosition) {
         return ret; //'=' is required for name-value-pair (RFC6265 section 5.2, rule 2)
     }
 
-    ret.first = QStringView(text).mid(position, equalsPosition - position).trimmed().toString();
+    // TODO Qt 6.3
+    //    ret.first = text.sliced(position, equalsPosition - position).trimmed().toByteArray();
+    ret.first        = text.sliced(position, equalsPosition - position).toByteArray().trimmed();
     int secondLength = semiColonPosition - equalsPosition - 1;
     if (secondLength > 0) {
-        ret.second = QStringView(text).mid(equalsPosition + 1, secondLength).trimmed().toString();
+        // TODO Qt 6.3
+        //        ret.second = text.sliced(equalsPosition + 1,
+        //        secondLength).trimmed().toByteArray();
+        ret.second = text.sliced(equalsPosition + 1, secondLength).toByteArray().trimmed();
     }
 
     position = semiColonPosition;
@@ -589,9 +597,9 @@ static std::pair<QString, QString> nextField(const QString &text, int &position)
 
 void RequestPrivate::parseCookies() const
 {
-    const QString cookieString = engineRequest->headers.header(QStringLiteral("COOKIE"));
-    int position               = 0;
-    const int length           = cookieString.length();
+    const QByteArray cookieString = engineRequest->headers.header("Cookie"_qba);
+    int position                  = 0;
+    const int length              = cookieString.length();
     while (position < length) {
         const auto field = nextField(cookieString, position);
         if (field.first.isEmpty()) {
@@ -604,7 +612,7 @@ void RequestPrivate::parseCookies() const
             ++position;
             continue;
         }
-        cookies.insert(field.first, field.second);
+        cookies.emplace(field.first, field.second);
         ++position;
     }
 

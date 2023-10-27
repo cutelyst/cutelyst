@@ -23,7 +23,7 @@ class TcpSslServer final : public TcpServer
 {
     Q_OBJECT
 public:
-    explicit TcpSslServer(const QString &serverAddress,
+    explicit TcpSslServer(const QByteArray &serverAddress,
                           Protocol *protocol,
                           Server *wsgi,
                           QObject *parent = nullptr);

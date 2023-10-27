@@ -18,13 +18,13 @@ public:
     void beforePrepareAction(Context *c, bool *skipMethod) const;
     bool detectLocale(Context *c, LangSelect::Source _source, bool *skipMethod = nullptr) const;
     bool getFromQuery(Context *c, const QString &key) const;
-    bool getFromCookie(Context *c, const QString &cookie) const;
+    bool getFromCookie(Context *c, const QByteArray &cookie) const;
     bool getFromSession(Context *c, const QString &key) const;
     bool getFromSubdomain(Context *c, const QMap<QString, QLocale> &map) const;
     bool getFromDomain(Context *c, const QMap<QString, QLocale> &map) const;
-    bool getFromHeader(Context *c, const QString &name = QStringLiteral("Accept-Language")) const;
+    bool getFromHeader(Context *c, const QByteArray &name = "Accept-Language"_qba) const;
     void setToQuery(Context *c, const QString &key) const;
-    void setToCookie(Context *c, const QString &name) const;
+    void setToCookie(Context *c, const QByteArray &name) const;
     void setToSession(Context *c, const QString &key) const;
     void setFallback(Context *c) const;
     void setContentLanguage(Context *c) const;
@@ -37,7 +37,7 @@ public:
     QStringList redirectSubDomains;
     QString queryKey;
     QString sessionKey;
-    QString cookieName;
+    QByteArray cookieName;
     QString langStashKey = QStringLiteral("c_langselect_lang");
     QString dirStashKey  = QStringLiteral("c_langselect_dir");
     QLocale fallbackLocale;

@@ -68,8 +68,8 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
             if (!locateStaticFile(c, path)) {
                 Response *res = c->response();
                 res->setStatus(Response::NotFound);
-                res->setContentType(QStringLiteral("text/html"));
-                res->setBody(QStringLiteral("File not found: ") + path);
+                res->setContentType("text/html"_qba);
+                res->setBody("File not found: " + path.toUtf8());
             }
 
             *skipMethod = true;
@@ -110,13 +110,13 @@ bool StaticSimple::locateStaticFile(Context *c, const QString &relPath)
                 // use the extension to match to be faster
                 QMimeType mimeType = db.mimeTypeForFile(path, QMimeDatabase::MatchExtension);
                 if (mimeType.isValid()) {
-                    headers.setContentType(mimeType.name());
+                    headers.setContentType(mimeType.name().toLatin1());
                 }
                 headers.setContentLength(file->size());
 
                 headers.setLastModified(currentDateTime);
                 // Tell Firefox & friends its OK to cache, even over SSL
-                headers.setHeader(QStringLiteral("CACHE_CONTROL"), QStringLiteral("public"));
+                headers.setHeader("Cache-Control"_qba, "public"_qba);
 
                 return true;
             }

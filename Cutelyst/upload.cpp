@@ -18,7 +18,7 @@ QString Upload::filename() const
     return d->filename;
 }
 
-QString Upload::contentType() const
+QByteArray Upload::contentType() const
 {
     Q_D(const Upload);
     return d->headers.contentType();
@@ -156,22 +156,23 @@ Upload::Upload(UploadPrivate *prv)
 {
     Q_D(Upload);
     open(prv->device->openMode());
-    const QString disposition = prv->headers.contentDisposition();
-    int start                 = disposition.indexOf(u"name=\"");
+    const QByteArray disposition = prv->headers.contentDisposition();
+    int start                    = disposition.indexOf("name=\"");
     if (start != -1) {
         start += 6;
         int end = disposition.indexOf(u'"', start);
         if (end != -1) {
-            d->name = disposition.mid(start, end - start);
+            // TODO
+            d->name = QString::fromLatin1(disposition.sliced(start, end - start));
         }
     }
 
-    start = disposition.indexOf(u"filename=\"");
+    start = disposition.indexOf("filename=\"");
     if (start != -1) {
         start += 10;
-        int end = disposition.indexOf(QLatin1Char('"'), start);
+        int end = disposition.indexOf('"', start);
         if (end != -1) {
-            d->filename = disposition.mid(start, end - start);
+            d->filename = QString::fromLatin1(disposition.sliced(start, end - start));
         }
     }
 }

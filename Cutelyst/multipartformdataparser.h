@@ -19,7 +19,7 @@ public:
      * @param contentType can be the whole HTTP Content-Type header or just it's value
      * @param bufferSize is the internal buffer size used to parse
      */
-    static Uploads parse(QIODevice *body, QStringView contentType, int bufferSize = 4096);
+    static Uploads parse(QIODevice *body, QByteArrayView contentType, int bufferSize = 4096);
 };
 
 } // namespace Cutelyst

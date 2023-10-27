@@ -41,12 +41,12 @@ class CUTELYST_LIBRARY Request final : public QObject
     Q_PROPERTY(QVariant bodyData READ bodyData CONSTANT)
     Q_PROPERTY(Cutelyst::ParamsMultiMap bodyParams READ bodyParameters CONSTANT)
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters CONSTANT)
-    Q_PROPERTY(QString contentEncoding READ contentEncoding CONSTANT)
-    Q_PROPERTY(QString contentType READ contentType CONSTANT)
+    Q_PROPERTY(QByteArray contentEncoding READ contentEncoding CONSTANT)
+    Q_PROPERTY(QByteArray contentType READ contentType CONSTANT)
     Q_PROPERTY(QString method READ method CONSTANT)
     Q_PROPERTY(QString protocol READ protocol CONSTANT)
-    Q_PROPERTY(QString userAgent READ userAgent CONSTANT)
-    Q_PROPERTY(QString referer READ referer CONSTANT)
+    Q_PROPERTY(QByteArray userAgent READ userAgent CONSTANT)
+    Q_PROPERTY(QByteArray referer READ referer CONSTANT)
     Q_PROPERTY(QString remoteUser READ remoteUser CONSTANT)
 public:
     virtual ~Request();
@@ -304,34 +304,34 @@ public:
     /**
      * Returns the Content-Encoding header
      */
-    inline QString contentEncoding() const;
+    inline QByteArray contentEncoding() const;
 
     /**
      * Returns the Content-Type header
      */
-    inline QString contentType() const;
+    inline QByteArray contentType() const;
 
     /**
      * Returns the cookie with the given name
      */
-    QString cookie(const QString &name) const;
+    QByteArray cookie(QByteArrayView name) const;
 
     /**
      * Returns a list of cookies that match with the given name
      *
      * \note Unlike QMap::values() this return values in insertion order.
      */
-    QStringList cookies(const QString &name) const;
+    QByteArrayList cookies(QByteArrayView name) const;
 
     /**
      * Returns all the cookies from the request
      */
-    ParamsMultiMap cookies() const;
+    std::multimap<QByteArray, QByteArray> cookies() const;
 
     /**
      * Short for headers().header(key);
      */
-    inline QString header(const QString &key) const;
+    inline QByteArray header(QByteArrayView key) const;
 
     /**
      * Returns the HTTP request headers
@@ -387,12 +387,12 @@ public:
     /**
      * Returns the user agent (browser) version string.
      */
-    inline QString userAgent() const;
+    inline QByteArray userAgent() const;
 
     /**
      * referer Shortcut for header("Referer")
      */
-    inline QString referer() const;
+    inline QByteArray referer() const;
 
     /**
      * Returns the value of the REMOTE_USER environment variable.
@@ -568,27 +568,27 @@ inline QStringList Request::queryParams(const QString &key) const
     return queryParameters(key);
 }
 
-inline QString Request::contentEncoding() const
+inline QByteArray Request::contentEncoding() const
 {
     return headers().contentEncoding();
 }
 
-inline QString Request::contentType() const
+inline QByteArray Request::contentType() const
 {
     return headers().contentType();
 }
 
-inline QString Request::header(const QString &key) const
+inline QByteArray Request::header(QByteArrayView key) const
 {
     return headers().header(key);
 }
 
-inline QString Request::userAgent() const
+inline QByteArray Request::userAgent() const
 {
     return headers().userAgent();
 }
 
-inline QString Request::referer() const
+inline QByteArray Request::referer() const
 {
     return headers().referer();
 }

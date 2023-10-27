@@ -151,14 +151,14 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
     }
 
     if (keylen > 5 && memcmp(key, "HTTP_", 5) == 0) {
-        const QString value = QString::fromLatin1(val, vallen);
+        const auto value = QByteArray(val, vallen);
         if (!request->headerHost && memcmp(key + 5, "HOST", 4) == 0) {
             request->serverAddress = value;
             request->headerHost    = true;
-            request->headers.pushRawHeader(QStringLiteral("HOST"), value);
+            request->headers.pushHeader("Host"_qba, value);
         } else {
-            const QString keyStr = QString::fromLatin1(key + 5, keylen - 5);
-            request->headers.pushRawHeader(keyStr, value);
+            const auto keyStr = QByteArray(key + 5, keylen - 5);
+            request->headers.pushHeader(keyStr, value);
         }
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
         request->method = QString::fromLatin1(val, vallen);
@@ -180,7 +180,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
         request->remotePort = quint16(QByteArray(val, vallen).toUInt());
     } else if (memcmp(key, "CONTENT_TYPE", 12) == 0) {
         if (vallen) {
-            request->headers.setContentType(QString::fromLatin1(val, vallen));
+            request->headers.setContentType(QByteArray{val, vallen});
         }
     } else if (memcmp(key, "CONTENT_LENGTH", 14) == 0) {
         request->contentLength = QByteArray(val, vallen).toInt();
@@ -461,18 +461,16 @@ bool ProtoRequestFastCGI::writeHeaders(quint16 status, const Cutelyst::Headers &
     const auto headersData = headers.data();
 
     bool hasDate = false;
-    auto it      = headersData.constBegin();
-    while (it != headersData.constEnd()) {
-        const QString &key   = it.key();
-        const QString &value = it.value();
-        if (!hasDate && key.compare(u"DATE") == 0) {
+    auto it      = headersData.begin();
+    while (it != headersData.end()) {
+        if (!hasDate && it->key.compare("Date", Qt::CaseInsensitive) == 0) {
             hasDate = true;
         }
 
-        QString line(QLatin1String("\r\n") + CWsgiEngine::camelCaseHeader(key) +
-                     QLatin1String(": ") + value);
-        const QByteArray data = line.toLatin1();
-        headerBuffer.append(data);
+        headerBuffer.append("\r\n");
+        headerBuffer.append(it->key);
+        headerBuffer.append(": ");
+        headerBuffer.append(it->value);
 
         ++it;
     }

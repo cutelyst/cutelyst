@@ -804,7 +804,7 @@ bool ServerPrivate::listenTcp(const QString &line, Protocol *protocol, bool secu
             auto qEnum = protocol->staticMetaObject.enumerator(0);
             std::cout << qEnum.valueToKey(static_cast<int>(protocol->type())) << " socket "
                       << QByteArray::number(static_cast<int>(servers.size())).constData()
-                      << " bound to TCP address " << qPrintable(server->serverName()) << " fd "
+                      << " bound to TCP address " << server->serverName().constData() << " fd "
                       << QByteArray::number(server->socketDescriptor()).constData() << std::endl;
             servers.push_back(server);
         }

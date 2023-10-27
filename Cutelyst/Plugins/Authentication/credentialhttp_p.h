@@ -23,8 +23,8 @@ public:
     bool isAuthTypeBasic() const;
 
     void createBasicAuthResponse(Context *c, AuthenticationRealm *realm);
-    QStringList buildAuthHeaderCommon(AuthenticationRealm *realm) const;
-    QString joinAuthHeaderParts(const QString &type, const QStringList &parts) const;
+    QByteArrayList buildAuthHeaderCommon(AuthenticationRealm *realm) const;
+    QByteArray joinAuthHeaderParts(const QByteArray &type, const QByteArrayList &parts) const;
 
     CredentialHttp::AuthType type             = CredentialHttp::Any;
     CredentialHttp::PasswordType passwordType = CredentialHttp::None;

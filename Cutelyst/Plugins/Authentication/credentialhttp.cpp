@@ -190,10 +190,10 @@ AuthenticationUser CredentialHttpPrivate::authenticationFailed(Context *c,
     Q_UNUSED(authinfo);
     Response *res = c->response();
     res->setStatus(Response::Unauthorized); // 401
-    res->setContentType(QStringLiteral("text/plain; charset=UTF-8"));
+    res->setContentType("text/plain; charset=UTF-8"_qba);
 
     if (authorizationRequiredMessage.isEmpty()) {
-        res->setBody(QStringLiteral("Authorization required."));
+        res->setBody("Authorization required."_qba);
     } else {
         res->setBody(authorizationRequiredMessage);
     }
@@ -214,27 +214,27 @@ bool CredentialHttpPrivate::isAuthTypeBasic() const
 void CredentialHttpPrivate::createBasicAuthResponse(Context *c, AuthenticationRealm *realm)
 {
     c->res()->headers().setWwwAuthenticate(
-        joinAuthHeaderParts(QStringLiteral("Basic"), buildAuthHeaderCommon(realm)));
+        joinAuthHeaderParts("Basic"_qba, buildAuthHeaderCommon(realm)));
 }
 
-QStringList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *realm) const
+QByteArrayList CredentialHttpPrivate::buildAuthHeaderCommon(AuthenticationRealm *realm) const
 {
-    QStringList ret;
+    QByteArrayList ret;
     // TODO
     // return realm="realmname"
     // return domain="realmname"
     if (!realm->name().isEmpty()) {
-        ret.append(u"realm=\"" + realm->name() + u'"');
+        ret.append("realm=\"" + realm->name().toLatin1() + '"');
     }
     return ret;
 }
 
-QString CredentialHttpPrivate::joinAuthHeaderParts(const QString &type,
-                                                   const QStringList &parts) const
+QByteArray CredentialHttpPrivate::joinAuthHeaderParts(const QByteArray &type,
+                                                      const QByteArrayList &parts) const
 {
-    QString ret = type;
+    QByteArray ret = type;
     if (!parts.isEmpty()) {
-        ret.append(u' ' + parts.join(u", "));
+        ret.append(' ' + parts.join(", "));
     }
     return ret;
 }

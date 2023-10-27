@@ -60,7 +60,7 @@ void EngineRequest::finalizeError()
 {
     Response *res = context->response();
 
-    res->setContentType(QStringLiteral("text/html; charset=utf-8"));
+    res->setContentType("text/html; charset=utf-8"_qba);
 
     QByteArray body;
 
@@ -96,14 +96,8 @@ void EngineRequest::finalizeCookies()
     Headers &headers   = res->headers();
     const auto cookies = res->cookies();
     for (const QNetworkCookie &cookie : cookies) {
-        headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
+        headers.pushHeader("Set-Cookie"_qba, cookie.toRawForm());
     }
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    const auto cuteCookies = res->cuteCookies();
-    for (const Cookie &cookie : cuteCookies) {
-        headers.pushHeader(QStringLiteral("SET_COOKIE"), QString::fromLatin1(cookie.toRawForm()));
-    }
-#endif
 }
 
 bool EngineRequest::finalizeHeaders()
@@ -148,9 +142,9 @@ qint64 EngineRequest::write(const char *data, qint64 len)
     return -1;
 }
 
-bool EngineRequest::webSocketHandshake(const QString &key,
-                                       const QString &origin,
-                                       const QString &protocol)
+bool EngineRequest::webSocketHandshake(const QByteArray &key,
+                                       const QByteArray &origin,
+                                       const QByteArray &protocol)
 {
     if (status & EngineRequest::FinalizedHeaders) {
         return false;
@@ -196,9 +190,9 @@ void EngineRequest::processingFinished()
 {
 }
 
-bool EngineRequest::webSocketHandshakeDo(const QString &key,
-                                         const QString &origin,
-                                         const QString &protocol)
+bool EngineRequest::webSocketHandshakeDo(const QByteArray &key,
+                                         const QByteArray &origin,
+                                         const QByteArray &protocol)
 {
     Q_UNUSED(key)
     Q_UNUSED(origin)

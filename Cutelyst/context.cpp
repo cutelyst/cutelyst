@@ -503,10 +503,8 @@ void Context::finalize()
         qCDebug(CUTELYST_STATS,
                 "Response Code: %d; Content-Type: %s; Content-Length: %s",
                 d->response->status(),
-                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_TYPE"),
-                                                         QStringLiteral("unknown"))),
-                qPrintable(d->response->headers().header(QStringLiteral("CONTENT_LENGTH"),
-                                                         QStringLiteral("unknown"))));
+                d->response->headers().header("Content-Type"_qba, "unknown"_qba).constData(),
+                d->response->headers().header("Content-Length"_qba, "unknown"_qba).constData());
 
         const double enlapsed = d->engineRequest->elapsed.nsecsElapsed() / 1000000000.0;
         QString average;

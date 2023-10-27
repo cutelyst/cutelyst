@@ -6,9 +6,6 @@
 #define CUTELYST_RESPONSE_P_H
 
 #include "response.h"
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#    include "cookie.h"
-#endif
 
 #include <QtCore/QMap>
 #include <QtCore/QUrl>

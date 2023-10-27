@@ -183,10 +183,9 @@ QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
 
     const Headers reqHeaders = request->headers();
     const auto headersData   = reqHeaders.data();
-    auto it                  = headersData.constBegin();
-    while (it != headersData.constEnd()) {
-        proxyReq.setRawHeader(Cutelyst::Engine::camelCaseHeader(it.key()).toLatin1(),
-                              it.value().toLatin1());
+    auto it                  = headersData.begin();
+    while (it != headersData.end()) {
+        proxyReq.setRawHeader(it->key, it->value);
         ++it;
     }
 
@@ -200,8 +199,7 @@ QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)
         Headers &responseHeaders                           = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
-            responseHeaders.setHeader(QString::fromLatin1(pair.first),
-                                      QString::fromLatin1(pair.second));
+            responseHeaders.pushHeader(pair.first, pair.second);
         }
         c->response()->setStatus(
             quint16(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt()));
@@ -217,8 +215,7 @@ void UA::forwardAsync(Context *c, const QUrl &destination)
         Headers &responseHeaders                           = c->response()->headers();
         const QList<QNetworkReply::RawHeaderPair> &headers = reply->rawHeaderPairs();
         for (const QNetworkReply::RawHeaderPair &pair : headers) {
-            responseHeaders.setHeader(QString::fromLatin1(pair.first),
-                                      QString::fromLatin1(pair.second));
+            responseHeaders.pushHeader(pair.first, pair.second);
         }
         c->response()->setStatus(
             quint16(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toUInt()));

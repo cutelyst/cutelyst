@@ -266,7 +266,7 @@ void LangSelect::setSessionKey(const QString &key)
     d->sessionKey = key;
 }
 
-void LangSelect::setCookieName(const QString &name)
+void LangSelect::setCookieName(const QByteArray &name)
 {
     Q_D(LangSelect);
     d->cookieName = name;
@@ -403,7 +403,7 @@ bool LangSelect::fromSession(Context *c, const QString &key)
     return foundInSession;
 }
 
-bool LangSelect::fromCookie(Context *c, const QString &name)
+bool LangSelect::fromCookie(Context *c, const QByteArray &name)
 {
     bool foundInCookie = false;
 
@@ -574,9 +574,9 @@ bool LangSelectPrivate::getFromQuery(Context *c, const QString &key) const
     }
 }
 
-bool LangSelectPrivate::getFromCookie(Context *c, const QString &cookie) const
+bool LangSelectPrivate::getFromCookie(Context *c, const QByteArray &cookie) const
 {
-    const QLocale l(c->req()->cookie(cookie));
+    const QLocale l(QString::fromLatin1(c->req()->cookie(cookie)));
     if (l.language() != QLocale::C && locales.contains(l)) {
         qCDebug(C_LANGSELECT) << "Found valid locale" << l << "in cookie name" << cookie;
         c->setLocale(l);
@@ -655,15 +655,17 @@ bool LangSelectPrivate::getFromDomain(Context *c, const QMap<QString, QLocale> &
     return false;
 }
 
-bool LangSelectPrivate::getFromHeader(Context *c, const QString &name) const
+bool LangSelectPrivate::getFromHeader(Context *c, const QByteArray &name) const
 {
     if (detectFromHeader) {
-        const auto accpetedLangs = c->req()->header(name).split(u',', Qt::SkipEmptyParts);
+        // TODO Qt::SkipEmptyParts
+        const auto accpetedLangs = c->req()->header(name).split(',');
         if (Q_LIKELY(!accpetedLangs.empty())) {
             std::map<float, QLocale> langMap;
-            for (const QString &al : accpetedLangs) {
-                const auto idx = al.indexOf(u';');
-                float priority = 1.0f;
+            for (const auto &ba : accpetedLangs) {
+                const QString al = QString::fromLatin1(ba);
+                const auto idx   = al.indexOf(u';');
+                float priority   = 1.0f;
                 QString langPart;
                 bool ok = true;
                 if (idx > -1) {
@@ -727,13 +729,11 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
     c->res()->redirect(uri, 307);
 }
 
-void LangSelectPrivate::setToCookie(Context *c, const QString &name) const
+void LangSelectPrivate::setToCookie(Context *c, const QByteArray &name) const
 {
     qCDebug(C_LANGSELECT) << "Storing selected locale in cookie with name" << name;
-    QNetworkCookie cookie(name.toLatin1(), c->locale().bcp47Name().toLatin1());
-#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+    QNetworkCookie cookie(name, c->locale().bcp47Name().toLatin1());
     cookie.setSameSitePolicy(QNetworkCookie::SameSite::Lax);
-#endif
     c->res()->setCookie(cookie);
 }
 
@@ -752,7 +752,7 @@ void LangSelectPrivate::setFallback(Context *c) const
 void LangSelectPrivate::setContentLanguage(Context *c) const
 {
     if (addContentLanguageHeader) {
-        c->res()->setHeader(QStringLiteral("Content-Language"), c->locale().bcp47Name());
+        c->res()->setHeader("Content-Language"_qba, c->locale().bcp47Name().toLatin1());
     }
     c->stash({{langStashKey, c->locale().bcp47Name()},
               {dirStashKey,

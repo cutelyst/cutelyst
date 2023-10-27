@@ -82,7 +82,9 @@ public:
      */
     qint64 write(const char *data, qint64 len);
 
-    bool webSocketHandshake(const QString &key, const QString &origin, const QString &protocol);
+    bool webSocketHandshake(const QByteArray &key,
+                            const QByteArray &origin,
+                            const QByteArray &protocol);
 
     virtual bool webSocketSendTextMessage(const QString &message);
 
@@ -115,8 +117,9 @@ protected:
      */
     virtual bool writeHeaders(quint16 status, const Headers &headers) = 0;
 
-    virtual bool
-        webSocketHandshakeDo(const QString &key, const QString &origin, const QString &protocol);
+    virtual bool webSocketHandshakeDo(const QByteArray &key,
+                                      const QByteArray &origin,
+                                      const QByteArray &protocol);
 
 public:
     /*!
@@ -148,7 +151,7 @@ public:
     /*! The server address which the server is listening to,
      *  usually the 'Host' header but if that's not present should be filled with the server address
      */
-    QString serverAddress;
+    QByteArray serverAddress;
 
     /*! The remote/client address */
     QHostAddress remoteAddress;

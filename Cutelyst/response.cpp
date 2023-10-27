@@ -10,6 +10,8 @@
 
 #include <QCryptographicHash>
 #include <QEventLoop>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QtCore/QJsonDocument>
 
 using namespace Cutelyst;
@@ -37,12 +39,12 @@ qint64 Response::writeData(const char *data, qint64 len)
 
     // Finalize headers if someone manually writes output
     if (!(d->engineRequest->status & EngineRequest::FinalizedHeaders)) {
-        if (d->headers.header(QStringLiteral("TRANSFER_ENCODING")).compare(u"chunked") == 0) {
+        if (d->headers.header("Transfer-Encoding"_qba).compare("chunked") == 0) {
             d->engineRequest->status |= EngineRequest::IOWrite | EngineRequest::Chunked;
         } else {
             // When chunked encoding is not set the client can only know
             // that data is finished if we close the connection
-            d->headers.setHeader(QStringLiteral("CONNECTION"), QStringLiteral("close"));
+            d->headers.setHeader("Connection"_qba, "Close"_qba);
             d->engineRequest->status |= EngineRequest::IOWrite;
         }
         delete d->bodyIODevice;
@@ -117,51 +119,30 @@ void Response::setBody(const QByteArray &body)
     d->setBodyData(body);
 }
 
-void Response::setJsonBody(const QJsonDocument &documment)
-{
-    Q_D(Response);
-    const QByteArray body = documment.toJson(QJsonDocument::Compact);
-    d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
-}
-
-void Response::setJsonBody(const QString &json)
-{
-    Q_D(Response);
-    d->setBodyData(json.toUtf8());
-    d->headers.setContentType(QStringLiteral("application/json"));
-}
-
 void Response::setJsonBody(const QByteArray &json)
 {
     Q_D(Response);
     d->setBodyData(json);
-    d->headers.setContentType(QStringLiteral("application/json"));
+    d->headers.setContentType("application/json"_qba);
 }
 
-void Response::setJsonObjectBody(const QJsonObject &object)
+void Response::setJsonBody(const QJsonValue &json)
 {
     Q_D(Response);
-    const QByteArray body = QJsonDocument(object).toJson(QJsonDocument::Compact);
-    d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
+    if (json.isArray()) {
+        setJsonBody(QJsonDocument(json.toArray()).toJson(QJsonDocument::Compact));
+    } else {
+        setJsonBody(QJsonDocument(json.toObject()).toJson(QJsonDocument::Compact));
+    }
 }
 
-void Response::setJsonArrayBody(const QJsonArray &array)
-{
-    Q_D(Response);
-    const QByteArray body = QJsonDocument(array).toJson(QJsonDocument::Compact);
-    d->setBodyData(body);
-    d->headers.setContentType(QStringLiteral("application/json"));
-}
-
-QString Response::contentEncoding() const
+QByteArray Response::contentEncoding() const
 {
     Q_D(const Response);
     return d->headers.contentEncoding();
 }
 
-void Cutelyst::Response::setContentEncoding(const QString &encoding)
+void Cutelyst::Response::setContentEncoding(const QByteArray &encoding)
 {
     Q_D(Response);
     Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
@@ -189,13 +170,13 @@ void Response::setContentLength(qint64 length)
     d->headers.setContentLength(length);
 }
 
-QString Response::contentType() const
+QByteArray Response::contentType() const
 {
     Q_D(const Response);
     return d->headers.contentType();
 }
 
-QString Response::contentTypeCharset() const
+QByteArray Response::contentTypeCharset() const
 {
     Q_D(const Response);
     return d->headers.contentTypeCharset();
@@ -282,26 +263,26 @@ void Response::redirect(const QUrl &url, quint16 status)
     d->status   = status;
 
     if (url.isValid()) {
-        const auto location = QString::fromLatin1(url.toEncoded(QUrl::FullyEncoded));
+        const auto location = url.toEncoded(QUrl::FullyEncoded);
         qCDebug(CUTELYST_RESPONSE) << "Redirecting to" << location << status;
 
-        d->headers.setHeader(QStringLiteral("LOCATION"), location);
-        d->headers.setContentType(QStringLiteral("text/html; charset=utf-8"));
+        d->headers.setHeader("LOCATION"_qba, location);
+        d->headers.setContentType("text/html; charset=utf-8"_qba);
 
-        const QString buf = QLatin1String(R"V0G0N(<!DOCTYPE html>
+        const QByteArray buf = R"V0G0N(<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Moved</title>
   </head>
   <body>
-     <p>This item has moved <a href=")V0G0N") +
-                            location + QLatin1String(R"V0G0N(">here</a>.</p>
+     <p>This item has moved <a href=")V0G0N" +
+                               location + R"V0G0N(">here</a>.</p>
   </body>
 </html>
-)V0G0N");
-        setBody(buf.toLatin1());
+)V0G0N";
+        setBody(buf);
     } else {
-        d->headers.removeHeader(QStringLiteral("LOCATION"));
+        d->headers.removeHeader("Location"_qba);
         qCDebug(CUTELYST_ENGINE) << "Invalid redirect removing header" << url << status;
     }
 }
@@ -328,13 +309,13 @@ QUrl Response::location() const noexcept
     return d->location;
 }
 
-QString Response::header(const QString &field) const
+QByteArray Response::header(const QByteArray &field) const
 {
     Q_D(const Response);
     return d->headers.header(field);
 }
 
-void Response::setHeader(const QString &field, const QString &value)
+void Response::setHeader(const QByteArray &key, const QByteArray &value)
 {
     Q_D(Response);
     Q_ASSERT_X(!(d->engineRequest->status & EngineRequest::FinalizedHeaders),
@@ -342,7 +323,7 @@ void Response::setHeader(const QString &field, const QString &value)
                "setting a header value after finalize_headers and the response callback has been "
                "called. Not what you want.");
 
-    d->headers.setHeader(field, value);
+    d->headers.setHeader(key, value);
 }
 
 Headers &Response::headers() noexcept
@@ -374,9 +355,9 @@ qint64 Response::size() const noexcept
     }
 }
 
-bool Response::webSocketHandshake(const QString &key,
-                                  const QString &origin,
-                                  const QString &protocol)
+bool Response::webSocketHandshake(const QByteArray &key,
+                                  const QByteArray &origin,
+                                  const QByteArray &protocol)
 {
     Q_D(Response);
     return d->engineRequest->webSocketHandshake(key, origin, protocol);

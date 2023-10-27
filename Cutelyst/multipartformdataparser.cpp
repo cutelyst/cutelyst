@@ -8,7 +8,7 @@
 
 using namespace Cutelyst;
 
-Uploads MultiPartFormDataParser::parse(QIODevice *body, QStringView contentType, int bufferSize)
+Uploads MultiPartFormDataParser::parse(QIODevice *body, QByteArrayView contentType, int bufferSize)
 {
     Uploads ret;
     if (body->isSequential()) {
@@ -16,7 +16,7 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, QStringView contentType,
         return ret;
     }
 
-    int start = contentType.indexOf(u"boundary=");
+    int start = contentType.indexOf("boundary=");
     if (start == -1) {
         qCWarning(CUTELYST_MULTIPART) << "No boundary match" << contentType;
         return ret;
@@ -28,15 +28,15 @@ Uploads MultiPartFormDataParser::parse(QIODevice *body, QStringView contentType,
     boundary.reserve(contentType.length() - start + 2);
 
     for (int i = start, quotes = 0; i < len; ++i) {
-        const QChar ch = contentType.at(i);
-        if (ch == u'\"') {
+        const char ch = contentType.at(i);
+        if (ch == '\"') {
             if ((quotes == 0 && i > start) || ++quotes == 2) {
                 break;
             }
-        } else if (ch == u';') {
+        } else if (ch == ';') {
             break;
         } else {
-            boundary.append(ch.toLatin1());
+            boundary.append(ch);
         }
     }
 
@@ -124,9 +124,9 @@ Uploads MultiPartFormDataParserPrivate::execute(char *buffer,
             case FinishHeader:
                 if (buffer[i] == '\n') {
                     int dotdot = headerLine.indexOf(':');
-                    headers.setHeader(QString::fromLatin1(headerLine.left(dotdot)),
-                                      QString::fromUtf8(headerLine.mid(dotdot + 1).trimmed()));
-                    headerLine = QByteArray();
+                    headers.setHeader(headerLine.left(dotdot),
+                                      headerLine.mid(dotdot + 1).trimmed());
+                    headerLine = {};
                     state      = StartHeaders;
                 } else {
                     //                    qCDebug(CUTELYST_MULTIPART) << "FinishHeader return!";

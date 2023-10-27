@@ -11,7 +11,8 @@ include(FetchContent)
 
 set(QT_VERSION_MAJOR 6)
 #find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 6 COMPONENTS Core Network Sql LinguistTools REQUIRED)
+# TODO Ubuntu 24.04 update to 6.3 due QByteArrayView trimmed
+find_package(Qt${QT_VERSION_MAJOR} 6.2 COMPONENTS Core Network Sql LinguistTools REQUIRED)
 
 set(CUTELYST_API_LEVEL "3")
 
@@ -144,7 +145,7 @@ add_definitions(
     -DQT_DISABLE_DEPRECATED_BEFORE=0x050E00
 )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

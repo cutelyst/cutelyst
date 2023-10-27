@@ -18,7 +18,7 @@ Q_LOGGING_CATEGORY(CWSGI_TCPSERVER, "cwsgi.tcpserver", QtWarningMsg)
 
 using namespace Cutelyst;
 
-TcpServer::TcpServer(const QString &serverAddress,
+TcpServer::TcpServer(const QByteArray &serverAddress,
                      Protocol *protocol,
                      Server *wsgi,
                      QObject *parent)
