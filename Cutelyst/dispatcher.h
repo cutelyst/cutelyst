@@ -50,9 +50,14 @@ public:
     ActionList getActions(QStringView name, const QString &nameSpace) const;
 
     /**
-     * Returns a hash of registered controllers
+     * Returns a Controller given it's name
      */
-    QMap<QString, Controller *> controllers() const;
+    Controller *controller(QStringView name) const;
+
+    /**
+     * Returns a list of registered controllers
+     */
+    QList<Controller *> controllers() const;
 
     /**
      * Takes a Catalyst::Action object and action parameters and returns a URI

@@ -173,12 +173,6 @@ QVector<Cutelyst::Controller *> Application::controllers() const noexcept
     return d->controllers;
 }
 
-View *Application::view(const QString &name) const
-{
-    Q_D(const Application);
-    return d->views.value(name);
-}
-
 View *Application::view(QStringView name) const
 {
     Q_D(const Application);

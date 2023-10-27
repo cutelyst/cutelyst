@@ -80,7 +80,7 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
         }
 
         if (instanceUsed) {
-            d->controllers.insert(controller->objectName(), controller);
+            d->controllers.insert(controller->objectName(), {controller->objectName(), controller});
         }
     }
 
@@ -255,10 +255,20 @@ ActionList Dispatcher::getActions(QStringView name, const QString &nameSpace) co
     return ret;
 }
 
-QMap<QString, Controller *> Dispatcher::controllers() const
+Controller *Dispatcher::controller(QStringView name) const
 {
     Q_D(const Dispatcher);
-    return d->controllers;
+    return d->controllers.value(name).controller;
+}
+
+QList<Controller *> Dispatcher::controllers() const
+{
+    Q_D(const Dispatcher);
+    QList<Controller *> ret;
+    for (const auto &value : d->controllers) {
+        ret.append(value.controller);
+    }
+    return ret;
 }
 
 QString Dispatcher::uriForAction(Action *action, const QStringList &captures) const

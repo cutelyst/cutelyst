@@ -153,10 +153,10 @@ Controller *Context::controller() const noexcept
     return d->action->controller();
 }
 
-Controller *Context::controller(const QString &name) const
+Controller *Context::controller(QStringView name) const
 {
     Q_D(const Context);
-    return d->dispatcher->controllers().value(name);
+    return d->dispatcher->controller(name);
 }
 
 View *Context::customView() const noexcept
@@ -165,19 +165,13 @@ View *Context::customView() const noexcept
     return d->view;
 }
 
-View *Context::view(const QString &name) const
-{
-    Q_D(const Context);
-    return d->app->view(name);
-}
-
 View *Context::view(QStringView name) const
 {
     Q_D(const Context);
     return d->app->view(name);
 }
 
-bool Context::setCustomView(const QString &name)
+bool Context::setCustomView(QStringView name)
 {
     Q_D(Context);
     d->view = d->app->view(name);
@@ -318,7 +312,7 @@ QUrl Context::uriFor(Action *action,
     return uri;
 }
 
-QUrl Context::uriForAction(const QString &path,
+QUrl Context::uriForAction(QStringView path,
                            const QStringList &captures,
                            const QStringList &args,
                            const ParamsMultiMap &queryValues) const
@@ -396,19 +390,19 @@ bool Context::forward(Component *action)
     return d->dispatcher->forward(this, action);
 }
 
-bool Context::forward(const QString &action)
+bool Context::forward(QStringView action)
 {
     Q_D(Context);
     return d->dispatcher->forward(this, action);
 }
 
-Action *Context::getAction(const QString &action, const QString &ns) const
+Action *Context::getAction(QStringView action, const QString &ns) const
 {
     Q_D(const Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QVector<Action *> Context::getActions(const QString &action, const QString &ns) const
+QVector<Action *> Context::getActions(QStringView action, const QString &ns) const
 {
     Q_D(const Context);
     return d->dispatcher->getActions(action, ns);

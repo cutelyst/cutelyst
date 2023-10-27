@@ -37,7 +37,12 @@ public:
     QMap<QStringView, Replacement> actions;
     QMap<QString, ActionList> actionContainer;
     ActionList rootActions;
-    QMap<QString, Controller *> controllers;
+
+    struct NameController {
+        QString name;
+        Controller *controller = nullptr;
+    };
+    QMap<QStringView, NameController> controllers;
     QVector<DispatchType *> dispatchers;
     Dispatcher *q_ptr;
 };

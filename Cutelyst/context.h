@@ -151,12 +151,7 @@ public:
      * Returns the controller by name, or nullptr
      * if the controller is not found
      */
-    Controller *controller(const QString &name) const;
-
-    /**
-     * Returns the view with name name or nullptr if not found
-     */
-    View *view(const QString &name) const;
+    Controller *controller(QStringView name) const;
 
     /**
      * Returns the view with name name or nullptr if not found
@@ -181,7 +176,7 @@ public:
      * Returns true if a view with the given
      * name was found
      */
-    bool setCustomView(const QString &name);
+    bool setCustomView(QStringView name);
 
     /**
      * You can set hash keys by passing arguments,
@@ -328,7 +323,7 @@ public:
      * c->uriForAction('/users/lst');
      * and it will create the URI /users/the-list.
      */
-    QUrl uriForAction(const QString &path,
+    QUrl uriForAction(QStringView path,
                       const QStringList &captures       = {},
                       const QStringList &args           = {},
                       const ParamsMultiMap &queryValues = {}) const;
@@ -336,7 +331,7 @@ public:
     /**
      * A convenience method for the uriForAction() without the arguments parameter
      */
-    inline QUrl uriForAction(const QString &path, const ParamsMultiMap &queryValues) const;
+    inline QUrl uriForAction(QStringView path, const ParamsMultiMap &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -415,17 +410,17 @@ public:
      * So a c->detach() inside a forwarded action would run the End() method from
      * the original action requested.
      */
-    bool forward(const QString &action);
+    bool forward(QStringView action);
 
     /**
      * Gets an action in a given namespace.
      */
-    Action *getAction(const QString &action, const QString &ns = {}) const;
+    Action *getAction(QStringView action, const QString &ns = {}) const;
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QVector<Action *> getActions(const QString &action, const QString &ns = {}) const;
+    QVector<Action *> getActions(QStringView action, const QString &ns = {}) const;
 
     /**
      * Returns all registered plugins
@@ -579,7 +574,7 @@ inline QUrl Context::uriFor(Action *action, const ParamsMultiMap &queryValues) c
     return uriFor(action, QStringList(), QStringList(), queryValues);
 }
 
-inline QUrl Context::uriForAction(const QString &path, const ParamsMultiMap &queryValues) const
+inline QUrl Context::uriForAction(QStringView path, const ParamsMultiMap &queryValues) const
 {
     return uriForAction(path, QStringList(), QStringList(), queryValues);
 }
