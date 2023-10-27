@@ -142,7 +142,7 @@ void TestLangselectManual::testController_data()
     QTest::newRow("session-02") << QStringLiteral("/langselect/manual/test/testSession") << headers
                                 << 200 << QByteArrayLiteral("en-GB");
     headers.setHeader("Accept-Language", "de-AT");
-    QTest::newRow("session-02") << QStringLiteral("/langselect/manual/test/testSession") << headers
+    QTest::newRow("session-03") << QStringLiteral("/langselect/manual/test/testSession") << headers
                                 << 200 << QByteArrayLiteral("de");
 
     headers.removeHeader("Accept-Language");
