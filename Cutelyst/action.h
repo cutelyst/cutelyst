@@ -129,7 +129,7 @@ protected:
     /**
      * Execute this action against
      */
-    virtual bool doExecute(Context *c) override;
+    bool doExecute(Context *c) override;
 
     /**
      * The method to be invoked by this Action

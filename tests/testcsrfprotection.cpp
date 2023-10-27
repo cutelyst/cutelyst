@@ -253,8 +253,8 @@ void TestCsrfProtection::doTest_data()
             }
         }
 
-        const auto fieldValid   = m_fieldName + '=' + m_fieldValue;
-        const auto fieldInvalid = m_fieldName + '=' + fieldValueInvalid.toLatin1();
+        const QByteArray fieldValid   = m_fieldName + '=' + m_fieldValue;
+        const QByteArray fieldInvalid = m_fieldName + '=' + fieldValueInvalid.toLatin1();
 
         Headers headers;
         headers.setContentType("application/x-www-form-urlencoded");

@@ -677,7 +677,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                 QByteArray requestCsrfToken;
                 // delete does not have body data
                 if (!c->req()->isDelete()) {
-                    if (c->req()->contentType().startsWith("multipart/form-data")) {
+                    if (c->req()->contentType().compare("multipart/form-data") == 0) {
                         // everything is an upload, even our token
                         Upload *upload =
                             c->req()->upload(QString::fromLatin1(csrf->d_ptr->formInputName));
