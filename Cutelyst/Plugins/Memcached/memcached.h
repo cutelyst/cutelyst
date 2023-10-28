@@ -152,7 +152,7 @@ class MemcachedPrivate;
  * export CUTELYST_MEMCACHED_TEST_SERVERS=localhost;/tmp/memcached.sock
  * @endcode
  *
- * @since Cutelyst 1.11.0
+ * @since %Cutelyst 1.11.0
  */
 class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
@@ -257,6 +257,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool set(QByteArrayView key,
                            const QByteArray &value,
@@ -285,6 +286,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool set(QByteArrayView key,
@@ -316,6 +318,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool setByKey(QByteArrayView groupKey,
                                 QByteArrayView key,
@@ -349,6 +352,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool setByKey(QByteArrayView groupKey,
@@ -379,6 +383,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool add(QByteArrayView key,
                            const QByteArray &value,
@@ -411,6 +416,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool add(QByteArrayView key,
@@ -445,6 +451,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool addByKey(QByteArrayView groupKey,
                                 QByteArrayView key,
@@ -482,6 +489,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool addByKey(QByteArrayView groupKey,
@@ -512,6 +520,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool replace(QByteArrayView key,
                                const QByteArray &value,
@@ -543,6 +552,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool replace(QByteArrayView key,
@@ -577,6 +587,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool replaceByKey(QByteArrayView groupKey,
                                     QByteArrayView key,
@@ -614,6 +625,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool replaceByKey(QByteArrayView groupKey,
@@ -801,6 +813,7 @@ public:
     /**
      * Expiration duration constant that can be used in the increment/decrement with initial methods.
      * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     * @since %Cutelyst 4.0.0
      */
     static const std::chrono::seconds expirationNotAddDuration;
 
@@ -881,6 +894,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool incrementWithInitial(QByteArrayView key,
                                             uint64_t offset,
@@ -928,6 +942,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool incrementWithInitialByKey(QByteArrayView groupKey,
                                                  QByteArrayView key,
@@ -1014,6 +1029,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool decrementWithInitial(QByteArrayView key,
                                             uint64_t offset,
@@ -1061,6 +1077,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool decrementWithInitialByKey(QByteArrayView groupKey,
                                                  QByteArrayView key,
@@ -1090,6 +1107,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool cas(QByteArrayView key,
                            const QByteArray &value,
@@ -1120,6 +1138,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool cas(QByteArrayView key,
@@ -1155,6 +1174,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool casByKey(QByteArrayView groupKey,
                                 QByteArrayView key,
@@ -1193,6 +1213,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     template <typename T>
     static bool casByKey(QByteArrayView groupKey,
@@ -1227,6 +1248,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool flush(std::chrono::seconds expiration, MemcachedReturnType *returnType = nullptr);
 
@@ -1332,6 +1354,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool touch(QByteArrayView key,
                              std::chrono::seconds expiration,
@@ -1358,6 +1381,7 @@ public:
 
     /**
      * @overload
+     * @since %Cutelyst 4.0.0
      */
     inline static bool touchByKey(QByteArrayView groupKey,
                                   QByteArrayView key,
