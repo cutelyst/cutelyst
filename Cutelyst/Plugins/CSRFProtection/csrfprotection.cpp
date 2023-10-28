@@ -334,7 +334,7 @@ QByteArray CSRFProtectionPrivate::sanitizeToken(const QByteArray &token)
     QByteArray sanitized;
 
     const QString tokenString = QString::fromLatin1(token);
-    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) || token.size() != CSRF_TOKEN_LENGTH) {
+    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) || token.size() != static_cast<QByteArray::size_type>(CSRF_TOKEN_LENGTH)) {
         sanitized = CSRFProtectionPrivate::getNewCsrfToken();
     } else {
         sanitized = token;
@@ -600,6 +600,9 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         // If there isn't a CSRF_COOKIE_DOMAIN, require an exact match on host:port.
                         // If not, obey the cookie rules (or those for the session cookie, if we
                         // use sessions
+                        constexpr int httpPort = 80;
+                        constexpr int httpsPort = 443;
+
                         const QUrl uri = c->req()->uri();
                         QString goodReferer;
                         if (!csrf->d_ptr->useSessions) {
@@ -608,8 +611,8 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
                         if (goodReferer.isEmpty()) {
                             goodReferer = uri.host();
                         }
-                        const int serverPort = uri.port(c->req()->secure() ? 443 : 80);
-                        if ((serverPort != 80) && (serverPort != 443)) {
+                        const int serverPort = uri.port(c->req()->secure() ? httpsPort : httpPort);
+                        if ((serverPort != httpPort) && (serverPort != httpsPort)) {
                             goodReferer += u':' + QString::number(serverPort);
                         }
 
@@ -618,14 +621,13 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
 
                         QString refererHost = refererUrl.host();
                         const int refererPort =
-                            refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? 443 : 80);
-                        if ((refererPort != 80) && (refererPort != 443)) {
+                            refererUrl.port(refererUrl.scheme().compare(u"https") == 0 ? httpsPort : httpPort);
+                        if ((refererPort != httpPort) && (refererPort != httpsPort)) {
                             refererHost += u':' + QString::number(refererPort);
                         }
 
                         bool refererCheck = false;
-                        for (int i = 0; i < goodHosts.size(); ++i) {
-                            const QString host = goodHosts.at(i);
+                        for (const auto &host : std::as_const(goodHosts)) {
                             if ((host.startsWith(u'.') &&
                                  (refererHost.endsWith(host) || (refererHost == host.mid(1)))) ||
                                 host == refererHost) {
