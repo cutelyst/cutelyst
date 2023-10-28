@@ -67,7 +67,7 @@ public:
     {
         auto in = getKeyVal(c);
         Memcached::MemcachedReturnType rt;
-        if (Memcached::set(in.first, in.second.toUtf8(), 5, &rt)) {
+        if (Memcached::set(in.first, in.second.toUtf8(), std::chrono::minutes{1}, &rt)) {
             setValid(c);
         } else {
             setRt(c, rt);
@@ -92,7 +92,7 @@ public:
     void setEmptyKey(Context *c)
     {
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::set({}, QByteArray(), 5, &rt));
+        setValidity(c, Memcached::set({}, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing setting too long key ****
@@ -101,7 +101,7 @@ public:
     {
         QByteArray key(500, 'a');
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::set(key, QByteArray(), 5, &rt));
+        setValidity(c, Memcached::set(key, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing setting byte array by key ****
@@ -110,7 +110,7 @@ public:
     {
         auto in = getKeyVal(c);
         Memcached::MemcachedReturnType rt;
-        if (Memcached::setByKey("myLittleGroup", in.first, in.second.toUtf8(), 5, &rt)) {
+        if (Memcached::setByKey("myLittleGroup", in.first, in.second.toUtf8(), std::chrono::seconds{5}, &rt)) {
             setValid(c);
         } else {
             setRt(c, rt);
@@ -135,7 +135,7 @@ public:
     void setEmptyKeyByKey(Context *c)
     {
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::setByKey("myLittleGroup", {}, QByteArray(), 5, &rt));
+        setValidity(c, Memcached::setByKey("myLittleGroup", {}, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing setting too long key by key ****
@@ -144,7 +144,7 @@ public:
     {
         QByteArray key(500, 'a');
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::setByKey("myLittleGroup", key, QByteArray(), 5, &rt));
+        setValidity(c, Memcached::setByKey("myLittleGroup", key, QByteArray(), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing setting QVariantList ****
@@ -153,7 +153,7 @@ public:
     {
         const QVariantList list = getTestVariantList();
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::set("varList", list, 5, &rt));
+        setValidity(c, Memcached::set("varList", list, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing getting QVariantList ****
@@ -172,7 +172,7 @@ public:
     {
         const QVariantList list = getTestVariantList();
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::setByKey("myListGroup", "varList2", list, 5, &rt));
+        setValidity(c, Memcached::setByKey("myListGroup", "varList2", list, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing getting QVariantList ****
@@ -191,7 +191,7 @@ public:
     void addByteArrayValid(Context *c)
     {
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), 5, &rt));
+        setValidity(c, Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
     }
 
     // *** Start testing adding QByteArray invalid ****
@@ -199,7 +199,7 @@ public:
     void addByteArrayInvalid(Context *c)
     {
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), 5, &rt));
+        setValidity(c, Memcached::add("add1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
     }
 
     // *** Start testing get after adding QByteArray ****
@@ -218,7 +218,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         const QVariantList list = getTestVariantList();
-        setValidity(c, Memcached::add("add2", list, 2, &rt));
+        setValidity(c, Memcached::add("add2", list, std::chrono::seconds{2}, &rt));
     }
 
     // **** Start testing adding QVariantList invalid ****
@@ -227,7 +227,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         const QVariantList list = getTestVariantList();
-        setValidity(c, Memcached::add("add2", list, 2, &rt));
+        setValidity(c, Memcached::add("add2", list, std::chrono::seconds{2}, &rt));
     }
 
     // **** Start testing get after add QVariantList ****
@@ -246,7 +246,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         setValidity(
-            c, Memcached::addByKey("addGroup", "add3", QByteArrayLiteral("Lorem ipsum"), 5, &rt));
+            c, Memcached::addByKey("addGroup", "add3", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
     }
 
     // *** Start testing adding QByteArray by key invalid ****
@@ -255,7 +255,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         setValidity(
-            c, Memcached::addByKey("addGruop", "add3", QByteArrayLiteral("Lorem ipsum"), 5, &rt));
+            c, Memcached::addByKey("addGruop", "add3", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5}, &rt));
     }
 
     // *** Start testing get after adding QByteArray by key ****
@@ -274,7 +274,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         const QVariantList list = getTestVariantList();
-        setValidity(c, Memcached::addByKey("addGroup", "add4", list, 2, &rt));
+        setValidity(c, Memcached::addByKey("addGroup", "add4", list, std::chrono::seconds{2}, &rt));
     }
 
     // **** Start testing adding QVariantList by key invalid ****
@@ -283,7 +283,7 @@ public:
     {
         Memcached::MemcachedReturnType rt;
         const QVariantList list = getTestVariantList();
-        setValidity(c, Memcached::addByKey("addGroup", "add4", list, 2, &rt));
+        setValidity(c, Memcached::addByKey("addGroup", "add4", list, std::chrono::seconds{2}, &rt));
     }
 
     // **** Start testing get after add QVariantList by key ****
@@ -300,9 +300,9 @@ public:
     C_ATTR(replaceByteArrayValid, :Local :AutoArgs)
     void replaceByteArrayValid(Context *c)
     {
-        Memcached::set("replace1", QByteArrayLiteral("Lorem ipsum"), 5);
+        Memcached::set("replace1", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5});
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::replace("replace1", QByteArrayLiteral("Lorem ipsum 2"), 5, &rt));
+        setValidity(c, Memcached::replace("replace1", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing replace byte array invalid ****
@@ -310,7 +310,7 @@ public:
     void replaceByteArrayInvalid(Context *c)
     {
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::replace("replace2", QByteArrayLiteral("Lorem ipsum 2"), 5, &rt));
+        setValidity(c, Memcached::replace("replace2", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing get after replace byte array ****
@@ -335,7 +335,7 @@ public:
         Memcached::set("replace3", list1, 5);
         Memcached::MemcachedReturnType rt;
         const QVariantList list2 = getTestVariantList();
-        setValidity(c, Memcached::replace("replace3", list2, 5, &rt));
+        setValidity(c, Memcached::replace("replace3", list2, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing replace variant list invalid ****
@@ -344,7 +344,7 @@ public:
     {
         const QVariantList list = getTestVariantList();
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::replace("replace4", list, 5, &rt));
+        setValidity(c, Memcached::replace("replace4", list, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing get after replace variant list ****
@@ -361,11 +361,11 @@ public:
     C_ATTR(replaceByteArrayValidByKey, :Local :AutoArgs)
     void replaceByteArrayValidByKey(Context *c)
     {
-        Memcached::setByKey("replaceGroup", "replace5", QByteArrayLiteral("Lorem ipsum"), 5);
+        Memcached::setByKey("replaceGroup", "replace5", QByteArrayLiteral("Lorem ipsum"), std::chrono::seconds{5});
         Memcached::MemcachedReturnType rt;
         setValidity(c,
                     Memcached::replaceByKey(
-                        "replaceGroup", "replace5", QByteArrayLiteral("Lorem ipsum 2"), 5, &rt));
+                        "replaceGroup", "replace5", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing replace byte array by key invalid ****
@@ -375,7 +375,7 @@ public:
         Memcached::MemcachedReturnType rt;
         setValidity(c,
                     Memcached::replaceByKey(
-                        "replaceGroup", "replace6", QByteArrayLiteral("Lorem ipsum 2"), 5, &rt));
+                        "replaceGroup", "replace6", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing get after replace byte array by key ****
@@ -397,10 +397,10 @@ public:
         list1.append(QVariant::fromValue<QString>(QStringLiteral("Lorem ipsum 2")));
         list1.append(QVariant::fromValue<float>(7848.23423f));
         list1.append(QVariant::fromValue<QByteArray>(QByteArrayLiteral("Lorem ipsum 2")));
-        Memcached::setByKey("replaceGroup", "replace7", list1, 5);
+        Memcached::setByKey("replaceGroup", "replace7", list1, std::chrono::seconds{5});
         Memcached::MemcachedReturnType rt;
         const QVariantList list2 = getTestVariantList();
-        setValidity(c, Memcached::replaceByKey("replaceGroup", "replace7", list2, 5, &rt));
+        setValidity(c, Memcached::replaceByKey("replaceGroup", "replace7", list2, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing replace variant list by key invalid ****
@@ -409,7 +409,7 @@ public:
     {
         const QVariantList list = getTestVariantList();
         Memcached::MemcachedReturnType rt;
-        setValidity(c, Memcached::replaceByKey("replaceGroup", "replace8", list, 5, &rt));
+        setValidity(c, Memcached::replaceByKey("replaceGroup", "replace8", list, std::chrono::seconds{5}, &rt));
     }
 
     // **** Start testing get after replace by key variant list ****
@@ -508,7 +508,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::incrementWithInitial("inc1", 1, initial, 10, &val)) {
+        if (!Memcached::incrementWithInitial("inc1", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, initial == val);
@@ -521,7 +521,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::incrementWithInitial("inc1", 1, initial, 10, &val)) {
+        if (!Memcached::incrementWithInitial("inc1", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, 11 == val);
@@ -563,7 +563,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::incrementWithInitialByKey("incGroup", "inc3", 1, initial, 10, &val)) {
+        if (!Memcached::incrementWithInitialByKey("incGroup", "inc3", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, initial == val);
@@ -576,7 +576,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::incrementWithInitialByKey("incGroup", "inc3", 1, initial, 10, &val)) {
+        if (!Memcached::incrementWithInitialByKey("incGroup", "inc3", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, 11 == val);
@@ -618,7 +618,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::decrementWithInitial("inc5", 1, initial, 10, &val)) {
+        if (!Memcached::decrementWithInitial("inc5", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, initial == val);
@@ -631,7 +631,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::decrementWithInitial("inc5", 1, initial, 10, &val)) {
+        if (!Memcached::decrementWithInitial("inc5", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, 9 == val);
@@ -673,7 +673,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::decrementWithInitialByKey("decGroup", "inc7", 1, initial, 10, &val)) {
+        if (!Memcached::decrementWithInitialByKey("decGroup", "inc7", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, initial == val);
@@ -686,7 +686,7 @@ public:
     {
         const uint64_t initial = 10;
         uint64_t val           = 0;
-        if (!Memcached::decrementWithInitialByKey("decGroup", "inc7", 1, initial, 10, &val)) {
+        if (!Memcached::decrementWithInitialByKey("decGroup", "inc7", 1, initial, std::chrono::seconds{10}, &val)) {
             setInvalid(c);
         } else {
             setValidity(c, 9 == val);
@@ -727,10 +727,10 @@ public:
     void casValid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum"), 60);
-        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
+        Memcached::set("cas1", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
         Memcached::get("cas1", &cas);
-        if (Memcached::cas("cas1", QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+        if (Memcached::cas("cas1", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::get("cas1") == QByteArrayLiteral("Lorem ipsum"));
         } else {
             setInvalid(c);
@@ -742,11 +742,11 @@ public:
     void casInvalid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum"), 60);
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
         Memcached::get("cas2", &cas);
-        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 3"), 60);
-        if (Memcached::cas("cas2", QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+        Memcached::set("cas2", QByteArrayLiteral("Lorem ipsum 3"), std::chrono::minutes{1});
+        if (Memcached::cas("cas2", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::get("cas2") == QByteArrayLiteral("Lorem ipsum"));
         } else {
             setInvalid(c);
@@ -760,10 +760,10 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::set("cas3", list1, 60);
-        Memcached::set("cas3", list2, 60);
+        Memcached::set("cas3", list1, std::chrono::minutes{1});
+        Memcached::set("cas3", list2, std::chrono::minutes{1});
         Memcached::get("cas3", &cas);
-        if (Memcached::cas("cas3", list1, 60, cas)) {
+        if (Memcached::cas("cas3", list1, std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::get<QVariantList>("cas3") == list1);
         } else {
             setInvalid(c);
@@ -777,11 +777,11 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::set("cas4", list1, 60);
-        Memcached::set("cas4", list2, 60);
+        Memcached::set("cas4", list1, std::chrono::minutes{1});
+        Memcached::set("cas4", list2, std::chrono::minutes{1});
         Memcached::get("cas4", &cas);
-        Memcached::set("cas4", list1, 60);
-        if (Memcached::cas("cas4", list2, 60, cas)) {
+        Memcached::set("cas4", list1, std::chrono::minutes{1});
+        if (Memcached::cas("cas4", list2, std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::get<QVariantList>("cas4") == list2);
         } else {
             setInvalid(c);
@@ -793,10 +793,10 @@ public:
     void casByKeyValid(Context *c)
     {
         uint64_t cas = 0;
-        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), 60);
-        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum 2"), 60);
+        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum 2"), std::chrono::minutes{1});
         Memcached::getByKey("casGroup", "cas5", &cas);
-        if (Memcached::casByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), 60, cas)) {
+        if (Memcached::casByKey("casGroup", "cas5", QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{1}, cas)) {
             setValidity(
                 c, Memcached::getByKey("casGroup", "cas5") == QByteArrayLiteral("Lorem ipsum"));
         } else {
@@ -828,10 +828,10 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::setByKey("casGroup", "cas7", list1, 60);
-        Memcached::setByKey("casGroup", "cas7", list2, 60);
+        Memcached::setByKey("casGroup", "cas7", list1, std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas7", list2, std::chrono::minutes{1});
         Memcached::getByKey("casGroup", "cas7", &cas);
-        if (Memcached::casByKey("casGroup", "cas7", list1, 60, cas)) {
+        if (Memcached::casByKey("casGroup", "cas7", list1, std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::getByKey<QVariantList>("casGroup", "cas7") == list1);
         } else {
             setInvalid(c);
@@ -845,11 +845,11 @@ public:
         const auto list1 = getTestVariantList();
         const auto list2 = getTestVariantList2();
         uint64_t cas     = 0;
-        Memcached::setByKey("casGroup", "cas8", list1, 60);
-        Memcached::setByKey("casGroup", "cas8", list2, 60);
+        Memcached::setByKey("casGroup", "cas8", list1, std::chrono::minutes{1});
+        Memcached::setByKey("casGroup", "cas8", list2, std::chrono::minutes{1});
         Memcached::getByKey("casGroup", "cas8", &cas);
-        Memcached::setByKey("casGroup", "cas8", list1, 60);
-        if (Memcached::casByKey("casGroup", "cas8", list2, 60, cas)) {
+        Memcached::setByKey("casGroup", "cas8", list1, std::chrono::minutes{1});
+        if (Memcached::casByKey("casGroup", "cas8", list2, std::chrono::minutes{1}, cas)) {
             setValidity(c, Memcached::getByKey<QVariantList>("casGroup", "cas8") == list2);
         } else {
             setInvalid(c);
@@ -863,7 +863,7 @@ public:
         const auto h1 = getTestHash("vala");
         auto i        = h1.constBegin();
         while (i != h1.constEnd()) {
-            Memcached::set(i.key(), i.value(), 60);
+            Memcached::set(i.key(), i.value(), std::chrono::minutes{1});
             ++i;
         }
         const auto h2 = Memcached::mget(h1.keys());
@@ -877,7 +877,7 @@ public:
         const auto h1 = getTestHash("valb");
         auto i        = h1.constBegin();
         while (i != h1.constEnd()) {
-            Memcached::setByKey("mgetGroup", i.key(), i.value(), 60);
+            Memcached::setByKey("mgetGroup", i.key(), i.value(), std::chrono::minutes{1});
             ++i;
         }
         const auto h2 = Memcached::mgetByKey("mgetGroup", h1.keys());
@@ -891,7 +891,7 @@ public:
         const auto h1 = getTestHashList("valc");
         auto i        = h1.constBegin();
         while (i != h1.constEnd()) {
-            Memcached::set(i.key(), i.value(), 60);
+            Memcached::set(i.key(), i.value(), std::chrono::minutes{1});
             ++i;
         }
         const auto h2 = Memcached::mget<QVariantList>(h1.keys());
@@ -905,7 +905,7 @@ public:
         const auto h1 = getTestHashList("vald");
         auto i        = h1.constBegin();
         while (i != h1.constEnd()) {
-            Memcached::setByKey("mgetGroup", i.key(), i.value(), 60);
+            Memcached::setByKey("mgetGroup", i.key(), i.value(), std::chrono::minutes{1});
             ++i;
         }
         const auto h2 = Memcached::mgetByKey<QVariantList>("mgetGroup", h1.keys());
@@ -917,7 +917,7 @@ public:
     void flush(Context *c)
     {
         const QByteArray key = "flushKey";
-        Memcached::set(key, QByteArrayLiteral("Lorem ipsum"), 300);
+        Memcached::set(key, QByteArrayLiteral("Lorem ipsum"), std::chrono::minutes{5});
         if (Memcached::flush(0)) {
             setValidity(c, Memcached::get(key).isNull());
         } else {
