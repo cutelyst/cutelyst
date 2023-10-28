@@ -244,10 +244,10 @@ class CSRFProtectionPrivate;
  *
  * @since Cutelyst 1.12.0
  */
-class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection : public Plugin
+class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(CSRFProtection)
+    Q_DECLARE_PRIVATE(CSRFProtection) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
 public:
     /**
      * Constructs a new CSRFProtection object with the given @a parent.
@@ -257,7 +257,7 @@ public:
     /**
      * Deconstructs the CSRFProtection object.
      */
-    virtual ~CSRFProtection() override;
+    ~CSRFProtection() override = default;
 
     /**
      * Sets a default action the application will @link Context::detach() detach to @endlink if
@@ -369,9 +369,10 @@ public:
     static bool checkPassed(Context *c);
 
 protected:
-    CSRFProtectionPrivate *d_ptr;
+    bool setup(Application *app) override;
 
-    virtual bool setup(Application *app) override;
+private:
+    const QScopedPointer<CSRFProtectionPrivate> d_ptr;
 };
 
 } // namespace Cutelyst
