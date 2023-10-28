@@ -248,6 +248,7 @@ class CUTELYST_PLUGIN_CSRFPROTECTION_EXPORT CSRFProtection : public Plugin // cl
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(CSRFProtection) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DISABLE_COPY(CSRFProtection)
 public:
     /**
      * Constructs a new CSRFProtection object with the given @a parent.
