@@ -794,10 +794,15 @@ public:
 
     /**
      * Expiration time constant that can be used in the increment/decrement with initial methods.
-     * @    sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial()
-     * decrementWithInitialByKey()
+     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
      */
     static const time_t expirationNotAdd;
+
+    /**
+     * Expiration duration constant that can be used in the increment/decrement with initial methods.
+     * @sa incrementWithInitial() incrementWithInitialByKey() decrementWithInitial() decrementWithInitialByKey()
+     */
+    static const std::chrono::seconds expirationNotAddDuration;
 
     /**
      * Increments the value of @a key by @a offset. If there is a valid pointer to @a value, the
