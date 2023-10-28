@@ -126,13 +126,14 @@ class StaticCompressedPrivate;
  * \c CUTELYST_STATICCOMPRESSED_WITH_BROTLI are defined if you need to know that the plugin supports
  * that compressions.
  *
- * @since Cutelyst 1.11.0
+ * @since %Cutelyst 1.11.0
  * @headerfile "" <Cutelyst/Plugins/StaticCompressed/StaticCompressed>
  */
-class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed : public Plugin
+class CUTELYST_PLUGIN_STATICCOMPRESSED_EXPORT StaticCompressed : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(StaticCompressed)
+    Q_DECLARE_PRIVATE(StaticCompressed) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DISABLE_COPY(StaticCompressed)
 public:
     /**
      * Constructs a new StaticCompressed object with the given @a parent.
@@ -164,9 +165,9 @@ public:
      * Application::beforePrepareAction() signal. Returns @c false if the cache directory
      * can not be created if it not exists.
      */
-    virtual bool setup(Application *app) override;
+    bool setup(Application *app) override;
 
-protected:
+private:
     QScopedPointer<StaticCompressedPrivate> d_ptr;
 };
 

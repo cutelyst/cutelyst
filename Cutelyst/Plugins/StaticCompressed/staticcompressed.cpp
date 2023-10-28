@@ -21,6 +21,8 @@
 #include <QMimeDatabase>
 #include <QStandardPaths>
 
+#include <chrono>
+
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
 #    include <zopfli.h>
 #endif
@@ -38,7 +40,7 @@ StaticCompressed::StaticCompressed(Application *parent)
     , d_ptr(new StaticCompressedPrivate)
 {
     Q_D(StaticCompressed);
-    d->includePaths.append(parent->config(QStringLiteral("root")).toString());
+    d->includePaths.append(parent->config(u"root"_qs).toString());
 }
 
 void StaticCompressed::setIncludePaths(const QStringList &paths)
@@ -61,12 +63,12 @@ bool StaticCompressed::setup(Application *app)
     Q_D(StaticCompressed);
 
     const QVariantMap config =
-        app->engine()->config(QStringLiteral("Cutelyst_StaticCompressed_Plugin"));
+        app->engine()->config(u"Cutelyst_StaticCompressed_Plugin"_qs);
     const QString _defaultCacheDir =
         QStandardPaths::writableLocation(QStandardPaths::CacheLocation) +
         QLatin1String("/compressed-static");
     d->cacheDir.setPath(
-        config.value(QStringLiteral("cache_directory"), _defaultCacheDir).toString());
+        config.value(u"cache_directory"_qs, _defaultCacheDir).toString());
 
     if (Q_UNLIKELY(!d->cacheDir.exists())) {
         if (!d->cacheDir.mkpath(d->cacheDir.absolutePath())) {
@@ -79,49 +81,91 @@ bool StaticCompressed::setup(Application *app)
 
     const QString _mimeTypes =
         config
-            .value(QStringLiteral("mime_types"), QStringLiteral("text/css,application/javascript"))
+            .value(u"mime_types"_qs, u"text/css,application/javascript"_qs)
             .toString();
     qCInfo(C_STATICCOMPRESSED) << "MIME Types:" << _mimeTypes;
     d->mimeTypes = _mimeTypes.split(u',', Qt::SkipEmptyParts);
 
     const QString _suffixes = config
-                                  .value(QStringLiteral("suffixes"),
-                                         QStringLiteral("js.map,css.map,min.js.map,min.css.map"))
+                                  .value(u"suffixes"_qs,
+                                         u"js.map,css.map,min.js.map,min.css.map"_qs)
                                   .toString();
     qCInfo(C_STATICCOMPRESSED) << "Suffixes:" << _suffixes;
     d->suffixes = _suffixes.split(u',', Qt::SkipEmptyParts);
 
-    d->checkPreCompressed = config.value(QStringLiteral("check_pre_compressed"), true).toBool();
+    d->checkPreCompressed = config.value(u"check_pre_compressed"_qs, true).toBool();
     qCInfo(C_STATICCOMPRESSED) << "Check for pre-compressed files:" << d->checkPreCompressed;
 
-    d->onTheFlyCompression = config.value(QStringLiteral("on_the_fly_compression"), true).toBool();
+    d->onTheFlyCompression = config.value(u"on_the_fly_compression"_qs, true).toBool();
     qCInfo(C_STATICCOMPRESSED) << "Compress static files on the fly:" << d->onTheFlyCompression;
 
-    QStringList supportedCompressions{QStringLiteral("deflate"), QStringLiteral("gzip")};
+    QStringList supportedCompressions{u"deflate"_qs, u"gzip"_qs};
 
     bool ok                 = false;
-    d->zlibCompressionLevel = config.value(QStringLiteral("zlib_compression_level"), 9).toInt(&ok);
-    if (!ok || (d->zlibCompressionLevel < -1) || (d->zlibCompressionLevel > 9)) {
-        d->zlibCompressionLevel = -1;
+    d->zlibCompressionLevel = config.value(u"zlib_compression_level"_qs, StaticCompressedPrivate::zlibCompressionLevelDefault).toInt(&ok);
+    if (!ok) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value set for zlib_compression_level. "
+                                                   "Has to to be an integer value between "
+                                                << StaticCompressedPrivate::zlibCompressionLevelMin << " and "
+                                                << StaticCompressedPrivate::zlibCompressionLevelMax
+                                                << " inclusive. Using default value "
+                                                << StaticCompressedPrivate::zlibCompressionLevelDefault;
+    }
+
+    if (d->zlibCompressionLevel < StaticCompressedPrivate::zlibCompressionLevelMin || d->zlibCompressionLevel > StaticCompressedPrivate::zlibCompressionLevelMax) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value " << d->zlibCompressionLevel
+                                                << " set for zlib_compression_level. Value hat to be between "
+                                                << StaticCompressedPrivate::zlibCompressionLevelMin << " and "
+                                                << StaticCompressedPrivate::zlibCompressionLevelMax
+                                                << " inclusive. Using default value "
+                                                << StaticCompressedPrivate::zlibCompressionLevelDefault;
+        d->zlibCompressionLevel = StaticCompressedPrivate::zlibCompressionLevelDefault;
     }
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_ZOPFLI
-    d->zopfliIterations = config.value(QStringLiteral("zopfli_iterations"), 15).toInt(&ok);
-    if (!ok || (d->zopfliIterations < 0)) {
-        d->zopfliIterations = 15;
+    d->zopfliIterations = config.value(u"zopfli_iterations"_qs, StaticCompressedPrivate::zopfliIterationsDefault).toInt(&ok);
+    if (!ok) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value for zopfli_iterations. "
+                                                   "Has to be an integer value greater than or equal to "
+                                                << StaticCompressedPrivate::zopfliIterationsMin
+                                                << ". Using default value "
+                                                << StaticCompressedPrivate::zopfliIterationsDefault;
+        d->zopfliIterations = StaticCompressedPrivate::zopfliIterationsDefault;
     }
-    d->useZopfli = config.value(QStringLiteral("use_zopfli"), false).toBool();
-    supportedCompressions << QStringLiteral("zopfli");
+
+    if (d->zopfliIterations < StaticCompressedPrivate::zopfliIterationsMin) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value " << d->zopfliIterations
+                                                << " set for zopfli_iterations. Value has to to be greater than or equal to "
+                                                << StaticCompressedPrivate::zopfliIterationsMin
+                                                << ". Using default value "
+                                                << StaticCompressedPrivate::zopfliIterationsDefault;
+        d->zopfliIterations = StaticCompressedPrivate::zopfliIterationsDefault;
+    }
+    d->useZopfli = config.value(u"use_zopfli"_qs, false).toBool();
+    supportedCompressions << u"zopfli"_qs;
 #endif
 
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     d->brotliQualityLevel =
-        config.value(QStringLiteral("brotli_quality_level"), BROTLI_DEFAULT_QUALITY).toInt(&ok);
-    if (!ok || (d->brotliQualityLevel < BROTLI_MIN_QUALITY) ||
-        (d->brotliQualityLevel > BROTLI_MAX_QUALITY)) {
-        d->brotliQualityLevel = BROTLI_DEFAULT_QUALITY;
+        config.value(u"brotli_quality_level"_qs, StaticCompressedPrivate::brotliQualityLevelDefault).toInt(&ok);
+    if (!ok) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value for brotli_quality_level. "
+                                                   "Has to be an integer value between "
+                                                << BROTLI_MIN_QUALITY << " and " << BROTLI_MAX_QUALITY
+                                                << " inclusive. Using default value "
+                                                << StaticCompressedPrivate::brotliQualityLevelDefault;
+        d->brotliQualityLevel = StaticCompressedPrivate::brotliQualityLevelDefault;
     }
-    supportedCompressions << QStringLiteral("brotli");
+
+    if (d->brotliQualityLevel < BROTLI_MIN_QUALITY || d->brotliQualityLevel > BROTLI_MAX_QUALITY) {
+        qCWarning(C_STATICCOMPRESSED).nospace() << "Invalid value " << d->brotliQualityLevel
+                                                << " set for brotli_quality_level. Value has to be between "
+                                                << BROTLI_MIN_QUALITY << " and " << BROTLI_MAX_QUALITY
+                                                << " inclusive. Using default value "
+                                                << StaticCompressedPrivate::brotliQualityLevelDefault;
+        d->brotliQualityLevel = StaticCompressedPrivate::brotliQualityLevelDefault;
+    }
+    supportedCompressions << u"brotli"_qs;
 #endif
 
     qCInfo(C_STATICCOMPRESSED) << "Supported compressions:" << supportedCompressions.join(u',');
@@ -278,15 +322,15 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
     switch (compression) {
     case Zopfli:
     case Gzip:
-        suffix = QStringLiteral(".gz");
+        suffix = u".gz"_qs;
         break;
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
     case Brotli:
-        suffix = QStringLiteral(".br");
+        suffix = u".br"_qs;
         break;
 #endif
     case Deflate:
-        suffix = QStringLiteral(".deflate");
+        suffix = u".deflate"_qs;
         break;
     default:
         Q_ASSERT_X(false, "locate cache file", "invalid compression type");
@@ -313,7 +357,7 @@ QString StaticCompressedPrivate::locateCacheFile(const QString &origPath,
             compressedPath = path;
         } else {
             QLockFile lock(path + QLatin1String(".lock"));
-            if (lock.tryLock(10)) {
+            if (lock.tryLock(std::chrono::milliseconds{10})) {
                 switch (compression) {
 #ifdef CUTELYST_STATICCOMPRESSED_WITH_BROTLI
                 case Brotli:
@@ -568,8 +612,8 @@ bool StaticCompressedPrivate::compressZopfli(const QString &inputPath,
     ZopfliInitOptions(&options);
     options.numiterations = zopfliIterations;
 
-    unsigned char *out = 0;
-    size_t outSize     = 0;
+    unsigned char *out{nullptr};
+    size_t outSize{0};
 
     ZopfliCompress(&options,
                    ZopfliFormat::ZOPFLI_FORMAT_GZIP,
@@ -635,8 +679,7 @@ bool StaticCompressedPrivate::compressBrotli(const QString &inputPath,
     size_t outSize = BrotliEncoderMaxCompressedSize(static_cast<size_t>(data.size()));
     if (Q_LIKELY(outSize > 0)) {
         const uint8_t *in = (const uint8_t *) data.constData();
-        uint8_t *out;
-        out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize + 1));
+        uint8_t *out = (uint8_t *) malloc(sizeof(uint8_t) * (outSize + 1));
         if (Q_LIKELY(out != nullptr)) {
             BROTLI_BOOL status = BrotliEncoderCompress(brotliQualityLevel,
                                                        BROTLI_DEFAULT_WINDOW,
