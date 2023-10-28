@@ -136,7 +136,7 @@ bool Memcached::setup(Application *app)
                     }
                 }
                 if (!name.isEmpty()) {
-                    memcached_return_t rc;
+                    memcached_return_t rc{MEMCACHED_FAILURE};
                     if (isSocket) {
                         rc = memcached_server_add_unix_socket_with_weight(
                             new_memc, name.toUtf8().constData(), weight);
@@ -534,7 +534,7 @@ QByteArray Memcached::get(QByteArrayView key,
     if (memcached_success(rt)) {
         memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
         if (result) {
-            retData = QByteArray(memcached_result_value(result), memcached_result_length(result));
+            retData = QByteArray(memcached_result_value(result), static_cast<QByteArray::size_type>(memcached_result_length(result)));
             if (cas) {
                 *cas = memcached_result_cas(result);
             }
@@ -551,7 +551,7 @@ QByteArray Memcached::get(QByteArrayView key,
     }
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
-        qCWarning(C_MEMCACHED).nospace() << "Failed to get data for key " << _key
+        qCWarning(C_MEMCACHED).nospace() << "Failed to get data for key " << key
                                          << ": " << memcached_strerror(mcd->d_ptr->memc, rt);
     }
 
@@ -604,8 +604,8 @@ QByteArray Memcached::getByKey(QByteArrayView groupKey,
     }
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
-        qCWarning(C_MEMCACHED).nospace() << "Failed to get data for key " << _key
-                                         << " on group " << _groupKey << ": "
+        qCWarning(C_MEMCACHED).nospace() << "Failed to get data for key " << key
+                                         << " on group " << groupKey << ": "
                                          << memcached_strerror(mcd->d_ptr->memc, rt);
     }
 
@@ -1159,10 +1159,9 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
         _keysSizes.push_back(key.size());
     }
 
-    memcached_return_t rt;
     bool ok = false;
 
-    rt = memcached_mget(mcd->d_ptr->memc, &_keys[0], &_keysSizes[0], _keys.size());
+    memcached_return_t rt = memcached_mget(mcd->d_ptr->memc, &_keys[0], &_keysSizes[0], _keys.size());
 
     if (memcached_success(rt)) {
         ok = true;
@@ -1170,14 +1169,19 @@ QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
             memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
             if (result) {
+<<<<<<< HEAD
                 const QByteArray rk = QByteArray(memcached_result_key_value(result),
                                                  memcached_result_key_length(result));
                 QByteArray rd(memcached_result_value(result), memcached_result_length(result));
+=======
+                const QString rk = QString::fromUtf8(memcached_result_key_value(result),
+                                                     static_cast<QString::size_type>(memcached_result_key_length(result)));
+                QByteArray rd(memcached_result_value(result), static_cast<QByteArray::size_type>(memcached_result_length(result)));
+>>>>>>> 2134e392 (Memcached plugin: more linter warning fixes)
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
                 }
-                MemcachedPrivate::Flags flags =
-                    MemcachedPrivate::Flags(memcached_result_flags(result));
+                const MemcachedPrivate::Flags flags{memcached_result_flags(result)};
                 if (flags.testFlag(MemcachedPrivate::Compressed)) {
                     rd = qUncompress(rd);
                 }
