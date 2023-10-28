@@ -152,10 +152,11 @@ class MemcachedPrivate;
  *
  * @since Cutelyst 1.11.0
  */
-class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached : public Plugin
+class CUTELYST_PLUGIN_MEMCACHED_EXPORT Memcached : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(Memcached)
+    Q_DECLARE_PRIVATE(Memcached) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DISABLE_COPY(Memcached)
 public:
     /**
      * Constructs a new Memcached object with the given @a parent.
@@ -165,7 +166,7 @@ public:
     /**
      * Deconstructs the Memcached object.
      */
-    virtual ~Memcached() override;
+    ~Memcached() override = default;
 
     /**
      * Return types for memcached operations.
@@ -1157,12 +1158,13 @@ public:
     static QVersionNumber libMemcachedVersion();
 
 protected:
-    const QScopedPointer<MemcachedPrivate> d_ptr;
-
     /**
      * Reads the configuration and sets up the plugin.
      */
-    virtual bool setup(Application *app) override;
+    bool setup(Application *app) override;
+
+private:
+    const QScopedPointer<MemcachedPrivate> d_ptr;
 };
 
 template <typename T>
