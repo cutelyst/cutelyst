@@ -17,8 +17,8 @@ using namespace Cutelyst;
 
 Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionstore", QtWarningMsg)
 
-#define SESSION_STORE_MEMCD_SAVE QStringLiteral("_c_session_store_memcd_save")
-#define SESSION_STORE_MEMCD_DATA QStringLiteral("_c_session_store_memcd_data")
+#define SESSION_STORE_MEMCD_SAVE u"_c_session_store_memcd_save"_qs
+#define SESSION_STORE_MEMCD_DATA u"_c_session_store_memcd_data"_qs
 
 static QVariantHash
     loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey);
@@ -32,12 +32,8 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
                "construct MemachedSessionStore",
                "you have to specifiy a pointer to the Application object");
     const QVariantMap map =
-        app->engine()->config(QStringLiteral("Cutelyst_MemcachedSessionStore_Plugin"));
-    d->groupKey = map.value(QStringLiteral("group_key")).toString().toLatin1();
-}
-
-MemcachedSessionStore::~MemcachedSessionStore()
-{
+        app->engine()->config(u"Cutelyst_MemcachedSessionStore_Plugin"_qs);
+    d->groupKey = map.value(u"group_key"_qs).toString().toLatin1();
 }
 
 QVariant MemcachedSessionStore::getSessionData(Context *c,
@@ -119,18 +115,18 @@ QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteA
                 ok = Memcached::removeByKey(groupKey, sessionKey);
             }
             if (!ok) {
-                qCWarning(C_MEMCACHEDSESSIONSTORE, "Failed to remove session from Memcached.");
+                qCWarning(C_MEMCACHEDSESSIONSTORE) << "Failed to remove session from Memcached.";
             }
         } else {
             bool ok              = false;
-            const time_t expires = data.value(QStringLiteral("expires")).value<time_t>();
+            const auto expires = data.value(u"expires"_qs).value<time_t>();
             if (groupKey.isEmpty()) {
                 ok = Memcached::set(sessionKey, data, expires);
             } else {
                 ok = Memcached::setByKey(groupKey, sessionKey, data, expires);
             }
             if (!ok) {
-                qCWarning(C_MEMCACHEDSESSIONSTORE, "Failed to store session to Memcached.");
+                qCWarning(C_MEMCACHEDSESSIONSTORE) << "Failed to store session to Memcached.";
             }
         }
     });

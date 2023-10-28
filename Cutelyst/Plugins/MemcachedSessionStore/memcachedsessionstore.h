@@ -72,7 +72,8 @@ class MemcachedSessionStorePrivate;
 class CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT MemcachedSessionStore final : public SessionStore
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(MemcachedSessionStore)
+    Q_DECLARE_PRIVATE(MemcachedSessionStore) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DISABLE_COPY(MemcachedSessionStore)
 public:
     /**
      * Constructs a new MemcachedSessionStore object with the given @a parent and @a app.
@@ -84,7 +85,7 @@ public:
     /**
      * Deconstructs the MemcachedSessionStore object
      */
-    ~MemcachedSessionStore();
+    ~MemcachedSessionStore() override = default;
 
     QVariant getSessionData(Context *c,
                             const QByteArray &sid,
@@ -106,7 +107,7 @@ public:
      */
     void setGroupKey(const QByteArray &groupKey);
 
-protected:
+private:
     QScopedPointer<MemcachedSessionStorePrivate> d_ptr;
 };
 
