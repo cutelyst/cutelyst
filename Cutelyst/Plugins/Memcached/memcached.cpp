@@ -17,7 +17,8 @@ Q_LOGGING_CATEGORY(C_MEMCACHED, "cutelyst.plugin.memcached", QtWarningMsg)
 using namespace Cutelyst;
 
 static thread_local Memcached *mcd       = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-const time_t Memcached::expirationNotAdd = MEMCACHED_EXPIRATION_NOT_ADD;
+const time_t Memcached::expirationNotAdd{MEMCACHED_EXPIRATION_NOT_ADD};
+const std::chrono::seconds Memcached::expirationNotAddDuration{MEMCACHED_EXPIRATION_NOT_ADD};
 
 Memcached::Memcached(Application *parent)
     : Plugin(parent)
