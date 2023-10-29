@@ -55,7 +55,8 @@ bool ValidatorDomain::validate(const QString &value,
             // checking the ACE puny code
             for (const QChar &ch : tld) {
                 const ushort &uc = ch.unicode();
-                if (((uc > 47) && (uc < 58)) || (uc == 45)) {
+                if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
+                        (uc == ValidatorRulePrivate::ascii_dash)) {
                     diag  = InvalidTLD;
                     valid = false;
                     break;
@@ -65,7 +66,7 @@ bool ValidatorDomain::validate(const QString &value,
             if (valid) {
                 if (!v.isEmpty()) {
                     // maximum length of the name in the DNS is 253 without the last dot
-                    if (v.length() < 254) {
+                    if (v.length() <= ValidatorDomainPrivate::maxDnsNameWithLastDot) {
                         const QStringList parts = v.split(QLatin1Char('.'), Qt::KeepEmptyParts);
                         // there has to be more than only the TLD
                         if (parts.size() > 1) {
@@ -76,13 +77,13 @@ bool ValidatorDomain::validate(const QString &value,
                                         const QString part = parts.at(i);
                                         if (!part.isEmpty()) {
                                             // labels/parts can have a maximum length of 63 chars
-                                            if (part.length() < 64) {
+                                            if (part.length() <= ValidatorDomainPrivate::maxDnsLabelLength) {
                                                 bool isTld      = (i == (parts.size() - 1));
                                                 bool isPunyCode = part.startsWith(u"xn--");
                                                 for (int j = 0; j < part.size(); ++j) {
                                                     const ushort &uc   = part.at(j).unicode();
-                                                    const bool isDigit = ((uc > 47) && (uc < 58));
-                                                    const bool isDash  = (uc == 45);
+                                                    const bool isDigit = ((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9));
+                                                    const bool isDash  = (uc == ValidatorRulePrivate::ascii_dash);
                                                     // no part/label can start with a digit or a
                                                     // dash
                                                     if ((j == 0) && (isDash || isDigit)) {
@@ -96,7 +97,7 @@ bool ValidatorDomain::validate(const QString &value,
                                                         diag  = DashEnd;
                                                         break;
                                                     }
-                                                    const bool isChar = ((uc > 96) && (uc < 123));
+                                                    const bool isChar = ((uc >= ValidatorRulePrivate::ascii_a) && (uc <= ValidatorRulePrivate::ascii_z));
                                                     if (!isTld) {
                                                         // if it is not the tld, it can have a-z 0-9
                                                         // and -
@@ -165,7 +166,7 @@ bool ValidatorDomain::validate(const QString &value,
         QDnsLookup alookup(QDnsLookup::A, v);
         QEventLoop aloop;
         QObject::connect(&alookup, &QDnsLookup::finished, &aloop, &QEventLoop::quit);
-        QTimer::singleShot(std::chrono::milliseconds{3100}, &alookup, &QDnsLookup::abort);
+        QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, &alookup, &QDnsLookup::abort);
         alookup.lookup();
         aloop.exec();
 
@@ -175,7 +176,7 @@ bool ValidatorDomain::validate(const QString &value,
             QDnsLookup aaaaLookup(QDnsLookup::AAAA, v);
             QEventLoop aaaaLoop;
             QObject::connect(&aaaaLookup, &QDnsLookup::finished, &aaaaLoop, &QEventLoop::quit);
-            QTimer::singleShot(std::chrono::milliseconds{3100}, &aaaaLookup, &QDnsLookup::abort);
+            QTimer::singleShot(ValidatorDomainPrivate::dnsLookupTimeout, &aaaaLookup, &QDnsLookup::abort);
             aaaaLookup.lookup();
             aaaaLoop.exec();
 
@@ -372,7 +373,7 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
     if (!v.isEmpty()) {
         Q_D(const ValidatorDomain);
         QString exVal;
-        Diagnose diag;
+        Diagnose diag{Valid};
         if (ValidatorDomain::validate(v, d->checkDNS, &diag, &exVal)) {
             result.value.setValue(exVal);
         } else {
@@ -387,11 +388,7 @@ ValidatorReturnType ValidatorDomain::validate(Context *c, const ParamsMultiMap &
 
 QString ValidatorDomain::genericValidationError(Context *c, const QVariant &errorData) const
 {
-    QString error;
-    const QString _label = label(c);
-    const Diagnose diag  = errorData.value<Diagnose>();
-    error                = ValidatorDomain::diagnoseString(c, diag, _label);
-    return error;
+    return ValidatorDomain::diagnoseString(c, errorData.value<Diagnose>(), label(c));
 }
 
 #include "moc_validatordomain.cpp"

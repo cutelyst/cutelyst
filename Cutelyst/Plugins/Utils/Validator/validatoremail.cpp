@@ -10,11 +10,14 @@
 
 #include <QDnsLookup>
 #include <QEventLoop>
-#include <QRegularExpression>
 #include <QTimer>
 #include <QUrl>
 
 using namespace Cutelyst;
+
+const QRegularExpression ValidatorEmailPrivate::ipv4Regex{u"\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25["
+                                                          "0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"_qs};
+const QRegularExpression ValidatorEmailPrivate::ipv6PartRegex{u"^[0-9A-Fa-f]{0,4}$"_qs};
 
 ValidatorEmail::ValidatorEmail(const QString &field,
                                Category threshold,
@@ -25,9 +28,7 @@ ValidatorEmail::ValidatorEmail(const QString &field,
 {
 }
 
-ValidatorEmail::~ValidatorEmail()
-{
-}
+ValidatorEmail::~ValidatorEmail() = default;
 
 ValidatorReturnType ValidatorEmail::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -99,8 +100,6 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                                        ValidatorEmail::Category threshold,
                                        ValidatorEmailDiagnoseStruct *diagnoseStruct)
 {
-    bool ret;
-
     QList<ValidatorEmail::Diagnose> returnStatus{ValidatorEmail::ValidAddress};
 
     EmailPart context = ComponentLocalpart;
@@ -130,7 +129,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
     const bool allowIdn       = options.testFlag(ValidatorEmail::AllowIDN);
 
     QString email;
-    const int atPos = address.lastIndexOf(QLatin1Char('@'));
+    const qsizetype atPos = address.lastIndexOf(QLatin1Char('@'));
     if (allowIdn) {
         if (atPos > 0) {
             const QString local  = address.left(atPos);
@@ -138,7 +137,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             bool asciiDomain     = true;
             for (const QChar &ch : domain) {
                 const ushort &uc = ch.unicode();
-                if (uc > 127) {
+                if (uc > ValidatorEmailPrivate::asciiEnd) {
                     asciiDomain = false;
                     break;
                 }
@@ -156,7 +155,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         email = address;
     }
 
-    const int rawLength = email.length();
+    const qsizetype rawLength = email.length();
 
     for (int i = 0; i < rawLength; i++) {
         token = email[i];
@@ -257,7 +256,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 // At this point we should have a valid local part
                 if (contextStack.size() != 1) {
                     returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                    qCCritical(C_VALIDATOR, "ValidatorEmail: Unexpected item on context stack");
+                    qCCritical(C_VALIDATOR) << "ValidatorEmail: Unexpected item on context stack";
                     break;
                 }
 
@@ -265,7 +264,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     returnStatus.push_back(ValidatorEmail::ErrorNoLocalPart); // Fatal error
                 } else if (elementLen == 0) {
                     returnStatus.push_back(ValidatorEmail::ErrorDotEnd); // Fatal Error
-                } else if (parseLocalPart.size() > 64) {
+                } else if (parseLocalPart.size() > ValidatorEmailPrivate::maxLocalPartLength) {
                     // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.1
                     // The maximum total length of a user name or other local-part is 64
                     // octets.
@@ -315,23 +314,22 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                         break;
                     default:
                         returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                        qCCritical(C_VALIDATOR,
-                                   "ValidatorEmail: More atext found where none is allowed, but "
-                                   "unrecognised prior context.");
+                        qCCritical(C_VALIDATOR) << "ValidatorEmail: More atext found where none is allowed, "
+                                                   "but unrecognizes prior context";
                         break;
                     }
                 } else {
                     contextPrior     = context;
-                    const ushort uni = token.unicode();
+                    const char16_t uni = token.unicode();
 
                     if (!allowUtf8Local) {
-                        if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
+                        if ((uni < ValidatorEmailPrivate::asciiExclamationMark) || (uni > ValidatorEmailPrivate::asciiTilde) || stringSpecials.contains(token)) {
                             returnStatus.push_back(
                                 ValidatorEmail::ErrorExpectingAText); // fatal error
                         }
                     } else {
                         if (!token.isLetterOrNumber()) {
-                            if ((uni < 33) || (uni > 126) || stringSpecials.contains(token)) {
+                            if ((uni < ValidatorEmailPrivate::asciiExclamationMark) || (uni > ValidatorEmailPrivate::asciiTilde) || stringSpecials.contains(token)) {
                                 returnStatus.push_back(
                                     ValidatorEmail::ErrorExpectingAText); // fatal error
                             }
@@ -425,7 +423,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     //
                     // https://tools.ietf.org/html/rfc1035#section-2.3.4
                     // labels          63 octets or less
-                    if (elementLen > 63) {
+                    if (elementLen > ValidatorEmailPrivate::maxDnsLabelLength) {
                         returnStatus.push_back(ValidatorEmail::RFC5322LabelTooLong);
                     }
                 }
@@ -607,13 +605,10 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     // at least) -- see https://bugs.php.net/bug.php?id=53236 for example
 
                     int maxGroups          = 8;
-                    int index              = -1;
+                    qsizetype index        = -1;
                     QString addressLiteral = parseLiteral;
 
-                    QRegularExpression ipv4Regex(
-                        QStringLiteral("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25["
-                                       "0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"));
-                    QRegularExpressionMatch ipv4Match = ipv4Regex.match(addressLiteral);
+                    const QRegularExpressionMatch ipv4Match = ValidatorEmailPrivate::ipv4Regex.match(addressLiteral);
                     if (ipv4Match.hasMatch()) {
                         index = addressLiteral.lastIndexOf(ipv4Match.captured());
                         if (index != 0) {
@@ -633,7 +628,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     } else {
                         QString ipv6                = addressLiteral.mid(5);
                         const QStringList matchesIP = ipv6.split(QLatin1Char(':'));
-                        int groupCount              = matchesIP.size();
+                        qsizetype groupCount        = matchesIP.size();
                         index                       = ipv6.indexOf(QLatin1String("::"));
 
                         if (index < 0) {
@@ -672,8 +667,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                         } else {
                             int unmatchedChars = 0;
                             for (const QString &ip : matchesIP) {
-                                if (!ip.contains(
-                                        QRegularExpression(QStringLiteral("^[0-9A-Fa-f]{0,4}$")))) {
+                                if (!ip.contains(ValidatorEmailPrivate::ipv6PartRegex)) {
                                     unmatchedChars++;
                                 }
                             }
@@ -727,10 +721,10 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 const ushort uni = token.unicode();
 
                 // CR, LF, SP & HTAB have already been parsed above
-                if ((uni > 127) || (uni == 0) || (uni == QLatin1Char('['))) {
+                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == QLatin1Char('['))) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingDText); // Fatal error
                     break;
-                } else if ((uni < 33) || (uni == 127)) {
+                } else if ((uni < ValidatorEmailPrivate::asciiExclamationMark) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                     returnStatus.push_back(ValidatorEmail::RFC5322DomLitOBSDText);
                 }
 
@@ -804,17 +798,17 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 const ushort uni = token.unicode();
 
                 if (!allowUtf8Local) {
-                    if ((uni > 127) || (uni == 0) || (uni == 10)) {
+                    if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                         returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
-                    } else if ((uni < 32) || (uni == 127)) {
+                    } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                         returnStatus.push_back(ValidatorEmail::DeprecatedQText);
                     }
                 } else {
                     if (!token.isLetterOrNumber()) {
-                        if ((uni > 127) || (uni == 0) || (uni == 10)) {
+                        if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                             returnStatus.push_back(
                                 ValidatorEmail::ErrorExpectingQText); // Fatal error
-                        } else if ((uni < 32) || (uni == 127)) {
+                        } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                             returnStatus.push_back(ValidatorEmail::DeprecatedQText);
                         }
                     }
@@ -856,9 +850,9 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
             const ushort uni = token.unicode();
 
-            if (uni > 127) {
+            if (uni > ValidatorEmailPrivate::asciiEnd) {
                 returnStatus.push_back(ValidatorEmail::ErrorExpectingQpair); // Fatal error
-            } else if (((uni < 31) && (uni != 9)) || (uni == 127)) {
+            } else if (((uni < ValidatorEmailPrivate::asciiUS) && (uni != ValidatorEmailPrivate::asciiTab)) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                 returnStatus.push_back(ValidatorEmail::DeprecatedQP);
             }
 
@@ -893,8 +887,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 break;
             default:
                 returnStatus.push_back(ValidatorEmail::ErrorFatal);
-                qCCritical(C_VALIDATOR,
-                           "ValidatorEmail: Quoted pair logic invoked in an invalid context.");
+                qCCritical(C_VALIDATOR) << "ValidatorEmail: Quoted pair logic invoked in an invalid context.";
                 break;
             }
         } break;
@@ -963,10 +956,10 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
                 const ushort uni = token.unicode();
 
-                if ((uni > 127) || (uni == 0) || (uni == 10)) {
+                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingCText); // Fatal error
                     break;
-                } else if ((uni < 32) || (uni == 127)) {
+                } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                     returnStatus.push_back(ValidatorEmail::DeprecatedCText);
                 }
             }
@@ -1100,7 +1093,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             //   that do not fit in those fields are not normally useful, the upper
             //   limit on address lengths should normally be considered to be 254.
             returnStatus.push_back(ValidatorEmail::RFC5322TooLong);
-        } else if (elementLen > 63) {
+        } else if (elementLen > ValidatorEmailPrivate::maxDnsLabelLength) {
             returnStatus.push_back(ValidatorEmail::RFC5322LabelTooLong);
         }
     }
@@ -1131,7 +1124,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         QDnsLookup mxLookup(QDnsLookup::MX, parseDomain);
         QEventLoop mxLoop;
         QObject::connect(&mxLookup, &QDnsLookup::finished, &mxLoop, &QEventLoop::quit);
-        QTimer::singleShot(std::chrono::milliseconds{3100}, &mxLookup, &QDnsLookup::abort);
+        QTimer::singleShot(ValidatorEmailPrivate::dnsLookupTimeout, &mxLookup, &QDnsLookup::abort);
         mxLookup.lookup();
         mxLoop.exec();
 
@@ -1142,7 +1135,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
             QDnsLookup aLookup(QDnsLookup::A, parseDomain);
             QEventLoop aLoop;
             QObject::connect(&aLookup, &QDnsLookup::finished, &aLoop, &QEventLoop::quit);
-            QTimer::singleShot(std::chrono::milliseconds{3100}, &aLookup, &QDnsLookup::abort);
+            QTimer::singleShot(ValidatorEmailPrivate::dnsLookupTimeout, &aLookup, &QDnsLookup::abort);
             aLookup.lookup();
             aLoop.exec();
 
@@ -1194,14 +1187,13 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         }
 
         if (QStringLiteral("0123456789").contains(atomListDomain[elementCount][0])) {
-            returnStatus.push_back(ValidatorEmail::RFC5321TLDNumberic);
+            returnStatus.push_back(ValidatorEmail::RFC5321TLDNumeric);
         }
     }
 
     if (returnStatus.size() != 1) {
         QList<ValidatorEmail::Diagnose> _rs;
-        for (int j = 0; j < returnStatus.size(); ++j) {
-            const ValidatorEmail::Diagnose dia = returnStatus.at(j);
+        for (const ValidatorEmail::Diagnose dia : std::as_const(returnStatus)) {
             if (!_rs.contains(dia) && (dia != ValidatorEmail::ValidAddress)) {
                 _rs.append(dia); // clazy:exclude=reserve-candidates
             }
@@ -1222,9 +1214,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         diagnoseStruct->literal      = parseLiteral;
     }
 
-    ret = (static_cast<int>(finalStatus) < static_cast<int>(threshold));
-
-    return ret;
+    return static_cast<int>(finalStatus) < static_cast<int>(threshold);
 }
 
 QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QString &label)
@@ -1254,7 +1244,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
             ret = c->translate("Cutelyst::ValidatorEmail",
                                "Address is valid but at a Top Level Domain.");
             break;
-        case RFC5321TLDNumberic:
+        case RFC5321TLDNumeric:
             ret = c->translate("Cutelyst::ValidatorEmail",
                                "Address is valid but the Top Level Domain begins with a number.");
             break;
@@ -1485,7 +1475,7 @@ QString ValidatorEmail::diagnoseString(Context *c, Diagnose diagnose, const QStr
                                "The address in the “%1” field is valid but at a Top Level Domain.")
                       .arg(label);
             break;
-        case RFC5321TLDNumberic:
+        case RFC5321TLDNumeric:
             ret = c->translate("Cutelyst::ValidatorEmail",
                                "The address in the “%1” field is valid but the Top Level Domain "
                                "begins with a number.")

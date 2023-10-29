@@ -16,14 +16,14 @@ class ValidatorBeforePrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorBeforePrivate(const QString &f,
-                           const QVariant &comp,
-                           const QString &tz,
+                           QVariant comp,
+                           QString tz,
                            const char *i,
                            const ValidatorMessages &m,
                            const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , comparison(comp)
-        , timeZone(tz)
+        , comparison(std::move(comp))
+        , timeZone(std::move(tz))
         , inputFormat(i)
     {
     }

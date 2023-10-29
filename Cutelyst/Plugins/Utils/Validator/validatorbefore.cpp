@@ -26,9 +26,7 @@ ValidatorBefore::ValidatorBefore(const QString &field,
 {
 }
 
-ValidatorBefore::~ValidatorBefore()
-{
-}
+ValidatorBefore::~ValidatorBefore() = default;
 
 ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -51,34 +49,23 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QDate odate = _comp.toDate();
             if (Q_UNLIKELY(!odate.isValid())) {
-                qCWarning(
-                    C_VALIDATOR,
-                    "ValidatorBefore: Invalid comparison date and time for field %s at %s::%s.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote()
+                        << "ValidatorBefore: Invalid comparison date for field"
+                        << field() << "at" << caName(c);
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDate date = d->extractDate(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!date.isValid())) {
-                    qCWarning(
-                        C_VALIDATOR,
-                        "ValidatorBefore: Can not parse input date \"%s\" for field %s at %s::%s.",
-                        qPrintable(v),
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << "ValidatorBefore: Can not parse input date \"" << v << "\" for field "
+                            << field() << " at " << caName(c);
                     result.errorMessage = parsingError(c, odate);
                 } else {
                     if (Q_UNLIKELY(date >= odate)) {
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorBefore: Validation failed at %s::%s for field %s: Input "
-                                "date \"%s\" is not before \"%s\".",
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                qPrintable(field()),
-                                qPrintable(date.toString()),
-                                qPrintable(odate.toString()));
+                        qCDebug(C_VALIDATOR).noquote().nospace()
+                                << "ValidatorBefore: Validation failed at " << caName(c)
+                                << " for field " << field() << ": Input " << date
+                                << " is not before " << odate;
                         result.errorMessage = validationError(c, odate);
                     } else {
                         result.value.setValue(date);
@@ -90,34 +77,23 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QDateTime odatetime = _comp.toDateTime();
             if (Q_UNLIKELY(!odatetime.isValid())) {
-                qCWarning(
-                    C_VALIDATOR,
-                    "ValidatorBefore: Invalid comparison date and time for field %s at %s::%s.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote()
+                        << "ValidatorBefore: Invalid comparison datetime for field"
+                        << field() << "at" << caName(c);
                 result.errorMessage = validationDataError(c);
             } else {
                 const QDateTime datetime = d->extractDateTime(c, v, d->inputFormat, tz);
                 if (Q_UNLIKELY(!datetime.isValid())) {
-                    qCWarning(C_VALIDATOR,
-                              "ValidatorBefore: Can not parse input date and time \"%s\" for field "
-                              "%s at %s::%s.",
-                              qPrintable(v),
-                              qPrintable(field()),
-                              qPrintable(c->controllerName()),
-                              qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << "ValidatorBefore: Can not parse input datetime \"" << v << "\" for field "
+                            << field() << " at " << caName(c);
                     result.errorMessage = parsingError(c, odatetime);
                 } else {
                     if (Q_UNLIKELY(datetime >= odatetime)) {
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorBefore: Validation failed at %s::%s for field %s: Input "
-                                "date and time \"%s\" is not before \"%s\".",
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                qPrintable(field()),
-                                qPrintable(datetime.toString()),
-                                qPrintable(odatetime.toString()));
+                        qCDebug(C_VALIDATOR).noquote().nospace()
+                                << "ValidatorBefore: Validation failed at " << caName(c)
+                                << " for field " << field() << ": Input " << datetime
+                                << " is not before " << odatetime;
                         result.errorMessage = validationError(c, odatetime);
                     } else {
                         result.value.setValue(datetime);
@@ -129,33 +105,23 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
 
             const QTime otime = _comp.toTime();
             if (Q_UNLIKELY(!otime.isValid())) {
-                qCWarning(C_VALIDATOR,
-                          "ValidatorBefore: Invalid comparison time for field %s at %s::%s.",
-                          qPrintable(field()),
-                          qPrintable(c->controllerName()),
-                          qPrintable(c->actionName()));
+                qCWarning(C_VALIDATOR).noquote()
+                        << "ValidatorBefore: Invalid comparison time for field"
+                        << field() << "at" << caName(c);
                 result.errorMessage = validationDataError(c);
             } else {
                 const QTime time = d->extractTime(c, v, d->inputFormat);
                 if (Q_UNLIKELY(!time.isValid())) {
-                    qCWarning(
-                        C_VALIDATOR,
-                        "ValidatorBefore: Can not parse input time \"%s\" for field %s at %s::%s.",
-                        qPrintable(v),
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()));
+                    qCWarning(C_VALIDATOR).noquote().nospace()
+                            << "ValidatorBefore: Can not parse input time \"" << v << "\" for field "
+                            << field() << " at " << caName(c);
                     result.errorMessage = parsingError(c, otime);
                 } else {
                     if (Q_UNLIKELY(time >= otime)) {
-                        qCDebug(C_VALIDATOR,
-                                "ValidatorBefore: Validation failed at %s::%s for field %s: Input "
-                                "time \"%s\" is not before \"%s\".",
-                                qPrintable(c->controllerName()),
-                                qPrintable(c->actionName()),
-                                qPrintable(field()),
-                                qPrintable(time.toString()),
-                                qPrintable(otime.toString()));
+                        qCDebug(C_VALIDATOR).noquote().nospace()
+                                << "ValidatorBefore: Validation failed at " << caName(c)
+                                << " for field " << field() << ": Input " << time
+                                << " is not before " << otime;
                         result.errorMessage = validationError(c, otime);
                     } else {
                         result.value.setValue(time);
@@ -164,9 +130,9 @@ ValidatorReturnType ValidatorBefore::validate(Context *c, const ParamsMultiMap &
             }
 
         } else {
-            qCWarning(C_VALIDATOR)
-                << "ValidatorBefore: Invalid validation data for field" << field() << "at"
-                << c->controllerName() << "::" << c->actionName() << ":" << d->comparison;
+            qCWarning(C_VALIDATOR).noquote().nospace()
+                << "ValidatorBefore: Invalid validation data for field " << field()
+                << " at " << caName(c) << ": " << d->comparison;
             result.errorMessage = validationDataError(c);
         }
     } else {
@@ -187,17 +153,20 @@ QString ValidatorBefore::genericValidationError(Cutelyst::Context *c,
         switch (errorData.userType()) {
         case QMetaType::QDate:
             error =
-                QStringLiteral("Has to be before %1.")
+                c->translate("Cutelyst::ValidatorBefore",
+                             "Has to be before %1.")
                     .arg(errorData.toDate().toString(c->locale().dateFormat(QLocale::ShortFormat)));
             break;
         case QMetaType::QDateTime:
-            error = QStringLiteral("Has to be before %1.")
+            error = c->translate("Cutelyst::ValidatorBefore",
+                                 "Has to be before %1.")
                         .arg(errorData.toDateTime().toString(
                             c->locale().dateTimeFormat(QLocale::ShortFormat)));
             break;
         case QMetaType::QTime:
             error =
-                QStringLiteral("Has to be before %1.")
+                c->translate("Cutelyst::ValidatorBefore",
+                             "Has to be before %1.")
                     .arg(errorData.toTime().toString(c->locale().timeFormat(QLocale::ShortFormat)));
             break;
         default:

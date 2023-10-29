@@ -14,11 +14,11 @@ class ValidatorDifferentPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorDifferentPrivate(const QString &f,
-                              const QString &of,
+                              QString of,
                               const char *ol,
                               const ValidatorMessages &m)
         : ValidatorRulePrivate(f, m, QString())
-        , otherField(of)
+        , otherField(std::move(of))
         , otherLabel(ol)
     {
     }

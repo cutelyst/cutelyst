@@ -28,9 +28,7 @@ Validator::Validator(std::initializer_list<ValidatorRule *> validators,
 }
 #endif
 
-Validator::~Validator()
-{
-}
+Validator::~Validator() = default;
 
 void Validator::clear()
 {
@@ -106,13 +104,13 @@ ValidatorResult
     }
 
     if (!result && flags.testFlag(FillStashOnError)) {
-        c->setStash(QStringLiteral("validationErrorStrings"), result.errorStrings());
-        c->setStash(QStringLiteral("validationErrors"), QVariant::fromValue(result.errors()));
+        c->setStash(u"validationErrorStrings"_qs, result.errorStrings());
+        c->setStash(u"validationErrors"_qs, QVariant::fromValue(result.errors()));
 
         if (!params.isEmpty()) {
             auto i = params.constBegin();
             while (i != params.constEnd()) {
-                if (!i.key().contains(QStringLiteral("password"), Qt::CaseInsensitive)) {
+                if (!i.key().contains(u"password"_qs, Qt::CaseInsensitive)) {
                     c->setStash(i.key(), i.value());
                 }
                 ++i;
@@ -132,5 +130,5 @@ void Validator::addValidator(ValidatorRule *v)
 
 void Validator::loadTranslations(Application *app)
 {
-    app->loadTranslations(QStringLiteral("plugin_utils_validator"));
+    app->loadTranslations(u"plugin_utils_validator"_qs);
 }

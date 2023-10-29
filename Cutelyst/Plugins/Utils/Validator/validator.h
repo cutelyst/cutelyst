@@ -371,11 +371,10 @@ public:
      */
     static void loadTranslations(Application *app);
 
-protected:
+private:
     const QScopedPointer<ValidatorPrivate> d_ptr;
 
-private:
-    Q_DECLARE_PRIVATE(Validator)
+    Q_DECLARE_PRIVATE(Validator) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(Validator)
 };
 

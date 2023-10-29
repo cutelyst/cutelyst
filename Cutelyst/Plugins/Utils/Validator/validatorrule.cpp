@@ -22,9 +22,7 @@ ValidatorRule::ValidatorRule(ValidatorRulePrivate &dd)
 {
 }
 
-ValidatorRule::~ValidatorRule()
-{
-}
+ValidatorRule::~ValidatorRule() = default;
 
 QString ValidatorRule::field() const
 {
@@ -169,14 +167,15 @@ void ValidatorRule::defaultValue(Context *c,
     Q_D(const ValidatorRule);
     if (!d->defValKey.isEmpty() && c->stash().contains(d->defValKey)) {
         result->value.setValue(c->stash(d->defValKey));
-        qCDebug(C_VALIDATOR,
-                "%s: Using default value \"%s\" for field %s in %s::%s.",
-                validatorName,
-                qPrintable(result->value.toString()),
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR).noquote().nospace()
+                << validatorName << ": Using default value " << result->value
+                << " for field " << field() << " at " << caName(c);
     }
+}
+
+QString ValidatorRule::caName(Context *c)
+{
+    return c->controllerName() + QLatin1String("::") + c->actionName();
 }
 
 bool ValidatorRule::trimBefore() const

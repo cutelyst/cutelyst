@@ -12,9 +12,7 @@ ValidatorConfirmed::ValidatorConfirmed(const QString &field, const ValidatorMess
 {
 }
 
-ValidatorConfirmed::~ValidatorConfirmed()
-{
-}
+ValidatorConfirmed::~ValidatorConfirmed() = default;
 
 ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -32,11 +30,9 @@ ValidatorReturnType ValidatorConfirmed::validate(Context *c, const ParamsMultiMa
 
         if (Q_UNLIKELY(v != ofv)) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorConfirmed: Failed to confirm the value in the field %s in %s::%s.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote()
+                    << "ValidatorConfirmed: Failed to confirm the value in the field"
+                    << field() << "at" << caName(c);
         } else {
             result.value.setValue(v);
         }

@@ -14,12 +14,12 @@ class ValidatorDateTimePrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorDateTimePrivate(const QString &f,
-                             const QString &tz,
+                             QString tz,
                              const char *inf,
                              const ValidatorMessages &m,
                              const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , timeZone(tz)
+        , timeZone(std::move(tz))
         , inputFormat(inf)
     {
     }

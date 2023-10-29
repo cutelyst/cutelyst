@@ -550,6 +550,14 @@ protected:
      */
     void defaultValue(Context *c, ValidatorReturnType *result, const char *validatorName) const;
 
+    /*!
+     * \brief Returns a string describing the current controller and action.
+     *
+     * This is mostly used by debug and wanring output. Returns something
+     * like \c MyController::myAction
+     */
+    static QString caName(Context *c);
+
 private:
     Q_DECLARE_PRIVATE(ValidatorRule)
     Q_DISABLE_COPY(ValidatorRule)

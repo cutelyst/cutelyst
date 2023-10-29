@@ -79,7 +79,7 @@ public:
         DnsWarnNoRecord = 6, /**< Could neither find a MX record nor an A-record for this domain. */
         // Address is valid for SMTP but has unusual Elements
         RFC5321TLD = 9, /**< Address is valid but at a Top Level Domain. */
-        RFC5321TLDNumberic =
+        RFC5321TLDNumeric =
             10, /**< Address is valid but the Top Level Domain begins with a number. */
         RFC5321QuotedString   = 11, /**< Address is valid but contains a quoted string. */
         RFC5321AddressLiteral = 12, /**< Address is valid but a literal address not a domain. */
@@ -250,7 +250,7 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorEmail)
+    Q_DECLARE_PRIVATE(ValidatorEmail) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorEmail)
 };
 

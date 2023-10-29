@@ -14,6 +14,7 @@ namespace Cutelyst {
 
 class ValidatorPrivate
 {
+    Q_DISABLE_COPY(ValidatorPrivate)
 public:
     ValidatorPrivate(QLatin1String trContext)
         : translationContext(trContext)

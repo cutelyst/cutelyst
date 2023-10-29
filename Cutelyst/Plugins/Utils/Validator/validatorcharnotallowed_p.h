@@ -15,11 +15,11 @@ class ValidatorCharNotAllowedPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorCharNotAllowedPrivate(const QString &f,
-                                   const QString &fcs,
+                                   QString fcs,
                                    const ValidatorMessages &m,
                                    const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , forbiddenChars(fcs)
+        , forbiddenChars(std::move(fcs))
     {
     }
 

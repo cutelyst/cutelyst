@@ -480,6 +480,16 @@ public:
         return var;
     }
 
+    // decimal ASCII codes used by some validators
+    static constexpr char16_t ascii_A{65};
+    static constexpr char16_t ascii_Z{90};
+    static constexpr char16_t ascii_a{97};
+    static constexpr char16_t ascii_z{122};
+    static constexpr char16_t ascii_0{48};
+    static constexpr char16_t ascii_9{57};
+    static constexpr char16_t ascii_dash{45};
+    static constexpr char16_t ascii_underscore{95};
+
     QLatin1String translationContext;
     QString field;
     QString defValKey;

@@ -5,9 +5,9 @@
 
 #include "validatoralphadash_p.h"
 
-#include <QRegularExpression>
-
 using namespace Cutelyst;
+
+const QRegularExpression ValidatorAlphaDashPrivate::regex{u"^[\\pL\\pM\\pN_-]+$"_qs};
 
 ValidatorAlphaDash::ValidatorAlphaDash(const QString &field,
                                        bool asciiOnly,
@@ -17,9 +17,7 @@ ValidatorAlphaDash::ValidatorAlphaDash(const QString &field,
 {
 }
 
-ValidatorAlphaDash::~ValidatorAlphaDash()
-{
-}
+ValidatorAlphaDash::~ValidatorAlphaDash() = default;
 
 ValidatorReturnType ValidatorAlphaDash::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -32,13 +30,9 @@ ValidatorReturnType ValidatorAlphaDash::validate(Context *c, const ParamsMultiMa
         if (Q_LIKELY(ValidatorAlphaDash::validate(v, d->asciiOnly))) {
             result.value.setValue(v);
         } else {
-            qCDebug(C_VALIDATOR,
-                    "ValidatorAlphaDash: Validation failed for field %s at %s::%s: %s contains "
-                    "characters that are not allowed.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()),
-                    qPrintable(v));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << "ValidatorAlphaDash: Validation failed for field " << field() << " at "
+                    << caName(c) << ": \"" << v << "\" contains characters that are not allowed";
             result.errorMessage = validationError(c);
         }
     } else {
@@ -54,14 +48,16 @@ bool ValidatorAlphaDash::validate(const QString &value, bool asciiOnly)
     if (asciiOnly) {
         for (const QChar &ch : value) {
             const ushort &uc = ch.unicode();
-            if (!(((uc > 64) && (uc < 91)) || ((uc > 96) && (uc < 123)) ||
-                  ((uc > 47) && (uc < 58)) || (uc == 45) || (uc == 95))) {
+            if (!(((uc >= ValidatorRulePrivate::ascii_A) && (uc <= ValidatorRulePrivate::ascii_Z)) ||
+                  ((uc >= ValidatorRulePrivate::ascii_a) && (uc <= ValidatorRulePrivate::ascii_z)) ||
+                  ((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) ||
+                  (uc == ValidatorRulePrivate::ascii_dash) || (uc == ValidatorRulePrivate::ascii_underscore))) {
                 valid = false;
                 break;
             }
         }
     } else {
-        valid = value.contains(QRegularExpression(QStringLiteral("^[\\pL\\pM\\pN_-]+$")));
+        valid = value.contains(ValidatorAlphaDashPrivate::regex);
     }
     return valid;
 }

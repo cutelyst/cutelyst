@@ -98,7 +98,7 @@ protected:
     QString genericParsingError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorBetween)
+    Q_DECLARE_PRIVATE(ValidatorBetween) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorBetween)
 };
 

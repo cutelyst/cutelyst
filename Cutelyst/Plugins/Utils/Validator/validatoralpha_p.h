@@ -8,6 +8,8 @@
 #include "validatoralpha.h"
 #include "validatorrule_p.h"
 
+#include <QRegularExpression>
+
 namespace Cutelyst {
 
 class ValidatorAlphaPrivate : public ValidatorRulePrivate
@@ -19,7 +21,9 @@ public:
     {
     }
 
-    bool asciiOnly = false;
+    static const QRegularExpression regex;
+
+    bool asciiOnly{false};
 };
 
 } // namespace Cutelyst

@@ -17,6 +17,9 @@ public:
         : ValidatorRulePrivate(f, m, dvk)
     {
     }
+
+    static const QStringList trueVals;
+    static const QStringList falseVals;
 };
 
 } // namespace Cutelyst

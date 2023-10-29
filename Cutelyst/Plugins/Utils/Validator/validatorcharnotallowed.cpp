@@ -15,9 +15,7 @@ ValidatorCharNotAllowed::ValidatorCharNotAllowed(const QString &field,
 {
 }
 
-ValidatorCharNotAllowed::~ValidatorCharNotAllowed()
-{
-}
+ValidatorCharNotAllowed::~ValidatorCharNotAllowed() = default;
 
 bool ValidatorCharNotAllowed::validate(const QString &value,
                                        const QString &forbiddenChars,
@@ -55,9 +53,9 @@ ValidatorReturnType ValidatorCharNotAllowed::validate(Context *c,
                 result.errorMessage = validationError(c, foundChar);
             }
         } else {
-            qCWarning(C_VALIDATOR)
-                << "ValidatorCharNotAllowed: Empty validation data for field" << field() << "at"
-                << c->controllerName() << "::" << c->actionName();
+            qCWarning(C_VALIDATOR).noquote()
+                << "ValidatorCharNotAllowed: Empty validation data for field"
+                << field() << "at" << caName(c);
             result.errorMessage = validationDataError(c);
         }
     } else {

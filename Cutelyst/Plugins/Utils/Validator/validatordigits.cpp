@@ -15,9 +15,7 @@ ValidatorDigits::ValidatorDigits(const QString &field,
 {
 }
 
-ValidatorDigits::~ValidatorDigits()
-{
-}
+ValidatorDigits::~ValidatorDigits() = default;
 
 ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -38,26 +36,18 @@ ValidatorReturnType ValidatorDigits::validate(Context *c, const ParamsMultiMap &
         if (Q_LIKELY(ValidatorDigits::validate(v, _length))) {
             if ((_length > 0) && (v.length() != _length)) {
                 result.errorMessage = validationError(c, _length);
-                qCDebug(C_VALIDATOR,
-                        "ValidatorDigits: Validation failed for value \"%s\" in field %s at "
-                        "%s::%s: does not contain exactly %i digit(s).",
-                        qPrintable(v),
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()),
-                        _length);
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << "ValidatorDigits: Validation failed for value \"" << v << "\" in field "
+                        << field() << " at " << caName(c) << ": does not contain exactly " << _length
+                        << " digits";
             } else {
                 result.value.setValue(v);
             }
         } else {
             result.errorMessage = validationError(c, _length);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorDigits: Validation failed for value \"%s\" in field %s at %s::%s: "
-                    "does not only contain digits.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << "ValidatorDigits: Validation failed for value \"" << v << "\" in field "
+                    << field() << " at " << caName(c) << ": does not only contain digits";
         }
 
     } else {
@@ -73,7 +63,7 @@ bool ValidatorDigits::validate(const QString &value, int length)
 
     for (const QChar &ch : value) {
         const ushort &uc = ch.unicode();
-        if (!((uc > 47) && (uc < 58))) {
+        if (!((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9))) {
             valid = false;
             break;
         }
