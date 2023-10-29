@@ -203,15 +203,16 @@ bool EngineRequest::webSocketHandshakeDo(const QByteArray &key,
 void EngineRequest::setPath(char *rawPath, const int len)
 {
     if (len == 0) {
-        path.clear();
+        path = u"/"_qs;
         return;
     }
 
     char *data           = rawPath;
     const char *inputPtr = data;
 
-    bool skipUtf8 = true;
-    int outlen    = 0;
+    bool lastSlash = false;
+    bool skipUtf8  = true;
+    int outlen     = 0;
     for (int i = 0; i < len; ++i, ++outlen) {
         const char c = inputPtr[i];
         if (c == '%' && i + 2 < len) {
@@ -236,15 +237,29 @@ void EngineRequest::setPath(char *rawPath, const int len)
             skipUtf8 = false;
         } else if (c == '+') {
             *data++ = ' ';
+        } else if (c == '/') {
+            // Remove duplicated slashes
+            if (!lastSlash) {
+                *data++ = '/';
+            } else {
+                --outlen;
+            }
+            lastSlash = true;
+            continue;
         } else {
             *data++ = c;
         }
+        lastSlash = false;
     }
 
     if (skipUtf8) {
         path = QString::fromLatin1(rawPath, outlen);
     } else {
         path = QString::fromUtf8(rawPath, outlen);
+    }
+
+    if (!path.startsWith(u'/')) {
+        path.prepend(u'/');
     }
 }
 

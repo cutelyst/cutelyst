@@ -172,7 +172,7 @@ void Dispatcher::prepareAction(Context *c)
 
 void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) const
 {
-    QString path = normalizePath(requestPath);
+    QString path = requestPath;
     QStringList args;
 
     //  "/foo/bar"
@@ -325,30 +325,6 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
         } else {
             lastWasSlash = false;
         }
-    }
-    return ret;
-}
-
-QString DispatcherPrivate::normalizePath(const QString &path)
-{
-    QString ret    = path;
-    bool lastSlash = false;
-    int i          = 0;
-    while (i < ret.size()) {
-        if (ret.at(i) == u'/') {
-            if (lastSlash) {
-                ret.remove(i, 1);
-                continue;
-            }
-            lastSlash = true;
-        } else {
-            lastSlash = false;
-        }
-        ++i;
-    }
-
-    if (ret.size() != 1 && ret.endsWith(u'/')) {
-        ret.resize(ret.size() - 1);
     }
     return ret;
 }

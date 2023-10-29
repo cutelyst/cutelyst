@@ -86,8 +86,6 @@ void TestDispatcherChained::testController_data()
 
     QTest::newRow("chained-test05")
         << QStringLiteral("/chain/item") << QByteArrayLiteral("/chain/item[MANY]/");
-    QTest::newRow("chained-test06")
-        << QStringLiteral("/chain/item/") << QByteArrayLiteral("/chain/item[MANY]/");
     QTest::newRow("chained-test07")
         << QStringLiteral("/chain/item/foo") << QByteArrayLiteral("/chain/item[ONE]/foo");
     QTest::newRow("chained-test08")
@@ -97,8 +95,6 @@ void TestDispatcherChained::testController_data()
                                     << QByteArrayLiteral("/chain/midle/one/two/end");
     QTest::newRow("chained-test10") << QStringLiteral("/chain/midle/TWO/ONE/end")
                                     << QByteArrayLiteral("/chain/midle/TWO/ONE/end");
-    QTest::newRow("chained-test11") << QStringLiteral("/chain/midle/one/two/end/")
-                                    << QByteArrayLiteral("/chain/midle/one/two/end");
     QTest::newRow("chained-test12") << QStringLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5")
                                     << QByteArrayLiteral("/chain/midle/TWO/ONE/end/1/2/3/4/5");
 }

@@ -96,14 +96,8 @@ void TestDispatcherPath::testController_data()
                              "1/2/3/4/5/6/7/8/9/10/11/12");
     QTest::newRow("path-test07") << QStringLiteral("/test/controller/one/1")
                                  << QByteArrayLiteral("path /test/controller/one/1 args 1");
-    QTest::newRow("path-test08") << QStringLiteral("/test/controller/one/1//")
-                                 << QByteArrayLiteral("path /test/controller/one/1// args 1");
     QTest::newRow("path-test09") << QStringLiteral("/test/controller/two/1/2")
                                  << QByteArrayLiteral("path /test/controller/two/1/2 args 1/2");
-    QTest::newRow("path-test10") << QStringLiteral("/test/controller/two/1/2//")
-                                 << QByteArrayLiteral("path /test/controller/two/1/2// args 1/2");
-    QTest::newRow("path-test11") << QStringLiteral("/test/controller/manyOld/")
-                                 << QByteArrayLiteral("path /test/controller/manyOld/ args ");
     QTest::newRow("path-test12") << QStringLiteral("/test/controller/manyOld")
                                  << QByteArrayLiteral("path /test/controller/manyOld args ");
     QTest::newRow("path-test13")
@@ -122,13 +116,8 @@ void TestDispatcherPath::testController_data()
                              "args 1/2/3/4/5/6/7/8/9/10/11/12");
     QTest::newRow("path-test17") << QStringLiteral("/test/controller/oneOld/1")
                                  << QByteArrayLiteral("path /test/controller/oneOld/1 args 1");
-    QTest::newRow("path-test18") << QStringLiteral("/test/controller/oneOld/1//")
-                                 << QByteArrayLiteral("path /test/controller/oneOld/1// args 1");
     QTest::newRow("path-test19") << QStringLiteral("/test/controller/twoOld/1/2")
                                  << QByteArrayLiteral("path /test/controller/twoOld/1/2 args 1/2");
-    QTest::newRow("path-test20") << QStringLiteral("/test/controller/twoOld/1/2//")
-                                 << QByteArrayLiteral(
-                                        "path /test/controller/twoOld/1/2// args 1/2");
     QTest::newRow("path-test21") << QStringLiteral("/") << QByteArrayLiteral("rootAction");
 }
 
