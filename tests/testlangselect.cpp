@@ -105,11 +105,11 @@ void TestLangselect::doTest()
 
     QUrl urlAux(url);
 
-    const QVariantMap result = m_engine->createRequest(
+    const auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), status);
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.statusCode, status);
+    QCOMPARE(result.body, output);
 }
 
 void TestLangselect::testController_data()

@@ -237,16 +237,16 @@ void TestResponse::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
 
-    QCOMPARE(result.value(QStringLiteral("status")).toByteArray(), responseStatus);
-    auto resultHeaders = result.value(QStringLiteral("headers")).value<Headers>();
+    QCOMPARE(result.status, responseStatus);
+    auto resultHeaders = result.headers;
     if (responseHeaders != resultHeaders) {
         qDebug() << resultHeaders << responseHeaders;
         QCOMPARE(resultHeaders, responseHeaders);
     }
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.body, output);
 }
 
 void TestResponse::testController_data()

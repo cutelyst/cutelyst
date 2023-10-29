@@ -79,11 +79,11 @@ int TestEngine::workerId() const
     return 0;
 }
 
-QVariantMap TestEngine::createRequest(const QByteArray &method,
-                                      const QByteArray &path,
-                                      const QByteArray &query,
-                                      const Headers &headers,
-                                      QByteArray *body)
+TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
+                                                   const QByteArray &path,
+                                                   const QByteArray &query,
+                                                   const Headers &headers,
+                                                   QByteArray *body)
 {
     QIODevice *bodyDevice = nullptr;
     if (headers.header("Sequential"_qba).isEmpty()) {
@@ -97,8 +97,6 @@ QVariantMap TestEngine::createRequest(const QByteArray &method,
     if (bodyDevice->size()) {
         headersCL.setContentLength(bodyDevice->size());
     }
-
-    QVariantMap ret;
 
     TestEngineConnection req;
     req.method       = method;
@@ -117,19 +115,20 @@ QVariantMap TestEngine::createRequest(const QByteArray &method,
 
     processRequest(&req);
 
-    ret = {{u"body"_qs, req.m_responseData},
-           {u"status"_qs, req.m_status},
-           {u"statusCode"_qs, req.m_statusCode},
-           {u"headers"_qs, QVariant::fromValue(req.m_headers)}};
+    TestResponse ret;
+    ret.body       = req.m_responseData;
+    ret.status     = req.m_status;
+    ret.statusCode = req.m_statusCode;
+    ret.headers    = req.m_headers;
 
     return ret;
 }
 
-QVariantMap TestEngine::createRequest(const QByteArray &method,
-                                      const QString &path,
-                                      const QByteArray &query,
-                                      const Headers &headers,
-                                      QByteArray *body)
+TestEngine::TestResponse TestEngine::createRequest(const QByteArray &method,
+                                                   const QString &path,
+                                                   const QByteArray &query,
+                                                   const Headers &headers,
+                                                   QByteArray *body)
 {
     return createRequest(method, path.toLatin1(), query, headers, body);
 }

@@ -113,15 +113,14 @@ void TestLangselectManual::doTest()
 
     QUrl urlAux(url);
 
-    const QVariantMap result = m_engine->createRequest(
+    const auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("statusCode")).value<int>(), status);
+    QCOMPARE(result.statusCode, status);
     if (status == 200) {
-        QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+        QCOMPARE(result.body, output);
     } else if (status == 307) {
-        QCOMPARE(result.value(QStringLiteral("headers")).value<Headers>().header("Location"),
-                 output);
+        QCOMPARE(result.headers.header("Location"), output);
     }
 }
 

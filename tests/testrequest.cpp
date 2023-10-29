@@ -408,15 +408,15 @@ void TestRequest::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(method,
-                                                 urlAux.path(QUrl::FullyEncoded),
-                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                 headers,
-                                                 &body);
+    auto result = m_engine->createRequest(method,
+                                          urlAux.path(QUrl::FullyEncoded),
+                                          urlAux.query(QUrl::FullyEncoded).toLatin1(),
+                                          headers,
+                                          &body);
 
-    //    qDebug() << result.value(QStringLiteral("body")).toByteArray();
+    //    qDebug() << result.body;
     //    qDebug() << output;
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.body, output);
 }
 
 void TestRequest::testController_data()

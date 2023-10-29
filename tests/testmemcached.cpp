@@ -1192,10 +1192,10 @@ void TestMemcached::doTest()
 
     QUrl urlAux(url);
 
-    const QVariantMap result = m_engine->createRequest(
+    const auto result = m_engine->createRequest(
         "POST", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
 
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.body, output);
 }
 
 QUrlQuery TestMemcached::makeKeyValQuery(const QString &key, const QString &val)

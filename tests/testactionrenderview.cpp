@@ -173,13 +173,12 @@ void TestActionRenderView::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), statusCode);
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
-    Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
-    QCOMPARE(headers.header("Content-Type"), contentType.toLatin1());
+    QCOMPARE(result.statusCode, statusCode);
+    QCOMPARE(result.body, output);
+    QCOMPARE(result.headers.header("Content-Type"), contentType.toLatin1());
 }
 
 void TestActionRenderView::testController_data()

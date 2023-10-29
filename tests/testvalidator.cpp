@@ -1120,10 +1120,10 @@ void TestValidator::doTest()
 
     const QUrl urlAux(u"/validator/test" + url);
 
-    const QVariantMap result = m_engine->createRequest(
+    const auto result = m_engine->createRequest(
         "POST", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
 
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.body, output);
 }
 
 void TestValidator::testController_data()

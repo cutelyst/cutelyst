@@ -66,10 +66,10 @@ void TestDispatcherChained::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.body, output);
 }
 
 void TestDispatcherChained::testController_data()

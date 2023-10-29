@@ -244,11 +244,11 @@ void TestAuthentication::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), status);
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(result.statusCode, status);
+    QCOMPARE(result.body, output);
 }
 
 void TestAuthentication::testController_data()

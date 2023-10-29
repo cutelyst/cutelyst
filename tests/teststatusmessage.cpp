@@ -183,15 +183,15 @@ void TestStatusMessage::doTest()
 
     QUrl urlAux(url);
 
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
-    Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
+    Headers headers = result.headers;
     headers.setHeader("Cookie"_qba, headers.header("Set-Cookie"));
 
     QUrl urlAux2(url + QLatin1String("Test/") + m_sm->statusMsgStashKey() + QLatin1Char('/') +
                  m_sm->errorMgStashKey());
 
-    QString body = result.value(QStringLiteral("body")).toString();
+    auto body = QString::fromLatin1(result.body);
     QUrlQuery query;
     if (body.startsWith(u"http://")) {
         QUrl urlToken(body);
@@ -203,10 +203,10 @@ void TestStatusMessage::doTest()
     }
     urlAux2.setQuery(query);
 
-    QVariantMap testResult = m_engine->createRequest(
+    auto testResult = m_engine->createRequest(
         "GET", urlAux2.path(), urlAux2.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
-    QCOMPARE(testResult.value(QStringLiteral("body")).toByteArray(), output);
+    QCOMPARE(testResult.body, output);
 }
 
 void TestStatusMessage::testController_data()

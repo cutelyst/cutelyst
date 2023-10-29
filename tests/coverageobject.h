@@ -38,17 +38,24 @@ public:
 
     virtual int workerId() const override;
 
-    QVariantMap createRequest(const QByteArray &method,
-                              const QByteArray &path,
-                              const QByteArray &query,
-                              const Headers &headers,
-                              QByteArray *body);
+    struct TestResponse {
+        QByteArray body;
+        Headers headers;
+        QByteArray status;
+        quint16 statusCode;
+    };
 
-    QVariantMap createRequest(const QByteArray &method,
-                              const QString &path,
-                              const QByteArray &query,
-                              const Headers &headers,
-                              QByteArray *body);
+    TestResponse createRequest(const QByteArray &method,
+                               const QByteArray &path,
+                               const QByteArray &query,
+                               const Headers &headers,
+                               QByteArray *body);
+
+    TestResponse createRequest(const QByteArray &method,
+                               const QString &path,
+                               const QByteArray &query,
+                               const Headers &headers,
+                               QByteArray *body);
 
     virtual bool init() override;
 

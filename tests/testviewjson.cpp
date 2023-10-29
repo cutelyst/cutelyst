@@ -151,12 +151,12 @@ void TestActionRenderView::doTest()
     if (sendXJsonVersion) {
         sendHeaders.pushHeader("X-Prototype-Version"_qba, "1.5.0");
     }
-    QVariantMap result = m_engine->createRequest(
+    auto result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), sendHeaders, nullptr);
 
-    QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), statusCode);
-    QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
-    Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
+    QCOMPARE(result.statusCode, statusCode);
+    QCOMPARE(result.body, output);
+    Headers headers = result.headers;
     QCOMPARE(headers.header("Content-Type"), contentType.toLatin1());
     QCOMPARE(headers.contains("X-Json"), hasXJson);
 }
