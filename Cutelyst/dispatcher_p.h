@@ -18,7 +18,7 @@ public:
     {
     }
 
-    inline void prepareAction(Context *c, const QString &requestPath) const;
+    inline void prepareAction(Context *c, QStringView path) const;
 
     void printActions() const;
     inline ActionList getContainers(const QString &ns) const;

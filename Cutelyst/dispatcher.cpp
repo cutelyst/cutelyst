@@ -158,21 +158,20 @@ void Dispatcher::prepareAction(Context *c)
     Request *request = c->request();
     d->prepareAction(c, request->path());
 
-    static const auto &log = CUTELYST_DISPATCHER();
-    if (log.isDebugEnabled()) {
+    static const bool log = CUTELYST_DISPATCHER().isDebugEnabled();
+    if (log) {
         if (!request->match().isEmpty()) {
-            qCDebug(log) << "Path is" << request->match();
+            qCDebug(CUTELYST_DISPATCHER) << "Path is" << request->match();
         }
 
         if (!request->args().isEmpty()) {
-            qCDebug(log) << "Arguments are" << request->args().join(QLatin1Char('/'));
+            qCDebug(CUTELYST_DISPATCHER) << "Arguments are" << request->args().join(u'/');
         }
     }
 }
 
-void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) const
+void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
 {
-    QString path = requestPath;
     QStringList args;
 
     //  "/foo/bar"
@@ -196,10 +195,9 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
 
         int pos = path.lastIndexOf(u'/');
 
-        const QString arg = path.mid(pos + 1);
-        args.prepend(arg);
+        args.emplaceBack(path.mid(pos + 1).toString());
 
-        path.resize(pos);
+        path = path.mid(0, pos);
     }
 }
 
