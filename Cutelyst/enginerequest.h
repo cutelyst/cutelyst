@@ -12,12 +12,15 @@
 #pragma once
 
 #include <Cutelyst/Headers>
+#include <chrono>
 
 #include <QElapsedTimer>
 #include <QHostAddress>
 #include <QObject>
 
 namespace Cutelyst {
+
+using TimePointSteady = std::chrono::time_point<std::chrono::steady_clock>;
 
 class Engine;
 class Context;
@@ -169,11 +172,8 @@ public:
      * \note It's deleted on processingFinished() or destructor */
     Context *context = nullptr;
 
-    /*! The elapsed timer since the start of request */
-    QElapsedTimer elapsed;
-
-    /*! The timestamp of the start of request, TODO remove in Cutelyst 3 */
-    quint64 startOfRequest = 0;
+    /*! The timepoint of the start of request */
+    TimePointSteady startOfRequest;
 
     /*! The remote/client port */
     quint16 remotePort = 0;

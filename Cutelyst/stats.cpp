@@ -30,7 +30,7 @@ void Stats::profileStart(const QString &action)
     Q_D(Stats);
     StatsAction stat;
     stat.action = action;
-    stat.begin  = d->engineRequest->elapsed.nsecsElapsed();
+    stat.begin  = std::chrono::steady_clock::now();
     d->actions.push_back(stat);
 }
 
@@ -39,7 +39,7 @@ void Stats::profileEnd(const QString &action)
     Q_D(Stats);
     for (auto &stat : d->actions) {
         if (stat.action == action) {
-            stat.end = d->engineRequest->elapsed.nsecsElapsed();
+            stat.end = std::chrono::steady_clock::now();
             break;
         }
     }
@@ -56,9 +56,8 @@ QByteArray Stats::report()
 
     QVector<QStringList> table;
     for (const auto &stat : d->actions) {
-        table.append(
-            {stat.action,
-             QString::number((stat.end - stat.begin) / 1000000000.0, 'f') + QLatin1Char('s')});
+        const std::chrono::duration<double> duration = stat.end - stat.begin;
+        table.append({stat.action, QString::number(duration.count(), 'f') + QLatin1Char('s')});
     }
 
     ret = Utils::buildTable(table, {QStringLiteral("Action"), QStringLiteral("Time")});

@@ -81,8 +81,9 @@ public:
 
     qint64 m_postBufferSize;
     qint64 m_postBuffering;
-    int m_bufferSize;
     char *m_postBuffer;
+    int m_bufferSize;
+    bool const useStats;
 };
 
 inline quint64 net_be64(const char *buf)

@@ -46,8 +46,8 @@ public:
         context = nullptr;
         body    = nullptr;
 
-        elapsed.invalidate();
-        status = InitialState;
+        startOfRequest = TimePointSteady{};
+        status         = InitialState;
 
         stream_id = 0;
         pktsize   = 0;

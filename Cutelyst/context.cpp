@@ -500,16 +500,18 @@ void Context::finalize()
                 d->response->headers().header("Content-Type"_qba, "unknown"_qba).constData(),
                 d->response->headers().header("Content-Length"_qba, "unknown"_qba).constData());
 
-        const double enlapsed = d->engineRequest->elapsed.nsecsElapsed() / 1000000000.0;
+        const std::chrono::duration<double> duration =
+            std::chrono::steady_clock::now() - d->engineRequest->startOfRequest;
+
         QString average;
-        if (enlapsed == 0.0) {
+        if (duration.count() == 0.0) {
             average = QStringLiteral("??");
         } else {
-            average = QString::number(1.0 / enlapsed, 'f');
+            average = QString::number(1.0 / duration.count(), 'f');
             average.truncate(average.size() - 3);
         }
         qCInfo(CUTELYST_STATS) << qPrintable(QStringLiteral("Request took: %1s (%2/s)\n%3")
-                                                 .arg(QString::number(enlapsed, 'f'),
+                                                 .arg(QString::number(duration.count(), 'f'),
                                                       average,
                                                       QString::fromLatin1(d->stats->report())));
         delete d->stats;

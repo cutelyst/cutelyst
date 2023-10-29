@@ -449,7 +449,9 @@ int ProtocolHttp2::parseHeaders(ProtoRequestHttp2 *request, QIODevice *io, const
         request->maxStreamId = fr.streamId;
 
         stream = new H2Stream(fr.streamId, request->settingsInitialWindowSize, request);
-        stream->elapsed.start();
+        if (useStats) {
+            stream->startOfRequest = std::chrono::steady_clock::now();
+        }
         request->streams.insert(fr.streamId, stream);
     }
 
@@ -798,15 +800,15 @@ bool ProtocolHttp2::upgradeH2C(Socket *socket,
             protoRequest->hpack       = new HPack(m_headerTableSize);
             protoRequest->maxStreamId = 1;
 
-            auto stream        = new H2Stream(1, 65535, protoRequest);
-            stream->method     = request.method;
-            stream->path       = request.path;
-            stream->query      = request.query;
-            stream->remoteUser = request.remoteUser;
-            stream->headers    = request.headers;
-            stream->elapsed.start();
-            stream->status = request.status;
-            stream->body   = request.body;
+            auto stream            = new H2Stream(1, 65535, protoRequest);
+            stream->method         = request.method;
+            stream->path           = request.path;
+            stream->query          = request.query;
+            stream->remoteUser     = request.remoteUser;
+            stream->headers        = request.headers;
+            stream->startOfRequest = std::chrono::steady_clock::now();
+            stream->status         = request.status;
+            stream->body           = request.body;
 
             stream->state = H2Stream::HalfClosed;
             protoRequest->streams.insert(1, stream);

@@ -13,8 +13,8 @@ namespace Cutelyst {
 
 struct StatsAction {
     QString action;
-    qint64 begin = 0;
-    qint64 end   = 0;
+    std::chrono::time_point<std::chrono::steady_clock> begin;
+    std::chrono::time_point<std::chrono::steady_clock> end;
 };
 
 class EngineRequest;

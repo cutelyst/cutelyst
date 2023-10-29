@@ -12,6 +12,7 @@
 #include <QTemporaryFile>
 
 Q_LOGGING_CATEGORY(CWSGI_PROTO, "cutelyst.server.proto", QtWarningMsg)
+Q_LOGGING_CATEGORY(CUTELYST_STATS, "cutelyst.stats", QtWarningMsg)
 
 using namespace Cutelyst;
 
@@ -27,12 +28,13 @@ ProtocolData::~ProtocolData()
     delete[] buffer;
 }
 
-Cutelyst::Protocol::Protocol(Cutelyst::Server *wsgi)
+Cutelyst::Protocol::Protocol(Cutelyst::Server *server)
+    : m_postBufferSize{qMax(static_cast<qint64>(32), server->postBufferingBufsize())}
+    , m_postBuffering{server->postBuffering()}
+    , m_postBuffer{new char[server->postBufferingBufsize()]}
+    , m_bufferSize{server->bufferSize()}
+    , useStats{CUTELYST_STATS().isDebugEnabled()}
 {
-    m_bufferSize     = wsgi->bufferSize();
-    m_postBuffering  = wsgi->postBuffering();
-    m_postBufferSize = qMax(static_cast<qint64>(32), wsgi->postBufferingBufsize());
-    m_postBuffer     = new char[wsgi->postBufferingBufsize()];
 }
 
 Cutelyst::Protocol::~Protocol()

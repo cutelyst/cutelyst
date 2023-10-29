@@ -103,16 +103,16 @@ QVariantMap TestEngine::createRequest(const QByteArray &method,
     TestEngineConnection req;
     req.method = method;
     req.setPath(path);
-    req.query         = query;
-    req.protocol      = "HTTP/1.1"_qba;
-    req.isSecure      = false;
-    req.serverAddress = "127.0.0.1"_qba;
-    req.remoteAddress = QHostAddress(u"127.0.0.1"_qs);
-    req.remotePort    = 3000;
-    req.remoteUser    = QString{};
-    req.headers       = headersCL;
-    req.elapsed.start();
-    req.body = bodyDevice;
+    req.query          = query;
+    req.protocol       = "HTTP/1.1"_qba;
+    req.isSecure       = false;
+    req.serverAddress  = "127.0.0.1"_qba;
+    req.remoteAddress  = QHostAddress(u"127.0.0.1"_qs);
+    req.remotePort     = 3000;
+    req.remoteUser     = QString{};
+    req.headers        = headersCL;
+    req.startOfRequest = std::chrono::steady_clock::now();
+    req.body           = bodyDevice;
 
     processRequest(&req);
 

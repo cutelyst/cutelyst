@@ -387,8 +387,8 @@ void ProtocolFastCGI::parse(Socket *sock, QIODevice *io) const
         if (len > 0) {
             request->buf_size += len;
 
-            if (!request->elapsed.isValid()) {
-                request->elapsed.start();
+            if (useStats && request->startOfRequest == TimePointSteady{}) {
+                request->startOfRequest = std::chrono::steady_clock::now();
             }
 
             if (request->buf_size < int(sizeof(struct fcgi_record))) {

@@ -82,8 +82,8 @@ public:
         context = nullptr;
         body    = nullptr;
 
-        elapsed.invalidate();
-        status = InitialState;
+        startOfRequest = TimePointSteady{};
+        status         = InitialState;
 
         websocketUpgraded = false;
         last              = 0;
