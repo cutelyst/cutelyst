@@ -131,18 +131,10 @@ AuthenticationUser CredentialHttp::authenticate(Cutelyst::Context *c,
 bool CredentialHttpPrivate::checkPassword(const AuthenticationUser &user,
                                           const ParamsMultiMap &authinfo)
 {
-    QString password             = authinfo.value(passwordField);
+    const QString password = passwordPreSalt + authinfo.value(passwordField) + passwordPostSalt;
     const QString storedPassword = user.value(passwordField).toString();
 
     if (Q_LIKELY(passwordType == CredentialHttp::Hashed)) {
-        if (!passwordPreSalt.isEmpty()) {
-            password.prepend(password);
-        }
-
-        if (!passwordPostSalt.isEmpty()) {
-            password.append(password);
-        }
-
         return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
     } else if (passwordType == CredentialHttp::Clear) {
         return storedPassword == password;

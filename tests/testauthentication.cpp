@@ -179,24 +179,28 @@ TestEngine *TestAuthentication::getEngine()
     clearPassword->setPasswordType(CredentialPassword::Clear);
     auth->addRealm(new AuthenticationRealm(clearStore, clearPassword));
 
+    const auto preSalt  = u"preSalt"_qs;
+    const auto postSalt = u"postSalt"_qs;
+
     auto hashedStore = new StoreMinimal(QStringLiteral("id"));
     {
         AuthenticationUser fooUser(QStringLiteral("foo"));
         fooUser.insert(QStringLiteral("password"),
-                       CredentialPassword::createPassword(
-                           QByteArrayLiteral("123"), QCryptographicHash::Sha256, 10, 10, 10));
+                       CredentialPassword::createPassword(preSalt + u"123" + postSalt));
         hashedStore->addUser(fooUser);
 
         AuthenticationUser barUser(QStringLiteral("bar"));
         barUser.insert(QStringLiteral("password"),
-                       CredentialPassword::createPassword(
-                           QByteArrayLiteral("321"), QCryptographicHash::Sha256, 20, 20, 20));
+                       CredentialPassword::createPassword(preSalt + u"321" + postSalt));
         hashedStore->addUser(barUser);
     }
 
     auto hashedPassword = new CredentialPassword;
     hashedPassword->setPasswordField(QStringLiteral("password"));
     hashedPassword->setPasswordType(CredentialPassword::Hashed);
+    hashedPassword->setPasswordPreSalt(preSalt);
+    hashedPassword->setPasswordPostSalt(postSalt);
+
     auth->addRealm(new AuthenticationRealm(hashedStore, hashedPassword, QStringLiteral("hashed")));
 
     auto nonePassword = new CredentialPassword;
@@ -213,6 +217,8 @@ TestEngine *TestAuthentication::getEngine()
     auto hashedHttpCredential = new CredentialHttp;
     hashedHttpCredential->setPasswordType(CredentialHttp::Hashed);
     hashedHttpCredential->setUsernameField(QStringLiteral("id"));
+    hashedHttpCredential->setPasswordPreSalt(preSalt);
+    hashedHttpCredential->setPasswordPostSalt(postSalt);
     auth->addRealm(
         new AuthenticationRealm(hashedStore, hashedHttpCredential, QStringLiteral("httpHashed")));
 

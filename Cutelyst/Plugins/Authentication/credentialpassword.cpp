@@ -228,18 +228,10 @@ QByteArray CredentialPassword::hmac(QCryptographicHash::Algorithm method,
 bool CredentialPasswordPrivate::checkPassword(const AuthenticationUser &user,
                                               const ParamsMultiMap &authinfo)
 {
-    QString password             = authinfo.value(passwordField);
+    const QString password = passwordPreSalt + authinfo.value(passwordField) + passwordPostSalt;
     const QString storedPassword = user.value(passwordField).toString();
 
     if (Q_LIKELY(passwordType == CredentialPassword::Hashed)) {
-        if (!passwordPreSalt.isEmpty()) {
-            password.prepend(password);
-        }
-
-        if (!passwordPostSalt.isEmpty()) {
-            password.append(password);
-        }
-
         return CredentialPassword::validatePassword(password.toUtf8(), storedPassword.toUtf8());
     } else if (passwordType == CredentialPassword::Clear) {
         return storedPassword == password;
