@@ -1,4 +1,7 @@
-project(cutelyst_tests VERSION 4)
+project(cutelyst_tests
+    LANGUAGES CXX
+    VERSION 4
+)
 
 find_package(QT NAMES Qt6 COMPONENTS Core Network Sql Test REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql Test REQUIRED)
