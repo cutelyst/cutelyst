@@ -247,7 +247,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool set(const QString &key,
+    static bool set(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     MemcachedReturnType *returnType = nullptr);
@@ -267,7 +267,7 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool set(const QString &key,
+    static bool set(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     MemcachedReturnType *returnType = nullptr);
@@ -288,8 +288,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool setByKey(const QString &groupKey,
-                         const QString &key,
+    static bool setByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          MemcachedReturnType *returnType = nullptr);
@@ -312,8 +312,8 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool setByKey(const QString &groupKey,
-                         const QString &key,
+    static bool setByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          MemcachedReturnType *returnType = nullptr);
@@ -333,7 +333,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool add(const QString &key,
+    static bool add(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     MemcachedReturnType *returnType = nullptr);
@@ -357,7 +357,7 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool add(const QString &key,
+    static bool add(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     MemcachedReturnType *returnType = nullptr);
@@ -381,8 +381,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool addByKey(const QString &groupKey,
-                         const QString &key,
+    static bool addByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          MemcachedReturnType *returnType = nullptr);
@@ -409,8 +409,8 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool addByKey(const QString &groupKey,
-                         const QString &key,
+    static bool addByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          MemcachedReturnType *returnType = nullptr);
@@ -430,7 +430,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool replace(const QString &key,
+    static bool replace(QByteArrayView key,
                         const QByteArray &value,
                         time_t expiration,
                         MemcachedReturnType *returnType = nullptr);
@@ -453,7 +453,7 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool replace(const QString &key,
+    static bool replace(QByteArrayView key,
                         const T &value,
                         time_t expiration,
                         MemcachedReturnType *returnType = nullptr);
@@ -477,8 +477,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool replaceByKey(const QString &groupKey,
-                             const QString &key,
+    static bool replaceByKey(QByteArrayView groupKey,
+                             QByteArrayView key,
                              const QByteArray &value,
                              time_t expiration,
                              MemcachedReturnType *returnType = nullptr);
@@ -505,8 +505,8 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool replaceByKey(const QString &groupKey,
-                             const QString &key,
+    static bool replaceByKey(QByteArrayView groupKey,
+                             QByteArrayView key,
                              const T &value,
                              time_t expiration,
                              MemcachedReturnType *returnType = nullptr);
@@ -529,7 +529,7 @@ public:
      * @a key has not been found, this will be @c null.
      */
     static QByteArray
-        get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+        get(QByteArrayView key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value of type @a T from the server identified by @a key. The returned
@@ -563,7 +563,7 @@ public:
      */
     template <typename T>
     static T
-        get(const QString &key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
+        get(QByteArrayView key, uint64_t *cas = nullptr, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch an individial value from the server identified by @a key. The returned QByteArray will
@@ -585,8 +585,8 @@ public:
      * @return QByteArray containing the data fetched from the server; if an error occurred or the
      * @a key has not been found, this will be @c null.
      */
-    static QByteArray getByKey(const QString &groupKey,
-                               const QString &key,
+    static QByteArray getByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t *cas                   = nullptr,
                                MemcachedReturnType *returnType = nullptr);
 
@@ -626,8 +626,8 @@ public:
      * key has not been found, this will be a default constructed value
      */
     template <typename T>
-    static T getByKey(const QString &groupKey,
-                      const QString &key,
+    static T getByKey(QByteArrayView groupKey,
+                      QByteArrayView key,
                       uint64_t *cas                   = nullptr,
                       MemcachedReturnType *returnType = nullptr);
 
@@ -639,7 +639,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool remove(const QString &key, MemcachedReturnType *returnType = nullptr);
+    static bool remove(QByteArrayView key, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Directly deletes a particular @a key in @a groupKey.
@@ -653,8 +653,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool removeByKey(const QString &groupKey,
-                            const QString &key,
+    static bool removeByKey(QByteArrayView groupKey,
+                            QByteArrayView key,
                             MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -664,7 +664,7 @@ public:
      * return type of the operation
      * @return @c true if the key exists; @c false otherwise
      */
-    static bool exist(const QString &key, MemcachedReturnType *returnType = nullptr);
+    static bool exist(QByteArrayView key, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Checks if the @a key exists in @a groupKey. This method behaves in a similar nature as
@@ -677,8 +677,8 @@ public:
      * type of the operation
      * @return @c true if the key exists; @c false otherwise
      */
-    static bool existByKey(const QString &groupKey,
-                           const QString &key,
+    static bool existByKey(QByteArrayView groupKey,
+                           QByteArrayView key,
                            MemcachedReturnType *returnType = nullptr);
 
     /**
@@ -703,7 +703,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool increment(const QString &key,
+    static bool increment(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value                 = nullptr,
                           MemcachedReturnType *returnType = nullptr);
@@ -726,8 +726,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool incrementByKey(const QString &groupKey,
-                               const QString &key,
+    static bool incrementByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value                 = nullptr,
                                MemcachedReturnType *returnType = nullptr);
@@ -756,7 +756,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool incrementWithInitial(const QString &key,
+    static bool incrementWithInitial(QByteArrayView key,
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
@@ -792,8 +792,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool incrementWithInitialByKey(const QString &groupKey,
-                                          const QString &key,
+    static bool incrementWithInitialByKey(QByteArrayView groupKey,
+                                          QByteArrayView key,
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
@@ -815,7 +815,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool decrement(const QString &key,
+    static bool decrement(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value                 = nullptr,
                           MemcachedReturnType *returnType = nullptr);
@@ -838,8 +838,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool decrementByKey(const QString &groupKey,
-                               const QString &key,
+    static bool decrementByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value                 = nullptr,
                                MemcachedReturnType *returnType = nullptr);
@@ -868,7 +868,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool decrementWithInitial(const QString &key,
+    static bool decrementWithInitial(QByteArrayView key,
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
@@ -904,8 +904,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool decrementWithInitialByKey(const QString &groupKey,
-                                          const QString &key,
+    static bool decrementWithInitialByKey(QByteArrayView groupKey,
+                                          QByteArrayView key,
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
@@ -924,7 +924,7 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool cas(const QString &key,
+    static bool cas(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     uint64_t cas,
@@ -945,7 +945,7 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool cas(const QString &key,
+    static bool cas(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     uint64_t cas,
@@ -969,8 +969,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool casByKey(const QString &groupKey,
-                         const QString &key,
+    static bool casByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          uint64_t cas,
@@ -997,8 +997,8 @@ public:
      * @return @c true on success; @c false otherwise
      */
     template <typename T>
-    static bool casByKey(const QString &groupKey,
-                         const QString &key,
+    static bool casByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          uint64_t cas,
@@ -1040,9 +1040,9 @@ public:
      * return type of the operation
      * @return QHash containing the keys and values
      */
-    static QHash<QString, QByteArray> mget(const QStringList &keys,
-                                           QHash<QString, uint64_t> *casValues = nullptr,
-                                           MemcachedReturnType *returnType     = nullptr);
+    static QHash<QByteArray, QByteArray> mget(const QByteArrayList &keys,
+                                              QHash<QByteArray, uint64_t> *casValues = nullptr,
+                                              MemcachedReturnType *returnType        = nullptr);
 
     /**
      * Fetch multiple values of type @a T from the server identified by a list of @a keys. If a
@@ -1060,9 +1060,9 @@ public:
      * @return QHash containing the keys and values
      */
     template <typename T>
-    static QHash<QString, T> mget(const QStringList &keys,
-                                  QHash<QString, uint64_t> *casValues = nullptr,
-                                  MemcachedReturnType *returnType     = nullptr);
+    static QHash<QByteArray, T> mget(const QByteArrayList &keys,
+                                     QHash<QByteArray, uint64_t> *casValues = nullptr,
+                                     MemcachedReturnType *returnType        = nullptr);
 
     /**
      * Fetch multiple values from the server specified by @a groupKey identified by a list of @a
@@ -1083,10 +1083,10 @@ public:
      * return type of the operation
      * @return QHash containing the keys and values
      */
-    static QHash<QString, QByteArray> mgetByKey(const QString &groupKey,
-                                                const QStringList &keys,
-                                                QHash<QString, uint64_t> *casValues = nullptr,
-                                                MemcachedReturnType *returnType     = nullptr);
+    static QHash<QByteArray, QByteArray> mgetByKey(QByteArrayView groupKey,
+                                                   const QByteArrayList &keys,
+                                                   QHash<QByteArray, uint64_t> *casValues = nullptr,
+                                                   MemcachedReturnType *returnType = nullptr);
 
     /**
      * Fetch multiple values of type @a T from the server specified by @a groupKey identified by a
@@ -1110,10 +1110,10 @@ public:
      * @return QHash containing the keys and values
      */
     template <typename T>
-    static QHash<QString, T> mgetByKey(const QString &groupKey,
-                                       const QStringList &keys,
-                                       QHash<QString, uint64_t> *casValues = nullptr,
-                                       MemcachedReturnType *returnType     = nullptr);
+    static QHash<QByteArray, T> mgetByKey(QByteArrayView groupKey,
+                                          const QByteArrayList &keys,
+                                          QHash<QByteArray, uint64_t> *casValues = nullptr,
+                                          MemcachedReturnType *returnType        = nullptr);
 
     /**
      * Updates the @a expiration time on an existing @a key.
@@ -1125,7 +1125,7 @@ public:
      * @return @c true on success; @c false otherwise
      */
     static bool
-        touch(const QString &key, time_t expiration, MemcachedReturnType *returnType = nullptr);
+        touch(QByteArrayView key, time_t expiration, MemcachedReturnType *returnType = nullptr);
 
     /**
      * Updates the @a expiration time on an existing @a key in group @a groupKey.
@@ -1141,8 +1141,8 @@ public:
      * return type of the operation
      * @return @c true on success; @c false otherwise
      */
-    static bool touchByKey(const QString &groupKey,
-                           const QString &key,
+    static bool touchByKey(QByteArrayView groupKey,
+                           QByteArrayView key,
                            time_t expiration,
                            MemcachedReturnType *returnType = nullptr);
 
@@ -1166,7 +1166,7 @@ protected:
 };
 
 template <typename T>
-bool Memcached::set(const QString &key,
+bool Memcached::set(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     MemcachedReturnType *returnType)
@@ -1178,8 +1178,8 @@ bool Memcached::set(const QString &key,
 }
 
 template <typename T>
-bool Memcached::setByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::setByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          MemcachedReturnType *returnType)
@@ -1191,7 +1191,7 @@ bool Memcached::setByKey(const QString &groupKey,
 }
 
 template <typename T>
-bool Memcached::add(const QString &key,
+bool Memcached::add(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     MemcachedReturnType *returnType)
@@ -1203,8 +1203,8 @@ bool Memcached::add(const QString &key,
 }
 
 template <typename T>
-bool Memcached::addByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::addByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          MemcachedReturnType *returnType)
@@ -1216,7 +1216,7 @@ bool Memcached::addByKey(const QString &groupKey,
 }
 
 template <typename T>
-bool Memcached::replace(const QString &key,
+bool Memcached::replace(QByteArrayView key,
                         const T &value,
                         time_t expiration,
                         MemcachedReturnType *returnType)
@@ -1228,8 +1228,8 @@ bool Memcached::replace(const QString &key,
 }
 
 template <typename T>
-bool Memcached::replaceByKey(const QString &groupKey,
-                             const QString &key,
+bool Memcached::replaceByKey(QByteArrayView groupKey,
+                             QByteArrayView key,
                              const T &value,
                              time_t expiration,
                              MemcachedReturnType *returnType)
@@ -1241,7 +1241,7 @@ bool Memcached::replaceByKey(const QString &groupKey,
 }
 
 template <typename T>
-T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnType)
+T Memcached::get(QByteArrayView key, uint64_t *cas, MemcachedReturnType *returnType)
 {
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
@@ -1253,8 +1253,8 @@ T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnT
 }
 
 template <typename T>
-T Memcached::getByKey(const QString &groupKey,
-                      const QString &key,
+T Memcached::getByKey(QByteArrayView groupKey,
+                      QByteArrayView key,
                       uint64_t *cas,
                       MemcachedReturnType *returnType)
 {
@@ -1268,7 +1268,7 @@ T Memcached::getByKey(const QString &groupKey,
 }
 
 template <typename T>
-bool Memcached::cas(const QString &key,
+bool Memcached::cas(QByteArrayView key,
                     const T &value,
                     time_t expiration,
                     uint64_t cas,
@@ -1281,8 +1281,8 @@ bool Memcached::cas(const QString &key,
 }
 
 template <typename T>
-bool Memcached::casByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::casByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const T &value,
                          time_t expiration,
                          uint64_t cas,
@@ -1295,12 +1295,12 @@ bool Memcached::casByKey(const QString &groupKey,
 }
 
 template <typename T>
-QHash<QString, T> Memcached::mget(const QStringList &keys,
-                                  QHash<QString, uint64_t> *casValues,
-                                  MemcachedReturnType *returnType)
+QHash<QByteArray, T> Memcached::mget(const QByteArrayList &keys,
+                                     QHash<QByteArray, uint64_t> *casValues,
+                                     MemcachedReturnType *returnType)
 {
-    QHash<QString, T> hash;
-    QHash<QString, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
+    QHash<QByteArray, T> hash;
+    QHash<QByteArray, QByteArray> _data = Memcached::mget(keys, casValues, returnType);
     if (!_data.empty()) {
         auto i = _data.constBegin();
         while (i != _data.constEnd()) {
@@ -1315,13 +1315,14 @@ QHash<QString, T> Memcached::mget(const QStringList &keys,
 }
 
 template <typename T>
-QHash<QString, T> Memcached::mgetByKey(const QString &groupKey,
-                                       const QStringList &keys,
-                                       QHash<QString, uint64_t> *casValues,
-                                       MemcachedReturnType *returnType)
+QHash<QByteArray, T> Memcached::mgetByKey(QByteArrayView groupKey,
+                                          const QByteArrayList &keys,
+                                          QHash<QByteArray, uint64_t> *casValues,
+                                          MemcachedReturnType *returnType)
 {
-    QHash<QString, T> hash;
-    QHash<QString, QByteArray> _data = Memcached::mgetByKey(groupKey, keys, casValues, returnType);
+    QHash<QByteArray, T> hash;
+    QHash<QByteArray, QByteArray> _data =
+        Memcached::mgetByKey(groupKey, keys, casValues, returnType);
     if (!_data.empty()) {
         auto i = _data.constBegin();
         while (i != _data.constEnd()) {

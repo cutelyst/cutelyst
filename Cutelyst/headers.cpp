@@ -395,6 +395,11 @@ QByteArray Headers::header(QByteArrayView key) const
     return {};
 }
 
+QString Headers::headerAsString(QByteArrayView key) const
+{
+    return QString::fromLatin1(header(key));
+}
+
 QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const
 {
     if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
@@ -403,11 +408,25 @@ QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) c
     return defaultValue;
 }
 
+QString Headers::headerAsString(QByteArrayView key, const QByteArray &defaultValue) const
+{
+    return QString::fromLatin1(header(key, defaultValue));
+}
+
 QByteArrayList Headers::headers(QByteArrayView key) const
 {
     QByteArrayList ret;
     for (auto result = findHeaderConst(m_data, key); result != m_data.end(); ++result) {
         ret.append(result->value);
+    }
+    return ret;
+}
+
+QStringList Headers::headersAsStrings(QByteArrayView key) const
+{
+    QStringList ret;
+    for (auto result = findHeaderConst(m_data, key); result != m_data.end(); ++result) {
+        ret.append(QString::fromLatin1(result->value));
     }
     return ret;
 }

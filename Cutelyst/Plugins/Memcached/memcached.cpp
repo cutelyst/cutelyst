@@ -279,7 +279,7 @@ bool Memcached::setup(Application *app)
     return ok;
 }
 
-bool Memcached::set(const QString &key,
+bool Memcached::set(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     Cutelyst::Memcached::MemcachedReturnType *returnType)
@@ -292,8 +292,6 @@ bool Memcached::set(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -303,8 +301,8 @@ bool Memcached::set(const QString &key,
     }
 
     const memcached_return_t rt = memcached_set(mcd->d_ptr->memc,
-                                                _key.constData(),
-                                                _key.size(),
+                                                key.constData(),
+                                                key.size(),
                                                 _value.constData(),
                                                 _value.size(),
                                                 expiration,
@@ -315,7 +313,7 @@ bool Memcached::set(const QString &key,
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to store key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -324,8 +322,8 @@ bool Memcached::set(const QString &key,
     return ok;
 }
 
-bool Memcached::setByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::setByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          MemcachedReturnType *returnType)
@@ -338,9 +336,6 @@ bool Memcached::setByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _key      = key.toUtf8();
-    const QByteArray _groupKey = groupKey.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -350,10 +345,10 @@ bool Memcached::setByKey(const QString &groupKey,
     }
 
     const memcached_return_t rt = memcached_set_by_key(mcd->d_ptr->memc,
-                                                       _groupKey.constData(),
-                                                       _groupKey.size(),
-                                                       _key.constData(),
-                                                       _key.size(),
+                                                       groupKey.constData(),
+                                                       groupKey.size(),
+                                                       key.constData(),
+                                                       key.size(),
                                                        _value.constData(),
                                                        _value.size(),
                                                        expiration,
@@ -364,8 +359,8 @@ bool Memcached::setByKey(const QString &groupKey,
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to store key \"%s\" on group \"%s\": %s",
-                  _key.constData(),
-                  _groupKey.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -374,7 +369,7 @@ bool Memcached::setByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::add(const QString &key,
+bool Memcached::add(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     MemcachedReturnType *returnType)
@@ -387,8 +382,6 @@ bool Memcached::add(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -398,8 +391,8 @@ bool Memcached::add(const QString &key,
     }
 
     const memcached_return_t rt = memcached_add(mcd->d_ptr->memc,
-                                                _key.constData(),
-                                                _key.size(),
+                                                key.constData(),
+                                                key.size(),
                                                 _value.constData(),
                                                 _value.size(),
                                                 expiration,
@@ -410,7 +403,7 @@ bool Memcached::add(const QString &key,
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED,
                   "Failed to add key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -419,8 +412,8 @@ bool Memcached::add(const QString &key,
     return ok;
 }
 
-bool Memcached::addByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::addByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          MemcachedReturnType *returnType)
@@ -433,9 +426,6 @@ bool Memcached::addByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _key      = key.toUtf8();
-    const QByteArray _groupKey = groupKey.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -445,10 +435,10 @@ bool Memcached::addByKey(const QString &groupKey,
     }
 
     const memcached_return_t rt = memcached_add_by_key(mcd->d_ptr->memc,
-                                                       _groupKey.constData(),
-                                                       _groupKey.size(),
-                                                       _key.constData(),
-                                                       _key.size(),
+                                                       groupKey.constData(),
+                                                       groupKey.size(),
+                                                       key.constData(),
+                                                       key.size(),
                                                        _value.constData(),
                                                        _value.size(),
                                                        expiration,
@@ -459,8 +449,8 @@ bool Memcached::addByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED,
                   "Failed to add key \"%s\" on group \"%s\": %s",
-                  _key.constData(),
-                  _groupKey.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -469,7 +459,7 @@ bool Memcached::addByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::replace(const QString &key,
+bool Memcached::replace(QByteArrayView key,
                         const QByteArray &value,
                         time_t expiration,
                         MemcachedReturnType *returnType)
@@ -482,8 +472,6 @@ bool Memcached::replace(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -493,8 +481,8 @@ bool Memcached::replace(const QString &key,
     }
 
     const memcached_return_t rt = memcached_replace(mcd->d_ptr->memc,
-                                                    _key.constData(),
-                                                    _key.size(),
+                                                    key.constData(),
+                                                    key.size(),
                                                     _value.constData(),
                                                     _value.size(),
                                                     expiration,
@@ -505,7 +493,7 @@ bool Memcached::replace(const QString &key,
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED,
                   "Failed to replace key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -514,8 +502,8 @@ bool Memcached::replace(const QString &key,
     return ok;
 }
 
-bool Memcached::replaceByKey(const QString &groupKey,
-                             const QString &key,
+bool Memcached::replaceByKey(QByteArrayView groupKey,
+                             QByteArrayView key,
                              const QByteArray &value,
                              time_t expiration,
                              MemcachedReturnType *returnType)
@@ -528,9 +516,6 @@ bool Memcached::replaceByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key      = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -540,10 +525,10 @@ bool Memcached::replaceByKey(const QString &groupKey,
     }
 
     const memcached_return_t rt = memcached_replace_by_key(mcd->d_ptr->memc,
-                                                           _groupKey.constData(),
-                                                           _groupKey.size(),
-                                                           _key.constData(),
-                                                           _key.size(),
+                                                           groupKey.constData(),
+                                                           groupKey.size(),
+                                                           key.constData(),
+                                                           key.size(),
                                                            _value.constData(),
                                                            _value.size(),
                                                            expiration,
@@ -554,8 +539,8 @@ bool Memcached::replaceByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_NOTSTORED)) {
         qCWarning(C_MEMCACHED,
                   "Failed to replace key \"%s\" on group \"%s\": %s",
-                  _key.constData(),
-                  _groupKey.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -564,7 +549,7 @@ bool Memcached::replaceByKey(const QString &groupKey,
     return ok;
 }
 
-QByteArray Memcached::get(const QString &key,
+QByteArray Memcached::get(QByteArrayView key,
                           uint64_t *cas,
                           Cutelyst::Memcached::MemcachedReturnType *returnType)
 {
@@ -579,13 +564,12 @@ QByteArray Memcached::get(const QString &key,
     }
 
     memcached_return_t rt;
-    const QByteArray _key = key.toUtf8();
-    bool ok               = false;
+    bool ok = false;
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
-    keys.push_back(_key.constData());
-    sizes.push_back(_key.size());
+    keys.push_back(key.constData());
+    sizes.push_back(key.size());
     rt = memcached_mget(mcd->d_ptr->memc, &keys[0], &sizes[0], keys.size());
 
     if (memcached_success(rt)) {
@@ -610,7 +594,7 @@ QByteArray Memcached::get(const QString &key,
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to get data for key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -619,8 +603,8 @@ QByteArray Memcached::get(const QString &key,
     return retData;
 }
 
-QByteArray Memcached::getByKey(const QString &groupKey,
-                               const QString &key,
+QByteArray Memcached::getByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t *cas,
                                MemcachedReturnType *returnType)
 {
@@ -635,20 +619,14 @@ QByteArray Memcached::getByKey(const QString &groupKey,
     }
 
     memcached_return_t rt;
-    const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key      = key.toUtf8();
-    bool ok                    = false;
+    bool ok = false;
 
     std::vector<const char *> keys;
     std::vector<size_t> sizes;
-    keys.push_back(_key.constData());
-    sizes.push_back(_key.size());
-    rt = memcached_mget_by_key(mcd->d_ptr->memc,
-                               _groupKey.constData(),
-                               _groupKey.size(),
-                               &keys[0],
-                               &sizes[0],
-                               keys.size());
+    keys.push_back(key.constData());
+    sizes.push_back(key.size());
+    rt = memcached_mget_by_key(
+        mcd->d_ptr->memc, groupKey.constData(), groupKey.size(), &keys[0], &sizes[0], keys.size());
 
     if (memcached_success(rt)) {
         memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
@@ -672,8 +650,8 @@ QByteArray Memcached::getByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to get data for key \"%s\" on group \"%s\": %s",
-                  _key.constData(),
-                  _groupKey.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -682,7 +660,7 @@ QByteArray Memcached::getByKey(const QString &groupKey,
     return retData;
 }
 
-bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
+bool Memcached::remove(QByteArrayView key, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -692,17 +670,15 @@ bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt =
-        memcached_delete(mcd->d_ptr->memc, _key.constData(), _key.size(), 0);
+        memcached_delete(mcd->d_ptr->memc, key.constData(), key.size(), 0);
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to remove data for key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -711,8 +687,8 @@ bool Memcached::remove(const QString &key, MemcachedReturnType *returnType)
     return ok;
 }
 
-bool Memcached::removeByKey(const QString &groupKey,
-                            const QString &key,
+bool Memcached::removeByKey(QByteArrayView groupKey,
+                            QByteArrayView key,
                             MemcachedReturnType *returnType)
 {
     if (!mcd) {
@@ -723,23 +699,16 @@ bool Memcached::removeByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key      = key.toUtf8();
-
-    const memcached_return_t rt = memcached_delete_by_key(mcd->d_ptr->memc,
-                                                          _groupKey.constData(),
-                                                          _groupKey.size(),
-                                                          _key.constData(),
-                                                          _key.size(),
-                                                          0);
+    const memcached_return_t rt = memcached_delete_by_key(
+        mcd->d_ptr->memc, groupKey.constData(), groupKey.size(), key.constData(), key.size(), 0);
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to remove data for key \"%s\" on group \"%s\": %s",
-                  _key.constData(),
-                  _groupKey.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -748,7 +717,7 @@ bool Memcached::removeByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
+bool Memcached::exist(QByteArrayView key, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -758,16 +727,14 @@ bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
-    const memcached_return_t rt = memcached_exist(mcd->d_ptr->memc, _key.constData(), _key.size());
+    const memcached_return_t rt = memcached_exist(mcd->d_ptr->memc, key.constData(), key.size());
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to check existence of key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -776,8 +743,8 @@ bool Memcached::exist(const QString &key, MemcachedReturnType *returnType)
     return ok;
 }
 
-bool Memcached::existByKey(const QString &groupKey,
-                           const QString &key,
+bool Memcached::existByKey(QByteArrayView groupKey,
+                           QByteArrayView key,
                            MemcachedReturnType *returnType)
 {
     if (!mcd) {
@@ -788,19 +755,16 @@ bool Memcached::existByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _groupKey = groupKey.toUtf8();
-    const QByteArray _key      = key.toUtf8();
-
     const memcached_return_t rt = memcached_exist_by_key(
-        mcd->d_ptr->memc, _groupKey.constData(), _groupKey.size(), _key.constData(), _key.size());
+        mcd->d_ptr->memc, groupKey.constData(), groupKey.size(), key.constData(), key.size());
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to check existence of key \"%s\" in group \"%s\"",
-                  _key.constData(),
-                  _groupKey.constData());
+                  key.constData(),
+                  groupKey.constData());
     }
 
     MemcachedPrivate::setReturnType(returnType, rt);
@@ -808,7 +772,7 @@ bool Memcached::existByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::increment(const QString &key,
+bool Memcached::increment(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value,
                           MemcachedReturnType *returnType)
@@ -821,17 +785,15 @@ bool Memcached::increment(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt =
-        memcached_increment(mcd->d_ptr->memc, _key.constData(), _key.size(), offset, value);
+        memcached_increment(mcd->d_ptr->memc, key.constData(), key.size(), offset, value);
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to increment key \"%s\" by %u: %s",
-                  _key.constData(),
+                  key.constData(),
                   offset,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -841,8 +803,8 @@ bool Memcached::increment(const QString &key,
     return ok;
 }
 
-bool Memcached::incrementByKey(const QString &groupKey,
-                               const QString &key,
+bool Memcached::incrementByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value,
                                MemcachedReturnType *returnType)
@@ -855,14 +817,11 @@ bool Memcached::incrementByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     const memcached_return_t rt = memcached_increment_by_key(mcd->d_ptr->memc,
-                                                             _group.constData(),
-                                                             _group.size(),
-                                                             _key.constData(),
-                                                             _key.size(),
+                                                             groupKey.constData(),
+                                                             groupKey.size(),
+                                                             key.constData(),
+                                                             key.size(),
                                                              offset,
                                                              value);
 
@@ -871,8 +830,8 @@ bool Memcached::incrementByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to increment \"%s\" key on group \"%s\" by %lu: %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   offset,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -882,7 +841,7 @@ bool Memcached::incrementByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::incrementWithInitial(const QString &key,
+bool Memcached::incrementWithInitial(QByteArrayView key,
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
@@ -897,17 +856,15 @@ bool Memcached::incrementWithInitial(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt = memcached_increment_with_initial(
-        mcd->d_ptr->memc, _key.constData(), _key.size(), offset, initial, expiration, value);
+        mcd->d_ptr->memc, key.constData(), key.size(), offset, initial, expiration, value);
 
     const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to increment or initialize key \"%s\" by offset %lu or initial %lu: %s",
-                  _key.constData(),
+                  key.constData(),
                   offset,
                   initial,
                   memcached_strerror(mcd->d_ptr->memc, rt));
@@ -918,8 +875,8 @@ bool Memcached::incrementWithInitial(const QString &key,
     return ok;
 }
 
-bool Memcached::incrementWithInitialByKey(const QString &groupKey,
-                                          const QString &key,
+bool Memcached::incrementWithInitialByKey(QByteArrayView groupKey,
+                                          QByteArrayView key,
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
@@ -934,14 +891,11 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     const memcached_return_t rt = memcached_increment_with_initial_by_key(mcd->d_ptr->memc,
-                                                                          _group.constData(),
-                                                                          _group.size(),
-                                                                          _key.constData(),
-                                                                          _key.size(),
+                                                                          groupKey.constData(),
+                                                                          groupKey.size(),
+                                                                          key.constData(),
+                                                                          key.size(),
                                                                           offset,
                                                                           initial,
                                                                           expiration,
@@ -952,8 +906,8 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey,
         qCWarning(C_MEMCACHED,
                   "Failed to increment or initialize key \"%s\" in group \"%s\" by offset %lu or "
                   "initial %lu: %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   offset,
                   initial,
                   memcached_strerror(mcd->d_ptr->memc, rt));
@@ -964,7 +918,7 @@ bool Memcached::incrementWithInitialByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::decrement(const QString &key,
+bool Memcached::decrement(QByteArrayView key,
                           uint32_t offset,
                           uint64_t *value,
                           MemcachedReturnType *returnType)
@@ -977,17 +931,15 @@ bool Memcached::decrement(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt =
-        memcached_decrement(mcd->d_ptr->memc, _key.constData(), _key.size(), offset, value);
+        memcached_decrement(mcd->d_ptr->memc, key.constData(), key.size(), offset, value);
 
     const bool ok = memcached_success(rt);
 
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to decrement key \"%s\" by %u: %s",
-                  _key.constData(),
+                  key.constData(),
                   offset,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -997,8 +949,8 @@ bool Memcached::decrement(const QString &key,
     return ok;
 }
 
-bool Memcached::decrementByKey(const QString &groupKey,
-                               const QString &key,
+bool Memcached::decrementByKey(QByteArrayView groupKey,
+                               QByteArrayView key,
                                uint64_t offset,
                                uint64_t *value,
                                MemcachedReturnType *returnType)
@@ -1011,14 +963,11 @@ bool Memcached::decrementByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     const memcached_return_t rt = memcached_decrement_by_key(mcd->d_ptr->memc,
-                                                             _group.constData(),
-                                                             _group.size(),
-                                                             _key.constData(),
-                                                             _key.size(),
+                                                             groupKey.constData(),
+                                                             groupKey.size(),
+                                                             key.constData(),
+                                                             key.size(),
                                                              offset,
                                                              value);
 
@@ -1027,8 +976,8 @@ bool Memcached::decrementByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_NOTFOUND)) {
         qCWarning(C_MEMCACHED,
                   "Failed to decrement \"%s\" key on group \"%s\" by %lu: %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   offset,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -1038,7 +987,7 @@ bool Memcached::decrementByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::decrementWithInitial(const QString &key,
+bool Memcached::decrementWithInitial(QByteArrayView key,
                                      uint64_t offset,
                                      uint64_t initial,
                                      time_t expiration,
@@ -1053,17 +1002,15 @@ bool Memcached::decrementWithInitial(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt = memcached_decrement_with_initial(
-        mcd->d_ptr->memc, _key.constData(), _key.size(), offset, initial, expiration, value);
+        mcd->d_ptr->memc, key.constData(), key.size(), offset, initial, expiration, value);
 
     const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to decrement or initialize key \"%s\" by offset %lu or initial %lu: %s",
-                  _key.constData(),
+                  key.constData(),
                   offset,
                   initial,
                   memcached_strerror(mcd->d_ptr->memc, rt));
@@ -1074,8 +1021,8 @@ bool Memcached::decrementWithInitial(const QString &key,
     return ok;
 }
 
-bool Memcached::decrementWithInitialByKey(const QString &groupKey,
-                                          const QString &key,
+bool Memcached::decrementWithInitialByKey(QByteArrayView groupKey,
+                                          QByteArrayView key,
                                           uint64_t offset,
                                           uint64_t initial,
                                           time_t expiration,
@@ -1090,14 +1037,11 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     const memcached_return_t rt = memcached_decrement_with_initial_by_key(mcd->d_ptr->memc,
-                                                                          _group.constData(),
-                                                                          _group.size(),
-                                                                          _key.constData(),
-                                                                          _key.size(),
+                                                                          groupKey.constData(),
+                                                                          groupKey.size(),
+                                                                          key.constData(),
+                                                                          key.size(),
                                                                           offset,
                                                                           initial,
                                                                           expiration,
@@ -1108,8 +1052,8 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey,
         qCWarning(C_MEMCACHED,
                   "Failed to increment or initialize key \"%s\" in group \"%s\" by offset %lu or "
                   "initial %lu: %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   offset,
                   initial,
                   memcached_strerror(mcd->d_ptr->memc, rt));
@@ -1120,7 +1064,7 @@ bool Memcached::decrementWithInitialByKey(const QString &groupKey,
     return ok;
 }
 
-bool Memcached::cas(const QString &key,
+bool Memcached::cas(QByteArrayView key,
                     const QByteArray &value,
                     time_t expiration,
                     uint64_t cas,
@@ -1134,8 +1078,6 @@ bool Memcached::cas(const QString &key,
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -1145,8 +1087,8 @@ bool Memcached::cas(const QString &key,
     }
 
     const memcached_return_t rt = memcached_cas(mcd->d_ptr->memc,
-                                                _key.constData(),
-                                                _key.size(),
+                                                key.constData(),
+                                                key.size(),
                                                 _value.constData(),
                                                 _value.size(),
                                                 expiration,
@@ -1158,7 +1100,7 @@ bool Memcached::cas(const QString &key,
     if (!ok && (rt != MEMCACHED_DATA_EXISTS)) {
         qCWarning(C_MEMCACHED,
                   "Failed to compare and set (cas) key \"%s\": %s",
-                  _key.constData(),
+                  key.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -1167,8 +1109,8 @@ bool Memcached::cas(const QString &key,
     return ok;
 }
 
-bool Memcached::casByKey(const QString &groupKey,
-                         const QString &key,
+bool Memcached::casByKey(QByteArrayView groupKey,
+                         QByteArrayView key,
                          const QByteArray &value,
                          time_t expiration,
                          uint64_t cas,
@@ -1182,9 +1124,6 @@ bool Memcached::casByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     MemcachedPrivate::Flags flags;
     QByteArray _value = value;
 
@@ -1194,10 +1133,10 @@ bool Memcached::casByKey(const QString &groupKey,
     }
 
     const memcached_return_t rt = memcached_cas_by_key(mcd->d_ptr->memc,
-                                                       _group.constData(),
-                                                       _group.size(),
-                                                       _key.constData(),
-                                                       _key.size(),
+                                                       groupKey.constData(),
+                                                       groupKey.size(),
+                                                       key.constData(),
+                                                       key.size(),
                                                        _value.constData(),
                                                        _value.size(),
                                                        expiration,
@@ -1209,8 +1148,8 @@ bool Memcached::casByKey(const QString &groupKey,
     if (!ok && (rt != MEMCACHED_DATA_EXISTS)) {
         qCWarning(C_MEMCACHED,
                   "Failed to compare and set (cas) key \"%s\" in group \"%s\": %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -1268,11 +1207,11 @@ bool Memcached::flush(time_t expiration, MemcachedReturnType *returnType)
     return ok;
 }
 
-QHash<QString, QByteArray> Memcached::mget(const QStringList &keys,
-                                           QHash<QString, uint64_t> *casValues,
-                                           MemcachedReturnType *returnType)
+QHash<QByteArray, QByteArray> Memcached::mget(const QByteArrayList &keys,
+                                              QHash<QByteArray, uint64_t> *casValues,
+                                              MemcachedReturnType *returnType)
 {
-    QHash<QString, QByteArray> ret;
+    QHash<QByteArray, QByteArray> ret;
 
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -1295,12 +1234,11 @@ QHash<QString, QByteArray> Memcached::mget(const QStringList &keys,
     std::vector<size_t> _keysSizes;
     _keysSizes.reserve(keys.size());
 
-    for (const QString &key : keys) {
-        const QByteArray _key = key.toUtf8();
-        char *data            = new char[_key.size() + 1];
-        qstrcpy(data, _key.data());
+    for (const auto &key : keys) {
+        char *data = new char[key.size() + 1];
+        qstrcpy(data, key.data());
         _keys.push_back(data);
-        _keysSizes.push_back(_key.size());
+        _keysSizes.push_back(key.size());
     }
 
     memcached_return_t rt;
@@ -1314,8 +1252,8 @@ QHash<QString, QByteArray> Memcached::mget(const QStringList &keys,
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
             memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
             if (result) {
-                const QString rk = QString::fromUtf8(memcached_result_key_value(result),
-                                                     memcached_result_key_length(result));
+                const QByteArray rk = QByteArray(memcached_result_key_value(result),
+                                                 memcached_result_key_length(result));
                 QByteArray rd(memcached_result_value(result), memcached_result_length(result));
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
@@ -1346,12 +1284,12 @@ QHash<QString, QByteArray> Memcached::mget(const QStringList &keys,
     return ret;
 }
 
-QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey,
-                                                const QStringList &keys,
-                                                QHash<QString, uint64_t> *casValues,
-                                                MemcachedReturnType *returnType)
+QHash<QByteArray, QByteArray> Memcached::mgetByKey(QByteArrayView groupKey,
+                                                   const QByteArrayList &keys,
+                                                   QHash<QByteArray, uint64_t> *casValues,
+                                                   MemcachedReturnType *returnType)
 {
-    QHash<QString, QByteArray> ret;
+    QHash<QByteArray, QByteArray> ret;
 
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -1378,27 +1316,24 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey,
         return ret;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-
     std::vector<char *> _keys;
     _keys.reserve(keys.size());
     std::vector<size_t> _keysSizes;
     _keysSizes.reserve(keys.size());
 
-    for (const QString &key : keys) {
-        const QByteArray _key = key.toUtf8();
-        char *data            = new char[_key.size() + 1];
-        strcpy(data, _key.data());
+    for (const auto &key : keys) {
+        char *data = new char[key.size() + 1];
+        strcpy(data, key.data());
         _keys.push_back(data);
-        _keysSizes.push_back(_key.size());
+        _keysSizes.push_back(key.size());
     }
 
     memcached_return_t rt;
     bool ok = false;
 
     rt = memcached_mget_by_key(mcd->d_ptr->memc,
-                               _group.constData(),
-                               _group.size(),
+                               groupKey.constData(),
+                               groupKey.size(),
                                &_keys[0],
                                &_keysSizes[0],
                                _keys.size());
@@ -1409,8 +1344,8 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey,
         while ((rt != MEMCACHED_END) && (rt != MEMCACHED_NOTFOUND)) {
             memcached_result_st *result = memcached_fetch_result(mcd->d_ptr->memc, NULL, &rt);
             if (result) {
-                const QString rk = QString::fromUtf8(memcached_result_key_value(result),
-                                                     memcached_result_key_length(result));
+                const QByteArray rk = QByteArray(memcached_result_key_value(result),
+                                                 memcached_result_key_length(result));
                 QByteArray rd(memcached_result_value(result), memcached_result_length(result));
                 if (casValues) {
                     casValues->insert(rk, memcached_result_cas(result));
@@ -1433,7 +1368,7 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey,
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to get values for multiple keys in group \"%s\": %s",
-                  _group.constData(),
+                  groupKey.constData(),
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
 
@@ -1442,7 +1377,7 @@ QHash<QString, QByteArray> Memcached::mgetByKey(const QString &groupKey,
     return ret;
 }
 
-bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType *returnType)
+bool Memcached::touch(QByteArrayView key, time_t expiration, MemcachedReturnType *returnType)
 {
     if (!mcd) {
         qCCritical(C_MEMCACHED) << "Memcached plugin not registered";
@@ -1452,17 +1387,15 @@ bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType
         return false;
     }
 
-    const QByteArray _key = key.toUtf8();
-
     const memcached_return_t rt =
-        memcached_touch(mcd->d_ptr->memc, _key.constData(), _key.size(), expiration);
+        memcached_touch(mcd->d_ptr->memc, key.constData(), key.size(), expiration);
 
     const bool ok = memcached_success(rt);
 
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to touch key \"%s\" with new expiration time %lu: %s",
-                  _key.constData(),
+                  key.constData(),
                   expiration,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }
@@ -1472,8 +1405,8 @@ bool Memcached::touch(const QString &key, time_t expiration, MemcachedReturnType
     return ok;
 }
 
-bool Memcached::touchByKey(const QString &groupKey,
-                           const QString &key,
+bool Memcached::touchByKey(QByteArrayView groupKey,
+                           QByteArrayView key,
                            time_t expiration,
                            MemcachedReturnType *returnType)
 {
@@ -1485,14 +1418,11 @@ bool Memcached::touchByKey(const QString &groupKey,
         return false;
     }
 
-    const QByteArray _group = groupKey.toUtf8();
-    const QByteArray _key   = key.toUtf8();
-
     const memcached_return_t rt = memcached_touch_by_key(mcd->d_ptr->memc,
-                                                         _group.constData(),
-                                                         _group.size(),
-                                                         _key.constData(),
-                                                         _key.size(),
+                                                         groupKey.constData(),
+                                                         groupKey.size(),
+                                                         key.constData(),
+                                                         key.size(),
                                                          expiration);
 
     const bool ok = memcached_success(rt);
@@ -1500,8 +1430,8 @@ bool Memcached::touchByKey(const QString &groupKey,
     if (!ok) {
         qCWarning(C_MEMCACHED,
                   "Failed to touch key \"%s\" in group \"%s\" with new expiration time %lu: %s",
-                  _key.constData(),
-                  _group.constData(),
+                  key.constData(),
+                  groupKey.constData(),
                   expiration,
                   memcached_strerror(mcd->d_ptr->memc, rt));
     }

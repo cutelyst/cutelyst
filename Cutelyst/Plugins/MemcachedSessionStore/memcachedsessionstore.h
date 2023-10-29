@@ -69,7 +69,7 @@ class MemcachedSessionStorePrivate;
  *
  * @since Cutelyst 1.11.0
  */
-class CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT MemcachedSessionStore : public SessionStore
+class CUTELYST_PLUGIN_MEMCACHEDSESSIONSTORE_EXPORT MemcachedSessionStore final : public SessionStore
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(MemcachedSessionStore)
@@ -86,19 +86,19 @@ public:
      */
     ~MemcachedSessionStore();
 
-    virtual QVariant getSessionData(Context *c,
-                                    const QString &sid,
-                                    const QString &key,
-                                    const QVariant &defaultValue) final;
+    QVariant getSessionData(Context *c,
+                            const QByteArray &sid,
+                            const QString &key,
+                            const QVariant &defaultValue) override;
 
-    virtual bool storeSessionData(Context *c,
-                                  const QString &sid,
-                                  const QString &key,
-                                  const QVariant &value) final;
+    bool storeSessionData(Context *c,
+                          const QByteArray &sid,
+                          const QString &key,
+                          const QVariant &value) override;
 
-    virtual bool deleteSessionData(Context *c, const QString &sid, const QString &key) final;
+    bool deleteSessionData(Context *c, const QByteArray &sid, const QString &key) override;
 
-    virtual bool deleteExpiredSessions(Context *c, quint64 expires) final;
+    bool deleteExpiredSessions(Context *c, quint64 expires) override;
 
     /**
      * Sets the @a groupKey to define the servers to store the sessions on.

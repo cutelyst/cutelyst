@@ -20,7 +20,7 @@ Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionsto
 #define SESSION_STORE_MEMCD_SAVE QStringLiteral("_c_session_store_memcd_save")
 #define SESSION_STORE_MEMCD_DATA QStringLiteral("_c_session_store_memcd_data")
 
-static QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey);
+static QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QString &groupKey);
 
 MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject *parent)
     : SessionStore(parent)
@@ -40,7 +40,7 @@ MemcachedSessionStore::~MemcachedSessionStore()
 }
 
 QVariant MemcachedSessionStore::getSessionData(Context *c,
-                                               const QString &sid,
+                                               const QByteArray &sid,
                                                const QString &key,
                                                const QVariant &defaultValue)
 {
@@ -52,7 +52,7 @@ QVariant MemcachedSessionStore::getSessionData(Context *c,
 }
 
 bool MemcachedSessionStore::storeSessionData(Context *c,
-                                             const QString &sid,
+                                             const QByteArray &sid,
                                              const QString &key,
                                              const QVariant &value)
 {
@@ -65,7 +65,7 @@ bool MemcachedSessionStore::storeSessionData(Context *c,
     return true;
 }
 
-bool MemcachedSessionStore::deleteSessionData(Context *c, const QString &sid, const QString &key)
+bool MemcachedSessionStore::deleteSessionData(Context *c, const QByteArray &sid, const QString &key)
 {
     Q_D(MemcachedSessionStore);
     QVariantHash data = loadMemcSessionData(c, sid, d->groupKey);
@@ -90,7 +90,7 @@ void MemcachedSessionStore::setGroupKey(const QString &groupKey)
     d->groupKey = groupKey;
 }
 
-QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &groupKey)
+QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey)
 {
     QVariantHash data;
     const QVariant sessionVariant = c->stash(SESSION_STORE_MEMCD_DATA);
@@ -99,9 +99,9 @@ QVariantHash loadMemcSessionData(Context *c, const QString &sid, const QString &
         return data;
     }
 
-    const static QString sessionPrefix =
-        QCoreApplication::applicationName() + QLatin1String("_sess_");
-    const QString sessionKey = sessionPrefix + sid;
+    const static QByteArray sessionPrefix =
+        QCoreApplication::applicationName().toLatin1() + "_sess_";
+    const QByteArray sessionKey = sessionPrefix + sid;
 
     QObject::connect(c->app(), &Application::afterDispatch, c, [=]() {
         if (!c->stash(SESSION_STORE_MEMCD_SAVE).toBool()) {

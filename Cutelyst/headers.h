@@ -343,14 +343,32 @@ public:
     QByteArray header(QByteArrayView key) const;
 
     /**
-     * Returns the value associated with \p field, if field is not set \p defaultValue is returned
+     * Returns the value associated with \p key from latin1
+     * \note This allocates memory so avoid when possible
+     */
+    QString headerAsString(QByteArrayView key) const;
+
+    /**
+     * Returns the value associated with \p key, if field is not set \p defaultValue is returned
      */
     QByteArray header(QByteArrayView key, const QByteArray &defaultValue) const;
+
+    /**
+     * Returns the value associated with \p key from latin1, if field is not set \p defaultValue is
+     * returned \note This allocates memory so avoid when possible
+     */
+    QString headerAsString(QByteArrayView key, const QByteArray &defaultValue) const;
 
     /**
      * Returns all values associated with \p key
      */
     QByteArrayList headers(QByteArrayView key) const;
+
+    /**
+     * Returns all values associated with \p key
+     * \note This allocates memory so avoid when possible
+     */
+    QStringList headersAsStrings(QByteArrayView key) const;
 
     /**
      * Sets the header field to value
