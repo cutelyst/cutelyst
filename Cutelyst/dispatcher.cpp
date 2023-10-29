@@ -195,9 +195,9 @@ void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
 
         int pos = path.lastIndexOf(u'/');
 
-        args.emplaceBack(path.mid(pos + 1).toString());
+        args.emplaceFront(path.mid(pos + 1).toString());
 
-        path = path.mid(0, pos);
+        path.truncate(pos);
     }
 }
 
