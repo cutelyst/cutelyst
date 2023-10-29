@@ -118,7 +118,7 @@ public:
     /**
      * Returns the body IO device (if any) of this response.
      */
-    QIODevice *bodyDevice() const;
+    QIODevice *bodyDevice() const noexcept;
 
     /**
      * Sets an IO device as the response body,
@@ -175,7 +175,7 @@ public:
     /**
      * Short for headers().contentEncoding();
      */
-    QByteArray contentEncoding() const;
+    QByteArray contentEncoding() const noexcept;
 
     /**
      * Short for headers().setContentEncoding(encoding);
@@ -291,7 +291,7 @@ public:
     /**
      * Shortcut headers().header()
      */
-    QByteArray header(const QByteArray &field) const;
+    QByteArray header(const QByteArray &field) const noexcept;
 
     /**
      * Shortcut headers().setHeader()
@@ -311,12 +311,12 @@ public:
     /**
      * Writing to user-agent is always sequential
      */
-    virtual bool isSequential() const noexcept override;
+    bool isSequential() const noexcept override;
 
     /**
      * Reimplemented from QIODevice::readData().
      */
-    virtual qint64 size() const noexcept override;
+    qint64 size() const noexcept override;
 
     /*!
      * Sends the websocket handshake, if no parameters are defined it will use header data.

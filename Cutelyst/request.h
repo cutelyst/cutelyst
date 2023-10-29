@@ -55,7 +55,7 @@ public:
     /**
      * Returns the address of the client
      */
-    QHostAddress address() const noexcept;
+    [[nodiscard]] QHostAddress address() const noexcept;
 
     /**
      * Returns the address as string of the client.
@@ -66,7 +66,7 @@ public:
      * this might not be interesting to have, so this function checks if it's
      * possible to convert to an IPv4 address and returns "127.0.0.1".
      */
-    QString addressString() const;
+    [[nodiscard]] QString addressString() const;
 
     /**
      * Returns the hostname of the client,
@@ -75,18 +75,18 @@ public:
      * This functions makes blocking call to do a reverse
      * DNS lookup if the engine didn't set the hostname.
      */
-    QString hostname() const;
+    [[nodiscard]] QString hostname() const;
 
     /**
      * Returns the originating port of the client
      */
-    quint16 port() const;
+    [[nodiscard]] quint16 port() const noexcept;
 
     /**
      * Returns the uri as close as possible to what
      * the user has in his browser url.
      */
-    QUrl uri() const;
+    [[nodiscard]] QUrl uri() const;
 
     /**
      * Returns Contains the URI base. This will always have a trailing slash.
@@ -97,21 +97,21 @@ public:
      * If your application was queried with the URI http://localhost:3000/some/path
      * then base is http://localhost:3000.
      */
-    QString base() const;
+    [[nodiscard]] QString base() const;
 
     /**
      * Returns the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
      * path will contain '/path/foo'
      */
-    QString path() const noexcept;
+    [[nodiscard]] QString path() const noexcept;
 
     /**
      * This contains the matching part of a Regex action.
      * Otherwise it returns the same as 'action' (not a pointer but it's private name),
      * except for default actions, which return an empty string.
      */
-    QString match() const noexcept;
+    [[nodiscard]] QString match() const noexcept;
 
     /**
      * Defines the matching part of the request
@@ -135,7 +135,7 @@ public:
      *
      * Arguments get automatically URI-unescaped for you.
      */
-    QStringList arguments() const noexcept;
+    [[nodiscard]] QStringList arguments() const noexcept;
 
     /**
      * Defines the arguments of the request
@@ -146,12 +146,12 @@ public:
     /**
      * Shortcut for arguments()
      */
-    inline QStringList args() const;
+    [[nodiscard]] inline QStringList args() const noexcept;
 
     /**
      * Captures
      */
-    QStringList captures() const noexcept;
+    [[nodiscard]] QStringList captures() const noexcept;
 
     /**
      * Defines the arguments of the request
@@ -166,14 +166,14 @@ public:
      * uri().scheme(). The Engine itself might not be aware of a front HTTP
      * server with https enabled.
      */
-    bool secure() const noexcept;
+    [[nodiscard]] bool secure() const noexcept;
 
     /**
      * Returns the message body of the request as
      * passed by the Engine, this can even be a file
      * if the Engine wants to.
      */
-    QIODevice *body() const;
+    [[nodiscard]] QIODevice *body() const noexcept;
 
     /**
      * Returns a QVariant representation of POST/PUT body data that is not classic HTML
@@ -188,67 +188,69 @@ public:
      * If the POSTed content type does not match an available data handler,
      * this will also return a null QVariant.
      */
-    QVariant bodyData() const;
+    [[nodiscard]] QVariant bodyData() const;
 
     /**
      * When request Content-Type is 'application/json' this will
      * contain the parsed JSON representation document.
      */
-    QJsonDocument bodyJsonDocument() const;
+    [[nodiscard]] QJsonDocument bodyJsonDocument() const;
 
     /**
      * When request Content-Type is 'application/json' this will
      * contain the parsed JSON representation object.
      */
-    QJsonObject bodyJsonObject() const;
+    [[nodiscard]] QJsonObject bodyJsonObject() const;
 
     /**
      * When request Content-Type is 'application/json' this will
      * contain the parsed JSON representation array.
      */
-    QJsonArray bodyJsonArray() const;
+    [[nodiscard]] QJsonArray bodyJsonArray() const;
 
     /**
      * Returns a QVariantMap of body (POST/PUT) parameters, this method
      * is expensive as it creates the map each time it's called, cache
      * it's result instead of calling multiple times
      */
-    QVariantMap bodyParametersVariant() const;
+    [[nodiscard]] QVariantMap bodyParametersVariant() const;
 
     /**
      * Returns a Map of body (POST/PUT) parameters when content type is
      * application/x-www-form-urlencoded
      */
-    ParamsMultiMap bodyParameters() const;
+    [[nodiscard]] ParamsMultiMap bodyParameters() const;
 
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParameter(const QString &key, const QString &defaultValue = {}) const;
+    [[nodiscard]] inline QString bodyParameter(const QString &key,
+                                               const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all body values passing a key
      *
      * \note Unlike QMap::values() this return values in insertion order.
      */
-    QStringList bodyParameters(const QString &key) const;
+    [[nodiscard]] QStringList bodyParameters(const QString &key) const;
 
     /**
      * Short for bodyParameters()
      */
-    inline ParamsMultiMap bodyParams() const;
+    [[nodiscard]] inline ParamsMultiMap bodyParams() const;
 
     /**
      * Convenience method for geting a single body value passing a key and an optional default value
      */
-    inline QString bodyParam(const QString &key, const QString &defaultValue = {}) const;
+    [[nodiscard]] inline QString bodyParam(const QString &key,
+                                           const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all body values passing a key
      *
      * \note Unlike QMap::values() this return values in insertion order.
      */
-    inline QStringList bodyParams(const QString &key) const;
+    [[nodiscard]] inline QStringList bodyParams(const QString &key) const;
 
     /**
      * Contains the keywords portion of a query string, when no '=' signs are present.
@@ -257,60 +259,62 @@ public:
      * c->request()->queryKeywords() will contain 'some keywords'
      * \endcode
      */
-    QString queryKeywords() const;
+    [[nodiscard]] QString queryKeywords() const;
 
     /**
      * Returns a QVariantMap of query string parameters, this method
      * is expensive as it creates the map each time it's called, cache
      * it's result instead of calling multiple times
      */
-    QVariantMap queryParametersVariant() const;
+    [[nodiscard]] QVariantMap queryParametersVariant() const;
 
     /**
      * Returns a QMultiHash containing the query string parameters
      */
-    ParamsMultiMap queryParameters() const;
+    [[nodiscard]] ParamsMultiMap queryParameters() const;
 
     /**
      * Convenience method for geting a single query value passing a key and an optional default
      * value
      */
-    inline QString queryParameter(const QString &key, const QString &defaultValue = {}) const;
+    [[nodiscard]] inline QString queryParameter(const QString &key,
+                                                const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all query values passing a key
      *
      * \note Unlike QMap::values() this return values in insertion order.
      */
-    QStringList queryParameters(const QString &key) const;
+    [[nodiscard]] QStringList queryParameters(const QString &key) const;
 
     /**
      * Short for queryParameters()
      */
-    inline ParamsMultiMap queryParams() const;
+    [[nodiscard]] inline ParamsMultiMap queryParams() const;
 
     /**
      * Convenience method for geting a single query value passing a key and an optional default
      * value
      */
-    inline QString queryParam(const QString &key, const QString &defaultValue = {}) const;
+    [[nodiscard]] inline QString queryParam(const QString &key,
+                                            const QString &defaultValue = {}) const;
 
     /**
      * Convenience method for geting all query values passing a key
      *
      * \note Unlike QMap::values() this return values in insertion order.
      */
-    inline QStringList queryParams(const QString &key) const;
+    [[nodiscard]] inline QStringList queryParams(const QString &key) const;
 
     /**
      * Returns the Content-Encoding header
      */
-    inline QByteArray contentEncoding() const;
+    [[nodiscard]] inline QByteArray contentEncoding() const noexcept;
 
     /**
      * Returns the Content-Type header
      */
-    inline QByteArray contentType() const;
+    [[nodiscard]] inline QByteArray contentType() const;
 
     struct Cookie {
         QByteArray name;
@@ -320,113 +324,113 @@ public:
     /**
      * Returns the first cookie value with the given name
      */
-    QByteArray cookie(QByteArrayView name) const;
+    [[nodiscard]] QByteArray cookie(QByteArrayView name) const;
 
     /**
      * Returns a list of cookies that match with the given name
      *
      * \note this return values in insertion order.
      */
-    QByteArrayList cookies(QByteArrayView name) const;
+    [[nodiscard]] QByteArrayList cookies(QByteArrayView name) const;
 
     /**
      * Returns all the cookies from the request
      */
-    QMultiMap<QByteArrayView, Cookie> cookies() const;
+    [[nodiscard]] QMultiMap<QByteArrayView, Cookie> cookies() const;
 
     /**
      * Short for headers().header(key);
      */
-    inline QByteArray header(QByteArrayView key) const;
+    [[nodiscard]] inline QByteArray header(QByteArrayView key) const noexcept;
 
     /**
      * Returns the HTTP request headers
      */
-    Headers headers() const noexcept;
+    [[nodiscard]] Headers headers() const noexcept;
 
     /**
      * Returns the request method (GET, POST, HEAD, etc).
      */
-    QByteArray method() const noexcept;
+    [[nodiscard]] QByteArray method() const noexcept;
 
     /**
      * Returns true if the request method is POST.
      */
-    bool isPost() const noexcept;
+    [[nodiscard]] bool isPost() const noexcept;
 
     /**
      * Returns true if the request method is GET.
      */
-    bool isGet() const noexcept;
+    [[nodiscard]] bool isGet() const noexcept;
 
     /**
      * Returns true if the request method is HEAD.
      */
-    bool isHead() const noexcept;
+    [[nodiscard]] bool isHead() const noexcept;
 
     /**
      * Returns true if the request method is PUT.
      */
-    bool isPut() const noexcept;
+    [[nodiscard]] bool isPut() const noexcept;
 
     /**
      * Returns true if the request method is PATCH.
      */
-    bool isPatch() const noexcept;
+    [[nodiscard]] bool isPatch() const noexcept;
 
     /**
      * Returns true if the request method is DELETE.
      */
-    bool isDelete() const noexcept;
+    [[nodiscard]] bool isDelete() const noexcept;
 
     /**
      * Returns the protocol (HTTP/1.0 or HTTP/1.1) used for the current request.
      */
-    QByteArray protocol() const noexcept;
+    [[nodiscard]] QByteArray protocol() const noexcept;
 
     /**
      * Returns true if the request's X-Requested-With header field is "XMLHttpRequest",
      * indicating that the request was issued by a client library such as jQuery.
      */
-    bool xhr() const noexcept;
+    [[nodiscard]] bool xhr() const noexcept;
 
     /**
      * Returns the user agent (browser) version string.
      */
-    inline QByteArray userAgent() const;
+    [[nodiscard]] inline QByteArray userAgent() const noexcept;
 
     /**
      * referer Shortcut for header("Referer")
      */
-    inline QByteArray referer() const;
+    [[nodiscard]] inline QByteArray referer() const noexcept;
 
     /**
      * Returns the value of the REMOTE_USER environment variable.
      */
-    QString remoteUser() const noexcept;
+    [[nodiscard]] QString remoteUser() const noexcept;
 
     /**
      * Returns a vector containing uploads as provided by a multipart/form-data content type
      */
-    QVector<Upload *> uploads() const;
+    [[nodiscard]] QVector<Upload *> uploads() const;
 
     /**
      * Returns a map containing uploads, where their key is
      * the field name.
      */
-    QMultiMap<QStringView, Upload *> uploadsMap() const;
+    [[nodiscard]] QMultiMap<QStringView, Upload *> uploadsMap() const;
 
     /**
      * Returns all (if any) Upload objects for the given field.
      */
-    Uploads uploads(QStringView name) const;
+    [[nodiscard]] Uploads uploads(QStringView name) const;
 
     /**
      * Returns the first Upload object for the given field,
      * if no upload matches the field name this function
      * returns 0.
      */
-    inline Upload *upload(QStringView name) const;
+    [[nodiscard]] inline Upload *upload(QStringView name) const;
 
     /**
      * Returns a ParamsMultiMap of parameters stemming from the current request's params,
@@ -451,7 +455,8 @@ public:
      * \endcode
      * This is the code behind uriWith().
      */
-    ParamsMultiMap mangleParams(const ParamsMultiMap &args, bool append = false) const;
+    [[nodiscard]] ParamsMultiMap mangleParams(const ParamsMultiMap &args,
+                                              bool append = false) const;
 
     /**
      * Returns a rewritten URI object for the current request. Key/value pairs
@@ -466,12 +471,12 @@ public:
      * \endcode
      * See mangleParams() for an explanation of this behavior.
      */
-    QUrl uriWith(const ParamsMultiMap &args, bool append = false) const;
+    [[nodiscard]] QUrl uriWith(const ParamsMultiMap &args, bool append = false) const;
 
     /**
      * Returns the current Engine processing the requests.
      */
-    Engine *engine() const noexcept;
+    [[nodiscard]] Engine *engine() const noexcept;
 
     /**
      * Constructs a new Request object.
@@ -529,7 +534,7 @@ private:
     Q_DECLARE_PRIVATE(Request)
 };
 
-inline QStringList Request::args() const
+inline QStringList Request::args() const noexcept
 {
     return arguments();
 }
@@ -574,7 +579,7 @@ inline QStringList Request::queryParams(const QString &key) const
     return queryParameters(key);
 }
 
-inline QByteArray Request::contentEncoding() const
+inline QByteArray Request::contentEncoding() const noexcept
 {
     return headers().contentEncoding();
 }
@@ -584,17 +589,17 @@ inline QByteArray Request::contentType() const
     return headers().contentType();
 }
 
-inline QByteArray Request::header(QByteArrayView key) const
+inline QByteArray Request::header(QByteArrayView key) const noexcept
 {
     return headers().header(key);
 }
 
-inline QByteArray Request::userAgent() const
+inline QByteArray Request::userAgent() const noexcept
 {
     return headers().userAgent();
 }
 
-inline QByteArray Request::referer() const
+inline QByteArray Request::referer() const noexcept
 {
     return headers().referer();
 }

@@ -28,12 +28,12 @@ public:
     /**
      * Construct an empty header object.
      */
-    Headers() = default;
+    Headers() noexcept = default;
 
     /**
      * Constructs a copy of \pa other.
      */
-    Headers(const Headers &other);
+    Headers(const Headers &other) noexcept;
 
 #ifdef Q_COMPILER_INITIALIZER_LISTS
     /**
@@ -54,7 +54,7 @@ public:
      * to be displayed inline in the browser, that is, as a Web page or as part
      * of a Web page, or as an attachment, that is downloaded and saved locally
      */
-    QByteArray contentDisposition() const;
+    QByteArray contentDisposition() const noexcept;
 
     /**
      * Defines the Cache-Control header
@@ -79,7 +79,7 @@ public:
      * When present, its value indicates what additional encoding mechanism has been applied to the
      * resource.
      */
-    QByteArray contentEncoding() const;
+    QByteArray contentEncoding() const noexcept;
 
     /**
      * Defines the Content-Encoding header
@@ -163,7 +163,7 @@ public:
      * (or has not) been modified since the time specified in this field,
      * then the server will return a 304 Not Modified response instead of the document itself.
      */
-    QByteArray ifModifiedSince() const;
+    QByteArray ifModifiedSince() const noexcept;
 
     /**
      * This header fields is used to make a request conditional. If the requested resource has
@@ -211,7 +211,7 @@ public:
     /**
      * This header indicates the date and time at which the resource was last modified.
      */
-    QByteArray lastModified() const;
+    QByteArray lastModified() const noexcept;
 
     /**
      * Defines the date and time at which the resource was last modified.
@@ -228,7 +228,7 @@ public:
      * Returns the server header field contains information about the software
      * being used by the originating server program handling the request.
      */
-    QByteArray server() const;
+    QByteArray server() const noexcept;
 
     /**
      * Defines the server header field contains information about the software
@@ -240,26 +240,26 @@ public:
      * Returns the 'Connection' header field that indicates how it should be handled after a
      * request has been processed, like 'close'.
      */
-    QByteArray connection() const;
+    QByteArray connection() const noexcept;
 
     /**
      * Returns the 'Host' header field used in request messages, containing information about which
      * host the client would like to talk to, this is especially useful for building URIs and for
      * VirtualHosts.
      */
-    QByteArray host() const;
+    QByteArray host() const noexcept;
 
     /**
      * Returns the header field used in request messages, containing information about the user
      * agent originating the request.
      */
-    QByteArray userAgent() const;
+    QByteArray userAgent() const noexcept;
 
     /**
      * Used to specify the address (URI) of the document from which the requested resource address
      * was obtained.
      */
-    QByteArray referer() const;
+    QByteArray referer() const noexcept;
 
     /**
      * Sets the referrer (Referer) header.
@@ -284,7 +284,7 @@ public:
     /**
      * This method is used to get an authorization header without any decoding.
      */
-    QByteArray authorization() const;
+    QByteArray authorization() const noexcept;
 
     /**
      * This method is used to get an authorization token
@@ -321,7 +321,7 @@ public:
      * A user agent that wishes to authenticate itself with a server or a proxy, may do so by
      * including these headers.
      */
-    QByteArray proxyAuthorization() const;
+    QByteArray proxyAuthorization() const noexcept;
 
     /**
      * This method is used to get an authorization header that use the
@@ -340,7 +340,7 @@ public:
     /**
      * Returns the value associated with \p key
      */
-    QByteArray header(QByteArrayView key) const;
+    QByteArray header(QByteArrayView key) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1
@@ -351,7 +351,7 @@ public:
     /**
      * Returns the value associated with \p key, if field is not set \p defaultValue is returned
      */
-    QByteArray header(QByteArrayView key, const QByteArray &defaultValue) const;
+    QByteArray header(QByteArrayView key, const QByteArray &defaultValue) const noexcept;
 
     /**
      * Returns the value associated with \p key from latin1, if field is not set \p defaultValue is
@@ -408,19 +408,19 @@ public:
     /**
      * Returns true if the header field is defined.
      */
-    bool contains(QByteArrayView key) const;
+    bool contains(QByteArrayView key) const noexcept;
 
     QByteArrayList keys() const;
 
     /**
      * Returns the value associated with key.
      */
-    QByteArray operator[](QByteArrayView key) const;
+    QByteArray operator[](QByteArrayView key) const noexcept;
 
     /**
      * Assigns \p other to this Header and returns a reference to this Header.
      */
-    inline Headers &operator=(const Headers &other)
+    inline Headers &operator=(const Headers &other) noexcept
     {
         m_data = other.m_data;
         return *this;
@@ -429,7 +429,7 @@ public:
     /**
      * Compares if another Header object has the same data as this.
      */
-    bool operator==(const Headers &other) const;
+    bool operator==(const Headers &other) const noexcept;
 
 private:
     QVector<HeaderKeyValue> m_data;

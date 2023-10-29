@@ -93,7 +93,7 @@ QByteArray &Response::body()
     return d->bodyData;
 }
 
-QIODevice *Response::bodyDevice() const
+QIODevice *Response::bodyDevice() const noexcept
 {
     Q_D(const Response);
     return d->bodyIODevice;
@@ -136,7 +136,7 @@ void Response::setJsonArrayBody(const QJsonArray &array)
     setJsonBody(QJsonDocument(array).toJson(QJsonDocument::Compact));
 }
 
-QByteArray Response::contentEncoding() const
+QByteArray Response::contentEncoding() const noexcept
 {
     Q_D(const Response);
     return d->headers.contentEncoding();
@@ -267,7 +267,7 @@ QUrl Response::location() const noexcept
     return d->location;
 }
 
-QByteArray Response::header(const QByteArray &field) const
+QByteArray Response::header(const QByteArray &field) const noexcept
 {
     Q_D(const Response);
     return d->headers.header(field);

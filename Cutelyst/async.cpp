@@ -48,7 +48,7 @@ public:
 
 } // namespace Cutelyst
 
-ASync::ASync() = default;
+ASync::ASync() noexcept = default;
 
 /*!
  * \brief ASync class should be used in a scoped manner

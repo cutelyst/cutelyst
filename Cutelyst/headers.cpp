@@ -16,7 +16,7 @@ inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
 
 namespace {
 QVector<Headers::HeaderKeyValue>::const_iterator
-    findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QByteArrayView key)
+    findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QByteArrayView key) noexcept
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
         return key.compare(entry.key, Qt::CaseInsensitive) == 0;
@@ -25,12 +25,12 @@ QVector<Headers::HeaderKeyValue>::const_iterator
 }
 } // namespace
 
-Headers::Headers(const Headers &other)
+Headers::Headers(const Headers &other) noexcept
     : m_data(other.m_data)
 {
 }
 
-QByteArray Headers::contentDisposition() const
+QByteArray Headers::contentDisposition() const noexcept
 {
     return header("Content-Disposition");
 }
@@ -54,7 +54,7 @@ void Headers::setContentDispositionAttachment(const QByteArray &filename)
     }
 }
 
-QByteArray Headers::contentEncoding() const
+QByteArray Headers::contentEncoding() const noexcept
 {
     return header("Content-Encoding");
 }
@@ -128,7 +128,7 @@ void Headers::setContentTypeCharset(const QByteArray &charset)
 
 bool Headers::contentIsText() const
 {
-    return header("CONTENT-TYPE").startsWith("text/");
+    return header("Content-Type").startsWith("text/");
 }
 
 bool Headers::contentIsHtml() const
@@ -202,7 +202,7 @@ QDateTime Headers::date() const
     return ret;
 }
 
-QByteArray Headers::ifModifiedSince() const
+QByteArray Headers::ifModifiedSince() const noexcept
 {
     return header("If-Modified-Since");
 }
@@ -263,7 +263,7 @@ void Headers::setETag(const QByteArray &etag)
     setHeader("ETag"_qba, '"' + etag + '"');
 }
 
-QByteArray Headers::lastModified() const
+QByteArray Headers::lastModified() const noexcept
 {
     return header("Last-Modified");
 }
@@ -282,7 +282,7 @@ QString Headers::setLastModified(const QDateTime &lastModified)
     return dt;
 }
 
-QByteArray Headers::server() const
+QByteArray Headers::server() const noexcept
 {
     return header("Server");
 }
@@ -292,22 +292,22 @@ void Headers::setServer(const QByteArray &value)
     setHeader("Server"_qba, value);
 }
 
-QByteArray Headers::connection() const
+QByteArray Headers::connection() const noexcept
 {
     return header("Connection");
 }
 
-QByteArray Headers::host() const
+QByteArray Headers::host() const noexcept
 {
     return header("Host");
 }
 
-QByteArray Headers::userAgent() const
+QByteArray Headers::userAgent() const noexcept
 {
     return header("User-Agent");
 }
 
-QByteArray Headers::referer() const
+QByteArray Headers::referer() const noexcept
 {
     return header("Referer");
 }
@@ -333,7 +333,7 @@ void Headers::setProxyAuthenticate(const QByteArray &value)
     setHeader("Proxy-Authenticate"_qba, value);
 }
 
-QByteArray Headers::authorization() const
+QByteArray Headers::authorization() const noexcept
 {
     return header("Authorization");
 }
@@ -372,7 +372,7 @@ QByteArray Headers::setAuthorizationBasic(const QString &username, const QString
     return ret;
 }
 
-QByteArray Headers::proxyAuthorization() const
+QByteArray Headers::proxyAuthorization() const noexcept
 {
     return header("Proxy-Authorization");
 }
@@ -387,7 +387,7 @@ Headers::Authorization Headers::proxyAuthorizationBasicObject() const
     return decodeBasicAuthPair(proxyAuthorization());
 }
 
-QByteArray Headers::header(QByteArrayView key) const
+QByteArray Headers::header(QByteArrayView key) const noexcept
 {
     if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
@@ -400,7 +400,7 @@ QString Headers::headerAsString(QByteArrayView key) const
     return QString::fromLatin1(header(key));
 }
 
-QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const
+QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const noexcept
 {
     if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
@@ -469,7 +469,7 @@ void Headers::removeHeader(QByteArrayView key)
         [key](HeaderKeyValue entry) { return key.compare(entry.key, Qt::CaseInsensitive) == 0; });
 }
 
-bool Headers::contains(QByteArrayView key) const
+bool Headers::contains(QByteArrayView key) const noexcept
 {
     auto result = findHeaderConst(m_data, key);
     return result != m_data.end();
@@ -496,12 +496,12 @@ QByteArrayList Headers::keys() const
     return ret;
 }
 
-QByteArray Headers::operator[](QByteArrayView key) const
+QByteArray Headers::operator[](QByteArrayView key) const noexcept
 {
     return header(key);
 }
 
-bool Headers::operator==(const Headers &other) const
+bool Headers::operator==(const Headers &other) const noexcept
 {
     const auto otherData = other.data();
     if (m_data.size() != otherData.size()) {

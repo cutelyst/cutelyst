@@ -72,7 +72,7 @@ QString Request::hostname() const
     return ret;
 }
 
-quint16 Request::port() const
+quint16 Request::port() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->remotePort;
@@ -176,7 +176,7 @@ bool Request::secure() const noexcept
     return d->engineRequest->isSecure;
 }
 
-QIODevice *Request::body() const
+QIODevice *Request::body() const noexcept
 {
     Q_D(const Request);
     return d->body;

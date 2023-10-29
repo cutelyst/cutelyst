@@ -59,7 +59,7 @@ public:
     /*!
      * Returns true if an error was set.
      */
-    bool error() const noexcept;
+    [[nodiscard]] bool error() const noexcept;
 
     /*!
      * Sets an error string and try to stop
@@ -69,12 +69,12 @@ public:
     /*!
      * Returns a list of errors that were defined
      */
-    QStringList errors() const noexcept;
+    [[nodiscard]] QStringList errors() const noexcept;
 
     /**
      * Contains the return value of the last executed action.
      */
-    bool state() const noexcept;
+    [[nodiscard]] bool state() const noexcept;
 
     /*!
      * Sets the state of the current executed action, setting to false
@@ -85,32 +85,32 @@ public:
     /**
      * Returns the engine instance. See Cutelyst::Engine
      */
-    Engine *engine() const noexcept;
+    [[nodiscard]] Engine *engine() const noexcept;
 
     /**
      * Returns the application instance. See Cutelyst::Application
      */
-    Application *app() const noexcept;
+    [[nodiscard]] Application *app() const noexcept;
 
     /**
      * Returns the current Cutelyst::Response object, see there for details.
      */
-    Response *response() const noexcept;
+    [[nodiscard]] Response *response() const noexcept;
 
     /**
      * Returns the current Cutelyst::Response object, see there for details.
      */
-    Response *res() const noexcept;
+    [[nodiscard]] Response *res() const noexcept;
 
     /**
      * Returns a pointer to the current action
      */
-    Action *action() const noexcept;
+    [[nodiscard]] Action *action() const noexcept;
 
     /**
      * Returns the private name of the current action
      */
-    QString actionName() const noexcept;
+    [[nodiscard]] QString actionName() const noexcept;
 
     /**
      * Returns the namespace of the current action.
@@ -119,51 +119,51 @@ public:
      * // a class named FooBar which inherits Controller
      * c->ns(); // returns 'foo/bar'
      */
-    QString ns() const noexcept;
+    [[nodiscard]] QString ns() const noexcept;
 
     /**
      * Returns the current Request object containing
      * information about the client request Request
      */
-    Request *request() const noexcept;
+    [[nodiscard]] Request *request() const noexcept;
 
     /**
      * Short for request()
      */
-    Request *req() const noexcept;
+    [[nodiscard]] Request *req() const noexcept;
 
     /**
      * Returns the dispatcher instance. See Cutelyst::Dispatcher
      */
-    Dispatcher *dispatcher() const noexcept;
+    [[nodiscard]] Dispatcher *dispatcher() const noexcept;
 
     /**
      * The current controller name
      */
-    QString controllerName() const;
+    [[nodiscard]] QString controllerName() const;
 
     /**
      * Returns the current controller
      */
-    Controller *controller() const noexcept;
+    [[nodiscard]] Controller *controller() const noexcept;
 
     /**
      * Returns the controller by name, or nullptr
      * if the controller is not found
      */
-    Controller *controller(QStringView name) const;
+    [[nodiscard]] Controller *controller(QStringView name) const;
 
     /**
      * Returns the view with name name or nullptr if not found
      */
-    View *view(QStringView name = {}) const;
+    [[nodiscard]] View *view(QStringView name = {}) const;
 
     /**
      * Returns the view set to be used
      * for rendering this request, if one
      * is set by setView() or nullptr if none was set
      */
-    View *customView() const noexcept;
+    [[nodiscard]] View *customView() const noexcept;
 
     /**
      * Defines the view to be used to render
@@ -212,17 +212,17 @@ public:
      * (for this you must use a session; see Cutelyst::Plugin::Session
      * for a complete system integrated with Cutelyst).
      */
-    QVariantHash &stash();
+    [[nodiscard]] QVariantHash &stash();
 
     /**
      * A convenient method to retrieve a single value from the stash
      */
-    QVariant stash(const QString &key) const;
+    [[nodiscard]] QVariant stash(const QString &key) const;
 
     /**
      * A convenient method to retrieve a single value with a default value from the stash
      */
-    QVariant stash(const QString &key, const QVariant &defaultValue) const;
+    [[nodiscard]] QVariant stash(const QString &key, const QVariant &defaultValue) const;
 
     /**
      * Removes the item with the key from the stash and returns the value associated with it.
@@ -250,7 +250,7 @@ public:
     /**
      * Returns the internal execution stack (actions that are currently executing).
      */
-    QStack<Component *> stack() const noexcept;
+    [[nodiscard]] QStack<Component *> stack() const noexcept;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -263,9 +263,9 @@ public:
      * c->request()->base() any \p args are appended as additional path
      * components; and any queryValues> are appended as "?foo=bar" parameters.
      */
-    QUrl uriFor(const QString &path               = {},
-                const QStringList &args           = {},
-                const ParamsMultiMap &queryValues = {}) const;
+    [[nodiscard]] QUrl uriFor(const QString &path               = {},
+                              const QStringList &args           = {},
+                              const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -277,7 +277,7 @@ public:
      * relative to the application root (if it does). It is then merged with
      * c->request()->base() and any queryValues> are appended as "?foo=bar" parameters.
      */
-    inline QUrl uriFor(const QString &path, const ParamsMultiMap &queryValues) const;
+    [[nodiscard]] inline QUrl uriFor(const QString &path, const ParamsMultiMap &queryValues) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
@@ -288,17 +288,17 @@ public:
      * To return the current action and also provide \p args, use
      * c->uriFor(c->action(), args).
      */
-    QUrl uriFor(Action *action,
-                const QStringList &captures       = {},
-                const QStringList &args           = {},
-                const ParamsMultiMap &queryValues = {}) const;
+    [[nodiscard]] QUrl uriFor(Action *action,
+                              const QStringList &captures       = {},
+                              const QStringList &args           = {},
+                              const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * Constructs an absolute QUrl object based on the application root, the
      * provided path, and the additional arguments and query parameters provided.
      * When used as a string, provides a textual URI.
      */
-    inline QUrl uriFor(Action *action, const ParamsMultiMap &queryValues) const;
+    [[nodiscard]] inline QUrl uriFor(Action *action, const ParamsMultiMap &queryValues) const;
 
     /**
      * A private path to the Cutelyst action you want to create a URI for.
@@ -323,15 +323,16 @@ public:
      * c->uriForAction('/users/lst');
      * and it will create the URI /users/the-list.
      */
-    QUrl uriForAction(QStringView path,
-                      const QStringList &captures       = {},
-                      const QStringList &args           = {},
-                      const ParamsMultiMap &queryValues = {}) const;
+    [[nodiscard]] QUrl uriForAction(QStringView path,
+                                    const QStringList &captures       = {},
+                                    const QStringList &args           = {},
+                                    const ParamsMultiMap &queryValues = {}) const;
 
     /**
      * A convenience method for the uriForAction() without the arguments parameter
      */
-    inline QUrl uriForAction(QStringView path, const ParamsMultiMap &queryValues) const;
+    [[nodiscard]] inline QUrl uriForAction(QStringView path,
+                                           const ParamsMultiMap &queryValues) const;
 
     /**
      * Returns true if the last executed Action requested
@@ -415,17 +416,17 @@ public:
     /**
      * Gets an action in a given namespace.
      */
-    Action *getAction(QStringView action, QStringView ns = {}) const;
+    [[nodiscard]] Action *getAction(QStringView action, QStringView ns = {}) const;
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QVector<Action *> getActions(QStringView action, QStringView ns = {}) const;
+    [[nodiscard]] QVector<Action *> getActions(QStringView action, QStringView ns = {}) const;
 
     /**
      * Returns all registered plugins
      */
-    QVector<Plugin *> plugins() const;
+    [[nodiscard]] QVector<Plugin *> plugins() const;
 
     /*!
      * Returns the registered plugin that casts to the template type \p T
@@ -455,7 +456,7 @@ public:
      * If not explicity set by setLocale it will use the QLocale::setDefault(),
      * or QLocale::system() if not set.
      */
-    QLocale locale() const noexcept;
+    [[nodiscard]] QLocale locale() const noexcept;
 
     /**
      * Defines the current locale to be used when processing Views
@@ -476,12 +477,12 @@ public:
     /**
      * Returns a configuration value for key with an optional default value
      */
-    QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
+    [[nodiscard]] QVariant config(const QString &key, const QVariant &defaultValue = {}) const;
 
     /**
      * Returns a configuration mapping for all configuration read
      */
-    QVariantMap config() const noexcept;
+    [[nodiscard]] QVariantMap config() const noexcept;
 
     /**
      * Translates the \a sourceText for the given \a context into the language defined by locale().
@@ -496,10 +497,10 @@ public:
      * }
      * \endcode
      */
-    QString translate(const char *context,
-                      const char *sourceText,
-                      const char *disambiguation = nullptr,
-                      int n                      = -1) const;
+    [[nodiscard]] QString translate(const char *context,
+                                    const char *sourceText,
+                                    const char *disambiguation = nullptr,
+                                    int n                      = -1) const;
     /**
      * Finds and returns a translated string.
      *
@@ -535,7 +536,7 @@ public:
      *
      * \since Cutelyst 3.9.0
      */
-    inline QString qtTrId(const char *id, int n = -1) const;
+    [[nodiscard]] inline QString qtTrId(const char *id, int n = -1) const;
 
 public Q_SLOTS:
     /*!
