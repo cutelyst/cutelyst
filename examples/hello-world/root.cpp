@@ -186,14 +186,3 @@ void Root::async(Context *c, const QString &timeout)
     });
     t->start();
 }
-
-bool Root::Auto(Context *c)
-{
-    qDebug() << "Auto was called";
-    return true;
-}
-
-void Root::End(Context *c)
-{
-    qDebug() << "End was called";
-}

@@ -15,7 +15,7 @@ class ActionRESTPrivate : ActionPrivate
     Q_DECLARE_PUBLIC(ActionREST)
 public:
     explicit ActionRESTPrivate(ActionREST *q);
-    bool dispatchRestMethod(Context *c, const QString &restMethod) const;
+    bool dispatchRestMethod(Context *c, const QByteArray &restMethod) const;
     bool returnOptions(Context *c, const QString &methodName) const;
     bool returnNotImplemented(Context *c, const QString &methodName) const;
     QByteArray getAllowedMethods(Controller *controller, const QString &methodName) const;

@@ -225,7 +225,7 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     while (*word_boundary != ' ' && word_boundary < end) {
         ++word_boundary;
     }
-    protoRequest->method = QString::fromLatin1(ptr, int(word_boundary - ptr));
+    protoRequest->method = QByteArray(ptr, int(word_boundary - ptr));
 
     // skip spaces
     while (*word_boundary == ' ' && word_boundary < end) {
@@ -266,24 +266,6 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
         ++word_boundary;
     }
     protoRequest->protocol = QByteArray(ptr, int(word_boundary - ptr));
-}
-
-inline QString normalizeHeaderKey(const char *str, int size)
-{
-    int i       = 0;
-    QString key = QString::fromLatin1(str, size);
-    while (i < key.size()) {
-        QChar c = key[i];
-        if (c.isLetter()) {
-            if (c.isLower()) {
-                key[i] = c.toUpper();
-            }
-        } else if (c == u'-') {
-            key[i] = u'_';
-        }
-        ++i;
-    }
-    return key;
 }
 
 void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) const
@@ -517,7 +499,7 @@ void ProtoRequestHttp::socketDisconnected()
 {
     if (websocketUpgraded) {
         if (websocket_finn_opcode != 0x88) {
-            Q_EMIT context->request()->webSocketClosed(1005, QString());
+            Q_EMIT context->request()->webSocketClosed(1005, QString{});
         }
         sock->requestFinished();
     }

@@ -227,7 +227,7 @@ void TestResponse::cleanupTestCase()
 
 void TestResponse::doTest()
 {
-    QFETCH(QString, method);
+    QFETCH(QByteArray, method);
     QFETCH(QString, url);
     QFETCH(Headers, headers);
     QFETCH(QByteArray, body);
@@ -251,7 +251,7 @@ void TestResponse::doTest()
 
 void TestResponse::testController_data()
 {
-    QTest::addColumn<QString>("method");
+    QTest::addColumn<QByteArray>("method");
     QTest::addColumn<QString>("url");
     QTest::addColumn<Headers>("headers");
     QTest::addColumn<QByteArray>("body");
@@ -259,8 +259,8 @@ void TestResponse::testController_data()
     QTest::addColumn<Headers>("responseHeaders");
     QTest::addColumn<QByteArray>("output");
 
-    QString get  = QStringLiteral("GET");
-    QString post = QStringLiteral("POST");
+    const auto get  = "GET"_qba;
+    const auto post = "POST"_qba;
 
     QUrlQuery query;
     Headers headers;

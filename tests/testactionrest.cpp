@@ -126,7 +126,7 @@ void TestActionREST::cleanupTestCase()
 
 void TestActionREST::doTest()
 {
-    QFETCH(QString, method);
+    QFETCH(QByteArray, method);
     QFETCH(QString, url);
     QFETCH(int, statusCode);
     QFETCH(QByteArray, output);
@@ -145,45 +145,46 @@ void TestActionREST::doTest()
 
 void TestActionREST::testController_data()
 {
-    QTest::addColumn<QString>("method");
+    QTest::addColumn<QByteArray>("method");
     QTest::addColumn<QString>("url");
     QTest::addColumn<int>("statusCode");
     QTest::addColumn<QByteArray>("output");
     QTest::addColumn<QString>("allow");
 
-    QTest::newRow("rest-test1-00") << QStringLiteral("GET") << QStringLiteral("/action/rest/test1/")
-                                   << 200 << QByteArrayLiteral("test1.test1 GET.") << QString();
-    QTest::newRow("rest-test1-01")
-        << QStringLiteral("HEAD") << QStringLiteral("/action/rest/test1/") << 200
-        << QByteArrayLiteral("test1.test1 HEAD.") << QString();
-    QTest::newRow("rest-test1-02")
-        << QStringLiteral("OPTIONS") << QStringLiteral("/action/rest/test1/") << 200
-        << QByteArrayLiteral("") << QStringLiteral("GET, HEAD");
+    const auto head         = "HEAD"_qba;
+    const auto get          = "GET"_qba;
+    const auto put          = "PUT"_qba;
+    const auto options      = "OPTIONS"_qba;
+    const auto methodDELETE = "DELETE"_qba;
+
+    QTest::newRow("rest-test1-00") << get << QStringLiteral("/action/rest/test1/") << 200
+                                   << QByteArrayLiteral("test1.test1 GET.") << QString();
+    QTest::newRow("rest-test1-01") << head << QStringLiteral("/action/rest/test1/") << 200
+                                   << QByteArrayLiteral("test1.test1 HEAD.") << QString();
+    QTest::newRow("rest-test1-02") << options << QStringLiteral("/action/rest/test1/") << 200
+                                   << QByteArrayLiteral("") << QStringLiteral("GET, HEAD");
 
     // Test custom NOT implemented
     QTest::newRow("rest-test1-03")
-        << QStringLiteral("PUT") << QStringLiteral("/action/rest/test1/") << 200
+        << put << QStringLiteral("/action/rest/test1/") << 200
         << QByteArrayLiteral("test1.test1 NOT IMPLEMENTED.") << QString();
 
-    QTest::newRow("rest-test2-00") << QStringLiteral("GET") << QStringLiteral("/action/rest/test2/")
-                                   << 200 << QByteArrayLiteral("test2.test2 GET.") << QString();
+    QTest::newRow("rest-test2-00") << get << QStringLiteral("/action/rest/test2/") << 200
+                                   << QByteArrayLiteral("test2.test2 GET.") << QString();
     // HEAD when unavailable redispatches to GET
-    QTest::newRow("rest-test2-01")
-        << QStringLiteral("HEAD") << QStringLiteral("/action/rest/test2/") << 200
-        << QByteArrayLiteral("test2.test2 GET.") << QString();
+    QTest::newRow("rest-test2-01") << head << QStringLiteral("/action/rest/test2/") << 200
+                                   << QByteArrayLiteral("test2.test2 GET.") << QString();
 
-    QTest::newRow("rest-test2-02")
-        << QStringLiteral("OPTIONS") << QStringLiteral("/action/rest/test2/") << 200
-        << QByteArrayLiteral("") << QStringLiteral("DELETE, GET, HEAD");
+    QTest::newRow("rest-test2-02") << options << QStringLiteral("/action/rest/test2/") << 200
+                                   << QByteArrayLiteral("") << QStringLiteral("DELETE, GET, HEAD");
 
     // Test default NOT implemented
     QTest::newRow("rest-test2-03")
-        << QStringLiteral("PUT") << QStringLiteral("/action/rest/test2/") << 405
+        << put << QStringLiteral("/action/rest/test2/") << 405
         << QByteArrayLiteral("Method PUT not implemented for http://127.0.0.1/test2")
         << QStringLiteral("DELETE, GET, HEAD");
-    QTest::newRow("rest-test2-04")
-        << QStringLiteral("DELETE") << QStringLiteral("/action/rest/test2/") << 200
-        << QByteArrayLiteral("test2.test2 DELETE.") << QString();
+    QTest::newRow("rest-test2-04") << methodDELETE << QStringLiteral("/action/rest/test2/") << 200
+                                   << QByteArrayLiteral("test2.test2 DELETE.") << QString();
 }
 
 QTEST_MAIN(TestActionREST)

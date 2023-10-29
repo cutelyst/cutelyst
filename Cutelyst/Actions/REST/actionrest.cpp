@@ -69,10 +69,10 @@ ActionRESTPrivate::ActionRESTPrivate(ActionREST *q)
 {
 }
 
-bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod) const
+bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QByteArray &httpMethod) const
 {
     Q_Q(const ActionREST);
-    const QString restMethod = q->name() + u'_' + httpMethod;
+    const QString restMethod = q->name() + u'_' + QString::fromLatin1(httpMethod);
 
     Controller *controller = q->controller();
     Action *action         = controller->actionFor(restMethod);
@@ -92,14 +92,14 @@ bool ActionRESTPrivate::dispatchRestMethod(Context *c, const QString &httpMethod
     }
 
     bool ret = false;
-    if (httpMethod.compare(u"OPTIONS") == 0) {
+    if (httpMethod.compare("OPTIONS") == 0) {
         ret = returnOptions(c, q->name());
-    } else if (httpMethod.compare(u"HEAD") == 0) {
+    } else if (httpMethod.compare("HEAD") == 0) {
         // redispatch to GET
-        ret = dispatchRestMethod(c, QStringLiteral("GET"));
-    } else if (httpMethod.compare(u"not_implemented") != 0) {
+        ret = dispatchRestMethod(c, "GET"_qba);
+    } else if (httpMethod.compare("not_implemented") != 0) {
         // try dispatching to foo_not_implemented
-        ret = dispatchRestMethod(c, QStringLiteral("not_implemented"));
+        ret = dispatchRestMethod(c, "not_implemented"_qba);
     } else {
         // not_implemented
         ret = returnNotImplemented(c, q->name());
@@ -123,8 +123,8 @@ bool ActionRESTPrivate::returnNotImplemented(Context *c, const QString &methodNa
     Response *response = c->response();
     response->setStatus(Response::MethodNotAllowed); // 405
     response->setHeader("Allow"_qba, getAllowedMethods(c->controller(), methodName));
-    const QString body = QLatin1String("Method ") + c->req()->method() +
-                         QLatin1String(" not implemented for ") + c->uriFor(methodName).toString();
+    const QByteArray body = "Method " + c->req()->method() + " not implemented for " +
+                            c->uriFor(methodName).toString().toLatin1();
     response->setBody(body);
     return true;
 }

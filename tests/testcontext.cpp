@@ -158,11 +158,8 @@ void TestContext::doTest()
 
     QUrl urlAux(url.mid(1));
 
-    QVariantMap result = m_engine->createRequest(QStringLiteral("GET"),
-                                                 urlAux.path(),
-                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                 Headers(),
-                                                 nullptr);
+    QVariantMap result = m_engine->createRequest(
+        "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
 
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }

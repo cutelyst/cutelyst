@@ -136,7 +136,7 @@ public:
     }
 
     /*! The method used (GET, POST...) */
-    QString method;
+    QByteArray method;
 
     /*! Call setPath() instead */
     QString path;

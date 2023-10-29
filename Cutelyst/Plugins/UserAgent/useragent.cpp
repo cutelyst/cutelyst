@@ -189,7 +189,7 @@ QNetworkReply *UA::forwardRequest(Request *request, const QUrl &destination)
         ++it;
     }
 
-    return m_instance.sendCustomRequest(proxyReq, request->method().toLatin1(), request->body());
+    return m_instance.sendCustomRequest(proxyReq, request->method(), request->body());
 }
 
 QNetworkReply *UA::forwardRequestResponse(Context *c, const QUrl &destination)

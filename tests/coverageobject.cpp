@@ -79,7 +79,7 @@ int TestEngine::workerId() const
     return 0;
 }
 
-QVariantMap TestEngine::createRequest(const QString &method,
+QVariantMap TestEngine::createRequest(const QByteArray &method,
                                       const QString &path,
                                       const QByteArray &query,
                                       const Headers &headers,

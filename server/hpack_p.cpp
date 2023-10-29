@@ -78,7 +78,7 @@ const QHash<QByteArray, const char *> HPackPrivate::hpackStaticHeadersCode = {
 const HPackPrivate::hpackStaticPair HPackPrivate::hpackStaticHeaders[] = {
     {QString(), QString()},
     {QStringLiteral(":authority"), QString()},
-    {QStringLiteral(":method"), QStringLiteral("GET")},
+    {QStringLiteral(":method"), u"GET"_qs},
     {QStringLiteral(":method"), QStringLiteral("POST")},
     {QStringLiteral(":path"), QStringLiteral("/")},
     {QStringLiteral(":path"), QStringLiteral("/index.html")},

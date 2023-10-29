@@ -48,13 +48,13 @@ using namespace Cutelyst;
 
 static thread_local CSRFProtection *csrf = nullptr;
 const QRegularExpression CSRFProtectionPrivate::sanitizeRe =
-    QRegularExpression(QStringLiteral("[^a-zA-Z0-9\\-_]"));
+    QRegularExpression(u"[^a-zA-Z0-9\\-_]"_qs);
 // Assume that anything not defined as 'safe' by RFC7231 needs protection
-const QStringList CSRFProtectionPrivate::secureMethods = QStringList({
-    QStringLiteral("GET"),
-    QStringLiteral("HEAD"),
-    QStringLiteral("OPTIONS"),
-    QStringLiteral("TRACE"),
+const QByteArrayList CSRFProtectionPrivate::secureMethods = QByteArrayList({
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "TRACE",
 });
 
 CSRFProtection::CSRFProtection(Application *parent)

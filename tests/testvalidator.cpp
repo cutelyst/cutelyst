@@ -1120,11 +1120,8 @@ void TestValidator::doTest()
 
     const QUrl urlAux(QLatin1String("validator/test") + url);
 
-    const QVariantMap result = m_engine->createRequest(QStringLiteral("POST"),
-                                                       urlAux.path(),
-                                                       urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                       headers,
-                                                       &body);
+    const QVariantMap result = m_engine->createRequest(
+        "POST", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);
 
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);
 }

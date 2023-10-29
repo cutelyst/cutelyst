@@ -161,7 +161,7 @@ quint16 ProtocolFastCGI::addHeader(ProtoRequestFastCGI *request,
             request->headers.pushHeader(keyStr, value);
         }
     } else if (memcmp(key, "REQUEST_METHOD", 14) == 0) {
-        request->method = QString::fromLatin1(val, vallen);
+        request->method = QByteArray(val, vallen);
     } else if (memcmp(key, "REQUEST_URI", 11) == 0) {
         const char *pch = static_cast<const char *>(memchr(val, '?', vallen));
         if (pch) {

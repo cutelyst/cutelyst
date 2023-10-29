@@ -38,7 +38,7 @@ public:
 
     virtual int workerId() const override;
 
-    QVariantMap createRequest(const QString &method,
+    QVariantMap createRequest(const QByteArray &method,
                               const QString &path,
                               const QByteArray &query,
                               const Headers &headers,

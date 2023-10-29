@@ -112,7 +112,7 @@ void MainWindow::indexCalled(Cutelyst::Context *c)
 {
     qDebug() << "indexCalled" << ui->serverResponsePTE->toPlainText().toUtf8().size();
     // Request
-    ui->serverMethodLE->setText(c->request()->method());
+    ui->serverMethodLE->setText(QString::fromLatin1(c->request()->method()));
     ui->serverPathLE->setText(c->request()->path());
     if (c->request()->body()) {
         ui->serverBodyPTE->setPlainText(QString::fromUtf8(c->request()->body()->readAll()));

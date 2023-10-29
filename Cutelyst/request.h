@@ -44,7 +44,7 @@ class CUTELYST_LIBRARY Request final : public QObject
     Q_PROPERTY(Cutelyst::ParamsMultiMap queryParams READ queryParameters CONSTANT)
     Q_PROPERTY(QByteArray contentEncoding READ contentEncoding CONSTANT)
     Q_PROPERTY(QByteArray contentType READ contentType CONSTANT)
-    Q_PROPERTY(QString method READ method CONSTANT)
+    Q_PROPERTY(QByteArray method READ method CONSTANT)
     Q_PROPERTY(QByteArray protocol READ protocol CONSTANT)
     Q_PROPERTY(QByteArray userAgent READ userAgent CONSTANT)
     Q_PROPERTY(QByteArray referer READ referer CONSTANT)
@@ -347,7 +347,7 @@ public:
     /**
      * Returns the request method (GET, POST, HEAD, etc).
      */
-    QString method() const noexcept;
+    QByteArray method() const noexcept;
 
     /**
      * Returns true if the request method is POST.

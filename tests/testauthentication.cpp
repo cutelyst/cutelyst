@@ -253,11 +253,8 @@ void TestAuthentication::doTest()
 
     QUrl urlAux(url.mid(1));
 
-    QVariantMap result = m_engine->createRequest(QStringLiteral("GET"),
-                                                 urlAux.path(),
-                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                 headers,
-                                                 nullptr);
+    QVariantMap result = m_engine->createRequest(
+        "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
     QCOMPARE(result.value(QStringLiteral("statusCode")).toInt(), status);
     QCOMPARE(result.value(QStringLiteral("body")).toByteArray(), output);

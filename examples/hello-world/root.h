@@ -52,13 +52,6 @@ public:
            : Local
            : AutoArgs)
     void async(Context *c, const QString &timeout);
-
-private Q_SLOTS:
-    bool Auto(Cutelyst::Context *c);
-
-private:
-    C_ATTR(End, )
-    void End(Context *c);
 };
 
 #endif // ROOT_H

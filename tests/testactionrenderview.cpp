@@ -165,7 +165,7 @@ void TestActionRenderView::cleanupTestCase()
 
 void TestActionRenderView::doTest()
 {
-    QFETCH(QString, method);
+    QFETCH(QByteArray, method);
     QFETCH(QString, url);
     QFETCH(int, statusCode);
     QFETCH(QByteArray, output);
@@ -184,48 +184,50 @@ void TestActionRenderView::doTest()
 
 void TestActionRenderView::testController_data()
 {
-    QTest::addColumn<QString>("method");
+    QTest::addColumn<QByteArray>("method");
     QTest::addColumn<QString>("url");
     QTest::addColumn<int>("statusCode");
     QTest::addColumn<QByteArray>("output");
     QTest::addColumn<QString>("contentType");
 
+    const auto get  = "GET"_qba;
+    const auto head = "HEAD"_qba;
+
     QTest::newRow("renderview-test-00")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test0") << 200
-        << QByteArrayLiteral("test0") << QStringLiteral("text/html; charset=utf-8");
+        << get << QStringLiteral("/action/render/view/test0") << 200 << QByteArrayLiteral("test0")
+        << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-test-01")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test1") << 200
+        << get << QStringLiteral("/action/render/view/test1") << 200
         << QByteArrayLiteral("view1test1") << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-test-02")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test2") << 200
+        << get << QStringLiteral("/action/render/view/test2") << 200
         << QByteArrayLiteral("view2test2") << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-test-03")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test3") << 200
-        << QByteArrayLiteral("test3") << QStringLiteral("plain/text");
+        << get << QStringLiteral("/action/render/view/test3") << 200 << QByteArrayLiteral("test3")
+        << QStringLiteral("plain/text");
     QTest::newRow("renderview-test-04")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test4") << 500
-        << QByteArrayLiteral("") << QStringLiteral("text/html; charset=utf-8");
+        << get << QStringLiteral("/action/render/view/test4") << 500 << QByteArrayLiteral("")
+        << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-test-05")
-        << QStringLiteral("HEAD") << QStringLiteral("/action/render/view/test3") << 200
-        << QByteArrayLiteral("") << QStringLiteral("plain/text");
+        << head << QStringLiteral("/action/render/view/test3") << 200 << QByteArrayLiteral("")
+        << QStringLiteral("plain/text");
     QTest::newRow("renderview-test-06")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test6") << 200
+        << get << QStringLiteral("/action/render/view/test6") << 200
         << QByteArrayLiteral("test6 body") << QStringLiteral("text/html; charset=utf-8");
-    QTest::newRow("renderview-test-07")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/test7") << 200
-        << QByteArrayLiteral("") << QStringLiteral("");
+    QTest::newRow("renderview-test-07") << get << QStringLiteral("/action/render/view/test7") << 200
+                                        << QByteArrayLiteral("") << QStringLiteral("");
 
     QTest::newRow("renderview-testStatus-00")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/testStatus/204") << 204
+        << get << QStringLiteral("/action/render/view/testStatus/204") << 204
         << QByteArrayLiteral("") << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-testStatus-01")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/testStatus/300") << 300
+        << get << QStringLiteral("/action/render/view/testStatus/300") << 300
         << QByteArrayLiteral("") << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-testStatus-02")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/testStatus/399") << 399
+        << get << QStringLiteral("/action/render/view/testStatus/399") << 399
         << QByteArrayLiteral("") << QStringLiteral("text/html; charset=utf-8");
     QTest::newRow("renderview-testStatus-03")
-        << QStringLiteral("GET") << QStringLiteral("/action/render/view/testStatus/200") << 200
+        << get << QStringLiteral("/action/render/view/testStatus/200") << 200
         << QByteArrayLiteral("rendered") << QStringLiteral("text/html; charset=utf-8");
 }
 

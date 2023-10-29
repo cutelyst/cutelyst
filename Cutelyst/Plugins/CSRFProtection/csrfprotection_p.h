@@ -34,7 +34,7 @@ public:
 
     qint64 cookieAge{0};
     QStringList trustedOrigins;
-    static const QStringList secureMethods;
+    static const QByteArrayList secureMethods;
     QStringList ignoredNamespaces;
     QString cookieDomain;
     QByteArray cookieName;

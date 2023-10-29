@@ -400,7 +400,7 @@ void TestRequest::cleanupTestCase()
 
 void TestRequest::doTest()
 {
-    QFETCH(QString, method);
+    QFETCH(QByteArray, method);
     QFETCH(QString, url);
     QFETCH(Headers, headers);
     QFETCH(QByteArray, body);
@@ -421,14 +421,17 @@ void TestRequest::doTest()
 
 void TestRequest::testController_data()
 {
-    QTest::addColumn<QString>("method");
+    QTest::addColumn<QByteArray>("method");
     QTest::addColumn<QString>("url");
     QTest::addColumn<Headers>("headers");
     QTest::addColumn<QByteArray>("body");
     QTest::addColumn<QByteArray>("output");
 
-    QString get  = QStringLiteral("GET");
-    QString post = QStringLiteral("POST");
+    const auto get  = "GET"_qba;
+    const auto GeT  = "GeT"_qba;
+    const auto post = "POST"_qba;
+    const auto head = "HEAD"_qba;
+    const auto PoSt = "PoSt"_qba;
 
     QUrlQuery query;
     Headers headers;
@@ -460,22 +463,20 @@ void TestRequest::testController_data()
                                    << QByteArray() << QByteArrayLiteral("GET");
     QTest::newRow("method-test01") << post << QStringLiteral("/request/test/method") << headers
                                    << QByteArray() << QByteArrayLiteral("POST");
-    QTest::newRow("method-test02")
-        << QStringLiteral("HEAD") << QStringLiteral("/request/test/method") << headers
-        << QByteArray() << QByteArrayLiteral("HEAD");
+    QTest::newRow("method-test02") << head << QStringLiteral("/request/test/method") << headers
+                                   << QByteArray() << QByteArrayLiteral("HEAD");
 
     QTest::newRow("isPost-test00") << get << QStringLiteral("/request/test/isPost") << headers
                                    << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isPost-test01")
-        << QStringLiteral("PoSt") << QStringLiteral("/request/test/isPost") << headers
-        << QByteArray() << QByteArrayLiteral("false");
+    QTest::newRow("isPost-test01") << PoSt << QStringLiteral("/request/test/isPost") << headers
+                                   << QByteArray() << QByteArrayLiteral("false");
     QTest::newRow("isPost-test02") << post << QStringLiteral("/request/test/isPost") << headers
                                    << QByteArray() << QByteArrayLiteral("true");
 
     QTest::newRow("isGet-test00") << post << QStringLiteral("/request/test/isGet") << headers
                                   << QByteArray() << QByteArrayLiteral("false");
-    QTest::newRow("isGet-test01") << QStringLiteral("GeT") << QStringLiteral("/request/test/isGet")
-                                  << headers << QByteArray() << QByteArrayLiteral("false");
+    QTest::newRow("isGet-test01") << GeT << QStringLiteral("/request/test/isGet") << headers
+                                  << QByteArray() << QByteArrayLiteral("false");
     QTest::newRow("isGet-test02") << get << QStringLiteral("/request/test/isGet") << headers
                                   << QByteArray() << QByteArrayLiteral("true");
 
@@ -1086,13 +1087,13 @@ QByteArray createBody(QByteArray &result, int count)
 
 void TestRequest::testUploads_data()
 {
-    QTest::addColumn<QString>("method");
+    QTest::addColumn<QByteArray>("method");
     QTest::addColumn<QString>("url");
     QTest::addColumn<Headers>("headers");
     QTest::addColumn<QByteArray>("body");
     QTest::addColumn<QByteArray>("output");
 
-    QString post = QStringLiteral("POST");
+    const auto post = "POST"_qba;
 
     QUrlQuery query;
     Headers headers;

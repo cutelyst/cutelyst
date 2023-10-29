@@ -248,7 +248,7 @@ inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stre
         }
     } else if (k.compare(u":method") == 0) {
         if (stream->method.isEmpty()) {
-            stream->method = v;
+            stream->method = v.toLatin1();
             return true;
         }
     } else if (k.compare(u":authority") == 0) {

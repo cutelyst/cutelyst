@@ -312,7 +312,7 @@ Headers Request::headers() const noexcept
     return d->engineRequest->headers;
 }
 
-QString Request::method() const noexcept
+QByteArray Request::method() const noexcept
 {
     Q_D(const Request);
     return d->engineRequest->method;
@@ -321,37 +321,37 @@ QString Request::method() const noexcept
 bool Request::isPost() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"POST") == 0;
+    return d->engineRequest->method.compare("POST") == 0;
 }
 
 bool Request::isGet() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"GET") == 0;
+    return d->engineRequest->method.compare("GET") == 0;
 }
 
 bool Request::isHead() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"HEAD") == 0;
+    return d->engineRequest->method.compare("HEAD") == 0;
 }
 
 bool Request::isPut() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"PUT") == 0;
+    return d->engineRequest->method.compare("PUT") == 0;
 }
 
 bool Request::isPatch() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"PATCH") == 0;
+    return d->engineRequest->method.compare("PATCH") == 0;
 }
 
 bool Request::isDelete() const noexcept
 {
     Q_D(const Request);
-    return d->engineRequest->method.compare(u"DELETE") == 0;
+    return d->engineRequest->method.compare("DELETE") == 0;
 }
 
 QByteArray Request::protocol() const noexcept

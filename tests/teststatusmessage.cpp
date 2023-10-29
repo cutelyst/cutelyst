@@ -183,12 +183,9 @@ void TestStatusMessage::doTest()
 
     QUrl urlAux(url.mid(1));
 
-    QVariantMap result = m_engine->createRequest(QStringLiteral("GET"),
-                                                 urlAux.path(),
-                                                 urlAux.query(QUrl::FullyEncoded).toLatin1(),
-                                                 Headers(),
-                                                 nullptr);
-    Headers headers    = result.value(QStringLiteral("headers")).value<Headers>();
+    QVariantMap result = m_engine->createRequest(
+        "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
+    Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
     headers.setHeader("Cookie"_qba, headers.header("Set-Cookie"));
 
     QUrl urlAux2(url.mid(1) + QLatin1String("Test/") + m_sm->statusMsgStashKey() +
@@ -206,11 +203,8 @@ void TestStatusMessage::doTest()
     }
     urlAux2.setQuery(query);
 
-    QVariantMap testResult = m_engine->createRequest(QStringLiteral("GET"),
-                                                     urlAux2.path(),
-                                                     urlAux2.query(QUrl::FullyEncoded).toLatin1(),
-                                                     headers,
-                                                     nullptr);
+    QVariantMap testResult = m_engine->createRequest(
+        "GET", urlAux2.path(), urlAux2.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
 
     QCOMPARE(testResult.value(QStringLiteral("body")).toByteArray(), output);
 }
