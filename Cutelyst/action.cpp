@@ -148,20 +148,23 @@ bool Action::doExecute(Context *c)
         bool methodRet;
 
         if (d->listSignature) {
+            // clang-format off
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context *, c),
+                                   Q_ARG(Cutelyst::Context*, c),
                                    Q_ARG(QStringList, c->request()->args()));
+            // clang-format on
         } else {
             QStringList args = c->request()->args();
             // Fill the missing arguments
             args.append(d->emptyArgs);
 
+            // clang-format off
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
                                    Q_RETURN_ARG(bool, methodRet),
-                                   Q_ARG(Cutelyst::Context *, c),
+                                   Q_ARG(Cutelyst::Context*, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
                                    Q_ARG(QString, args.at(2)),
@@ -171,6 +174,7 @@ bool Action::doExecute(Context *c)
                                    Q_ARG(QString, args.at(6)),
                                    Q_ARG(QString, args.at(7)),
                                    Q_ARG(QString, args.at(8)));
+            // clang-format on
         }
 
         if (ret) {
@@ -185,18 +189,21 @@ bool Action::doExecute(Context *c)
         return false;
     } else {
         if (d->listSignature) {
+            // clang-format off
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context *, c),
+                                   Q_ARG(Cutelyst::Context*, c),
                                    Q_ARG(QStringList, c->request()->args()));
+            // clang-format on
         } else {
             QStringList args = c->request()->args();
             // Fill the missing arguments
             args.append(d->emptyArgs);
 
+            // clang-format off
             ret = d->method.invoke(d->controller,
                                    Qt::DirectConnection,
-                                   Q_ARG(Cutelyst::Context *, c),
+                                   Q_ARG(Cutelyst::Context*, c),
                                    Q_ARG(QString, args.at(0)),
                                    Q_ARG(QString, args.at(1)),
                                    Q_ARG(QString, args.at(2)),
@@ -206,6 +213,7 @@ bool Action::doExecute(Context *c)
                                    Q_ARG(QString, args.at(6)),
                                    Q_ARG(QString, args.at(7)),
                                    Q_ARG(QString, args.at(8)));
+            // clang-format on
         }
         c->setState(ret);
         return ret;

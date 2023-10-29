@@ -184,7 +184,7 @@ QByteArray CuteleeView::render(Context *c) const
         }
 
         if (templateFile.isEmpty()) {
-            c->error(QStringLiteral(
+            c->appendError(QStringLiteral(
                 "Cannot render template, template name or template stash key not defined"));
             return ret;
         }
@@ -212,14 +212,14 @@ QByteArray CuteleeView::render(Context *c) const
     Cutelee::Template tmpl = d->engine->loadByName(templateFile);
     if (tmpl->error() != Cutelee::NoError) {
         c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
-        c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+        c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
         return ret;
     }
 
     QString content = tmpl->render(&gc);
     if (tmpl->error() != Cutelee::NoError) {
         c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
-        c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+        c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
         return ret;
     }
 
@@ -227,7 +227,7 @@ QByteArray CuteleeView::render(Context *c) const
         Cutelee::Template wrapper = d->engine->loadByName(d->wrapper);
         if (tmpl->error() != Cutelee::NoError) {
             c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
-            c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+            c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
             return ret;
         }
 
@@ -237,7 +237,7 @@ QByteArray CuteleeView::render(Context *c) const
 
         if (wrapper->error() != Cutelee::NoError) {
             c->res()->setBody(c->translate("Cutelyst::CuteleeView", "Internal server error."));
-            c->error(QLatin1String("Error while rendering template: ") + tmpl->errorString());
+            c->appendError(QLatin1String("Error while rendering template: ") + tmpl->errorString());
             return ret;
         }
     }

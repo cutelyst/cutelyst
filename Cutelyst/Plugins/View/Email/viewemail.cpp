@@ -199,7 +199,7 @@ QByteArray ViewEmail::render(Context *c) const
     QByteArray ret;
     QVariantHash email = c->stash(d->stashKey).toHash();
     if (email.isEmpty()) {
-        c->error(QStringLiteral(
+        c->appendError(QStringLiteral(
             "Cannot render template, template name or template stash key not defined"));
         return ret;
     }
@@ -243,7 +243,7 @@ QByteArray ViewEmail::render(Context *c) const
     QVariant body  = email.value(QStringLiteral("body"));
     QVariant parts = email.value(QStringLiteral("parts"));
     if (body.isNull() && parts.isNull()) {
-        c->error(QStringLiteral("Can't send email without parts or body, check stash"));
+        c->appendError(QStringLiteral("Can't send email without parts or body, check stash"));
         return ret;
     }
 
@@ -278,7 +278,7 @@ QByteArray ViewEmail::render(Context *c) const
         ServerReply *reply = d->server->sendMail(message);
         connect(reply, &ServerReply::finished, reply, &ServerReply::deleteLater);
     } else if (!d->sender->sendMail(message)) {
-        c->error(QString::fromLatin1(d->sender->responseText()));
+        c->appendError(QString::fromLatin1(d->sender->responseText()));
         return ret;
     }
 

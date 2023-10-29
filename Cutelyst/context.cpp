@@ -52,7 +52,7 @@ bool Context::error() const noexcept
     return !d->error.isEmpty();
 }
 
-void Context::error(const QString &error)
+void Context::appendError(const QString &error)
 {
     Q_D(Context);
     if (error.isEmpty()) {
@@ -396,13 +396,13 @@ bool Context::forward(QStringView action)
     return d->dispatcher->forward(this, action);
 }
 
-Action *Context::getAction(QStringView action, const QString &ns) const
+Action *Context::getAction(QStringView action, QStringView ns) const
 {
     Q_D(const Context);
     return d->dispatcher->getAction(action, ns);
 }
 
-QVector<Action *> Context::getActions(QStringView action, const QString &ns) const
+QVector<Action *> Context::getActions(QStringView action, QStringView ns) const
 {
     Q_D(const Context);
     return d->dispatcher->getActions(action, ns);
@@ -424,7 +424,7 @@ bool Context::execute(Component *code)
     if (d->stack.size() >= recursion) {
         QString msg = QStringLiteral("Deep recursion detected (stack size %1) calling %2, %3")
                           .arg(QString::number(d->stack.size()), code->reverse(), code->name());
-        error(msg);
+        appendError(msg);
         setState(false);
         return false;
     }

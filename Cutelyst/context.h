@@ -64,7 +64,7 @@ public:
     /*!
      * Sets an error string and try to stop
      */
-    void error(const QString &error);
+    void appendError(const QString &error);
 
     /*!
      * Returns a list of errors that were defined
@@ -415,12 +415,12 @@ public:
     /**
      * Gets an action in a given namespace.
      */
-    Action *getAction(QStringView action, const QString &ns = {}) const;
+    Action *getAction(QStringView action, QStringView ns = {}) const;
 
     /**
      * Gets all actions of a given name in a namespace and all parent namespaces.
      */
-    QVector<Action *> getActions(QStringView action, const QString &ns = {}) const;
+    QVector<Action *> getActions(QStringView action, QStringView ns = {}) const;
 
     /**
      * Returns all registered plugins
