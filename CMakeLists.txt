@@ -7,7 +7,6 @@ project(cutelyst
     LANGUAGES CXX)
 
 include(GNUInstallDirs)
-include(FetchContent)
 
 set(QT_VERSION_MAJOR 6)
 #find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql LinguistTools REQUIRED)
@@ -164,7 +163,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config-vers
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
-    COMPONENT cutelyst_installable
 )
 install(EXPORT CutelystTargets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
@@ -172,6 +170,8 @@ install(EXPORT CutelystTargets
     NAMESPACE Cutelyst::
     COMPONENT Devel
 )
+
+add_subdirectory(3rdparty)
 
 add_subdirectory(Cutelyst)
 

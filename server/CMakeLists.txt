@@ -3,19 +3,6 @@ if (USE_JEMALLOC)
     find_package(JeMalloc REQUIRED)
 endif ()
 
-option(USE_MIMALLOC "Use mimalloc memory allocator" ${BUILD_ALL})
-if (USE_MIMALLOC)
-  FetchContent_Declare(
-    mimalloc
-    GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
-    GIT_TAG        b3b0fb58326a96beea1f4872bc1489d1d9fda7e0 # v2.0.2
-  )
-  set(MI_BUILD_SHARED OFF)
-  set(MI_BUILD_TESTS OFF)
-  set(MI_BUILD_OBJECT OFF)
-  FetchContent_MakeAvailable(mimalloc)
-endif ()
-
 set(cutelyst_server_SRC
     server.cpp
     server.h

@@ -17,8 +17,8 @@ target_compile_features(cutelyst-skell
     cxx_generalized_initializers
 )
 target_link_libraries(cutelyst-skell
-    PRIVATE Qt${QT_VERSION_MAJOR}::Core
-    PRIVATE Qt${QT_VERSION_MAJOR}::Network
+    PRIVATE Qt::Core
+    PRIVATE Qt::Network
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core
     PRIVATE Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Server
 )
