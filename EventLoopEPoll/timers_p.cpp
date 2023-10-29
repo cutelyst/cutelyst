@@ -244,13 +244,8 @@ void EventDispatcherEPollPrivate::registerZeroTimer(int timerId, QObject *object
 
 bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     auto it = m_timers.constFind(timerId);
     if (it != m_timers.constEnd()) {
-#else
-    auto it = m_timers.find(timerId);
-    if (it != m_timers.end()) {
-#endif
         TimerInfo *data = it.value();
 
         int fd = data->fd;
@@ -266,13 +261,8 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
         m_handles.remove(fd);
         return true;
     } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         auto zit = m_zero_timers.constFind(timerId);
         if (zit != m_zero_timers.constEnd()) {
-#else
-        auto zit = m_zero_timers.find(timerId);
-        if (zit != m_zero_timers.end()) {
-#endif
             ZeroTimer *data = zit.value();
             data->deref();
 
@@ -287,13 +277,8 @@ bool EventDispatcherEPollPrivate::unregisterTimer(int timerId)
 bool EventDispatcherEPollPrivate::unregisterTimers(QObject *object)
 {
     bool result = false;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    auto it = m_timers.constBegin();
+    auto it     = m_timers.constBegin();
     while (it != m_timers.constEnd()) {
-#else
-    auto it = m_timers.begin();
-    while (it != m_timers.end()) {
-#endif
         TimerInfo *data = it.value();
 
         if (object == data->object) {

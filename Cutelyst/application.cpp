@@ -52,9 +52,6 @@ Application::Application(QObject *parent)
     d->q_ptr = this;
 
     qRegisterMetaType<ParamsMultiMap>();
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    qRegisterMetaTypeStreamOperators<ParamsMultiMap>("ParamsMultiMap");
-#endif
 
     d->dispatcher = new Dispatcher(this);
 

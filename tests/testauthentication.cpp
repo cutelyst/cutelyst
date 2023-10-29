@@ -4,14 +4,6 @@
 #include "coverageobject.h"
 #include "headers.h"
 
-#include <QNetworkCookie>
-#include <QObject>
-#include <QTest>
-#include <QUrlQuery>
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#    include "cookie.h"
-#endif
-
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/authenticationuser.h>
@@ -22,6 +14,11 @@
 #include <Cutelyst/application.h>
 #include <Cutelyst/controller.h>
 #include <Cutelyst/headers.h>
+
+#include <QNetworkCookie>
+#include <QObject>
+#include <QTest>
+#include <QUrlQuery>
 
 using namespace Cutelyst;
 
@@ -142,15 +139,9 @@ public:
     void authenticate_user_cookie(Context *c, const QString &realm)
     {
         Authentication::authenticate(c, c->request()->queryParameters(), realm);
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 1, 0))
         const auto cookie = c->response()
                                 ->cookie(QByteArrayLiteral("testauthentication_exec_session"))
                                 .value<QNetworkCookie>();
-#else
-        const auto cookie = c->response()
-                                ->cuteCookie(QByteArrayLiteral("testauthentication_exec_session"))
-                                .value<Cookie>();
-#endif
         if (cookie.isHttpOnly() && cookie.path().compare(u"/") == 0) {
             c->response()->setBody(QStringLiteral("ok"));
             return;

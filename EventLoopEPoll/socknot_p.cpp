@@ -151,13 +151,8 @@ void EventDispatcherEPollPrivate::unregisterSocketNotifier(QSocketNotifier *noti
                 res = 0;
             }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             auto hi = m_handles.constFind(info->fd);
             Q_ASSERT(hi != m_handles.constEnd());
-#else
-            auto hi = m_handles.find(info->fd);
-            Q_ASSERT(hi != m_handles.end());
-#endif
             m_handles.erase(hi);
         }
 

@@ -364,6 +364,8 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         ++pos;
     }
 
+    const static auto digitRE = QRegularExpression(u"\\D"_qs);
+
     // Add the attributes to the map in the reverse order so
     // that values() return them in the right order
     for (const auto &pair : attributes) {
@@ -380,11 +382,11 @@ ParamsMultiMap ControllerPrivate::parseAttributes(const QMetaMethod &method,
         } else if (key.compare(u"Args") == 0) {
             QString args = value;
             if (!args.isEmpty()) {
-                value = args.remove(QRegularExpression(QStringLiteral("\\D")));
+                value = args.remove(digitRE);
             }
         } else if (key.compare(u"CaptureArgs") == 0) {
             QString captureArgs = value;
-            value               = captureArgs.remove(QRegularExpression(QStringLiteral("\\D")));
+            value               = captureArgs.remove(digitRE);
         } else if (key.compare(u"Chained") == 0) {
             value = parseChainedAttr(value);
         }
@@ -489,7 +491,6 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
     if (!instanceName.isEmpty()) {
         instanceName.remove(QRegularExpression(QStringLiteral("\\W")));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
         QMetaType id = QMetaType::fromName(instanceName.toLatin1().data());
         if (!id.isValid()) {
             if (!instanceName.endsWith(QLatin1Char('*'))) {
@@ -541,59 +542,7 @@ QObject *ControllerPrivate::instantiateClass(const QString &name, const QByteArr
                        qPrintable(instanceName));
         }
     }
-#else
-        int id = QMetaType::type(instanceName.toLatin1().data());
-        if (!id) {
-            if (!instanceName.endsWith(QLatin1Char('*'))) {
-                instanceName.append(QLatin1Char('*'));
-            }
 
-            id = QMetaType::type(instanceName.toLatin1().data());
-            if (!id && !instanceName.startsWith(u"Cutelyst::")) {
-                instanceName = QLatin1String("Cutelyst::") + instanceName;
-                id           = QMetaType::type(instanceName.toLatin1().data());
-            }
-        }
-
-        if (id) {
-            const QMetaObject *metaObj = QMetaType::metaObjectForType(id);
-            if (metaObj) {
-                if (!superIsClassName(metaObj->superClass(), super)) {
-                    qCWarning(CUTELYST_CONTROLLER)
-                        << "Class name" << instanceName << "is not a derived class of" << super;
-                }
-
-                QObject *object = metaObj->newInstance();
-                if (!object) {
-                    qCWarning(CUTELYST_CONTROLLER)
-                        << "Could create a new instance of" << instanceName
-                        << "make sure it's default constructor is "
-                           "marked with the Q_INVOKABLE macro";
-                }
-
-                return object;
-            }
-        } else {
-            Component *component = application->createComponentPlugin(name);
-            if (component) {
-                return component;
-            }
-
-            component = application->createComponentPlugin(instanceName);
-            if (component) {
-                return component;
-            }
-        }
-
-        if (!id) {
-            qCCritical(CUTELYST_CONTROLLER,
-                       "Could not create component '%s', you can register it with "
-                       "qRegisterMetaType<%s>(); or set a proper CUTELYST_PLUGINS_DIR",
-                       qPrintable(instanceName),
-                       qPrintable(instanceName));
-        }
-    }
-#endif
     return nullptr;
 }
 

@@ -6,9 +6,6 @@
 #define SESSION_P_H
 
 #include "session.h"
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#    include "cookie.h"
-#endif
 
 #include <QtNetwork/QNetworkCookie>
 

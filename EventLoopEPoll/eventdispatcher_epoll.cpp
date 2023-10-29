@@ -150,49 +150,12 @@ void EventDispatcherEPoll::interrupt()
     wakeUp();
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-extern uint qGlobalPostedEventsCount();
-
-bool EventDispatcherEPoll::hasPendingEvents()
-{
-    return qGlobalPostedEventsCount() > 0;
-}
-
-void EventDispatcherEPoll::registerTimer(int timerId,
-                                         int interval,
-                                         Qt::TimerType timerType,
-                                         QObject *object)
-{
-#    ifndef QT_NO_DEBUG
-    if (timerId < 1 || interval < 0 || !object) {
-        qWarning("%s: invalid arguments", Q_FUNC_INFO);
-        return;
-    }
-
-    if (object->thread() != thread() && thread() != QThread::currentThread()) {
-        qWarning("%s: timers cannot be started from another thread", Q_FUNC_INFO);
-        return;
-    }
-#    endif
-
-    Q_D(EventDispatcherEPoll);
-    if (interval) {
-        d->registerTimer(timerId, interval, timerType, object);
-    } else {
-        d->registerZeroTimer(timerId, object);
-    }
-}
-
-void EventDispatcherEPoll::flush()
-{
-}
-#else
 void EventDispatcherEPoll::registerTimer(int timerId,
                                          qint64 interval,
                                          Qt::TimerType timerType,
                                          QObject *object)
 {
-#    ifndef QT_NO_DEBUG
+#ifndef QT_NO_DEBUG
     if (timerId < 1 || interval < 0 || !object) {
         qWarning("%s: invalid arguments", Q_FUNC_INFO);
         return;
@@ -202,7 +165,7 @@ void EventDispatcherEPoll::registerTimer(int timerId,
         qWarning("%s: timers cannot be started from another thread", Q_FUNC_INFO);
         return;
     }
-#    endif
+#endif
 
     Q_D(EventDispatcherEPoll);
     if (interval) {
@@ -211,6 +174,5 @@ void EventDispatcherEPoll::registerTimer(int timerId,
         d->registerZeroTimer(timerId, object);
     }
 }
-#endif
 
 #include "moc_eventdispatcher_epoll.cpp"

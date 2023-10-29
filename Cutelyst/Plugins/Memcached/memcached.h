@@ -2,9 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2017-2022 Matthias Fehring <mf@huessenbergnetz.de>
  * SPDX-License-Identifier: BSD-3-Clause
  */
-
-#ifndef CUTELYSTMEMCACHED_H
-#define CUTELYSTMEMCACHED_H
+#pragma once
 
 #include <Cutelyst/cutelyst_global.h>
 #include <Cutelyst/plugin.h>
@@ -1174,11 +1172,7 @@ bool Memcached::set(const QString &key,
                     MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::set(key, data, expiration, returnType);
 }
@@ -1191,11 +1185,7 @@ bool Memcached::setByKey(const QString &groupKey,
                          MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::setByKey(groupKey, key, data, expiration, returnType);
 }
@@ -1207,11 +1197,7 @@ bool Memcached::add(const QString &key,
                     MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::add(key, data, expiration, returnType);
 }
@@ -1224,11 +1210,7 @@ bool Memcached::addByKey(const QString &groupKey,
                          MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::addByKey(groupKey, key, data, expiration, returnType);
 }
@@ -1240,11 +1222,7 @@ bool Memcached::replace(const QString &key,
                         MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::replace(key, data, expiration, returnType);
 }
@@ -1257,11 +1235,7 @@ bool Memcached::replaceByKey(const QString &groupKey,
                              MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::replaceByKey(groupKey, key, data, expiration, returnType);
 }
@@ -1272,11 +1246,7 @@ T Memcached::get(const QString &key, uint64_t *cas, MemcachedReturnType *returnT
     T retVal;
     QByteArray ba = Memcached::get(key, cas, returnType);
     if (!ba.isEmpty()) {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        QDataStream in(&ba, QIODevice::ReadOnly);
-#else
         QDataStream in(&ba, QIODeviceBase::ReadOnly);
-#endif
         in >> retVal;
     }
     return retVal;
@@ -1291,11 +1261,7 @@ T Memcached::getByKey(const QString &groupKey,
     T retVal;
     QByteArray ba = Memcached::getByKey(groupKey, key, cas, returnType);
     if (!ba.isEmpty()) {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-        QDataStream in(&ba, QIODevice::ReadOnly);
-#else
         QDataStream in(&ba, QIODeviceBase::ReadOnly);
-#endif
         in >> retVal;
     }
     return retVal;
@@ -1309,11 +1275,7 @@ bool Memcached::cas(const QString &key,
                     MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::cas(key, data, expiration, cas, returnType);
 }
@@ -1327,11 +1289,7 @@ bool Memcached::casByKey(const QString &groupKey,
                          MemcachedReturnType *returnType)
 {
     QByteArray data;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    QDataStream out(&data, QIODevice::WriteOnly);
-#else
     QDataStream out(&data, QIODeviceBase::WriteOnly);
-#endif
     out << value;
     return Memcached::casByKey(groupKey, key, data, expiration, cas, returnType);
 }
@@ -1378,5 +1336,3 @@ QHash<QString, T> Memcached::mgetByKey(const QString &groupKey,
 }
 
 } // namespace Cutelyst
-
-#endif // CUTELYSTMEMCACHED_H

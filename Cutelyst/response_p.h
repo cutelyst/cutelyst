@@ -29,9 +29,6 @@ public:
 
     Headers headers;
     QMap<QByteArray, QNetworkCookie> cookies;
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-    QMap<QByteArray, Cookie> cuteCookies;
-#endif
     QByteArray bodyData;
     QUrl location;
     QIODevice *bodyIODevice = nullptr;

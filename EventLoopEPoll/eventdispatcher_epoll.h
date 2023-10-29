@@ -24,31 +24,23 @@ public:
 
     void reinstall();
 
-    virtual bool processEvents(QEventLoop::ProcessEventsFlags flags) override;
+    bool processEvents(QEventLoop::ProcessEventsFlags flags) override;
 
-    virtual void registerSocketNotifier(QSocketNotifier *notifier) override;
-    virtual void unregisterSocketNotifier(QSocketNotifier *notifier) override;
+    void registerSocketNotifier(QSocketNotifier *notifier) override;
+    void unregisterSocketNotifier(QSocketNotifier *notifier) override;
 
-    virtual bool unregisterTimer(int timerId) override;
-    virtual bool unregisterTimers(QObject *object) override;
-    virtual QList<QAbstractEventDispatcher::TimerInfo>
-        registeredTimers(QObject *object) const override;
-    virtual int remainingTime(int timerId) override;
+    bool unregisterTimer(int timerId) override;
+    bool unregisterTimers(QObject *object) override;
+    QList<QAbstractEventDispatcher::TimerInfo> registeredTimers(QObject *object) const override;
+    int remainingTime(int timerId) override;
 
-    virtual void wakeUp() override;
-    virtual void interrupt() override;
+    void wakeUp() override;
+    void interrupt() override;
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    virtual bool hasPendingEvents() override;
-    virtual void
-        registerTimer(int timerId, int interval, Qt::TimerType timerType, QObject *object) override;
-    virtual void flush() override;
-#else
-    virtual void registerTimer(int timerId,
-                               qint64 interval,
-                               Qt::TimerType timerType,
-                               QObject *object) override;
-#endif
+    void registerTimer(int timerId,
+                       qint64 interval,
+                       Qt::TimerType timerType,
+                       QObject *object) override;
 
 private:
     Q_DISABLE_COPY(EventDispatcherEPoll)

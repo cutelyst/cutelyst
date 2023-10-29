@@ -31,9 +31,6 @@ Authentication::Authentication(Application *parent)
     , d_ptr(new AuthenticationPrivate)
 {
     qRegisterMetaType<AuthenticationUser>();
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    qRegisterMetaTypeStreamOperators<AuthenticationUser>();
-#endif
 }
 
 Authentication::~Authentication()

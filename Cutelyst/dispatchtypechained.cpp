@@ -135,11 +135,7 @@ QByteArray DispatchTypeChained::list() const
         paths.append(rows);
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     QTextStream out(&buffer, QTextStream::WriteOnly);
-#else
-    QTextStream out(&buffer, QIODevice::WriteOnly);
-#endif
 
     if (!paths.isEmpty()) {
         out << Utils::buildTable(paths,
@@ -167,8 +163,8 @@ DispatchType::MatchType
 
     // TODO avoid toString()
     // TODO remove mid(1)
-    const BestActionMatch ret = d->recurseMatch(
-        args.size(), QStringLiteral("/"), path.mid(1).toString().split(QLatin1Char('/')));
+    const BestActionMatch ret =
+        d->recurseMatch(args.size(), u"/"_qs, path.mid(1).toString().split(QLatin1Char('/')));
     const ActionList chain = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;

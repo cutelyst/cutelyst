@@ -7,9 +7,6 @@
 #define CSRFPROTECTION_P_H
 
 #include "csrfprotection.h"
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-#    include "cookie.h"
-#endif
 
 #include <QNetworkCookie>
 #include <QRegularExpression>

@@ -187,41 +187,17 @@ QVariant Response::cookie(const QByteArray &name) const
     return QVariant::fromValue(d->cookies.value(name));
 }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-QVariant Response::cuteCookie(const QByteArray &name) const
-{
-    Q_D(const Response);
-    return QVariant::fromValue(d->cuteCookies.value(name));
-}
-#endif
-
 QList<QNetworkCookie> Response::cookies() const
 {
     Q_D(const Response);
     return d->cookies.values();
 }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-QList<Cookie> Response::cuteCookies() const
-{
-    Q_D(const Response);
-    return d->cuteCookies.values();
-}
-#endif
-
 void Response::setCookie(const QNetworkCookie &cookie)
 {
     Q_D(Response);
     d->cookies.insert(cookie.name(), cookie);
 }
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-void Response::setCuteCookie(const Cookie &cookie)
-{
-    Q_D(Response);
-    d->cuteCookies.insert(cookie.name(), cookie);
-}
-#endif
 
 void Response::setCookies(const QList<QNetworkCookie> &cookies)
 {
@@ -231,29 +207,11 @@ void Response::setCookies(const QList<QNetworkCookie> &cookies)
     }
 }
 
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-void Response::setCuteCookies(const QList<Cookie> &cookies)
-{
-    Q_D(Response);
-    for (const Cookie &cookie : cookies) {
-        d->cuteCookies.insert(cookie.name(), cookie);
-    }
-}
-#endif
-
 int Response::removeCookies(const QByteArray &name)
 {
     Q_D(Response);
     return d->cookies.remove(name);
 }
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 1, 0))
-int Response::removeCuteCookies(const QByteArray &name)
-{
-    Q_D(Response);
-    return d->cuteCookies.remove(name);
-}
-#endif
 
 void Response::redirect(const QUrl &url, quint16 status)
 {
