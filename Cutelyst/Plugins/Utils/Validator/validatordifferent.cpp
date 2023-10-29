@@ -15,9 +15,7 @@ ValidatorDifferent::ValidatorDifferent(const QString &field,
 {
 }
 
-ValidatorDifferent::~ValidatorDifferent()
-{
-}
+ValidatorDifferent::~ValidatorDifferent() = default;
 
 ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -32,14 +30,10 @@ ValidatorReturnType ValidatorDifferent::validate(Context *c, const ParamsMultiMa
     if (!v.isEmpty()) {
         if ((v == o)) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorDifferent: Validation failed for value %s in field %s at %s::%s: the "
-                    "value in the %s field is not different.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()),
-                    qPrintable(d->otherField));
+            qCDebug(C_VALIDATOR).nospace().noquote()
+                    << "ValidatorDifferent: Validation failed for value \"" << v << "\" in field "
+                    << field() << " at " << caName(c) << ": the value in the field " << d->otherField
+                    << " is not different";
         } else {
             result.value.setValue(v);
         }

@@ -17,9 +17,7 @@ ValidatorDate::ValidatorDate(const QString &field,
 {
 }
 
-ValidatorDate::~ValidatorDate()
-{
-}
+ValidatorDate::~ValidatorDate() = default;
 
 ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -34,13 +32,9 @@ ValidatorReturnType ValidatorDate::validate(Context *c, const ParamsMultiMap &pa
 
         if (!date.isValid()) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorDate: Validation failed for value \"%s\" in field %s in %s::%s: not "
-                    "a valid date.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote()
+                    << "ValidatorDate: Validation failed for value \"" << v << "\" in field"
+                    << field() << "at" << caName(c);
         } else {
             result.value.setValue(date);
         }

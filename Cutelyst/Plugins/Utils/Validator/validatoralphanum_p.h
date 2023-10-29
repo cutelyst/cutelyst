@@ -8,6 +8,8 @@
 #include "validatoralphanum.h"
 #include "validatorrule_p.h"
 
+#include <QRegularExpression>
+
 namespace Cutelyst {
 
 class ValidatorAlphaNumPrivate : public ValidatorRulePrivate
@@ -21,6 +23,8 @@ public:
         , asciiOnly(ao)
     {
     }
+
+    static const QRegularExpression regex;
 
     bool asciiOnly = false;
 };

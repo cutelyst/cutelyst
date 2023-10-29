@@ -14,13 +14,13 @@ class ValidatorDigitsBetweenPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorDigitsBetweenPrivate(const QString &f,
-                                  const QVariant &mi,
-                                  const QVariant &ma,
+                                  QVariant mi,
+                                  QVariant ma,
                                   const ValidatorMessages &m,
                                   const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , min(mi)
-        , max(ma)
+        , min(std::move(mi))
+        , max(std::move(ma))
     {
     }
 

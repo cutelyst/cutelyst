@@ -43,7 +43,7 @@ public:
     /*!
      * \brief Deconstructs the accepted validator.
      */
-    ~ValidatorAccepted() override;
+    ~ValidatorAccepted() override = default;
 
     /*!
      * \ingroup plugins-utils-validator-rules
@@ -68,7 +68,7 @@ protected:
                                    const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorAccepted)
+    Q_DECLARE_PRIVATE(ValidatorAccepted) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorAccepted)
 };
 

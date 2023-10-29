@@ -6,7 +6,9 @@
 #define CUTELYSTVALIDATORDOMAIN_P_H
 
 #include "validatordomain.h"
-#include "validatorurl_p.h"
+#include "validatorrule_p.h"
+
+#include <chrono>
 
 namespace Cutelyst {
 
@@ -21,6 +23,10 @@ public:
         , checkDNS(cd)
     {
     }
+
+    static constexpr qsizetype maxDnsNameWithLastDot{253};
+    static constexpr qsizetype maxDnsLabelLength{63};
+    static constexpr std::chrono::milliseconds dnsLookupTimeout{3100};
 
     bool checkDNS = false;
 };

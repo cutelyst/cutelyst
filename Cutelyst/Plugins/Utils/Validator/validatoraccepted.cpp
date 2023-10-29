@@ -15,10 +15,6 @@ ValidatorAccepted::ValidatorAccepted(const QString &field,
 {
 }
 
-ValidatorAccepted::~ValidatorAccepted()
-{
-}
-
 ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
                                                 const Cutelyst::ParamsMultiMap &params) const
 {
@@ -29,11 +25,9 @@ ValidatorReturnType ValidatorAccepted::validate(Cutelyst::Context *c,
     } else {
         result.errorMessage = validationError(c);
         result.value.setValue<bool>(false);
-        qCDebug(C_VALIDATOR,
-                "ValidatorAccepted: Validation failed for field %s at %s::%s.",
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+        qCDebug(C_VALIDATOR).nospace().noquote()
+                << "ValidatorAccepted: Validation failed for field "
+                << field() << " at " << caName(c);
     }
 
     return result;

@@ -14,11 +14,11 @@ class ValidatorDigitsPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorDigitsPrivate(const QString &f,
-                           const QVariant &len,
+                           QVariant len,
                            const ValidatorMessages &m,
                            const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , length(len)
+        , length(std::move(len))
     {
     }
 

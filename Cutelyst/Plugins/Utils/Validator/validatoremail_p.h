@@ -8,6 +8,8 @@
 #include "validatoremail.h"
 #include "validatorrule_p.h"
 
+#include <QRegularExpression>
+
 namespace Cutelyst {
 
 struct ValidatorEmailDiagnoseStruct {
@@ -46,6 +48,25 @@ public:
                            ValidatorEmail::Options options              = ValidatorEmail::NoOption,
                            ValidatorEmail::Category threshold           = ValidatorEmail::RFC5321,
                            ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
+
+    // last integer code number use by ASCII
+    static constexpr char16_t asciiTab{9};
+    static constexpr char16_t asciiLF{10};
+    static constexpr char16_t asciiUS{31};
+    static constexpr char16_t asciiSpace{32};
+    static constexpr char16_t asciiExclamationMark{33};
+    static constexpr char16_t asciiTilde{126};
+    static constexpr char16_t asciiEnd{127};
+
+    // https://tools.ietf.org/html/rfc5321#section-4.5.3.1.1
+    // The maximum total length of a user name or other local-part is 64 octets.
+    static constexpr qsizetype maxLocalPartLength{64};
+    static constexpr qsizetype maxDnsLabelLength{63};
+
+    static constexpr std::chrono::milliseconds dnsLookupTimeout{3100};
+
+    static const QRegularExpression ipv4Regex;
+    static const QRegularExpression ipv6PartRegex;
 
     ValidatorEmail::Category threshold = ValidatorEmail::RFC5321;
     ValidatorEmail::Options options    = ValidatorEmail::NoOption;

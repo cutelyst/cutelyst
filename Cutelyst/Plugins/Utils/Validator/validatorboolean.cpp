@@ -9,6 +9,17 @@
 
 using namespace Cutelyst;
 
+const QStringList ValidatorBooleanPrivate::trueVals{
+    u"1"_qs,
+    u"true"_qs,
+    u"on"_qs
+};
+const QStringList ValidatorBooleanPrivate::falseVals{
+    u"0"_qs,
+    u"false"_qs,
+    u"off"_qs
+};
+
 ValidatorBoolean::ValidatorBoolean(const QString &field,
                                    const ValidatorMessages &messages,
                                    const QString &defValKey)
@@ -16,9 +27,7 @@ ValidatorBoolean::ValidatorBoolean(const QString &field,
 {
 }
 
-ValidatorBoolean::~ValidatorBoolean()
-{
-}
+ValidatorBoolean::~ValidatorBoolean() = default;
 
 ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -27,23 +36,16 @@ ValidatorReturnType ValidatorBoolean::validate(Context *c, const ParamsMultiMap 
     const QString v = value(params);
 
     if (!v.isEmpty()) {
-        static const QStringList lt(
-            {QStringLiteral("1"), QStringLiteral("true"), QStringLiteral("on")});
-        static const QStringList lf(
-            {QStringLiteral("0"), QStringLiteral("false"), QStringLiteral("off")});
-        if (lt.contains(v, Qt::CaseInsensitive)) {
+        if (ValidatorBooleanPrivate::trueVals.contains(v, Qt::CaseInsensitive)) {
             result.value.setValue<bool>(true);
-        } else if (lf.contains(v, Qt::CaseInsensitive)) {
+        } else if (ValidatorBooleanPrivate::falseVals.contains(v, Qt::CaseInsensitive)) {
             result.value.setValue<bool>(false);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorBoolean: The value %s of field %s in %s::%s can not be interpreted "
-                    "as boolean.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).nospace().noquote()
+                    << "ValidatorBoolean: The value \"" << v << "\" of field"
+                    << field() << "at" << caName(c)
+                    << "can not be interpreted as boolean";
         }
     } else {
         defaultValue(c, &result, "ValidatorBoolean");

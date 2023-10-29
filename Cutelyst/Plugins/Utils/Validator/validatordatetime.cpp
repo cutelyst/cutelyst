@@ -19,9 +19,7 @@ ValidatorDateTime::ValidatorDateTime(const QString &field,
 {
 }
 
-ValidatorDateTime::~ValidatorDateTime()
-{
-}
+ValidatorDateTime::~ValidatorDateTime() = default;
 
 ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -37,13 +35,9 @@ ValidatorReturnType ValidatorDateTime::validate(Context *c, const ParamsMultiMap
 
         if (!dt.isValid()) {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorDateTime: Validation failed for value \"%s\" in field %s in %s::%s: "
-                    "not a valid date and time.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote()
+                    << "ValidatorDateTime: Validation failed for value \"" << v << "\" in field"
+                    << field() << "at" << caName(c);
         } else {
             result.value.setValue(dt);
         }

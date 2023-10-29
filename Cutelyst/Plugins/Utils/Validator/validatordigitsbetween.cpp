@@ -16,9 +16,7 @@ ValidatorDigitsBetween::ValidatorDigitsBetween(const QString &field,
 {
 }
 
-ValidatorDigitsBetween::~ValidatorDigitsBetween()
-{
-}
+ValidatorDigitsBetween::~ValidatorDigitsBetween() = default;
 
 ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -33,37 +31,26 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
     int _min = d->extractInt(c, params, d->min, &ok);
     if (!ok) {
         result.errorMessage = validationDataError(c);
-        qCWarning(
-            C_VALIDATOR,
-            "ValidatorDigitsBetween: Invalid minimum validation length for field %s at %s::%s.",
-            qPrintable(field()),
-            qPrintable(c->controllerName()),
-            qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR).noquote()
+                << "ValidatorDigitsBetween: Invalid minimum validation length for field"
+                << field() << "at" << caName(c);
         return result;
     } else {
         _max = d->extractInt(c, params, d->max, &ok);
         if (!ok) {
             result.errorMessage = validationDataError(c);
-            qCWarning(
-                C_VALIDATOR,
-                "ValidatorDigitsBetween: Invalid maximum validation length for field %s at %s::%s.",
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+            qCWarning(C_VALIDATOR).noquote()
+                    << "ValidatorBetween: Invalid maximum validation length for field"
+                    << field() << "at" << caName(c);
             return result;
         }
     }
 
     if (_min > _max) {
         result.errorMessage = validationDataError(c);
-        qCWarning(C_VALIDATOR,
-                  "ValidatorDigitsBetween: Minimum length %i is larger than maximum length %i for "
-                  "field %s at %s::%s",
-                  _min,
-                  _max,
-                  qPrintable(field()),
-                  qPrintable(c->controllerName()),
-                  qPrintable(c->actionName()));
+        qCWarning(C_VALIDATOR).noquote()
+                << "ValidatorDigitsBetween: Minimum length" << _min << "is larger than"
+                << "maximum lenth" << _max << "for field" << field() << "at" << caName(c);
         return result;
     }
 
@@ -73,15 +60,10 @@ ValidatorReturnType ValidatorDigitsBetween::validate(Context *c, const ParamsMul
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c, QVariantList{_min, _max});
-            qCDebug(C_VALIDATOR,
-                    "ValidatorDigitsBetween: Validation failed for value \"%s\" in field %s at "
-                    "%s::%s: length not between %i and %i and/or non-digit characters.",
-                    qPrintable(v),
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()),
-                    _min,
-                    _max);
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << "ValidatorBetween: Validation failed for value \"" << v << "\" in field "
+                    << field() << " at " << caName(c) << ": length not between " << _min << " and "
+                    << _max << " and/or non-digit characters in the input value";
         }
 
     } else {
@@ -97,7 +79,7 @@ bool ValidatorDigitsBetween::validate(const QString &value, int min, int max)
 
     for (const QChar &ch : value) {
         const ushort &uc = ch.unicode();
-        if (!((uc > 47) && (uc < 58))) {
+        if (!((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9))) {
             valid = false;
             break;
         }

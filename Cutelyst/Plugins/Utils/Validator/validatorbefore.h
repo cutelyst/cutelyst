@@ -133,7 +133,7 @@ protected:
     QString genericParsingError(Context *c, const QVariant &errorData = QVariant()) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorBefore)
+    Q_DECLARE_PRIVATE(ValidatorBefore) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorBefore)
 };
 
