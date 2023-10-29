@@ -68,6 +68,10 @@ public:
     static const QRegularExpression ipv4Regex;
     static const QRegularExpression ipv6PartRegex;
 
+    // US-ASCII visible characters not valid for atext
+    // (https://tools.ietf.org/html/rfc5322#section-3.2.3)
+    static const QString stringSpecials;
+
     ValidatorEmail::Category threshold = ValidatorEmail::RFC5321;
     ValidatorEmail::Options options    = ValidatorEmail::NoOption;
 };
