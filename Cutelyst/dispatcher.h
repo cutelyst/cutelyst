@@ -36,7 +36,7 @@ public:
     /**
      * Returns a named action from a given namespace.
      */
-    Action *getAction(QStringView name, const QString &nameSpace = {}) const;
+    Action *getAction(QStringView name, QStringView nameSpace = {}) const;
 
     /**
      * Returns the named action by its full private path.
@@ -47,7 +47,7 @@ public:
      * Returns a list of actions that match \p name on
      * the desired namespace \p nameSpace
      */
-    ActionList getActions(QStringView name, const QString &nameSpace) const;
+    ActionList getActions(QStringView name, QStringView nameSpace) const;
 
     /**
      * Returns a Controller given it's name

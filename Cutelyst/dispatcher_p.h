@@ -21,21 +21,23 @@ public:
     inline void prepareAction(Context *c, QStringView path) const;
 
     void printActions() const;
-    inline ActionList getContainers(const QString &ns) const;
+    inline ActionList getContainers(QStringView ns) const;
     inline Action *command2Action(Context *c, QStringView command, const QStringList &args) const;
     inline Action *
         invokeAsPath(Context *c, QStringView relativePath, const QStringList &args) const;
 
     static inline QString actionRel2Abs(Context *c, QStringView path);
-    static inline QString cleanNamespace(const QString &ns);
-    static inline QString normalizePath(const QString &path);
 
-    struct Replacement {
+    struct ActionReplacement {
         QString name;
         Action *action = nullptr;
     };
-    QMap<QStringView, Replacement> actions;
-    QMap<QString, ActionList> actionContainer;
+    QMap<QStringView, ActionReplacement> actions;
+    struct ActionListReplacement {
+        QString name;
+        ActionList actions;
+    };
+    QMap<QStringView, ActionListReplacement> actionContainer;
     ActionList rootActions;
 
     struct NameController {

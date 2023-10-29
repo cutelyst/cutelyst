@@ -67,7 +67,13 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
             if (registered) {
                 const QString name = action->ns() + QLatin1Char('/') + action->name();
                 d->actions.insert(name, {name, action});
-                d->actionContainer[action->ns()] << action;
+                auto it = d->actionContainer.find(action->ns());
+                if (it != d->actionContainer.end()) {
+                    it->actions << action;
+                } else {
+                    d->actionContainer.insert(action->ns(), {action->ns(), {action}});
+                }
+
                 registeredActions.append(action);
                 instanceUsed = true;
             } else {
@@ -89,7 +95,7 @@ void Dispatcher::setupActions(const QVector<Controller *> &controllers,
     }
 
     // Cache root actions, BEFORE the controllers set them
-    d->rootActions = d->actionContainer.value(QLatin1String(""));
+    d->rootActions = d->actionContainer.value(u"").actions;
 
     for (Controller *controller : controllers) {
         controller->d_ptr->setupFinished();
@@ -201,7 +207,7 @@ void DispatcherPrivate::prepareAction(Context *c, QStringView path) const
     }
 }
 
-Action *Dispatcher::getAction(QStringView name, const QString &nameSpace) const
+Action *Dispatcher::getAction(QStringView name, QStringView nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -214,8 +220,7 @@ Action *Dispatcher::getAction(QStringView name, const QString &nameSpace) const
         return d->actions.value(normName).action;
     }
 
-    const QString ns = DispatcherPrivate::cleanNamespace(nameSpace);
-    return getActionByPath(QString{ns + u'/' + name});
+    return getActionByPath(QString{nameSpace + u'/' + name});
 }
 
 Action *Dispatcher::getActionByPath(QStringView path) const
@@ -231,7 +236,7 @@ Action *Dispatcher::getActionByPath(QStringView path) const
     return d->actions.value(path).action;
 }
 
-ActionList Dispatcher::getActions(QStringView name, const QString &nameSpace) const
+ActionList Dispatcher::getActions(QStringView name, QStringView nameSpace) const
 {
     Q_D(const Dispatcher);
 
@@ -241,8 +246,7 @@ ActionList Dispatcher::getActions(QStringView name, const QString &nameSpace) co
         return ret;
     }
 
-    const QString ns            = DispatcherPrivate::cleanNamespace(nameSpace);
-    const ActionList containers = d->getContainers(ns);
+    const ActionList containers = d->getContainers(nameSpace);
     auto rIt                    = containers.rbegin();
     while (rIt != containers.rend()) {
         if ((*rIt)->name() == name) {
@@ -303,30 +307,6 @@ QVector<DispatchType *> Dispatcher::dispatchers() const
     return d->dispatchers;
 }
 
-QString DispatcherPrivate::cleanNamespace(const QString &ns)
-{
-    QString ret       = ns;
-    bool lastWasSlash = true; // remove initial slash
-    int nsSize        = ns.size();
-    for (int i = 0; i < nsSize; ++i) {
-        // Mark if the last char was a slash
-        // so that two or more consecutive slashes
-        // could be converted to just one
-        // "a///b" -> "a/b"
-        if (ret.at(i) == u'/') {
-            if (lastWasSlash) {
-                ret.remove(i, 1);
-                --nsSize;
-            } else {
-                lastWasSlash = true;
-            }
-        } else {
-            lastWasSlash = false;
-        }
-    }
-    return ret;
-}
-
 void DispatcherPrivate::printActions() const
 {
     QVector<QStringList> table;
@@ -355,7 +335,7 @@ void DispatcherPrivate::printActions() const
                                         .constData();
 }
 
-ActionList DispatcherPrivate::getContainers(const QString &ns) const
+ActionList DispatcherPrivate::getContainers(QStringView ns) const
 {
     ActionList ret;
 
@@ -364,8 +344,8 @@ ActionList DispatcherPrivate::getContainers(const QString &ns) const
         //        qDebug() << pos << ns.mid(0, pos);
         while (pos > 0) {
             //            qDebug() << pos << ns.mid(0, pos);
-            ret.append(actionContainer.value(ns.mid(0, pos)));
-            pos = ns.lastIndexOf(QLatin1Char('/'), pos - 1);
+            ret.append(actionContainer.value(ns.mid(0, pos)).actions);
+            pos = ns.lastIndexOf(u'/', pos - 1);
         }
     }
     //    qDebug() << actionContainer.size() << rootActions;
@@ -394,27 +374,28 @@ Action *DispatcherPrivate::invokeAsPath(Context *c,
     Q_Q(const Dispatcher);
 
     Action *ret;
-    QString path = DispatcherPrivate::actionRel2Abs(c, relativePath);
+    const QString path = DispatcherPrivate::actionRel2Abs(c, relativePath);
+    QStringView pathView{path};
 
-    int pos     = path.lastIndexOf(QLatin1Char('/'));
-    int lastPos = path.size();
+    int pos     = pathView.lastIndexOf(u'/');
+    int lastPos = pathView.size();
     do {
         if (pos == -1) {
-            ret = q->getAction(path, QString());
+            ret = q->getAction(pathView);
             if (ret) {
                 return ret;
             }
         } else {
-            const QString name = path.mid(pos + 1, lastPos);
-            path               = path.mid(0, pos);
-            ret                = q->getAction(name, path);
+            const auto name = pathView.mid(pos + 1, lastPos);
+            pathView        = pathView.mid(0, pos);
+            ret             = q->getAction(name, pathView);
             if (ret) {
                 return ret;
             }
         }
 
         lastPos = pos;
-        pos     = path.indexOf(QLatin1Char('/'), pos - 1);
+        pos     = pathView.indexOf(u'/', pos - 1);
     } while (pos != -1);
 
     return nullptr;
