@@ -80,7 +80,7 @@ int TestEngine::workerId() const
 }
 
 QVariantMap TestEngine::createRequest(const QByteArray &method,
-                                      const QString &path,
+                                      const QByteArray &path,
                                       const QByteArray &query,
                                       const Headers &headers,
                                       QByteArray *body)
@@ -101,8 +101,9 @@ QVariantMap TestEngine::createRequest(const QByteArray &method,
     QVariantMap ret;
 
     TestEngineConnection req;
-    req.method = method;
-    req.setPath(path);
+    req.method       = method;
+    QByteArray _path = path;
+    req.setPath(_path);
     req.query          = query;
     req.protocol       = "HTTP/1.1"_qba;
     req.isSecure       = false;
@@ -122,6 +123,15 @@ QVariantMap TestEngine::createRequest(const QByteArray &method,
            {u"headers"_qs, QVariant::fromValue(req.m_headers)}};
 
     return ret;
+}
+
+QVariantMap TestEngine::createRequest(const QByteArray &method,
+                                      const QString &path,
+                                      const QByteArray &query,
+                                      const Headers &headers,
+                                      QByteArray *body)
+{
+    return createRequest(method, path.toLatin1(), query, headers, body);
 }
 
 bool TestEngine::init()

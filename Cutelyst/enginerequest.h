@@ -128,15 +128,14 @@ public:
      * This method sets the path and already does the decoding so that it is
      * done a single time.
      *
-     * The path requested by the user agent '/index', MUST NOT have a leading slash
+     * The path requested by the user agent '/index', MUST have a leading slash
      */
     void setPath(char *rawPath, const int len);
 
-    inline void setPath(const QString &path)
+    inline void setPath(QByteArray &path)
     {
-        Q_ASSERT_X(path.startsWith(u'/'), "leading slash", "Path must always start with /");
-        QByteArray rawPath = path.toLatin1();
-        setPath(rawPath.data(), rawPath.size());
+        Q_ASSERT_X(path.startsWith('/'), "leading slash", "Path must always start with /");
+        setPath(path.data(), path.size());
     }
 
     /*! The method used (GET, POST...) */

@@ -35,8 +35,8 @@ public:
     };
 
     typedef struct {
-        QString key;
-        QString value;
+        QByteArray key;
+        QByteArray value;
     } hpackStaticPair;
 
     static const QHash<QByteArray, const char *> hpackStaticHeadersCode;

@@ -47,7 +47,7 @@ public:
     void windowUpdated();
 
     QEventLoop *loop = nullptr;
-    QString scheme;
+    QByteArray scheme;
     ProtoRequestHttp2 *protoRequest;
     quint32 streamId;
     qint32 windowSize    = 65535;

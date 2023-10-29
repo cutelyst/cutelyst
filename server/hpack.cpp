@@ -17,7 +17,7 @@
 using namespace Cutelyst;
 
 unsigned char *
-    hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len);
+    hpackDecodeString(unsigned char *src, unsigned char *src_end, QByteArray &value, int len);
 
 // This decodes an UInt
 // it returns nullptr if it tries to read past end
@@ -75,7 +75,7 @@ static inline void encodeH2caseHeader(QByteArray &buf, const QString &key)
     }
 }
 
-unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
+unsigned char *parse_string(QByteArray &dst, unsigned char *buf, quint8 *itEnd)
 {
     quint16 str_len = 0;
 
@@ -93,7 +93,7 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
         }
     } else {
         if (buf + str_len <= itEnd) {
-            dst = QString::fromLatin1(reinterpret_cast<const char *>(buf), str_len);
+            dst = QByteArray(reinterpret_cast<const char *>(buf), str_len);
             buf += str_len;
         } else {
             return nullptr; // Reading past end
@@ -102,7 +102,7 @@ unsigned char *parse_string(QString &dst, unsigned char *buf, quint8 *itEnd)
     return buf;
 }
 
-unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
+unsigned char *parse_string_key(QByteArray &dst, quint8 *buf, quint8 *itEnd)
 {
     quint16 str_len    = 0;
     bool huffmanDecode = *buf & 0x80;
@@ -126,7 +126,7 @@ unsigned char *parse_string_key(QString &dst, quint8 *buf, quint8 *itEnd)
                 if (c.isUpper()) {
                     return nullptr;
                 }
-                dst += c;
+                dst += char(*(buf++));
             }
         } else {
             return nullptr; // Reading past end
@@ -225,53 +225,55 @@ enum ErrorCodes {
     ErrorHttp11Required     = 0xD
 };
 
-inline bool validPseudoHeader(const QString &k, const QString &v, H2Stream *stream)
+inline bool validPseudoHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
 {
     //    qDebug() << "validPseudoHeader" << k << v << stream->path << stream->method <<
     //    stream->scheme;
-    if (k.compare(u":path") == 0) {
+    if (k.compare(":path") == 0) {
         if (!stream->gotPath && !v.isEmpty()) {
             int leadingSlash = 0;
             while (leadingSlash < v.size() && v.at(leadingSlash) == u'/') {
                 ++leadingSlash;
             }
 
-            int pos = v.indexOf(QLatin1Char('?'));
+            int pos = v.indexOf('?');
             if (pos == -1) {
-                stream->setPath(v.mid(leadingSlash));
+                QByteArray path = v.mid(leadingSlash);
+                stream->setPath(path);
             } else {
-                stream->setPath(v.mid(leadingSlash, pos - leadingSlash));
-                stream->query = v.mid(++pos).toLatin1();
+                QByteArray path = v.mid(leadingSlash, pos - leadingSlash);
+                stream->setPath(path);
+                stream->query = v.mid(++pos);
             }
             stream->gotPath = true;
             return true;
         }
-    } else if (k.compare(u":method") == 0) {
+    } else if (k.compare(":method") == 0) {
         if (stream->method.isEmpty()) {
-            stream->method = v.toLatin1();
+            stream->method = v;
             return true;
         }
-    } else if (k.compare(u":authority") == 0) {
-        stream->serverAddress = v.toLatin1();
+    } else if (k.compare(":authority") == 0) {
+        stream->serverAddress = v;
         return true;
-    } else if (k.compare(u":scheme") == 0) {
+    } else if (k.compare(":scheme") == 0) {
         if (stream->scheme.isEmpty()) {
             stream->scheme   = v;
-            stream->isSecure = v.compare(u"https") == 0;
+            stream->isSecure = v.compare("https") == 0;
             return true;
         }
     }
     return false;
 }
 
-inline bool validHeader(const QString &k, const QString &v)
+inline bool validHeader(const QByteArray &k, const QByteArray &v)
 {
-    return k.compare(u"connection") != 0 && (k.compare(u"te") != 0 || v.compare(u"trailers") == 0);
+    return k.compare("connection") != 0 && (k.compare("te") != 0 || v.compare("trailers") == 0);
 }
 
-inline void consumeHeader(const QString &k, const QString &v, H2Stream *stream)
+inline void consumeHeader(const QByteArray &k, const QByteArray &v, H2Stream *stream)
 {
-    if (k.compare(u"content-length") == 0) {
+    if (k.compare("content-length") == 0) {
         stream->contentLength = v.toLongLong();
     }
 }
@@ -290,8 +292,8 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 return ErrorCompressionError;
             }
 
-            QString key;
-            QString value;
+            QByteArray key;
+            QByteArray value;
             if (intValue > 61) {
                 //                qDebug() << "6.1 Indexed Header Field Representation dynamic table
                 //                lookup" << *it << intValue << m_dynamicTable.size();
@@ -310,7 +312,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
             }
 
             //            qDebug() << "header" << key << value;
-            if (key.startsWith(QLatin1Char(':'))) {
+            if (key.startsWith(':')) {
                 if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
                     return ErrorProtocolError;
                 }
@@ -320,7 +322,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                stream->headers.pushHeader(key.toLatin1(), value.toLatin1());
+                stream->headers.pushHeader(key, value);
             }
         } else {
             bool addToDynamicTable = false;
@@ -359,7 +361,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
             }
 
-            QString key;
+            QByteArray key;
             if (intValue > 61) {
                 if (addToDynamicTable) {
                     // 6.2.1 Literal Header Field with Incremental Indexing
@@ -383,13 +385,13 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
             }
 
-            QString value;
+            QByteArray value;
             it = parse_string(value, it, itEnd);
             if (!it) {
                 return ErrorCompressionError;
             }
 
-            if (key.startsWith(QLatin1Char(':'))) {
+            if (key.startsWith(':')) {
                 if (!pseudoHeadersAllowed || !validPseudoHeader(key, value, stream)) {
                     return ErrorProtocolError;
                 }
@@ -399,7 +401,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
                 }
                 pseudoHeadersAllowed = false;
                 consumeHeader(key, value, stream);
-                stream->headers.pushHeader(key.toLatin1(), value.toLatin1());
+                stream->headers.pushHeader(key, value);
             }
 
             if (addToDynamicTable) {
@@ -430,7 +432,7 @@ int HPack::decode(unsigned char *it, unsigned char *itEnd, H2Stream *stream)
 }
 
 unsigned char *
-    hpackDecodeString(unsigned char *src, unsigned char *src_end, QString &value, int len)
+    hpackDecodeString(unsigned char *src, unsigned char *src_end, QByteArray &value, int len)
 {
     quint8 state                          = 0;
     const HPackPrivate::HuffDecode *entry = nullptr;
@@ -448,7 +450,7 @@ unsigned char *
         }
 
         if (entry->flags & HPackPrivate::HUFF_SYM) {
-            value.append(QLatin1Char(char(entry->sym)));
+            value.append(char(entry->sym));
         }
 
         entry = HPackPrivate::huff_decode_table[entry->state] + (*src & 0x0f);
@@ -459,7 +461,7 @@ unsigned char *
         }
 
         if ((entry->flags & HPackPrivate::HUFF_SYM) != 0) {
-            value.append(QLatin1Char(char(entry->sym)));
+            value.append(char(entry->sym));
         }
 
     } while (++src < src_end);

@@ -14,8 +14,8 @@
 namespace Cutelyst {
 
 struct DynamicTableEntry {
-    QString key;
-    QString value;
+    QByteArray key;
+    QByteArray value;
 };
 
 class Headers;
