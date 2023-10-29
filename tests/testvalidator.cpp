@@ -669,7 +669,7 @@ public:
         if (r) {
             QString sizeString;
             const QVariant rv = r.value(QStringLiteral("field"));
-            if (rv.type() == QVariant::Double) {
+            if (rv.typeId() == QMetaType::Double) {
                 sizeString = QString::number(rv.toDouble(), 'f', 2);
             } else {
                 sizeString = QString::number(rv.toULongLong());

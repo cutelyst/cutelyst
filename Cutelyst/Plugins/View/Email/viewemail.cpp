@@ -208,9 +208,9 @@ QByteArray ViewEmail::render(Context *c) const
 
     QVariant value;
     value = email.value(QStringLiteral("to"));
-    if (value.type() == QVariant::String && !value.toString().isEmpty()) {
+    if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addTo(value.toString());
-    } else if (value.type() == QVariant::StringList) {
+    } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
             message.addTo(rcpt);
@@ -218,9 +218,9 @@ QByteArray ViewEmail::render(Context *c) const
     }
 
     value = email.value(QStringLiteral("cc"));
-    if (value.type() == QVariant::String && !value.toString().isEmpty()) {
+    if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addCc(value.toString());
-    } else if (value.type() == QVariant::StringList) {
+    } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
             message.addCc(rcpt);
@@ -228,9 +228,9 @@ QByteArray ViewEmail::render(Context *c) const
     }
 
     value = email.value(QStringLiteral("bcc"));
-    if (value.type() == QVariant::String && !value.toString().isEmpty()) {
+    if (value.typeId() == QMetaType::QString && !value.toString().isEmpty()) {
         message.addBcc(value.toString());
-    } else if (value.type() == QVariant::StringList) {
+    } else if (value.typeId() == QMetaType::QStringList) {
         const auto rcpts = value.toStringList();
         for (const QString &rcpt : rcpts) {
             message.addBcc(rcpt);

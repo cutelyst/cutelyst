@@ -73,7 +73,7 @@ void UriFor::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const
     QVariant pathVar = m_path.resolve(gc);
     if (pathVar.userType() == qMetaTypeId<Cutelee::SafeString>()) {
         path = pathVar.value<Cutelee::SafeString>().get();
-    } else if (pathVar.type() == QVariant::String) {
+    } else if (pathVar.typeId() == QMetaType::QString) {
         path = pathVar.toString();
     } else {
         qWarning() << "c_uri_for PATH is not a valid type";
@@ -84,9 +84,9 @@ void UriFor::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const
         QVariant var = exp.resolve(gc);
         if (var.userType() == qMetaTypeId<Cutelee::SafeString>()) {
             args << var.value<Cutelee::SafeString>().get();
-        } else if (var.type() == QVariant::String) {
+        } else if (var.typeId() == QMetaType::QString) {
             args << var.toString();
-        } else if (var.type() == QVariant::StringList) {
+        } else if (var.typeId() == QMetaType::QStringList) {
             args << var.toStringList();
         }
     }
@@ -99,10 +99,10 @@ void UriFor::render(Cutelee::OutputStream *stream, Cutelee::Context *gc) const
         } else if (var.userType() == qMetaTypeId<Cutelee::SafeString>()) {
             auto query = splitQuery(var.value<Cutelee::SafeString>().get());
             queryValues.insert(query.first, query.second);
-        } else if (var.type() == QVariant::String) {
+        } else if (var.typeId() == QMetaType::QString) {
             auto query = splitQuery(var.toString());
             queryValues.insert(query.first, query.second);
-        } else if (var.type() == QVariant::StringList) {
+        } else if (var.typeId() == QMetaType::QStringList) {
             const auto queries = var.toStringList();
             for (const QString &str : queries) {
                 auto query = splitQuery(str);

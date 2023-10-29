@@ -1,6 +1,6 @@
-project(cutelyst_tests VERSION 3)
+project(cutelyst_tests VERSION 4)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Network Sql Test REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Core Network Sql Test REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.6.0 COMPONENTS Core Network Sql Test REQUIRED)
 
 add_library(coverage_test STATIC coverageobject.cpp
@@ -14,7 +14,7 @@ target_compile_features(coverage_test
     cxx_nullptr
     cxx_override
 )
-target_link_libraries(coverage_test Qt${QT_VERSION_MAJOR}::Test Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network)
+target_link_libraries(coverage_test Qt::Test Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}::Core Qt::Network)
 
 function(cute_test _testname _link1 _link2 _link3)
     add_executable(${_testname}_exec ${_testname}.cpp)

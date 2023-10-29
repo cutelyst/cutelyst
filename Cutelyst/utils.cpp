@@ -180,17 +180,17 @@ ParamsMultiMap Utils::decodePercentEncoding(char *data, int len)
         if (hasKey) {
             if ((data - from) == 0) {
                 if (!key.isEmpty()) {
-                    ret.insertMulti(key, {});
+                    ret.insert(key, {});
                 }
             } else {
-                ret.insertMulti(key,
-                                skipUtf8 ? QString::fromLatin1(from, data - from)
-                                         : QString::fromUtf8(from, data - from));
+                ret.insert(key,
+                           skipUtf8 ? QString::fromLatin1(from, data - from)
+                                    : QString::fromUtf8(from, data - from));
             }
         } else if ((data - from) > 0) {
-            ret.insertMulti(skipUtf8 ? QString::fromLatin1(from, data - from)
-                                     : QString::fromUtf8(from, data - from),
-                            {});
+            ret.insert(skipUtf8 ? QString::fromLatin1(from, data - from)
+                                : QString::fromUtf8(from, data - from),
+                       {});
         }
     };
 

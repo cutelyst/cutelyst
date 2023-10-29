@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(cutelyst
-    VERSION 3.9.0
+    VERSION 4.0.0
     DESCRIPTION "A C++ Web Framework built on top of Qt, using the simple approach of Catalyst (Perl) framework."
     HOMEPAGE_URL "https://cutelyst.org/"
     LANGUAGES CXX)
@@ -98,8 +98,6 @@ set (DOXYGEN_TIMESTAMP "YES" CACHE STRING "Enables or disables the footer timest
 set (MANDIR "${DATADIR}/man" CACHE PATH "Directory to install man pages")
 set (I18NDIR "${CMAKE_INSTALL_FULL_DATADIR}/cutelyst${PROJECT_VERSION_MAJOR}-qt${QT_VERSION_MAJOR}/translations" CACHE PATH "Directory to install translations")
 
-add_definitions("-DLOCALSTATEDIR=\"${LOCALSTATEDIR}\"")
-
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 macro(set_compiler_flags targetName)
@@ -141,7 +139,7 @@ add_definitions(
     -DQT_USE_QSTRINGBUILDER
     -DQT_NO_SIGNALS_SLOTS_KEYWORDS
     -DQT_USE_FAST_OPERATOR_PLUS
-    -DQT_DISABLE_DEPRECATED_BEFORE=0x050E00
+    -DQT_DISABLE_DEPRECATED_BEFORE=0x060200
 )
 
 set(CMAKE_CXX_STANDARD 20)
@@ -166,6 +164,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/cutelystqt5-config-vers
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}Config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/
+    COMPONENT cutelyst_installable
 )
 install(EXPORT CutelystTargets
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/Cutelyst${PROJECT_VERSION_MAJOR}Qt${QT_VERSION_MAJOR}/

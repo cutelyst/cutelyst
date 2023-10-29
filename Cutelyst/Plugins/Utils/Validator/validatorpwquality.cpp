@@ -44,7 +44,7 @@ int ValidatorPwQuality::validate(const QString &value,
 
             bool optionsSet = false;
             if (options.isValid()) {
-                if (options.type() == QVariant::Map) {
+                if (options.typeId() == QMetaType::QVariantMap) {
                     const QVariantMap map = options.toMap();
                     if (!map.empty()) {
                         auto i = map.constBegin();
@@ -63,7 +63,7 @@ int ValidatorPwQuality::validate(const QString &value,
                         }
                         optionsSet = true;
                     }
-                } else if (options.type() == QVariant::String) {
+                } else if (options.typeId() == QMetaType::QString) {
                     const QString configFile = options.toString();
                     if (!configFile.isEmpty()) {
                         if (C_VALIDATOR().isWarningEnabled()) {
@@ -461,9 +461,9 @@ ValidatorReturnType ValidatorPwQuality::validate(Context *c, const ParamsMultiMa
         Q_D(const ValidatorPwQuality);
         QVariant opts;
         if (d->options.isValid()) {
-            if (d->options.type() == QVariant::Map) {
+            if (d->options.typeId() == QMetaType::QVariantMap) {
                 opts = d->options;
-            } else if (d->options.type() == QVariant::String) {
+            } else if (d->options.typeId() == QMetaType::QString) {
                 const QString optString = d->options.toString();
                 if (c->stash().contains(optString)) {
                     opts = c->stash(optString);
