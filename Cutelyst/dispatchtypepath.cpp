@@ -28,7 +28,7 @@ QByteArray DispatchTypePath::list() const
 {
     Q_D(const DispatchTypePath);
 
-    QRegularExpression multipleSlashes(QLatin1String("/{1,}"));
+    const static QRegularExpression multipleSlashes(u"/{1,}"_qs);
 
     QVector<QStringList> table;
 
@@ -41,27 +41,25 @@ QByteArray DispatchTypePath::list() const
         const auto paths = d->paths.value(path);
         for (Action *action : paths.actions) {
             QString _path = u'/' + path;
-            if (action->attribute(QLatin1String("Args")).isEmpty()) {
-                _path.append(QLatin1String("/..."));
+            if (action->attribute(u"Args"_qs).isEmpty()) {
+                _path.append(u"/...");
             } else {
                 for (int i = 0; i < action->numberOfArgs(); ++i) {
-                    _path.append(QLatin1String("/*"));
+                    _path.append(u"/*");
                 }
             }
-            _path.replace(multipleSlashes, QLatin1String("/"));
+            _path.replace(multipleSlashes, u"/"_qs);
 
             QString privateName = action->reverse();
-            if (!privateName.startsWith(QLatin1Char('/'))) {
-                privateName.prepend(QLatin1Char('/'));
+            if (!privateName.startsWith(u'/')) {
+                privateName.prepend(u'/');
             }
 
             table.append({_path, privateName});
         }
     }
 
-    return Utils::buildTable(table,
-                             {QLatin1String("Path"), QLatin1String("Private")},
-                             QLatin1String("Loaded Path actions:"));
+    return Utils::buildTable(table, {u"Path"_qs, u"Private"_qs}, u"Loaded Path actions:"_qs);
 }
 
 Cutelyst::DispatchType::MatchType
@@ -112,7 +110,7 @@ bool DispatchTypePath::registerAction(Action *action)
 
     bool ret              = false;
     const auto attributes = action->attributes();
-    const auto range      = attributes.equal_range(QLatin1String("Path"));
+    const auto range      = attributes.equal_range(u"Path"_qs);
     for (auto i = range.first; i != range.second; ++i) {
         if (d->registerPath(*i, action)) {
             ret = true;
@@ -134,13 +132,13 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
     QString ret;
     if (captures.isEmpty()) {
         const auto attributes = action->attributes();
-        auto it               = attributes.constFind(QStringLiteral("Path"));
+        auto it               = attributes.constFind(u"Path"_qs);
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
                 ret = QStringLiteral("/");
-            } else if (!path.startsWith(QLatin1Char('/'))) {
-                ret = QLatin1Char('/') + path;
+            } else if (!path.startsWith(u'/')) {
+                ret = u'/' + path;
             } else {
                 ret = path;
             }

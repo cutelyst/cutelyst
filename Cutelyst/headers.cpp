@@ -14,13 +14,16 @@ using namespace Cutelyst;
 inline QByteArray decodeBasicAuth(const QByteArray &auth);
 inline Headers::Authorization decodeBasicAuthPair(const QByteArray &auth);
 
-auto findHeader(const std::vector<Headers::HeaderKeyValue> &headers, QByteArrayView key)
+namespace {
+QVector<Headers::HeaderKeyValue>::const_iterator
+    findHeaderConst(const QVector<Headers::HeaderKeyValue> &headers, QByteArrayView key)
 {
     auto matchKey = [key](Headers::HeaderKeyValue entry) {
         return key.compare(entry.key, Qt::CaseInsensitive) == 0;
     };
-    return std::find_if(headers.begin(), headers.end(), matchKey);
+    return std::find_if(headers.cbegin(), headers.cend(), matchKey);
 }
+} // namespace
 
 Headers::Headers(const Headers &other)
     : m_data(other.m_data)
@@ -92,10 +95,7 @@ QByteArray Headers::contentTypeCharset() const
 
 void Headers::setContentTypeCharset(const QByteArray &charset)
 {
-    auto matchKey = [](HeaderKeyValue entry) {
-        return entry.key.compare("Content-Type", Qt::CaseInsensitive) == 0;
-    };
-    auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
+    auto result = findHeaderConst(m_data, "Content-Type");
     if (result == m_data.end() || (result->value.isEmpty() && !charset.isEmpty())) {
         setContentType("charset=" + charset);
         return;
@@ -171,7 +171,7 @@ qint64 Headers::contentLength() const
 
 void Headers::setContentLength(qint64 value)
 {
-    setHeader("Content-Length", QByteArray::number(value));
+    setHeader("Content-Length"_qba, QByteArray::number(value));
 }
 
 QByteArray Headers::setDateWithDateTime(const QDateTime &date)
@@ -180,7 +180,7 @@ QByteArray Headers::setDateWithDateTime(const QDateTime &date)
     // and follow RFC 822
     QByteArray dt =
         QLocale::c().toString(date.toUTC(), u"ddd, dd MMM yyyy hh:mm:ss 'GMT").toLatin1();
-    setHeader("Date", dt);
+    setHeader("Date"_qba, dt);
     return dt;
 }
 
@@ -260,7 +260,7 @@ bool Headers::ifNoneMatch(const QByteArray &etag) const
 
 void Headers::setETag(const QByteArray &etag)
 {
-    setHeader("ETag", '"' + etag + '"');
+    setHeader("ETag"_qba, '"' + etag + '"');
 }
 
 QByteArray Headers::lastModified() const
@@ -270,7 +270,7 @@ QByteArray Headers::lastModified() const
 
 void Headers::setLastModified(const QByteArray &value)
 {
-    setHeader("Last-Modified", value);
+    setHeader("Last-Modified"_qba, value);
 }
 
 QString Headers::setLastModified(const QDateTime &lastModified)
@@ -317,9 +317,9 @@ void Headers::setReferer(const QByteArray &uri)
     int fragmentPos = uri.indexOf('#');
     if (fragmentPos != -1) {
         // Strip fragment per RFC 2616, section 14.36.
-        setHeader("Referer", uri.mid(0, fragmentPos));
+        setHeader("Referer"_qba, uri.mid(0, fragmentPos));
     } else {
-        setHeader("Referer", uri);
+        setHeader("Referer"_qba, uri);
     }
 }
 
@@ -389,11 +389,7 @@ Headers::Authorization Headers::proxyAuthorizationBasicObject() const
 
 QByteArray Headers::header(QByteArrayView key) const
 {
-    auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
-    };
-    if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
-        result != m_data.end()) {
+    if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
     }
     return {};
@@ -401,11 +397,7 @@ QByteArray Headers::header(QByteArrayView key) const
 
 QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) const
 {
-    auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
-    };
-    if (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
-        result != m_data.end()) {
+    if (auto result = findHeaderConst(m_data, key); result != m_data.end()) {
         return result->value;
     }
     return defaultValue;
@@ -414,12 +406,7 @@ QByteArray Headers::header(QByteArrayView key, const QByteArray &defaultValue) c
 QByteArrayList Headers::headers(QByteArrayView key) const
 {
     QByteArrayList ret;
-    auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
-    };
-
-    for (auto result = std::find_if(m_data.begin(), m_data.end(), matchKey); result != m_data.end();
-         ++result) {
+    for (auto result = findHeaderConst(m_data, key); result != m_data.end(); ++result) {
         ret.append(result->value);
     }
     return ret;
@@ -465,10 +452,7 @@ void Headers::removeHeader(QByteArrayView key)
 
 bool Headers::contains(QByteArrayView key) const
 {
-    auto matchKey = [key](HeaderKeyValue entry) {
-        return key.compare(entry.key, Qt::CaseInsensitive) == 0;
-    };
-    auto result = std::find_if(m_data.begin(), m_data.end(), matchKey);
+    auto result = findHeaderConst(m_data, key);
     return result != m_data.end();
 }
 
