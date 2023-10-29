@@ -11,6 +11,8 @@
 #include <QNetworkCookie>
 #include <QRegularExpression>
 
+#include <chrono>
+
 namespace Cutelyst {
 
 class CSRFProtectionPrivate
@@ -29,7 +31,6 @@ public:
 
     void beforeDispatch(Context *c);
 
-    qint64 cookieAge{0};
     QStringList trustedOrigins;
     static const QByteArrayList secureMethods;
     QStringList ignoredNamespaces;
@@ -42,7 +43,16 @@ public:
     QString errorMsgStashKey;
     QString genericErrorMessage;
     QByteArray genericContentType{"text/plain; charset=utf8"_qba};
+    std::chrono::seconds cookieExpiration{0};
+    static const QByteArray allowedChars;
     static const QRegularExpression sanitizeRe;
+#if __cplusplus >= 202002L
+    static constexpr std::chrono::years cookieDefaultExpiration{1};
+#else
+    static constexpr std::chrono::hours cookieDefaultExpiration{8766};
+#endif
+    static constexpr qsizetype secretLength{32};
+    static constexpr qsizetype tokenLength{2 * secretLength};
     QNetworkCookie::SameSite cookieSameSite = QNetworkCookie::SameSite::Strict;
     bool cookieHttpOnly{false};
     bool cookieSecure{false};
