@@ -1,0 +1,7 @@
+option(USE_MIMALLOC "Use mimalloc memory allocator" ${BUILD_ALL})
+if (USE_MIMALLOC)
+    set(MI_BUILD_SHARED OFF)
+    set(MI_BUILD_TESTS OFF)
+    set(MI_BUILD_OBJECT OFF)
+    add_subdirectory(../3rdparty/mimalloc)
+endif ()
