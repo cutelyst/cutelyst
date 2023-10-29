@@ -326,10 +326,11 @@ class LangSelectPrivate;
  *
  * @since %Cutelyst 2.1.0
  */
-class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect : public Plugin
+class CUTELYST_PLUGIN_UTILS_LANGSELECT_EXPORT LangSelect : public Plugin // clazy:exclude=ctor-missing-parent-argument
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(LangSelect)
+    Q_DECLARE_PRIVATE(LangSelect) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+    Q_DISABLE_COPY(LangSelect)
 public:
     /**
      * Sources that can be used for automatically detecting the locale.
@@ -374,7 +375,7 @@ public:
     /**
      * Deconstructs the %LangSelect object.
      */
-    ~LangSelect() override;
+    ~LangSelect() override = default;
 
     /**
      * Sets the list of supported @a locales.
@@ -468,7 +469,7 @@ public:
      * LangSelect::getSupportedLocales().
      * @sa setSupportedLocales(), addSupportedLocale(), setLocalesFromDir(), setLocalesFromDirs()
      */
-    QVector<QLocale> supportedLocales() const;
+    Q_REQUIRED_RESULT QVector<QLocale> supportedLocales() const;
 
     /**
      * Sets a @a key used in the URL query to store and retrieve the locale.
@@ -653,7 +654,7 @@ protected:
     bool setup(Application *app) override;
 
 private:
-    LangSelectPrivate *const d_ptr;
+    const QScopedPointer<LangSelectPrivate> d_ptr;
 };
 
 } // namespace Cutelyst

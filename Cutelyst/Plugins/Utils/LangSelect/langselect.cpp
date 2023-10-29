@@ -27,9 +27,9 @@ Q_LOGGING_CATEGORY(C_LANGSELECT, "cutelyst.plugin.langselect", QtWarningMsg)
 
 using namespace Cutelyst;
 
-static thread_local LangSelect *lsp = nullptr;
+static thread_local LangSelect *lsp = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-#define SELECTION_TRIED QStringLiteral("_c_langselect_tried")
+#define SELECTION_TRIED u"_c_langselect_tried"_qs
 
 LangSelect::LangSelect(Application *parent, Cutelyst::LangSelect::Source source)
     : Plugin(parent)
@@ -47,11 +47,6 @@ LangSelect::LangSelect(Application *parent)
     Q_D(LangSelect);
     d->source     = AcceptHeader;
     d->autoDetect = false;
-}
-
-LangSelect::~LangSelect()
-{
-    delete d_ptr;
 }
 
 bool LangSelect::setup(Application *app)
@@ -157,8 +152,8 @@ void LangSelect::setLocalesFromDir(const QString &path,
     if (Q_LIKELY(!path.isEmpty() && !name.isEmpty())) {
         const QDir dir(path);
         if (Q_LIKELY(dir.exists())) {
-            const auto _pref     = prefix.isEmpty() ? QStringLiteral(".") : prefix;
-            const auto _suff     = suffix.isEmpty() ? QStringLiteral(".qm") : suffix;
+            const auto _pref     = prefix.isEmpty() ? u"."_qs : prefix;
+            const auto _suff     = suffix.isEmpty() ? u".qm"_qs : suffix;
             const QString filter = name + _pref + u'*' + _suff;
             const auto files     = dir.entryInfoList({name}, QDir::Files);
             if (Q_LIKELY(!files.empty())) {
@@ -348,7 +343,7 @@ bool LangSelect::fromUrlQuery(Context *c, const QString &key)
         return true;
     }
 
-    const auto d    = lsp->d_ptr;
+    const auto d    = lsp->d_ptr.get();
     const auto _key = !key.isEmpty() ? key : d->queryKey;
     if (!d->getFromQuery(c, _key)) {
         if (!d->getFromHeader(c)) {
@@ -372,7 +367,7 @@ bool LangSelect::fromSession(Context *c, const QString &key)
         return foundInSession;
     }
 
-    const auto d    = lsp->d_ptr;
+    const auto d    = lsp->d_ptr.get();
     const auto _key = !key.isEmpty() ? key : d->sessionKey;
     foundInSession  = d->getFromSession(c, _key);
     if (!foundInSession) {
@@ -395,7 +390,7 @@ bool LangSelect::fromCookie(Context *c, const QByteArray &name)
         return foundInCookie;
     }
 
-    const auto d     = lsp->d_ptr;
+    const auto d     = lsp->d_ptr.get();
     const auto _name = !name.isEmpty() ? name : d->cookieName;
     foundInCookie    = d->getFromCookie(c, _name);
     if (!foundInCookie) {
@@ -418,7 +413,7 @@ bool LangSelect::fromSubDomain(Context *c, const QMap<QString, QLocale> &subDoma
         return foundInSubDomain;
     }
 
-    const auto d     = lsp->d_ptr;
+    const auto d     = lsp->d_ptr.get();
     const auto _map  = !subDomainMap.empty() ? subDomainMap : d->subDomainMap;
     foundInSubDomain = d->getFromSubdomain(c, _map);
     if (!foundInSubDomain) {
@@ -441,7 +436,7 @@ bool LangSelect::fromDomain(Context *c, const QMap<QString, QLocale> &domainMap)
         return foundInDomain;
     }
 
-    const auto d    = lsp->d_ptr;
+    const auto d    = lsp->d_ptr.get();
     const auto _map = !domainMap.empty() ? domainMap : d->domainMap;
     foundInDomain   = d->getFromDomain(c, _map);
     if (!foundInDomain) {
@@ -462,7 +457,7 @@ bool LangSelect::fromPath(Context *c, const QString &locale)
         return true;
     }
 
-    const auto d = lsp->d_ptr;
+    const auto d = lsp->d_ptr.get();
     const QLocale l(locale);
     if (l.language() != QLocale::C && d->locales.contains(l)) {
         qCDebug(C_LANGSELECT) << "Found valid locale" << l << "in path";
@@ -479,7 +474,7 @@ bool LangSelect::fromPath(Context *c, const QString &locale)
         pathParts[localeIdx] = c->locale().bcp47Name().toLower();
         uri.setPath(pathParts.join(u'/'));
         qCDebug(C_LANGSELECT) << "Storing selected locale by redirecting to" << uri;
-        c->res()->redirect(uri, 307);
+        c->res()->redirect(uri, Response::TemporaryRedirect);
         c->detach();
         return false;
     }
@@ -709,7 +704,7 @@ void LangSelectPrivate::setToQuery(Context *c, const QString &key) const
     query.addQueryItem(key, c->locale().bcp47Name().toLower());
     uri.setQuery(query);
     qCDebug(C_LANGSELECT) << "Storing selected locale in URL query by redirecting to" << uri;
-    c->res()->redirect(uri, 307);
+    c->res()->redirect(uri, Response::TemporaryRedirect);
 }
 
 void LangSelectPrivate::setToCookie(Context *c, const QByteArray &name) const
@@ -739,8 +734,8 @@ void LangSelectPrivate::setContentLanguage(Context *c) const
     }
     c->stash({{langStashKey, c->locale().bcp47Name()},
               {dirStashKey,
-               (c->locale().textDirection() == Qt::LeftToRight ? QStringLiteral("ltr")
-                                                               : QStringLiteral("rtl"))}});
+               (c->locale().textDirection() == Qt::LeftToRight ? u"ltr"_qs
+                                                               : u"rtl"_qs)}});
 }
 
 void LangSelectPrivate::beforePrepareAction(Context *c, bool *skipMethod) const
