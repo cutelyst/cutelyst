@@ -304,7 +304,7 @@ void ProtocolHttp::parseHeader(const char *ptr, const char *end, Socket *sock) c
             (key.compare("X-Forwarded-For", Qt::CaseInsensitive) == 0 ||
              key.compare("X-Real-Ip", Qt::CaseInsensitive) == 0)) {
             // configure your reverse-proxy to list only one IP address
-            protoRequest->remoteAddress   = QHostAddress(QString::fromLatin1(value));
+            protoRequest->remoteAddress.setAddress(QString::fromLatin1(value));
             protoRequest->remotePort      = 0; // unknown
             protoRequest->X_Forwarded_For = true;
         } else if (!protoRequest->X_Forwarded_Host &&

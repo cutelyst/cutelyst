@@ -27,7 +27,7 @@ class CUTELYST_LIBRARY EngineRequest
     friend class Engine;
 
 public:
-    enum StatusFlag {
+    enum StatusFlag : quint8 {
         InitialState     = 0x00,
         FinalizedHeaders = 0x01,
         IOWrite          = 0x02,
@@ -161,12 +161,6 @@ public:
     /*! The request headers */
     Headers headers;
 
-    /*! The timestamp of the start of request, TODO remove in Cutelyst 3 */
-    quint64 startOfRequest = 0;
-
-    /*! Connection status */
-    Status status = InitialState;
-
     /*! The QIODevice containing the body (if any) of the request
      * \note It's deleted when Context gets deleted */
     QIODevice *body = nullptr;
@@ -175,14 +169,20 @@ public:
      * \note It's deleted on processingFinished() or destructor */
     Context *context = nullptr;
 
+    /*! The elapsed timer since the start of request */
+    QElapsedTimer elapsed;
+
+    /*! The timestamp of the start of request, TODO remove in Cutelyst 3 */
+    quint64 startOfRequest = 0;
+
     /*! The remote/client port */
     quint16 remotePort = 0;
 
+    /*! Connection status */
+    Status status = InitialState;
+
     /*! If the connection is secure HTTPS */
     bool isSecure = false;
-
-    /*! The elapsed timer since the start of request */
-    QElapsedTimer elapsed;
 };
 
 } // namespace Cutelyst
