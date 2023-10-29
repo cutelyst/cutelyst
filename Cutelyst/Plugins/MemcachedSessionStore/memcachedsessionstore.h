@@ -104,7 +104,7 @@ public:
      * Sets the @a groupKey to define the servers to store the sessions on.
      * This can also be set in the configuration file.
      */
-    void setGroupKey(const QString &groupKey);
+    void setGroupKey(const QByteArray &groupKey);
 
 protected:
     QScopedPointer<MemcachedSessionStorePrivate> d_ptr;

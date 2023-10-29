@@ -28,7 +28,7 @@ void Root::hello(Context *c)
 
 void Root::json(Context *c)
 {
-    c->res()->setJsonBody(QJsonObject{{u"message"_qs, u"Hello, World!"_qs}});
+    c->res()->setJsonObjectBody({{u"message"_qs, u"Hello, World!"_qs}});
 }
 
 void Root::echo(Context *c)

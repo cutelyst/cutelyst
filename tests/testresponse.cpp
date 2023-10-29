@@ -103,7 +103,7 @@ public:
             obj.insert(it.key(), it.value());
             ++it;
         }
-        c->response()->setJsonBody(obj);
+        c->response()->setJsonObjectBody(obj);
     }
 
     C_ATTR(largeSetBody, :Local :AutoArgs)
@@ -199,6 +199,20 @@ public:
         c->response()->setCookies({cookie, cookie2});
         c->response()->removeCookies(cookieToBeRemoved.toLatin1());
         c->response()->setBody(cookie.toRawForm());
+    }
+
+    C_ATTR(sendJson, :Local :AutoArgs)
+    void sendJson(Context *c)
+    {
+        c->response()->setJsonBody("{}"_qba);
+
+        c->response()->setJsonBody(u"{}"_qs);
+
+        QJsonObject obj;
+        c->response()->setJsonObjectBody(obj);
+
+        QJsonArray array;
+        c->response()->setJsonArrayBody(array);
     }
 };
 

@@ -20,7 +20,8 @@ Q_LOGGING_CATEGORY(C_MEMCACHEDSESSIONSTORE, "cutelyst.plugin.memcachedsessionsto
 #define SESSION_STORE_MEMCD_SAVE QStringLiteral("_c_session_store_memcd_save")
 #define SESSION_STORE_MEMCD_DATA QStringLiteral("_c_session_store_memcd_data")
 
-static QVariantHash loadMemcSessionData(Context *c, const QByteArray &sid, const QString &groupKey);
+static QVariantHash
+    loadMemcSessionData(Context *c, const QByteArray &sid, const QByteArray &groupKey);
 
 MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject *parent)
     : SessionStore(parent)
@@ -32,7 +33,7 @@ MemcachedSessionStore::MemcachedSessionStore(Cutelyst::Application *app, QObject
                "you have to specifiy a pointer to the Application object");
     const QVariantMap map =
         app->engine()->config(QStringLiteral("Cutelyst_MemcachedSessionStore_Plugin"));
-    d->groupKey = map.value(QStringLiteral("group_key")).toString();
+    d->groupKey = map.value(QStringLiteral("group_key")).toString().toLatin1();
 }
 
 MemcachedSessionStore::~MemcachedSessionStore()
@@ -84,7 +85,7 @@ bool MemcachedSessionStore::deleteExpiredSessions(Context *c, quint64 expires)
     return true;
 }
 
-void MemcachedSessionStore::setGroupKey(const QString &groupKey)
+void MemcachedSessionStore::setGroupKey(const QByteArray &groupKey)
 {
     Q_D(MemcachedSessionStore);
     d->groupKey = groupKey;

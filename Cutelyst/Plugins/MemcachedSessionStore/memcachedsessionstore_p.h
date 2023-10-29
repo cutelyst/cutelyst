@@ -12,7 +12,7 @@ namespace Cutelyst {
 class MemcachedSessionStorePrivate
 {
 public:
-    QString groupKey;
+    QByteArray groupKey;
 };
 
 } // namespace Cutelyst

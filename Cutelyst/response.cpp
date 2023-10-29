@@ -126,13 +126,14 @@ void Response::setJsonBody(const QByteArray &json)
     d->headers.setContentType("application/json"_qba);
 }
 
-void Response::setJsonBody(const QJsonValue &json)
+void Response::setJsonObjectBody(const QJsonObject &obj)
 {
-    if (json.isArray()) {
-        setJsonBody(QJsonDocument(json.toArray()).toJson(QJsonDocument::Compact));
-    } else {
-        setJsonBody(QJsonDocument(json.toObject()).toJson(QJsonDocument::Compact));
-    }
+    setJsonBody(QJsonDocument(obj).toJson(QJsonDocument::Compact));
+}
+
+void Response::setJsonArrayBody(const QJsonArray &array)
+{
+    setJsonBody(QJsonDocument(array).toJson(QJsonDocument::Compact));
 }
 
 QByteArray Response::contentEncoding() const
