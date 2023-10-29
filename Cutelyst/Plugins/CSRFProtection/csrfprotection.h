@@ -275,7 +275,7 @@ public:
     void setFormFieldName(const QByteArray &fieldName);
 
     /**
-     * Sets the name of the stash key that that will contains the error message if the CSRF
+     * Sets the name of the stash key that that will contain the error message if the CSRF
      * protection check failed.
      */
     void setErrorMsgStashKey(const QString &keyName);

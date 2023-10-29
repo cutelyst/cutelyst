@@ -25,15 +25,11 @@
 #include <QUrl>
 #include <QUuid>
 
-#define DEFAULT_COOKIE_AGE Q_INT64_C(31449600) // approx. 1 year
 #define DEFAULT_COOKIE_NAME "csrftoken"
 #define DEFAULT_COOKIE_PATH "/"
 #define DEFAULT_COOKIE_SAMESITE "strict"
 #define DEFAULT_HEADER_NAME "X_CSRFTOKEN"
 #define DEFAULT_FORM_INPUT_NAME "csrfprotectiontoken"
-#define CSRF_SECRET_LENGTH 32
-#define CSRF_TOKEN_LENGTH 2 * CSRF_SECRET_LENGTH
-#define CSRF_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 #define CSRF_SESSION_KEY "_csrftoken"
 #define CONTEXT_CSRF_COOKIE u"_c_csrfcookie"_qs
 #define CONTEXT_CSRF_COOKIE_USED u"_c_csrfcookieused"_qs
@@ -47,8 +43,7 @@ Q_LOGGING_CATEGORY(C_CSRFPROTECTION, "cutelyst.plugin.csrfprotection", QtWarning
 using namespace Cutelyst;
 
 static thread_local CSRFProtection *csrf = nullptr; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
-const QRegularExpression CSRFProtectionPrivate::sanitizeRe =
-    QRegularExpression(u"[^a-zA-Z0-9\\-_]"_qs);
+const QRegularExpression CSRFProtectionPrivate::sanitizeRe{u"[^a-zA-Z0-9\\-_]"_qs};
 // Assume that anything not defined as 'safe' by RFC7231 needs protection
 const QByteArrayList CSRFProtectionPrivate::secureMethods = QByteArrayList({
     "GET",
@@ -56,6 +51,7 @@ const QByteArrayList CSRFProtectionPrivate::secureMethods = QByteArrayList({
     "OPTIONS",
     "TRACE",
 });
+const QByteArray CSRFProtectionPrivate::allowedChars{"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"_qba};
 
 CSRFProtection::CSRFProtection(Application *parent)
     : Plugin(parent)
@@ -72,10 +68,18 @@ bool CSRFProtection::setup(Application *app)
     const QVariantMap config =
         app->engine()->config(u"Cutelyst_CSRFProtection_Plugin"_qs);
 
-    d->cookieAge = config.value(u"cookie_age"_qs, DEFAULT_COOKIE_AGE).value<qint64>();
-    if (d->cookieAge <= 0) {
-        d->cookieAge = DEFAULT_COOKIE_AGE;
+    bool cookieExpirationOk = false;
+    const qint64 expSeconds = config.value(u"cookie_expiration"_qs, config.value(u"cookie_age"_qs, static_cast<qint64>(std::chrono::duration_cast<std::chrono::seconds>(CSRFProtectionPrivate::cookieDefaultExpiration).count()))).toLongLong(&cookieExpirationOk);
+    if  (cookieExpirationOk) {
+        d->cookieExpiration = std::chrono::seconds{expSeconds};
+    } else {
+        qCWarning(C_CSRFPROTECTION).nospace() << "Invalid value set for cookie_expiration. "
+                                                 "Has to be an integer greater than 0. "
+                                                 "Using default value " << CSRFProtectionPrivate::cookieDefaultExpiration;
+        d->cookieExpiration = CSRFProtectionPrivate::cookieDefaultExpiration;
     }
+
+
     d->cookieDomain = config.value(u"cookie_domain"_qs).toString();
     if (d->cookieName.isEmpty()) {
         d->cookieName = QByteArrayLiteral(DEFAULT_COOKIE_NAME);
@@ -237,44 +241,43 @@ bool CSRFProtection::checkPassed(Context *c)
 
 /**
  * @internal
- * Creates a new random string of length CSRF_SECRET_LENGTH by creating a uuid.
+ * Creates a new random string of length CSRFProtectionPrivate::secretLength by creating a uuid.
  */
 QByteArray CSRFProtectionPrivate::getNewCsrfString()
 {
     QByteArray csrfString;
 
-    while (csrfString.size() < CSRF_SECRET_LENGTH) {
+    while (csrfString.size() < CSRFProtectionPrivate::secretLength) {
         csrfString.append(QUuid::createUuid().toRfc4122().toBase64(QByteArray::Base64UrlEncoding |
                                                                    QByteArray::OmitTrailingEquals));
     }
 
-    csrfString.resize(CSRF_SECRET_LENGTH);
+    csrfString.resize(CSRFProtectionPrivate::secretLength);
 
     return csrfString;
 }
 
 /**
  * @internal
- * Given a @a secret (assumed to be astring of CSRF_ALLOWED_CHARS), generate a
+ * Given a @a secret (assumed to be astring of CSRFProtectionPrivate::allowedChars), generate a
  * token by adding a salt and using it to encrypt the secret.
  */
 QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
 {
     QByteArray salted;
-    salted.reserve(static_cast<QByteArray::size_type>(CSRF_TOKEN_LENGTH));
+    salted.reserve(CSRFProtectionPrivate::tokenLength);
 
     const QByteArray salt  = CSRFProtectionPrivate::getNewCsrfString();
-    const QByteArray chars = QByteArrayLiteral(CSRF_ALLOWED_CHARS);
     std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(secret.size(), salt.size()));
     for (int i = 0; i < std::min(secret.size(), salt.size()); ++i) {
-        pairs.emplace_back(chars.indexOf(secret.at(i)), chars.indexOf(salt.at(i)));
+        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(secret.at(i)), CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
 
     QByteArray cipher;
-    cipher.reserve(CSRF_SECRET_LENGTH);
+    cipher.reserve(CSRFProtectionPrivate::secretLength);
     for (const auto &p : std::as_const(pairs)) {
-        cipher.append(chars[(p.first + p.second) % chars.size()]);
+        cipher.append(CSRFProtectionPrivate::allowedChars[(p.first + p.second) % CSRFProtectionPrivate::allowedChars.size()]);
     }
 
     salted = salt + cipher;
@@ -284,31 +287,30 @@ QByteArray CSRFProtectionPrivate::saltCipherSecret(const QByteArray &secret)
 
 /**
  * @internal
- * Given a @a token (assumed to be string fo CSRF_ALLOWED_CHARS, of length CSRF_TOKEN_LENGTH,
+ * Given a @a token (assumed to be string of CSRFProtectionPrivate::allowedChars, of length CSRFProtectionPrivate::tokenLength,
  * and that its first half is a salt), use it to decrypt the second half to produce the
  * original secret.
  */
 QByteArray CSRFProtectionPrivate::unsaltCipherToken(const QByteArray &token)
 {
     QByteArray secret;
-    secret.reserve(CSRF_SECRET_LENGTH);
+    secret.reserve(CSRFProtectionPrivate::secretLength);
 
-    const QByteArray salt   = token.left(CSRF_SECRET_LENGTH);
-    const QByteArray _token = token.mid(CSRF_SECRET_LENGTH);
+    const QByteArray salt   = token.left(CSRFProtectionPrivate::secretLength);
+    const QByteArray _token = token.mid(CSRFProtectionPrivate::secretLength);
 
-    const QByteArray chars = QByteArrayLiteral(CSRF_ALLOWED_CHARS);
     std::vector<std::pair<int, int>> pairs;
     pairs.reserve(std::min(salt.size(), _token.size()));
     for (int i = 0; i < std::min(salt.size(), _token.size()); ++i) {
-        pairs.emplace_back(chars.indexOf(_token.at(i)), chars.indexOf(salt.at(i)));
+        pairs.emplace_back(CSRFProtectionPrivate::allowedChars.indexOf(_token.at(i)), CSRFProtectionPrivate::allowedChars.indexOf(salt.at(i)));
     }
 
     for (const auto &p : std::as_const(pairs)) {
         QByteArray::size_type idx = p.first - p.second;
         if (idx < 0) {
-            idx = chars.size() + idx;
+            idx = CSRFProtectionPrivate::allowedChars.size() + idx;
         }
-        secret.append(chars.at(idx));
+        secret.append(CSRFProtectionPrivate::allowedChars.at(idx));
     }
 
     return secret;
@@ -334,7 +336,7 @@ QByteArray CSRFProtectionPrivate::sanitizeToken(const QByteArray &token)
     QByteArray sanitized;
 
     const QString tokenString = QString::fromLatin1(token);
-    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) || token.size() != static_cast<QByteArray::size_type>(CSRF_TOKEN_LENGTH)) {
+    if (tokenString.contains(CSRFProtectionPrivate::sanitizeRe) || token.size() != CSRFProtectionPrivate::tokenLength) {
         sanitized = CSRFProtectionPrivate::getNewCsrfToken();
     } else {
         sanitized = token;
@@ -394,7 +396,11 @@ void CSRFProtectionPrivate::setToken(Context *c)
         if (!csrf->d_ptr->cookieDomain.isEmpty()) {
             cookie.setDomain(csrf->d_ptr->cookieDomain);
         }
-        cookie.setExpirationDate(QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieAge));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+        cookie.setExpirationDate(QDateTime::currentDateTime().addDuration(csrf->d_ptr->cookieExpiration));
+#else
+        cookie.setExpirationDate(QDateTime::currentDateTime().addSecs(csrf->d_ptr->cookieExpiration.count()));
+#endif
         cookie.setHttpOnly(csrf->d_ptr->cookieHttpOnly);
         cookie.setPath(csrf->d_ptr->cookiePath);
         cookie.setSecure(csrf->d_ptr->cookieSecure);
