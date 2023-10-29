@@ -177,8 +177,7 @@ void HPack::encodeHeaders(int status, const Headers &headers, QByteArray &buf, C
             hasDate = true;
         }
 
-        auto staticIt =
-            HPackPrivate::hpackStaticHeadersCode.constFind(QString::fromLatin1(it->key));
+        auto staticIt = HPackPrivate::hpackStaticHeadersCode.constFind(it->key);
         if (staticIt != HPackPrivate::hpackStaticHeadersCode.constEnd()) {
             buf.append(staticIt.value(), 2);
 

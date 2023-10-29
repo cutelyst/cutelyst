@@ -39,7 +39,7 @@ public:
         QString value;
     } hpackStaticPair;
 
-    static const QHash<QString, const char *> hpackStaticHeadersCode;
+    static const QHash<QByteArray, const char *> hpackStaticHeadersCode;
     static const hpackStaticPair hpackStaticHeaders[];
 
     static const HuffSym huff_sym_table[];
