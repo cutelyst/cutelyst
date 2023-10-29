@@ -95,14 +95,14 @@ public:
      * See secure() for more info.
      *
      * If your application was queried with the URI http://localhost:3000/some/path
-     * then base is http://localhost:3000/.
+     * then base is http://localhost:3000.
      */
     QString base() const;
 
     /**
      * Returns the path, i.e. the part of the URI after base(), for the current request.
      * for  http://localhost/path/foo
-     * path will contain 'path/foo'
+     * path will contain '/path/foo'
      */
     QString path() const noexcept;
 

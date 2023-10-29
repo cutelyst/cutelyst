@@ -175,10 +175,10 @@ void DispatcherPrivate::prepareAction(Context *c, const QString &requestPath) co
     QString path = normalizePath(requestPath);
     QStringList args;
 
-    //  "foo/bar"
-    //  "foo/" skip
-    //  "foo"
-    //  ""
+    //  "/foo/bar"
+    //  "/foo/" skip
+    //  "/foo"
+    //  "/"
     Q_FOREVER
     {
         // Check out the dispatch types to see if any
@@ -332,7 +332,7 @@ QString DispatcherPrivate::cleanNamespace(const QString &ns)
 QString DispatcherPrivate::normalizePath(const QString &path)
 {
     QString ret    = path;
-    bool lastSlash = true;
+    bool lastSlash = false;
     int i          = 0;
     while (i < ret.size()) {
         if (ret.at(i) == u'/') {
@@ -347,7 +347,7 @@ QString DispatcherPrivate::normalizePath(const QString &path)
         ++i;
     }
 
-    if (ret.endsWith(u'/')) {
+    if (ret.size() != 1 && ret.endsWith(u'/')) {
         ret.resize(ret.size() - 1);
     }
     return ret;

@@ -234,11 +234,6 @@ void ProtocolHttp::parseMethod(const char *ptr, const char *end, Socket *sock) c
     }
     ptr = word_boundary;
 
-    // skip leading slashes
-    while (*ptr == '/' && ptr <= end) {
-        ++ptr;
-    }
-
     // find path end
     while (*word_boundary != ' ' && *word_boundary != '?' && word_boundary < end) {
         ++word_boundary;

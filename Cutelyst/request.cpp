@@ -95,7 +95,8 @@ QUrl Request::uri() const
                                                  : QStringLiteral("http"));
 
         // if the path does not start with a slash it cleans the uri
-        uri.setPath(QLatin1Char('/') + d->engineRequest->path);
+        // TODO check if engines will always set a slash
+        uri.setPath(d->engineRequest->path);
 
         if (!d->engineRequest->query.isEmpty()) {
             uri.setQuery(QString::fromLatin1(d->engineRequest->query));
@@ -120,9 +121,6 @@ QString Request::base() const
         } else {
             base.append(QString::fromLatin1(d->engineRequest->serverAddress));
         }
-
-        // base always have a trailing slash
-        base.append(QLatin1Char('/'));
 
         d->base = base;
         d->parserStatus |= RequestPrivate::BaseParsed;

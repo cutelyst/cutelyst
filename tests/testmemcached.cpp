@@ -1190,7 +1190,7 @@ void TestMemcached::doTest()
     QFETCH(QByteArray, body);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     const QVariantMap result = m_engine->createRequest(
         "POST", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, &body);

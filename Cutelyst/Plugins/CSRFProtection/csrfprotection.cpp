@@ -547,7 +547,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
         return;
     }
 
-    if (c->action()->attributes().contains(QStringLiteral("CSRFIgnore"))) {
+    if (c->action()->attributes().contains(u"CSRFIgnore"_qs)) {
         qCDebug(C_CSRFPROTECTION,
                 "Action \"%s::%s\" is ignored by the CSRF protection.",
                 qPrintable(c->action()->className()),
@@ -556,7 +556,7 @@ void CSRFProtectionPrivate::beforeDispatch(Context *c)
     }
 
     if (csrf->d_ptr->ignoredNamespaces.contains(c->action()->ns())) {
-        if (!c->action()->attributes().contains(QStringLiteral("CSRFRequire"))) {
+        if (!c->action()->attributes().contains(u"CSRFRequire"_qs)) {
             qCDebug(C_CSRFPROTECTION,
                     "Namespace \"%s\" is ignored by the CSRF protection.",
                     qPrintable(c->action()->ns()));

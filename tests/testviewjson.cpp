@@ -146,7 +146,7 @@ void TestActionRenderView::doTest()
     QFETCH(QString, contentType);
     QFETCH(bool, hasXJson);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
     Headers sendHeaders;
     if (sendXJsonVersion) {
         sendHeaders.pushHeader("X-Prototype-Version"_qba, "1.5.0");

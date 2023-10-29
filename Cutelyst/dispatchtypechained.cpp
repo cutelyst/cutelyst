@@ -166,8 +166,9 @@ DispatchType::MatchType
     Q_D(const DispatchTypeChained);
 
     // TODO avoid toString()
-    const BestActionMatch ret =
-        d->recurseMatch(args.size(), QStringLiteral("/"), path.toString().split(QLatin1Char('/')));
+    // TODO remove mid(1)
+    const BestActionMatch ret = d->recurseMatch(
+        args.size(), QStringLiteral("/"), path.mid(1).toString().split(QLatin1Char('/')));
     const ActionList chain = ret.actions;
     if (ret.isNull || chain.isEmpty()) {
         return NoMatch;

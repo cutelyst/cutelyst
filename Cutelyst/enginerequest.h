@@ -134,6 +134,7 @@ public:
 
     inline void setPath(const QString &path)
     {
+        Q_ASSERT_X(path.startsWith(u'/'), "leading slash", "Path must always start with /");
         QByteArray rawPath = path.toLatin1();
         setPath(rawPath.data(), rawPath.size());
     }

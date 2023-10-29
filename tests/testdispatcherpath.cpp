@@ -64,7 +64,7 @@ void TestDispatcherPath::doTest()
     QFETCH(QString, url);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     QVariantMap result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
@@ -79,7 +79,7 @@ void TestDispatcherPath::testController_data()
 
     // Path dispatcher
     QTest::newRow("path-test00") << QStringLiteral("/test/unknown_resource")
-                                 << QByteArrayLiteral("Unknown resource 'test/unknown_resource'.");
+                                 << QByteArrayLiteral("Unknown resource '/test/unknown_resource'.");
     QTest::newRow("path-test01") << QStringLiteral("/test/controller")
                                  << QByteArrayLiteral("path /test/controller args ");
     QTest::newRow("path-test02") << QStringLiteral("/test/controller/hello")

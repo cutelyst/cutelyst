@@ -111,7 +111,7 @@ void TestLangselectManual::doTest()
     QFETCH(int, status);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     const QVariantMap result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), headers, nullptr);
@@ -158,11 +158,11 @@ void TestLangselectManual::testController_data()
                              << QByteArrayLiteral(
                                     "http://127.0.0.1/langselect/manual/test/de/testPath?foo=bar");
     headers.setHeader("Accept-Language", "de-CH");
-    QTest::newRow("path-02") << QStringLiteral("/langselect/manual/test/ru/testPath?foo=bar")
+    QTest::newRow("path-03") << QStringLiteral("/langselect/manual/test/ru/testPath?foo=bar")
                              << headers << 307
                              << QByteArrayLiteral(
                                     "http://127.0.0.1/langselect/manual/test/de/testPath?foo=bar");
-    QTest::newRow("path-00") << QStringLiteral("/langselect/manual/test/en-gb/testPath") << headers
+    QTest::newRow("path-04") << QStringLiteral("/langselect/manual/test/en-gb/testPath") << headers
                              << 200 << QByteArrayLiteral("en-GB");
 
     headers.removeHeader("Accept-Language");

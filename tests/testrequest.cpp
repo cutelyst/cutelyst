@@ -406,7 +406,7 @@ void TestRequest::doTest()
     QFETCH(QByteArray, body);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     QVariantMap result = m_engine->createRequest(method,
                                                  urlAux.path(QUrl::FullyEncoded),
@@ -453,11 +453,11 @@ void TestRequest::testController_data()
                                 << QByteArray()
                                 << QByteArrayLiteral("http://127.0.0.1/request/test/uri");
     QTest::newRow("base-test00") << get << QStringLiteral("/request/test/base") << headers
-                                 << QByteArray() << QByteArrayLiteral("http://127.0.0.1/");
+                                 << QByteArray() << QByteArrayLiteral("http://127.0.0.1");
     QTest::newRow("path-test00") << get << QStringLiteral("/request/test/path") << headers
-                                 << QByteArray() << QByteArrayLiteral("request/test/path");
+                                 << QByteArray() << QByteArrayLiteral("/request/test/path");
     QTest::newRow("match-test00") << get << QStringLiteral("/request/test/match") << headers
-                                  << QByteArray() << QByteArrayLiteral("request/test/match");
+                                  << QByteArray() << QByteArrayLiteral("/request/test/match");
 
     QTest::newRow("method-test00") << get << QStringLiteral("/request/test/method") << headers
                                    << QByteArray() << QByteArrayLiteral("GET");

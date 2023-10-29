@@ -181,15 +181,15 @@ void TestStatusMessage::doTest()
         m_sm->setErrorMgStashKey(errorMsgStashKey);
     }
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     QVariantMap result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);
     Headers headers = result.value(QStringLiteral("headers")).value<Headers>();
     headers.setHeader("Cookie"_qba, headers.header("Set-Cookie"));
 
-    QUrl urlAux2(url.mid(1) + QLatin1String("Test/") + m_sm->statusMsgStashKey() +
-                 QLatin1Char('/') + m_sm->errorMgStashKey());
+    QUrl urlAux2(url + QLatin1String("Test/") + m_sm->statusMsgStashKey() + QLatin1Char('/') +
+                 m_sm->errorMgStashKey());
 
     QString body = result.value(QStringLiteral("body")).toString();
     QUrlQuery query;

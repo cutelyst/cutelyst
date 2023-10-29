@@ -156,7 +156,7 @@ void TestContext::doTest()
     QFETCH(QString, url);
     QFETCH(QByteArray, output);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     QVariantMap result = m_engine->createRequest(
         "GET", urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);

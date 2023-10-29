@@ -35,7 +35,7 @@ QByteArray DispatchTypePath::list() const
     auto keys = d->paths.keys();
 
     std::sort(keys.begin(), keys.end(), [](QStringView a, QStringView b) {
-        return a.compare(b, Qt::CaseInsensitive);
+        return a.compare(b, Qt::CaseInsensitive) < 0;
     });
     for (const auto &path : keys) {
         const auto paths = d->paths.value(path);
@@ -67,14 +67,7 @@ Cutelyst::DispatchType::MatchType
 {
     Q_D(const DispatchTypePath);
 
-    StringActionsMap::const_iterator it;
-
-    if (Q_UNLIKELY(path.isEmpty())) {
-        it = d->paths.constFind(u"/");
-    } else {
-        it = d->paths.constFind(path);
-    }
-
+    auto it = d->paths.constFind(path);
     if (it == d->paths.constEnd()) {
         return NoMatch;
     }
@@ -136,7 +129,7 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
         if (it != attributes.constEnd()) {
             const QString &path = it.value();
             if (path.isEmpty()) {
-                ret = QStringLiteral("/");
+                ret = u"/"_qs;
             } else if (!path.startsWith(u'/')) {
                 ret = u'/' + path;
             } else {
@@ -150,11 +143,11 @@ QString DispatchTypePath::uriForAction(Cutelyst::Action *action, const QStringLi
 bool DispatchTypePathPrivate::registerPath(const QString &path, Action *action)
 {
     QString _path = path;
-    if (_path.startsWith(QLatin1Char('/')) && !_path.isEmpty()) {
-        _path.remove(0, 1);
-    }
+    // TODO see if we can make controllers fix this
     if (_path.isEmpty()) {
-        _path = QStringLiteral("/");
+        _path = u"/"_qs;
+    } else if (!_path.startsWith(u'/')) {
+        _path.prepend(u'/');
     }
 
     auto it = paths.find(_path);

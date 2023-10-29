@@ -132,7 +132,7 @@ void TestActionREST::doTest()
     QFETCH(QByteArray, output);
     QFETCH(QString, allow);
 
-    QUrl urlAux(url.mid(1));
+    QUrl urlAux(url);
 
     QVariantMap result = m_engine->createRequest(
         method, urlAux.path(), urlAux.query(QUrl::FullyEncoded).toLatin1(), Headers(), nullptr);

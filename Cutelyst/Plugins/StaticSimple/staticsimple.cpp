@@ -60,7 +60,8 @@ void StaticSimple::beforePrepareAction(Context *c, bool *skipMethod)
         return;
     }
 
-    const QString path          = c->req()->path();
+    // TODO mid(1) quick fix for path now having leading slash
+    const QString path          = c->req()->path().mid(1);
     const QRegularExpression re = d->re; // Thread-safe
 
     for (const QString &dir : d->dirs) {

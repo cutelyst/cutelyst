@@ -38,11 +38,11 @@ public:
     H2Stream(quint32 streamId, qint32 initialWindowSize, ProtoRequestHttp2 *protoRequestH2);
     ~H2Stream() override;
 
-    virtual qint64 doWrite(const char *data, qint64 len) override final;
+    qint64 doWrite(const char *data, qint64 len) override final;
 
-    virtual bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
+    bool writeHeaders(quint16 status, const Cutelyst::Headers &headers) override final;
 
-    virtual void processingFinished() override final;
+    void processingFinished() override final;
 
     void windowUpdated();
 

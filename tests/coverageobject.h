@@ -120,7 +120,7 @@ public:
     void index(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -128,7 +128,7 @@ public:
     void hello(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -136,7 +136,7 @@ public:
     void global(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -145,7 +145,7 @@ public:
     {
         Q_UNUSED(args)
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -154,7 +154,7 @@ public:
     {
         Q_UNUSED(one)
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -164,7 +164,7 @@ public:
         Q_UNUSED(one)
         Q_UNUSED(two)
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -172,7 +172,7 @@ public:
     void manyOld(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -180,7 +180,7 @@ public:
     void manyOldWithNoArgs(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -188,7 +188,7 @@ public:
     void oneOld(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
@@ -196,7 +196,7 @@ public:
     void twoOld(Context *c)
     {
         c->response()->setBody(
-            QStringLiteral("path /%1 args %2")
+            QStringLiteral("path %1 args %2")
                 .arg(c->request()->path(), c->request()->args().join(QLatin1Char('/'))));
     }
 
