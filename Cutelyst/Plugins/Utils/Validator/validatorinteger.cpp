@@ -15,9 +15,7 @@ ValidatorInteger::ValidatorInteger(const QString &field,
 {
 }
 
-ValidatorInteger::~ValidatorInteger()
-{
-}
+ValidatorInteger::~ValidatorInteger() = default;
 
 ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
                                                const ParamsMultiMap &params) const
@@ -45,24 +43,18 @@ ValidatorReturnType ValidatorInteger::validate(Cutelyst::Context *c,
             break;
         default:
             result.errorMessage = validationDataError(c);
-            qCWarning(
-                C_VALIDATOR,
-                "ValidatorInteger: Conversion type for field %s at %s::%s is not an integer type.",
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+            qCWarning(C_VALIDATOR).noquote()
+                    << "ValidatorInteger: Conversion type for field" << field()
+                    << "at" << caName(c) << "is not an integer value";
             break;
         }
 
         if (converted.isValid()) {
             result.value = converted;
         } else {
-            qCDebug(
-                C_VALIDATOR,
-                "ValidatorInteger: Validation failed for field %s at %s::%s: not an integer value.",
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).noquote().nospace()
+                    << "ValidatorInteger: Validation failed for field " << field()
+                    << " at " << caName(c) << ": not an integer value";
             result.errorMessage = validationError(c);
         }
     } else {

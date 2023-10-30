@@ -76,7 +76,7 @@ protected:
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorIn)
+    Q_DECLARE_PRIVATE(ValidatorIn) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorIn)
 };
 

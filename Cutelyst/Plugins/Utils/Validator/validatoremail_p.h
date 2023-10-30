@@ -50,10 +50,8 @@ public:
                            ValidatorEmailDiagnoseStruct *diagnoseStruct = nullptr);
 
     // last integer code number use by ASCII
-    static constexpr char16_t asciiTab{9};
     static constexpr char16_t asciiLF{10};
     static constexpr char16_t asciiUS{31};
-    static constexpr char16_t asciiSpace{32};
     static constexpr char16_t asciiExclamationMark{33};
     static constexpr char16_t asciiTilde{126};
     static constexpr char16_t asciiEnd{127};

@@ -16,9 +16,7 @@ ValidatorIn::ValidatorIn(const QString &field,
 {
 }
 
-ValidatorIn::~ValidatorIn()
-{
-}
+ValidatorIn::~ValidatorIn() = default;
 
 ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
 {
@@ -37,24 +35,16 @@ ValidatorReturnType ValidatorIn::validate(Cutelyst::Context *c, const ParamsMult
         }
 
         if (vals.empty()) {
-            qCWarning(
-                C_VALIDATOR,
-                "ValidatorIn: The list of comparison values for the field %s at %s::%s is empty.",
-                qPrintable(field()),
-                qPrintable(c->controllerName()),
-                qPrintable(c->actionName()));
-            result.errorMessage = validationDataError(c);
+            qCWarning(C_VALIDATOR).noquote()
+                    << "ValidatorIn: The list of comparison values for the field"
+                    << field() << "at" << caName(c) << "is empty";
         } else {
             if (vals.contains(v, d->cs)) {
                 result.value.setValue(v);
             } else {
-                qCDebug(C_VALIDATOR,
-                        "ValidatorIn: Validation failed for field %s at %s::%s: \"%s\" is not part "
-                        "of the list of comparison values.",
-                        qPrintable(field()),
-                        qPrintable(c->controllerName()),
-                        qPrintable(c->actionName()),
-                        qPrintable(v));
+                qCDebug(C_VALIDATOR).noquote().nospace()
+                        << "ValidatorIn: Validation failed for field " << field()
+                        << " at " << caName(c) << ": \"" << v << "\" is not part of the comparison value list";
                 result.errorMessage = validationError(c, vals);
             }
         }
