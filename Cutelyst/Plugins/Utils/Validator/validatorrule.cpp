@@ -32,19 +32,17 @@ QString ValidatorRule::field() const
 
 QString ValidatorRule::value(const Cutelyst::ParamsMultiMap &params) const
 {
-    QString v;
-
     Q_D(const ValidatorRule);
 
     if (!d->field.isEmpty() && !params.empty()) {
         if (d->trimBefore) {
-            v = params.value(d->field).trimmed();
+            return params.value(d->field).trimmed();
         } else {
-            v = params.value(d->field);
+            return params.value(d->field);
         }
     }
 
-    return v;
+    return {};
 }
 
 QString ValidatorRule::label(Context *c) const

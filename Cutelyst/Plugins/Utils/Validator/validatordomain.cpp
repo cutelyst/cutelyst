@@ -21,9 +21,7 @@ ValidatorDomain::ValidatorDomain(const QString &field,
 {
 }
 
-ValidatorDomain::~ValidatorDomain()
-{
-}
+ValidatorDomain::~ValidatorDomain() = default;
 
 bool ValidatorDomain::validate(const QString &value,
                                bool checkDNS,

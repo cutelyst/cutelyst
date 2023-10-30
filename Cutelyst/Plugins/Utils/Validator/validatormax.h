@@ -64,7 +64,6 @@ public:
      * \brief Deconstructs the max validator.
      */
     ~ValidatorMax() override;
-
 protected:
     /*!
      * \brief Performs the validation and returns the result.
@@ -95,7 +94,6 @@ protected:
      * \brief Returns a generic error message for input value parsing errors.
      */
     QString genericParsingError(Context *c, const QVariant &errorData) const override;
-
 private:
     Q_DECLARE_PRIVATE(ValidatorMax) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorMax)

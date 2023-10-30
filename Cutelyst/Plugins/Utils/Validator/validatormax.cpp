@@ -16,9 +16,7 @@ ValidatorMax::ValidatorMax(const QString &field,
 {
 }
 
-ValidatorMax::~ValidatorMax()
-{
-}
+ValidatorMax::~ValidatorMax() = default;
 
 ValidatorReturnType ValidatorMax::validate(Context *c, const ParamsMultiMap &params) const
 {

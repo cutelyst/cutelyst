@@ -544,8 +544,9 @@ protected:
 
     /*!
      * \brief I a \a defValKey has been set in the constructor, this will try to get the default
-     * value from the stash and put it into the result. \param c             Current Context to get
-     * the default value from. \param result        The result struct to put the default value in.
+     * value from the stash and put it into the result.
+     * \param c             Current Context to get the default value from.
+     * \param result        The result struct to put the default value in.
      * \param validatorName Name of the validator used for logging.
      */
     void defaultValue(Context *c, ValidatorReturnType *result, const char *validatorName) const;
@@ -553,7 +554,7 @@ protected:
     /*!
      * \brief Returns a string describing the current controller and action.
      *
-     * This is mostly used by debug and wanring output. Returns something
+     * This is mostly used by debug and warning output. Returns something
      * like \c MyController::myAction
      */
     static QString caName(Context *c);
