@@ -481,6 +481,8 @@ public:
     }
 
     // decimal ASCII codes used by some validators
+    static constexpr char16_t asciiTab{9};
+    static constexpr char16_t asciiSpace{32};
     static constexpr char16_t ascii_dash{45};
     static constexpr char16_t ascii_0{48};
     static constexpr char16_t ascii_9{57};

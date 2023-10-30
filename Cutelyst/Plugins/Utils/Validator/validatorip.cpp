@@ -8,9 +8,10 @@
 #include <utility>
 
 #include <QHostAddress>
-#include <QRegularExpression>
 
 using namespace Cutelyst;
+
+const QRegularExpression ValidatorIpPrivate::regex{u"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"_qs};
 
 ValidatorIp::ValidatorIp(const QString &field,
                          Constraints constraints,
@@ -20,9 +21,7 @@ ValidatorIp::ValidatorIp(const QString &field,
 {
 }
 
-ValidatorIp::~ValidatorIp()
-{
-}
+ValidatorIp::~ValidatorIp() = default;
 
 ValidatorReturnType ValidatorIp::validate(Cutelyst::Context *c, const ParamsMultiMap &params) const
 {
@@ -38,12 +37,8 @@ ValidatorReturnType ValidatorIp::validate(Cutelyst::Context *c, const ParamsMult
             result.value.setValue(v);
         } else {
             result.errorMessage = validationError(c);
-            qCDebug(C_VALIDATOR,
-                    "ValidatorIp: Validation failed for field %s at %s::%s: not a valid IP address "
-                    "within the constraints.",
-                    qPrintable(field()),
-                    qPrintable(c->controllerName()),
-                    qPrintable(c->actionName()));
+            qCDebug(C_VALIDATOR).nospace().noquote()
+                    << "ValidatorIp: Validation failed for field " << field() << " at " << caName(c) << ": not a valid IP address";
         }
 
     } else {
@@ -59,8 +54,7 @@ bool ValidatorIp::validate(const QString &value, Constraints constraints)
 
     // simple check for an IPv4 address with four parts, because QHostAddress also tolerates
     // addresses like 192.168.2 and fills them with 0 somewhere
-    if (!value.contains(QLatin1Char(':')) && !value.contains(QRegularExpression(QStringLiteral(
-                                                 "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")))) {
+    if (!value.contains(QLatin1Char(':')) && !value.contains(ValidatorIpPrivate::regex)) {
 
         valid = false;
 

@@ -14,9 +14,7 @@ ValidatorFilled::ValidatorFilled(const QString &field,
 {
 }
 
-ValidatorFilled::~ValidatorFilled()
-{
-}
+ValidatorFilled::~ValidatorFilled() = default;
 
 ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &params) const
 {
@@ -30,7 +28,7 @@ ValidatorReturnType ValidatorFilled::validate(Context *c, const ParamsMultiMap &
             result.errorMessage = validationError(c);
         }
     } else {
-        defaultValue(c, &result, "ValidatorAfter");
+        defaultValue(c, &result, "ValidatorFilled");
     }
 
     return result;

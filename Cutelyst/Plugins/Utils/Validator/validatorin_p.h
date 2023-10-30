@@ -16,13 +16,13 @@ class ValidatorInPrivate : public ValidatorRulePrivate
 {
 public:
     ValidatorInPrivate(const QString &f,
-                       const QVariant &vs,
+                       QVariant vs,
                        Qt::CaseSensitivity c,
                        const ValidatorMessages &m,
                        const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
         , cs(c)
-        , values(vs)
+        , values(std::move(vs))
     {
     }
 

@@ -16,16 +16,26 @@ class ValidatorFileSizePrivate : public ValidatorRulePrivate
 public:
     ValidatorFileSizePrivate(const QString &f,
                              ValidatorFileSize::Option o,
-                             const QVariant &mi,
-                             const QVariant &ma,
+                             QVariant mi,
+                             QVariant ma,
                              const ValidatorMessages &m,
                              const QString &dvk)
         : ValidatorRulePrivate(f, m, dvk)
-        , min(mi)
-        , max(ma)
+        , min(std::move(mi))
+        , max(std::move(ma))
         , option(o)
     {
     }
+
+    static constexpr char16_t ascii_B{66};
+    static constexpr char16_t ascii_E{69};
+    static constexpr char16_t ascii_G{71};
+    static constexpr char16_t ascii_I{73};
+    static constexpr char16_t ascii_K{75};
+    static constexpr char16_t ascii_M{77};
+    static constexpr char16_t ascii_P{80};
+    static constexpr char16_t ascii_T{84};
+    static constexpr char16_t ascii_Y{89};
 
     QVariant min;
     QVariant max;

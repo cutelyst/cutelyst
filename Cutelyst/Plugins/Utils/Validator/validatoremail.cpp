@@ -798,7 +798,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 if (!allowUtf8Local) {
                     if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                         returnStatus.push_back(ValidatorEmail::ErrorExpectingQText); // Fatal error
-                    } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
+                    } else if ((uni < ValidatorRulePrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                         returnStatus.push_back(ValidatorEmail::DeprecatedQText);
                     }
                 } else {
@@ -806,7 +806,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                         if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                             returnStatus.push_back(
                                 ValidatorEmail::ErrorExpectingQText); // Fatal error
-                        } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
+                        } else if ((uni < ValidatorRulePrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                             returnStatus.push_back(ValidatorEmail::DeprecatedQText);
                         }
                     }
@@ -850,7 +850,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
 
             if (uni > ValidatorEmailPrivate::asciiEnd) {
                 returnStatus.push_back(ValidatorEmail::ErrorExpectingQpair); // Fatal error
-            } else if (((uni < ValidatorEmailPrivate::asciiUS) && (uni != ValidatorEmailPrivate::asciiTab)) || (uni == ValidatorEmailPrivate::asciiEnd)) {
+            } else if (((uni < ValidatorEmailPrivate::asciiUS) && (uni != ValidatorRulePrivate::asciiTab)) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                 returnStatus.push_back(ValidatorEmail::DeprecatedQP);
             }
 
@@ -957,7 +957,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == ValidatorEmailPrivate::asciiLF)) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingCText); // Fatal error
                     break;
-                } else if ((uni < ValidatorEmailPrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
+                } else if ((uni < ValidatorRulePrivate::asciiSpace) || (uni == ValidatorEmailPrivate::asciiEnd)) {
                     returnStatus.push_back(ValidatorEmail::DeprecatedCText);
                 }
             }

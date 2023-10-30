@@ -151,7 +151,7 @@ protected:
     QString genericValidationDataError(Context *c, const QVariant &errorData) const override;
 
 private:
-    Q_DECLARE_PRIVATE(ValidatorFileSize)
+    Q_DECLARE_PRIVATE(ValidatorFileSize) // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
     Q_DISABLE_COPY(ValidatorFileSize)
 };
 

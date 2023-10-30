@@ -8,6 +8,8 @@
 #include "validatorip.h"
 #include "validatorrule_p.h"
 
+#include <QRegularExpression>
+
 namespace Cutelyst {
 
 class ValidatorIpPrivate : public ValidatorRulePrivate
@@ -21,6 +23,8 @@ public:
         , constraints(c)
     {
     }
+
+    static const QRegularExpression regex;
 
     ValidatorIp::Constraints constraints;
 };

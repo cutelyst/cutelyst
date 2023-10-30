@@ -20,9 +20,7 @@ ValidatorFileSize::ValidatorFileSize(const QString &field,
 {
 }
 
-ValidatorFileSize::~ValidatorFileSize()
-{
-}
+ValidatorFileSize::~ValidatorFileSize() = default;
 
 bool ValidatorFileSize::validate(const QString &value,
                                  double min,
@@ -44,8 +42,8 @@ bool ValidatorFileSize::validate(const QString &value,
 
     for (const QChar &ch : value) {
         if (valid) {
-            const ushort &uc = ch.unicode();
-            if (((uc > 47) && (uc < 58)) || (ch == decimalPoint)) {
+            const char16_t &uc = ch.toUpper().unicode();
+            if (((uc >= ValidatorRulePrivate::ascii_0) && (uc <= ValidatorRulePrivate::ascii_9)) || (ch == decimalPoint)) {
                 if (startsWith == 0) {
                     startsWith = -1;
                 }
@@ -64,16 +62,15 @@ bool ValidatorFileSize::validate(const QString &value,
                     valid = false;
                     break;
                 }
-            } else if ((uc != 9) &&
-                       (uc != 32)) { // not a digit or decimal point and not a space or tab
+            } else if ((uc != ValidatorRulePrivate::asciiTab) &&
+                       (uc != ValidatorRulePrivate::asciiSpace)) { // not a digit or decimal point and not a space or tab
                 if (startsWith == 0) {
                     startsWith = 1;
                 }
                 if ((digitPart.isEmpty() && (startsWith > 0)) ||
                     (!digitPart.isEmpty() && (startsWith < 0))) {
                     switch (uc) {
-                    case 75:  // K
-                    case 107: // k
+                    case ValidatorFileSizePrivate::ascii_K:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -82,8 +79,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 77:  // M
-                    case 109: // m
+                    case ValidatorFileSizePrivate::ascii_M:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -92,8 +88,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 71:  // G
-                    case 103: // g
+                    case ValidatorFileSizePrivate::ascii_G:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -102,8 +97,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 84:  // T
-                    case 116: // t
+                    case ValidatorFileSizePrivate::ascii_T:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -112,8 +106,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 80:  // P
-                    case 112: // p
+                    case ValidatorFileSizePrivate::ascii_P:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -122,8 +115,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 69:  // E
-                    case 101: // e
+                    case ValidatorFileSizePrivate::ascii_E:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -132,8 +124,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 90:  // Z
-                    case 122: // z
+                    case ValidatorRulePrivate::ascii_Z:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -142,8 +133,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 89:  // Y
-                    case 121: // y
+                    case ValidatorFileSizePrivate::ascii_Y:
                     {
                         if (multiplier > 0) {
                             valid = false;
@@ -152,8 +142,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 73:  // I
-                    case 105: // i
+                    case ValidatorFileSizePrivate::ascii_I:
                     {
                         if ((multiplier == 0) || binary) {
                             valid = false;
@@ -162,8 +151,7 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 66: // B
-                    case 98: // b
+                    case ValidatorFileSizePrivate::ascii_B:
                     {
                         if (byteSignFound) {
                             valid = false;
@@ -172,8 +160,8 @@ bool ValidatorFileSize::validate(const QString &value,
                             symbolPart.append(ch);
                         }
                     } break;
-                    case 9:  // horizontal tab
-                    case 32: // space
+                    case ValidatorRulePrivate::asciiTab:
+                    case ValidatorRulePrivate::asciiSpace:
                         break;
                     default:
                         valid = false;
