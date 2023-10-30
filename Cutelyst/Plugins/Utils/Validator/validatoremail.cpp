@@ -602,7 +602,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     // filter_var() validates IPv6 address inconsistently (up to PHP 5.3.3
                     // at least) -- see https://bugs.php.net/bug.php?id=53236 for example
 
-                    int maxGroups          = 8;
+                    int maxGroups          = 8; // NOLINT(cppcoreguidelines-avoid-magic-numbers)
                     qsizetype index        = -1;
                     QString addressLiteral = parseLiteral;
 
@@ -620,7 +620,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                     if (index == 0) {
                         // Nothing there except a valid IPv4 address, so...
                         returnStatus.push_back(ValidatorEmail::RFC5321AddressLiteral);
-                    } else if (QString::compare(addressLiteral.left(5), QLatin1String("IPv6:")) !=
+                    } else if (QString::compare(addressLiteral.left(5), QLatin1String("IPv6:")) != // NOLINT(cppcoreguidelines-avoid-magic-numbers)
                                0) {
                         returnStatus.push_back(ValidatorEmail::RFC5322DomainLiteral);
                     } else {
@@ -719,7 +719,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
                 const char16_t uni = token.unicode();
 
                 // CR, LF, SP & HTAB have already been parsed above
-                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == QLatin1Char('['))) {
+                if ((uni > ValidatorEmailPrivate::asciiEnd) || (uni == 0) || (uni == QLatin1Char('[').unicode())) {
                     returnStatus.push_back(ValidatorEmail::ErrorExpectingDText); // Fatal error
                     break;
                 } else if ((uni < ValidatorEmailPrivate::asciiExclamationMark) || (uni == ValidatorEmailPrivate::asciiEnd)) {
@@ -1199,7 +1199,7 @@ bool ValidatorEmailPrivate::checkEmail(const QString &address,
         returnStatus = _rs;
 
         std::sort(
-            returnStatus.begin(), returnStatus.end(), std::greater<ValidatorEmail::Diagnose>());
+            returnStatus.begin(), returnStatus.end(), std::greater<>());
     }
 
     const ValidatorEmail::Diagnose finalStatus = returnStatus.at(0);
@@ -1875,10 +1875,7 @@ Cutelyst::ValidatorEmail::Category ValidatorEmail::category(Diagnose diagnose)
 
 QString ValidatorEmail::categoryString(Context *c, Diagnose diagnose, const QString &label)
 {
-    QString ret;
-    const Category cat = category(diagnose);
-    ret                = categoryString(c, cat, label);
-    return ret;
+    return categoryString(c, category(diagnose), label);
 }
 
 bool ValidatorEmail::validate(const QString &email,
@@ -1886,10 +1883,8 @@ bool ValidatorEmail::validate(const QString &email,
                               Options options,
                               QList<Cutelyst::ValidatorEmail::Diagnose> *diagnoses)
 {
-    bool ret;
-
     ValidatorEmailDiagnoseStruct diag;
-    ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);
+    bool ret = ValidatorEmailPrivate::checkEmail(email, options, threshold, &diag);
 
     if (diagnoses) {
         *diagnoses = diag.returnStatus;
